@@ -1989,13 +1989,6 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
     card_id = card_id->next;
   }
 
-  /*  */
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			   FALSE);
-  
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			   FALSE);
-
   /* unref */
   g_list_free_full(start_sound_server,
 		   g_object_unref);
@@ -2063,13 +2056,6 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
     card_id = card_id->next;
   }
 
-  /*  */
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			   FALSE);
-  
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			   FALSE);
-
   /* unref */
   g_list_free_full(start_sound_server,
 		   g_object_unref);
@@ -2136,13 +2122,6 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
     
     card_id = card_id->next;
   }
-
-  /*  */
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			   FALSE);
-  
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			   FALSE);
 
   /* unref */
   g_list_free_full(start_sound_server,
@@ -2222,12 +2201,6 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   
   g_list_free(list);
   
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			   TRUE);
-  
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			   TRUE);
-
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
 }
 
@@ -2294,12 +2267,6 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   }
 
   g_list_free(list);
-  
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
-			   TRUE);
-
-  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
-			   TRUE);
 }
 
 /**

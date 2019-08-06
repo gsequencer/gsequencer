@@ -1,3 +1,8 @@
+ags (2.2.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* replaced regular expression by while loop in ags_turtle_read_pn_chars_base()
+
 ags (2.2.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

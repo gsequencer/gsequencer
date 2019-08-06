@@ -50,6 +50,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
 			       TRUE);
 
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       FALSE);
+  
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			       FALSE);
+
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
@@ -66,6 +72,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
 			       TRUE);
 
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       FALSE);
+  
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			       FALSE);
+
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
@@ -75,6 +87,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
 			       FALSE);
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
+			       FALSE);
+
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       FALSE);
+  
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
 			       FALSE);
 
       ags_soundcard_editor_load_jack_card(soundcard_editor);
@@ -88,6 +106,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
 			       FALSE);
 
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       TRUE);
+  
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			       TRUE);
+
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
       //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
@@ -99,6 +123,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
 			       FALSE);
 
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       TRUE);
+
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			       TRUE);
+      
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
       //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);

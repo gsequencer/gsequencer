@@ -1347,6 +1347,11 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 
   gboolean success;
 
+  if(offset == NULL ||
+     offset >= end_ptr){
+    return(NULL);
+  }
+
   look_ahead = offset;
   str = NULL;
 

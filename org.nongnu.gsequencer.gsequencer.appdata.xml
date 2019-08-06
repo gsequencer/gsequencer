@@ -35,7 +35,13 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="2.2.34" date="2019-08-03">
+    <release version="2.2.35" date="2019-08-06">
+      <description>
+        <p>Replaced regular expression in ags_turtle_read_pn_chars_base().</p>
+      </description>
+    </release>
+
+    <release version="2.2.34" date="2019-08-05">
       <description>
         <p>Improved AgsReturnableThread safety.</p>
       </description>
