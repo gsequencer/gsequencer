@@ -1305,6 +1305,7 @@ gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
 {
+#if 0
   regmatch_t match_arr[1];
     
   gchar *str;
@@ -1340,6 +1341,93 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
+#else
+  gchar *str;
+  gchar *look_ahead;
+
+  gboolean success;
+
+  look_ahead = offset;
+  str = NULL;
+
+  success = TRUE;
+  
+  while(success &&
+	look_ahead < end_ptr){
+    if((look_ahead[0] >= 'a' && look_ahead[0] <= 'z') ||
+       (look_ahead[0] >= 'A' && look_ahead[0] <= 'Z')){
+      look_ahead++;
+    }else if(look_ahead + 2 < end_ptr &&
+	     ((look_ahead[0] == '\xC3' &&
+	       ((look_ahead[1] >= '\x80' && look_ahead[1] <= '\x96') ||
+		(look_ahead[1] >= '\x98' && look_ahead[1] <= '\xB6') ||
+		(look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBF'))) ||
+	      ((look_ahead[0] >= '\xC3' && look_ahead[0] <= '\xCA') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
+	      (look_ahead[0] == '\xCB' &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
+	      (look_ahead[0] == '\xCD' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBD')) ||
+	      (look_ahead[0] == '\xCD' &&
+	       (look_ahead[1] >= '\xBF' && look_ahead[1] <= '\xDF')) ||
+	      ((look_ahead[0] >= '\xCE' && look_ahead[0] <= '\xDF') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')))){
+      look_ahead += 2;
+    }else if(look_ahead + 3 < end_ptr &&
+	     (((look_ahead[0] >= '\xE0' && look_ahead[0] <= '\xE1') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x80' &&
+	       (look_ahead[2] >= '\x8C' && look_ahead[2] <= '\x8D')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x81' &&
+	       (look_ahead[2] >= '\xB0' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       (look_ahead[1] >= '\x81' && look_ahead[1] <= '\x85') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x86' &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBE') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\xBF' &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xAF')) ||
+	      (look_ahead[0] == '\xE3' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBF') &&
+	       (look_ahead[2] >= '\x81' && look_ahead[2] <= '\xBF')) ||
+	      ((look_ahead[0] >= '\xE4') && look_ahead[0] <= '\xEC') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\x9F') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      (look_ahead[1] >= '\xA4' && look_ahead[1] <= '\xB6') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xB7' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xB7' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      (look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBE') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xBF' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBD')))){
+      look_ahead += 3;
+    }else if(look_ahead + 4 < end_ptr &&
+	     ((look_ahead[0] == '\xF0' && look_ahead[0] == '\xF3') &&
+	      (look_ahead[1] == '\x90' && look_ahead[1] == '\xAF') &&
+	      (look_ahead[2] == '\x80' && look_ahead[2] == '\xBF') &&
+	      (look_ahead[3] == '\x80' && look_ahead[3] == '\xBF'))){
+      look_ahead += 4;
+    }else{
+      success = FALSE;
+    }
+  }
+#endif
   
   return(str);
 }
@@ -3303,15 +3391,19 @@ ags_turtle_load(AgsTurtle *turtle,
        sb);
   file = fopen(turtle->filename,
 	       "r");
-
+  
   if(file == NULL ||
      sb->st_size <= 0){
+    free(sb);
+    
     return(NULL);
   }
 
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){
+    free(sb);
+
     return(NULL);
   }
   
