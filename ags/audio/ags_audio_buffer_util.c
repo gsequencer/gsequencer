@@ -332,6 +332,7 @@ void
 ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
 				  guint count)
 {
+  guint current_channel;
   guint limit;
   guint i;
 
@@ -342,16 +343,18 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *buffer = 0.0;
-      buffer[1 * channels] = 0.0;
-      buffer[2 * channels] = 0.0;
-      buffer[3 * channels] = 0.0;
-      buffer[4 * channels] = 0.0;
-      buffer[5 * channels] = 0.0;
-      buffer[6 * channels] = 0.0;
-      buffer[7 * channels] = 0.0;
+      current_channel = 0;
+      
+      buffer[0] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
 
-      buffer += (8 * channels);
+      buffer += (current_channel + channels);
     }
   }
 
@@ -377,6 +380,7 @@ void
 ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
 				    guint count)
 {
+  guint current_channel;
   guint limit;
   guint i;
 
@@ -387,16 +391,18 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      *buffer = 0.0;
-      buffer[1 * channels] = (Float32) 0.0;
-      buffer[2 * channels] = (Float32) 0.0;
-      buffer[3 * channels] = (Float32) 0.0;
-      buffer[4 * channels] = (Float32) 0.0;
-      buffer[5 * channels] = (Float32) 0.0;
-      buffer[6 * channels] = (Float32) 0.0;
-      buffer[7 * channels] = (Float32) 0.0;
+      current_channel = 0;
+      
+      buffer[0] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel += channels)] = (Float32) 0.0;
 
-      buffer += (8 * channels);
+      buffer += (current_channel + channels);
     }
   }
 
@@ -422,6 +428,7 @@ void
 ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
 				   guint count)
 {
+  guint current_channel;
   guint limit;
   guint i;
 
@@ -432,16 +439,18 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      *buffer = 0.0;
-      buffer[1 * channels] = 0.0;
-      buffer[2 * channels] = 0.0;
-      buffer[3 * channels] = 0.0;
-      buffer[4 * channels] = 0.0;
-      buffer[5 * channels] = 0.0;
-      buffer[6 * channels] = 0.0;
-      buffer[7 * channels] = 0.0;
+      current_channel = 0;
 
-      buffer += (8 * channels);
+      buffer[0] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel += channels)] = 0.0;
+
+      buffer += (current_channel + channels);
     }
   }
 
@@ -530,6 +539,7 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
 				  gdouble current_volume,
 				  gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -542,23 +552,34 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+      
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
+
+      current_channel = 0;
       
       buffer[0] = (gint8) v_buffer[0];
-      buffer[1 * channels] = (gint8) v_buffer[1];
-      buffer[2 * channels] = (gint8) v_buffer[2];
-      buffer[3 * channels] = (gint8) v_buffer[3];
-      buffer[4 * channels] = (gint8) v_buffer[4];
-      buffer[5 * channels] = (gint8) v_buffer[5];
-      buffer[6 * channels] = (gint8) v_buffer[6];
-      buffer[7 * channels] = (gint8) v_buffer[7];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[1];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[2];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[3];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[4];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[5];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[6];
+      buffer[(current_channel + channels)] = (gint8) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -566,8 +587,10 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
     
-    for(; i < limit; i += 8){
-      *buffer = 0xff & ((gint16) ((*buffer) * current_volume));
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      current_channel = 0;
+
+      buffer[0] = 0xff & ((gint16) ((*buffer) * current_volume));
       buffer[1 * channels] = 0xff & ((gint16) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = 0xff & ((gint16) (buffer[2 * channels] * current_volume));
       buffer[3 * channels] = 0xff & ((gint16) (buffer[3 * channels] * current_volume));
@@ -577,18 +600,14 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
       buffer[7 * channels] = 0xff & ((gint16) (buffer[7 * channels] * current_volume));
       
       buffer += (8 * channels);
-      
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
     *buffer = 0xff & ((gint16) ((*buffer) * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
@@ -614,6 +633,7 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
 				   gdouble current_volume,
 				   gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -626,23 +646,34 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
+
+      current_channel = 0;
       
       buffer[0] = (gint16) v_buffer[0];
-      buffer[1 * channels] = (gint16) v_buffer[1];
-      buffer[2 * channels] = (gint16) v_buffer[2];
-      buffer[3 * channels] = (gint16) v_buffer[3];
-      buffer[4 * channels] = (gint16) v_buffer[4];
-      buffer[5 * channels] = (gint16) v_buffer[5];
-      buffer[6 * channels] = (gint16) v_buffer[6];
-      buffer[7 * channels] = (gint16) v_buffer[7];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[1];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[2];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[3];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[4];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[5];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[6];
+      buffer[(current_channel += channels)] = (gint16) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -650,7 +681,7 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
       *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * current_volume));
       buffer[1 * channels] = (gint16) 0xffff & ((gint32) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = (gint16) 0xffff & ((gint32) (buffer[2 * channels] * current_volume));
@@ -661,18 +692,14 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
       buffer[7 * channels] = (gint16) 0xffff & ((gint32) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
     *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
@@ -698,6 +725,7 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
 				   gdouble current_volume,
 				   gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -710,23 +738,34 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
+
+      current_channel = 0;
       
       buffer[0] = (gint32) v_buffer[0];
-      buffer[1 * channels] = (gint32) v_buffer[1];
-      buffer[2 * channels] = (gint32) v_buffer[2];
-      buffer[3 * channels] = (gint32) v_buffer[3];
-      buffer[4 * channels] = (gint32) v_buffer[4];
-      buffer[5 * channels] = (gint32) v_buffer[5];
-      buffer[6 * channels] = (gint32) v_buffer[6];
-      buffer[7 * channels] = (gint32) v_buffer[7];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[1];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[2];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[3];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[4];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[5];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[6];
+      buffer[(current_channel += channels)] = (gint32) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -734,7 +773,7 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
       *buffer = (gint32) 0xffffff & ((gint32) ((*buffer) * current_volume));
       buffer[1 * channels] = (gint32) 0xffffff & ((gint32) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = (gint32) 0xffffff & ((gint32) (buffer[2 * channels] * current_volume));
@@ -745,18 +784,14 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
       buffer[7 * channels] = (gint32) 0xffffff & ((gint32) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
     *buffer = (gint32) 0xffffff & ((gint32) ((*buffer) * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
@@ -782,6 +817,7 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
 				   gdouble current_volume,
 				   gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -794,23 +830,34 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
+
+      current_channel = 0;
       
       buffer[0] = (gint32) v_buffer[0];
-      buffer[1 * channels] = (gint32) v_buffer[1];
-      buffer[2 * channels] = (gint32) v_buffer[2];
-      buffer[3 * channels] = (gint32) v_buffer[3];
-      buffer[4 * channels] = (gint32) v_buffer[4];
-      buffer[5 * channels] = (gint32) v_buffer[5];
-      buffer[6 * channels] = (gint32) v_buffer[6];
-      buffer[7 * channels] = (gint32) v_buffer[7];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[1];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[2];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[3];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[4];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[5];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[6];
+      buffer[(current_channel + channels)] = (gint32) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -818,7 +865,7 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
       *buffer = (gint32) 0xffffffff & ((gint64) ((*buffer) * current_volume));
       buffer[1 * channels] = (gint32) 0xffffffff & ((gint64) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = (gint32) 0xffffffff & ((gint64) (buffer[2 * channels] * current_volume));
@@ -829,18 +876,14 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
       buffer[7 * channels] = (gint32) 0xffffffff & ((gint64) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
     *buffer = (gint32) 0xffffffff & ((gint64) ((*buffer) * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
@@ -866,6 +909,7 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
 				   gdouble current_volume,
 				   gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -878,23 +922,34 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
       
+      current_channel = 0;
+
       buffer[0] = (gint64) v_buffer[0];
-      buffer[1 * channels] = (gint64) v_buffer[1];
-      buffer[2 * channels] = (gint64) v_buffer[2];
-      buffer[3 * channels] = (gint64) v_buffer[3];
-      buffer[4 * channels] = (gint64) v_buffer[4];
-      buffer[5 * channels] = (gint64) v_buffer[5];
-      buffer[6 * channels] = (gint64) v_buffer[6];
-      buffer[7 * channels] = (gint64) v_buffer[7];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[1];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[2];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[3];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[4];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[5];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[6];
+      buffer[(current_channel += channels)] = (gint64) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -902,7 +957,7 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
       *buffer = (gint64) 0xffffffffffffffff & ((gint64) ((*buffer) * current_volume));
       buffer[1 * channels] = (gint64) 0xffffffffffffffff & ((gint64) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = (gint64) 0xffffffffffffffff & ((gint64) (buffer[2 * channels] * current_volume));
@@ -913,18 +968,14 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
       buffer[7 * channels] = (gint64) 0xffffffffffffffff & ((gint64) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
     *buffer = (gint64) 0xffffffffffffffff & ((gint64) ((*buffer) * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
@@ -950,6 +1001,7 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
 				     gdouble current_volume,
 				     gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -962,23 +1014,34 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
+
+      current_channel = 0;
       
       buffer[0] = (gfloat) v_buffer[0];
-      buffer[1 * channels] = (gfloat) v_buffer[1];
-      buffer[2 * channels] = (gfloat) v_buffer[2];
-      buffer[3 * channels] = (gfloat) v_buffer[3];
-      buffer[4 * channels] = (gfloat) v_buffer[4];
-      buffer[5 * channels] = (gfloat) v_buffer[5];
-      buffer[6 * channels] = (gfloat) v_buffer[6];
-      buffer[7 * channels] = (gfloat) v_buffer[7];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[1];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[2];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[3];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[4];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[5];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[6];
+      buffer[(current_channel + channels)] = (gfloat) v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -1034,6 +1097,7 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 				      gdouble current_volume,
 				      gdouble ratio)
 {
+  guint current_channel;
   gdouble start_volume;
   guint limit;
   guint i;
@@ -1046,23 +1110,34 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
 
-    for(; i < limit; i += 8){
-      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
+      v8double v_buffer;
+
+      current_channel = 0;
+
+      v_buffer = (v8double) {(gdouble) buffer[0],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)],
+			     (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
       
+      current_channel = 0;
+
       buffer[0] = v_buffer[0];
-      buffer[1 * channels] = v_buffer[1];
-      buffer[2 * channels] = v_buffer[2];
-      buffer[3 * channels] = v_buffer[3];
-      buffer[4 * channels] = v_buffer[4];
-      buffer[5 * channels] = v_buffer[5];
-      buffer[6 * channels] = v_buffer[6];
-      buffer[7 * channels] = v_buffer[7];
+      buffer[(current_channel += channels)] = v_buffer[1];
+      buffer[(current_channel += channels)] = v_buffer[2];
+      buffer[(current_channel += channels)] = v_buffer[3];
+      buffer[(current_channel += channels)] = v_buffer[4];
+      buffer[(current_channel += channels)] = v_buffer[5];
+      buffer[(current_channel += channels)] = v_buffer[6];
+      buffer[(current_channel += channels)] = v_buffer[7];
 
-      buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
+      buffer += (current_channel + channels);
     }
   }  
 #else
@@ -1070,7 +1145,7 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
   if(buffer_length > 8){
     limit = buffer_length - (buffer_length % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
       *buffer = ((gdouble) ((*buffer) * current_volume));
       buffer[1 * channels] = ((gdouble) (buffer[1 * channels] * current_volume));
       buffer[2 * channels] = ((gdouble) (buffer[2 * channels] * current_volume));
@@ -1081,18 +1156,14 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
       buffer[7 * channels] = ((gdouble) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
-
-      current_volume = start_volume + i * ratio;
     }
   }
 #endif
   
-  for(; i < buffer_length; i++){
-    *buffer = ((gdouble) ((*buffer) * current_volume));
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
+    buffer[0] = ((gdouble) (buffer[0] * current_volume));
 
     buffer += channels;
-
-    current_volume = start_volume + i * ratio;
   }
 
   return(current_volume);
