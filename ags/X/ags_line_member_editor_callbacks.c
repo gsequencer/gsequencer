@@ -64,8 +64,6 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-
-  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -119,11 +117,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
       machine = machine_editor->machine;
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-      g_object_get(window,
-		   "application-context" , &application_context,
-		   NULL);
 
-      gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+      application_context = (AgsApplicationContext *) window->application_context;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
@@ -202,8 +197,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 (GObject *) add_effect);
+	    ags_xorg_application_context_schedule_task(application_context,
+						       (GObject *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -278,8 +273,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 (GObject *) add_effect);
+	    ags_xorg_application_context_schedule_task(application_context,
+						       (GObject *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,

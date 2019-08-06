@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,8 +27,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -461,8 +459,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *start_notation, *notation;
@@ -501,9 +497,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   /* application context and mutex manager */
   application_context = (AgsApplicationContext *) window->application_context;
   
-  /* get task thread */  
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   /* crop note */
   g_object_get(audio,
 	       "notation", &start_notation,
@@ -548,8 +541,8 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 		   g_object_unref);
   
   /* append tasks */
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    task);
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  task);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,8 +27,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_soundcard.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <glib/gstdio.h>
 
@@ -127,7 +125,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsMachine *machine;
   
   AgsThread *main_loop;
-  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -139,9 +136,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   application_context = ags_application_context_get_instance();
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
+    
   /* collect */  
   machines_start = NULL;
 
@@ -381,8 +376,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* append AgsStartSoundcard */
       task = g_list_reverse(task);
       
-      ags_gui_thread_schedule_task_list(AGS_GUI_THREAD(gui_thread),
-					task);
+      ags_xorg_application_context_schedule_task_list(application_context,
+						      task);
       
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

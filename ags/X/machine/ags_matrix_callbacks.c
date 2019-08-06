@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,8 +26,6 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <math.h>
 
@@ -169,8 +167,6 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
 
-  AgsThread *gui_thread;
-
   AgsApplySequencerLength *apply_sequencer_length;
   
   AgsApplicationContext *application_context;
@@ -182,16 +178,14 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
   apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(matrix)->audio,
 							  length);
 
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) apply_sequencer_length);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) apply_sequencer_length);
 }
 
 void

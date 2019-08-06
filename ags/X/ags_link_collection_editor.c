@@ -441,8 +441,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     GtkTreeModel *model;
 
-    AgsThread *gui_thread;
-
     AgsAudio *audio;
     AgsChannel *start_channel, *start_link;
     AgsChannel *channel, *next_channel, *nth_channel;
@@ -465,9 +463,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
     application_context = (AgsApplicationContext *) window->application_context;
-
-    /* get gui thread */
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
     /* get first line */
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
@@ -524,8 +519,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					task);
+      ags_xorg_application_context_schedule_task_list(application_context,
+						      task);
     }else{
       guint first_link;
 
@@ -572,8 +567,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       }
 
       task = g_list_reverse(task);
-      ags_gui_thread_schedule_task_list(gui_thread,
-					task);
+      ags_xorg_application_context_schedule_task_list(application_context,
+						      task);
 
       g_object_unref(start_link);
 

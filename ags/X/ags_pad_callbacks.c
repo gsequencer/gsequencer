@@ -87,8 +87,6 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   AgsSetMuted *set_muted;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
 
   GList *list, *list_start;
@@ -101,8 +99,6 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /*  */
   start_task = NULL;
@@ -200,8 +196,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }
 
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    start_task);
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  start_task);
 }
 
 void

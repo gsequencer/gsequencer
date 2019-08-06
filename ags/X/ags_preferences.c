@@ -26,8 +26,6 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/X/file/ags_simple_file.h>
 
 #include <sys/types.h>
@@ -280,8 +278,6 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   AgsApplySoundConfig *apply_sound_config;
   
-  AgsThread *gui_thread;
-  
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
@@ -297,7 +293,6 @@ ags_preferences_apply(AgsApplicable *applicable)
   application_context = ags_application_context_get_instance();
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   config = ags_config_get_instance();
 
@@ -317,8 +312,8 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   apply_sound_config = ags_apply_sound_config_new(application_context,
 						  NULL);
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) apply_sound_config);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) apply_sound_config);
 
   /* notify user about safe GSequencer */
   dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,
