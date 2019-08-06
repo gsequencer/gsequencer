@@ -1399,8 +1399,8 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBF') &&
 	       (look_ahead[2] >= '\x81' && look_ahead[2] <= '\xBF')) ||
 	      ((look_ahead[0] >= '\xE4') && look_ahead[0] <= '\xEC') &&
-	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\x9F') &&
-	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[1] >= '\x80' && look_ahead[1] <= '\x9F') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
 	     (look_ahead[0] == '\xEF' &&
 	      (look_ahead[1] >= '\xA4' && look_ahead[1] <= '\xB6') &&
 	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
@@ -1415,7 +1415,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
 	     (look_ahead[0] == '\xEF' &&
 	      look_ahead[1] == '\xBF' &&
-	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBD')))){
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBD'))){
       look_ahead += 3;
     }else if(look_ahead + 4 < end_ptr &&
 	     ((look_ahead[0] == '\xF0' && look_ahead[0] == '\xF3') &&
@@ -1427,6 +1427,9 @@ ags_turtle_read_pn_chars_base(gchar *offset,
       success = FALSE;
     }
   }
+
+  str = g_strndup(offset,
+		  look_ahead - offset);
 #endif
   
   return(str);
