@@ -35,6 +35,12 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.2.36" date="2019-08-07">
+      <description>
+        <p>Faster iterating on buffer in ags_audio_buffer_util.c.</p>
+      </description>
+    </release>
+
     <release version="2.2.35" date="2019-08-06">
       <description>
         <p>Replaced regular expression in ags_turtle_read_pn_chars_base().</p>
