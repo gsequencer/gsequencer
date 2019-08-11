@@ -371,7 +371,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       }
 
       /* copy */
-#if 0
+#if 1
       sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
       
       completed_sub_block_count = 0;
@@ -478,7 +478,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     }
     
     /* copy */
-#if 0
+#if 1
     sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
       
     completed_sub_block_count = 0;

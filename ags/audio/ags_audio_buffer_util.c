@@ -346,7 +346,7 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
       current_channel = 0;
       
       buffer[0] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel = channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
@@ -394,7 +394,7 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
       current_channel = 0;
       
       buffer[0] = (Float32) 0.0;
-      buffer[(current_channel += channels)] = (Float32) 0.0;
+      buffer[(current_channel = channels)] = (Float32) 0.0;
       buffer[(current_channel += channels)] = (Float32) 0.0;
       buffer[(current_channel += channels)] = (Float32) 0.0;
       buffer[(current_channel += channels)] = (Float32) 0.0;
@@ -442,7 +442,7 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
       current_channel = 0;
 
       buffer[0] = 0.0;
-      buffer[(current_channel += channels)] = 0.0;
+      buffer[(current_channel = channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
       buffer[(current_channel += channels)] = 0.0;
