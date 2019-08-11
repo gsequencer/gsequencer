@@ -2,6 +2,9 @@ ags (2.2.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved iterating buffer in ags_audio_buffer_util.c
+	* work-around for broken lock-free audio buffer, reverted see below
+	* reverted ags_devout.c to 2.2.25
+	* reverted ags_play_audio_signal.c to 2.2.25
 
 ags (2.2.35)
 
