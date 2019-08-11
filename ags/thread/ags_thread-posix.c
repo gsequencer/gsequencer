@@ -2822,16 +2822,6 @@ ags_thread_real_clock(AgsThread *thread)
       next_sync_tic = 5;
     }
 
-    if(ags_thread_global_get_use_sync_counter()){
-      ags_main_loop_sync_counter_inc(AGS_MAIN_LOOP(main_loop),
-				     next_sync_tic);
-
-      if(!skip_sync_counter){
-	ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
-				       sync_tic);
-      }
-    }
-
     /* thread tree */
     current_tic = thread->current_tic;
     next_tic = 0;
@@ -2842,6 +2832,18 @@ ags_thread_real_clock(AgsThread *thread)
       next_tic = 1;
     }else if(current_tic == 1){
       next_tic = 2;
+    }
+
+    if(ags_thread_global_get_use_sync_counter()){
+      ags_main_loop_sync_counter_inc(AGS_MAIN_LOOP(main_loop),
+				     next_sync_tic);
+
+      if(!skip_sync_counter){
+	ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				       sync_tic);
+      }
+    }else{
+      sync_tic = current_tic;
     }
 
     switch(thread->current_tic){

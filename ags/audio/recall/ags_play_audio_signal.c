@@ -371,6 +371,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       }
 
       /* copy */
+#if 0
       sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
       
       completed_sub_block_count = 0;
@@ -400,9 +401,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	    play_audio_signal->completed_sub_block[i] = TRUE;
 	  }
 	}
-      }
-      
-#if 0
+      } 
+#else
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
 				buffer0);
       
@@ -478,6 +478,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     }
     
     /* copy */
+#if 0
     sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
       
     completed_sub_block_count = 0;
@@ -540,9 +541,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	  play_audio_signal->completed_sub_block[i] = TRUE;
 	}
       }
-    }
-    
-#if 0
+    }    
+#else
     if(ags_recall_test_flags(recall, AGS_RECALL_INITIAL_RUN)){
       /* copy */
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
