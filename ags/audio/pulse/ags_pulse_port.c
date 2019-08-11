@@ -1584,6 +1584,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_lock(device_mutex);
 
   /* wait callback */
+  nth_buffer = 0;
+  
   no_event = TRUE;
 
   if(pulse_devout != NULL){

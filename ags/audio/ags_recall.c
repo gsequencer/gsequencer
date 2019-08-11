@@ -2061,7 +2061,8 @@ ags_recall_connect(AgsConnectable *connectable)
 
     pthread_mutex_unlock(recall_mutex);
   }else{
-    list = recall->children;
+    list =
+      list_start = recall->children;
   }
   
   while(list != NULL){
@@ -2130,7 +2131,8 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
     pthread_mutex_unlock(recall_mutex);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   while(list != NULL){
@@ -2592,7 +2594,8 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
     child =
       child_start = g_list_copy(recall->children);
   }else{
-    child = recall->children;
+    child =
+      child_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -2647,7 +2650,8 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
     child =
       child_start = g_list_copy(recall->children);
   }else{
-    child = recall->children;
+    child = 
+      child_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -3746,7 +3750,8 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
     list =
       list_start = g_list_copy(recall->children);
   }else{
-    list = recall->children;
+    list =
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4333,7 +4338,8 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
     list =
       list_start = g_list_copy(recall->children);
   }else{
-    list = recall->children;
+    list =
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4402,7 +4408,8 @@ ags_recall_real_check_rt_data(AgsRecall *recall)
     list =
       list_start = g_list_copy(recall->children);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4478,7 +4485,8 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4551,7 +4559,8 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4624,7 +4633,8 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4705,7 +4715,8 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4845,7 +4856,8 @@ ags_recall_real_run_pre(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4918,7 +4930,8 @@ ags_recall_real_run_inter(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -4992,7 +5005,8 @@ ags_recall_real_run_post(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -5065,7 +5079,8 @@ ags_recall_real_do_feedback(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);
@@ -5138,7 +5153,8 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
 				    (GCopyFunc) g_object_ref,
 				    NULL);
   }else{
-    list = recall->children;
+    list = 
+      list_start = recall->children;
   }
   
   pthread_mutex_unlock(recall_mutex);

@@ -1261,6 +1261,7 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					pads_old);
 
       channel = nth_channel;
+      next_channel = NULL;
       
       while(channel != NULL){
 	/* get some fields */
@@ -1315,6 +1316,7 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					pads_old);
 
       channel = nth_channel;
+      next_channel = NULL;
       
       while(channel != NULL){
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
