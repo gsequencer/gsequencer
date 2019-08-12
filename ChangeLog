@@ -2,7 +2,7 @@ ags (2.2.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved iterating buffer in ags_audio_buffer_util.c
-	* fixed unitialized values of FreeBSD
+	* fixed unitialized values related to FreeBSD
 
 ags (2.2.37)
 
