@@ -7281,6 +7281,7 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
   //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
   static const gdouble scale = 0.00000000002328306417;
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
@@ -7727,6 +7728,7 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
   //NOTE:JK: scale = (2^bits_source / 2.0 - 1.0)
   static const gdouble scale = 127.0;
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
@@ -7762,7 +7764,7 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
 			    source[(current_schannel += schannels)]};
 
       /* scale and copy */
-      v_source *= scale;
+      v_source *= (gfloat) scale;
       v_destination += v_source;
       
       current_dchannel = 0;
@@ -7874,7 +7876,7 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
 			    source[(current_schannel += schannels)]};
 
       /* scale and copy */
-      v_source *= scale;
+      v_source *= (gfloat) scale;
       v_destination += v_source;
       
       current_dchannel = 0;
@@ -7986,7 +7988,7 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
 			    source[(current_schannel += schannels)]};
 
       /* scale and copy */
-      v_source *= scale;
+      v_source *= (gfloat) scale;
       v_destination += v_source;
       
       current_dchannel = 0;
@@ -8098,7 +8100,7 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
 			    source[(current_schannel += schannels)]};
 
       /* scale and copy */
-      v_source *= scale;
+      v_source *= (gfloat) scale;
       v_destination += v_source;
       
       current_dchannel = 0;
@@ -8174,6 +8176,7 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
   //NOTE:JK: scale = (2^bits_source / 2.0 - 1.0)
   static const gdouble scale = 9223372036854775807.0;
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
@@ -8209,7 +8212,7 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
 			    source[(current_schannel += schannels)]};
 
       /* scale and copy */
-      v_source *= scale;
+      v_source *= (gfloat) scale;
       v_destination += v_source;
       
       current_dchannel = 0;
@@ -8283,6 +8286,7 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
 					  guint count)
 {
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
@@ -8388,6 +8392,7 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
 					   guint count)
 {
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
