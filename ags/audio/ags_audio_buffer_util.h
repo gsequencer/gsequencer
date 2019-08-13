@@ -605,6 +605,7 @@ void ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dch
 						 guint count);
 
 #ifdef __APPLE__
+/* Float32 */
 void ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
 					      gint8 *source, guint schannels,
 					      guint count);
@@ -624,6 +625,102 @@ void ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchan
 void ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
 					       gint64 *source, guint schannels,
 					       guint count);
+
+void ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannels,
+						 float *source, guint schannels,
+						 guint count);
+
+void ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchannels,
+						  gdouble *source, guint schannels,
+						  guint count);
+
+void ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchannels,
+						   Float32 *source, guint schannels,
+						   guint count);
+
+void ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
+					      Float32 *source, guint schannels,
+					      guint count);
+void ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels,
+						 Float32 *source, guint schannels,
+						 guint count);
+void ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchannels,
+						  Float32 *source, guint schannels,
+						  guint count);
+#endif
+
+/* AgsComplex */
+void ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannels,
+					      gint8 *source, guint schannels,
+					      guint count);
+
+void ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchannels,
+					       gint16 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchannels,
+					       gint32 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchannels,
+					       gint32 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchannels,
+					       gint64 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
+						 gdouble *source, guint schannels,
+						 guint count);
+
+void ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,
+						  gdouble *source, guint schannels,
+						  guint count);
+
+#ifdef __APPLE__
+void ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dchannels,
+						   Float32 *source, guint schannels,
+						   guint count);
+#endif
+
+void ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
+					      AgsComplex *source, guint schannels,
+					      guint count);
+void ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels,
+						 AgsComplex *source, guint schannels,
+						 guint count);
+void ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchannels,
+						  AgsComplex *source, guint schannels,
+						  guint count);
+#ifdef __APPLE__
+void ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchannels,
+						   AgsComplex *source, guint schannels,
+						   guint count);
 #endif
 
 /* copy */
