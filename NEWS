@@ -10,6 +10,12 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 2.2.39
+================================
+
+* Added AgsComplex data type support in ags_audio_buffer_util.h and completed
+  Float32 support.
+
 Overview of Changes in AGS 2.2.38
 ================================
 

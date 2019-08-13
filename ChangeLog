@@ -1,3 +1,8 @@
+ags (2.2.39)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* extended ags_audio_buffer_util.h prototype, completed Float32 and added AgsComplex type support
+
 ags (2.2.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
