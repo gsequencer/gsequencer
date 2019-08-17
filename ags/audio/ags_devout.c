@@ -687,7 +687,7 @@ ags_devout_init(AgsDevout *devout)
     pthread_mutex_init(devout->buffer_mutex[i],
 		       NULL);
   }
-
+  
   devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
   devout->sub_block_mutex = (pthread_mutex_t **) malloc(4 * devout->sub_block_count * devout->pcm_channels * sizeof(pthread_mutex_t *));
 
@@ -697,7 +697,7 @@ ags_devout_init(AgsDevout *devout)
     pthread_mutex_init(devout->sub_block_mutex[i],
 		       NULL);
   }
-  
+
   devout->buffer = (void **) malloc(4 * sizeof(void *));
 
   devout->buffer[0] = NULL;
@@ -1227,7 +1227,7 @@ ags_devout_get_uuid(AgsConnectable *connectable)
 
   devout = AGS_DEVOUT(connectable);
 
-  /* get devout signal mutex */
+  /* get devout mutex */
   devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);
 
   /* get UUID */
@@ -2164,7 +2164,7 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   }
 
   fds = NULL;
-  
+    
   if(devout->poll_fd == NULL){
     count = 0;
     
@@ -2234,9 +2234,9 @@ ags_devout_is_available(AgsSoundcard *soundcard)
   while(list !=	NULL){
     gint16 revents;
 
-    revents = 0;
-      
     if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+      revents = 0;
+      
 #ifdef AGS_WITH_ALSA
       snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
 #endif
@@ -2676,6 +2676,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   GList *task;
   GList *list;
 
+  gchar *str;
+  
   guint word_size;
   guint nth_buffer;
 
@@ -3072,7 +3074,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
 #ifdef AGS_WITH_ALSA
-  format = 0;
+  format = SND_PCM_FORMAT_S16;
 #endif
   
   switch(devout->format){
@@ -3156,7 +3158,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* Open PCM device for playback. */  
   handle = NULL;
 
-  if((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK)) < 0){
+  if((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
     gchar *device_fixup;
     
     str = snd_strerror(err);
@@ -3318,7 +3320,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  if(rrate != rate){
+  if (rrate != rate) {
     pthread_mutex_unlock(devout_mutex);
     g_warning("Rate doesn't match (requested %iHz, get %iHz)", rate, err);
 
@@ -3358,12 +3360,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  
   /* set the period size * /
-     err = snd_pcm_hw_params_set_periods(handle, hwparams, 4, 0);
-     err = snd_pcm_hw_params_set_period_size(handle, hwparams, 4 * size, 0);
-
-     period_size = 4 * devout->buffer_size;
+     period_size = devout->buffer_size;
+     err = snd_pcm_hw_params_set_period_size_near(handle, hwparams, period_size, dir);
      if (err < 0) {
      pthread_mutex_unlock(devout_mutex);
 
@@ -3529,6 +3528,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
     gint count;
     guint i, chn;
+
+    format = SND_PCM_FORMAT_S16;
     
     switch(ags_format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -3567,8 +3568,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     big_endian = snd_pcm_format_big_endian(format) == 1;
     to_unsigned = snd_pcm_format_unsigned(format) == 1;
 
-    memset(res, 0, 8 * sizeof(int));
-    
     /* fill the channel areas */
     for(count = 0; count < buffer_size - (buffer_size % 8);){
       for(chn = 0; chn < channels; chn++){
@@ -3621,6 +3620,15 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	    res[7] = (int) ((gint32 *) buffer)[(count + 7) * channels + chn];
 	  }
 	  break;
+	default:
+	    res[0] = 0;
+	    res[1] = 0;
+	    res[2] = 0;
+	    res[3] = 0;
+	    res[4] = 0;
+	    res[5] = 0;
+	    res[6] = 0;
+	    res[7] = 0;	  
 	}
 
 	if(to_unsigned){
@@ -3687,6 +3695,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	    res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
 	  }
 	  break;
+	default:
+	  res[0] = 0;
 	}
 
 	if(to_unsigned){

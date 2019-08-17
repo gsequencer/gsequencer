@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,8 +26,6 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -253,8 +251,6 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
 
-  AgsThread *gui_thread;
-
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
   
@@ -277,8 +273,6 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
   /* get audio */
   audio = machine_editor->machine->audio;
 
@@ -294,8 +288,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      audio_channels);
       
   /* append AgsResizeAudio */
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) resize_audio);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) resize_audio);
 }
 
 void

@@ -27,8 +27,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
@@ -545,8 +543,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   AgsSeekSoundcard *seek_soundcard;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
 
   GList *start_list, *list;
@@ -562,9 +558,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  /* get task thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   /* seek soundcard */
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
   
@@ -577,8 +570,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 					  new_offset,
 					  AGS_SEEK_SET);
   
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) seek_soundcard);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) seek_soundcard);
 
   /* soundcard - start offset */
   list = 

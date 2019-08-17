@@ -24,10 +24,9 @@
 #include <ags/libags-audio.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -1096,8 +1095,6 @@ ags_pad_play(AgsPad *pad)
   AgsStartSoundcard *start_soundcard;
   AgsStartChannel *start_channel;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *start_task;
@@ -1111,8 +1108,6 @@ ags_pad_play(AgsPad *pad)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   no_soundcard = FALSE;
   
@@ -1199,8 +1194,8 @@ ags_pad_play(AgsPad *pad)
       /* append AgsStartSoundcard */
       start_task = g_list_reverse(start_task);
 
-      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					start_task);
+      ags_xorg_application_context_schedule_task_list(application_context,
+						      start_task);
     }
   }else{
     AgsPlayback *playback;
@@ -1231,8 +1226,8 @@ ags_pad_play(AgsPad *pad)
 	  cancel_channel = ags_cancel_channel_new(channel,
 						  AGS_SOUND_SCOPE_PLAYBACK);
 
-	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				       (GObject *) cancel_channel);
+	  ags_xorg_application_context_schedule_task(application_context,
+						     (GObject *) cancel_channel);
 	}
 
 	g_object_unref(playback);
@@ -1287,8 +1282,8 @@ ags_pad_play(AgsPad *pad)
 	cancel_channel = ags_cancel_channel_new(channel,
 						AGS_SOUND_SCOPE_PLAYBACK);
 
-	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				     (GObject *) cancel_channel);
+	ags_xorg_application_context_schedule_task(application_context,
+						   (GObject *) cancel_channel);
       }
 
       g_object_unref(playback);

@@ -551,6 +551,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   specifier = NULL;
 
+  clipboard = NULL;
   audio_node = NULL;
   
   if(copy_selection){

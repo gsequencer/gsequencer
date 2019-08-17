@@ -1,3 +1,41 @@
+ags (2.2.39)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* extended ags_audio_buffer_util.h prototype, completed Float32 and added AgsComplex type support
+
+ags (2.2.38)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved iterating buffer in ags_audio_buffer_util.c
+	* fixed unitialized values related to FreeBSD
+
+ags (2.2.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed more unitialized values
+
+ags (2.2.36)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved iterating buffer in ags_audio_buffer_util.c
+	* work-around for broken lock-free audio buffer, reverted see below
+	* reverted ags_devout.c to 2.2.25
+	* reverted ags_play_audio_signal.c to 2.2.25
+
+ags (2.2.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* replaced regular expression by while loop in ags_turtle_read_pn_chars_base()
+
+ags (2.2.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored scheduling tasks to be done by AgsXorgApplicationContext
+	* improved AgsAnimationWindow draw only as needed
+	* improved AgsSoundcardEditor set sensitive
+	* improved ref-count of AgsReturnableThread
+	* improved resetting AgsReturnableThread
+
 ags (2.2.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

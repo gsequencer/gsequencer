@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.33\n"
+"Project-Id-Version: gsequencer 2.2.38\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-08-03 14:10+0200\n"
+"POT-Creation-Date: 2019-08-12 18:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:297 ags/X/ags_preferences.c:180
+#: ags/X/ags_automation_editor.c:297 ags/X/ags_preferences.c:178
 msgid "audio"
 msgstr ""
 
@@ -56,7 +56,7 @@ msgstr ""
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:647 ags/X/machine/ags_dssi_bridge.c:424
+#: ags/X/ags_bulk_member.c:645 ags/X/machine/ags_dssi_bridge.c:424
 #: ags/X/machine/ags_live_dssi_bridge.c:427
 msgid "Plugin file not present"
 msgstr ""
@@ -192,7 +192,7 @@ msgid "group"
 msgstr ""
 
 #: ags/X/ags_effect_line.c:959 ags/X/ags_effect_line.c:965
-#: ags/X/ags_line.c:1031 ags/X/ags_line.c:1037 ags/X/ags_notation_editor.c:305
+#: ags/X/ags_line.c:1031 ags/X/ags_line.c:1037 ags/X/ags_notation_editor.c:303
 msgid "channel"
 msgstr ""
 
@@ -226,7 +226,7 @@ msgstr ""
 msgid "live export"
 msgstr ""
 
-#: ags/X/ags_export_window.c:226 ags/X/ags_navigation.c:306
+#: ags/X/ags_export_window.c:226 ags/X/ags_navigation.c:304
 msgid "exclude sequencers"
 msgstr ""
 
@@ -316,84 +316,84 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/X/ags_machine.c:2623 ags/X/machine/ags_audiorec_callbacks.c:64
+#: ags/X/ags_machine.c:2619 ags/X/machine/ags_audiorec_callbacks.c:64
 msgid "Open audio files"
 msgstr ""
 
-#: ags/X/ags_machine.c:2631
+#: ags/X/ags_machine.c:2627
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:2636
+#: ags/X/ags_machine.c:2632
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:3242 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3233 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:3245 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3236 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:3248
+#: ags/X/ags_machine.c:3239
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:3251
+#: ags/X/ags_machine.c:3242
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:3254
+#: ags/X/ags_machine.c:3245
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3257 ags/X/ags_machine_callbacks.c:199
+#: ags/X/ags_machine.c:3248 ags/X/ags_machine_callbacks.c:195
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3260 ags/X/ags_machine_callbacks.c:271
+#: ags/X/ags_machine.c:3251 ags/X/ags_machine_callbacks.c:267
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3263 ags/X/ags_machine_callbacks.c:356
+#: ags/X/ags_machine.c:3254 ags/X/ags_machine_callbacks.c:352
 msgid "reposition audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3266 ags/X/ags_machine_editor.c:207
+#: ags/X/ags_machine.c:3257 ags/X/ags_machine_editor.c:207
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:3269
+#: ags/X/ags_machine.c:3260
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:3335 ags/X/editor/ags_pattern_envelope.c:225
+#: ags/X/ags_machine.c:3326 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:193
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:3346
+#: ags/X/ags_machine.c:3337
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3356
+#: ags/X/ags_machine.c:3347
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3366
+#: ags/X/ags_machine.c:3357
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:3395
+#: ags/X/ags_machine.c:3386
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3406
+#: ags/X/ags_machine.c:3397
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3416
+#: ags/X/ags_machine.c:3407
 msgid "MIDI dialog"
 msgstr ""
 
@@ -433,23 +433,23 @@ msgstr ""
 msgid "midi device"
 msgstr ""
 
-#: ags/X/ags_navigation.c:211
+#: ags/X/ags_navigation.c:209
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:315
+#: ags/X/ags_navigation.c:249 ags/X/machine/ags_drum.c:315
 msgid "loop"
 msgstr ""
 
-#: ags/X/ags_navigation.c:284
+#: ags/X/ags_navigation.c:282
 msgid "loop L"
 msgstr ""
 
-#: ags/X/ags_navigation.c:290
+#: ags/X/ags_navigation.c:288
 msgid "loop R"
 msgstr ""
 
-#: ags/X/ags_notation_editor.c:273
+#: ags/X/ags_notation_editor.c:271
 msgid "notation"
 msgstr ""
 
@@ -525,27 +525,27 @@ msgstr ""
 msgid "Plugin type:"
 msgstr ""
 
-#: ags/X/ags_preferences.c:161
+#: ags/X/ags_preferences.c:159
 msgid "preferences"
 msgstr ""
 
-#: ags/X/ags_preferences.c:175
+#: ags/X/ags_preferences.c:173
 msgid "generic"
 msgstr ""
 
-#: ags/X/ags_preferences.c:185
+#: ags/X/ags_preferences.c:183
 msgid "midi"
 msgstr ""
 
-#: ags/X/ags_preferences.c:190
+#: ags/X/ags_preferences.c:188
 msgid "performance"
 msgstr ""
 
-#: ags/X/ags_preferences.c:199
+#: ags/X/ags_preferences.c:197
 msgid "OSC server"
 msgstr ""
 
-#: ags/X/ags_preferences.c:210
+#: ags/X/ags_preferences.c:208
 msgid "server"
 msgstr ""
 
@@ -555,15 +555,15 @@ msgstr ""
 msgid "enabled"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:159 ags/X/ags_soundcard_editor.c:288
+#: ags/X/ags_resize_editor.c:157 ags/X/ags_soundcard_editor.c:288
 msgid "audio channels"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:186
+#: ags/X/ags_resize_editor.c:184
 msgid "outputs"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:213
+#: ags/X/ags_resize_editor.c:211
 msgid "inputs"
 msgstr ""
 
@@ -615,27 +615,27 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2194
+#: ags/X/ags_xorg_application_context.c:2201
 #: ags/audio/ags_audio_application_context.c:1744
 #: ags/audio/task/ags_apply_sound_config.c:895
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2204
+#: ags/X/ags_xorg_application_context.c:2211
 #: ags/audio/ags_audio_application_context.c:1754
 #: ags/audio/task/ags_apply_sound_config.c:905
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2452
+#: ags/X/ags_xorg_application_context.c:2459
 #: ags/audio/ags_audio_application_context.c:2001
 #: ags/audio/task/ags_apply_sound_config.c:1149
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2462
+#: ags/X/ags_xorg_application_context.c:2469
 #: ags/audio/ags_audio_application_context.c:2011
 #: ags/audio/task/ags_apply_sound_config.c:1159
 msgid "unknown sequencer backend - NULL"
@@ -712,29 +712,29 @@ msgstr ""
 msgid "disable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:207
+#: ags/X/editor/ags_crop_note_dialog.c:205
 #: ags/X/editor/ags_notation_toolbar.c:451
 msgid "crop notes"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:217
-#: ags/X/editor/ags_move_note_dialog.c:226
+#: ags/X/editor/ags_crop_note_dialog.c:215
+#: ags/X/editor/ags_move_note_dialog.c:224
 msgid "absolute"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:225
+#: ags/X/editor/ags_crop_note_dialog.c:223
 msgid "in-place"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:233
+#: ags/X/editor/ags_crop_note_dialog.c:231
 msgid "do resize"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:247
+#: ags/X/editor/ags_crop_note_dialog.c:245
 msgid "crop note"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:272
+#: ags/X/editor/ags_crop_note_dialog.c:270
 msgid "padding note"
 msgstr ""
 
@@ -756,7 +756,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
 #: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:311
-#: ags/X/machine/ags_live_lv2_bridge.c:1799 ags/X/machine/ags_lv2_bridge.c:2089
+#: ags/X/machine/ags_live_lv2_bridge.c:1801 ags/X/machine/ags_lv2_bridge.c:2089
 msgid "preset"
 msgstr ""
 
@@ -830,20 +830,20 @@ msgstr ""
 msgid "shift piano"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:207
+#: ags/X/editor/ags_move_note_dialog.c:205
 #: ags/X/editor/ags_notation_toolbar.c:448
 msgid "move notes"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:218
+#: ags/X/editor/ags_move_note_dialog.c:216
 msgid "relative"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:240
+#: ags/X/editor/ags_move_note_dialog.c:238
 msgid "move x"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:265
+#: ags/X/editor/ags_move_note_dialog.c:263
 msgid "move y"
 msgstr ""
 
@@ -1084,16 +1084,16 @@ msgstr ""
 msgid "length"
 msgstr ""
 
-#: ags/X/machine/ags_drum_input_pad_callbacks.c:56
+#: ags/X/machine/ags_drum_input_pad_callbacks.c:54
 msgid "Open File"
 msgstr ""
 
-#: ags/X/machine/ags_drum_input_pad_callbacks.c:74
+#: ags/X/machine/ags_drum_input_pad_callbacks.c:72
 msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:334 ags/X/machine/ags_live_dssi_bridge.c:337
-#: ags/X/machine/ags_live_lv2_bridge.c:1721 ags/X/machine/ags_lv2_bridge.c:2011
+#: ags/X/machine/ags_live_lv2_bridge.c:1723 ags/X/machine/ags_lv2_bridge.c:2011
 msgid "program"
 msgstr ""
 
@@ -1173,23 +1173,23 @@ msgstr ""
 msgid "sync"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:285 ags/X/machine/ags_synth.c:228
+#: ags/X/machine/ags_syncsynth.c:283 ags/X/machine/ags_synth.c:223
 msgid "auto update"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:288 ags/X/machine/ags_synth.c:231
+#: ags/X/machine/ags_syncsynth.c:286 ags/X/machine/ags_synth.c:226
 msgid "update"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:297 ags/X/machine/ags_synth.c:240
+#: ags/X/machine/ags_syncsynth.c:295 ags/X/machine/ags_synth.c:235
 msgid "lower"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:320 ags/X/machine/ags_synth.c:263
+#: ags/X/machine/ags_syncsynth.c:318 ags/X/machine/ags_synth.c:258
 msgid "loop start"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:340 ags/X/machine/ags_synth.c:283
+#: ags/X/machine/ags_syncsynth.c:338 ags/X/machine/ags_synth.c:278
 msgid "loop end"
 msgstr ""
 

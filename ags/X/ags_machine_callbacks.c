@@ -124,8 +124,6 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   
   AgsRemoveAudio *remove_audio;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *list, *list_start;
@@ -176,13 +174,11 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   gtk_widget_destroy((GtkWidget *) machine);
 
   /* get task thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   remove_audio = ags_remove_audio_new(application_context,
 				      audio);
   
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) remove_audio);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) remove_audio);
 }
 
 void

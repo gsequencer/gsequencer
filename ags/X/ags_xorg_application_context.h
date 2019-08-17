@@ -57,6 +57,9 @@ struct _AgsXorgApplicationContext
   volatile gboolean gui_ready;
   volatile gboolean show_animation;
   volatile gboolean file_ready;
+
+  GList *collected_task;
+  GList *task_completion;
   
   AgsThreadPool *thread_pool;
 
@@ -96,7 +99,14 @@ struct _AgsXorgApplicationContextClass
 GType ags_xorg_application_context_get_type();
 
 void ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context);
+
+void ags_xorg_application_schedule_task(AgsXorgApplicationContext *xorg_application_context,
+					GObject *task);
+void ags_xorg_application_schedule_task_list(AgsXorgApplicationContext *xorg_application_context,
+					     GList *task);
+
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
+gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 

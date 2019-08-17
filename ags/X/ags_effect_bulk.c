@@ -29,8 +29,6 @@
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -898,8 +896,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
-  AgsGuiThread *gui_thread;
-
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsGenericRecallChannelRun *generic_recall_channel_run;
@@ -935,8 +931,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						 AGS_TYPE_WINDOW);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
@@ -1439,8 +1433,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  task);
 
   return(retport);
 }
@@ -1456,8 +1450,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
    
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
-
-  AgsGuiThread *gui_thread;
 
   AgsChannel *current;
   AgsRecallContainer *recall_container;
@@ -1495,8 +1487,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						 AGS_TYPE_WINDOW);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
@@ -1995,8 +1985,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  task);
 
   return(retport);
 }

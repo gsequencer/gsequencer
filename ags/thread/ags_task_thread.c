@@ -743,6 +743,10 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
+  if(append == NULL){
+    return;
+  }
+
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   task = AGS_TASK(g_atomic_pointer_get(&(append->data)));
 
@@ -763,8 +767,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   pthread_mutex_unlock(task_thread->read_mutex);
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d", devout->append_task_suspend);
-
-  g_object_unref(returnable_thread);
 }
 
 /**
@@ -824,6 +826,10 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
+  if(append == NULL){
+    return;
+  }
+  
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   list = (GList *) g_atomic_pointer_get(&(append->data));
 
@@ -842,8 +848,6 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
   /*  */
   pthread_mutex_unlock(task_thread->read_mutex);
-
-  g_object_unref(returnable_thread);
 }
 
 /**

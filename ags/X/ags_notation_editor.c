@@ -30,8 +30,6 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
@@ -855,8 +853,6 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 {
   AgsWindow *window;
   
-  AgsThread *gui_thread;
-
   AgsStartSoundcard *start_soundcard;
   AgsStartChannel *start_channel;
 
@@ -869,8 +865,6 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) notation_edit);
 
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get soundcard */
   g_object_get(channel,
@@ -897,8 +891,8 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 
   /* perform playback */
   task = g_list_reverse(task);
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    task);
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  task);
 
   g_object_unref(soundcard);
 }

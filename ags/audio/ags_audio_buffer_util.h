@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,6 +59,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_DOUBLE,
   AGS_AUDIO_BUFFER_UTIL_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COMPLEX,
 }AgsAudioBufferUtilFormat;
 
 /**
@@ -139,10 +140,35 @@ typedef enum{
  * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT: copy AGS_AUDIO_BUFFER_UTIL_DOUBLE to AGS_AUDIO_BUFFER_UTIL_FLOAT
  * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE: copy AGS_AUDIO_BUFFER_UTIL_DOUBLE to AGS_AUDIO_BUFFER_UTIL_DOUBLE
  * @AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
- * @AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
- * @AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
- * @AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
- * @AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S16 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S24 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S32 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_S64 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_FLOAT to AGS_AUDIO_BUFFER_UTIL_FLOAT
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_DOUBLE to AGS_AUDIO_BUFFER_UTIL_DOUBLE
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_FLOAT32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_S8
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S16: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_S16
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S24: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_S24
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S32: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_S32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S64: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_S64
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_FLOAT
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_DOUBLE: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_DOUBLE
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S8 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S16 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S24 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S32 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S64 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S8
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S16
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S24
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S32: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S32
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S64
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_FLOAT
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_DOUBLE
  * 
  * Copy modes.
  */
@@ -155,6 +181,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE,
+
   /* signed 16 bit source */  
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16,
@@ -163,6 +190,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE,
+
   /* signed 24 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16,
@@ -171,6 +199,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE,
+
   /* signed 32 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16,
@@ -179,6 +208,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE,
+
   /* signed 64 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16,
@@ -187,6 +217,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE,
+
   /* float source */
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16,
@@ -195,6 +226,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE,
+
   /* double source */
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16,
@@ -203,11 +235,43 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE,
+
+  /* Float32 */
   AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_DOUBLE,
+
+  /* AgsComplex */
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE,
+  AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT32,
+
 }AgsAudioBufferUtilCopyMode;
 
 typedef gint8 v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
@@ -216,6 +280,7 @@ typedef gint32 v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
 typedef gint64 v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
 typedef gfloat v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
+typedef AgsComplex v8complex __attribute__ ((vector_size(8 * sizeof(AgsComplex))));
 
 guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
@@ -540,6 +605,7 @@ void ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dch
 						 guint count);
 
 #ifdef __APPLE__
+/* Float32 */
 void ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
 					      gint8 *source, guint schannels,
 					      guint count);
@@ -559,6 +625,102 @@ void ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchan
 void ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
 					       gint64 *source, guint schannels,
 					       guint count);
+
+void ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannels,
+						 float *source, guint schannels,
+						 guint count);
+
+void ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchannels,
+						  gdouble *source, guint schannels,
+						  guint count);
+
+void ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchannels,
+						   Float32 *source, guint schannels,
+						   guint count);
+
+void ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
+					      Float32 *source, guint schannels,
+					      guint count);
+void ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
+					       Float32 *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels,
+						 Float32 *source, guint schannels,
+						 guint count);
+void ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchannels,
+						  Float32 *source, guint schannels,
+						  guint count);
+#endif
+
+/* AgsComplex */
+void ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannels,
+					      gint8 *source, guint schannels,
+					      guint count);
+
+void ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchannels,
+					       gint16 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchannels,
+					       gint32 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchannels,
+					       gint32 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchannels,
+					       gint64 *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
+						 gdouble *source, guint schannels,
+						 guint count);
+
+void ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,
+						  gdouble *source, guint schannels,
+						  guint count);
+
+#ifdef __APPLE__
+void ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dchannels,
+						   Float32 *source, guint schannels,
+						   guint count);
+#endif
+
+void ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
+					      AgsComplex *source, guint schannels,
+					      guint count);
+void ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
+					       AgsComplex *source, guint schannels,
+					       guint count);
+void ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels,
+						 AgsComplex *source, guint schannels,
+						 guint count);
+void ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchannels,
+						  AgsComplex *source, guint schannels,
+						  guint count);
+#ifdef __APPLE__
+void ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchannels,
+						   AgsComplex *source, guint schannels,
+						   guint count);
 #endif
 
 /* copy */

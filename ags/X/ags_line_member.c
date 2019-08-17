@@ -32,8 +32,6 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
@@ -1390,7 +1388,6 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsWindow *window;
 
-    AgsThread *gui_thread;
     AgsTask *task;
 
     AgsApplicationContext *application_context;
@@ -1400,14 +1397,12 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   
     application_context = (AgsApplicationContext *) window->application_context;
 
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,
 				    NULL);
 
-    ags_gui_thread_schedule_task(AGS_GUI_THREAD(gui_thread),
-				 G_OBJECT(task));
+    ags_xorg_application_context_schedule_task(application_context,
+					       G_OBJECT(task));
   }
 }
 

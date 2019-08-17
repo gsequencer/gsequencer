@@ -867,6 +867,8 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
 
+  guint format;
+  
   pthread_mutex_t *sndfile_mutex;
 
   sndfile = AGS_SNDFILE(sound_resource);
@@ -902,8 +904,49 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
     return(FALSE);
   }
 
+  format = AGS_SOUNDCARD_DOUBLE;
+
+  switch(((SF_FORMAT_PCM_S8 |
+	   SF_FORMAT_PCM_16 |
+	   SF_FORMAT_PCM_24 |
+	   SF_FORMAT_PCM_32 |
+	   SF_FORMAT_FLOAT |
+	   SF_FORMAT_DOUBLE) & sndfile->info->format)){
+  case SF_FORMAT_PCM_S8:
+  {
+    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+  }
+  break;
+  case SF_FORMAT_PCM_16:
+  {
+    format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  }
+  break;
+  case SF_FORMAT_PCM_24:
+  {
+    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+  }
+  break;
+  case SF_FORMAT_PCM_32:
+  {
+    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+  }
+  break;
+  case SF_FORMAT_FLOAT:
+  {
+    format = AGS_SOUNDCARD_FLOAT;
+  }
+  break;
+  case SF_FORMAT_DOUBLE:
+  {
+    format = AGS_SOUNDCARD_DOUBLE;
+  }
+  break;
+  }
+  
   g_object_set(sndfile,
 	       "audio-channels", sndfile->info->channels,
+	       "format", format,
 	       NULL);
   
 #ifdef AGS_DEBUG

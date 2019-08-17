@@ -28,8 +28,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
@@ -1201,8 +1199,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
   AgsWindow *window;
-
-  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -1371,8 +1367,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
     ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
 
@@ -1392,8 +1386,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				    bulk_member->control_port, port_data,
 				    NULL);
 
-    ags_gui_thread_schedule_task(AGS_GUI_THREAD(gui_thread),
-				 G_OBJECT(task));
+    ags_xorg_application_context_schedule_task(application_context,
+					       G_OBJECT(task));
   }
 }
 
