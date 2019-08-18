@@ -1738,6 +1738,14 @@ ags_synth_util_sin(void *buffer,
 			      offset, n_frames);
   }
   break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_synth_util_sin_complex((AgsComplex *) buffer,
+			       freq, phase, volume,
+			       samplerate,
+			       offset, n_frames);
+  }
+  break;
   default:
   {
     g_warning("ags_synth_util_sin() - unsupported format");
@@ -1821,6 +1829,14 @@ ags_synth_util_sawtooth(void *buffer,
 				   freq, phase, volume,
 				   samplerate,
 				   offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_synth_util_sawtooth_complex((AgsComplex *) buffer,
+				    freq, phase, volume,
+				    samplerate,
+				    offset, n_frames);
   }
   break;
   default:

@@ -1474,9 +1474,93 @@ ags_fm_synth_util_sin(void *buffer,
 		      gdouble lfo_freq, gdouble lfo_depth,
 		      gdouble tuning)
 {
-  //TODO:JK: implement me
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_sin_s8((gint8 *) buffer,
+			     freq, phase, volume,
+			     samplerate,
+			     offset, n_frames,
+			     lfo_freq, lfo_depth,
+			     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_sin_s16((gint16 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_sin_s24((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_sin_s32((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_sin_s64((gint64 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames,
+			      lfo_freq, lfo_depth,
+			      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_sin_float((float *) buffer,
+				freq, phase, volume,
+				samplerate,
+				offset, n_frames,
+				lfo_freq, lfo_depth,
+				tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_sin_double((double *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames,
+				 lfo_freq, lfo_depth,
+				 tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_sin_complex((AgsComplex *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_sin() - unsupported format");
+  }
+  }
 }
-
 
 /**
  * ags_fm_synth_util_sawtooth:
@@ -1504,7 +1588,92 @@ ags_fm_synth_util_sawtooth(void *buffer,
 			   gdouble lfo_freq, gdouble lfo_depth,
 			   gdouble tuning)
 {
-  //TODO:JK: implement me
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_sawtooth_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_sawtooth_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_sawtooth_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_sawtooth_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_sawtooth_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_sawtooth_float((float *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_sawtooth_double((double *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_sawtooth_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_sawtooth() - unsupported format");
+  }
+  }
 }
 
 /**
@@ -1533,7 +1702,92 @@ ags_fm_synth_util_triangle(void *buffer,
 			   gdouble lfo_freq, gdouble lfo_depth,
 			   gdouble tuning)
 {
-  //TODO:JK: implement me
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_triangle_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_triangle_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_triangle_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_triangle_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_triangle_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_triangle_float((float *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_triangle_double((double *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_triangle_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_triangle() - unsupported format");
+  }
+  }
 }
 
 /**
@@ -1562,7 +1816,92 @@ ags_fm_synth_util_square(void *buffer,
 			 gdouble lfo_freq, gdouble lfo_depth,
 			 gdouble tuning)
 {
-  //TODO:JK: implement me
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_square_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_square_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_square_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_square_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_square_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_square_float((float *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_square_double((double *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_square_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_square() - unsupported format");
+  }
+  }
 }
 
 /**
@@ -1591,5 +1930,90 @@ ags_fm_synth_util_impulse(void *buffer,
 			  gdouble lfo_freq, gdouble lfo_depth,
 			  gdouble tuning)
 {
-  //TODO:JK: implement me
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_fm_synth_util_impulse_s8((gint8 *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames,
+				  lfo_freq, lfo_depth,
+				  tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_fm_synth_util_impulse_s16((gint16 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_fm_synth_util_impulse_s24((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_fm_synth_util_impulse_s32((gint32 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_fm_synth_util_impulse_s64((gint64 *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames,
+				   lfo_freq, lfo_depth,
+				   tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_fm_synth_util_impulse_float((float *) buffer,
+				     freq, phase, volume,
+				     samplerate,
+				     offset, n_frames,
+				     lfo_freq, lfo_depth,
+				     tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_fm_synth_util_impulse_double((double *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames,
+				      lfo_freq, lfo_depth,
+				      tuning);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_fm_synth_util_impulse_complex((AgsComplex *) buffer,
+				       freq, phase, volume,
+				       samplerate,
+				       offset, n_frames,
+				       lfo_freq, lfo_depth,
+				       tuning);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_fm_synth_util_impulse() - unsupported format");
+  }
+  }
 }

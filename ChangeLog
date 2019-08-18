@@ -7,7 +7,7 @@ ags (2.3.0)
 	* TODO:JK: implemented ags_filter_util.c
 	* TODO:JK: extended ags_audio_buffer_util.h to support complex data type
 	* TODO:JK: extended ags_synth_util.h to support complex data type
-	* TODO:JK: extended ags_synth_util.h to support impulse oscillator
+	* extended ags_synth_util.h to support impulse oscillator
 	* TODO:JK: updated developer's handbook
 	* TODO:JK: fixed AgsPiano border
 
