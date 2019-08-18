@@ -23,62 +23,169 @@
 #include <glib.h>
 #include <glib-object.h>
 
+void ags_filter_util_highpass_s8(gint8 *buffer,
+				 guint buffer_length,
+				 guint samplerate);
+void ags_filter_util_highpass_s16(gint16 *buffer,
+				  guint buffer_length,
+				  guint samplerate);
+void ags_filter_util_highpass_s24(gint32 *buffer,
+				  guint buffer_length,
+				  guint samplerate);
+void ags_filter_util_highpass_s32(gint32 *buffer,
+				  guint buffer_length,
+				  guint samplerate);
+void ags_filter_util_highpass_s64(gint64 *buffer,
+				  guint buffer_length,
+				  guint samplerate);
+void ags_filter_util_highpass_float(gfloat *buffer,
+				    guint buffer_length,
+				    guint samplerate);
+void ags_filter_util_highpass_double(gdouble *buffer,
+				     guint buffer_length,
+				     guint samplerate);
+void ags_filter_util_highpass_complex(AgsComplex *buffer,
+				      guint buffer_length,
+				      guint samplerate);
+
 void ags_filter_util_lowpass_s8(gint8 *buffer,
-				guint buffer_size,
+				guint buffer_length,
 				guint samplerate);
 void ags_filter_util_lowpass_s16(gint16 *buffer,
-				 guint buffer_size,
+				 guint buffer_length,
 				 guint samplerate);
 void ags_filter_util_lowpass_s24(gint32 *buffer,
-				 guint buffer_size,
+				 guint buffer_length,
 				 guint samplerate);
 void ags_filter_util_lowpass_s32(gint32 *buffer,
-				 guint buffer_size,
+				 guint buffer_length,
 				 guint samplerate);
 void ags_filter_util_lowpass_s64(gint64 *buffer,
-				 guint buffer_size,
+				 guint buffer_length,
 				 guint samplerate);
 void ags_filter_util_lowpass_float(gfloat *buffer,
-				   guint buffer_size,
+				   guint buffer_length,
 				   guint samplerate);
 void ags_filter_util_lowpass_double(gdouble *buffer,
-				    guint buffer_size,
+				    guint buffer_length,
 				    guint samplerate);
+void ags_filter_util_lowpass_complex(AgsComplex *buffer,
+				     guint buffer_length,
+				     guint samplerate);
+
+void ags_filter_util_bandpass_s8(gint8 *buffer,
+				 guint buffer_length,
+				 guint samplerate,
+				 gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_s16(gint16 *buffer,
+				  guint buffer_length,
+				  guint samplerate,
+				  gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_s24(gint32 *buffer,
+				  guint buffer_length,
+				  guint samplerate,
+				  gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_s32(gint32 *buffer,
+				  guint buffer_length,
+				  guint samplerate,
+				  gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_s64(gint64 *buffer,
+				  guint buffer_length,
+				  guint samplerate,
+				  gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_float(gfloat *buffer,
+				    guint buffer_length,
+				    guint samplerate,
+				    gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_double(gdouble *buffer,
+				     guint buffer_length,
+				     guint samplerate,
+				     gdouble lower, gdouble upper);
+void ags_filter_util_bandpass_complex(AgsComplex *buffer,
+				      guint buffer_length,
+				      guint samplerate,
+				      gdouble lower, gdouble upper);
+
+void ags_filter_util_equalizer_s8(gint8 *buffer,
+				  guint buffer_length,
+				  guint samplerate,
+				  gdouble frequency, gdouble bandwidth,
+				  gdouble gain);
+void ags_filter_util_equalizer_s16(gint16 *buffer,
+				   guint buffer_length,
+				   guint samplerate,
+				   gdouble frequency, gdouble bandwidth,
+				   gdouble gain);
+void ags_filter_util_equalizer_s24(gint32 *buffer,
+				   guint buffer_length,
+				   guint samplerate,
+				   gdouble frequency, gdouble bandwidth,
+				   gdouble gain);
+void ags_filter_util_equalizer_s32(gint32 *buffer,
+				   guint buffer_length,
+				   guint samplerate,
+				   gdouble frequency, gdouble bandwidth,
+				   gdouble gain);
+void ags_filter_util_equalizer_s64(gint64 *buffer,
+				   guint buffer_length,
+				   guint samplerate,
+				   gdouble frequency, gdouble bandwidth,
+				   gdouble gain);
+void ags_filter_util_equalizer_float(gfloat *buffer,
+				     guint buffer_length,
+				     guint samplerate,
+				     gdouble frequency, gdouble bandwidth,
+				     gdouble gain);
+void ags_filter_util_equalizer_double(gdouble *buffer,
+				      guint buffer_length,
+				      guint samplerate,
+				      gdouble frequency, gdouble bandwidth,
+				      gdouble gain);
+void ags_filter_util_equalizer_complex(AgsComplex *buffer,
+				       guint buffer_length,
+				       guint samplerate,
+				       gdouble frequency, gdouble bandwidth,
+				       gdouble gain);
 
 void ags_filter_util_pitch_s8(gint8 *buffer,
-			      guint buffer_size,
+			      guint buffer_length,
 			      guint samplerate,
 			      gdouble base_key,
 			      gdouble tuning);
 void ags_filter_util_pitch_s16(gint16 *buffer,
-			       guint buffer_size,
+			       guint buffer_length,
 			       guint samplerate,
 			       gdouble base_key,
 			       gdouble tuning);
 void ags_filter_util_pitch_s24(gint32 *buffer,
-			       guint buffer_size,
+			       guint buffer_length,
 			       guint samplerate,
 			       gdouble base_key,
 			       gdouble tuning);
 void ags_filter_util_pitch_s32(gint32 *buffer,
-			       guint buffer_size,
+			       guint buffer_length,
 			       guint samplerate,
 			       gdouble base_key,
 			       gdouble tuning);
 void ags_filter_util_pitch_s64(gint64 *buffer,
-			       guint buffer_size,
+			       guint buffer_length,
 			       guint samplerate,
 			       gdouble base_key,
 			       gdouble tuning);
 void ags_filter_util_pitch_float(gfloat *buffer,
-				 guint buffer_size,
+				 guint buffer_length,
 				 guint samplerate,
 				 gdouble base_key,
 				 gdouble tuning);
 void ags_filter_util_pitch_double(gdouble *buffer,
-				  guint buffer_size,
+				  guint buffer_length,
 				  guint samplerate,
 				  gdouble base_key,
 				  gdouble tuning);
+void ags_filter_util_pitch_complex(AgsComplex *buffer,
+				   guint buffer_length,
+				   guint samplerate,
+				   gdouble base_key,
+				   gdouble tuning);
 
 #endif /*__AGS_FILTER_UTIL_H__*/

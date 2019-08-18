@@ -1,3 +1,13 @@
+ags (2.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsComplex buffer type
+	* TODO:JK: implemented ags_fourier_transform_util.c
+	* TODO:JK: implemented ags_filter_util.c
+	* TODO:JK: extended ags_synth_util.h to support impulse oscillator
+	* TODO:JK: extended ags_synth_util.h to support FM synthesis
+	* TODO:JK: updated developer's handbook
+
 ags (2.2.39)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
