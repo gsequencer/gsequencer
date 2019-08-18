@@ -4,6 +4,7 @@
 [
   <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
   <!ENTITY % gtkdocentities SYSTEM "xml/gtkdocentities.ent">
+  <!ENTITY version SYSTEM "version.xml">
   %gtkdocentities;
 ]>
 
@@ -21,7 +22,7 @@
     <releaseinfo>
       for libgsequencer.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/libgsequencer/index.html">http://nongnu.org/gsequencer/api/libgsequencer/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/&version;/libgsequencer/index.html">http://nongnu.org/gsequencer/api/&version;/libgsequencer/</ulink>.
     </releaseinfo>
   </bookinfo>
   

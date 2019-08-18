@@ -374,6 +374,10 @@ po/Makefile.in
 libags.pc
 libags_audio.pc
 libags_gui.pc
-libgsequencer.pc])
+libgsequencer.pc
+docs/reference/libags/version.xml
+docs/reference/libags-audio/version.xml
+docs/reference/libags-gui/version.xml
+docs/reference/libgsequencer/version.xml])
 
 AC_OUTPUT
