@@ -36,6 +36,7 @@
 #define AGS_AUDIO_BUFFER_S64(ptr) ((gint64 *)(ptr))
 #define AGS_AUDIO_BUFFER_FLOAT(ptr) ((gfloat *)(ptr))
 #define AGS_AUDIO_BUFFER_DOUBLE(ptr) ((gdouble *)(ptr))
+#define AGS_AUDIO_BUFFER_COMPLEX(ptr) ((AgsComplex *)(ptr))
 
 /**
  * AgsAudioBufferUtilFormat:
@@ -47,6 +48,7 @@
  * @AGS_AUDIO_BUFFER_UTIL_FLOAT: signed float raw pcm
  * @AGS_AUDIO_BUFFER_UTIL_DOUBLE: signed double raw pcm
  * @AGS_AUDIO_BUFFER_UTIL_FLOAT32: signed float32 raw pcm
+ * @AGS_AUDIO_BUFFER_UTIL_COMPLEX: complex data type
  * 
  * #AgsAudioBufferUtilFormat specifies the audio data representation.
  */
