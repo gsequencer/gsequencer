@@ -7,6 +7,7 @@ ags (2.3.0)
 	* TODO:JK: extended ags_synth_util.h to support impulse oscillator
 	* TODO:JK: extended ags_synth_util.h to support FM synthesis
 	* TODO:JK: updated developer's handbook
+	* TODO:JK: fixed AgsPiano border
 
 ags (2.2.39)
 
