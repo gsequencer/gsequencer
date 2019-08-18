@@ -27,7 +27,7 @@
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -37,8 +37,13 @@ void
 ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
 				      guint buffer_length,
 				      guint samplerate,
-				      gdouble **result)
+				      gdouble **retval)
 {
+  if(buffer == NULL ||
+     retval == NULL){
+    return;
+  }
+  
   //TODO:JK: implement me
 }
 
@@ -48,7 +53,7 @@ ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -58,7 +63,7 @@ void
 ags_fourier_transform_util_compute_s16(gint16 *buffer, guint channels,
 				       guint buffer_length,
 				       guint samplerate,
-				       gdouble **result)
+				       gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -69,7 +74,7 @@ ags_fourier_transform_util_compute_s16(gint16 *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -79,7 +84,7 @@ void
 ags_fourier_transform_util_compute_s24(gint32 *buffer, guint channels,
 				       guint buffer_length,
 				       guint samplerate,
-				       gdouble **result)
+				       gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -90,7 +95,7 @@ ags_fourier_transform_util_compute_s24(gint32 *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -100,7 +105,7 @@ void
 ags_fourier_transform_util_compute_s32(gint32 *buffer, guint channels,
 				       guint buffer_length,
 				       guint samplerate,
-				       gdouble **result)
+				       gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -111,7 +116,7 @@ ags_fourier_transform_util_compute_s32(gint32 *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -121,7 +126,7 @@ void
 ags_fourier_transform_util_compute_s64(gint64 *buffer, guint channels,
 				       guint buffer_length,
 				       guint samplerate,
-				       gdouble **result)
+				       gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -132,7 +137,7 @@ ags_fourier_transform_util_compute_s64(gint64 *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -142,7 +147,7 @@ void
 ags_fourier_transform_util_compute_float(gfloat *buffer, guint channels,
 					 guint buffer_length,
 					 guint samplerate,
-					 gdouble **result)
+					 gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -153,7 +158,7 @@ ags_fourier_transform_util_compute_float(gfloat *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -163,7 +168,7 @@ void
 ags_fourier_transform_util_compute_double(gdouble *buffer, guint channels,
 					  guint buffer_length,
 					  guint samplerate,
-					  gdouble **result)
+					  gdouble **retval)
 {
   //TODO:JK: implement me
 }
@@ -174,7 +179,7 @@ ags_fourier_transform_util_compute_double(gdouble *buffer, guint channels,
  * @channels: number of audio channels
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
- * @result: the return location of result
+ * @retval: the return location of result
  * 
  * Compute fourier transform for @buffer.
  * 
@@ -184,7 +189,7 @@ void
 ags_fourier_transform_util_compute_complex(AgsComplex *buffer, guint channels,
 					   guint buffer_length,
 					   guint samplerate,
-					   gdouble **result)
+					   gdouble **retval)
 {
   //TODO:JK: implement me
 }
