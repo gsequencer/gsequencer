@@ -32,8 +32,9 @@
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -44,9 +45,15 @@ ags_fm_synth_util_sin_s8(gint8 *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
 			 guint samplerate,
 			 guint offset, guint n_frames,
-			 gdouble lfo_frequency, gdouble depth)
+			 gdouble lfo_freq, gdouble lfo_depth,
+			 gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 127.0;
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
+  }
 }
 
 /**
@@ -58,8 +65,9 @@ ags_fm_synth_util_sin_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -70,9 +78,15 @@ ags_fm_synth_util_sin_s16(gint16 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames,
-			  gdouble lfo_frequency, gdouble depth)
+			  gdouble lfo_freq, gdouble lfo_depth,
+			  gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 8388607.0;
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
+  }
 }
 
 /**
@@ -84,8 +98,9 @@ ags_fm_synth_util_sin_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -96,9 +111,15 @@ ags_fm_synth_util_sin_s24(gint32 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames,
-			  gdouble lfo_frequency, gdouble depth)
+			  gdouble lfo_freq, gdouble lfo_depth,
+			  gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 8388607.0;
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
+  }
 }
 
 /**
@@ -110,8 +131,9 @@ ags_fm_synth_util_sin_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -122,9 +144,15 @@ ags_fm_synth_util_sin_s32(gint32 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames,
-			  gdouble lfo_frequency, gdouble depth)
+			  gdouble lfo_freq, gdouble lfo_depth,
+			  gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 214748363.0;
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
+  }
 }
 
 /**
@@ -136,8 +164,9 @@ ags_fm_synth_util_sin_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -148,9 +177,15 @@ ags_fm_synth_util_sin_s64(gint64 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames,
-			  gdouble lfo_frequency, gdouble depth)
+			  gdouble lfo_freq, gdouble lfo_depth,
+			  gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 9223372036854775807.0;
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (gint64) (0xffffffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
+  }
 }
 
 /**
@@ -162,8 +197,9 @@ ags_fm_synth_util_sin_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -174,9 +210,14 @@ ags_fm_synth_util_sin_float(float *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gdouble lfo_frequency, gdouble depth)
+			    gdouble lfo_freq, gdouble lfo_depth,
+			    gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (float) ((gdouble) buffer[i] + (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume));
+  }
 }
 
 /**
@@ -188,8 +229,9 @@ ags_fm_synth_util_sin_float(float *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -200,9 +242,14 @@ ags_fm_synth_util_sin_double(double *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  for(i = offset; i < offset + n_frames; i++){
+    buffer[i] = (double) ((gdouble) buffer[i] + (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * volume));
+  }
 }
 
 /**
@@ -214,8 +261,9 @@ ags_fm_synth_util_sin_double(double *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sin wave.
  * 
@@ -226,7 +274,8 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -240,8 +289,9 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -252,9 +302,18 @@ ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 127.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -266,8 +325,9 @@ ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -278,9 +338,18 @@ ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 32767.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -292,8 +361,9 @@ ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -304,9 +374,18 @@ ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 8388607.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -318,8 +397,9 @@ ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -330,9 +410,18 @@ ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 214748363.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -344,8 +433,9 @@ ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -356,9 +446,18 @@ ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 9223372036854775807.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -370,8 +469,9 @@ ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -382,9 +482,17 @@ ags_fm_synth_util_sawtooth_float(float *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth)
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = ((double) buffer[i] + (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+  }
 }
 
 /**
@@ -396,8 +504,9 @@ ags_fm_synth_util_sawtooth_float(float *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -408,9 +517,17 @@ ags_fm_synth_util_sawtooth_double(double *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth)
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = ((double) buffer[i] + (double) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate) - 1.0) * volume));
+  }
 }
 
 /**
@@ -422,8 +539,9 @@ ags_fm_synth_util_sawtooth_double(double *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate sawtooth wave.
  * 
@@ -434,7 +552,8 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth)
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -448,8 +567,9 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -460,9 +580,18 @@ ags_fm_synth_util_triangle_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 127.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -474,8 +603,9 @@ ags_fm_synth_util_triangle_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -486,9 +616,18 @@ ags_fm_synth_util_triangle_s16(gint16 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 32767.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -500,8 +639,9 @@ ags_fm_synth_util_triangle_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -512,9 +652,18 @@ ags_fm_synth_util_triangle_s24(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 8388607.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -526,8 +675,9 @@ ags_fm_synth_util_triangle_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -538,9 +688,18 @@ ags_fm_synth_util_triangle_s32(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 214748363.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -552,8 +711,9 @@ ags_fm_synth_util_triangle_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -564,9 +724,18 @@ ags_fm_synth_util_triangle_s64(gint64 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 9223372036854775807.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+  }
 }
 
 /**
@@ -578,8 +747,9 @@ ags_fm_synth_util_triangle_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -590,9 +760,17 @@ ags_fm_synth_util_triangle_float(float *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth)
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = ((double) buffer[i] + (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+  }
 }
 
 /**
@@ -604,8 +782,9 @@ ags_fm_synth_util_triangle_float(float *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -616,9 +795,17 @@ ags_fm_synth_util_triangle_double(double *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth)
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    buffer[i] = ((double) buffer[i] + (double) ((((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / samplerate)) / 2.0) * 2) - 1.0) * volume));
+  }
 }
 
 /**
@@ -630,8 +817,9 @@ ags_fm_synth_util_triangle_double(double *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate triangle wave.
  * 
@@ -642,7 +830,8 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth)
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -656,8 +845,9 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -668,9 +858,22 @@ ags_fm_synth_util_square_s8(gint8 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames,
-			    gdouble lfo_frequency, gdouble depth)
+			    gdouble lfo_freq, gdouble lfo_depth,
+			    gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 127.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (1.0 * scale * volume)));
+    }else{
+      buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (-1.0 * scale * volume)));
+    }
+  }
 }
 
 /**
@@ -682,8 +885,9 @@ ags_fm_synth_util_square_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -694,9 +898,22 @@ ags_fm_synth_util_square_s16(gint16 *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 32767.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
+    }else{
+      buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
+    }
+  }
 }
 
 /**
@@ -708,8 +925,9 @@ ags_fm_synth_util_square_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -720,9 +938,22 @@ ags_fm_synth_util_square_s24(gint32 *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 8388607.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
+    }else{
+      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
+    }
+  }
 }
 
 /**
@@ -734,8 +965,9 @@ ags_fm_synth_util_square_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -746,9 +978,22 @@ ags_fm_synth_util_square_s32(gint32 *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 214748363.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
+    }else{
+      buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (-1.0 * scale * volume)));
+    }
+  }
 }
 
 /**
@@ -760,8 +1005,9 @@ ags_fm_synth_util_square_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -772,9 +1018,22 @@ ags_fm_synth_util_square_s64(gint64 *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
-  //TODO:JK: implement me
+  static const gdouble scale = 9223372036854775807.0;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
+    }else{
+      buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (-1.0 * scale * volume)));
+    }
+  }
 }
 
 /**
@@ -786,8 +1045,9 @@ ags_fm_synth_util_square_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -798,9 +1058,21 @@ ags_fm_synth_util_square_float(float *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth)
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (buffer[i] + (1.0 * volume));
+    }else{
+      buffer[i] = (buffer[i] + (-1.0 * volume));
+    }
+  }
 }
 
 /**
@@ -812,8 +1084,9 @@ ags_fm_synth_util_square_float(float *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -824,9 +1097,21 @@ ags_fm_synth_util_square_double(double *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
-				gdouble lfo_frequency, gdouble depth)
+				gdouble lfo_freq, gdouble lfo_depth,
+				gdouble tuning)
 {
-  //TODO:JK: implement me
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  for(i = offset; i < n_frames; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) >= 0.0){
+      buffer[i] = (buffer[i] + (1.0 * volume));
+    }else{
+      buffer[i] = (buffer[i] + (-1.0 * volume));
+    }
+  }
 }
 
 /**
@@ -838,8 +1123,9 @@ ags_fm_synth_util_square_double(double *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate square wave.
  * 
@@ -850,7 +1136,8 @@ ags_fm_synth_util_square_complex(AgsComplex *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth)
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -864,8 +1151,9 @@ ags_fm_synth_util_square_complex(AgsComplex *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -876,7 +1164,8 @@ ags_fm_synth_util_impulse_s8(gint8 *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
 			     guint samplerate,
 			     guint offset, guint n_frames,
-			     gdouble lfo_frequency, gdouble depth)
+			     gdouble lfo_freq, gdouble lfo_depth,
+			     gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -890,8 +1179,9 @@ ags_fm_synth_util_impulse_s8(gint8 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -902,7 +1192,8 @@ ags_fm_synth_util_impulse_s16(gint16 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -916,8 +1207,9 @@ ags_fm_synth_util_impulse_s16(gint16 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -928,7 +1220,8 @@ ags_fm_synth_util_impulse_s24(gint32 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -942,8 +1235,9 @@ ags_fm_synth_util_impulse_s24(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -954,7 +1248,8 @@ ags_fm_synth_util_impulse_s32(gint32 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -968,8 +1263,9 @@ ags_fm_synth_util_impulse_s32(gint32 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -980,7 +1276,8 @@ ags_fm_synth_util_impulse_s64(gint64 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth)
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -994,8 +1291,9 @@ ags_fm_synth_util_impulse_s64(gint64 *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -1006,7 +1304,8 @@ ags_fm_synth_util_impulse_float(float *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate,
 				guint offset, guint n_frames,
-				gdouble lfo_frequency, gdouble depth)
+				gdouble lfo_freq, gdouble lfo_depth,
+				gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1020,8 +1319,9 @@ ags_fm_synth_util_impulse_float(float *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -1032,7 +1332,8 @@ ags_fm_synth_util_impulse_double(double *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth)
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1046,8 +1347,9 @@ ags_fm_synth_util_impulse_double(double *buffer,
  * @samplerate: the samplerate
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  * 
  * Generate frequency modulate impulse wave.
  * 
@@ -1058,7 +1360,8 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth)
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1073,8 +1376,9 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
  * @audio_buffer_util_format: the audio data format
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  *
  * Generate frequency modulate sin wave.
  *
@@ -1085,7 +1389,8 @@ ags_fm_synth_util_sin(void *buffer,
 		      gdouble freq, gdouble phase, gdouble volume,
 		      guint samplerate, guint audio_buffer_util_format,
 		      guint offset, guint n_frames,
-		      gdouble lfo_frequency, gdouble depth)
+		      gdouble lfo_freq, gdouble lfo_depth,
+		      gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1101,8 +1406,9 @@ ags_fm_synth_util_sin(void *buffer,
  * @audio_buffer_util_format: the audio data format
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  *
  * Generate frequency modulate sawtooth wave.
  *
@@ -1113,7 +1419,8 @@ ags_fm_synth_util_sawtooth(void *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate, guint audio_buffer_util_format,
 			   guint offset, guint n_frames,
-			   gdouble lfo_frequency, gdouble depth)
+			   gdouble lfo_freq, gdouble lfo_depth,
+			   gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1128,8 +1435,9 @@ ags_fm_synth_util_sawtooth(void *buffer,
  * @audio_buffer_util_format: the audio data format
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  *
  * Generate frequency modulate triangle wave.
  *
@@ -1140,7 +1448,8 @@ ags_fm_synth_util_triangle(void *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate, guint audio_buffer_util_format,
 			   guint offset, guint n_frames,
-			   gdouble lfo_frequency, gdouble depth)
+			   gdouble lfo_freq, gdouble lfo_depth,
+			   gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1155,8 +1464,9 @@ ags_fm_synth_util_triangle(void *buffer,
  * @audio_buffer_util_format: the audio data format
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  *
  * Generate frequency modulate square wave.
  *
@@ -1167,7 +1477,8 @@ ags_fm_synth_util_square(void *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
 			 guint samplerate, guint audio_buffer_util_format,
 			 guint offset, guint n_frames,
-			 gdouble lfo_frequency, gdouble depth)
+			 gdouble lfo_freq, gdouble lfo_depth,
+			 gdouble tuning)
 {
   //TODO:JK: implement me
 }
@@ -1182,8 +1493,9 @@ ags_fm_synth_util_square(void *buffer,
  * @audio_buffer_util_format: the audio data format
  * @offset: start frame
  * @n_frames: generate n frames
- * @lfo_frequency: the LFO's frequency
- * @depth: the LFO's depth
+ * @lfo_freq: the LFO's frequency
+ * @lfo_depth: the LFO's depth
+ * @tuning: the tuninig
  *
  * Generate frequency modulate impulse wave.
  *
@@ -1194,7 +1506,8 @@ ags_fm_synth_util_impulse(void *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate, guint audio_buffer_util_format,
 			  guint offset, guint n_frames,
-			  gdouble lfo_frequency, gdouble depth)
+			  gdouble lfo_freq, gdouble lfo_depth,
+			  gdouble tuning)
 {
   //TODO:JK: implement me
 }

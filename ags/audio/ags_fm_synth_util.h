@@ -30,240 +30,285 @@ void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth);
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning);
 void ags_fm_synth_util_sin_s16(gint16 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth);
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning);
 void ags_fm_synth_util_sin_s24(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth);
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning);
 void ags_fm_synth_util_sin_s32(gint32 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth);
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning);
 void ags_fm_synth_util_sin_s64(gint64 *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth);
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning);
 void ags_fm_synth_util_sin_float(float *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth);
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning);
 void ags_fm_synth_util_sin_double(double *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_sin_complex(AgsComplex *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 
 /* fm sawtooth oscillator */
 void ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_sawtooth_float(float *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
 				      guint offset, guint n_frames,
-				      gdouble lfo_frequency, gdouble depth);
+				      gdouble lfo_freq, gdouble lfo_depth,
+				      gdouble tuning);
 void ags_fm_synth_util_sawtooth_double(double *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
 				       guint offset, guint n_frames,
-				       gdouble lfo_frequency, gdouble depth);
+				       gdouble lfo_freq, gdouble lfo_depth,
+				       gdouble tuning);
 void ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
 					gdouble freq, gdouble phase, gdouble volume,
 					guint samplerate,
 					guint offset, guint n_frames,
-					gdouble lfo_frequency, gdouble depth);
+					gdouble lfo_freq, gdouble lfo_depth,
+					gdouble tuning);
 
 /* fm triangle oscillator */
 void ags_fm_synth_util_triangle_s8(gint8 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_triangle_s16(gint16 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_triangle_s24(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_triangle_s32(gint32 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_triangle_s64(gint64 *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_triangle_float(float *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
 				      guint offset, guint n_frames,
-				      gdouble lfo_frequency, gdouble depth);
+				      gdouble lfo_freq, gdouble lfo_depth,
+				      gdouble tuning);
 void ags_fm_synth_util_triangle_double(double *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
 				       guint offset, guint n_frames,
-				       gdouble lfo_frequency, gdouble depth);
+				       gdouble lfo_freq, gdouble lfo_depth,
+				       gdouble tuning);
 void ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
 					gdouble freq, gdouble phase, gdouble volume,
 					guint samplerate,
 					guint offset, guint n_frames,
-					gdouble lfo_frequency, gdouble depth);
+					gdouble lfo_freq, gdouble lfo_depth,
+					gdouble tuning);
 
 /* fm square oscillator */
 void ags_fm_synth_util_square_s8(gint8 *buffer,
 				 gdouble freq, gdouble phase, gdouble volume,
 				 guint samplerate,
 				 guint offset, guint n_frames,
-				 gdouble lfo_frequency, gdouble depth);
+				 gdouble lfo_freq, gdouble lfo_depth,
+				 gdouble tuning);
 void ags_fm_synth_util_square_s16(gint16 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_square_s24(gint32 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_square_s32(gint32 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_square_s64(gint64 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_square_float(float *buffer,
 				    gdouble freq, gdouble phase, gdouble volume,
 				    guint samplerate,
 				    guint offset, guint n_frames,
-				    gdouble lfo_frequency, gdouble depth);
+				    gdouble lfo_freq, gdouble lfo_depth,
+				    gdouble tuning);
 void ags_fm_synth_util_square_double(double *buffer,
 				     gdouble freq, gdouble phase, gdouble volume,
 				     guint samplerate,
 				     guint offset, guint n_frames,
-				     gdouble lfo_frequency, gdouble depth);
+				     gdouble lfo_freq, gdouble lfo_depth,
+				     gdouble tuning);
 void ags_fm_synth_util_square_complex(AgsComplex *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
 				      guint offset, guint n_frames,
-				      gdouble lfo_frequency, gdouble depth);
+				      gdouble lfo_freq, gdouble lfo_depth,
+				      gdouble tuning);
 
 /* fm impulse oscillator */
 void ags_fm_synth_util_impulse_s8(gint8 *buffer,
 				  gdouble freq, gdouble phase, gdouble volume,
 				  guint samplerate,
 				  guint offset, guint n_frames,
-				  gdouble lfo_frequency, gdouble depth);
+				  gdouble lfo_freq, gdouble lfo_depth,
+				  gdouble tuning);
 void ags_fm_synth_util_impulse_s16(gint16 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_impulse_s24(gint32 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_impulse_s32(gint32 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_impulse_s64(gint64 *buffer,
 				   gdouble freq, gdouble phase, gdouble volume,
 				   guint samplerate,
 				   guint offset, guint n_frames,
-				   gdouble lfo_frequency, gdouble depth);
+				   gdouble lfo_freq, gdouble lfo_depth,
+				   gdouble tuning);
 void ags_fm_synth_util_impulse_float(float *buffer,
 				     gdouble freq, gdouble phase, gdouble volume,
 				     guint samplerate,
 				     guint offset, guint n_frames,
-				     gdouble lfo_frequency, gdouble depth);
+				     gdouble lfo_freq, gdouble lfo_depth,
+				     gdouble tuning);
 void ags_fm_synth_util_impulse_double(double *buffer,
 				      gdouble freq, gdouble phase, gdouble volume,
 				      guint samplerate,
 				      guint offset, guint n_frames,
-				      gdouble lfo_frequency, gdouble depth);
+				      gdouble lfo_freq, gdouble lfo_depth,
+				      gdouble tuning);
 void ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
 				       gdouble freq, gdouble phase, gdouble volume,
 				       guint samplerate,
 				       guint offset, guint n_frames,
-				       gdouble lfo_frequency, gdouble depth);
+				       gdouble lfo_freq, gdouble lfo_depth,
+				       gdouble tuning);
 
 /* oscillators */
 void ags_fm_synth_util_sin(void *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate, guint audio_buffer_util_format,
 			   guint offset, guint n_frames,
-			   gdouble lfo_frequency, gdouble depth);
+			   gdouble lfo_freq, gdouble lfo_depth,
+			   gdouble tuning);
 
 void ags_fm_synth_util_sawtooth(void *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate, guint audio_buffer_util_format,
 				guint offset, guint n_frames,
-				gdouble lfo_frequency, gdouble depth);
+				gdouble lfo_freq, gdouble lfo_depth,
+				gdouble tuning);
 
 void ags_fm_synth_util_triangle(void *buffer,
 				gdouble freq, gdouble phase, gdouble volume,
 				guint samplerate, guint audio_buffer_util_format,
 				guint offset, guint n_frames,
-				gdouble lfo_frequency, gdouble depth);
+				gdouble lfo_freq, gdouble lfo_depth,
+				gdouble tuning);
 
 void ags_fm_synth_util_square(void *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
 			      guint samplerate, guint audio_buffer_util_format,
 			      guint offset, guint n_frames,
-			      gdouble lfo_frequency, gdouble depth);
+			      gdouble lfo_freq, gdouble lfo_depth,
+			      gdouble tuning);
 
 void ags_fm_synth_util_impulse(void *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
 			       guint samplerate, guint audio_buffer_util_format,
 			       guint offset, guint n_frames,
-			       gdouble lfo_frequency, gdouble depth);
+			       gdouble lfo_freq, gdouble lfo_depth,
+			       gdouble tuning);
 
 #endif /*__AGS_FM_SYNTH_UTIL_H__*/
