@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_util.h>
 
@@ -72,6 +73,11 @@ enum{
   PROP_FREQUENCY,
   PROP_PHASE,
   PROP_VOLUME,
+  PROP_DO_FM_SYNTH,
+  PROP_FM_LFO_OSCILLATOR,
+  PROP_FM_LFO_FREQUENCY,
+  PROP_FM_LFO_DEPTH,
+  PROP_FM_TUNING,
   PROP_TIMESTAMP,
 };
 
@@ -355,6 +361,94 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
+   * AgsSynthGenerator:do-fm-synth:
+   *
+   * If %TRUE compute FM synth, otherwise not.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_boolean("do-fm-synth",
+				    i18n_pspec("do fm synth"),
+				    i18n_pspec("do fm synth"),
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_FM_SYNTH,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:fm-lfo-oscillator:
+   *
+   * The frame count to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_uint("fm-lfo-oscillator",
+				 i18n_pspec("fm LFO oscillator mode"),
+				 i18n_pspec("the frequency modulation LFO oscillator mode"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FM_LFO_OSCILLATOR,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:fm-lfo-frequency:
+   *
+   * The fm LFO frequency to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_double("fm-lfo-frequency",
+				   i18n_pspec("using fm LFO frequency"),
+				   i18n_pspec("The fm LFO frequency to be used"),
+				   0.001,
+				   27.5,
+				   AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FM_LFO_FREQUENCY,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:fm-lfo-depth:
+   *
+   * The fm LFO depth to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_double("fm-lfo-depth",
+				   i18n_pspec("using fm LFO depth"),
+				   i18n_pspec("The fm LFO depth to be used"),
+				   0.0,
+				   1.0,
+				   AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_DEPTH,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FM_LFO_DEPTH,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:fm-tuning:
+   *
+   * The fm tuning to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_double("fm-tuning",
+				   i18n_pspec("using FM tuning"),
+				   i18n_pspec("The FM tuning to be used"),
+				   0.0,
+				   1200.0,
+				   AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FM_TUNING,
+				  param_spec);
+
+  /**
    * AgsSynthGenerator:timestamp:
    *
    * The assigned timestamp.
@@ -415,6 +509,15 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
 
   synth_generator->damping = ags_complex_alloc();
   synth_generator->vibration = ags_complex_alloc();
+
+  synth_generator->do_fm_synth = FALSE;
+
+  synth_generator->fm_lfo_oscillator = 0;
+
+  synth_generator->fm_lfo_frequency = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY;
+  synth_generator->fm_lfo_depth = AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_DEPTH;
+  
+  synth_generator->fm_tuning = AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING;
   
   /* timestamp */
   synth_generator->timestamp = NULL;
@@ -506,6 +609,31 @@ ags_synth_generator_set_property(GObject *gobject,
       synth_generator->volume = g_value_get_double(value);
     }
     break;
+  case PROP_DO_FM_SYNTH:
+    {
+      synth_generator->do_fm_synth = g_value_get_boolean(value);
+    }
+    break;
+  case PROP_FM_LFO_OSCILLATOR:
+    {
+      synth_generator->fm_lfo_oscillator = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FM_LFO_FREQUENCY:
+    {
+      synth_generator->fm_lfo_frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_FM_LFO_DEPTH:
+    {
+      synth_generator->fm_lfo_depth = g_value_get_double(value);
+    }
+    break;
+  case PROP_FM_TUNING:
+    {
+      synth_generator->fm_tuning = g_value_get_double(value);
+    }
+    break;
   case PROP_TIMESTAMP:
     {
       AgsTimestamp *timestamp;
@@ -561,7 +689,7 @@ ags_synth_generator_get_property(GObject *gobject,
     break;
   case PROP_DELAY:
     {
-      g_value_set_uint(value, synth_generator->delay);
+      g_value_set_double(value, synth_generator->delay);
     }
     break;
   case PROP_ATTACK:
@@ -591,17 +719,37 @@ ags_synth_generator_get_property(GObject *gobject,
     break;
   case PROP_FREQUENCY:
     {
-      g_value_set_uint(value, synth_generator->frequency);
+      g_value_set_double(value, synth_generator->frequency);
     }
     break;
   case PROP_PHASE:
     {
-      g_value_set_uint(value, synth_generator->phase);
+      g_value_set_double(value, synth_generator->phase);
     }
     break;
-  case PROP_VOLUME:
+  case PROP_DO_FM_SYNTH:
     {
-      g_value_set_uint(value, synth_generator->volume);
+      g_value_set_boolean(value, synth_generator->do_fm_synth);
+    }
+    break;
+  case PROP_FM_LFO_OSCILLATOR:
+    {
+      g_value_set_uint(value, synth_generator->fm_lfo_oscillator);
+    }
+    break;
+  case PROP_FM_LFO_FREQUENCY:
+    {
+      g_value_set_double(value, synth_generator->fm_lfo_frequency);
+    }
+    break;
+  case PROP_FM_LFO_DEPTH:
+    {
+      g_value_set_double(value, synth_generator->fm_lfo_depth);
+    }
+    break;
+  case PROP_FM_TUNING:
+    {
+      g_value_set_double(value, synth_generator->fm_tuning);
     }
     break;
   case PROP_TIMESTAMP:
@@ -790,6 +938,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint frame_count;
   guint buffer_size;
   guint current_frame_count, requested_frame_count;
+  guint oscillator;
   gdouble samplerate;
   gdouble current_frequency;
   gdouble phase, volume;
@@ -802,6 +951,11 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint i, j;
   AgsComplex **sync_point;
   guint sync_point_count;
+  gboolean do_fm_synth;
+  guint fm_lfo_osc_mode;
+  gdouble fm_lfo_freq; 
+  gdouble fm_lfo_depth;
+  gdouble fm_tuning;
   gboolean synced;
 
   delay = synth_generator->delay;
@@ -811,6 +965,8 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
 
+  oscillator = synth_generator->oscillator;
+  
   sync_point = synth_generator->sync_point;
   sync_point_count = synth_generator->sync_point_count;
 
@@ -872,12 +1028,50 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
       }
     }
   }
+
+  do_fm_synth = synth_generator->do_fm_synth;
+
+  fm_lfo_osc_mode = 0;
   
+  switch(synth_generator->fm_lfo_oscillator){
+  case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
+  {
+    fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_SIN;
+  }
+  case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
+  {
+    fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
+  }
+  break;
+  break;
+  case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
+  {
+    fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_TRIANGLE;
+  }
+  break;
+  case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
+  {
+    fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_SQUARE;
+  }
+  break;
+  case AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE:
+  {
+    fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_IMPULSE;
+  }
+  break;
+  }
+  
+  fm_lfo_freq = synth_generator->fm_lfo_frequency;
+  fm_lfo_depth = synth_generator->fm_lfo_depth;
+
+  fm_tuning = synth_generator->fm_tuning;
+
   synced = FALSE;
   
   for(i = attack, j = 0; i < frame_count + attack && stream != NULL;){
-    switch(synth_generator->oscillator){
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
+    if(!do_fm_synth){
+      switch(oscillator){
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
       {
 	ags_synth_util_sin(stream->data,
 			   current_frequency, current_phase, volume,
@@ -885,7 +1079,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 			   current_attack, current_count);
       }
       break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
       {
 	ags_synth_util_sawtooth(stream->data,
 				current_frequency, current_phase, volume,
@@ -893,7 +1087,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				current_attack, current_count);
       }
       break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
       {
 	ags_synth_util_triangle(stream->data,
 				current_frequency, current_phase, volume,
@@ -901,7 +1095,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				current_attack, current_count);
       }
       break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
       {
 	ags_synth_util_square(stream->data,
 			      current_frequency, current_phase, volume,
@@ -909,10 +1103,79 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 			      current_attack, current_count);
       }
       break;
-    default:
-      g_message("unknown oscillator");
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE:
+      {
+	ags_synth_util_impulse(stream->data,
+			       current_frequency, current_phase, volume,
+			       samplerate, audio_buffer_util_format,
+			       current_attack, current_count);
+      }
+      break;
+      default:
+	g_message("unknown oscillator");
+      }
+    }else if(do_fm_synth){
+      switch(synth_generator->oscillator){
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
+      {
+	ags_fm_synth_util_sin(stream->data,
+			      current_frequency, current_phase, volume,
+			      samplerate, audio_buffer_util_format,
+			      current_attack, current_count,
+			      fm_lfo_osc_mode,
+			      fm_lfo_freq, fm_lfo_depth,
+			      fm_tuning);
+      }
+      break;
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
+      {
+	ags_fm_synth_util_sawtooth(stream->data,
+				   current_frequency, current_phase, volume,
+				   samplerate, audio_buffer_util_format,
+				   current_attack, current_count,
+				   fm_lfo_osc_mode,
+				   fm_lfo_freq, fm_lfo_depth,
+				   fm_tuning);
+      }
+      break;
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
+      {
+	ags_fm_synth_util_triangle(stream->data,
+				   current_frequency, current_phase, volume,
+				   samplerate, audio_buffer_util_format,
+				   current_attack, current_count,
+				   fm_lfo_osc_mode,
+				   fm_lfo_freq, fm_lfo_depth,
+				   fm_tuning);
+      }
+      break;
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
+      {
+	ags_fm_synth_util_square(stream->data,
+				 current_frequency, current_phase, volume,
+				 samplerate, audio_buffer_util_format,
+				 current_attack, current_count,
+				 fm_lfo_osc_mode,
+				 fm_lfo_freq, fm_lfo_depth,
+				 fm_tuning);
+      }
+      break;
+      case AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE:
+      {
+	ags_fm_synth_util_impulse(stream->data,
+				  current_frequency, current_phase, volume,
+				  samplerate, audio_buffer_util_format,
+				  current_attack, current_count,
+				  fm_lfo_osc_mode,
+				  fm_lfo_freq, fm_lfo_depth,
+				  fm_tuning);
+      }
+      break;
+      default:
+	g_message("unknown oscillator");
+      }
     }
-
+    
     if(current_frequency == 0.0){
       current_phase = (guint) ((offset + current_count) + phase);
     }else if(floor(samplerate / current_frequency) == 0){
