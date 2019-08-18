@@ -23,35 +23,35 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void ags_fourier_transform_util_compute_s8(gint8 *buffer,
+void ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
 					   guint buffer_length,
 					   guint samplerate,
 					   gdouble **result);
-void ags_fourier_transform_util_compute_s16(gint16 *buffer,
+void ags_fourier_transform_util_compute_s16(gint16 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);
-void ags_fourier_transform_util_compute_s24(gint24 *buffer,
+void ags_fourier_transform_util_compute_s24(gint24 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);
-void ags_fourier_transform_util_compute_s32(gint32 *buffer,
+void ags_fourier_transform_util_compute_s32(gint32 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);
-void ags_fourier_transform_util_compute_s64(gint64 *buffer,
+void ags_fourier_transform_util_compute_s64(gint64 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);
-void ags_fourier_transform_util_compute_float(gfloat *buffer,
+void ags_fourier_transform_util_compute_float(gfloat *buffer, guint channels,
 					      guint buffer_length,
 					      guint samplerate,
 					      gdouble **result);
-void ags_fourier_transform_util_compute_double(gdouble *buffer,
+void ags_fourier_transform_util_compute_double(gdouble *buffer, guint channels,
 					       guint buffer_length,
 					       guint samplerate,
 					       gdouble **result);
-void ags_fourier_transform_util_compute_complex(AgsComplex *buffer,
+void ags_fourier_transform_util_compute_complex(AgsComplex *buffer, guint channels,
 						guint buffer_length,
 						guint samplerate,
 						gdouble **result);
