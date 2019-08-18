@@ -76,7 +76,7 @@ ags_fourier_transform_util_compute_s16(gint16 *buffer, guint channels,
  * Since: 2.3.0
  */
 void
-ags_fourier_transform_util_compute_s24(gint24 *buffer, guint channels,
+ags_fourier_transform_util_compute_s24(gint32 *buffer, guint channels,
 				       guint buffer_length,
 				       guint samplerate,
 				       gdouble **result)

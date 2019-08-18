@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libags.h>
+
 /* fm sin oscillator */
 void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,

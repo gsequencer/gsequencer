@@ -347,7 +347,13 @@ guint
 ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 					guint buffer_size)
 {
+  guint count;
+  
+  count = 0;
+
   //TODO:JK: implement me
+  
+  return(count);
 }
 
 /**

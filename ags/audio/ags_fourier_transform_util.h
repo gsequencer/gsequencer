@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libags.h>
+
 void ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
 					   guint buffer_length,
 					   guint samplerate,
@@ -31,7 +33,7 @@ void ags_fourier_transform_util_compute_s16(gint16 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);
-void ags_fourier_transform_util_compute_s24(gint24 *buffer, guint channels,
+void ags_fourier_transform_util_compute_s24(gint32 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
 					    gdouble **result);

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 void ags_filter_util_highpass_s8(gint8 *buffer,
 				 guint buffer_length,
 				 guint samplerate);

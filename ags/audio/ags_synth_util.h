@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libags.h>
+
 /* zero-crossing */
 guint ags_synth_util_get_xcross_count_s8(gint8 *buffer,
 					 guint buffer_size);

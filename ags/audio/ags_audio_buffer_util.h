@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_complex.h>
+#include <libags.h>
 
 #ifdef __APPLE__
 #include <AudioToolbox/AudioToolbox.h>
