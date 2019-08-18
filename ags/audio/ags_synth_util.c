@@ -333,6 +333,24 @@ ags_synth_util_get_xcross_count_double(double *buffer,
 }
 
 /**
+ * ags_synth_util_get_xcross_count_complex:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 2.3.0
+ */
+guint
+ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
+					guint buffer_size)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_synth_util_get_xcross_count:
  * @buffer: the buffer containing audio data
  * @audio_buffer_util_format: the audio buffer util format
@@ -355,51 +373,57 @@ ags_synth_util_get_xcross_count(void *buffer,
 
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      count = ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
-						 buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
+					       buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      count = ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
-						  buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
+						buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      count = ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
-						  buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
+						buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      count = ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
-						  buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
+						buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      count = ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
-						  buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
+						buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      count = ags_synth_util_get_xcross_count_float((float *) buffer,
-						    buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_float((float *) buffer,
+						  buffer_size);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      count = ags_synth_util_get_xcross_count_double((double *) buffer,
-						     buffer_size);
-    }
-    break;
+  {
+    count = ags_synth_util_get_xcross_count_double((double *) buffer,
+						   buffer_size);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    count = ags_synth_util_get_xcross_count_complex((AgsComplex *) buffer,
+						    buffer_size);
+  }
+  break;
   default:
-    {
-      g_warning("ags_synth_util_get_xcross_count() - unsupported format");
-    }
+  {
+    g_warning("ags_synth_util_get_xcross_count() - unsupported format");
+  }
   }
   
   return(count);
@@ -597,6 +621,29 @@ ags_synth_util_sin_double(double *buffer,
   for (i = offset; i < offset + n_frames; i++){
     buffer[i] = (double) ((gdouble) buffer[i] + (gdouble) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * volume));
   }
+}
+
+/**
+ * ags_synth_util_sin_complex:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_sin_complex(AgsComplex *buffer,
+			   gdouble freq, gdouble phase, gdouble volume,
+			   guint samplerate,
+			   guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -815,6 +862,29 @@ ags_synth_util_sawtooth_double(double *buffer,
 }
 
 /**
+ * ags_synth_util_sawtooth_complex:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_sawtooth_complex(AgsComplex *buffer,
+				gdouble freq, gdouble phase, gdouble volume,
+				guint samplerate,
+				guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_synth_util_triangle_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the triangle wave
@@ -1027,6 +1097,29 @@ ags_synth_util_triangle_double(double *buffer,
   for (i = offset; i < n_frames; i++){
     buffer[i] = ((double) buffer[i] + (double) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * volume));
   }
+}
+
+/**
+ * ags_synth_util_triangle_complex:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_triangle_complex(AgsComplex *buffer,
+				gdouble freq, gdouble phase, gdouble volume,
+				guint samplerate,
+				guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -1270,6 +1363,213 @@ ags_synth_util_square_double(double *buffer,
       buffer[i] = (buffer[i] + (-1.0 * volume));
     }
   }
+}
+
+/**
+ * ags_synth_util_square_complex:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_square_complex(AgsComplex *buffer,
+			      gdouble freq, gdouble phase, gdouble volume,
+			      guint samplerate,
+			      guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_s8:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_s8(gint8 *buffer,
+			 gdouble freq, gdouble phase, gdouble volume,
+			 guint samplerate,
+			 guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_s16:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_s16(gint16 *buffer,
+			  gdouble freq, gdouble phase, gdouble volume,
+			  guint samplerate,
+			  guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_s24:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_s24(gint32 *buffer,
+			  gdouble freq, gdouble phase, gdouble volume,
+			  guint samplerate,
+			  guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_s32:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_s32(gint32 *buffer,
+			  gdouble freq, gdouble phase, gdouble volume,
+			  guint samplerate,
+			  guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_s64:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_s64(gint64 *buffer,
+			  gdouble freq, gdouble phase, gdouble volume,
+			  guint samplerate,
+			  guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_float:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_float(float *buffer,
+			    gdouble freq, gdouble phase, gdouble volume,
+			    guint samplerate,
+			    guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_double:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_double(double *buffer,
+			     gdouble freq, gdouble phase, gdouble volume,
+			     guint samplerate,
+			     guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_synth_util_impulse_complex:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse_complex(AgsComplex *buffer,
+			      gdouble freq, gdouble phase, gdouble volume,
+			      guint samplerate,
+			      guint offset, guint n_frames)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -1520,6 +1820,14 @@ ags_synth_util_triangle(void *buffer,
 				     offset, n_frames);
     }
     break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      ags_synth_util_triangle_complex((AgsComplex *) buffer,
+				      freq, phase, volume,
+				      samplerate,
+				      offset, n_frames);
+    }
+    break;
   default:
     {
       g_warning("ags_synth_util_triangle() - unsupported format");
@@ -1550,64 +1858,165 @@ ags_synth_util_square(void *buffer,
 {
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      ags_synth_util_square_s8((gint8 *) buffer,
-			       freq, phase, volume,
-			       samplerate,
-			       offset, n_frames);
-    }
-    break;
+  {
+    ags_synth_util_square_s8((gint8 *) buffer,
+			     freq, phase, volume,
+			     samplerate,
+			     offset, n_frames);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      ags_synth_util_square_s16((gint16 *) buffer,
-				freq, phase, volume,
-				samplerate,
-				offset, n_frames);
-    }
-    break;
+  {
+    ags_synth_util_square_s16((gint16 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      ags_synth_util_square_s24((gint32 *) buffer,
-				freq, phase, volume,
-				samplerate,
-				offset, n_frames);
-    }
-    break;
+  {
+    ags_synth_util_square_s24((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      ags_synth_util_square_s32((gint32 *) buffer,
-				freq, phase, volume,
-				samplerate,
-				offset, n_frames);
-    }
-    break;
+  {
+    ags_synth_util_square_s32((gint32 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      ags_synth_util_square_s64((gint64 *) buffer,
+  {
+    ags_synth_util_square_s64((gint64 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_synth_util_square_float((float *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      ags_synth_util_square_float((float *) buffer,
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_synth_util_square_double((double *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_synth_util_square_complex((AgsComplex *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      ags_synth_util_square_double((double *) buffer,
-				   freq, phase, volume,
-				   samplerate,
-				   offset, n_frames);
-    }
-    break;
+  }
+  break;
   default:
     {
       g_warning("ags_synth_util_square() - unsupported format");
     }
+  }
+}
+
+/**
+ * ags_synth_util_impulse:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the impulse wave
+ * @phase: the phase of the impulse wave
+ * @volume: the volume of the impulse wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate impulse wave.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_synth_util_impulse(void *buffer,
+		       gdouble freq, gdouble phase, gdouble volume,
+		       guint samplerate, guint audio_buffer_util_format,
+		       guint offset, guint n_frames)
+{
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_synth_util_impulse_s8((gint8 *) buffer,
+			      freq, phase, volume,
+			      samplerate,
+			      offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_synth_util_impulse_s16((gint16 *) buffer,
+			       freq, phase, volume,
+			       samplerate,
+			       offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_synth_util_impulse_s24((gint32 *) buffer,
+			       freq, phase, volume,
+			       samplerate,
+			       offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_synth_util_impulse_s32((gint32 *) buffer,
+			       freq, phase, volume,
+			       samplerate,
+			       offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_synth_util_impulse_s64((gint64 *) buffer,
+			       freq, phase, volume,
+			       samplerate,
+			       offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_synth_util_impulse_float((float *) buffer,
+				 freq, phase, volume,
+				 samplerate,
+				 offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_synth_util_impulse_double((double *) buffer,
+				  freq, phase, volume,
+				  samplerate,
+				  offset, n_frames);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_synth_util_impulse_complex((AgsComplex *) buffer,
+				   freq, phase, volume,
+				   samplerate,
+				   offset, n_frames);
+  }
+  break;
+  default:
+  {
+    g_warning("ags_synth_util_impulse() - unsupported format");
+  }
   }
 }
