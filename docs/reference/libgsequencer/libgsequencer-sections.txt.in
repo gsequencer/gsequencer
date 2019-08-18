@@ -17,6 +17,22 @@
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
 <SECTION>
+<FILE>ags_animation_window</FILE>
+<TITLE>AgsAnimationWindow</TITLE>
+ags_animation_window_progress_timeout
+ags_animation_window_new
+<SUBSECTION Public>
+AGS_ANIMATION_WINDOW
+AGS_ANIMATION_WINDOW_CLASS
+AGS_ANIMATION_WINDOW_GET_CLASS
+AGS_IS_ANIMATION_WINDOW
+AGS_TYPE_ANIMATION_WINDOW
+AgsAnimationWindow
+AgsAnimationWindowClass
+ags_animation_window_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_audio_preferences</FILE>
 <TITLE>AgsAudioPreferences</TITLE>
 AgsAudioPreferencesFlags
@@ -969,6 +985,8 @@ ags_export_window_export_callback
 <SECTION>
 <FILE>ags_ffplayer</FILE>
 <TITLE>AgsFFPlayer</TITLE>
+AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH
+AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT
 AgsFFPlayerFlags
 ags_ffplayer_paint
 ags_ffplayer_open_filename
@@ -1696,6 +1714,13 @@ ags_live_lv2_bridge_lv2ui_cleanup_function
 ags_live_lv2_bridge_lv2ui_write_function
 ags_live_lv2_bridge_program_changed_callback
 ags_live_lv2_bridge_preset_changed_callback
+ags_live_lv2_bridge_dial_changed_callback
+ags_live_lv2_bridge_vscale_changed_callback
+ags_live_lv2_bridge_hscale_changed_callback
+ags_live_lv2_bridge_spin_button_changed_callback
+ags_live_lv2_bridge_check_button_clicked_callback
+ags_live_lv2_bridge_toggle_button_clicked_callback
+ags_live_lv2_bridge_button_clicked_callback
 </SECTION>
 
 <SECTION>
@@ -3675,6 +3700,7 @@ ags_track_collection_mapper_get_type
 <SECTION>
 <FILE>ags_ui_provider</FILE>
 <TITLE>AgsUiProvider</TITLE>
+AGS_UI_PROVIDER_DEFAULT_TIMEOUT
 ags_ui_provider_get_window
 ags_ui_provider_set_window
 ags_ui_provider_get_gui_thread
@@ -3683,6 +3709,8 @@ ags_ui_provider_get_show_animation
 ags_ui_provider_set_show_animation
 ags_ui_provider_get_gui_ready
 ags_ui_provider_set_gui_ready
+ags_ui_provider_get_animation_window
+ags_ui_provider_set_animation_window
 <SUBSECTION Public>
 AGS_IS_UI_PROVIDER
 AGS_IS_UI_PROVIDER_INTERFACE
@@ -3933,7 +3961,11 @@ ags_window_button_press_event
 AGS_XORG_VERSION
 AGS_XORG_BUILD_ID
 AgsXorgApplicationContextFlags
+ags_xorg_application_context_load_gui_scale
+ags_xorg_application_schedule_task
+ags_xorg_application_schedule_task_list
 ags_xorg_application_context_message_monitor_timeout
+ags_xorg_application_context_task_timeout
 ags_xorg_application_context_new
 <SUBSECTION Public>
 AGS_IS_XORG_APPLICATION_CONTEXT

@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
+ags_animation_window_get_type
 ags_audio_preferences_get_type
 ags_audiorec_get_type
 ags_automation_edit_box_get_type
