@@ -780,6 +780,7 @@ deprecated_libags_audio_h_sources =
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
 	ags/audio/ags_sound_enums.h \
+	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
