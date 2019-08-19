@@ -19,8 +19,4 @@ pthread_mutex_t *thread_mutex;
 thread = ags_thread_new(NULL);
 
 /* get object mutex */
-pthread_mutex_lock(ags_thread_get_class_mutex());
-
-thread_mutex = thread->obj_mutex;
-
-pthread_mutex_unlock(ags_thread_get_class_mutex());
+thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
