@@ -10,6 +10,16 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 2.3.0
+================================
+
+* Improved AgsSynthGenerator to support impulse and FM LFO oscillator.
+* Implemented new impulse oscillator in ags_synth_util.c 
+* Implemented ags_fm_synth_util.c to do frequency modulation oscillators.
+  Used by AgsSynthGenerator.
+* Implemented ags_lfo_synth_util.c to do amplification using LFO oscillator.
+* TODO:JK:
+
 Overview of Changes in AGS 2.2.39
 ================================
 

@@ -276,6 +276,7 @@
 ./ags/audio/ags_generic_recall_channel_run.c
 ./ags/audio/ags_generic_recall_recycling.c
 ./ags/audio/ags_input.c
+./ags/audio/ags_lfo_synth_util.c
 ./ags/audio/ags_midi.c
 ./ags/audio/ags_midiin.c
 ./ags/audio/ags_notation.c

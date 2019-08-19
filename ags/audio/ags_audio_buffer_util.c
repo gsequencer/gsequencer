@@ -55,6 +55,8 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
     return(AGS_AUDIO_BUFFER_UTIL_FLOAT);
   case AGS_SOUNDCARD_DOUBLE:
     return(AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  case AGS_SOUNDCARD_COMPLEX:
+    return(AGS_AUDIO_BUFFER_UTIL_COMPLEX);
   default:
     {
       g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
@@ -113,6 +115,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -149,6 +154,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -185,6 +193,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -221,6 +232,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -257,6 +271,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -293,6 +310,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -329,6 +349,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32;
       break;
 #endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -364,13 +387,54 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
     case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32;
       break;
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX;
+      break;
     default:
       {
 	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
 #endif
-    
+
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_COMPLEX){
+
+    /* complex source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE;
+      break;
+#ifdef __APPLE__
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT32;
+      break;
+#endif
+    case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX;
+      break;
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+      }
+    }    
   }else{
     g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
   }
@@ -522,6 +586,23 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_clear_complex:
+ * @buffer: the buffer to clear
+ * @channels: number of channels
+ * @count: count frames
+ * 
+ * Clears a buffer.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
+				    guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_audio_buffer_util_clear_buffer:
  * @buffer: the audio data
  * @channels: the number of channels
@@ -571,6 +652,20 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
       ags_audio_buffer_util_clear_double(buffer, channels,
+					 count);
+    }
+    break;
+#ifdef __APPLE__
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+    {
+      ags_audio_buffer_util_clear_float32(buffer, channels,
+					  count);
+    }
+    break;
+#endif
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      ags_audio_buffer_util_clear_complex(buffer, channels,
 					 count);
     }
     break;
@@ -1242,6 +1337,31 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_envelope_complex:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer at @ratio.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 2.3.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
+				       guint buffer_length,
+				       gdouble current_volume,
+				       gdouble ratio)
+{
+  //TODO:JK: implement me
+
+  return(current_volume);
+}
+
+/**
  * ags_audio_buffer_util_envelope:
  * @buffer: the audio buffer
  * @channels: number of audio channels
@@ -1322,6 +1442,14 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
 						     buffer_length,
 						     current_volume,
 						     ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      retval = ags_audio_buffer_util_envelope_complex((AgsComplex *) buffer, channels,
+						      buffer_length,
+						      current_volume,
+						      ratio);
     }
     break;
   default:
@@ -1934,6 +2062,25 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_volume_complex:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
+				     guint buffer_length,
+				     gdouble volume)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_audio_buffer_util_volume:
  * @buffer: the audio buffer
  * @channels: number of audio channels
@@ -1999,6 +2146,13 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
       ags_audio_buffer_util_volume_double((gdouble *) buffer, channels,
 					  buffer_length,
 					  volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      ags_audio_buffer_util_volume_complex((AgsComplex *) buffer, channels,
+					   buffer_length,
+					   volume);
     }
     break;
   default:
@@ -3330,6 +3484,38 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_peak_complex:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer length
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 2.3.0
+ */
+gdouble
+ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
+				   guint buffer_length,
+				   gdouble harmonic_rate,
+				   gdouble max_rate,
+				   gdouble pressure_factor)
+{
+  double current_value;
+
+  /* calculate average value */
+  current_value = 0.0;
+  
+  //TODO:JK: implement me
+  
+  return(current_value);
+}
+
+/**
  * ags_audio_buffer_util_peak:
  * @buffer: the audio buffer
  * @channels: number of audio channels
@@ -3419,6 +3605,15 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
 							harmonic_rate,
 							max_rate,
 							pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      current_value = ags_audio_buffer_util_peak_complex((AgsComplex *) buffer, channels,
+							 buffer_length,
+							 harmonic_rate,
+							 max_rate,
+							 pressure_factor);
     }
     break;
   default:
@@ -3768,6 +3963,21 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
   return(ret_buffer);
 }
 
+AgsComplex*
+ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
+				       guint samplerate,
+				       guint buffer_length,
+				       guint target_samplerate)
+{
+  gdouble *ret_buffer;
+
+  ret_buffer = NULL;
+  
+  //TODO:JK: implement me
+
+  return(ret_buffer);
+}
+
 /**
  * ags_audio_buffer_util_resample:
  * @buffer: the audio buffer
@@ -3848,6 +4058,14 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 						     samplerate,
 						     buffer_length,
 						     target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      retval = ags_audio_buffer_util_resample_complex((AgsComplex *) buffer, channels,
+						      samplerate,
+						      buffer_length,
+						      target_samplerate);
     }
     break;
   default:

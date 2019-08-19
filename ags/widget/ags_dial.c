@@ -326,6 +326,24 @@ ags_dial_class_init(AgsDialClass *dial)
 				  param_spec);
 
   /**
+   * AgsDial:margin-right:
+   *
+   * The button's margin right.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_int("margin-right",
+				"button's margin right",
+				"The button's margin right",
+				-1,
+				G_MAXINT,
+				AGS_DIAL_DEFAULT_MARGIN_RIGHT,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MARGIN_RIGHT,
+				  param_spec);
+
+  /**
    * AgsDial:adjustment:
    *
    * The adjustment storing current value and boundaries.

@@ -299,6 +299,8 @@ void ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
 
 void ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
 					guint count);
+void ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
+					 guint count);
 void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
 					guint count, guint format);
 
@@ -331,6 +333,10 @@ gdouble ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 					      guint buffer_length,
 					      gdouble current_volume,
 					      gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
+					       guint buffer_length,
+					       gdouble current_volume,
+					       gdouble ratio);
 
 gdouble ags_audio_buffer_util_envelope(void *buffer, guint channels,
 				       guint format,
@@ -360,46 +366,14 @@ void ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
 void ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
 					 guint buffer_length,
 					 gdouble volume);
+void ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
+					  guint buffer_length,
+					  gdouble volume);
 
 void ags_audio_buffer_util_volume(void *buffer, guint channels,
 				  guint format,
 				  guint buffer_length,
 				  gdouble volume);
-
-/* resample */
-gint8* ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
-					 guint samplerate,
-					 guint buffer_length,
-					 guint target_samplerate);
-gint16* ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
-					   guint samplerate,
-					   guint buffer_length,
-					   guint target_samplerate);
-gint32* ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
-					   guint samplerate,
-					   guint buffer_length,
-					   guint target_samplerate);
-gint32* ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
-					   guint samplerate,
-					   guint buffer_length,
-					   guint target_samplerate);
-gint64* ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
-					   guint samplerate,
-					   guint buffer_length,
-					   guint target_samplerate);
-gfloat* ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
-					     guint samplerate,
-					     guint buffer_length,
-					     guint target_samplerate);
-double* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
-					      guint samplerate,
-					      guint buffer_length,
-					      guint target_samplerate);
-
-void* ags_audio_buffer_util_resample(void *buffer, guint channels,
-				     guint format,  guint samplerate,
-				     guint buffer_length,
-				     guint target_samplerate);
 
 /* peak */
 gdouble ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
@@ -437,6 +411,11 @@ gdouble ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 					  gdouble harmonic_rate,
 					  gdouble max_rate,
 					  gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
+					   guint buffer_length,
+					   gdouble harmonic_rate,
+					   gdouble max_rate,
+					   gdouble pressure_factor);
 
 gdouble ags_audio_buffer_util_peak(void *buffer, guint channels,
 				   guint format,
@@ -444,6 +423,45 @@ gdouble ags_audio_buffer_util_peak(void *buffer, guint channels,
 				   gdouble harmonic_rate,
 				   gdouble max_rate,
 				   gdouble pressure_factor);
+
+/* resample */
+gint8* ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
+					 guint samplerate,
+					 guint buffer_length,
+					 guint target_samplerate);
+gint16* ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
+gint32* ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
+gint32* ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
+gint64* ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
+gfloat* ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
+					     guint samplerate,
+					     guint buffer_length,
+					     guint target_samplerate);
+gdouble* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate);
+AgsComplex* ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
+						   guint samplerate,
+						   guint buffer_length,
+						   guint target_samplerate);
+
+void* ags_audio_buffer_util_resample(void *buffer, guint channels,
+				     guint format,  guint samplerate,
+				     guint buffer_length,
+				     guint target_samplerate);
 
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
@@ -697,6 +715,10 @@ void ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guin
 						   Float32 *source, guint schannels,
 						   guint count);
 #endif
+
+void ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dchannels,
+						   AgsComplex *source, guint schannels,
+						   guint count);
 
 void ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
 					      AgsComplex *source, guint schannels,
