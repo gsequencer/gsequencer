@@ -25,4 +25,5 @@ echo_channel = (AgsEchoChannel *) g_object_new(AGS_TYPE_ECHO_CHANNEL,
                                                "dry", 0.5,
                                                NULL);
 
-AGS_RECALL(echo_channel)->flags = AGS_RECALL_TEMPLATE;
+ags_recall_set_flags(echo_channel,
+		     AGS_RECALL_TEMPLATE);

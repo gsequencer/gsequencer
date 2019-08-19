@@ -22,4 +22,5 @@ echo_channel_run = (AgsEchoChannelRun *) g_object_new(AGS_TYPE_ECHO_CHANNEL_RUN,
                                                       "recall-container", echo_container,
                                                       NULL);
 
-AGS_RECALL(echo_channel_run)->flags = AGS_RECALL_TEMPLATE;
+ags_recall_set_flags(echo_channel_run,
+		     AGS_RECALL_TEMPLATE);
