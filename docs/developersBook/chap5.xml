@@ -37,7 +37,7 @@
   <para>
     AgsAudioSignal keeps your audio data as a GList of buffers. AgsRecycling is your
     nested tree to AgsChannel, giving you the opportunity to emit ::add_audio_signal
-    or ::remove_audio_signal by producer and havig many consumers. AgsChannel is your
+    or ::remove_audio_signal by producer and to have many consumers. AgsChannel is your
     opposite to an audio channel representing a single line. AgsAudio keeps track of
     all of them. You might want to add your audio object to an AgsSoundcard.
   </para>
@@ -57,6 +57,21 @@
 
   <sect1>
     <title>AgsNotation and AgsNote</title>
+    <para>
+      AgsAudio provides many AgsNotation objects for one single audio channel. They all have a different :timestamp property. Usually a new
+      AgsNotation object is introduced as AGS_NOTATION_DEFAULT_OFFSET is exceeded. So AgsNotation can hold at most 1024 x-positions of AgsNote.
+    </para>
+
+    <para>
+      You might want to query a GList of AgsNotation by the matching AgsTimestamp using AGS_TIMESTAMP_OFFSET.
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	<code language="C">void ags_notation_find_near_timestamp(GList*, guint, AgsTimestamp*)</code>
+      </listitem>
+    </itemizedlist>
+        
     <para>
       The notation object stores your notes as a GList. You can add or remove a note
       by calling appropriate function:
@@ -85,6 +100,18 @@
 	<code language="C">GList* ags_notation_find_region(AgsNotation*, guint, guint, guint, guint, gboolean)</code>
       </listitem>
     </itemizedlist>
+
+    <para>
+      To copy &amp; paste notes you might want to select a region first. Then copy the selection and insert it using new x_offset later.
+    </para>
+
+  <example>
+    <title>Using AgsNotation Clipboard</title>
+    <programlisting language="C">
+<xi:include href="../listings/notation_clipboard.c" parse="text" />
+    </programlisting>
+  </example>
+    
   </sect1>
 
   <sect1>
