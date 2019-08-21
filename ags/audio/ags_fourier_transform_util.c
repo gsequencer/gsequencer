@@ -31,7 +31,7 @@
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -78,7 +78,7 @@ ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -125,7 +125,7 @@ ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -172,7 +172,7 @@ ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -219,7 +219,7 @@ ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -266,7 +266,7 @@ ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -312,7 +312,7 @@ ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute fourier transform for @buffer.
+ * Compute fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -358,7 +358,7 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -403,7 +403,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -448,7 +448,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -493,7 +493,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -538,7 +538,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -583,7 +583,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
@@ -627,7 +627,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
  * @buffer_length: the buffer's length
  * @retval: the return location of result
  * 
- * Compute inverse fourier transform for @buffer.
+ * Compute inverse fourier transform of @buffer.
  * 
  * Since: 2.3.0
  */
