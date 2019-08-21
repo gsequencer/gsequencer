@@ -56,7 +56,11 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_fifoout.h>
+#include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_fm_synth_util.h>
+#include <ags/audio/ags_fourier_transform_util.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>

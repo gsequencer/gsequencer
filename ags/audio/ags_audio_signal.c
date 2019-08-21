@@ -2054,6 +2054,20 @@ ags_stream_alloc(guint buffer_size,
       word_size = sizeof(gdouble);
     }
     break;
+  case AGS_SOUNDCARD_COMPLEX:
+    {
+      guint i;
+      
+      buffer = (AgsComplex *) malloc(buffer_size * sizeof(AgsComplex));
+
+      for(i = 0; i < buffer_size; i++){
+	((AgsComplex *) buffer)[i][0] = 0.0;
+	((AgsComplex *) buffer)[i][1] = 0.0;
+      }
+      
+      return(buffer);
+    }
+    break;
   default:
     g_warning("ags_stream_alloc(): unsupported word size");
     return(NULL);
