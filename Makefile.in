@@ -6138,9 +6138,9 @@ CLEANFILES = functional-system-tests.mk m4/Makefile libags.sym \
 	docs/listings/file_write.c \
 	docs/listings/linking_prerequisites.c \
 	docs/listings/linking_safe.c docs/listings/linking_unsafe.c \
-	docs/listings/pcm_info.c docs/listings/port.c \
-	docs/listings/pull_thread.c docs/listings/recycling.c \
-	docs/listings/start_thread.c \
+	docs/listings/notation_clipboard.c docs/listings/pcm_info.c \
+	docs/listings/port.c docs/listings/pull_thread.c \
+	docs/listings/recycling.c docs/listings/start_thread.c \
 	docs/listings/thread_application_context.c \
 	docs/listings/thread_obj_mutex.c \
 	docs/reference/libags/version.xml \
@@ -6246,6 +6246,7 @@ devdoclistings = \
 	docs/listings/linking_prerequisites.c.in \
 	docs/listings/linking_safe.c.in \
 	docs/listings/linking_unsafe.c.in \
+	docs/listings/notation_clipboard.c.in \
 	docs/listings/pcm_info.c.in \
 	docs/listings/pull_thread.c.in \
 	docs/listings/port.c.in \

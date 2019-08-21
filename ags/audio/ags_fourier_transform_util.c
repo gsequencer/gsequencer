@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include <math.h>
+#include <complex.h>
 
 /**
  * ags_fourier_transform_util_compute_stft_s8:
@@ -39,34 +40,34 @@ void
 ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
 					   guint buffer_length,
 					   guint samplerate,
-					   gdouble **retval)
+					   AgsComplex **retval)
 {
   complex m_e;
-  guint i;
+  guint n;
+  guint i, i_stop;
 
   static const gdouble normalize_divisor = exp2(7.0);
 
   if(buffer == NULL ||
-     retval == NULL){
+     retval == NULL ||
+     retval[0] == NULL){
     return;
-  }
-
-  if(retval[0] == NULL){
-    retval[0] = (AgsComplex *) malloc(buffer_length * sizeof(AgsComplex));
   }
 
   m_e = M_E + I * 0.0;
 
-  for(i = 0; i < buffer_length; i++){
+  i_stop = channels * buffer_length;
+  
+  for(i = 0, n = 0; i < i_stop; i += channels, n++){
     complex z;
     gdouble h;
     gdouble k;
     gdouble r;
 
-    k = (gdouble) i;
-    r = (gdouble) i;
+    k = (gdouble) n;
+    r = (gdouble) n;
 
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(i - r);
+    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
     z = ((gdouble) buffer[i] / normalize_divisor) * h * cpow(m_e, -1.0 * I * 2.0 * M_PI * k * r / buffer_length);
 
@@ -90,7 +91,7 @@ void
 ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
-					    gdouble **retval)
+					    AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -111,7 +112,7 @@ void
 ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
-					    gdouble **retval)
+					    AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -132,7 +133,7 @@ void
 ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
-					    gdouble **retval)
+					    AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -153,7 +154,7 @@ void
 ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
 					    guint buffer_length,
 					    guint samplerate,
-					    gdouble **retval)
+					    AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -174,7 +175,7 @@ void
 ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
 					      guint buffer_length,
 					      guint samplerate,
-					      gdouble **retval)
+					      AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -195,7 +196,7 @@ void
 ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 					       guint buffer_length,
 					       guint samplerate,
-					       gdouble **retval)
+					       AgsComplex **retval)
 {
   //TODO:JK: implement me
 }
@@ -219,32 +220,31 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 					   gint8 **retval)
 {
   complex m_e;
-  guint i;
+  guint n;
+  guint i, i_stop;
 
   static const gdouble scale = 127.0;
 
-
   if(buffer == NULL ||
-     retval == NULL){
+     retval == NULL ||
+     retval[0] == NULL){
     return;
-  }
-
-  if(retval[0] == NULL){
-    retval[0] = (gint8 *) malloc(buffer_length * sizeof(gint8));
   }
   
   m_e = M_E + I * 0.0;
 
-  for(i = 0; i < buffer_length; i++){
+  i_stop = channels * buffer_length;
+  
+  for(i = 0, n = 0; i < i_stop; i += channels, n++){
     complex z;
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[i]);
+    z = ags_complex_get(buffer[n]);
 
-    k = (gdouble) i;
+    k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * (z * cpow(m_e, I * 2.0 * M_PI * k * i / buffer_length));
+    y = (1.0 / buffer_length) * (z * cpow(m_e, I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
