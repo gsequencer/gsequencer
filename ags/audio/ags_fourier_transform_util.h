@@ -25,6 +25,8 @@
 
 #include <libags.h>
 
+#define AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x) (x + 1.0)
+
 void ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
 						guint buffer_length,
 						guint samplerate,

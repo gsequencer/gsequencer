@@ -41,6 +41,11 @@ ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
 				      guint samplerate,
 				      gdouble **retval)
 {
+  complex m_e;
+  guint i;
+
+  static const gdouble normalize_divisor = exp2(7.0);
+
   if(buffer == NULL ||
      retval == NULL){
     return;
@@ -49,8 +54,24 @@ ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
   if(retval[0] == NULL){
     retval[0] = (AgsComplex *) malloc(buffer_length * sizeof(AgsComplex));
   }
-  
-  //TODO:JK: implement me
+
+  m_e = M_E + I * 0.0;
+
+  for(i = 0; i < buffer_length; i++){
+    complex z;
+    gdouble h;
+    gdouble k;
+    gdouble r;
+
+    k = (gdouble) i;
+    r = (gdouble) i;
+
+    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(i - r);
+    
+    z = ((gdouble) buffer[i] / normalize_divisor) * h * cpow(m_e, -1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+
+    ags_complex_set(retval[0] + i, z);
+  }
 }
 
 /**
