@@ -29,60 +29,46 @@
 
 void ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
 						guint buffer_length,
-						guint samplerate,
 						AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
 						   guint buffer_length,
-						   guint samplerate,
 						   AgsComplex **retval);
 void ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 						    guint buffer_length,
-						    guint samplerate,
 						    AgsComplex **retval);
 
 void ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 						guint buffer_length,
-						guint samplerate,
 						gint8 **retval);
 void ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 gint16 **retval);
 void ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 gint32 **retval);
 void ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 gint32 **retval);
 void ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
 						 guint buffer_length,
-						 guint samplerate,
 						 gint64 **retval);
 void ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels,
 						   guint buffer_length,
-						   guint samplerate,
 						   gfloat **retval);
 void ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channels,
 						    guint buffer_length,
-						    guint samplerate,
 						    gdouble **retval);
 
 #endif /*__AGS_FOURIER_TRANSFORM_UTIL_H__*/

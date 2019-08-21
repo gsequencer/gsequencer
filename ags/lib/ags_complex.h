@@ -23,9 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <math.h>
 #include <complex.h>
 
 #define AGS_TYPE_COMPLEX                (ags_complex_get_type())
+
+#define AGS_COMPLEX_M_E (M_E + I * 0.0)
+#define AGS_COMPLEX_M_PI (M_PI + I * 0.0)
 
 typedef long double AgsComplex[2];
 
