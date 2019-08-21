@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_fourier_transform_util.h>
 
+#include <stdlib.h>
+
 #include <math.h>
 
 /**
@@ -42,6 +44,10 @@ ags_fourier_transform_util_compute_s8(gint8 *buffer, guint channels,
   if(buffer == NULL ||
      retval == NULL){
     return;
+  }
+
+  if(retval[0] == NULL){
+    retval[0] = (AgsComplex *) malloc(buffer_length * sizeof(AgsComplex));
   }
   
   //TODO:JK: implement me
