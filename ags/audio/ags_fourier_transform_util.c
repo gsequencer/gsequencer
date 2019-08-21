@@ -244,7 +244,9 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 
     k = (gdouble) i;
 
-    y = (1.0 / buffer_length) * (z * cpow(m_e, I * 2.0 * M_PI * k * i / buffer_length);
+    y = (1.0 / buffer_length) * (z * cpow(m_e, I * 2.0 * M_PI * k * i / buffer_length));
+
+    retval[0][i] = scale * y;
   }
 }
 
