@@ -106,6 +106,8 @@ ags_fourier_transform_util_test_compute_stft_s8()
 
   guint i;
   gboolean success;
+
+  static const complex z_zero = 0.0 + I * 0.0;
   
   s8_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE,
 			       AGS_SOUNDCARD_SIGNED_8_BIT);
@@ -124,7 +126,14 @@ ags_fourier_transform_util_test_compute_stft_s8()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S8_BUFFER_SIZE; i++){
+    if(s8_buffer[i] != 0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -138,6 +147,8 @@ ags_fourier_transform_util_test_compute_stft_s16()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   s16_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_16_BIT);
 
@@ -155,7 +166,14 @@ ags_fourier_transform_util_test_compute_stft_s16()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S16_BUFFER_SIZE; i++){
+    if(s16_buffer[i] != 0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -169,6 +187,8 @@ ags_fourier_transform_util_test_compute_stft_s24()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   s24_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_24_BIT);
 
@@ -186,7 +206,14 @@ ags_fourier_transform_util_test_compute_stft_s24()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S24_BUFFER_SIZE; i++){
+    if(s24_buffer[i] != 0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -200,6 +227,8 @@ ags_fourier_transform_util_test_compute_stft_s32()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   s32_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_32_BIT);
 
@@ -217,7 +246,14 @@ ags_fourier_transform_util_test_compute_stft_s32()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S32_BUFFER_SIZE; i++){
+    if(s32_buffer[i] != 0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -231,6 +267,8 @@ ags_fourier_transform_util_test_compute_stft_s64()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   s64_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE,
 				AGS_SOUNDCARD_SIGNED_64_BIT);
 
@@ -248,7 +286,14 @@ ags_fourier_transform_util_test_compute_stft_s64()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_S64_BUFFER_SIZE; i++){
+    if(s64_buffer[i] != 0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -262,6 +307,8 @@ ags_fourier_transform_util_test_compute_stft_float()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   float_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE,
 				  AGS_SOUNDCARD_FLOAT);
 
@@ -279,7 +326,14 @@ ags_fourier_transform_util_test_compute_stft_float()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_FLOAT_BUFFER_SIZE; i++){
+    if(float_buffer[i] != 0.0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
@@ -293,6 +347,8 @@ ags_fourier_transform_util_test_compute_stft_double()
   guint i;
   gboolean success;
   
+  static const complex z_zero = 0.0 + I * 0.0;
+
   double_buffer = ags_stream_alloc(AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE,
 				   AGS_SOUNDCARD_DOUBLE);
 
@@ -310,7 +366,14 @@ ags_fourier_transform_util_test_compute_stft_double()
 
   success = TRUE;
 
-  //TODO:JK: implement me
+  for(i = 0; i < AGS_FOURIER_TRANSFORM_UTIL_TEST_COMPUTE_STFT_DOUBLE_BUFFER_SIZE; i++){
+    if(double_buffer[i] != 0.0 &&
+       ags_complex_get(retval + i) == z_zero){
+      success = FALSE;
+      
+      break;
+    }
+  }
 
   CU_ASSERT(success == TRUE);
 }
