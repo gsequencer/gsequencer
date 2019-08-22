@@ -4121,7 +4121,7 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
 
-    z = y * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = y * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / output_frames);
 
     ags_complex_set(ret_buffer + i, z);
     
