@@ -453,10 +453,6 @@ gdouble* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 					       guint samplerate,
 					       guint buffer_length,
 					       guint target_samplerate);
-AgsComplex* ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
-						   guint samplerate,
-						   guint buffer_length,
-						   guint target_samplerate);
 
 void* ags_audio_buffer_util_resample(void *buffer, guint channels,
 				     guint format,  guint samplerate,

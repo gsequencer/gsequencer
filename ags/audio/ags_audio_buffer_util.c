@@ -599,7 +599,53 @@ void
 ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
 				    guint count)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint current_channel;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      current_channel = 0;
+
+      buffer[0][0] = 0.0;
+      buffer[0][1] = 0.0;
+
+      buffer[(current_channel = channels)][0] = 0.0;
+      buffer[(current_channel = channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer[(current_channel += channels)][0] = 0.0;
+      buffer[(current_channel += channels)][1] = 0.0;
+
+      buffer += (current_channel + channels);
+    }
+  }
+
+  for(; i < count; i++){
+    buffer[0][0] = 0.0;
+    buffer[0][1] = 0.0;
+
+    buffer += channels;
+  }
 }
 
 /**
@@ -1356,7 +1402,26 @@ ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
 				       gdouble current_volume,
 				       gdouble ratio)
 {
-  //TODO:JK: implement me
+  gdouble start_volume;
+  guint limit;
+  guint current_channel;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+
+  //TODO:JK: improve me
+    
+  for(; i < buffer_length; i++, current_volume = start_volume + i * ratio){
+    complex z;
+
+    z = ags_complex_get(buffer) * current_volume;
+    
+    ags_complex_set(buffer,
+		    z);
+
+    buffer += channels;
+  }
 
   return(current_volume);
 }
@@ -2077,7 +2142,23 @@ ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
 				     guint buffer_length,
 				     gdouble volume)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint current_channel;
+  guint i;
+
+  i = 0;
+
+  //TODO:JK: improve me
+
+  for(; i < buffer_length; i++){
+    complex z;
+
+    z = ags_complex_get(buffer) * volume;
+    ags_complex_set(buffer,
+		    z);
+
+    buffer += channels;
+  }
 }
 
 /**
@@ -3506,12 +3587,34 @@ ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
 				   gdouble pressure_factor)
 {
   double current_value;
+  guint limit;
+  guint current_channel;
+  guint i;
 
+  i = 0;
+  
   /* calculate average value */
   current_value = 0.0;
-  
-  //TODO:JK: implement me
-  
+
+  //TODO:JK: improve me
+    
+  for(; i < buffer_length; i++){
+    complex z;
+
+    z = ags_complex_get(buffer);
+    
+    if(creal(z) != 0.0 ||
+       cimag(z) != 0.0){
+      current_value += (1.0 / ((0.5 * pressure_factor) * (z / M_PI)));
+    }
+
+    buffer += channels;
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
   return(current_value);
 }
 
@@ -3963,21 +4066,6 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
   return(ret_buffer);
 }
 
-AgsComplex*
-ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
-				       guint samplerate,
-				       guint buffer_length,
-				       guint target_samplerate)
-{
-  gdouble *ret_buffer;
-
-  ret_buffer = NULL;
-  
-  //TODO:JK: implement me
-
-  return(ret_buffer);
-}
-
 /**
  * ags_audio_buffer_util_resample:
  * @buffer: the audio buffer
@@ -4058,14 +4146,6 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 						     samplerate,
 						     buffer_length,
 						     target_samplerate);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      retval = ags_audio_buffer_util_resample_complex((AgsComplex *) buffer, channels,
-						      samplerate,
-						      buffer_length,
-						      target_samplerate);
     }
     break;
   default:
@@ -11189,6 +11269,350 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
     destination += dchannels;
     source += schannels;
   }
+}
+#endif
+
+/**
+ * ags_audio_buffer_util_copy_s8_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannels,
+					 gint8 *source, guint schannels,
+					 guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_s16_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchannels,
+					  gint16 *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_s24_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchannels,
+					  gint32 *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_s32_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchannels,
+					  gint32 *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_s64_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchannels,
+					  gint64 *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_float_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
+					    gdouble *source, guint schannels,
+					    guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_double_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,
+					     gdouble *source, guint schannels,
+					     guint count)
+{
+  //TODO:JK: implement me
+}
+
+#ifdef __APPLE__
+/**
+ * ags_audio_buffer_util_copy_float32_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dchannels,
+					      Float32 *source, guint schannels,
+					      guint count)
+{
+  //TODO:JK: implement me
+}
+#endif
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_complex:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dchannels,
+					      AgsComplex *source, guint schannels,
+					      guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
+					 AgsComplex *source, guint schannels,
+					 guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
+					  AgsComplex *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
+					  AgsComplex *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
+					  AgsComplex *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
+					  AgsComplex *source, guint schannels,
+					  guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels,
+					    AgsComplex *source, guint schannels,
+					    guint count)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_copy_complex_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchannels,
+					     AgsComplex *source, guint schannels,
+					     guint count)
+{
+  //TODO:JK: implement me
+}
+
+#ifdef __APPLE__
+/**
+ * ags_audio_buffer_util_copy_complex_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 2.3.0
+ */
+void
+ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchannels,
+					      AgsComplex *source, guint schannels,
+					      guint count)
+{
+  //TODO:JK: implement me
 }
 #endif
 
