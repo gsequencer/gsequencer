@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_fourier_transform_util.h>
+
 #include <samplerate.h>
 
 #include <stdlib.h>
@@ -4067,6 +4069,80 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_resample_complex:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @samplerate: the current samplerate
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 2.3.0
+ */
+AgsComplex*
+ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
+				       guint samplerate,
+				       guint buffer_length,
+				       guint target_samplerate)
+{
+  AgsComplex *ret_buffer;
+
+  gdouble delay_factor;
+  gdouble delay;
+  guint output_frames;
+  guint i, n;
+
+  delay_factor = 1.0 / (gdouble) target_samplerate * (gdouble) samplerate;
+  
+  output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
+
+  ret_buffer = (AgsComplex *) malloc(channels * output_frames * sizeof(AgsComplex));
+  
+  for(i = 0, n = 0, delay = 0.0; i < output_frames; i++){
+    complex z;
+    gdouble h;
+    gdouble k;
+    gdouble r;
+    gdouble y;
+
+    z = ags_complex_get(buffer[n]);
+
+    k = (gdouble) n;
+
+    /* get y */
+    y = (1.0 / buffer_length) * creal(ags_complex_get(buffer + n) * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+
+    /* put z */
+    k = (gdouble) i;
+    r = (gdouble) i;
+
+    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
+
+    z = y * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+
+    ags_complex_set(ret_buffer + i, z);
+    
+    delay += delay_factor;
+    
+    if(delay_factor < 1.0){
+      if(delay >= 1.0){
+	n += floor(delay);
+	
+	delay -= floor(delay);
+      }
+    }else{
+      n += floor(delay);
+      delay -= floor(delay);
+    }
+  }
+
+  return(ret_buffer);
+}
+
+/**
  * ags_audio_buffer_util_resample:
  * @buffer: the audio buffer
  * @channels: number of audio channels
@@ -4146,6 +4222,14 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 						     samplerate,
 						     buffer_length,
 						     target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+    {
+      retval = ags_audio_buffer_util_resample_complex((AgsComplex *) buffer, channels,
+						      samplerate,
+						      buffer_length,
+						      target_samplerate);
     }
     break;
   default:
