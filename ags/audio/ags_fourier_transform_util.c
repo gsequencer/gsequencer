@@ -15,6 +15,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Loy, Gareth 
+ * Musimathics volume 2 - Musical Signals, First MIT press paperback
+ * edition, 2011
+ * MIT Press,
+ * Copyright 2007 Gareth Loy
+ * ISBN 978-0-262-51656-3
+ * 
+ * http://musimathics.com
+ * 
+ * Based on Discrete Short Time Fourier Transform covered in Musimathics
+ * volume 2 chapter 10. Thank you Dr. Gareth Loy.
  */
 
 #include <ags/audio/ags_fourier_transform_util.h>
