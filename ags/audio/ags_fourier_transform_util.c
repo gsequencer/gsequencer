@@ -304,7 +304,7 @@ ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = (buffer[i]) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -348,7 +348,7 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = (buffer[i]) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -612,7 +612,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
 
     y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
-    retval[0][i] = y;
+    retval[0][i] = y / M_PI;
   }
 }
 
@@ -654,6 +654,6 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
 
     y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
-    retval[0][i] = y;
+    retval[0][i] = y / M_PI;
   }
 }
