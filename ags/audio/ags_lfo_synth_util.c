@@ -19,9 +19,13 @@
 
 #include <ags/audio/ags_lfo_synth_util.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_fourier_transform_util.h>
 
 #include <math.h>
+#include <complex.h>
 
 /**
  * ags_lfo_synth_util_sin_s8:
@@ -256,7 +260,37 @@ ags_lfo_synth_util_sin_complex(AgsComplex *buffer,
 			       guint samplerate,
 			       guint offset, guint n_frames)
 {
-  //TODO:JK: implement me
+  AgsComplex c;
+  AgsComplex *c_ptr;
+  AgsComplex **c_ptr_ptr;
+
+  double *y_ptr;
+  double y;
+  complex z0, z1;
+
+  guint i_stop;
+  guint i;
+
+  c_ptr = &c;
+  c_ptr_ptr = &c_ptr;
+  
+  y_ptr = &y;
+
+  i_stop = offset + n_frames;
+
+  for(i = offset; i < i_stop; i++){
+    y = (gdouble) (tuning / 1200.0 + sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * depth);
+
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
+							 i - offset, i_stop - offset,
+							 c_ptr_ptr);
+
+    z0 = ags_complex_get(buffer + i);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(buffer + i,
+		    z0 + z1);
+  }
 }
 
 /**
@@ -287,7 +321,7 @@ ags_lfo_synth_util_sawtooth_s8(gint8 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint8) (0xff & (gint16) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * depth)));
   }
 }
@@ -320,7 +354,7 @@ ags_lfo_synth_util_sawtooth_s16(gint16 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint16) (0xffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * depth)));
   }
 }
@@ -353,7 +387,7 @@ ags_lfo_synth_util_sawtooth_s24(gint32 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * depth)));
   }
 }
@@ -386,7 +420,7 @@ ags_lfo_synth_util_sawtooth_s32(gint32 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * depth)));
   }
 }
@@ -419,7 +453,7 @@ ags_lfo_synth_util_sawtooth_s64(gint64 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint64) (0xffffffffffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * depth)));
   }
 }
@@ -452,7 +486,7 @@ ags_lfo_synth_util_sawtooth_float(float *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = ((double) buffer[i] * (double) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0)));
   }
 }
@@ -485,7 +519,7 @@ ags_lfo_synth_util_sawtooth_double(double *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = ((double) buffer[i] * (double) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0)));
   }
 }
@@ -513,7 +547,40 @@ ags_lfo_synth_util_sawtooth_complex(AgsComplex *buffer,
 				    guint samplerate,
 				    guint offset, guint n_frames)
 {
-  //TODO:JK: implement me
+  AgsComplex c;
+  AgsComplex *c_ptr;
+  AgsComplex **c_ptr_ptr;
+
+  double *y_ptr;
+  double y;
+  complex z0, z1;
+
+  guint i_stop;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  c_ptr = &c;
+  c_ptr_ptr = &c_ptr;
+  
+  y_ptr = &y;
+
+  i_stop = offset + n_frames;
+
+  for(i = offset; i < offset + n_frames; i++){
+    y = (double) (tuning / 1200.0 + ((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0));
+
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
+							 i - offset, i_stop - offset,
+							 c_ptr_ptr);
+
+    z0 = ags_complex_get(buffer + i);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(buffer + i,
+		    z0 + z1);
+  }
 }
 
 /**
@@ -544,7 +611,7 @@ ags_lfo_synth_util_triangle_s8(gint8 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint8) (0xff & (gint16) ((gdouble) buffer[i] * (gdouble) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * depth)));
   }
 }
@@ -577,7 +644,7 @@ ags_lfo_synth_util_triangle_s16(gint16 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint16) (0xffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * depth)));
   }
 }
@@ -610,7 +677,7 @@ ags_lfo_synth_util_triangle_s24(gint32 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * depth)));
   }
 }
@@ -643,7 +710,7 @@ ags_lfo_synth_util_triangle_s32(gint32 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint32) (0xffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * depth)));
   }
 }
@@ -676,7 +743,7 @@ ags_lfo_synth_util_triangle_s64(gint64 *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = (gint64) (0xffffffffffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * depth)));
   }
 }
@@ -709,7 +776,7 @@ ags_lfo_synth_util_triangle_float(float *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = ((double) buffer[i] * (double) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0)));
   }
 }
@@ -742,7 +809,7 @@ ags_lfo_synth_util_triangle_double(double *buffer,
   phase = (int) ceil(phase) % (int) ceil(freq);
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     buffer[i] = ((double) buffer[i] * (double) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0)));
   }
 }
@@ -770,7 +837,40 @@ ags_lfo_synth_util_triangle_complex(AgsComplex *buffer,
 				    guint samplerate,
 				    guint offset, guint n_frames)
 {
-  //TODO:JK: implement me
+  AgsComplex c;
+  AgsComplex *c_ptr;
+  AgsComplex **c_ptr_ptr;
+
+  double *y_ptr;
+  double y;
+  complex z0, z1;
+
+  guint i_stop;
+  guint i;
+
+  phase = (int) ceil(phase) % (int) ceil(freq);
+  phase = ceil(phase / freq) * ceil(samplerate / freq);
+
+  c_ptr = &c;
+  c_ptr_ptr = &c_ptr;
+  
+  y_ptr = &y;
+
+  i_stop = offset + n_frames;
+
+  for(i = offset; i < offset + n_frames; i++){
+    y = (double) (tuning / 1200.0 + (((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0));
+
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
+							 i - offset, i_stop - offset,
+							 c_ptr_ptr);
+
+    z0 = ags_complex_get(buffer + i);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(buffer + i,
+		    z0 + z1);
+  }
 }
 
 /**
@@ -798,7 +898,7 @@ ags_lfo_synth_util_square_s8(gint8 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint8) (0xff & (gint16) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -832,7 +932,7 @@ ags_lfo_synth_util_square_s16(gint16 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint16) (0xffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -866,7 +966,7 @@ ags_lfo_synth_util_square_s24(gint32 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint32) (0xffffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -900,7 +1000,7 @@ ags_lfo_synth_util_square_s32(gint32 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint32) (0xffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -934,7 +1034,7 @@ ags_lfo_synth_util_square_s64(gint64 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (gint64) (0xffffffffffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -968,7 +1068,7 @@ ags_lfo_synth_util_square_float(float *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (buffer[i] * (tuning / 1200.0 + 1.0 * depth));
     }else{
@@ -1002,7 +1102,7 @@ ags_lfo_synth_util_square_double(double *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
       buffer[i] = (buffer[i] * (tuning / 1200.0 + 1.0 * depth));
     }else{
@@ -1034,7 +1134,41 @@ ags_lfo_synth_util_square_complex(AgsComplex *buffer,
 				  guint samplerate,
 				  guint offset, guint n_frames)
 {
-  //TODO:JK: implement me
+  AgsComplex c;
+  AgsComplex *c_ptr;
+  AgsComplex **c_ptr_ptr;
+
+  double *y_ptr;
+  double y;
+  complex z0, z1;
+
+  guint i_stop;
+  guint i;
+
+  c_ptr = &c;
+  c_ptr_ptr = &c_ptr;
+  
+  y_ptr = &y;
+
+  i_stop = offset + n_frames;
+
+  for(i = offset; i < i_stop; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
+      y = (tuning / 1200.0 + 1.0 * depth);
+    }else{
+      y = (tuning / 1200.0 + -1.0 * depth);
+    }
+
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
+							 i - offset, i_stop - offset,
+							 c_ptr_ptr);
+
+    z0 = ags_complex_get(buffer + i);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(buffer + i,
+		    z0 + z1);
+  }
 }
 
 /**
@@ -1062,7 +1196,7 @@ ags_lfo_synth_util_impulse_s8(gint8 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint8) (0xff & (gint16) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -1096,7 +1230,7 @@ ags_lfo_synth_util_impulse_s16(gint16 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint16) (0xffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -1130,7 +1264,7 @@ ags_lfo_synth_util_impulse_s24(gint32 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint32) (0xffffff & (gint32) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -1164,7 +1298,7 @@ ags_lfo_synth_util_impulse_s32(gint32 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint32) (0xffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -1198,7 +1332,7 @@ ags_lfo_synth_util_impulse_s64(gint64 *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (gint64) (0xffffffffffffffff & (gint64) ((gdouble) buffer[i] * (gdouble) (tuning / 1200.0 + 1.0 * depth)));
     }else{
@@ -1232,7 +1366,7 @@ ags_lfo_synth_util_impulse_float(float *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (buffer[i] * (tuning / 1200.0 + 1.0 * depth));
     }else{
@@ -1266,7 +1400,7 @@ ags_lfo_synth_util_impulse_double(double *buffer,
 {
   guint i;
 
-  for(i = offset; i < n_frames; i++){
+  for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
       buffer[i] = (buffer[i] * (tuning / 1200.0 + 1.0 * depth));
     }else{
@@ -1298,7 +1432,41 @@ ags_lfo_synth_util_impulse_complex(AgsComplex *buffer,
 				   guint samplerate,
 				   guint offset, guint n_frames)
 {
-  //TODO:JK: implement me
+  AgsComplex c;
+  AgsComplex *c_ptr;
+  AgsComplex **c_ptr_ptr;
+
+  double *y_ptr;
+  double y;
+  complex z0, z1;
+
+  guint i_stop;
+  guint i;
+
+  c_ptr = &c;
+  c_ptr_ptr = &c_ptr;
+  
+  y_ptr = &y;
+
+  i_stop = offset + n_frames;
+
+  for(i = offset; i < i_stop; i++){
+    if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
+      y = (tuning / 1200.0 + 1.0 * depth);
+    }else{
+      y = (tuning / 1200.0 + -1.0 * depth);
+    }
+
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, 1,
+							 i - offset, i_stop - offset,
+							 c_ptr_ptr);
+
+    z0 = ags_complex_get(buffer + i);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(buffer + i,
+		    z0 + z1);
+  }
 }
 
 /**
