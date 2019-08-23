@@ -137,7 +137,7 @@
     gdouble k;								\
     gdouble y;								\
 									\
-    static const gdouble scale = 127.0;					\
+    static const gdouble scale = 127.0 / M_PI;				\
 									\
     z = ags_complex_get(buffer);					\
 									\
@@ -151,7 +151,7 @@
     gdouble k;								\
     gdouble y;								\
 									\
-    static const gdouble scale = 32767.0;				\
+    static const gdouble scale = 32767.0 / M_PI;			\
 									\
     z = ags_complex_get(buffer);					\
 									\
@@ -165,7 +165,7 @@
     gdouble k;								\
     gdouble y;								\
 									\
-    static const gdouble scale = 8388607.0;				\
+    static const gdouble scale = 8388607.0 / M_PI;			\
 									\
     z = ags_complex_get(buffer);					\
 									\
@@ -179,7 +179,7 @@
     gdouble k;								\
     gdouble y;								\
 									\
-    static const gdouble scale = 214748363.0;				\
+    static const gdouble scale = 214748363.0 / M_PI;			\
 									\
     z = ags_complex_get(buffer);					\
 									\
@@ -193,7 +193,7 @@
     gdouble k;								\
     gdouble y;								\
 									\
-    static const long double scale = 9223372036854775807.0;		\
+    static const long double scale = 9223372036854775807.0 / M_PI;	\
 									\
     z = ags_complex_get(buffer);					\
 									\

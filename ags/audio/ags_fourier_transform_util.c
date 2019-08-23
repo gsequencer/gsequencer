@@ -373,7 +373,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble scale = 127.0;
+  static const gdouble scale = 127.0 / M_PI;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -417,7 +417,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble scale = 32767.0;
+  static const gdouble scale = 32767.0 / M_PI;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -461,7 +461,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble scale = 8388607.0;
+  static const gdouble scale = 8388607.0 / M_PI;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -505,7 +505,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble scale = 214748363.0;
+  static const gdouble scale = 214748363.0 / M_PI;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -549,7 +549,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const long double scale = 9223372036854775807.0;
+  static const long double scale = 9223372036854775807.0 / M_PI;
 
   if(buffer == NULL ||
      retval == NULL ||
