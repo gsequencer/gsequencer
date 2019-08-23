@@ -4113,6 +4113,7 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
     k = (gdouble) n;
 
     /* get y */
+    //TODO:JK: improve me
     y = (1.0 / buffer_length) * creal(ags_complex_get(buffer + n) * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     /* put z */
@@ -11373,7 +11374,33 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
 					 gint8 *source, guint schannels,
 					 guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_s8(source, schannels,
+					       1,
+					       &c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11393,7 +11420,33 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
 					  gint16 *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_s16(source, schannels,
+						1,
+						&c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11413,7 +11466,33 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
 					  gint32 *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_s24(source, schannels,
+						1,
+						&c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11433,7 +11512,33 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
 					  gint32 *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_s32(source, schannels,
+						1,
+						&c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11453,7 +11558,33 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
 					  gint64 *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_s64(source, schannels,
+						1,
+						&c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11473,7 +11604,33 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
 					    gdouble *source, guint schannels,
 					    guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_float(source, schannels,
+						  1,
+						  &c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11493,7 +11650,33 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
 					     gdouble *source, guint schannels,
 					     guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+    
+    ags_fourier_transform_util_compute_stft_double(source, schannels,
+						   1,
+						   &c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 #ifdef __APPLE__
@@ -11514,7 +11697,39 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
 					      Float32 *source, guint schannels,
 					      guint count)
 {
-  //TODO:JK: implement me
+  AgsComplex *c_ptr;
+  AgsComplex c_value;
+
+  gfloat *f_ptr;
+  gfloat f_value;
+  
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  c_ptr = &c_value;
+  
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+
+    f_value = source[0];
+    f_ptr = &f_value;
+    
+    ags_fourier_transform_util_compute_stft_float(f_value, 1,
+						  1,
+						  &c_ptr);
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(c_ptr);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 #endif
 
@@ -11534,8 +11749,25 @@ void
 ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dchannels,
 					      AgsComplex *source, guint schannels,
 					      guint count)
-{
-  //TODO:JK: implement me
+{  
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    complex z0, z1;
+
+    z0 = ags_complex_get(destination);
+    z1 = ags_complex_get(source);
+
+    ags_complex_set(destination,
+		    z0 + z1);
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11555,7 +11787,23 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
 					 AgsComplex *source, guint schannels,
 					 guint count)
 {
-  //TODO:JK: implement me
+  gint8 value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_s8(source, schannels,
+					       1,
+					       &value);
+
+    destination[0] = 0xff & ((gint16) (destination[0] + value));      
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11575,7 +11823,23 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  gint16 value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_s16(source, schannels,
+						1,
+						&value);
+
+    destination[0] = (gint16) 0xffff & ((gint32) (destination[0] + value));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11595,7 +11859,23 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  gint32 value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_s24(source, schannels,
+						1,
+						&value);
+
+    destination[0] = 0xffffff & ((gint32) (destination[0] + value));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11615,7 +11895,23 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  gint32 value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_s32(source, schannels,
+						1,
+						&value);
+
+    destination[0] = 0xffffffff & ((gint64) (destination[0] + value));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11635,7 +11931,23 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
 					  AgsComplex *source, guint schannels,
 					  guint count)
 {
-  //TODO:JK: implement me
+  gint64 value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_s64(source, schannels,
+						1,
+						&value);
+
+    destination[0] = 0xffffffffffffffff & ((gint64) (destination[0] + value));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11655,7 +11967,23 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
 					    AgsComplex *source, guint schannels,
 					    guint count)
 {
-  //TODO:JK: implement me
+  gfloat value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_float(source, schannels,
+						  1,
+						  &value);
+
+    destination[0] = (gfloat) ((gdouble) (destination[0] + (gdouble) (value)));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -11675,12 +12003,28 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
 					     AgsComplex *source, guint schannels,
 					     guint count)
 {
-  //TODO:JK: implement me
+  gdouble value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_double(source, schannels,
+						   1,
+						   &value);
+
+    destination[0] = ((gdouble) ((destination[0]) + (value)));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 #ifdef __APPLE__
 /**
- * ags_audio_buffer_util_copy_complex_to_s8:
+ * ags_audio_buffer_util_copy_complex_to_float32:
  * @destination: destination buffer
  * @dchannels: destination buffer's count of channels
  * @source: source buffer
@@ -11696,7 +12040,23 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
 					      AgsComplex *source, guint schannels,
 					      guint count)
 {
-  //TODO:JK: implement me
+  gdouble value;
+  guint limit;
+  guint current_dchannel, current_schannel;
+  guint i;
+
+  i = 0;
+
+  for(; i < count; i++){
+    ags_fourier_transform_util_inverse_stft_double(source, schannels,
+						   1,
+						   &value);
+
+    destination[0] = ((Float32) ((gdouble) (destination[0]) + (value)));
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 #endif
 
