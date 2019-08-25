@@ -798,6 +798,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
+	ags/audio/ags_frequency_map.h \
+	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_input.h \
@@ -859,6 +861,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
+	ags/audio/ags_frequency_map.c \
+	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_lfo_synth_util.c \

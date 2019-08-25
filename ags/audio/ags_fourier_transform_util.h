@@ -25,6 +25,9 @@
 
 #include <libags.h>
 
+#include <math.h>
+#include <complex.h>
+
 #define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
     gdouble h;								\
     gdouble k;								\

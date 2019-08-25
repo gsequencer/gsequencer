@@ -4091,6 +4091,13 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
 {
   AgsComplex *ret_buffer;
 
+  complex **z_ptr_ptr;
+  complex *z_ptr;
+  gdouble **y_ptr_ptr;
+  gdouble *y_ptr;
+
+  complex z;
+  gdouble y;
   gdouble delay_factor;
   gdouble delay;
   guint output_frames;
@@ -4101,30 +4108,21 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
   output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
 
   ret_buffer = (AgsComplex *) malloc(channels * output_frames * sizeof(AgsComplex));
+
+  z_ptr = &z;
+  z_ptr_ptr = &z_ptr;
+  
+  y_ptr = &y;
+  y_ptr_ptr = &y_ptr;
   
   for(i = 0, n = 0, delay = 0.0; i < output_frames; i++){
-    complex z;
-    gdouble h;
-    gdouble k;
-    gdouble r;
-    gdouble y;
-
-    z = ags_complex_get(buffer[n]);
-
-    k = (gdouble) n;
-
     /* get y */
     //TODO:JK: improve me
-    y = (1.0 / buffer_length) * creal(ags_complex_get(buffer + n) * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer + n, channels, n, buffer_length, y_ptr_ptr);
 
     /* put z */
-    k = (gdouble) i;
-    r = (gdouble) i;
-
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
-
-    z = y * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / output_frames);
-
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, channels, i, output_frames, z_ptr_ptr);
+    
     ags_complex_set(ret_buffer + i,
 		    z);
     
