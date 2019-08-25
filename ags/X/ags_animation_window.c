@@ -30,6 +30,8 @@ void ags_animation_window_show(GtkWidget *widget);
 gboolean ags_animation_window_expose(GtkWidget *widget,
 				     GdkEventExpose *event);
 
+void ags_animation_window_draw(AgsAnimationWindow *animation_window);
+
 static gpointer ags_animation_window_parent_class = NULL;
 
 GType
