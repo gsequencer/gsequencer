@@ -30,6 +30,24 @@ static gpointer ags_frequency_map_manager_parent_class = NULL;
 
 static pthread_mutex_t ags_frequency_map_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+guint ags_frequency_map_manager_default_samplerate_count = 4;
+guint ags_frequency_map_manager_default_samplerate[] = {
+  44100,
+  48000,
+  96000,
+  192000,
+};
+
+guint ags_frequency_map_manager_default_buffer_size_count = 6;
+guint ags_frequency_map_manager_default_buffer_size[] = {
+  128,
+  256,
+  512,
+  1024,
+  2048,
+  4096,
+};
+
 GType
 ags_frequency_map_manager_get_type (void)
 {
@@ -156,7 +174,26 @@ void
 ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 					    AgsFrequencyMap *frequency_map)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *frequency_map_manager_mutex;
+  
+  if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager) ||
+     !AGS_IS_FREQUENCY_MAP(frequency_map)){
+    return;
+  }
+
+  frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
+
+  pthread_mutex_lock(frequency_map_manager_mutex);
+  
+  if(g_list_find(frequency_map_manager->frequency_map, frequency_map) == NULL){
+    g_object_ref(frequency_map);
+    
+    frequency_map_manager->frequency_map = g_list_insert_sorted(frequency_map_manager->frequency_map,
+								frequency_map,
+								(GCompareFunc) ags_frequency_map_sort_func);
+  }
+
+  pthread_mutex_unlock(frequency_map_manager_mutex);
 }
 
 /**
@@ -179,9 +216,68 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
 {
   AgsFrequencyMap *frequency_map;
 
+  GList *start_list, *list;
+  
+  pthread_mutex_t *frequency_map_manager_mutex;
+
+  if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
+    return(NULL);
+  }
+
+  frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
+  
+  pthread_mutex_lock(frequency_map_manager_mutex);
+
+  list =
+    start_list = g_list_copy_deep(frequency_map_manager->frequency_map,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+  
+  pthread_mutex_unlock(frequency_map_manager_mutex);
+  
   frequency_map = NULL;
 
-  //TODO:JK: implement me
+  while(list != NULL){
+    guint current_samplerate;
+    guint current_buffer_size;
+    gdouble current_freq;
+
+    g_object_get(list->data,
+		 "samplerate", &current_samplerate,
+		 "buffer-size", &current_buffer_size,
+		 NULL);
+
+    if(current_samplerate != samplerate){
+      list = g_list_nth(list,
+			current_buffer_size);
+
+      continue;
+    }
+
+    if(current_buffer_size != buffer_size){
+      list = g_list_nth(list,
+			current_buffer_size);
+
+      continue;
+    }
+    
+    g_object_get(list->data,
+		 "freq", &current_freq,
+		 NULL);
+
+    if(current_freq == freq){
+      frequency_map = list->data;
+      
+      g_object_ref(frequency_map);
+
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   return(frequency_map);
 }
@@ -197,7 +293,50 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
 void
 ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_manager)
 {
-  //TODO:JK: implement me
+  guint samplerate;
+  guint buffer_size;
+  guint i_stop, j_stop, k_stop;
+  guint i, j, k;
+
+  i_stop = ags_frequency_map_manager_default_samplerate_count;
+  j_stop = ags_frequency_map_manager_default_buffer_size_count;
+  
+  for(i = 0; i < i_stop; i++){
+    samplerate = ags_frequency_map_manager_default_samplerate[i];
+    
+    for(j = 0; j < j_stop; j++){
+      buffer_size = ags_frequency_map_manager_default_buffer_size[j];
+      
+      k_stop = buffer_size;
+      
+      for(k = 0; k < k_stop; k++){
+	AgsFrequencyMap *frequency_map;
+
+	gdouble freq;
+	guint frame_count;
+	guint attack;
+
+	freq = (gdouble) AGS_FREQUENCY_MAP_MANAGER_EQUINOX * ((gdouble) k / (gdouble) buffer_size);
+
+	frame_count = buffer_size / 2;
+
+	attack = k;
+	
+	frequency_map = (AgsFrequencyMap *) g_object_new(AGS_TYPE_FREQUENCY_MAP,
+							 "z-index", k,
+							 "window-count", buffer_size,
+							 "samplerate", samplerate,
+							 "buffer-size", buffer_size,
+							 "freq", freq,
+							 "frame-count", frame_count,
+							 "attack", attack,
+							 NULL);
+	ags_frequency_map_process(frequency_map);
+	ags_frequency_map_manager_add_frequency_map(frequency_map_manager,
+						    frequency_map);
+      }
+    }
+  }
 }
 
 /**

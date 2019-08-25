@@ -92,6 +92,9 @@ GType ags_frequency_map_get_type();
 
 pthread_mutex_t* ags_frequency_map_get_class_mutex();
 
+gint ags_frequency_map_sort_func(gconstpointer a,
+				 gconstpointer b);
+
 void ags_frequency_map_process(AgsFrequencyMap *frequency_map);
 
 void ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,

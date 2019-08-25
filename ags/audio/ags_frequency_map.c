@@ -621,6 +621,68 @@ ags_frequency_map_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_frequency_map_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_frequency_map_sort_func:
+ * @a: an #AgsFrequencyMap
+ * @b: an #AgsFrequencyMap
+ * 
+ * Sort frequency maps.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 2.3.0
+ */
+gint
+ags_frequency_map_sort_func(gconstpointer a,
+			    gconstpointer b)
+{
+  guint a_samplerate, b_samplerate;
+  guint a_buffer_size, b_buffer_size;
+  gdouble a_freq, b_freq;
+  
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+
+  g_object_get(a,
+	       "samplerate", &a_samplerate,
+	       "buffer-size", &a_buffer_size,
+	       "freq", &a_freq,
+	       NULL);
+  
+  g_object_get(b,
+	       "samplerate", &b_samplerate,
+	       "buffer-size", &b_buffer_size,
+	       "freq", &b_freq,
+	       NULL);
+  
+  if(a_samplerate == b_samplerate){
+    if(a_buffer_size == b_buffer_size){
+      if(a_freq == b_freq){
+	return(0);
+      }
+      
+      if(a_freq < b_freq){
+	return(-1);
+      }else{
+	return(1);
+      }
+    }
+
+    if(a_buffer_size < b_buffer_size){
+      return(-1);
+    }else{
+      return(1);
+    }
+  }
+
+  if(a_samplerate < b_samplerate){
+    return(-1);
+  }else{
+    return(1);
+  }  
+}
+
 void
 ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
 {

@@ -36,6 +36,8 @@
 
 #define AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(obj) (((AgsFrequencyMapManager *) obj)->obj_mutex)
 
+#define AGS_FREQUENCY_MAP_MANAGER_EQUINOX (22000)
+
 typedef struct _AgsFrequencyMapManager AgsFrequencyMapManager;
 typedef struct _AgsFrequencyMapManagerClass AgsFrequencyMapManagerClass;
 
