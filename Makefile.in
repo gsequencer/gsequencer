@@ -453,6 +453,8 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/ags_input.c ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
+	ags/audio/ags_frequency_map.c \
+	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_lfo_synth_util.c ags/audio/ags_midi.c \
@@ -701,6 +703,8 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_fifoout.lo \
 	ags/audio/libags_audio_la-ags_fm_synth_util.lo \
 	ags/audio/libags_audio_la-ags_fourier_transform_util.lo \
+	ags/audio/libags_audio_la-ags_frequency_map.lo \
+	ags/audio/libags_audio_la-ags_frequency_map_manager.lo \
 	ags/audio/libags_audio_la-ags_generic_recall_channel_run.lo \
 	ags/audio/libags_audio_la-ags_generic_recall_recycling.lo \
 	ags/audio/libags_audio_la-ags_lfo_synth_util.lo \
@@ -4272,6 +4276,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_fourier_transform_util.Plo \
+	ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Plo \
+	ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_channel_run.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_recycling.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo \
@@ -5284,6 +5290,8 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/ags_filter_util.h ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
+	ags/audio/ags_frequency_map.h \
+	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h ags/audio/ags_midi.h \
@@ -7844,6 +7852,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
+	ags/audio/ags_frequency_map.h \
+	ags/audio/ags_frequency_map_manager.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_input.h \
@@ -7904,6 +7914,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
+	ags/audio/ags_frequency_map.c \
+	ags/audio/ags_frequency_map_manager.c \
 	ags/audio/ags_generic_recall_channel_run.c \
 	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_lfo_synth_util.c \
@@ -9533,6 +9545,10 @@ ags/audio/libags_audio_la-ags_fifoout.lo: ags/audio/$(am__dirstamp) \
 ags/audio/libags_audio_la-ags_fm_synth_util.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_fourier_transform_util.lo:  \
+	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_frequency_map.lo:  \
+	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_frequency_map_manager.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_generic_recall_channel_run.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
@@ -13140,6 +13156,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_fourier_transform_util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_channel_run.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_recycling.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo@am__quote@ # am--include-marker
@@ -14144,6 +14162,20 @@ ags/audio/libags_audio_la-ags_fourier_transform_util.lo: ags/audio/ags_fourier_t
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_fourier_transform_util.c' object='ags/audio/libags_audio_la-ags_fourier_transform_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_fourier_transform_util.lo `test -f 'ags/audio/ags_fourier_transform_util.c' || echo '$(srcdir)/'`ags/audio/ags_fourier_transform_util.c
+
+ags/audio/libags_audio_la-ags_frequency_map.lo: ags/audio/ags_frequency_map.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_frequency_map.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Tpo -c -o ags/audio/libags_audio_la-ags_frequency_map.lo `test -f 'ags/audio/ags_frequency_map.c' || echo '$(srcdir)/'`ags/audio/ags_frequency_map.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_frequency_map.c' object='ags/audio/libags_audio_la-ags_frequency_map.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_frequency_map.lo `test -f 'ags/audio/ags_frequency_map.c' || echo '$(srcdir)/'`ags/audio/ags_frequency_map.c
+
+ags/audio/libags_audio_la-ags_frequency_map_manager.lo: ags/audio/ags_frequency_map_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_frequency_map_manager.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Tpo -c -o ags/audio/libags_audio_la-ags_frequency_map_manager.lo `test -f 'ags/audio/ags_frequency_map_manager.c' || echo '$(srcdir)/'`ags/audio/ags_frequency_map_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_frequency_map_manager.c' object='ags/audio/libags_audio_la-ags_frequency_map_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_frequency_map_manager.lo `test -f 'ags/audio/ags_frequency_map_manager.c' || echo '$(srcdir)/'`ags/audio/ags_frequency_map_manager.c
 
 ags/audio/libags_audio_la-ags_generic_recall_channel_run.lo: ags/audio/ags_generic_recall_channel_run.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_generic_recall_channel_run.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_channel_run.Tpo -c -o ags/audio/libags_audio_la-ags_generic_recall_channel_run.lo `test -f 'ags/audio/ags_generic_recall_channel_run.c' || echo '$(srcdir)/'`ags/audio/ags_generic_recall_channel_run.c
@@ -23320,6 +23352,8 @@ distclean: distclean-recursive
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fourier_transform_util.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_channel_run.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_recycling.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo
@@ -24217,6 +24251,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fourier_transform_util.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_frequency_map_manager.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_channel_run.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_generic_recall_recycling.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo

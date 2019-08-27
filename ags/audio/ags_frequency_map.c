@@ -21,6 +21,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_synth_enums.h>
+#include <ags/audio/ags_synth_util.h>
+
 #include <math.h>
 #include <complex.h>
 
@@ -41,6 +44,8 @@ void ags_frequency_map_dispose(GObject *gobject);
 void ags_frequency_map_finalize(GObject *gobject);
 
 void ags_frequency_map_real_process(AgsFrequencyMap *frequency_map);
+void ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
+				      AgsFrequencyMap *factorized_frequency_map);
 void ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 						   AgsComplex *source,
 						   AgsComplex **retval);
@@ -67,11 +72,11 @@ enum{
   PROP_ATTACK,
   PROP_OSCILLATOR_MODE,
   PROP_FREQ,
-  
 };
 
 enum{
   PROCESS,
+  FACTORIZE,
   COMPUTE_MAX_LIKELIHOOD,
   LAST_SIGNAL,
 };
@@ -268,7 +273,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
   param_spec = g_param_spec_double("freq",
 				   i18n_pspec("using frequency"),
 				   i18n_pspec("The frequency to be used"),
-				   0.0,
+				   -1.0,
 				   G_MAXDOUBLE,
 				   AGS_FREQUENCY_MAP_DEFAULT_FREQ,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -278,6 +283,9 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
 
   /* AgsFrequencyMapClass */
   frequency_map->process = ags_frequency_map_real_process;
+
+  frequency_map->factorize = ags_frequency_map_real_factorize;
+
   frequency_map->compute_max_likelihood = ags_frequency_map_real_compute_max_likelihood;
 
   /* signals */
@@ -299,8 +307,29 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
 		 G_TYPE_NONE, 0);
 
   /**
+   * AgsFrequencyMap::factorize:
+   * @frequency_map: the #AgsFrequencyMap
+   * @factorized_frequency_map: the factorized #AgsFrequencyMap
+   *
+   * The ::factorize signal notifies about factorizing map.
+   * 
+   * Since: 2.3.0
+   */
+  frequency_map_signals[FACTORIZE] =
+    g_signal_new("factorize",
+		 G_TYPE_FROM_CLASS(frequency_map),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFrequencyMapClass, factorize),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
    * AgsFrequencyMap::compute-max-likelihood:
    * @frequency_map: the #AgsFrequencyMap
+   * @source: the source buffer
+   * @retval: return location pointer to buffer
    *
    * The ::compute-max-likelihood signal notifies about max likelihooded commputed.
    * 
@@ -366,7 +395,8 @@ ags_frequency_map_init(AgsFrequencyMap *frequency_map)
 
   frequency_map->freq = AGS_FREQUENCY_MAP_DEFAULT_FREQ;
 
-  frequency_map->buffer = NULL;
+  frequency_map->buffer = ags_stream_alloc(AGS_SOUNDCARD_COMPLEX,
+					   frequency_map->buffer_size);
 }
 
 void
@@ -432,8 +462,15 @@ ags_frequency_map_set_property(GObject *gobject,
 
     pthread_mutex_lock(frequency_map_mutex);
 
-    frequency_map->buffer_size = buffer_size;
+    if(frequency_map->buffer_size != buffer_size){
+      frequency_map->buffer_size = buffer_size;
 
+      ags_stream_free(frequency_map->buffer);
+      
+      frequency_map->buffer = ags_stream_alloc(AGS_SOUNDCARD_COMPLEX,
+					       frequency_map->buffer_size);
+    }
+    
     pthread_mutex_unlock(frequency_map_mutex);
   }
   break;
@@ -480,7 +517,7 @@ ags_frequency_map_set_property(GObject *gobject,
   {
     gdouble freq;
 
-    frea = g_value_get_double(value);
+    freq = g_value_get_double(value);
 
     pthread_mutex_lock(frequency_map_mutex);
 
@@ -683,10 +720,144 @@ ags_frequency_map_sort_func(gconstpointer a,
   }  
 }
 
+/**
+ * ags_frequency_map_test_flags:
+ * @frequency_map: the #AgsFrequencyMap
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.3.0
+ */
+gboolean
+ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *frequency_map_mutex;
+
+  if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
+
+  /* test flags */
+  pthread_mutex_lock(frequency_map_mutex);
+
+  retval = ((flags & (frequency_map->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(frequency_map_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_frequency_map_set_flags:
+ * @frequency_map: the #AgsFrequencyMap
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.3.0
+ */
+void
+ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
+{
+  pthread_mutex_t *frequency_map_mutex;
+
+  if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
+
+  /* set flags */
+  pthread_mutex_lock(frequency_map_mutex);
+
+  frequency_map->flags |= flags;
+  
+  pthread_mutex_unlock(frequency_map_mutex);
+}
+
+/**
+ * ags_frequency_map_unset_flags:
+ * @frequency_map: the #AgsFrequencyMap
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.3.0
+ */
+void
+ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags)
+{
+  pthread_mutex_t *frequency_map_mutex;
+
+  if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
+
+  /* unset flags */
+  pthread_mutex_lock(frequency_map_mutex);
+
+  frequency_map->flags &= (~flags);
+  
+  pthread_mutex_unlock(frequency_map_mutex);
+}
+
 void
 ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
 {
-  //TODO:JK: implement me
+  switch(frequency_map->oscillator_mode){
+  case AGS_SYNTH_OSCILLATOR_SIN:
+  {
+    ags_synth_util_sin_complex(frequency_map->buffer + frequency_map->attack,
+			       frequency_map->freq, 0.0, 1.0,
+			       frequency_map->samplerate,
+			       0, frequency_map->frame_count);
+  }
+  break;
+  case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+  {
+    ags_synth_util_sawtooth_complex(frequency_map->buffer + frequency_map->attack,
+				    frequency_map->freq, 0.0, 1.0,
+				    frequency_map->samplerate,
+				    0, frequency_map->frame_count);
+  }
+  break;
+  case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+  {
+    ags_synth_util_triangle_complex(frequency_map->buffer + frequency_map->attack,
+				    frequency_map->freq, 0.0, 1.0,
+				    frequency_map->samplerate,
+				    0, frequency_map->frame_count);
+  }
+  break;
+  case AGS_SYNTH_OSCILLATOR_SQUARE:
+  {
+    ags_synth_util_square_complex(frequency_map->buffer + frequency_map->attack,
+				  frequency_map->freq, 0.0, 1.0,
+				  frequency_map->samplerate,
+				  0, frequency_map->frame_count);
+  }
+  break;
+  case AGS_SYNTH_OSCILLATOR_IMPULSE:
+  {
+    ags_synth_util_impulse_complex(frequency_map->buffer + frequency_map->attack,
+				   frequency_map->freq, 0.0, 1.0,
+				   frequency_map->samplerate,
+				   0, frequency_map->frame_count);
+  }
+  break;
+  }
 }
 
 /**
@@ -708,11 +879,55 @@ ags_frequency_map_process(AgsFrequencyMap *frequency_map)
 }
 
 void
+ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
+				 AgsFrequencyMap *factorized_frequency_map)
+{
+  complex z;  
+  guint i;
+
+  for(i = frequency_map->attack; i < frequency_map->frame_count; i++){
+    z = ags_complex_get(factorized_frequency_map->buffer[i]) * ags_complex_get(frequency_map->buffer[i]) / M_PI;
+    
+    ags_complex_set(factorized_frequency_map->buffer[i],
+		    z);
+  }
+}
+
+/**
+ * ags_frequency_map_factorize:
+ * @frequency_map: the #AgsFrequencyMap
+ * @factorized_frequency_map: the factorized #AgsFrequencyMap
+ * 
+ * Factorize @frequency_map.
+ * 
+ * Since: 2.3.0
+ */
+void
+ags_frequency_map_factorize(AgsFrequencyMap *frequency_map,
+			    AgsFrequencyMap *factorized_frequency_map)
+{
+  g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map));
+  g_object_ref(G_OBJECT(frequency_map));
+  g_signal_emit(G_OBJECT(frequency_map),
+		frequency_map_signals[FACTORIZE], 0,
+		factorized_frequency_map);
+  g_object_unref(G_OBJECT(frequency_map));
+}
+
+void
 ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 					      AgsComplex *source,
 					      AgsComplex **retval)
 {
-  //TODO:JK: implement me
+  complex z;
+  guint i;
+
+  for(i = 0; i < frequency_map->buffer_size; i++){
+    z = ags_complex_get(frequency_map->buffer[i]) * ags_complex_get(source[i]);
+        
+    ags_complex_set(frequency_map->buffer[i],
+		    z);
+  }
 }
 
 /**
@@ -733,7 +948,7 @@ ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
   g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map));
   g_object_ref(G_OBJECT(frequency_map));
   g_signal_emit(G_OBJECT(frequency_map),
-		frequency_map_signals[ADD_COMPUTE_MAX_LIKELIHOOD], 0,
+		frequency_map_signals[COMPUTE_MAX_LIKELIHOOD], 0,
 		source,
 		retval);
   g_object_unref(G_OBJECT(frequency_map));

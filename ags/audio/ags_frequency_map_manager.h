@@ -41,31 +41,53 @@
 typedef struct _AgsFrequencyMapManager AgsFrequencyMapManager;
 typedef struct _AgsFrequencyMapManagerClass AgsFrequencyMapManagerClass;
 
+/**
+ * AgsFrequencyMapManagerFlags:
+ * @AGS_FREQUENCY_MAP_MANAGER_PRESERVE_FREQUENCY_MAP: if set preserve frequency maps, otherwise destroy 
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsFrequencyMapManager by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_FREQUENCY_MAP_MANAGER_PRESERVE_FREQUENCY_MAP       = 1,
+}AgsFrequencyMapManagerFlags;
+
 struct _AgsFrequencyMapManager
 {
-  GObject object;
+  GObject gobject;
 
+  guint flags;
+  
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
   GList *frequency_map;
+  GList *factorized_frequency_map;
 };
 
 struct _AgsFrequencyMapManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_frequency_map_manager_get_type(void);
 
 pthread_mutex_t* ags_frequency_map_manager_get_class_mutex();
 
+gboolean ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
+void ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
+void ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
+
 void ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 						 AgsFrequencyMap *frequency_map);
+void ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
+							    AgsFrequencyMap *frequency_map);
 
 AgsFrequencyMap* ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 							      guint samplerate, guint buffer_size,
 							      gdouble freq);
+AgsFrequencyMap* ags_frequency_map_manager_find_factorized_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
+									 guint samplerate, guint buffer_size);
 
 void ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_manager);
 

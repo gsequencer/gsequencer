@@ -2089,7 +2089,11 @@ ags_stream_alloc(guint buffer_size,
 void
 ags_stream_free(void *buffer)
 {
-  g_free(buffer);
+  if(buffer == NULL){
+    return;
+  }
+  
+  free(buffer);
 }
 
 /**

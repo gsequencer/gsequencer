@@ -83,6 +83,9 @@ struct _AgsFrequencyMapClass
 
   void (*process)(AgsFrequencyMap *frequency_map);
 
+  void (*factorize)(AgsFrequencyMap *frequency_map,
+		    AgsFrequencyMap *factorized_frequency_map);
+  
   void (*compute_max_likelihood)(AgsFrequencyMap *frequency_map,
 				 AgsComplex *source,
 				 AgsComplex **retval);
@@ -95,7 +98,14 @@ pthread_mutex_t* ags_frequency_map_get_class_mutex();
 gint ags_frequency_map_sort_func(gconstpointer a,
 				 gconstpointer b);
 
+gboolean ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags);
+void ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags);
+void ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags);
+
 void ags_frequency_map_process(AgsFrequencyMap *frequency_map);
+
+void ags_frequency_map_factorize(AgsFrequencyMap *frequency_map,
+				 AgsFrequencyMap *factorized_frequency_map);
 
 void ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 					      AgsComplex *source,
