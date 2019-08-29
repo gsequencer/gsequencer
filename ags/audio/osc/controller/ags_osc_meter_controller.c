@@ -3065,6 +3065,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 						  port)){
       AgsOscMeterControllerMonitor *monitor;
       
+      g_message("OSC meter controller monitor alloc");
+
       /* allocate monitor */
       monitor = ags_osc_meter_controller_monitor_alloc();
 

@@ -854,6 +854,8 @@ ags_osc_server_add_connection(AgsOscServer *osc_server,
     g_object_set(osc_connection,
 		 "osc-server", osc_server,
 		 NULL);
+    
+    g_message("OSC server connection added - fd = [%d]", AGS_OSC_CONNECTION(osc_connection)->fd);
   }
 }
 
@@ -883,6 +885,8 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
 		 NULL);
 
     g_object_unref(osc_connection);
+    
+    g_message("OSC server connection removed");
   }
 }
 
@@ -1505,6 +1509,8 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 
       guint packet_size;
 
+      g_message("OSC server do request");
+
       packet = ags_osc_util_slip_decode(slip_buffer,
 					data_length,
 					&packet_size);
@@ -1513,7 +1519,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 	start_osc_response = ags_osc_front_controller_do_request((AgsOscFrontController *) osc_server->front_controller,
 								 list->data,
 								 packet, packet_size);
-
+    
       while(osc_response != NULL){
 	ags_osc_connection_write_response(list->data,
 					  osc_response->data);

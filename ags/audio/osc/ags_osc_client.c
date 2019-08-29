@@ -959,6 +959,8 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 
   if(!ip4_connected && !ip6_connected){
     g_message("failed to connect to server");
+  }else{
+    g_message("OSC client connected");
   }
 }
   
@@ -1352,6 +1354,10 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
     if(num_write != data_length){
       success = FALSE;
     }
+  }
+
+  if(!success){
+    g_message("OSC client failed to send data");
   }
   
   return(success);
