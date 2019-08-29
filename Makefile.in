@@ -154,6 +154,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_audio_signal_test$(EXEEXT) \
 	ags_audio_buffer_util_test$(EXEEXT) \
 	ags_char_buffer_util_test$(EXEEXT) \
+	ags_fm_synth_util_test$(EXEEXT) \
 	ags_fourier_transform_util_test$(EXEEXT) \
 	ags_recall_test$(EXEEXT) ags_recall_channel_test$(EXEEXT) \
 	ags_recall_channel_run_test$(EXEEXT) \
@@ -2580,6 +2581,17 @@ ags_file_test_DEPENDENCIES = libags_server.la libags_thread.la \
 ags_file_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(ags_file_test_CFLAGS) \
 	$(CFLAGS) $(ags_file_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_fm_synth_util_test_OBJECTS = ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.$(OBJEXT)
+ags_fm_synth_util_test_OBJECTS = $(am_ags_fm_synth_util_test_OBJECTS)
+ags_fm_synth_util_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_fm_synth_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_fm_synth_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_fm_synth_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_fourier_transform_util_test_OBJECTS = ags/test/audio/fourier_transform_util_test-ags_fourier_transform_util_test.$(OBJEXT)
 ags_fourier_transform_util_test_OBJECTS =  \
 	$(am_ags_fourier_transform_util_test_OBJECTS)
@@ -4627,6 +4639,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/$(DEPDIR)/devin_test-ags_devin_test.Po \
 	ags/test/audio/$(DEPDIR)/devout_test-ags_devout_test.Po \
 	ags/test/audio/$(DEPDIR)/fifoout_test-ags_fifoout_test.Po \
+	ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po \
 	ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po \
 	ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po \
 	ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po \
@@ -4941,6 +4954,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_fifoout_test_SOURCES) $(ags_file_id_ref_test_SOURCES) \
 	$(ags_file_launch_test_SOURCES) \
 	$(ags_file_lookup_test_SOURCES) $(ags_file_test_SOURCES) \
+	$(ags_fm_synth_util_test_SOURCES) \
 	$(ags_fourier_transform_util_test_SOURCES) \
 	$(ags_free_selection_test_SOURCES) \
 	$(ags_functional_audio_config_test_SOURCES) \
@@ -5097,6 +5111,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_fifoout_test_SOURCES) $(ags_file_id_ref_test_SOURCES) \
 	$(ags_file_launch_test_SOURCES) \
 	$(ags_file_lookup_test_SOURCES) $(ags_file_test_SOURCES) \
+	$(ags_fm_synth_util_test_SOURCES) \
 	$(ags_fourier_transform_util_test_SOURCES) \
 	$(ags_free_selection_test_SOURCES) \
 	$(am__ags_functional_audio_config_test_SOURCES_DIST) \
@@ -6766,6 +6781,12 @@ ags_char_buffer_util_test_SOURCES = ags/test/audio/ags_char_buffer_util_test.c
 ags_char_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_char_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_char_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# FM synth util unit test
+ags_fm_synth_util_test_SOURCES = ags/test/audio/ags_fm_synth_util_test.c
+ags_fm_synth_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_fm_synth_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_fm_synth_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # fourier transform util unit test
 ags_fourier_transform_util_test_SOURCES = ags/test/audio/ags_fourier_transform_util_test.c
@@ -11903,6 +11924,13 @@ ags/test/file/file_test-ags_file_test.$(OBJEXT):  \
 ags_file_test$(EXEEXT): $(ags_file_test_OBJECTS) $(ags_file_test_DEPENDENCIES) $(EXTRA_ags_file_test_DEPENDENCIES) 
 	@rm -f ags_file_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_file_test_LINK) $(ags_file_test_OBJECTS) $(ags_file_test_LDADD) $(LIBS)
+ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_fm_synth_util_test$(EXEEXT): $(ags_fm_synth_util_test_OBJECTS) $(ags_fm_synth_util_test_DEPENDENCIES) $(EXTRA_ags_fm_synth_util_test_DEPENDENCIES) 
+	@rm -f ags_fm_synth_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_fm_synth_util_test_LINK) $(ags_fm_synth_util_test_OBJECTS) $(ags_fm_synth_util_test_LDADD) $(LIBS)
 ags/test/audio/fourier_transform_util_test-ags_fourier_transform_util_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -13507,6 +13535,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/devin_test-ags_devin_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/devout_test-ags_devout_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/fifoout_test-ags_fifoout_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po@am__quote@ # am--include-marker
@@ -19175,6 +19204,20 @@ ags/test/file/file_test-ags_file_test.obj: ags/test/file/ags_file_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_file_test_CFLAGS) $(CFLAGS) -c -o ags/test/file/file_test-ags_file_test.obj `if test -f 'ags/test/file/ags_file_test.c'; then $(CYGPATH_W) 'ags/test/file/ags_file_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/file/ags_file_test.c'; fi`
 
+ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.o: ags/test/audio/ags_fm_synth_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_fm_synth_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Tpo -c -o ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.o `test -f 'ags/test/audio/ags_fm_synth_util_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_fm_synth_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Tpo ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_fm_synth_util_test.c' object='ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_fm_synth_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.o `test -f 'ags/test/audio/ags_fm_synth_util_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_fm_synth_util_test.c
+
+ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.obj: ags/test/audio/ags_fm_synth_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_fm_synth_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Tpo -c -o ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.obj `if test -f 'ags/test/audio/ags_fm_synth_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_fm_synth_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_fm_synth_util_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Tpo ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_fm_synth_util_test.c' object='ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_fm_synth_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/fm_synth_util_test-ags_fm_synth_util_test.obj `if test -f 'ags/test/audio/ags_fm_synth_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_fm_synth_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_fm_synth_util_test.c'; fi`
+
 ags/test/audio/fourier_transform_util_test-ags_fourier_transform_util_test.o: ags/test/audio/ags_fourier_transform_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_fourier_transform_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/fourier_transform_util_test-ags_fourier_transform_util_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Tpo -c -o ags/test/audio/fourier_transform_util_test-ags_fourier_transform_util_test.o `test -f 'ags/test/audio/ags_fourier_transform_util_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_fourier_transform_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Tpo ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po
@@ -21868,6 +21911,13 @@ ags_char_buffer_util_test.log: ags_char_buffer_util_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_fm_synth_util_test.log: ags_fm_synth_util_test$(EXEEXT)
+	@p='ags_fm_synth_util_test$(EXEEXT)'; \
+	b='ags_fm_synth_util_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_fourier_transform_util_test.log: ags_fourier_transform_util_test$(EXEEXT)
 	@p='ags_fourier_transform_util_test$(EXEEXT)'; \
 	b='ags_fourier_transform_util_test'; \
@@ -23703,6 +23753,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/devin_test-ags_devin_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/devout_test-ags_devout_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fifoout_test-ags_fifoout_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po
@@ -24602,6 +24653,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/devin_test-ags_devin_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/devout_test-ags_devout_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fifoout_test-ags_fifoout_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po
