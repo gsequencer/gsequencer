@@ -3,8 +3,9 @@ ags (2.3.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags-modify-synth-generator recall
 	* TODO:JK: implemented AgsComplex buffer type
+	* TODO:JK: implemented ags_complex_buffer_util.h
 	* implemented AgsFrequencyMapManager
-	* TOOD:JK: implemented AgsFrequencyMap to compute max likelihood
+	* implemented AgsFrequencyMap to compute max likelihood
 	* implemented ags_fm_synth_util.h supporting FM synthesis
 	* implemented ags_lfo_synth_util.h supporting LFO amplification
 	* implemented ags_fourier_transform_util.c
