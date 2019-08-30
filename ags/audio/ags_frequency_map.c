@@ -906,7 +906,8 @@ void
 ags_frequency_map_factorize(AgsFrequencyMap *frequency_map,
 			    AgsFrequencyMap *factorized_frequency_map)
 {
-  g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map));
+  g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map) &&
+		   AGS_IS_FREQUENCY_MAP(factorized_frequency_map));
   g_object_ref(G_OBJECT(frequency_map));
   g_signal_emit(G_OBJECT(frequency_map),
 		frequency_map_signals[FACTORIZE], 0,
@@ -925,7 +926,7 @@ ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
   for(i = 0; i < frequency_map->buffer_size; i++){
     z = ags_complex_get(frequency_map->buffer[i]) * ags_complex_get(source[i]);
         
-    ags_complex_set(frequency_map->buffer[i],
+    ags_complex_set(retval[0][i],
 		    z);
   }
 }
@@ -945,7 +946,10 @@ ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 					 AgsComplex *source,
 					 AgsComplex **retval)
 {
-  g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map));
+  g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map) &&
+		   source != NULL &&
+		   retval ! NULL &&
+		   retval[0] != NULL);
   g_object_ref(G_OBJECT(frequency_map));
   g_signal_emit(G_OBJECT(frequency_map),
 		frequency_map_signals[COMPUTE_MAX_LIKELIHOOD], 0,
