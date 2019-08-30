@@ -702,8 +702,8 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -868,8 +868,8 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1034,8 +1034,8 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1200,8 +1200,8 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1366,8 +1366,8 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1532,8 +1532,8 @@ ags_filter_util_pitch_float(gfloat *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1698,8 +1698,8 @@ ags_filter_util_pitch_double(gdouble *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 
@@ -1864,8 +1864,8 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   ptr_ptr_buffer = &ptr_buffer;
   ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
 
-  base_freq = 27.5 * exp2((base_key) / 12.0);
-  new_freq = 27.5 * exp2((base_key + (tuning / 100.0)) / 12.0);
+  base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+  new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
   freq_period = samplerate / new_freq;
 

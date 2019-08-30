@@ -17,6 +17,7 @@ ags (2.3.0)
 	* TODO:JK: fixed AgsPiano border
 	* added ags_fourier_transform_util_test.c
 	* added ags_fm_synth_util_test.c
+	* added ags_filter_util_test.c
 
 ags (2.2.39)
 
