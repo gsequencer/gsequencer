@@ -28,207 +28,207 @@
 #include <math.h>
 #include <complex.h>
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
     static const gdouble normalize_factor = M_PI / exp2(7.0);		\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(buffer, channels, n, buffer_length, retval)  { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval)  { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
     static const gdouble normalize_factor = M_PI / exp2(15.0);		\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
     static const gdouble normalize_factor = M_PI / exp2(23.0);		\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
     static const gdouble normalize_factor = M_PI / exp2(31.0);		\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
     static const long double normalize_factor = M_PI / exp2(63.0);	\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble h;								\
-    gdouble k;								\
-    gdouble r;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_h;							\
+    gdouble l_k;							\
+    gdouble l_r;							\
 									\
-    k = (gdouble) n;							\
-    r = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
+    l_r = (gdouble) x_n;						\
 									\
-    h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);		\
+    l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    z = (buffer[0] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length); \
+    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
     									\
-    ags_complex_set(retval[0], z); }
+    ags_complex_set(x_retval[0], l_z); }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
     static const gdouble scale = 127.0 / M_PI;				\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = scale * y; }
+    x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
     static const gdouble scale = 32767.0 / M_PI;			\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = scale * y; }
+    x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
     static const gdouble scale = 8388607.0 / M_PI;			\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = scale * y; }
+    x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
     static const gdouble scale = 214748363.0 / M_PI;			\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = scale * y; }
+    x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
     static const long double scale = 9223372036854775807.0 / M_PI;	\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = scale * y; }
+    x_retval[0][0] = scale * l_y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = y / M_PI; }
+    x_retval[0][0] = l_y / M_PI; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
-    gdouble k;								\
-    gdouble y;								\
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
+    gdouble l_k;							\
+    gdouble l_y;							\
 									\
-    z = ags_complex_get(buffer);					\
+    l_z = ags_complex_get(x_buffer);					\
 									\
-    k = (gdouble) n;							\
+    l_k = (gdouble) x_n;						\
 									\
-    y = (1.0 / buffer_length) * creal(z * cexp(I * 2.0 * M_PI * k * n / buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
-    retval[0][0] = y / M_PI; }
+    x_retval[0][0] = l_y / M_PI; }
 
 #define AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x) (x + 1.0)
 
