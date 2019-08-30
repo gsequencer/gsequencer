@@ -178,7 +178,7 @@
 									\
     retval[0][0] = scale * y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_32_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
     gdouble k;								\
     gdouble y;								\
 									\
@@ -192,7 +192,7 @@
 									\
     retval[0][0] = scale * y; }
 
-#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_64_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
+#define AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(buffer, channels, n, buffer_length, retval) { complex z; \
     gdouble k;								\
     gdouble y;								\
 									\

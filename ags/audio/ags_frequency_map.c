@@ -948,7 +948,7 @@ ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 {
   g_return_if_fail(AGS_IS_FREQUENCY_MAP(frequency_map) &&
 		   source != NULL &&
-		   retval ! NULL &&
+		   retval != NULL &&
 		   retval[0] != NULL);
   g_object_ref(G_OBJECT(frequency_map));
   g_signal_emit(G_OBJECT(frequency_map),

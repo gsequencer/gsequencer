@@ -11944,9 +11944,9 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
     ptr = &value;    
     ptr_ptr = &ptr;
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_32_FRAME(source, schannels,
-						     i, count,
-						     ptr_ptr);
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(source, schannels,
+						      i, count,
+						      ptr_ptr);
 
     destination[0] = 0xffffffff & ((gint64) (destination[0] + value));
     
@@ -11986,9 +11986,9 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
     ptr = &value;    
     ptr_ptr = &ptr;
 
-    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_64_FRAME(source, schannels,
-						     i, count,
-						     ptr_ptr);
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(source, schannels,
+						      i, count,
+						      ptr_ptr);
 
     destination[0] = 0xffffffffffffffff & ((gint64) (destination[0] + value));
     

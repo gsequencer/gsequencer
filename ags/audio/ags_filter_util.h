@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#define AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE (8192)
+
 void ags_filter_util_highpass_s8(gint8 *buffer,
 				 guint buffer_length,
 				 guint samplerate);
