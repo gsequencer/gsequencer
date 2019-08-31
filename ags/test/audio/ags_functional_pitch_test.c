@@ -26,22 +26,34 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+struct AgsFunctionalPitchTestWave
+{
+  gdouble freq;
+  gdouble key;
+  
+  GList *wave;
+};
+
 int ags_functional_pitch_test_init_suite();
 int ags_functional_pitch_test_clean_suite();
 
 void ags_functional_pitch_test_pitch_up();
 void ags_functional_pitch_test_pitch_down();
 
+struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *template_wave);
+
 #define AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS (2)
 
-#define AGS_FUNCTIONAL_PITCH_TEST_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE (1024)
 #define AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE (44100)
+#define AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE (1024)
+#define AGS_FUNCTIONAL_PITCH_TEST_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
 
 #define AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY (0.0)
 #define AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ (440.0)
 
 #define AGS_FUNCTIONAL_PITCH_TEST_TUNE (100.0)
+
+#define AGS_FUNCTIONAL_PITCH_TEST_DELAY (8000000)
 
 #define AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_END_KEY (48.0)
 #define AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT (5 * 44100)
@@ -182,22 +194,199 @@ ags_functional_pitch_test_clean_suite()
   return(0);
 }
 
+struct AgsFunctionalPitchTestWave*
+ags_functional_pitch_test_alloc(GList *template_wave)
+{
+  struct AgsFunctionalPitchTestWave *test_wave;
+
+  guint i_stop, j_stop;
+  guint i, j;
+  
+  test_wave = (struct AgsFunctionalPitchTestWave *) malloc(sizeof(struct AgsFunctionalPitchTestWave));
+
+  test_wave->key = AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY;
+  test_wave->freq = AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ;
+
+  test_wave->wave = NULL;
+
+  /* wave */
+  i_stop = g_list_length(template_wave);
+
+  for(i = 0; i < i_stop; i++){
+    AgsWave *wave, *current_wave;
+
+    GList *template_buffer;
+    
+    current_wave = AGS_WAVE(template_wave->data);
+
+    /* instantiate wave */
+    wave = ags_wave_new(current_wave->audio,
+			current_wave->line);
+
+    ags_timestamp_set_ags_offset(wave,
+				 ags_timestamp_get_ags_offset(current_wave));
+    
+    g_object_set(wave,
+		 "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+		 "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		 "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
+		 NULL);
+
+    test_wave->wave = ags_wave_add(test_wave->wave,
+				   wave);
+    
+    /* buffer */
+    template_buffer = current_wave->buffer;
+    
+    j_stop = g_list_length(current_wave->buffer);
+    
+    for(j = 0; j < j_stop; j++){
+      AgsBuffer *buffer, *current_buffer;
+
+      current_buffer = AGS_BUFFER(template_buffer->data);
+
+      /* duplicate buffer */
+      buffer = ags_buffer_duplicate(current_buffer);
+      ags_wave_add_buffer(wave,
+			  buffer,
+			  FALSE);
+
+      /* iterate buffer */
+      template_buffer = template_buffer->next;
+    }
+
+    /* iterate wave */
+    template_wave = template_wave->next;
+  }
+  
+  return(test_wave);
+}
+
 void
 ags_functional_pitch_test_pitch_up()
 {
+  AgsTaskThread *task_thread;
+  
+  GList *start_wave, *wave;
   GList *start_list, *list;
 
-  guint i;
+  gint i, j, k;
   gboolean success;
 
+  start_wave = NULL;
+  
+  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
+    AgsWave *current_wave;
+
+    current_wave = ags_wave_new(wave_player,
+				i);
+
+    g_object_set(current_wave,
+		 "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+		 "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		 "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
+		 NULL);
+
+    start_wave = ags_wave_add(start_wave,
+			      current_wave);
+    
+    for(j = 0; j < floor(AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE); j++){
+      AgsBuffer *buffer;
+
+      buffer = ags_buffer_new();
+      g_object_set(buffer,
+		   "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+		   "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
+		   "x", j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   NULL);
+      ags_wave_add_buffer(current_wave,
+			  buffer,
+			  FALSE);
+
+      phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
+      ags_synth_util_sin(buffer->data,
+			 AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_PITCH_TEST_BASE_VOLUME,
+			 AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_PITCH_TEST_FORMAT),
+			 0, AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+    }
+  }
+  
   start_list = NULL;
   
   for(i = (gint) AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY; i <= (gint) AGS_FUNCTIONAL_PITCH_TEST_PITCH_DOWN_END_KEY; i++){
+    struct AgsFuncitonalPitchTestWave *test_wave;
+
+    GList *pitch_wave;
+    
+    test_wave = ags_functional_pitch_test_alloc(start_wave);
+    start_list = g_list_prepend(start_list,
+				test_wave);
+
+    pitch_wave = test_wave->wave;
+    
+    while(pitch_wave != NULL){
+      GList *pitch_buffer;
+
+      pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
+      
+      for(k = 0; k < ceil(AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE); k++){
+	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  ags_filter_util_pitch_s16(AGS_BUFFER(pitch_buffer->data)->data,
+				    AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+				    AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+				    AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
+				    (gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
+	}
+	break;
+	}
+	
+	pitch_buffer = pitch_buffer->next;
+      }
+
+      pitch_wave = pitch_wave->next;
+    }
   }
 
+  start_list = g_list_reverse(start_list);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+
+  list = start_list;
   success = TRUE;
 
   for(i = (gint) AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY; i <= (gint) AGS_FUNCTIONAL_PITCH_TEST_PITCH_DOWN_END_KEY; i++){
+    AgsStartAudio *start_audio;
+    AgsStartSoundcard *start_soundcard;
+
+    struct AgsFuncitonalPitchTestWave *test_wave;
+
+    GList *task;
+
+    g_message("playing key = %d", i);
+
+    test_wave = list->data;
+    
+    wave_player->wave = test_wave->wave;
+    
+    task = NULL;    
+    start_audio = ags_start_audio_new(wave_player,
+				      AGS_SOUND_SCOPE_WAVE);
+    task = g_list_prepend(task,
+			  start_audio);
+    
+    start_soundcard = ags_start_soundcard_new(audio_application_context);
+    task = g_list_prepend(task,
+			  start_soundcard);
+    
+    ags_task_thread_append_tasks(task_thread,
+				 task);
+
+    usleep(AGS_FUNCTIONAL_PITCH_TEST_DELAY);
+    
+    list = list->next;
   }
 
   CU_ASSERT(success == TRUE);
@@ -206,19 +395,128 @@ ags_functional_pitch_test_pitch_up()
 void
 ags_functional_pitch_test_pitch_down()
 {
+  AgsTaskThread *task_thread;
+
+  GList *start_wave, *wave;
   GList *start_list, *list;
 
-  guint i;
+  gint i, j, k;
   gboolean success;
 
+  start_wave = NULL;
+  
+  for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
+    AgsWave *current_wave;
+
+    current_wave = ags_wave_new(wave_player,
+				i);
+
+    g_object_set(current_wave,
+		 "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+		 "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		 "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
+		 NULL);
+
+    start_wave = ags_wave_add(start_wave,
+			      current_wave);
+    
+    for(j = 0; j < floor(AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE); j++){
+      AgsBuffer *buffer;
+
+      buffer = ags_buffer_new();
+      g_object_set(buffer,
+		   "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+		   "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
+		   "x", j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   NULL);
+      ags_wave_add_buffer(current_wave,
+			  buffer,
+			  FALSE);
+
+      phase = buffer->x % (guint) floor(AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE / AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ);
+      ags_synth_util_sin(buffer->data,
+			 AGS_FUNCTIONAL_PITCH_TEST_BASE_FREQ, phase, AGS_FUNCTIONAL_PITCH_TEST_BASE_VOLUME,
+			 AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE, ags_audio_buffer_util_format_from_soundcard(AGS_FUNCTIONAL_PITCH_TEST_FORMAT),
+			 0, AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE);
+    }
+  }
+  
   start_list = NULL;
   
   for(i = (gint) AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY; i >= (gint) AGS_FUNCTIONAL_PITCH_TEST_PITCH_DOWN_END_KEY; i--){
+    struct AgsFuncitonalPitchTestWave *test_wave;
+
+    GList *pitch_wave;
+    
+    test_wave = ags_functional_pitch_test_alloc(start_wave);
+    start_list = g_list_prepend(start_list,
+				test_wave);
+
+    pitch_wave = test_wave->wave;
+    
+    while(pitch_wave != NULL){
+      GList *pitch_buffer;
+
+      pitch_buffer = AGS_WAVE(pitch_wave->data)->buffer;
+      
+      for(k = 0; k < floor(AGS_FUNCTIONAL_PITCH_TEST_PITCH_UP_FRAME_COUNT / AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE); k++){
+	switch(AGS_FUNCTIONAL_PITCH_TEST_FORMAT){
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  ags_filter_util_pitch_s16(AGS_BUFFER(pitch_buffer->data)->data,
+				    AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+				    AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
+				    AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY,
+				    (gdouble) i * AGS_FUNCTIONAL_PITCH_TEST_TUNE);
+	}
+	break;
+	}
+	
+	pitch_buffer = pitch_buffer->next;
+      }
+
+      pitch_wave = pitch_wave->next;
+    }
   }
 
+  start_list = g_list_reverse(start_list);
+  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+
+  list = start_list;
   success = TRUE;
 
   for(i = (gint) AGS_FUNCTIONAL_PITCH_TEST_BASE_KEY; i >= (gint) AGS_FUNCTIONAL_PITCH_TEST_PITCH_DOWN_END_KEY; i--){
+    AgsStartAudio *start_audio;
+    AgsStartSoundcard *start_soundcard;
+
+    struct AgsFuncitonalPitchTestWave *test_wave;
+
+    GList *task;
+
+    g_message("playing key = %d", i);
+
+    test_wave = list->data;
+    
+    wave_player->wave = test_wave->wave;
+    
+    task = NULL;    
+    start_audio = ags_start_audio_new(wave_player,
+				      AGS_SOUND_SCOPE_WAVE);
+    task = g_list_prepend(task,
+			  start_audio);
+    
+    start_soundcard = ags_start_soundcard_new(audio_application_context);
+    task = g_list_prepend(task,
+			  start_soundcard);
+    
+    ags_task_thread_append_tasks(task_thread,
+				 task);
+
+    usleep(AGS_FUNCTIONAL_PITCH_TEST_DELAY);
+    
+    list = list->next;
   }
 
   CU_ASSERT(success == TRUE);

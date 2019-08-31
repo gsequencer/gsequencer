@@ -28,6 +28,7 @@ noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 # functional system tests - edit target
 installcheck_programs = \
 	ags_check_system_functional_audio_test \
+	ags_check_system_functional_pitch_test \
 	ags_check_system_functional_osc_server_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
 	ags_check_system_functional_machine_link_test \
@@ -56,6 +57,12 @@ ags_check_system_functional_audio_test_SOURCES = ags/test/audio/ags_functional_a
 ags_check_system_functional_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_functional_audio_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_audio_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional pitch test
+ags_check_system_functional_pitch_test_SOURCES = ags/test/audio/ags_functional_pitch_test.c
+ags_check_system_functional_pitch_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_functional_pitch_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_pitch_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional osc server test
 ags_check_system_functional_osc_server_test_SOURCES = ags/test/audio/osc/ags_functional_osc_server_test.c
@@ -156,6 +163,7 @@ ags_check_system_functional_audio_config_test_LDADD = $(gsequencer_check_system_
 
 ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_audio_test
+	./ags_check_system_functional_pitch_test
 	./ags_check_system_functional_osc_server_test
 	./ags_check_system_functional_machine_add_and_destroy_test
 	./ags_check_system_functional_machine_link_test
