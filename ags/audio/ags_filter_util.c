@@ -257,25 +257,16 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     while(i < buffer_length){
       offset_delay = prev_offset_delay;
 
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = j;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
 							  n,
 							  1,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
       tmp_offset_delay = prev_offset_delay;
@@ -284,25 +275,16 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = k;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(tmp_offset, 1,
 							  n,
 							  1,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
