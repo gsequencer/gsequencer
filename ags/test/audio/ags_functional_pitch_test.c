@@ -312,8 +312,6 @@ ags_functional_pitch_test_pitch_up()
 
   gint i, j, k;
   gboolean success;
-
-  return;
   
   start_wave = NULL;
   

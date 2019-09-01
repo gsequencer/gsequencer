@@ -392,7 +392,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
@@ -436,7 +436,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
@@ -480,7 +480,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
@@ -524,7 +524,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
@@ -568,7 +568,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = scale * y;
   }
@@ -610,7 +610,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = y / M_PI;
   }
@@ -652,7 +652,7 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
 
     k = (gdouble) n;
 
-    y = (1.0 / buffer_length) * cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
 
     retval[0][i] = y / M_PI;
   }

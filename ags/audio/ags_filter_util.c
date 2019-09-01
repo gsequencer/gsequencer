@@ -52,7 +52,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -67,7 +67,8 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -96,23 +97,34 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
-      tmp_offset = tmp_buffer + (guint) (k);
+      if(new_freq > base_freq){
+	tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+	n = ((gdouble) k / freq_period * new_freq_period);
+      }else{
+	tmp_offset = tmp_buffer + (guint) (k / freq_period * new_freq_period);
+
+	n = ((gdouble) k);
+      }
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(tmp_offset, 1,
 						       n,
-						       1.0,
+						       new_freq_period,
 						       ptr_ptr_buffer);
     }
   }
 }
 
 /**
- * ags_filter_util_pitch_s8:
+ * ags_filter_util_pitch_s16:
  * @buffer: the audio buffer
  * @buffer_length: the buffer's length
  * @samplerate: the samplerate
@@ -184,16 +196,21 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+      
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
-      
+      n = ((gdouble) k / freq_period * new_freq_period);
+
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(tmp_offset, 1,
 							n,
-							1.0,
+							new_freq_period,
 							ptr_ptr_buffer);
     }
   }
@@ -227,7 +244,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -242,7 +259,8 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -271,16 +289,21 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(tmp_offset, 1,
 							n,
-							1.0,
+							new_freq_period,
 							ptr_ptr_buffer);
     }
   }
@@ -314,7 +337,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -329,7 +352,8 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -358,16 +382,21 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(tmp_offset, 1,
 							n,
-							1.0,
+							new_freq_period,
 							ptr_ptr_buffer);
     }
   }
@@ -401,7 +430,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -416,7 +445,8 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -445,16 +475,21 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(tmp_offset, 1,
 							n,
-							1.0,
+							new_freq_period,
 							ptr_ptr_buffer);
     }
   }
@@ -488,7 +523,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -503,7 +538,8 @@ ags_filter_util_pitch_float(gfloat *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -532,16 +568,21 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(tmp_offset, 1,
 							  n,
-							  1.0,
+							  new_freq_period,
 							  ptr_ptr_buffer);
     }
   }
@@ -575,7 +616,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   gdouble n;
   guint i, j, k;
@@ -590,7 +631,8 @@ ags_filter_util_pitch_double(gdouble *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -619,16 +661,21 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
       
       AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(tmp_offset, 1,
 							   n,
-							   1.0,
+							   new_freq_period,
 							   ptr_ptr_buffer);
     }
   }
@@ -662,7 +709,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
 
   gdouble base_freq, new_freq;
-  gdouble freq_period;
+  gdouble freq_period, new_freq_period;
   gdouble offset_factor;
   guint n;
   guint i, j, k;
@@ -677,7 +724,8 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
   
-  freq_period = samplerate / new_freq;
+  freq_period = samplerate / base_freq;
+  new_freq_period = samplerate / new_freq;
 
   if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
     g_warning("freq bigger than temporary buffer's size");
@@ -704,12 +752,17 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
-	  k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
+      if(new_freq < base_freq &&
+	 k > freq_period / offset_factor){
+	break;
+      }
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
 
-      n = (gdouble) (k / new_freq_period);
+      n = ((gdouble) k / freq_period * new_freq_period);
 	
       ags_complex_set(ptr_ptr_buffer[0][0],
 		      ags_complex_get(tmp_offset[n]));
