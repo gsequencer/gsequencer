@@ -110,7 +110,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -166,7 +166,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -276,7 +276,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -332,7 +332,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -442,7 +442,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -498,7 +498,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -608,7 +608,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -664,7 +664,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -774,7 +774,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -830,7 +830,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -940,7 +940,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -996,7 +996,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -1106,7 +1106,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -1162,7 +1162,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -1270,7 +1270,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
       offset_delay = tmp_offset_delay;
       
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;
@@ -1322,7 +1322,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
       offset_delay = tmp_offset_delay;
 
-      for(k = 0; i < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + k;

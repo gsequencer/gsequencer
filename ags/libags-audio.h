@@ -59,6 +59,8 @@
 #include <ags/audio/ags_filter_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
+#include <ags/audio/ags_frequency_map_manager.h>
+#include <ags/audio/ags_frequency_map.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_midi.h>
@@ -95,6 +97,7 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_sequencer_util.h>
 #include <ags/audio/ags_soundcard_util.h>
+#include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_track.h>

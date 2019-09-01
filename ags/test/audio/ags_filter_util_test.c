@@ -48,6 +48,26 @@ void ags_filter_util_test_pitch_complex();
 #define AGS_FILTER_UTIL_TEST_BASE_KEY (0.0)
 #define AGS_FILTER_UTIL_TEST_TUNING (200.0)
 
+/* The suite initialization function.
+ * Opens the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_filter_util_test_init_suite()
+{ 
+  return(0);
+}
+
+/* The suite cleanup function.
+ * Closes the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_filter_util_test_clean_suite()
+{
+  return(0);
+}
+
 void
 ags_filter_util_test_pitch_s8()
 {
@@ -55,7 +75,7 @@ ags_filter_util_test_pitch_s8()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_SIGNED_8_BIT);
 
   ags_synth_util_sin_s8(buffer,
@@ -83,7 +103,7 @@ ags_filter_util_test_pitch_s16()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_SIGNED_16_BIT);
 
   ags_synth_util_sin_s16(buffer,
@@ -111,7 +131,7 @@ ags_filter_util_test_pitch_s24()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_SIGNED_24_BIT);
 
   ags_synth_util_sin_s24(buffer,
@@ -139,7 +159,7 @@ ags_filter_util_test_pitch_s32()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_SIGNED_32_BIT);
 
   ags_synth_util_sin_s32(buffer,
@@ -167,7 +187,7 @@ ags_filter_util_test_pitch_s64()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_SIGNED_64_BIT);
 
   ags_synth_util_sin_s64(buffer,
@@ -195,7 +215,7 @@ ags_filter_util_test_pitch_float()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_FLOAT);
 
   ags_synth_util_sin_float(buffer,
@@ -223,7 +243,7 @@ ags_filter_util_test_pitch_double()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_DOUBLE);
 
   ags_synth_util_sin_double(buffer,
@@ -251,7 +271,7 @@ ags_filter_util_test_pitch_complex()
 
   gboolean success;
   
-  buffer = ags_stream_alloc(AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT,
+  buffer = ags_stream_alloc(AGS_FILTER_UTIL_TEST_FRAME_COUNT,
 			    AGS_SOUNDCARD_COMPLEX);
 
   ags_synth_util_sin_complex(buffer,
