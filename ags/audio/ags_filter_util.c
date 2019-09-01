@@ -54,9 +54,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -81,114 +79,58 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(offset, 1,
 							 n,
-							 1,
+							 freq_period,
 							 ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(tmp_offset, 1,
 							 n,
-							 1,
+							 1.0,
 							 ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(offset, 1,
 							 n,
-							 1,
+							 freq_period,
 							 ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(tmp_offset, 1,
 							 n,
-							 1,
+							 1.0,
 							 ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -224,9 +166,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -251,77 +191,57 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
       for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
 	offset = buffer + (guint) (j / offset_factor);
-	n = j;
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
       for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
-	n = k;
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
       for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
 	offset = buffer + (guint) (k * offset_factor);
-	n = j;
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
 
       for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
 	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
-	n = i;
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
       }
     }
@@ -358,9 +278,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -385,114 +303,58 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -528,9 +390,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -555,114 +415,58 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -698,9 +502,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -725,114 +527,58 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(offset, 1,
 							  n,
-							  1,
+							  freq_period,
 							  ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(tmp_offset, 1,
 							  n,
-							  1,
+							  1.0,
 							  ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -868,9 +614,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -895,114 +639,58 @@ ags_filter_util_pitch_float(gfloat *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(offset, 1,
 							    n,
-							    1,
+							    freq_period,
 							    ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(tmp_offset, 1,
 							    n,
-							    1,
+							    1.0,
 							    ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(offset, 1,
 							    n,
-							    1,
+							    freq_period,
 							    ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(tmp_offset, 1,
 							    n,
-							    1,
+							    1.0,
 							    ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -1038,9 +726,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
-  guint n;
+  gdouble n;
   guint i, j, k;
 
   if(tuning == 0.0){
@@ -1065,114 +751,58 @@ ags_filter_util_pitch_double(gdouble *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < offset_factor * freq_period && offset_factor * k < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + (offset_factor * k);
+	offset = buffer + (guint) (j / offset_factor);
+	n = (gdouble) j / offset_factor;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(offset, 1,
 							     n,
-							     1,
+							     freq_period,
 							     ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
       
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(tmp_offset, 1,
 							     n,
-							     1,
+							     1.0,
 							     ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
-      for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
+      for(j = 0, k = i; j < (1.0 / offset_factor) * freq_period && offset_factor * k < buffer_length; j++, k++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
-	offset = buffer + k;
-	n = j + ((1.0 / offset_factor) * k);
+	offset = buffer + (guint) (k * offset_factor);
+	n = (gdouble) j / (1.0 / offset_factor);
 
 	AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(offset, 1,
 							     n,
-							     1,
+							     freq_period,
 							     ptr_ptr_tmp_buffer);
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-
-      for(k = 0; k < freq_period && i < buffer_length; i++){
+      for(k = 0; k < freq_period && i < buffer_length && offset_factor * k < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
 	ptr_buffer = buffer + i;
 
-	tmp_offset = tmp_buffer + k;
-	n = i;
+	tmp_offset = tmp_buffer + (guint) (k * offset_factor);
+	n = (gdouble) k / freq_period;
 	
 	AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(tmp_offset, 1,
 							     n,
-							     1,
+							     1.0,
 							     ptr_ptr_buffer);
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }
@@ -1208,8 +838,6 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   gdouble base_freq, new_freq;
   gdouble freq_period;
   gdouble offset_factor;
-  gdouble offset_delay, prev_offset_delay;
-  gdouble tmp_offset_delay;
   guint n;
   guint i, j, k;
 
@@ -1235,12 +863,8 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
   if(base_freq < new_freq){
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
       for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
@@ -1249,23 +873,8 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
 	ags_complex_set(ptr_ptr_tmp_buffer[0][0],
 			ags_complex_get(offset[n]));
-	
-	/* iterate */
-	offset_delay += (1.0 / offset_factor);
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
 
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
-      
       for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
 
@@ -1274,25 +883,12 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 	
 	ags_complex_set(ptr_ptr_buffer[0][0],
 			ags_complex_get(tmp_offset[n]));
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }else{
     i = 0;
-    offset_delay = 0.0;
-    prev_offset_delay = 0.0;
     
     while(i < buffer_length){
-      offset_delay = prev_offset_delay;
-
       for(j = 0, k = i; j < freq_period && k < buffer_length; j++){
 	ptr_tmp_buffer = tmp_buffer + j;
 
@@ -1301,22 +897,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
 	ags_complex_set(ptr_ptr_tmp_buffer[0][0],
 			ags_complex_get(offset[n]));
-	
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
-
-      tmp_offset_delay = prev_offset_delay;
-
-      prev_offset_delay = offset_delay;
-
-      offset_delay = tmp_offset_delay;
 
       for(k = 0; k < freq_period && i < buffer_length; i++){
 	ptr_buffer = buffer + i;
@@ -1326,15 +907,6 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
 	ags_complex_set(ptr_ptr_buffer[0][0],
 			ags_complex_get(tmp_offset[n]));
-
-	/* iterate */
-	offset_delay += offset_factor;
-
-	if(offset_delay >= 1.0){
-	  k += floor(offset_delay);
-	
-	  offset_delay -= floor(offset_delay);
-	}
       }
     }
   }

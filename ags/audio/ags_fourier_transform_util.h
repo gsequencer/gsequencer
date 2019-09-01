@@ -146,7 +146,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -160,7 +160,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -174,7 +174,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -188,7 +188,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -202,7 +202,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -214,7 +214,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = l_y / M_PI; }
 
@@ -226,7 +226,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = (1.0 / x_buffer_length) * creal(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (1.0 / x_buffer_length) * cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
 									\
     x_retval[0][0] = l_y / M_PI; }
 
