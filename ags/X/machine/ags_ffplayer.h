@@ -22,12 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <pango/pango.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_machine.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/file/ags_ipatch.h>
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_FFPLAYER                (ags_ffplayer_get_type())
 #define AGS_FFPLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER, AgsFFPlayer))

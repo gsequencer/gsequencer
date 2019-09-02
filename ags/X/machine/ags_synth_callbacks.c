@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,14 @@ ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth
 				       AGS_TYPE_SYNTH);
 
   g_free(str);
+}
+
+void
+ags_synth_samplerate_changed_callback(AgsMachine *machine,
+				      guint samplerate, guint old_samplerate,
+				      gpointer user_data)
+{
+  //TODO:JK: implement me
 }
 
 void

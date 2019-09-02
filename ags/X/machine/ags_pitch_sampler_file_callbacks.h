@@ -17,25 +17,21 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_CALLBACKS_H__ 
-#define __AGS_SYNTH_CALLBACKS_H__ 
+#ifndef __AGS_PITCH_SAMPLER_FILE_CALLBACKS_H__ 
+#define __AGS_PITCH_SAMPLER_FILE_CALLBACKS_H__ 
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
 
-#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_pitch_sampler_file.h>
 
-void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
+void ags_pitch_sampler_file_open_callback(GtkWidget *button, AgsPitchSamplerFile *pitch_sampler_file);
 
-void ags_synth_samplerate_changed_callback(AgsMachine *machine,
-					   guint samplerate, guint old_samplerate,
-					   gpointer user_data);
+void ags_pitch_sampler_file_base_key_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
 
-void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
+void ags_pitch_sampler_file_loop_start_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
+void ags_pitch_sampler_file_loop_end_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
 
-void ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth);
-void ags_synth_update_callback(GtkButton *button, AgsSynth *synth);
-
-#endif /*__AGS_SYNTH_CALLBACKS_H__ */
+#endif /*__AGS_PITCH_SAMPLER_FILE_CALLBACKS_H__ */
