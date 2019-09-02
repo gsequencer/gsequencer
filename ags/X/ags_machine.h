@@ -66,6 +66,7 @@ typedef enum{
   AGS_MACHINE_ACCEPT_WAV          = 1,
   AGS_MACHINE_ACCEPT_OGG          = 1 <<  1,
   AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 <<  2,
+  AGS_MACHINE_ACCEPT_SFZ          = 1 <<  3,
 }AgsMachineFileInputFlags;
 
 typedef enum{

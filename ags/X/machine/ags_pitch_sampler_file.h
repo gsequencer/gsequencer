@@ -37,10 +37,16 @@
 typedef struct _AgsPitchSamplerFile AgsPitchSamplerFile;
 typedef struct _AgsPitchSamplerFileClass AgsPitchSamplerFileClass;
 
+typedef enum{
+  AGS_PITCH_SAMPLER_FILE_CONNECTED   = 1,
+}AgsPitchSamplerFileFlags;
+
 struct _AgsPitchSamplerFile
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GtkEntry *filename;
   GtkButton *open;
 
@@ -56,6 +62,8 @@ struct _AgsPitchSamplerFile
 struct _AgsPitchSamplerFileClass
 {
   GtkVBoxClass vbox;
+
+  void (*control_changed)(AgsPitchSamplerFile *pitch_sampler_file);
 };
 
 GType ags_pitch_sampler_file_get_type(void);

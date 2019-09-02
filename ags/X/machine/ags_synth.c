@@ -45,8 +45,10 @@ void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_init(AgsSynth *synth);
 void ags_synth_finalize(GObject *gobject);
+
 void ags_synth_connect(AgsConnectable *connectable);
 void ags_synth_disconnect(AgsConnectable *connectable);
+
 void ags_synth_show(GtkWidget *widget);
 void ags_synth_map_recall(AgsMachine *machine);
 gchar* ags_synth_get_name(AgsPlugin *plugin);

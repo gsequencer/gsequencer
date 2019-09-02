@@ -1916,6 +1916,12 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
+	ags/X/machine/ags_fm_oscillator_callbacks.h \
+	ags/X/machine/ags_fm_oscillator.h \
+	ags/X/machine/ags_fm_syncsynth.h \
+	ags/X/machine/ags_fm_syncsynth_callbacks.h \
+	ags/X/machine/ags_fm_synth.h \
+	ags/X/machine/ags_fm_synth_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -1943,6 +1949,10 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_panel_input_pad.h \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
+	ags/X/machine/ags_pitch_sampler.h \
+	ags/X/machine/ags_pitch_sampler_callbacks.h \
+	ags/X/machine/ags_pitch_sampler_file.h \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_syncsynth.h \
 	ags/X/machine/ags_syncsynth_callbacks.h \
@@ -1993,6 +2003,12 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_equalizer10.c \
 	ags/X/machine/ags_equalizer10_callbacks.c \
+	ags/X/machine/ags_fm_oscillator_callbacks.c \
+	ags/X/machine/ags_fm_oscillator.c \
+	ags/X/machine/ags_fm_syncsynth.c \
+	ags/X/machine/ags_fm_syncsynth_callbacks.c \
+	ags/X/machine/ags_fm_synth.c \
+	ags/X/machine/ags_fm_synth_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -2020,6 +2036,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
 	ags/X/machine/ags_pattern_box.c \
+	ags/X/machine/ags_pitch_sampler.c \
+	ags/X/machine/ags_pitch_sampler_callbacks.c \
+	ags/X/machine/ags_pitch_sampler_file.c \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.c \
 	ags/X/machine/ags_syncsynth.c \
 	ags/X/machine/ags_syncsynth_callbacks.c \
 	ags/X/machine/ags_synth.c \

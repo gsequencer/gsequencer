@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -540,7 +540,8 @@ ags_oscillator_new()
 {
   AgsOscillator *oscillator;
 
-  oscillator = (AgsOscillator *) g_object_new(AGS_TYPE_OSCILLATOR, NULL);
+  oscillator = (AgsOscillator *) g_object_new(AGS_TYPE_OSCILLATOR,
+					      NULL);
 
   return(oscillator);
 }

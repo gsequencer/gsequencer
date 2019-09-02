@@ -1473,10 +1473,10 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 
 /**
  * ags_syncsynth_add_oscillator:
- * @syncsynth: the #AgsSynthsync
+ * @syncsynth: the #AgsSyncsynth
  * @oscillator: the #AgsOscillator
  * 
- * Add @oscillator to @synthsync.
+ * Add @oscillator to @syncsynth.
  * 
  * Since: 2.0.0
  */
@@ -1519,7 +1519,7 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 
 /**
  * ags_syncsynth_remove_oscillator:
- * @syncsynth: the #AgsSynthsync
+ * @syncsynth: the #AgsSyncsynth
  * @nth: the nth #AgsOscillator
  * 
  * Remove nth oscillator.

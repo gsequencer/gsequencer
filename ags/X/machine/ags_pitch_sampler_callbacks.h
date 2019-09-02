@@ -27,6 +27,8 @@
 
 #include <ags/X/machine/ags_pitch_sampler.h>
 
+void ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPitchSampler *pitch_sampler);
+
 void ags_pitch_sampler_add_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_remove_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
 

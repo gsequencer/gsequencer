@@ -245,6 +245,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@am__append_5 = \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_pitch_test \
+@RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_fourier_transform_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_osc_server_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_machine_add_and_destroy_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_machine_link_test \
@@ -341,6 +342,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" \
 @RUN_FUNCTIONAL_TESTS_TRUE@am__EXEEXT_1 =  \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_pitch_test$(EXEEXT) \
+@RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_fourier_transform_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_osc_server_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_machine_add_and_destroy_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_machine_link_test$(EXEEXT) \
@@ -1274,6 +1276,12 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
+	ags/X/machine/ags_fm_oscillator_callbacks.h \
+	ags/X/machine/ags_fm_oscillator.h \
+	ags/X/machine/ags_fm_syncsynth.h \
+	ags/X/machine/ags_fm_syncsynth_callbacks.h \
+	ags/X/machine/ags_fm_synth.h \
+	ags/X/machine/ags_fm_synth_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -1299,6 +1307,10 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_panel_input_pad.h \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
+	ags/X/machine/ags_pitch_sampler.h \
+	ags/X/machine/ags_pitch_sampler_callbacks.h \
+	ags/X/machine/ags_pitch_sampler_file.h \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_syncsynth.h \
 	ags/X/machine/ags_syncsynth_callbacks.h \
@@ -1493,6 +1505,12 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_equalizer10.c \
 	ags/X/machine/ags_equalizer10_callbacks.c \
+	ags/X/machine/ags_fm_oscillator_callbacks.c \
+	ags/X/machine/ags_fm_oscillator.c \
+	ags/X/machine/ags_fm_syncsynth.c \
+	ags/X/machine/ags_fm_syncsynth_callbacks.c \
+	ags/X/machine/ags_fm_synth.c \
+	ags/X/machine/ags_fm_synth_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -1517,7 +1535,12 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_panel_input_line_callbacks.c \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
-	ags/X/machine/ags_pattern_box.c ags/X/machine/ags_syncsynth.c \
+	ags/X/machine/ags_pattern_box.c \
+	ags/X/machine/ags_pitch_sampler.c \
+	ags/X/machine/ags_pitch_sampler_callbacks.c \
+	ags/X/machine/ags_pitch_sampler_file.c \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/X/machine/ags_syncsynth.c \
 	ags/X/machine/ags_syncsynth_callbacks.c \
 	ags/X/machine/ags_synth.c ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
@@ -1770,6 +1793,12 @@ am__objects_40 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_dssi_bridge_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_equalizer10.lo \
 	ags/X/machine/libgsequencer_la-ags_equalizer10_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_synth.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo \
@@ -1797,6 +1826,10 @@ am__objects_40 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_panel_input_pad.lo \
 	ags/X/machine/libgsequencer_la-ags_pattern_box_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_pattern_box.lo \
+	ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo \
+	ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo \
+	ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_syncsynth.lo \
 	ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_synth.lo \
@@ -2702,6 +2735,18 @@ ags_functional_ffplayer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) \
 	$(ags_functional_ffplayer_test_LDFLAGS) $(LDFLAGS) -o $@
+am__ags_functional_fourier_transform_test_SOURCES_DIST =  \
+	ags/test/audio/ags_functional_fourier_transform_test.c
+@RUN_FUNCTIONAL_TESTS_TRUE@am_ags_functional_fourier_transform_test_OBJECTS = ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.$(OBJEXT)
+ags_functional_fourier_transform_test_OBJECTS =  \
+	$(am_ags_functional_fourier_transform_test_OBJECTS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_fourier_transform_test_DEPENDENCIES =  \
+@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__DEPENDENCIES_3)
+ags_functional_fourier_transform_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_functional_fourier_transform_test_CFLAGS) \
+	$(CFLAGS) $(ags_functional_fourier_transform_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_functional_line_member_add_and_destroy_test_SOURCES_DIST =  \
 	ags/test/X/ags_functional_line_member_add_and_destroy_test.c
 @RUN_FUNCTIONAL_TESTS_TRUE@am_ags_functional_line_member_add_and_destroy_test_OBJECTS = ags/test/X/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT)
@@ -4257,6 +4302,12 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo \
@@ -4284,6 +4335,10 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_panel_input_pad.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo \
@@ -4667,6 +4722,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po \
 	ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po \
 	ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po \
+	ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po \
 	ags/test/audio/$(DEPDIR)/functional_pitch_test-ags_functional_pitch_test.Po \
 	ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po \
 	ags/test/audio/$(DEPDIR)/midi_test-ags_midi_test.Po \
@@ -4989,6 +5045,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_functional_automation_editor_workflow_test_SOURCES) \
 	$(ags_functional_drum_test_SOURCES) \
 	$(ags_functional_ffplayer_test_SOURCES) \
+	$(ags_functional_fourier_transform_test_SOURCES) \
 	$(ags_functional_line_member_add_and_destroy_test_SOURCES) \
 	$(ags_functional_machine_add_and_destroy_test_SOURCES) \
 	$(ags_functional_machine_link_test_SOURCES) \
@@ -5148,6 +5205,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(am__ags_functional_automation_editor_workflow_test_SOURCES_DIST) \
 	$(am__ags_functional_drum_test_SOURCES_DIST) \
 	$(am__ags_functional_ffplayer_test_SOURCES_DIST) \
+	$(am__ags_functional_fourier_transform_test_SOURCES_DIST) \
 	$(am__ags_functional_line_member_add_and_destroy_test_SOURCES_DIST) \
 	$(am__ags_functional_machine_add_and_destroy_test_SOURCES_DIST) \
 	$(am__ags_functional_machine_link_test_SOURCES_DIST) \
@@ -7507,6 +7565,12 @@ ags_xorg_application_context_test_LDADD = libgsequencer.la libags_gui.la libags_
 @RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_pitch_test_LDFLAGS = -pthread $(LDFLAGS)
 @RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_pitch_test_LDADD = $(gsequencer_functional_test_LDADD)
 
+# functional fourier transform test
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_fourier_transform_test_SOURCES = ags/test/audio/ags_functional_fourier_transform_test.c
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_fourier_transform_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_fourier_transform_test_LDFLAGS = -pthread $(LDFLAGS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_fourier_transform_test_LDADD = $(gsequencer_functional_test_LDADD)
+
 # functional osc server test
 @RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_osc_server_test_SOURCES = ags/test/audio/osc/ags_functional_osc_server_test.c
 @RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -8974,6 +9038,12 @@ libgsequencer_machine_h_sources =  \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
+	ags/X/machine/ags_fm_oscillator_callbacks.h \
+	ags/X/machine/ags_fm_oscillator.h \
+	ags/X/machine/ags_fm_syncsynth.h \
+	ags/X/machine/ags_fm_syncsynth_callbacks.h \
+	ags/X/machine/ags_fm_synth.h \
+	ags/X/machine/ags_fm_synth_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -8999,6 +9069,10 @@ libgsequencer_machine_h_sources =  \
 	ags/X/machine/ags_panel_input_pad.h \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
+	ags/X/machine/ags_pitch_sampler.h \
+	ags/X/machine/ags_pitch_sampler_callbacks.h \
+	ags/X/machine/ags_pitch_sampler_file.h \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_syncsynth.h \
 	ags/X/machine/ags_syncsynth_callbacks.h \
@@ -9030,6 +9104,12 @@ libgsequencer_machine_c_sources =  \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_equalizer10.c \
 	ags/X/machine/ags_equalizer10_callbacks.c \
+	ags/X/machine/ags_fm_oscillator_callbacks.c \
+	ags/X/machine/ags_fm_oscillator.c \
+	ags/X/machine/ags_fm_syncsynth.c \
+	ags/X/machine/ags_fm_syncsynth_callbacks.c \
+	ags/X/machine/ags_fm_synth.c \
+	ags/X/machine/ags_fm_synth_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -9054,7 +9134,12 @@ libgsequencer_machine_c_sources =  \
 	ags/X/machine/ags_panel_input_line_callbacks.c \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
-	ags/X/machine/ags_pattern_box.c ags/X/machine/ags_syncsynth.c \
+	ags/X/machine/ags_pattern_box.c \
+	ags/X/machine/ags_pitch_sampler.c \
+	ags/X/machine/ags_pitch_sampler_callbacks.c \
+	ags/X/machine/ags_pitch_sampler_file.c \
+	ags/X/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/X/machine/ags_syncsynth.c \
 	ags/X/machine/ags_syncsynth_callbacks.c \
 	ags/X/machine/ags_synth.c ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
@@ -11159,6 +11244,24 @@ ags/X/machine/libgsequencer_la-ags_equalizer10.lo:  \
 ags/X/machine/libgsequencer_la-ags_equalizer10_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_synth.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -11238,6 +11341,18 @@ ags/X/machine/libgsequencer_la-ags_pattern_box_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_pattern_box.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_syncsynth.lo:  \
@@ -12035,6 +12150,13 @@ ags/test/X/machine/functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEX
 ags_functional_ffplayer_test$(EXEEXT): $(ags_functional_ffplayer_test_OBJECTS) $(ags_functional_ffplayer_test_DEPENDENCIES) $(EXTRA_ags_functional_ffplayer_test_DEPENDENCIES) 
 	@rm -f ags_functional_ffplayer_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_functional_ffplayer_test_LINK) $(ags_functional_ffplayer_test_OBJECTS) $(ags_functional_ffplayer_test_LDADD) $(LIBS)
+ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_fourier_transform_test$(EXEEXT): $(ags_functional_fourier_transform_test_OBJECTS) $(ags_functional_fourier_transform_test_DEPENDENCIES) $(EXTRA_ags_functional_fourier_transform_test_DEPENDENCIES) 
+	@rm -f ags_functional_fourier_transform_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_fourier_transform_test_LINK) $(ags_functional_fourier_transform_test_OBJECTS) $(ags_functional_fourier_transform_test_LDADD) $(LIBS)
 ags/test/X/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT):  \
 	ags/test/X/$(am__dirstamp) \
 	ags/test/X/$(DEPDIR)/$(am__dirstamp)
@@ -13185,6 +13307,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo@am__quote@ # am--include-marker
@@ -13212,6 +13340,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_panel_input_pad.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo@am__quote@ # am--include-marker
@@ -13595,6 +13727,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/functional_pitch_test-ags_functional_pitch_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/midi_test-ags_midi_test.Po@am__quote@ # am--include-marker
@@ -17673,6 +17806,48 @@ ags/X/machine/libgsequencer_la-ags_equalizer10_callbacks.lo: ags/X/machine/ags_e
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_equalizer10_callbacks.lo `test -f 'ags/X/machine/ags_equalizer10_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_equalizer10_callbacks.c
 
+ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo: ags/X/machine/ags_fm_oscillator_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo `test -f 'ags/X/machine/ags_fm_oscillator_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_oscillator_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_oscillator_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_oscillator_callbacks.lo `test -f 'ags/X/machine/ags_fm_oscillator_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_oscillator_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo: ags/X/machine/ags_fm_oscillator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo `test -f 'ags/X/machine/ags_fm_oscillator.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_oscillator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_oscillator.c' object='ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_oscillator.lo `test -f 'ags/X/machine/ags_fm_oscillator.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_oscillator.c
+
+ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo: ags/X/machine/ags_fm_syncsynth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo `test -f 'ags/X/machine/ags_fm_syncsynth.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_syncsynth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_syncsynth.c' object='ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_syncsynth.lo `test -f 'ags/X/machine/ags_fm_syncsynth.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_syncsynth.c
+
+ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo: ags/X/machine/ags_fm_syncsynth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo `test -f 'ags/X/machine/ags_fm_syncsynth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_syncsynth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_syncsynth_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo `test -f 'ags/X/machine/ags_fm_syncsynth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_syncsynth_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_fm_synth.lo: ags/X/machine/ags_fm_synth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_synth.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_synth.lo `test -f 'ags/X/machine/ags_fm_synth.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth.lo `test -f 'ags/X/machine/ags_fm_synth.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth.c
+
+ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo: ags/X/machine/ags_fm_synth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo `test -f 'ags/X/machine/ags_fm_synth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo `test -f 'ags/X/machine/ags_fm_synth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_callbacks.c
+
 ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo: ags/X/machine/ags_ladspa_bridge.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Tpo -c -o ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo `test -f 'ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_ladspa_bridge.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo
@@ -17861,6 +18036,34 @@ ags/X/machine/libgsequencer_la-ags_pattern_box.lo: ags/X/machine/ags_pattern_box
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_pattern_box.c' object='ags/X/machine/libgsequencer_la-ags_pattern_box.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pattern_box.lo `test -f 'ags/X/machine/ags_pattern_box.c' || echo '$(srcdir)/'`ags/X/machine/ags_pattern_box.c
+
+ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo: ags/X/machine/ags_pitch_sampler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Tpo -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo `test -f 'ags/X/machine/ags_pitch_sampler.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_pitch_sampler.c' object='ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler.lo `test -f 'ags/X/machine/ags_pitch_sampler.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler.c
+
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo: ags/X/machine/ags_pitch_sampler_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo `test -f 'ags/X/machine/ags_pitch_sampler_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_pitch_sampler_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_callbacks.lo `test -f 'ags/X/machine/ags_pitch_sampler_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo: ags/X/machine/ags_pitch_sampler_file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Tpo -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo `test -f 'ags/X/machine/ags_pitch_sampler_file.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_file.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_pitch_sampler_file.c' object='ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_file.lo `test -f 'ags/X/machine/ags_pitch_sampler_file.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_file.c
+
+ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo: ags/X/machine/ags_pitch_sampler_file_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo `test -f 'ags/X/machine/ags_pitch_sampler_file_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_file_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_pitch_sampler_file_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pitch_sampler_file_callbacks.lo `test -f 'ags/X/machine/ags_pitch_sampler_file_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_pitch_sampler_file_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_syncsynth.lo: ags/X/machine/ags_syncsynth.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth.lo `test -f 'ags/X/machine/ags_syncsynth.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth.c
@@ -19387,6 +19590,20 @@ ags/test/X/machine/functional_ffplayer_test-ags_functional_ffplayer_test.obj: ag
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_ffplayer_test.c' object='ags/test/X/machine/functional_ffplayer_test-ags_functional_ffplayer_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/functional_ffplayer_test-ags_functional_ffplayer_test.obj `if test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_ffplayer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_ffplayer_test.c'; fi`
+
+ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.o: ags/test/audio/ags_functional_fourier_transform_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_fourier_transform_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Tpo -c -o ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.o `test -f 'ags/test/audio/ags_functional_fourier_transform_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_functional_fourier_transform_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Tpo ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_functional_fourier_transform_test.c' object='ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_fourier_transform_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.o `test -f 'ags/test/audio/ags_functional_fourier_transform_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_functional_fourier_transform_test.c
+
+ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.obj: ags/test/audio/ags_functional_fourier_transform_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_fourier_transform_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Tpo -c -o ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.obj `if test -f 'ags/test/audio/ags_functional_fourier_transform_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_functional_fourier_transform_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_functional_fourier_transform_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Tpo ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_functional_fourier_transform_test.c' object='ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_fourier_transform_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/functional_fourier_transform_test-ags_functional_fourier_transform_test.obj `if test -f 'ags/test/audio/ags_functional_fourier_transform_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_functional_fourier_transform_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_functional_fourier_transform_test.c'; fi`
 
 ags/test/X/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o: ags/test/X/ags_functional_line_member_add_and_destroy_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo -c -o ags/test/X/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_line_member_add_and_destroy_test.c
@@ -22760,6 +22977,13 @@ ags_functional_pitch_test.log: ags_functional_pitch_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_fourier_transform_test.log: ags_functional_fourier_transform_test$(EXEEXT)
+	@p='ags_functional_fourier_transform_test$(EXEEXT)'; \
+	b='ags_functional_fourier_transform_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_functional_osc_server_test.log: ags_functional_osc_server_test$(EXEEXT)
 	@p='ags_functional_osc_server_test$(EXEEXT)'; \
 	b='ags_functional_osc_server_test'; \
@@ -23447,6 +23671,12 @@ distclean: distclean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo
@@ -23474,6 +23704,10 @@ distclean: distclean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_panel_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo
@@ -23857,6 +24091,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_pitch_test-ags_functional_pitch_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/midi_test-ags_midi_test.Po
@@ -24349,6 +24584,12 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_oscillator_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo
@@ -24376,6 +24617,10 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_panel_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pitch_sampler_file_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_spectrometer_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo
@@ -24759,6 +25004,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/fm_synth_util_test-ags_fm_synth_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/fourier_transform_util_test-ags_fourier_transform_util_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_audio_test-ags_functional_audio_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/functional_fourier_transform_test-ags_functional_fourier_transform_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/functional_pitch_test-ags_functional_pitch_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/input_test-ags_input_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/midi_test-ags_midi_test.Po

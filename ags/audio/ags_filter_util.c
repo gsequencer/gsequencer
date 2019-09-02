@@ -990,7 +990,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
       gdouble t;
-      AgsComplex sum, sum0, sum1;
+      complex sum, sum0, sum1;
     
       sum0 = ags_complex_get(buffer + i);
       sum1 = ags_complex_get(buffer + i - 1);
@@ -1006,7 +1006,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   
   for(i = 1; i < buffer_length; i++){
     gdouble t;
-    AgsComplex sum, sum0, sum1;
+    complex sum, sum0, sum1;
     
     sum0 = ags_complex_get(buffer + i);
     sum1 = ags_complex_get(buffer + i - 1);
