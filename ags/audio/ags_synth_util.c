@@ -351,6 +351,10 @@ guint
 ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
 					guint buffer_size)
 {
+  gfloat **ptr_ptr;
+  gfloat *ptr;
+
+  gfloat value;
   guint count;
   complex z;
   
@@ -359,24 +363,31 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
   
   count = 0;
 
-  z = ags_complex_get(buffer);
-  
-  if(cabs(z) > 0){
+  ptr = &value;    
+  ptr_ptr = &ptr;
+
+  AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(buffer, 1,
+						      0, buffer_size,
+						      ptr_ptr);
+
+  if(value > 0.0){
     negative = FALSE;
   }else{
     negative = TRUE;
   }
 
   for(i = 1; i < buffer_size; i++){
-    z = ags_complex_get(buffer + i);
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(buffer + i, 1,
+							i, buffer_size,
+							ptr_ptr);
 
     if(negative &&
-       cabs(z) > 0.0){
+       value > 0.0){
       count++;
 
       negative = FALSE;
     }else if(!negative &&
-	     cabs(z) < 0.0){
+	     value < 0.0){
       count++;
 
       negative = TRUE;
@@ -1072,7 +1083,7 @@ ags_synth_util_triangle_s24(gint32 *buffer,
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
   for(i = offset; i < offset + n_frames; i++){
-    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 

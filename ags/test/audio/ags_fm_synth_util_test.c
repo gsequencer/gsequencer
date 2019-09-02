@@ -177,7 +177,7 @@ ags_fm_synth_util_test_sin_s24()
   xcross_count = ags_synth_util_get_xcross_count(buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
+  
   CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
 }
 
@@ -577,7 +577,7 @@ ags_fm_synth_util_test_triangle_s24()
   xcross_count = ags_synth_util_get_xcross_count(buffer,
 						 AGS_AUDIO_BUFFER_UTIL_S24,
 						 AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT);
-
+  
   CU_ASSERT(xcross_count + 2 > ((gdouble) AGS_FM_SYNTH_UTIL_TEST_FRAME_COUNT / (gdouble) AGS_FM_SYNTH_UTIL_TEST_SAMPLERATE) * AGS_FM_SYNTH_UTIL_TEST_FREQ);
 }
 
