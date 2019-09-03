@@ -125,7 +125,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint8 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -139,10 +139,10 @@ ags_filter_util_pitch_s8(gint8 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint8 sum, sum0, sum1;
-    
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -155,7 +155,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint8 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -169,10 +169,10 @@ ags_filter_util_pitch_s8(gint8 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint8 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -254,7 +254,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 							freq_period,
 							ptr_ptr_tmp_buffer);
     }
-
+    
     for(k = 0; k < new_freq_period &&
 	  i < buffer_length &&
 	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
@@ -262,7 +262,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	 k > freq_period / offset_factor){
 	break;
       }
-      
+
       ptr_buffer = buffer + i;
 
       tmp_offset = tmp_buffer + (guint) (k);
@@ -279,7 +279,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint16 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -293,11 +293,11 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint16 sum, sum0, sum1;
-    
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
-	   
+      
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
+      
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
 	   
@@ -309,7 +309,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint16 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -323,10 +323,10 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint16 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -433,7 +433,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -447,10 +447,10 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -463,7 +463,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -477,10 +477,10 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -587,7 +587,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -601,10 +601,10 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -617,7 +617,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -631,10 +631,10 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -647,7 +647,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -661,10 +661,10 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -677,7 +677,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint32 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -787,7 +787,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint64 sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -801,10 +801,10 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint64 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -817,7 +817,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint64 sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -831,10 +831,10 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gint64 sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -941,7 +941,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gfloat sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -955,10 +955,10 @@ ags_filter_util_pitch_float(gfloat *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gfloat sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -971,7 +971,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gfloat sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -985,10 +985,10 @@ ags_filter_util_pitch_float(gfloat *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gfloat sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -1095,7 +1095,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gdouble sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -1109,10 +1109,10 @@ ags_filter_util_pitch_double(gdouble *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gdouble sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -1125,7 +1125,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gdouble sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -1139,10 +1139,10 @@ ags_filter_util_pitch_double(gdouble *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       gdouble sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
@@ -1245,7 +1245,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   /* interpolation */
   if(freq_period < new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       complex sum, sum0, sum1;
     
       t = 1.0 / exp(freq_period / new_freq_period);
@@ -1260,10 +1260,10 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
-      gdouble sum, sum0, sum1;
+      gdouble t;
+      complex sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / exp((65535.0 / 17500.0) / (new_freq_period - freq_period)))) + 1.0;
+      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = ags_complex_get(buffer + i);
       sum1 = ags_complex_get(buffer + i - 1);
@@ -1277,7 +1277,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   
   if(freq_period > new_freq_period){
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       complex sum, sum0, sum1;
     
       t = 1.0 / (freq_period / new_freq_period);
@@ -1292,10 +1292,10 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
     }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t, t0;
+      gdouble t;
       complex sum, sum0, sum1;
     
-      t = (-1.0 * (1.0 / (freq_period / new_freq_period))) + 1.0;
+      t = (-1.0 * (1.0 / (freq_period / new_freq_period * i))) + 1.0;
 	   
       sum0 = ags_complex_get(buffer + i);
       sum1 = ags_complex_get(buffer + i - 1);
