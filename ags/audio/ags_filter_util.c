@@ -248,33 +248,51 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 
   /* interpolation */
   if(freq_period < new_freq_period){
+    if(new_freq * 2.0 * M_PI < (gdouble) 22000.0 / (0.25 * M_PI)){
+      for(i = 1; i < buffer_length; i++){
+	gdouble t;
+	gint16 sum, sum0, sum1;
+    
+	t = (new_freq * 2.0 * M_PI) / ((gdouble) 22000.0 / (0.25 * M_PI));
+    
+	sum0 = buffer[i - 1];
+	sum1 = buffer[i];
+    
+	sum = (1.0 - t) * sum0 + (t * sum1);
+    
+	buffer[i] = sum;
+      }
+    }
+    
     for(i = 1; i < buffer_length; i++){
-      gdouble t;
+      gdouble t, t0;
       gint16 sum, sum0, sum1;
     
-      sum0 = buffer[i];
-      sum1 = buffer[i - 1];
-    
-      t = 0.5 * (freq_period / new_freq_period);
-    
+      t = 1.0 / (new_freq_period / freq_period);
+
+      sum0 = buffer[i - 1];
+      sum1 = buffer[i];
+
       sum = (1.0 - t) * sum0 + (t * sum1);
-    
+      
       buffer[i] = sum;
     }
   }
   
-  for(i = 1; i < buffer_length; i++){
-    gdouble t;
-    gint16 sum, sum0, sum1;
+  if(freq_period > new_freq_period){
+    for(i = 1; i < buffer_length; i++){
+      gdouble t, t0;
+      gint16 sum, sum0, sum1;
+    
+      t = 1.0 / (freq_period / new_freq_period);
 
-    sum0 = buffer[i];
-    sum1 = buffer[i - 1];
-    
-    t = (0.01333);
-    
-    sum = (1.0 - t) * sum0 + (t * sum1);
-    
-    buffer[i] = sum;
+      sum0 = buffer[i - 1];
+      sum1 = buffer[i];
+
+      sum = (1.0 - t) * sum0 + (t * sum1);
+      
+      buffer[i] = sum;
+    }
   }
 }
 
