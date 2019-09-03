@@ -46,6 +46,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   gint8 **ptr_ptr_buffer;
   gint8 *ptr_buffer;
   gint8 *offset;
+  gint8 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -149,8 +150,12 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -179,8 +184,12 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -206,6 +215,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   gint16 **ptr_ptr_buffer;
   gint16 *ptr_buffer;
   gint16 *offset;
+  gint16 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -303,8 +313,12 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -333,8 +347,12 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -360,6 +378,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   gint32 **ptr_ptr_buffer;
   gint32 *ptr_buffer;
   gint32 *offset;
+  gint32 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -457,8 +476,12 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -487,8 +510,12 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -514,6 +541,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   gint32 **ptr_ptr_buffer;
   gint32 *ptr_buffer;
   gint32 *offset;
+  gint32 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -611,8 +639,12 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -641,53 +673,11 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
-  }
-  /* interpolation */
-  if(freq_period < new_freq_period){
-    for(i = 1; i < buffer_length; i++){
-      gdouble t;
-      gint32 sum, sum0, sum1;
-    
-      t = 1.0 / exp(freq_period / new_freq_period);
-
-      sum0 = buffer[i - 1];
-      sum1 = buffer[i];
-
-      sum = (1.0 - t) * sum0 + (t * sum1);
-      
-      buffer[i] = sum;
-    }
 
     for(i = 1; i < buffer_length; i++){
-      gdouble t;
-      gint32 sum, sum0, sum1;
-    
-      t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
-	   
-      sum0 = buffer[i - 1];
-      sum1 = buffer[i];
-	   
-      sum = (1.0 - t) * sum0 + (t * sum1);
-      
-      buffer[i] = sum;
-    }    
-  }
-  
-  if(freq_period > new_freq_period){
-    for(i = 1; i < buffer_length; i++){
-      gdouble t;
-      gint32 sum, sum0, sum1;
-    
-      t = 1.0 / (freq_period / new_freq_period);
-
-      sum0 = buffer[i - 1];
-      sum1 = buffer[i];
-
-      sum = (1.0 - t) * sum0 + (t * sum1);
-      
-      buffer[i] = sum;
+      buffer[i] = mix_buffer[i];
     }
   }
 }
@@ -714,6 +704,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   gint64 **ptr_ptr_buffer;
   gint64 *ptr_buffer;
   gint64 *offset;
+  gint64 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -811,8 +802,12 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -841,8 +836,12 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -868,6 +867,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   gfloat **ptr_ptr_buffer;
   gfloat *ptr_buffer;
   gfloat *offset;
+  gfloat mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -965,8 +965,12 @@ ags_filter_util_pitch_float(gfloat *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -995,8 +999,12 @@ ags_filter_util_pitch_float(gfloat *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -1022,6 +1030,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   gdouble **ptr_ptr_buffer;
   gdouble *ptr_buffer;
   gdouble *offset;
+  gdouble mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -1119,8 +1128,12 @@ ags_filter_util_pitch_double(gdouble *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -1149,8 +1162,12 @@ ags_filter_util_pitch_double(gdouble *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      buffer[i] = sum;
+      mix_buffer[i] = sum;
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      buffer[i] = mix_buffer[i];
+    }
   }
 }
 
@@ -1176,6 +1193,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   AgsComplex **ptr_ptr_buffer;
   AgsComplex *ptr_buffer;
   AgsComplex *offset;
+  AgsComplex mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
   AgsComplex **ptr_ptr_tmp_buffer;
   AgsComplex *ptr_tmp_buffer;
   AgsComplex *tmp_offset;
@@ -1270,9 +1288,14 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      ags_complex_set(buffer + i,
+      ags_complex_set(mix_buffer + i,
 		      sum);
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      ags_complex_set(buffer + i,
+		      ags_complex_get(mix_buffer + i));
+    }
   }
   
   if(freq_period > new_freq_period){
@@ -1302,8 +1325,13 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      ags_complex_set(buffer + i,
+      ags_complex_set(mix_buffer + i,
 		      sum);
     }    
+
+    for(i = 1; i < buffer_length; i++){
+      ags_complex_set(buffer + i,
+		      ags_complex_get(mix_buffer + i));
+    }
   }
 }
