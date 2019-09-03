@@ -313,8 +313,6 @@ ags_functional_pitch_test_pitch_up()
   gint i, j, k;
   gboolean success;
 
-  return;
-  
   start_wave = NULL;
   
   for(i = 0; i < AGS_FUNCTIONAL_PITCH_TEST_AUDIO_CHANNELS; i++){
