@@ -19,6 +19,9 @@
 
 #include <ags/audio/ags_filter_util.h>
 
+#include <libags.h>
+
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
@@ -43,85 +46,165 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 			 gdouble base_key,
 			 gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gint8 **ptr_ptr_buffer;
   gint8 *ptr_buffer;
   gint8 *offset;
-  gint8 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(offset, 1,
-						       n,
-						       freq_period,
-						       ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      if(new_freq > base_freq){
-	tmp_offset = tmp_buffer + (guint) (k);
-
-	n = ((gdouble) k / freq_period * new_freq_period);
-      }else{
-	tmp_offset = tmp_buffer + (guint) (k / freq_period * new_freq_period);
-
-	n = ((gdouble) k);
-      }
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S8_FRAME(tmp_offset, 1,
-						       n,
-						       new_freq_period,
-						       ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -150,12 +233,8 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -184,12 +263,8 @@ ags_filter_util_pitch_s8(gint8 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -212,79 +287,165 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 			  gdouble base_key,
 			  gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gint16 **ptr_ptr_buffer;
   gint16 *ptr_buffer;
   gint16 *offset;
-  gint16 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
-							n,
-							freq_period,
-							ptr_ptr_tmp_buffer);
-    }
-    
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
       }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
 
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      n = ((gdouble) k / freq_period * new_freq_period);
-      
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(tmp_offset, 1,
-							n,
-							new_freq_period,
-							ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -305,20 +466,16 @@ ags_filter_util_pitch_s16(gint16 *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gint16 sum, sum0, sum1;
-      
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
-      
+	   
       sum0 = buffer[i - 1];
       sum1 = buffer[i];
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -347,12 +504,8 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -375,79 +528,165 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 			  gdouble base_key,
 			  gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gint32 **ptr_ptr_buffer;
   gint32 *ptr_buffer;
   gint32 *offset;
-  gint32 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S24_FRAME(offset, 1,
-							n,
-							freq_period,
-							ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S24_FRAME(tmp_offset, 1,
-							n,
-							new_freq_period,
-							ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -468,7 +707,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gint32 sum, sum0, sum1;
-    
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
@@ -476,12 +715,8 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -510,12 +745,8 @@ ags_filter_util_pitch_s24(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -538,79 +769,165 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 			  gdouble base_key,
 			  gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gint32 **ptr_ptr_buffer;
   gint32 *ptr_buffer;
   gint32 *offset;
-  gint32 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S32_FRAME(offset, 1,
-							n,
-							freq_period,
-							ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S32_FRAME(tmp_offset, 1,
-							n,
-							new_freq_period,
-							ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -631,7 +948,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gint32 sum, sum0, sum1;
-    
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
@@ -639,12 +956,8 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -673,12 +986,8 @@ ags_filter_util_pitch_s32(gint32 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -701,79 +1010,165 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 			  gdouble base_key,
 			  gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gint64 **ptr_ptr_buffer;
   gint64 *ptr_buffer;
   gint64 *offset;
-  gint64 mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S64_FRAME(offset, 1,
-							n,
-							freq_period,
-							ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S64_FRAME(tmp_offset, 1,
-							n,
-							new_freq_period,
-							ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -794,7 +1189,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gint64 sum, sum0, sum1;
-    
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
@@ -802,12 +1197,8 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -836,12 +1227,8 @@ ags_filter_util_pitch_s64(gint64 *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -864,79 +1251,165 @@ ags_filter_util_pitch_float(gfloat *buffer,
 			    gdouble base_key,
 			    gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gfloat **ptr_ptr_buffer;
   gfloat *ptr_buffer;
   gfloat *offset;
-  gfloat mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(offset, 1,
-							  n,
-							  freq_period,
-							  ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_FLOAT_FRAME(tmp_offset, 1,
-							  n,
-							  new_freq_period,
-							  ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -957,7 +1430,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gfloat sum, sum0, sum1;
-    
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
@@ -965,12 +1438,8 @@ ags_filter_util_pitch_float(gfloat *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -999,12 +1468,8 @@ ags_filter_util_pitch_float(gfloat *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -1027,79 +1492,165 @@ ags_filter_util_pitch_double(gdouble *buffer,
 			     gdouble base_key,
 			     gdouble tuning)
 {
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
   gdouble **ptr_ptr_buffer;
   gdouble *ptr_buffer;
   gdouble *offset;
-  gdouble mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
   }
-  
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+    
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S16_FRAME(offset, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_mix_buffer);
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
+	
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
-      AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(offset, 1,
-							   n,
-							   freq_period,
-							   ptr_ptr_tmp_buffer);
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
       
-      AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(tmp_offset, 1,
-							   n,
-							   new_freq_period,
-							   ptr_ptr_buffer);
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_S16_FRAME(ptr_new_mix_buffer, 1,
+						      n,
+						      buffer_length,
+						      ptr_ptr_buffer);
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){
@@ -1120,7 +1671,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
     for(i = 1; i < buffer_length; i++){
       gdouble t;
       gdouble sum, sum0, sum1;
-    
+
       t = (-1.0 * (1.0 / exp((i * 2.0 * M_PI * new_freq / samplerate) / (new_freq_period - freq_period)))) + 1.0;
 	   
       sum0 = buffer[i - 1];
@@ -1128,12 +1679,8 @@ ags_filter_util_pitch_double(gdouble *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
   
   if(freq_period > new_freq_period){
@@ -1162,12 +1709,8 @@ ags_filter_util_pitch_double(gdouble *buffer,
 	   
       sum = (1.0 - t) * sum0 + (t * sum1);
       
-      mix_buffer[i] = sum;
+      buffer[i] = sum;
     }    
-
-    for(i = 1; i < buffer_length; i++){
-      buffer[i] = mix_buffer[i];
-    }
   }
 }
 
@@ -1190,75 +1733,161 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
 			      gdouble base_key,
 			      gdouble tuning)
 {
-  AgsComplex **ptr_ptr_buffer;
-  AgsComplex *ptr_buffer;
-  AgsComplex *offset;
-  AgsComplex mix_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-  AgsComplex **ptr_ptr_tmp_buffer;
-  AgsComplex *ptr_tmp_buffer;
-  AgsComplex *tmp_offset;
-  AgsComplex tmp_buffer[AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE];
-
-  gdouble base_freq, new_freq;
-  gdouble freq_period, new_freq_period;
-  gdouble offset_factor;
-  guint n;
+  AgsComplex **ptr_ptr_mix_buffer, **ptr_ptr_im_mix_buffer, **ptr_ptr_new_mix_buffer;
+  AgsComplex *ptr_mix_buffer, *ptr_im_mix_buffer, *ptr_new_mix_buffer;
+  AgsComplex *mix_buffer;
+  AgsComplex *im_mix_buffer, *new_mix_buffer;
+  gdouble **ptr_ptr_buffer;
+  gdouble *ptr_buffer;
+  gdouble *offset;
+  
+  gdouble base_freq, im_freq, new_freq;
+  gdouble offset_factor, im_offset_factor, new_offset_factor;
+  gdouble freq_period, im_freq_period, new_freq_period;
+  gdouble t;
+  complex sum, sum0, sum1;
+  gdouble n;
   guint i, j, k;
-
+  
   if(tuning == 0.0){
     return;
-  }  
-
-  ptr_ptr_buffer = &ptr_buffer;
-  ptr_ptr_tmp_buffer = &ptr_tmp_buffer;
-
+  }
+    
+  /* frequency */
   base_freq = 27.5 * exp2((base_key + 48.0) / 12.0);
+
+  im_freq = base_freq + 1.0;
   new_freq = 27.5 * exp2(((base_key + 48.0) + (tuning / 100.0)) / 12.0);
-  
+
+  /* get frequency period */
   freq_period = samplerate / base_freq;
+  
+  im_freq_period = samplerate / im_freq;
   new_freq_period = samplerate / new_freq;
 
-  if(freq_period > AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE){
-    g_warning("freq bigger than temporary buffer's size");
+  /* get offset factor */
+  offset_factor = 1.0;
+  
+  im_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / im_freq);
+  new_offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+
+  /* allocate buffer */
+  mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+					       AGS_SOUNDCARD_COMPLEX);
     
-    freq_period = AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE;    
+  im_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						  AGS_SOUNDCARD_COMPLEX);
+    
+  new_mix_buffer = (AgsComplex *) ags_stream_alloc(buffer_length,
+						   AGS_SOUNDCARD_COMPLEX);
+  
+  ptr_ptr_buffer = &ptr_buffer;
+
+  ptr_ptr_mix_buffer = &ptr_mix_buffer;
+
+  ptr_ptr_im_mix_buffer = &ptr_im_mix_buffer;
+  ptr_ptr_new_mix_buffer = &ptr_new_mix_buffer;
+
+  /* compute mix buffer */
+  for(i = 0; i < buffer_length; i++){
+    ptr_mix_buffer = mix_buffer + i;
+    
+    offset = buffer + i;
+    n = (gdouble) i;
+
+    ags_complex_set(ptr_mix_buffer,
+		    ags_complex_get(offset));
+  }
+
+  /* compute intermediate mix buffer */
+  sum = ags_complex_get(mix_buffer);
+
+  ags_complex_set(im_mix_buffer,
+		  sum);
+
+  i = 1;
+
+  while(i < buffer_length){
+    for(j = 0; j < freq_period && i + j < buffer_length;){
+      for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
+	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
+
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	  
+	sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	ags_complex_set(im_mix_buffer + (guint) (i + j),
+			sum);
+      }
+    }
+
+    i += j;
   }
   
-  offset_factor = 1.0 / (samplerate / base_freq) * (samplerate / new_freq);  
+  /* compute new mix buffer */
+  sum = ags_complex_get(mix_buffer);
 
-  i = 0;
-    
+  ags_complex_set(new_mix_buffer,
+		  sum);
+
+  i = 1;
+  
   while(i < buffer_length){
-    for(j = 0, k = i; j * offset_factor < freq_period &&
-	  k / offset_factor < buffer_length &&
-	  j < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; j++, k++){
-      ptr_tmp_buffer = tmp_buffer + j;
+    if(new_freq_period > freq_period){	
+      for(j = 0; j < new_freq_period && i + j < buffer_length;){
+	sum0 = ags_complex_get(mix_buffer);
 
-      offset = buffer + (guint) (k / offset_factor);
-      n = (gdouble) (j * offset_factor);
-
-      ags_complex_set(ptr_ptr_tmp_buffer[0][0],
-		      ags_complex_get(offset[n]));
-    }
-
-    for(k = 0; k < new_freq_period &&
-	  i < buffer_length &&
-	  k * (new_freq_period / freq_period) < AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE; i++, k++){
-      if(new_freq < base_freq &&
-	 k > freq_period / offset_factor){
-	break;
-      }
-
-      ptr_buffer = buffer + i;
-
-      tmp_offset = tmp_buffer + (guint) (k);
-
-      n = ((gdouble) k / freq_period * new_freq_period);
+	ags_complex_set(new_mix_buffer + (guint) i + j,
+			sum);
 	
-      ags_complex_set(ptr_ptr_buffer[0][0],
-		      ags_complex_get(tmp_offset[n]));
+	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
+	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
+    }else{
+      for(j = 0; j < freq_period && i + j < buffer_length;){
+	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
+	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
+
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  
+	  sum = (1.0 - t) * sum0 + (t * sum1);
+      
+	  ags_complex_set(new_mix_buffer + (guint) (i + j),
+			  sum);
+	}
+      }
     }
+
+    i += j;
   }
+  
+  /* rewrite buffer */
+  for(i = 0; i < buffer_length; i++){
+    n = (gdouble) (i % (guint) new_freq_period);
+
+    ptr_new_mix_buffer = new_mix_buffer + i;
+    ptr_buffer = buffer + i;
+
+    ags_complex_set(ptr_buffer,
+		    ags_complex_get(ptr_new_mix_buffer));
+  }
+
+  ags_stream_free(mix_buffer);
+
+  ags_stream_free(im_mix_buffer);
+
+  ags_stream_free(new_mix_buffer);
 
   /* interpolation */
   if(freq_period < new_freq_period){

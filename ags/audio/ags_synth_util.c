@@ -556,7 +556,7 @@ ags_synth_util_sin_s24(gint32 *buffer,
   guint i;
 
   for(i = offset; i < offset + n_frames; i++){
-    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -812,7 +812,7 @@ ags_synth_util_sawtooth_s24(gint32 *buffer,
   phase = ceil(phase / freq) * ceil(samplerate / freq);
 
   for(i = offset; i < offset + n_frames; i++){
-    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (((((int) ceil(i + phase) % (int) ceil(samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -1354,9 +1354,9 @@ ags_synth_util_square_s24(gint32 *buffer,
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= 0.0){
-      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1633,9 +1633,9 @@ ags_synth_util_impulse_s24(gint32 *buffer,
 
   for(i = offset; i < offset + n_frames; i++){
     if(sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0)){
-      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
     }
   }
 }

@@ -312,8 +312,6 @@ ags_functional_pitch_test_pitch_up()
 
   gint i, j, k;
   gboolean success;
-
-  return;
   
   start_wave = NULL;
   
@@ -441,7 +439,7 @@ ags_functional_pitch_test_pitch_up()
     ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				(AgsTask *) cancel_audio);
 
-    usleep(1000000);
+    usleep(1500000);
     
     /* iterate */
     list = list->next;
@@ -587,7 +585,7 @@ ags_functional_pitch_test_pitch_down()
     ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				(AgsTask *) cancel_audio);
 
-    usleep(1000000);
+    usleep(1500000);
 
     /* iterate */
     list = list->next;

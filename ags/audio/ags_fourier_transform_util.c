@@ -76,7 +76,7 @@ ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -122,7 +122,7 @@ ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -168,7 +168,7 @@ ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -214,7 +214,7 @@ ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -260,7 +260,7 @@ ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = ((gdouble) buffer[i] * normalize_factor) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -304,7 +304,7 @@ ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -348,7 +348,7 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
 
     h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(n - r);
     
-    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / buffer_length);
+    z = (buffer[i] * M_PI) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r);
 
     ags_complex_set(retval[0] + i, z);
   }
@@ -392,7 +392,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = scale * y;
   }
@@ -436,7 +436,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = scale * y;
   }
@@ -480,7 +480,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = scale * y;
   }
@@ -524,7 +524,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = scale * y;
   }
@@ -568,7 +568,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = scale * y;
   }
@@ -610,7 +610,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = y / M_PI;
   }
@@ -652,7 +652,7 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
 
     k = (gdouble) n;
 
-    y = cabs(z * cexp(I * 2.0 * M_PI * k * n / buffer_length));
+    y = (z * cexp(I * 2.0 * M_PI * k * n));
 
     retval[0][i] = y / M_PI;
   }

@@ -40,7 +40,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -56,7 +56,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -72,7 +72,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -88,7 +88,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -104,7 +104,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * normalize_factor) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -118,7 +118,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -132,7 +132,7 @@
 									\
     l_h = AGS_FOURIER_TRANSFORM_UTIL_ANALYSIS_WINDOW(x_n - l_r);	\
 									\
-    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r / x_buffer_length); \
+    l_z = (x_buffer[0] * M_PI) * l_h * cexp(-1.0 * I * 2.0 * M_PI * l_k * l_r); \
     									\
     ags_complex_set(x_retval[0], l_z); }
 
@@ -146,7 +146,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -160,7 +160,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n));			\
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -174,7 +174,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -188,7 +188,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -202,7 +202,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = scale * l_y; }
 
@@ -214,7 +214,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = l_y / M_PI; }
 
@@ -226,7 +226,7 @@
 									\
     l_k = (gdouble) x_n;						\
 									\
-    l_y = cabs(l_z * cexp(I * 2.0 * M_PI * l_k * x_n / x_buffer_length)); \
+    l_y = (l_z * cexp(I * 2.0 * M_PI * l_k * x_n)); \
 									\
     x_retval[0][0] = l_y / M_PI; }
 
