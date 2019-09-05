@@ -55,20 +55,6 @@ ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth
 }
 
 void
-ags_synth_samplerate_changed_callback(AgsMachine *machine,
-				      guint samplerate, guint old_samplerate,
-				      gpointer user_data)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
 {
   if(gtk_toggle_button_get_active(toggle)){
@@ -82,4 +68,10 @@ void
 ags_synth_update_callback(GtkButton *button, AgsSynth *synth)
 {
   ags_synth_update(synth);
+}
+
+void
+ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth)
+{
+  //TODO:JK: implement me
 }

@@ -33,8 +33,8 @@ void ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 						  guint samplerate, guint old_samplerate,
 						  gpointer user_data);
 
-void ags_fm_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
-							  AgsFMSyncsynth *fm_syncsynth);
+void ags_fm_syncsynth_fm_oscillator_control_changed_callback(AgsFMOscillator *fm_oscillator,
+							     AgsFMSyncsynth *fm_syncsynth);
 
 void ags_fm_syncsynth_add_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_remove_callback(GtkButton *button, AgsFMSyncsynth *fm_syncsynth);

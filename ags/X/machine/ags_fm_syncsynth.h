@@ -27,7 +27,7 @@
 
 #include <ags/X/ags_machine.h>
 
-#include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_fm_oscillator.h>
 
 #define AGS_TYPE_FM_SYNCSYNTH                (ags_fm_syncsynth_get_type())
 #define AGS_FM_SYNCSYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_SYNCSYNTH, AgsFMSyncsynth))
@@ -58,7 +58,7 @@ struct _AgsFMSyncsynth
   guint mapped_input_pad;
   guint mapped_output_pad;
 
-  GtkVBox *oscillator;
+  GtkVBox *fm_oscillator;
   GtkButton *add;
   GtkButton *remove;
 
@@ -85,10 +85,10 @@ struct _AgsFMSyncsynthClass
 
 GType ags_fm_syncsynth_get_type(void);
 
-void ags_fm_syncsynth_add_oscillator(AgsFMSyncsynth *fm_syncsynth,
-				  AgsOscillator *oscillator);
-void ags_fm_syncsynth_remove_oscillator(AgsFMSyncsynth *fm_syncsynth,
-				     guint nth);
+void ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
+					AgsFMOscillator *fm_oscillator);
+void ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
+					   guint nth);
 
 void ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth);

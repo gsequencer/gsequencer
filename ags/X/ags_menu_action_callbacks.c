@@ -39,11 +39,15 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
 #endif
+
+#include <ags/X/machine/ags_pitch_sampler.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 
@@ -638,6 +642,47 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 }
 
 void
+ags_menu_action_add_fm_synth_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsWindow *window;
+  AgsFMSynth *fm_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  /* create fm_synth */
+  fm_synth = ags_fm_synth_new(G_OBJECT(window->soundcard));
+
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
+				AGS_MACHINE(fm_synth)->audio);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) fm_synth,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(fm_synth));
+
+  AGS_MACHINE(fm_synth)->audio->audio_channels = 1;
+
+  ags_audio_set_pads(AGS_MACHINE(fm_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     2, 0);
+  ags_audio_set_pads(AGS_MACHINE(fm_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     78, 0);
+
+  gtk_widget_show_all((GtkWidget *) fm_synth);
+}
+
+void
 ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 {
   AgsWindow *window;
@@ -676,6 +721,47 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 		     1, 0);
 
   gtk_widget_show_all((GtkWidget *) syncsynth);
+}
+
+void
+ags_menu_action_add_fm_syncsynth_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsWindow *window;
+  AgsFMSyncsynth *fm_syncsynth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  /* create fm_syncsynth */
+  fm_syncsynth = ags_fm_syncsynth_new(G_OBJECT(window->soundcard));
+
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
+				AGS_MACHINE(fm_syncsynth)->audio);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) fm_syncsynth,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(fm_syncsynth));
+
+  AGS_MACHINE(fm_syncsynth)->audio->audio_channels = 1;
+  
+  ags_audio_set_pads(AGS_MACHINE(fm_syncsynth)->audio,
+		     AGS_TYPE_INPUT,
+		     78, 0);
+  ags_audio_set_pads(AGS_MACHINE(fm_syncsynth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show_all((GtkWidget *) fm_syncsynth);
 }
 
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -720,6 +806,47 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 #endif
+
+void
+ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsWindow *window;
+  AgsPitchSampler *pitch_sampler;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  /* create pitch_sampler */
+  pitch_sampler = ags_pitch_sampler_new(G_OBJECT(window->soundcard));
+
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
+				AGS_MACHINE(pitch_sampler)->audio);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) pitch_sampler,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(pitch_sampler));
+
+  AGS_MACHINE(pitch_sampler)->audio->audio_channels = 2;
+  
+  ags_audio_set_pads(AGS_MACHINE(pitch_sampler)->audio,
+		     AGS_TYPE_INPUT,
+		     78, 0);
+  ags_audio_set_pads(AGS_MACHINE(pitch_sampler)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);  
+
+  gtk_widget_show_all((GtkWidget *) pitch_sampler);
+}
 
 void
 ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)

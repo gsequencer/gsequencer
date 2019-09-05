@@ -56,7 +56,7 @@ struct _AgsFMSynth
   guint mapped_input_pad;
   guint mapped_output_pad;
 
-  GtkVBox *oscillator;
+  GtkVBox *input_pad;
 
   GtkCheckButton *enable_lfo;
   

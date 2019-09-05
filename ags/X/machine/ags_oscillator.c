@@ -198,6 +198,11 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		     0, i18n("triangle"),
 		     -1);
 
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("impulse"),
+		     -1);
+
   gtk_combo_box_set_model(oscillator->wave, GTK_TREE_MODEL(model));
   gtk_combo_box_set_active(oscillator->wave, 0);
 

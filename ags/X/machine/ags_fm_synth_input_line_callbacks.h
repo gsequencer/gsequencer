@@ -17,21 +17,22 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_CALLBACKS_H__ 
-#define __AGS_SYNTH_CALLBACKS_H__ 
+#ifndef __AGS_FM_SYNTH_INPUT_LINE_CALLBACKS_H__ 
+#define __AGS_FM_SYNTH_INPUT_LINE_CALLBACKS_H__ 
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
 
-#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_fm_synth_input_line.h>
+#include <ags/X/machine/ags_fm_oscillator.h>
 
-void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
+void ags_fm_synth_input_line_samplerate_changed_callback(AgsLine *line,
+							 guint samplerate, guint old_samplerate,
+							 gpointer user_data);
 
-void ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth);
-void ags_synth_update_callback(GtkButton *button, AgsSynth *synth);
+void ags_fm_synth_input_line_fm_oscillator_control_changed_callback(AgsFMOscillator *fm_oscillator,
+								    AgsFMSynthInputLine *fm_synth_input_line);
 
-void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
-
-#endif /*__AGS_SYNTH_CALLBACKS_H__ */
+#endif /*__AGS_FM_SYNTH_INPUT_LINE_CALLBACKS_H__ */

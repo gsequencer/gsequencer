@@ -149,18 +149,22 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 
   fm_oscillator->flags = 0;
   
-  table = (GtkTable *) gtk_table_new(8, 2, FALSE);
-  gtk_container_add((GtkContainer *) fm_oscillator, (GtkWidget *) table);
+  table = (GtkTable *) gtk_table_new(8, 4,
+				     FALSE);
+  gtk_container_add((GtkContainer *) fm_oscillator,
+		    (GtkWidget *) table);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("wave")),
-			    0, 1, 0, 1);
+			    0, 1,
+			    0, 1);
 
   /* wave */
   fm_oscillator->wave = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->wave,
-			    1, 2, 0, 1);
+			    1, 2,
+			    0, 1);
 
   cell_renderer = gtk_cell_renderer_text_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(fm_oscillator->wave),
@@ -198,34 +202,46 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		     0, i18n("triangle"),
 		     -1);
 
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("impulse"),
+		     -1);
+
   gtk_combo_box_set_model(fm_oscillator->wave, GTK_TREE_MODEL(model));
   gtk_combo_box_set_active(fm_oscillator->wave, 0);
 
   /* other controls */
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("attack")),
-			    2, 3, 0, 1);
+			    2, 3,
+			    0, 1);
   fm_oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   fm_oscillator->attack->adjustment->value = 0.0;
-  gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->attack, 3, 4, 0, 1);
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) fm_oscillator->attack,
+			    3, 4,
+			    0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("length")),
-			    4, 5, 0, 1);
+			    4, 5,
+			    0, 1);
   fm_oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   fm_oscillator->frame_count->adjustment->value = AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT;
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("phase")),
-			    0, 1, 1, 2);
+			    0, 1,
+			    1, 2);
   fm_oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   fm_oscillator->phase->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("frequency")),
-			    2, 3, 1, 2);
+			    2, 3,
+			    1, 2);
   fm_oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(fm_oscillator->frequency,
 			     3);
@@ -281,6 +297,102 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 		       FALSE, FALSE,
 		       0);
   }
+
+  /* LFO wave */
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) gtk_label_new(i18n("LFO wave")),
+			    0, 1,
+			    2, 3);
+
+  fm_oscillator->fm_lfo_wave = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) fm_oscillator->fm_lfo_wave,
+			    1, 2,
+			    2, 3);
+
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(fm_oscillator->fm_lfo_wave),
+			     cell_renderer,
+			     FALSE); 
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(fm_oscillator->fm_lfo_wave),
+				 cell_renderer,
+				 "text", 0,
+				 NULL);
+
+  model = gtk_list_store_new(1, G_TYPE_STRING);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "sin",
+		     -1);
+
+  /*  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "cos",
+		     -1);  */
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("sawtooth"),
+		     -1);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("square"),
+		     -1);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("triangle"),
+		     -1);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("impulse"),
+		     -1);
+
+  gtk_combo_box_set_model(fm_oscillator->fm_lfo_wave, GTK_TREE_MODEL(model));
+  gtk_combo_box_set_active(fm_oscillator->fm_lfo_wave, 0);
+
+  /* LFO controls */
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) gtk_label_new(i18n("LFO freq")),
+			    2, 3,
+			    2, 3);
+  fm_oscillator->fm_lfo_freq = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 24.0, 1.0);
+  gtk_spin_button_set_digits(fm_oscillator->fm_lfo_freq,
+			     3);
+  fm_oscillator->attack->adjustment->value = 12.0;
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) fm_oscillator->fm_lfo_freq,
+			    3, 4,
+			    2, 3);
+
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) gtk_label_new(i18n("LFO depth")),
+			    4, 5,
+			    2, 3);
+  fm_oscillator->fm_lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.01);
+  gtk_spin_button_set_digits(fm_oscillator->fm_lfo_depth,
+			     3);
+  fm_oscillator->attack->adjustment->value = 0.0;
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) fm_oscillator->fm_lfo_depth,
+			    5, 6,
+			    2, 3);
+
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) gtk_label_new(i18n("LFO tuning")),
+			    2, 3,
+			    3, 4);
+  fm_oscillator->fm_lfo_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-96.0, 96.0, 0.01);
+  gtk_spin_button_set_digits(fm_oscillator->fm_lfo_tuning,
+			     2);
+  fm_oscillator->attack->adjustment->value = 0.0;
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) fm_oscillator->fm_lfo_tuning,
+			    3, 4,
+			    3, 4);
 }
 
 void

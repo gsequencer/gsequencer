@@ -305,7 +305,11 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   syncsynth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNCSYNTH_BASE_NOTE_MIN,
 								      AGS_SYNCSYNTH_BASE_NOTE_MAX,
 								      1.0);
+  gtk_spin_button_set_digits(syncsynth->lower,
+			     2);
   syncsynth->lower->adjustment->value = -48.0;
+  gtk_spin_button_set_digits(syncsynth->lower,
+			     2);
   gtk_table_attach(table,
 		   GTK_WIDGET(syncsynth->lower),
 		   1, 2,

@@ -247,51 +247,13 @@ ags_synth_init(AgsSynth *synth)
   synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNTH_BASE_NOTE_MIN,
 								  AGS_SYNTH_BASE_NOTE_MAX,
 								  1.0);
+  gtk_spin_button_set_digits(synth->lower,
+			     2);
   synth->lower->adjustment->value = -48.0;
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
 		   1, 2,
 		   0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  /* loop start */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("loop start"),
-				    "xalign", 0.0,
-				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  synth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(synth->loop_start),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  /* loop end */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("loop end"),
-				    "xalign", 0.0,
-				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  synth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(synth->loop_end),
-		   1, 2,
-		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 

@@ -32,11 +32,15 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
 #endif
+
+#include <ags/X/machine/ags_pitch_sampler.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
@@ -646,13 +650,23 @@ ags_window_standard_machine_counter_alloc()
 							     AGS_TYPE_SYNTH, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_FM_SYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_SYNCSYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_FM_SYNCSYNTH, 0));
 
 #ifdef AGS_WITH_LIBINSTPATCH
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
 #endif
+
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_PITCH_SAMPLER, 0));
   
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,

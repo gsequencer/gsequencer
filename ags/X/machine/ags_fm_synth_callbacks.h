@@ -34,11 +34,4 @@ void ags_fm_synth_update_callback(GtkButton *button, AgsFMSynth *fm_synth);
 
 void ags_fm_synth_lower_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);
 
-void ags_fm_synth_enable_lfo_callback(GtkToggleButton *toggle, AgsFMSynth *fm_synth);
-
-void ags_fm_synth_lfo_freq_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);
-void ags_fm_synth_lfo_phase_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);
-void ags_fm_synth_lfo_depth_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);
-void ags_fm_synth_lfo_tunint_callback(GtkSpinButton *spin_button, AgsFMSynth *fm_synth);
-
 #endif /*__AGS_FM_SYNTH_CALLBACKS_H__ */

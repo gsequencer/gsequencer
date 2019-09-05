@@ -1282,6 +1282,9 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_fm_syncsynth_callbacks.h \
 	ags/X/machine/ags_fm_synth.h \
 	ags/X/machine/ags_fm_synth_callbacks.h \
+	ags/X/machine/ags_fm_synth_input_pad.h \
+	ags/X/machine/ags_fm_synth_input_line.h \
+	ags/X/machine/ags_fm_synth_input_line_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -1511,6 +1514,9 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/machine/ags_fm_syncsynth_callbacks.c \
 	ags/X/machine/ags_fm_synth.c \
 	ags/X/machine/ags_fm_synth_callbacks.c \
+	ags/X/machine/ags_fm_synth_input_pad.c \
+	ags/X/machine/ags_fm_synth_input_line.c \
+	ags/X/machine/ags_fm_synth_input_line_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -1799,6 +1805,9 @@ am__objects_40 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_fm_syncsynth_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_fm_synth.lo \
 	ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo \
+	ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo \
@@ -4308,6 +4317,9 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Plo \
+	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo \
 	ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo \
@@ -9044,6 +9056,9 @@ libgsequencer_machine_h_sources =  \
 	ags/X/machine/ags_fm_syncsynth_callbacks.h \
 	ags/X/machine/ags_fm_synth.h \
 	ags/X/machine/ags_fm_synth_callbacks.h \
+	ags/X/machine/ags_fm_synth_input_pad.h \
+	ags/X/machine/ags_fm_synth_input_line.h \
+	ags/X/machine/ags_fm_synth_input_line_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -9110,6 +9125,9 @@ libgsequencer_machine_c_sources =  \
 	ags/X/machine/ags_fm_syncsynth_callbacks.c \
 	ags/X/machine/ags_fm_synth.c \
 	ags/X/machine/ags_fm_synth_callbacks.c \
+	ags/X/machine/ags_fm_synth_input_pad.c \
+	ags/X/machine/ags_fm_synth_input_line.c \
+	ags/X/machine/ags_fm_synth_input_line_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -11262,6 +11280,15 @@ ags/X/machine/libgsequencer_la-ags_fm_synth.lo:  \
 ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -13313,6 +13340,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo@am__quote@ # am--include-marker
@@ -17847,6 +17877,27 @@ ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo: ags/X/machine/ags_fm_s
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_callbacks.lo `test -f 'ags/X/machine/ags_fm_synth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo: ags/X/machine/ags_fm_synth_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo `test -f 'ags/X/machine/ags_fm_synth_input_pad.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth_input_pad.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_pad.lo `test -f 'ags/X/machine/ags_fm_synth_input_pad.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_pad.c
+
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo: ags/X/machine/ags_fm_synth_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo `test -f 'ags/X/machine/ags_fm_synth_input_line.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth_input_line.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_line.lo `test -f 'ags/X/machine/ags_fm_synth_input_line.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_line.c
+
+ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo: ags/X/machine/ags_fm_synth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_fm_synth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_fm_synth_input_line_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_fm_synth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_fm_synth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_fm_synth_input_line_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo: ags/X/machine/ags_ladspa_bridge.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Tpo -c -o ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo `test -f 'ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_ladspa_bridge.c
@@ -23677,6 +23728,9 @@ distclean: distclean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo
@@ -24590,6 +24644,9 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_syncsynth_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_line_callbacks.Plo
+	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_fm_synth_input_pad.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo
 	-rm -f ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo
