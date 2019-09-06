@@ -25,6 +25,8 @@
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_lfo_synth_util.h>
+#include <ags/audio/ags_fm_synth_util.h>
 
 #include <math.h>
 
@@ -1107,11 +1109,11 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   {
     fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_SIN;
   }
+  break;
   case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
   {
     fm_lfo_osc_mode = AGS_SYNTH_OSCILLATOR_SAWTOOTH;
   }
-  break;
   break;
   case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
   {

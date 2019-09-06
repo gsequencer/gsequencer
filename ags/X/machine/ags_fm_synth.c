@@ -502,7 +502,9 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   guint attack, frame_count;
   gdouble frequency, phase, start_frequency;
   gdouble volume;
-
+  gdouble fm_lfo_frequency, fm_lfo_depth;
+  gdouble fm_tuning;
+  
   AgsComplex **sync_point;
   guint sync_point_count;
   
@@ -605,15 +607,25 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
     frequency = gtk_spin_button_get_value(fm_oscillator->frequency);
     volume = gtk_spin_button_get_value(fm_oscillator->volume);
 
+    fm_lfo_frequency = gtk_spin_button_get_value(fm_oscillator->fm_lfo_frequency);
+    fm_lfo_depth = gtk_spin_button_get_value(fm_oscillator->fm_lfo_depth);
+
+    fm_tuning = gtk_spin_button_get_value(fm_oscillator->fm_tuning);
+
     g_object_set(synth_generator->data,
 		 "format", format,
 		 "delay", (gdouble) attack / (gdouble) buffer_size,
 		 "attack", attack,
 		 "frame-count", frame_count,
-		 "fm_oscillator", gtk_combo_box_get_active(fm_oscillator->wave),
+		 "oscillator", gtk_combo_box_get_active(fm_oscillator->wave),
 		 "frequency", frequency,
 		 "phase", phase,
 		 "volume", volume,
+		 "do-fm-synth", TRUE,
+		 "fm-lfo-oscillator", gtk_combo_box_get_active(fm_oscillator->fm_lfo_wave),
+		 "fm-lfo-frequency", fm_lfo_frequency,
+		 "fm-lfo-depth", fm_lfo_depth,
+		 "fm-tuning", fm_tuning,
 		 NULL);
 
     do_sync = gtk_toggle_button_get_active((GtkToggleButton *) fm_oscillator->do_sync);

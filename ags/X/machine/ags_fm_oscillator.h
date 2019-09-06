@@ -65,10 +65,10 @@ struct _AgsFMOscillator
 
   GtkComboBox *fm_lfo_wave;
 
-  GtkSpinButton *fm_lfo_freq;
+  GtkSpinButton *fm_lfo_frequency;
   GtkSpinButton *fm_lfo_depth;
   
-  GtkSpinButton *fm_lfo_tuning;
+  GtkSpinButton *fm_tuning;
 };
 
 struct _AgsFMOscillatorClass

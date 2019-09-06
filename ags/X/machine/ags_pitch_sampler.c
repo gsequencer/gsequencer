@@ -176,6 +176,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   GtkVBox *vbox;
   GtkHBox *hbox;
   GtkVBox *control_vbox;
+  GtkHBox *filename_hbox;
   GtkTable *lfo_table;
   GtkLabel *label;
   
@@ -277,6 +278,27 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     FALSE, FALSE,
 		     0);
 
+  /* filename */
+  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					   0);
+  gtk_box_pack_start((GtkBox *) control_vbox,
+		     (GtkWidget *) filename_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) pitch_sampler->filename,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) pitch_sampler->open,
+		     FALSE, FALSE,
+		     0);
+
+  /* other controls */
   pitch_sampler->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) control_vbox,
 		     (GtkWidget *) pitch_sampler->add,
@@ -291,12 +313,12 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 
   pitch_sampler->auto_update = gtk_check_button_new_with_label(i18n("auto update"));
   gtk_box_pack_start((GtkBox *) control_vbox,
-		     (GtkWidget *) pitch_sampler->remove,
+		     (GtkWidget *) pitch_sampler->auto_update,
 		     FALSE, FALSE,
 		     0);
 
   pitch_sampler->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start((GtkBox *) control_vbox,
 		     (GtkWidget *) pitch_sampler->update,
 		     FALSE, FALSE,
 		     0);
@@ -328,6 +350,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->lfo_freq = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_PITCH_SAMPLER_LFO_FREQ_MIN,
 									  AGS_PITCH_SAMPLER_LFO_FREQ_MAX,
 									  0.001);
+  gtk_spin_button_set_digits(pitch_sampler->lfo_freq,
+			     3);
   pitch_sampler->lfo_freq->adjustment->value = AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ;
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_freq,
@@ -340,7 +364,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) label,
 		   1, 2,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
@@ -351,7 +375,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_phase,
 		   2, 3,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -359,18 +383,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) label,
 		   1, 2,
-		   0, 1,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
   pitch_sampler->lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									      100000.0,
 									      1.0);
+  gtk_spin_button_set_digits(pitch_sampler->lfo_depth,
+			     3);
   pitch_sampler->lfo_depth->adjustment->value = 0.0;
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_depth,
 		   2, 3,
-		   0, 1,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -378,18 +404,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) label,
 		   1, 2,
-		   0, 1,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
   pitch_sampler->lfo_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-2400.0,
 									       2400.0,
 									       1.0);
+  gtk_spin_button_set_digits(pitch_sampler->lfo_tuning,
+			     2);
   pitch_sampler->lfo_tuning->adjustment->value = 0.0;
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_tuning,
 		   2, 3,
-		   0, 1,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   

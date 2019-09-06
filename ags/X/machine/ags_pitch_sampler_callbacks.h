@@ -40,6 +40,6 @@ void ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSamp
 void ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_lfo_phase_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
-void ags_pitch_sampler_lfo_tunint_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
+void ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);
 
 #endif /*__AGS_PITCH_SAMPLER_CALLBACKS_H__ */

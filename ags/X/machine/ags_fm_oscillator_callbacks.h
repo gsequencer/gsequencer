@@ -35,9 +35,9 @@ void ags_fm_oscillator_phase_callback(GtkSpinButton *spin_button, AgsFMOscillato
 void ags_fm_oscillator_volume_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
 void ags_fm_oscillator_sync_point_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
 
-void ags_fm_oscillator_wave_fm_lfo_callback(GtkComboBox *combo, AgsFMOscillator *fm_oscillator);
-void ags_fm_oscillator_fm_lfo_freq_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
+void ags_fm_oscillator_fm_lfo_wave_callback(GtkComboBox *combo, AgsFMOscillator *fm_oscillator);
+void ags_fm_oscillator_fm_lfo_frequency_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
 void ags_fm_oscillator_fm_lfo_depth_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
-void ags_fm_oscillator_fm_lfo_tuning_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
+void ags_fm_oscillator_fm_tuning_callback(GtkSpinButton *spin_button, AgsFMOscillator *fm_oscillator);
 
 #endif /*__AGS_FM_OSCILLATOR_CALLBACKS_H__ */

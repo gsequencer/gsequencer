@@ -24,11 +24,33 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
+
+#include <ags/i18n.h>
 
 void
 ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPitchSampler *pitch_sampler)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+
+  gchar *str;
+  
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) pitch_sampler, AGS_TYPE_WINDOW));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_PITCH_SAMPLER)->counter);
+
+  g_object_set(AGS_MACHINE(pitch_sampler),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_PITCH_SAMPLER);
+  g_free(str);
 }
 
 void
@@ -80,7 +102,7 @@ ags_pitch_sampler_lfo_depth_callback(GtkSpinButton *spin_button, AgsPitchSampler
 }
 
 void
-ags_pitch_sampler_lfo_tunint_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler)
+ags_pitch_sampler_lfo_tuning_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler)
 {
   //TODO:JK: implement me
 }

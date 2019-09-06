@@ -29,7 +29,7 @@
 #include <complex.h>
 
 /**
- * ags_fm_synth_util_sin_S8:
+ * ags_fm_synth_util_sin_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the sin wave
  * @phase: the phase of the sin wave
@@ -126,10 +126,10 @@ ags_fm_synth_util_sin_s16(gint16 *buffer,
 {
   static const gdouble scale = 32767.0;
   guint i;
-
+    
   switch(lfo_osc_mode){
   case AGS_SYNTH_OSCILLATOR_SIN:
-  {
+  {    
     for(i = offset; i < offset + n_frames; i++){
       buffer[i] = (gint32) (0xffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * (freq * exp2(tuning / 1200.0 + sin(i * 2.0 * M_PI * lfo_freq / samplerate) * lfo_depth)) / (gdouble) samplerate) * scale * volume)));
     }

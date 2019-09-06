@@ -59,6 +59,9 @@ struct _AgsPitchSampler
 
   GtkVBox *file;
 
+  GtkEntry *filename;
+  GtkButton *open;
+
   GtkButton *add;
   GtkButton *remove;
 

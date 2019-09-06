@@ -25,6 +25,8 @@
 
 #include <ags/X/ags_ui_provider.h>
 
+#include <ags/i18n.h>
+
 void ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_file);
 void ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file);
@@ -78,7 +80,7 @@ ags_pitch_sampler_file_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_pitch_sampler_file = g_type_register_static(GTK_TYPE_FRAME,
+    ags_type_pitch_sampler_file = g_type_register_static(GTK_TYPE_VBOX,
 							 "AgsPitchSamplerFile",
 							 &ags_pitch_sampler_file_info,
 							 0);
@@ -135,6 +137,121 @@ ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 {
+  GtkTable *table;
+  GtkHBox *filename_hbox;
+  GtkLabel *label;
+  
+  table = (GtkTable *) gtk_table_new(2, 4,
+				     FALSE);
+  gtk_box_pack_start((GtkBox *) pitch_sampler_file,
+		     (GtkWidget *) table,
+		     FALSE, FALSE,
+		     0);
+
+  /* filename */
+  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					   0);
+  gtk_table_attach(table,
+		   (GtkWidget *) filename_hbox,
+		   0, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0); 
+
+  pitch_sampler_file->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) pitch_sampler_file->filename,
+		     FALSE, FALSE,
+		     0);
+
+  pitch_sampler_file->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) pitch_sampler_file->open,
+		     FALSE, FALSE,
+		     0);
+
+  /*  */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("frequency"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  pitch_sampler_file->freq = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						       "label", i18n("440.0"),
+						       "xalign", 0.0,
+						       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(pitch_sampler_file->freq),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("base key"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  pitch_sampler_file->base_key = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_PITCH_SAMPLER_FILE_BASE_KEY_MIN, AGS_PITCH_SAMPLER_FILE_BASE_KEY_MAX, 0.01);
+  pitch_sampler_file->base_key->adjustment->value = 0.0;
+  gtk_table_attach(table,
+		   GTK_WIDGET(pitch_sampler_file->base_key),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* loop start */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("loop start"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  pitch_sampler_file->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT, 1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(pitch_sampler_file->loop_start),
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* loop end */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("loop end"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  pitch_sampler_file->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT, 1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(pitch_sampler_file->loop_end),
+		   1, 2,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
