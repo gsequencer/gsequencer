@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,17 +21,6 @@
 
 #include <ags/X/editor/ags_machine_selection.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
-
-#include <ags/X/machine/ags_drum.h>
-#include <ags/X/machine/ags_matrix.h>
-#include <ags/X/machine/ags_synth.h>
-
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <ags/X/machine/ags_ffplayer.h>
-#endif
-
-#include <ags/X/machine/ags_dssi_bridge.h>
-#include <ags/X/machine/ags_lv2_bridge.h>
 
 void ags_machine_selector_selection_response(GtkWidget *machine_selection,
 					     gint response,
