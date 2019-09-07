@@ -62,6 +62,8 @@ struct _AgsSFZSample
   pthread_mutexattr_t *obj_mutexattr;
 
   AgsUUID *uuid;
+
+  gchar *filename;
   
   guint audio_channels;
   gint64 *audio_channel_written;

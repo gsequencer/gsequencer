@@ -104,6 +104,7 @@ void ags_sfz_sample_close(AgsSoundResource *sound_resource);
 
 enum{
   PROP_0,
+  PROP_FILENAME,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
   PROP_LOOP_START,
@@ -185,6 +186,22 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
   gobject->finalize = ags_sfz_sample_finalize;
 
   /* properties */
+  /**
+   * AgsSFZSample:filename:
+   *
+   * The filename to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_string("filename",
+				 i18n_pspec("using filename"),
+				 i18n_pspec("The filename to be used"),
+				 NULL,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
   /**
    * AgsSFZSample:buffer-size:
    *
@@ -369,6 +386,8 @@ ags_sfz_sample_init(AgsSFZSample *sfz_sample)
 
   config = ags_config_get_instance();
 
+  sfz_sample->filename = NULL;
+
   sfz_sample->audio_channels = 1;
   sfz_sample->audio_channel_written = (gint64 *) malloc(sfz_sample->audio_channels * sizeof(gint64));
 
@@ -414,6 +433,27 @@ ags_sfz_sample_set_property(GObject *gobject,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   switch(prop_id){
+  case PROP_FILENAME:
+  {
+    gchar *filename;
+
+    filename = g_value_get_string(value);
+
+    pthread_mutex_lock(sfz_sample_mutex);
+
+    if(filename == sfz_sample->filename){
+      pthread_mutex_unlock(sfz_sample_mutex);
+
+      return;	
+    }
+
+    g_free(sfz_sample->filename);
+
+    sfz_sample->filename = g_strdup(filename);
+
+    pthread_mutex_unlock(sfz_sample_mutex);
+  }
+  break;
   case PROP_BUFFER_SIZE:
   {
     guint buffer_size;
@@ -573,6 +613,15 @@ ags_sfz_sample_get_property(GObject *gobject,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
   
   switch(prop_id){
+  case PROP_FILENAME:
+  {
+    pthread_mutex_lock(sfz_sample_mutex);
+
+    g_value_set_string(value, sfz_sample->filename);
+
+    pthread_mutex_unlock(sfz_sample_mutex);
+  }
+  break;
   case PROP_BUFFER_SIZE:
   {
     pthread_mutex_lock(sfz_sample_mutex);
@@ -668,6 +717,8 @@ ags_sfz_sample_finalize(GObject *gobject)
   pthread_mutexattr_destroy(sfz_sample->obj_mutexattr);
   free(sfz_sample->obj_mutexattr);
 
+  g_free(sfz_sample->filename);
+  
   ags_stream_free(sfz_sample->buffer);
 
   if(sfz_sample->region != NULL){
@@ -940,6 +991,7 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   }
   
   g_object_set(sfz_sample,
+	       "filename", filename,
 	       "audio-channels", sfz_sample->info->channels,
 	       "format", format,
 	       NULL);
@@ -1048,6 +1100,7 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   }
 
   g_object_set(sfz_sample,
+	       "filename", filename,
 	       "audio-channels", audio_channels,
 	       NULL);
 

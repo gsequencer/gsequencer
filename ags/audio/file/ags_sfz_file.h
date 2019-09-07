@@ -57,6 +57,18 @@ typedef enum{
   AGS_SFZ_FILE_CONNECTED            = 1 <<  1,
 }AgsSFZFileFlags;
 
+/**
+ * AgsSFZLevel:
+ * @AGS_SFZ_FILENAME: filename
+ * @AGS_SFZ_SAMPLE: sample
+ * 
+ * Enum values to describe the different levels of a SFZ file.
+ */
+typedef enum{
+  AGS_SFZ_FILENAME = 0,
+  AGS_SFZ_SAMPLE   = 1,
+}AgsSFZLevel;
+
 struct _AgsSFZFile
 {
   GObject object;

@@ -1003,8 +1003,57 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
   /* sublevel */
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(sfz_file));
 
-  //TODO:JK: implement me  
-  
+  switch(sublevel){
+  case AGS_SFZ_FILENAME:
+  {
+    gchar **sublevel_name;
+	
+    sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+
+    sublevel_name[0] = g_strdup(sfz_file->filename);
+    sublevel_name[1] = NULL;
+
+    return(sublevel_name);
+  }
+  case AGS_SFZ_SAMPLE:
+  {
+    GList *start_list, *list;
+
+    gchar **sublevel_name;
+
+    guint sample_count;
+    guint i;
+
+    g_object_get(sfz_file,
+		 "sample", &start_list,
+		 NULL);
+
+    list = start_list;
+
+    sample_count = g_list_length(start_list);
+    
+    sublevel_name = (gchar **) malloc((sample_count + 1) * sizeof(gchar*));
+
+    for(i = 0; i < sample_count; i++){
+      gchar *str;
+      
+      g_object_get(list->data,
+		   "filename", &str,
+		   NULL);
+      sublevel_name[i] = str;
+
+      list = list->next;
+    }
+    
+    sublevel_name[i] = NULL;
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+    
+    return(sublevel_name);
+  }
+  };
+
   return(NULL);
 }
 
