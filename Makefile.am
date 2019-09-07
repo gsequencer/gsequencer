@@ -995,7 +995,11 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
-	ags/audio/file/ags_sndfile.h
+	ags/audio/file/ags_sndfile.h \
+	ags/audio/file/ags_sfz_file.h \
+	ags/audio/file/ags_sfz_group.h \
+	ags/audio/file/ags_sfz_region.h \
+	ags/audio/file/ags_sfz_sample.h	
 
 if WITH_LIBINSTPATCH
 libags_audio_file_h_sources += \
@@ -1016,7 +1020,11 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
-	ags/audio/file/ags_sndfile.c
+	ags/audio/file/ags_sndfile.c \
+	ags/audio/file/ags_sfz_file.c \
+	ags/audio/file/ags_sfz_group.c \
+	ags/audio/file/ags_sfz_region.c \
+	ags/audio/file/ags_sfz_sample.c	
 
 if WITH_LIBINSTPATCH
 libags_audio_file_c_sources += \

@@ -300,6 +300,10 @@
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_sample.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
+      <xi:include href="xml/ags_sfz_file.xml"/>
+      <xi:include href="xml/ags_sfz_group.xml"/>
+      <xi:include href="xml/ags_sfz_region.xml"/>
+      <xi:include href="xml/ags_sfz_sample.xml"/>
       <xi:include href="xml/ags_sound_container.xml"/>
       <xi:include href="xml/ags_sound_resource.xml"/>
     </chapter>

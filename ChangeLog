@@ -4,6 +4,7 @@ ags (2.3.0)
 	* TODO:JK: implemented ags-modify-synth-generator recall
 	* implemented FMSynth
 	* implemented FMSyncSynth
+	* implemented AgsSFZFile, AgsSFZGroup, AgsSFZRegion and AgsSFZSample
 	* implemented AgsComplex buffer type
 	* implemented AgsFrequencyMapManager
 	* implemented AgsFrequencyMap to compute max likelihood

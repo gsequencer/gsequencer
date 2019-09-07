@@ -1104,7 +1104,11 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
   pthread_mutex_lock(sndfile_mutex);
 
   if(frame_count != NULL){
-    *frame_count = sndfile->info->frames;
+    if(sndfile->info != NULL){
+      *frame_count = sndfile->info->frames;
+    }else{
+      *frame_count = 0;
+    }
   }
 
   pthread_mutex_unlock(sndfile_mutex);
