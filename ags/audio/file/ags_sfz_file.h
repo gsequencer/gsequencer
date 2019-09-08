@@ -98,7 +98,12 @@ struct _AgsSFZFile
   GList *group;
   GList *region;
   GList *sample;
-  
+
+  guint *index_selected;
+  gchar **name_selected;
+
+  gpointer current_sample;
+
   GList *audio_signal;
 };
 
@@ -114,6 +119,9 @@ pthread_mutex_t* ags_sfz_file_get_class_mutex();
 gboolean ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags);
+
+gboolean ags_sfz_file_select_sample(AgsIpatchSF2Reader *sfz_file,
+				    guint sample_index);
 
 gboolean ags_sfz_file_check_suffix(gchar *filename);
 

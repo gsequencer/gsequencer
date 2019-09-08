@@ -365,6 +365,18 @@ ags_sfz_file_init(AgsSFZFile *sfz_file)
   sfz_file->region = NULL;
   sfz_file->sample = NULL;
   
+  /* selected */
+  sfz_file->index_selected = (guint *) malloc(2 * sizeof(guint));
+  memset(sfz_file->index_selected, 0, 2 * sizeof(guint));
+  
+  sfz_file->name_selected = (gchar **) malloc(3 * sizeof(gchar *));
+
+  for(i = 0; i < 3; i++){
+    sfz_file->name_selected[i] = NULL;
+  }
+
+  sfz_file->current_sample = NULL;
+  
   sfz_file->audio_signal= NULL;
 }
 
@@ -1127,7 +1139,20 @@ ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(sfz_file));
   retval = 0;
   
-  //TODO:JK: implement me
+  switch(sublevel){
+  case AGS_SFZ_FILENAME:
+  {
+    if(ags_sfz_file_select_sample(ipatch_sfz_reader, level_index)){
+      retval = AGS_SFZ_FILENAME;
+    }
+  }
+  break;
+  case AGS_SFZ_SAMPLE:
+  {
+    retval = AGS_SFZ_SAMPLE;
+  }
+  break;
+  };
   
   return(retval);
 }
@@ -1183,12 +1208,9 @@ ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container)
   /* get sound resource */
   sound_resource = NULL;
 
-  //TODO:JK: implement me
-
-  sound_resource = g_list_reverse(sound_resource);
-  g_list_foreach(sound_resource,
-		 (GFunc) g_object_ref,
-		 NULL);
+  g_object_get(sfz_file,
+	       "sample", &sound_resource,
+	       NULL);
   
   return(sound_resource);
 }
@@ -1308,6 +1330,63 @@ ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
   sfz_file->flags &= (~flags);
   
   pthread_mutex_unlock(sfz_file_mutex);
+}
+
+/**
+ * ags_sfz_file_select_sample:
+ * @sfz_file: the #AgsSFZFile
+ * @sample_index: the sample index
+ * 
+ * Select sample.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 2.3.0
+ */
+gboolean
+ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
+			   guint sample_index)
+{
+  GList *start_list, *list;
+
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return(FALSE);
+  }
+
+  success = FALSE;
+
+  g_object_get(sfz_file,
+	       "sample", &start_list,
+	       NULL);
+
+  if(start_list != NULL){
+    list = start_list;
+
+    if(sample_index < g_list_length(start_list)){
+      gchar *filename;
+      
+      success = TRUE;
+
+      list = g_list_nth(start_list,
+			sample_index);
+
+      /* selected index and name */
+      ipatch_sf2_reader->index_selected[AGS_SFZ_SAMPLE] = sample_index;
+
+      g_free(ipatch_sf2_reader->name_selected[AGS_SFZ_SAMPLE]);
+
+      g_object_get(list->data,
+		   "filename", &filename,
+		   NULL);
+      
+      ipatch_sf2_reader->name_selected[AGS_SFZ_SAMPLE] = filename;
+
+      /* container */
+      ipatch_sf2_reader->current_sample = (AgsSFZSample *) list->data;
+    }
+  }
+  
+  return(success);
 }
 
 /**
