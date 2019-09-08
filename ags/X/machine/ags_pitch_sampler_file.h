@@ -36,8 +36,8 @@
 
 #define AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT (G_MAXDOUBLE)
 
-#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MIN (-96.0)
-#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MAX (96.0)
+#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MIN (-127.0)
+#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MAX (127.0)
 
 typedef struct _AgsPitchSamplerFile AgsPitchSamplerFile;
 typedef struct _AgsPitchSamplerFileClass AgsPitchSamplerFileClass;
