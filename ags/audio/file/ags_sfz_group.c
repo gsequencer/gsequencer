@@ -763,6 +763,43 @@ ags_sfz_group_insert_control(AgsSFZGroup *sfz_group,
 }
 
 /**
+ * ags_sfz_group_lookup_control:
+ * @sfz_group: the #AgsSFZGroup
+ * @key: the key
+ *
+ * Lookup control specified by @key of @sfz_group.
+ *
+ * Since: 2.3.0
+ */
+gchar*
+ags_sfz_group_lookup_control(AgsSFZGroup *sfz_group,
+			     gchar *key)
+{
+  gchar *value;
+  
+  pthread_mutex_t *sfz_group_mutex;
+
+  if(!AGS_IS_SFZ_GROUP(sfz_group)){
+    return(NULL);
+  }
+
+  /* get sfz_group mutex */
+  sfz_group_mutex = AGS_SFZ_GROUP_GET_OBJ_MUTEX(sfz_group);
+  
+  /* lookup */
+  pthread_mutex_lock(sfz_group_mutex);
+  
+  value = g_hash_table_lookup(sfz_group->control,
+			      key);
+
+  value = g_strdup(value);
+  
+  pthread_mutex_unlock(sfz_group_mutex);
+
+  return(value);
+}
+
+/**
  * ags_sfz_group_new:
  *
  * Creates a new instance of #AgsSFZGroup.

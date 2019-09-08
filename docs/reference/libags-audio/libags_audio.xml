@@ -115,6 +115,16 @@
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>
     </chapter>
+
+    <chapter id="audio-freq">
+      <title>Frequency utils</title>
+      <para>
+	The frequency util objects.
+      </para>
+
+      <xi:include href="xml/ags_frequency_map_manager.xml"/>
+      <xi:include href="xml/ags_frequency_map.xml"/>
+    </chapter>
     
     <chapter id="audio-io">
       <title>Audio sinks and sources</title>

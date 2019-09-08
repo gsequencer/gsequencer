@@ -765,6 +765,43 @@ ags_sfz_region_insert_control(AgsSFZRegion *sfz_region,
 }
 
 /**
+ * ags_sfz_region_lookup_control:
+ * @sfz_region: the #AgsSFZRegion
+ * @key: the key
+ *
+ * Lookup control specified by @key of @sfz_region.
+ *
+ * Since: 2.3.0
+ */
+gchar*
+ags_sfz_region_lookup_control(AgsSFZRegion *sfz_region,
+			      gchar *key)
+{
+  gchar *value;
+  
+  pthread_mutex_t *sfz_region_mutex;
+
+  if(!AGS_IS_SFZ_REGION(sfz_region)){
+    return(NULL);
+  }
+
+  /* get sfz_region mutex */
+  sfz_region_mutex = AGS_SFZ_REGION_GET_OBJ_MUTEX(sfz_region);
+  
+  /* lookup */
+  pthread_mutex_lock(sfz_region_mutex);
+  
+  value = g_hash_table_lookup(sfz_region->control,
+			      key);
+
+  value = g_strdup(value);
+  
+  pthread_mutex_unlock(sfz_region_mutex);
+
+  return(value);
+}
+
+/**
  * ags_sfz_region_new:
  *
  * Creates a new instance of #AgsSFZRegion.

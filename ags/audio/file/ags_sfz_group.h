@@ -85,6 +85,8 @@ void ags_sfz_group_unset_flags(AgsSFZGroup *sfz_group, guint flags);
 void ags_sfz_group_insert_control(AgsSFZGroup *sfz_group,
 				  gchar *key,
 				  gchar *value);
+gchar* ags_sfz_group_lookup_control(AgsSFZGroup *sfz_group,
+				    gchar *key);
 
 /* instantiate */
 AgsSFZGroup* ags_sfz_group_new();

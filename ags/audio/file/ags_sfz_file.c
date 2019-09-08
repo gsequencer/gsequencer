@@ -320,6 +320,8 @@ ags_sfz_file_sound_container_interface_init(AgsSoundContainerInterface *sound_co
 void
 ags_sfz_file_init(AgsSFZFile *sfz_file)
 {
+  guint i;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -1142,7 +1144,7 @@ ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
   switch(sublevel){
   case AGS_SFZ_FILENAME:
   {
-    if(ags_sfz_file_select_sample(ipatch_sfz_reader, level_index)){
+    if(ags_sfz_file_select_sample(sfz_file, level_index)){
       retval = AGS_SFZ_FILENAME;
     }
   }
@@ -1349,6 +1351,8 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 {
   GList *start_list, *list;
 
+  gboolean success;
+  
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return(FALSE);
   }
@@ -1371,18 +1375,18 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 			sample_index);
 
       /* selected index and name */
-      ipatch_sf2_reader->index_selected[AGS_SFZ_SAMPLE] = sample_index;
+      sfz_file->index_selected[AGS_SFZ_SAMPLE] = sample_index;
 
-      g_free(ipatch_sf2_reader->name_selected[AGS_SFZ_SAMPLE]);
+      g_free(sfz_file->name_selected[AGS_SFZ_SAMPLE]);
 
       g_object_get(list->data,
 		   "filename", &filename,
 		   NULL);
       
-      ipatch_sf2_reader->name_selected[AGS_SFZ_SAMPLE] = filename;
+      sfz_file->name_selected[AGS_SFZ_SAMPLE] = filename;
 
       /* container */
-      ipatch_sf2_reader->current_sample = (AgsSFZSample *) list->data;
+      sfz_file->current_sample = (AgsSFZSample *) list->data;
     }
   }
   
@@ -1427,6 +1431,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   FILE *file;
 
   struct stat *sb;
+  
+  GList *start_list, *list;  
 
   regmatch_t match_arr[3];
 
@@ -1543,7 +1549,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 
     free(sb);
 
-    return(FALSE);
+    return;
   }
   
   n_read = fread(buffer, sizeof(gchar), sb->st_size, file);
@@ -1677,6 +1683,96 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   
   free(sb);
   free(buffer);
+
+  /* apply loop start/end */
+  g_object_get(sfz_file,
+	       "sample", &start_list,
+	       NULL);
+
+  list = start_list;
+
+  while(list != NULL){
+    AgsSFZGroup *group;
+    AgsSFZRegion *region;
+    AgsSFZSample *sample;
+    
+    guint loop_start, loop_end;
+
+    sample = (AgsSFZSample *) list->data;
+
+    loop_start = 0;
+    loop_end = 0;
+    
+    g_object_get(sample,
+		 "group", &group,
+		 "region", &region,
+		 NULL);
+
+    /* check group */
+    if(group != NULL){
+      gchar *str;
+
+      str = ags_sfz_group_lookup_control(group,
+					 "loop_start");
+
+      if(str != NULL){
+	loop_start = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+
+	g_free(str);
+      }
+
+      str = ags_sfz_group_lookup_control(group,
+					 "loop_end");
+
+      if(str != NULL){
+	loop_end = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+
+	g_free(str);
+      }
+    }
+
+    /* check region */
+    if(region != NULL){
+      gchar *str;
+
+      str = ags_sfz_region_lookup_control(region,
+					 "loop_start");
+
+      if(str != NULL){
+	loop_start = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+
+	g_free(str);
+      }
+
+      str = ags_sfz_region_lookup_control(region,
+					 "loop_end");
+
+      if(str != NULL){
+	loop_end = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+
+	g_free(str);
+      }
+    }
+    
+    g_object_set(sample,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
+		 NULL);
+
+    /* iterate */
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 /**
