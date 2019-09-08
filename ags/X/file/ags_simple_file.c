@@ -2847,6 +2847,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
   auto void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
 
+  auto void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler);
+
 #ifdef AGS_WITH_LIBINSTPATCH
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
 #endif
@@ -3186,6 +3188,28 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 			       (gdouble) audio_loop_end);
       
       xmlFree(str);
+    }
+  }
+
+  void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    xmlChar *str;
+    gchar *value;
+
+    str = xmlGetProp(node,
+		     "filename");
+    
+    ags_pitch_sampler_open_filename(pitch_sampler,
+				    str);
+
+    if(str != NULL){      
+      xmlFree(str);
+    }
+    
+    if(pitch_sampler->audio_container == NULL){
+      return;
     }
   }
 
@@ -3667,6 +3691,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
+  }else if(AGS_IS_PITCH_SAMPLER(machine)){
+    ags_simple_file_read_pitch_sampler_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsPitchSampler *) machine);
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
@@ -8100,6 +8126,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "audio-loop-end",
 	       g_strdup_printf("%u", (guint) round(fm_syncsynth->loop_end->adjustment->value)));
+  }else if(AGS_IS_PITCH_SAMPLER(machine)){
+    AgsPitchSampler *pitch_sampler;
+
+    pitch_sampler = (AgsPitchSampler *) machine;
+
+    if(pitch_sampler->audio_container != NULL &&
+       pitch_sampler->audio_container->filename != NULL){
+      xmlNewProp(node,
+		 "filename",
+		 pitch_sampler->audio_container->filename);
+    }
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
