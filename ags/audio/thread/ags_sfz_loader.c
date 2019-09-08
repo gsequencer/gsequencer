@@ -763,6 +763,7 @@ ags_sfz_loader_run(void *ptr)
 
       pitch_keycenter = 49;
       
+      /* group */
       str_pitch_keycenter = ags_sfz_group_lookup_control(group,
 							 "pitch_keycenter");
       
@@ -797,6 +798,41 @@ ags_sfz_loader_run(void *ptr)
 	}	
       }
 
+      /* region */
+      str_pitch_keycenter = ags_sfz_region_lookup_control(region,
+							  "pitch_keycenter");
+      
+      str_key = ags_sfz_region_lookup_control(region,
+					      "key");
+
+      if(str_pitch_keycenter != NULL){
+	retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+
+	if(retval > 0){
+	  pitch_keycenter = current_pitch_keycenter;
+	}else{
+	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
+						       &current_key);
+
+	  if(retval > 0){
+	    pitch_keycenter = current_pitch_keycenter;
+	  }
+	}		
+      }else if(str_key != NULL){
+	retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+
+	if(retval > 0){
+	  pitch_keycenter = current_key;
+	}else{
+	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
+						       &current_key);
+
+	  if(retval > 0){
+	    pitch_keycenter = current_key;
+	  }
+	}	
+      }
+      
       /* loop start/end */
       g_object_get(audio_signal->data,
 		   "samplerate", &samplerate,
@@ -1100,8 +1136,11 @@ ags_sfz_loader_run(void *ptr)
 
     input = next_input;
   }
-    
+  
   g_object_unref(output_soundcard);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   ags_sfz_loader_set_flags(sfz_loader,
 			   AGS_SFZ_LOADER_HAS_COMPLETED);

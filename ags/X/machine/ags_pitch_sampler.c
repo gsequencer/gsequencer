@@ -1752,6 +1752,146 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 			 pitch_sampler) != NULL){
     if(pitch_sampler->sfz_loader != NULL){
       if(ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
+	AgsPitchSamplerFile *file;
+
+	GList *start_list, *list;
+	
+	/* file */
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(pitch_sampler->file));
+
+	while(list != NULL){
+	  gtk_widget_destroy(list->data);
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+
+	g_object_get(pitch_sampler->sfz_loader->audio_container->sound_container,
+		     "sample", &start_list,
+		     NULL);
+
+	list = start_list;
+
+	while(list != NULL){
+	  AgsSFZGroup *group;
+	  AgsSFZRegion *region;      
+
+	  gchar *str_key, *str_pitch_keycenter;
+
+	  guint current_key;
+	  guint pitch_keycenter, current_pitch_keycenter;
+	  guint loop_start, loop_end;
+	  int retval;
+	  
+	  file = ags_pitch_sampler_file_new();
+	  ags_pitch_sampler_add_file(pitch_sampler,
+				     file);
+	  ags_connectable_connect(AGS_CONNECTABLE(file));
+
+	  /* pitch keycenter */
+	  g_object_get(list->data,
+		       "group", &group,
+		       "region", &region,
+		       NULL);
+
+	  pitch_keycenter = 49;	  
+
+	  /* group */
+	  str_pitch_keycenter = ags_sfz_group_lookup_control(group,
+							     "pitch_keycenter");
+      
+	  str_key = ags_sfz_group_lookup_control(group,
+						 "key");
+
+	  if(str_pitch_keycenter != NULL){
+	    retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+
+	    if(retval > 0){
+	      pitch_keycenter = current_pitch_keycenter;
+	    }else{
+	      retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
+							   &current_key);
+
+	      if(retval > 0){
+		pitch_keycenter = current_pitch_keycenter;
+	      }
+	    }		
+	  }else if(str_key != NULL){
+	    retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+
+	    if(retval > 0){
+	      pitch_keycenter = current_key;
+	    }else{
+	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
+							   &current_key);
+
+	      if(retval > 0){
+		pitch_keycenter = current_key;
+	      }
+	    }	
+	  }
+
+	  /* region */
+	  str_pitch_keycenter = ags_sfz_region_lookup_control(region,
+							      "pitch_keycenter");
+      
+	  str_key = ags_sfz_region_lookup_control(region,
+						  "key");
+
+	  if(str_pitch_keycenter != NULL){
+	    retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+
+	    if(retval > 0){
+	      pitch_keycenter = current_pitch_keycenter;
+	    }else{
+	      retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
+							   &current_key);
+
+	      if(retval > 0){
+		pitch_keycenter = current_pitch_keycenter;
+	      }
+	    }		
+	  }else if(str_key != NULL){
+	    retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+
+	    if(retval > 0){
+	      pitch_keycenter = current_key;
+	    }else{
+	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
+							   &current_key);
+
+	      if(retval > 0){
+		pitch_keycenter = current_key;
+	      }
+	    }	
+	  }
+
+	  /* set pitch keycenter */
+	  gtk_spin_button_set_value(file->base_key,
+				    (gdouble) pitch_keycenter);
+
+	  /* set loop start/end */
+	  g_object_get(list->data,
+		       "loop-start", &loop_start,
+		       "loop-end", &loop_end,
+		       NULL);
+	  
+	  gtk_spin_button_set_value(file->loop_start,
+				    (gdouble) loop_start);
+
+	  gtk_spin_button_set_value(file->loop_end,
+				    (gdouble) loop_end);	  
+	  
+	  /* iterate */
+	  list = list->next;
+	}
+
+	g_list_free_full(start_list,
+			 g_object_unref);
+	
+	/* cleanup */	
 	g_object_run_dispose((GObject *) pitch_sampler->sfz_loader);
 	g_object_unref(pitch_sampler->sfz_loader);
 
@@ -1759,6 +1899,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 
 	pitch_sampler->position = -1;
 	gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
+
       }else{
 	if(pitch_sampler->position == -1){
 	  pitch_sampler->position = 0;
