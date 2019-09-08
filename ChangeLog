@@ -7,7 +7,7 @@ ags (2.3.0)
 	* implemented AgsFMOscillator
 	* TODO:JK: implemented AgsPitchSampler and AgsPitchSamplerFile
 	* implemented AgsSFZFile, AgsSFZGroup, AgsSFZRegion and AgsSFZSample
-	* TODO:JK: implemented AgsSFZLoader
+	* implemented AgsSFZLoader
 	* implemented AgsComplex buffer type
 	* implemented AgsFrequencyMapManager
 	* implemented AgsFrequencyMap to compute max likelihood
