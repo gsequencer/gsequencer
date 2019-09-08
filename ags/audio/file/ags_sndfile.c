@@ -914,7 +914,9 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
 	   SF_FORMAT_DOUBLE) & sndfile->info->format)){
   case SF_FORMAT_PCM_S8:
   {
-    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    //TODO:JK: implement me
+    //format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    format = AGS_SOUNDCARD_DOUBLE;
   }
   break;
   case SF_FORMAT_PCM_16:

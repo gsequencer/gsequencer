@@ -50,12 +50,18 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_fm_synth.h>
+#include <ags/X/machine/ags_fm_synth_input_line.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_fm_oscillator.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
 #endif
+
+#include <ags/X/machine/ags_pitch_sampler.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 
@@ -143,6 +149,8 @@ void ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
 					     AgsEffectLine *effect_line);
 void ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator);
 void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator);
+void ags_simple_file_read_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **fm_oscillator);
+void ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsFMOscillator **fm_oscillator);
 
 void ags_simple_file_read_notation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsNotationEditor **notation_editor);
 void ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
@@ -185,6 +193,8 @@ xmlNode* ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlN
 xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line);
 xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
 xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
+xmlNode* ags_simple_file_write_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *fm_oscillator);
+xmlNode* ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsFMOscillator *fm_oscillator);
 
 xmlNode* ags_simple_file_write_notation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotationEditor *notation_editor);
 void ags_simple_file_write_notation_editor_resolve_machine(AgsFileLookup *file_lookup,
@@ -2507,6 +2517,44 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  g_list_free(start_list);
 	}
       }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-fm-oscillator-list",
+			   21)){
+	if(AGS_IS_FM_SYNCSYNTH(gobject)){
+	  GList *fm_oscillator;
+	  GList *start_list, *list;
+
+	  guint count;
+	  guint i;
+
+	  start_list = gtk_container_get_children(GTK_CONTAINER(AGS_FM_SYNCSYNTH(gobject)->fm_oscillator));
+	  count = g_list_length(start_list);
+
+	  for(i = 0; i < count; i++){
+	    ags_fm_syncsynth_remove_fm_oscillator((AgsFMSyncsynth *) gobject,
+						  0);
+	  }
+
+	  g_list_free(start_list);
+	  
+	  fm_oscillator = NULL;
+	  
+	  ags_simple_file_read_fm_oscillator_list(simple_file,
+						  child,
+						  &fm_oscillator);
+
+	  list =
+	    start_list = g_list_reverse(fm_oscillator);
+	  
+	  while(list != NULL){
+	    ags_fm_syncsynth_add_fm_oscillator((AgsFMSyncsynth *) gobject,
+					       list->data);
+
+	    list = list->next;
+	  }
+	  
+	  g_list_free(start_list);
+	}
+      }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-pattern-list",
 			   20)){
 	xmlNode *pattern_list_child;
@@ -4399,6 +4447,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	  ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
 	}
       }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-fm-oscillator",
+			   17)){	
+	if(AGS_IS_FM_SYNTH_INPUT_LINE(gobject)){
+	  ags_simple_file_read_fm_oscillator(simple_file, child, &(AGS_FM_SYNTH_INPUT_LINE(gobject)->fm_oscillator));
+	}
+      }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list",
 			   14)){
 	GList *property_start, *property;
@@ -5270,6 +5324,235 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 	endptr++;
       }
     }
+
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **fm_oscillator)
+{
+  AgsFMOscillator *current;
+  
+  xmlNode *child;
+
+  GList *list;
+  
+  guint i;
+
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-fm-oscillator",
+		     14)){
+	current = NULL;
+
+	if(*fm_oscillator != NULL){
+	  GList *iter;
+
+	  iter = g_list_nth(*fm_oscillator,
+			    i);
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
+	}
+	
+	ags_simple_file_read_fm_oscillator(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *fm_oscillator = list;
+}
+
+void
+ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsFMOscillator **fm_oscillator)
+{
+  AgsFMOscillator *gobject;
+  
+  xmlChar *str;
+  
+  gdouble val;
+  guint nth;
+  
+  if(*fm_oscillator != NULL){
+    gobject = AGS_FM_OSCILLATOR(fm_oscillator[0]);
+  }else{
+    gobject = ags_fm_oscillator_new();
+
+    *fm_oscillator = gobject;
+  }
+
+  str = xmlGetProp(node,
+		   "wave");
+
+  if(str != NULL){      
+    nth = g_ascii_strtoull(str,
+			   NULL,
+			   10);
+    gtk_combo_box_set_active(gobject->wave,
+			     nth);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "attack");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->attack->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "frequency");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->frequency->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "length");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->frame_count->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "phase");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->phase->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->volume->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "sync");
+
+  if(str != NULL &&
+     !xmlStrncmp(str,
+		 "true",
+		 5)){
+    gtk_toggle_button_set_active((GtkToggleButton *) gobject->do_sync,
+				 TRUE);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "sync-point");
+
+  if(str != NULL){
+    gchar *endptr;
+
+    gdouble current;
+    guint i;
+
+    endptr = str;
+    
+    for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
+      current = g_strtod(endptr,
+			 &endptr);
+
+      gtk_spin_button_set_value(gobject->sync_point[i],
+				current);
+
+      if(endptr[0] != '\0'){
+	endptr++;
+      }
+    }
+
+    xmlFree(str);
+  }
+
+  /* FM LFO */
+  str = xmlGetProp(node,
+		   "fm-lfo-wave");
+
+  if(str != NULL){      
+    nth = g_ascii_strtoull(str,
+			   NULL,
+			   10);
+    gtk_combo_box_set_active(gobject->fm_lfo_wave,
+			     nth);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "fm-lfo-frequency");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->fm_lfo_frequency->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "fm-lfo-depth");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->fm_lfo_depth->adjustment,
+			     val);
+
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "fm-tuning");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->fm_tuning->adjustment,
+			     val);
 
     xmlFree(str);
   }
@@ -7777,6 +8060,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "base-note",
 	       g_strdup_printf("%f", synth->lower->adjustment->value));
+  }else if(AGS_IS_FM_SYNTH(machine)){
+    AgsFMSynth *fm_synth;
+
+    fm_synth = (AgsFMSynth *) machine;
+    
+    xmlNewProp(node,
+	       "base-note",
+	       g_strdup_printf("%f", fm_synth->lower->adjustment->value));
   }else if(AGS_IS_SYNCSYNTH(machine)){
     AgsSyncsynth *syncsynth;
 
@@ -7793,6 +8084,22 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "audio-loop-end",
 	       g_strdup_printf("%u", (guint) round(syncsynth->loop_end->adjustment->value)));
+  }else if(AGS_IS_FM_SYNCSYNTH(machine)){
+    AgsFMSyncsynth *fm_syncsynth;
+
+    fm_syncsynth = (AgsFMSyncsynth *) machine;
+    
+    xmlNewProp(node,
+	       "base-note",
+	       g_strdup_printf("%f", fm_syncsynth->lower->adjustment->value));
+
+    xmlNewProp(node,
+	       "audio-loop-start",
+	       g_strdup_printf("%u", (guint) round(fm_syncsynth->loop_start->adjustment->value)));
+
+    xmlNewProp(node,
+	       "audio-loop-end",
+	       g_strdup_printf("%u", (guint) round(fm_syncsynth->loop_end->adjustment->value)));
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
@@ -8065,6 +8372,33 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     g_list_free(list_start);
     g_list_free(oscillator);
+  }else if(AGS_IS_FM_SYNCSYNTH(machine)){
+    xmlNode *child;
+    
+    GList *list, *list_start, *next, *fm_oscillator;
+
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) AGS_FM_SYNCSYNTH(machine)->fm_oscillator);
+
+    fm_oscillator = NULL;
+
+    while(list != NULL){
+      next = gtk_container_get_children(list->data);
+
+      fm_oscillator = g_list_prepend(fm_oscillator,
+				     next->next->data);
+
+      g_list_free(next);
+      
+      list = list->next;
+    }
+    
+    child = ags_simple_file_write_fm_oscillator_list(simple_file,
+						     node,
+						     fm_oscillator);
+    
+    g_list_free(list_start);
+    g_list_free(fm_oscillator);
   }
   
   /* pattern list */
@@ -8509,6 +8843,11 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     ags_simple_file_write_oscillator(simple_file,
 				     node,
 				     AGS_SYNTH_INPUT_LINE(line)->oscillator);
+    found_content = TRUE;
+  }else if(AGS_IS_FM_SYNTH_INPUT_LINE(line)){
+    ags_simple_file_write_fm_oscillator(simple_file,
+					node,
+					AGS_FM_SYNTH_INPUT_LINE(line)->fm_oscillator);
     found_content = TRUE;
   }
   
@@ -8975,6 +9314,111 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   xmlNewProp(node,
 	     "sync-point",
 	     str);
+  
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *fm_oscillator)
+{
+  xmlNode *node;
+    
+  node = xmlNewNode(NULL,
+		    "ags-fm-oscillator-list");
+
+  while(fm_oscillator != NULL){
+    ags_simple_file_write_fm_oscillator(simple_file,
+					node,
+					fm_oscillator->data);
+       
+    fm_oscillator = fm_oscillator->next;
+  }
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsFMOscillator *fm_oscillator)
+{
+  xmlNode *node;
+
+  xmlChar *str, *tmp;
+
+  guint i;
+  
+  node = xmlNewNode(NULL,
+		    "ags-fm-oscillator");
+    
+  xmlNewProp(node,
+	     "wave",
+	     g_strdup_printf("%d", gtk_combo_box_get_active(fm_oscillator->wave)));
+
+  xmlNewProp(node,
+	     "attack",
+	     g_strdup_printf("%f", fm_oscillator->attack->adjustment->value));
+
+  xmlNewProp(node,
+	     "length",
+	     g_strdup_printf("%f", fm_oscillator->frame_count->adjustment->value));
+
+  xmlNewProp(node,
+	     "frequency",
+	     g_strdup_printf("%f", fm_oscillator->frequency->adjustment->value));
+
+  xmlNewProp(node,
+	     "phase",
+	     g_strdup_printf("%f", fm_oscillator->phase->adjustment->value));
+
+  xmlNewProp(node,
+	     "volume",
+	     g_strdup_printf("%f", fm_oscillator->volume->adjustment->value));
+
+  xmlNewProp(node,
+	     "sync",
+	     g_strdup_printf("%s", (gtk_toggle_button_get_active((GtkToggleButton *) fm_oscillator->do_sync) ? "true": "false")));
+
+  str = NULL;
+
+  for(i = 0; i < 2 * fm_oscillator->sync_point_count; i++){
+    tmp = str;
+
+    if(str != NULL){
+      str = g_strdup_printf("%s %f",
+			    str,
+			    gtk_spin_button_get_value(fm_oscillator->sync_point[i]));
+    }else{
+      str = g_strdup_printf("%f",
+			    gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i]));
+    }
+    
+    g_free(tmp);
+  }
+  
+  xmlNewProp(node,
+	     "sync-point",
+	     str);
+  
+  xmlNewProp(node,
+	     "fm-lfo-wave",
+	     g_strdup_printf("%d", gtk_combo_box_get_active(fm_oscillator->fm_lfo_wave)));
+
+  xmlNewProp(node,
+	     "fm-lfo-frequency",
+	     g_strdup_printf("%f", fm_oscillator->fm_lfo_frequency->adjustment->value));
+
+  xmlNewProp(node,
+	     "fm-lfo-depth",
+	     g_strdup_printf("%f", fm_oscillator->fm_lfo_depth->adjustment->value));
+
+  xmlNewProp(node,
+	     "fm-tuning",
+	     g_strdup_printf("%f", fm_oscillator->fm_tuning->adjustment->value));
   
   xmlAddChild(parent,
 	      node);
