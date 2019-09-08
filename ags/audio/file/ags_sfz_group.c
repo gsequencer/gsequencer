@@ -244,7 +244,7 @@ ags_sfz_group_init(AgsSFZGroup *sfz_group)
   sfz_group->region = NULL;
   sfz_group->sample = NULL;
 
-  sfz_group->control = g_hash_table_new_full(g_string_hash, g_string_equal,
+  sfz_group->control = g_hash_table_new_full(g_str_hash, g_str_equal,
 					     NULL,
 					     NULL);
 }
@@ -300,8 +300,8 @@ ags_sfz_group_set_property(GObject *gobject,
     }
 
     g_object_ref(region);
-    g_list_prepend(sfz_group->region,
-		   region);
+    sfz_group->region = g_list_prepend(sfz_group->region,
+				       region);
 
     pthread_mutex_unlock(sfz_group_mutex);
   }

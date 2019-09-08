@@ -245,7 +245,7 @@ ags_sfz_region_init(AgsSFZRegion *sfz_region)
   sfz_region->group = NULL;
   sfz_region->sample = NULL;
 
-  sfz_region->control = g_hash_table_new_full(g_string_hash, g_string_equal,
+  sfz_region->control = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      NULL,
 					      NULL);
 }

@@ -61,6 +61,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -302,6 +303,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -362,14 +364,19 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 		  sum);
 
   i = 1;
-
+  tail = 0;
+  
   while(i < buffer_length){
     for(j = 0; j < freq_period && i + j < buffer_length;){
       for(k = 1; k < im_freq_period && i + j < buffer_length; j++, k++){
 	t = 1.0 / exp((gdouble) k * 2.0 * M_PI * im_freq_period / freq_period);
 
-	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
-	sum1 = ags_complex_get(mix_buffer + (guint) (i + k));
+	if(i + k >= buffer_length){
+	  tail = (i + k + 2) - buffer_length;
+	}
+	
+	sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1 - tail));
+	sum1 = ags_complex_get(mix_buffer + (guint) (i + k - tail));
 	  
 	sum = (1.0 - t) * sum0 + (t * sum1);
       
@@ -388,9 +395,10 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 		  sum);
 
   i = 1;
+  tail = 0;
   
-  while(i < buffer_length){
-    if(new_freq_period > freq_period){	
+  while(i < buffer_length && (guint) new_freq_period > 0){
+    if(new_freq_period > freq_period){
       for(j = 0; j < new_freq_period && i + j < buffer_length;){
 	sum0 = ags_complex_get(mix_buffer);
 
@@ -400,6 +408,10 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	for(k = 1; k < freq_period && i + j < buffer_length; j++, k++){
 	  t = (freq_period / new_freq_period) * 1.0 / exp2(j * 2.0 * M_PI * new_freq / base_freq);
 
+	  if((guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)) >= buffer_length){
+	    tail = (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) + 2) - buffer_length;
+	  }
+	  
 	  sum0 = ags_complex_get(mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor) - 1));
 	  sum1 = ags_complex_get(im_mix_buffer + (guint) (floor(i / new_freq_period) * new_freq_period + (k / new_offset_factor)));
 	  
@@ -414,8 +426,12 @@ ags_filter_util_pitch_s16(gint16 *buffer,
 	for(k = 1; k < new_freq_period && i + j < buffer_length; j++, k++){
 	  t = 1.0 / exp((gdouble) k * 2.0 * M_PI * new_freq_period / freq_period);
 
-	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1));
-	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k));
+	  if(i + k >= buffer_length){
+	    tail = (i + k + 2) - buffer_length;
+	  }
+	  
+	  sum0 = ags_complex_get(mix_buffer + (guint) (i + k - 1 - tail));
+	  sum1 = ags_complex_get(im_mix_buffer + (guint) (i + k - tail));
 	  
 	  sum = (1.0 - t) * sum0 + (t * sum1);
       
@@ -543,6 +559,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -784,6 +801,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -1025,6 +1043,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -1266,6 +1285,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -1507,6 +1527,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;
@@ -1748,6 +1769,7 @@ ags_filter_util_pitch_complex(AgsComplex *buffer,
   complex sum, sum0, sum1;
   gdouble n;
   guint i, j, k;
+  guint tail;
   
   if(tuning == 0.0){
     return;

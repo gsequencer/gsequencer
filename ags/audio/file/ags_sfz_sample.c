@@ -104,6 +104,7 @@ void ags_sfz_sample_close(AgsSoundResource *sound_resource);
 
 enum{
   PROP_0,
+  PROP_AUDIO_CHANNELS,
   PROP_FILENAME,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
@@ -186,6 +187,24 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
   gobject->finalize = ags_sfz_sample_finalize;
 
   /* properties */
+  /**
+   * AgsSFZSample:audio-channels:
+   *
+   * The audio channels to be used.
+   * 
+   * Since: 2.3.0
+   */
+  param_spec = g_param_spec_uint("audio-channels",
+				 i18n_pspec("using audio channels"),
+				 i18n_pspec("The audio channels to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
+
   /**
    * AgsSFZSample:filename:
    *
@@ -433,6 +452,42 @@ ags_sfz_sample_set_property(GObject *gobject,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   switch(prop_id){
+  case PROP_AUDIO_CHANNELS:
+  {
+    guint audio_channels;
+    guint i;
+      
+    audio_channels = g_value_get_uint(value);
+
+    pthread_mutex_lock(sfz_sample_mutex);
+
+    if(audio_channels == sfz_sample->audio_channels){
+      pthread_mutex_unlock(sfz_sample_mutex);
+
+      return;	
+    }
+      
+    ags_stream_free(sfz_sample->buffer);
+
+    if(audio_channels > 0){
+      sfz_sample->audio_channel_written = (gint64 *) realloc(sfz_sample->audio_channel_written,
+							     audio_channels * sizeof(gint64));
+	
+      for(i = sfz_sample->audio_channels; i < audio_channels; i++){
+	sfz_sample->audio_channel_written[i] = -1;
+      }
+    }else{
+      free(sfz_sample->audio_channel_written);
+    }
+
+    sfz_sample->audio_channels = audio_channels;
+      
+    sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * sfz_sample->buffer_size,
+					  sfz_sample->format);
+
+    pthread_mutex_unlock(sfz_sample_mutex);
+  }
+  break;
   case PROP_FILENAME:
   {
     gchar *filename;
@@ -552,7 +607,7 @@ ags_sfz_sample_set_property(GObject *gobject,
       return;	
     }
 
-    if(sfz_sample->group == NULL){
+    if(sfz_sample->group != NULL){
       g_object_unref(sfz_sample->group);
     }
 
@@ -579,7 +634,7 @@ ags_sfz_sample_set_property(GObject *gobject,
       return;	
     }
 
-    if(sfz_sample->region == NULL){
+    if(sfz_sample->region != NULL){
       g_object_unref(sfz_sample->region);
     }
 
@@ -613,6 +668,15 @@ ags_sfz_sample_get_property(GObject *gobject,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
   
   switch(prop_id){
+  case PROP_AUDIO_CHANNELS:
+  {
+    pthread_mutex_lock(sfz_sample_mutex);
+
+    g_value_set_uint(value, sfz_sample->audio_channels);
+
+    pthread_mutex_unlock(sfz_sample_mutex);
+  }
+  break;
   case PROP_FILENAME:
   {
     pthread_mutex_lock(sfz_sample_mutex);
@@ -970,12 +1034,16 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   break;
   case SF_FORMAT_PCM_24:
   {
-    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    //TODO:JK: implement me
+    //format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    format = AGS_SOUNDCARD_DOUBLE;
   }
   break;
   case SF_FORMAT_PCM_32:
   {
-    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    //TODO:JK: implement me
+    //format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    format = AGS_SOUNDCARD_DOUBLE;
   }
   break;
   case SF_FORMAT_FLOAT:
@@ -1447,7 +1515,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						sfz_sample->buffer, sfz_sample->info->channels, audio_channel,
 						read_count, copy_mode);
-    //    g_message("[%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
+//    g_message("[%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
     
     i += read_count;
   }

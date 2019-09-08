@@ -924,12 +924,16 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
   break;
   case SF_FORMAT_PCM_24:
   {
-    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    //TODO:JK: implement me
+    //format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    format = AGS_SOUNDCARD_DOUBLE;
   }
   break;
   case SF_FORMAT_PCM_32:
   {
-    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    //TODO:JK: implement me
+    //format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    format = AGS_SOUNDCARD_DOUBLE;
   }
   break;
   case SF_FORMAT_FLOAT:

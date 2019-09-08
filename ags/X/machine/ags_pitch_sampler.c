@@ -175,6 +175,7 @@ void
 ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 {
   GtkVBox *vbox;
+  AgsPitchSamplerFile *file;
   GtkHBox *hbox;
   GtkVBox *control_vbox;
   GtkHBox *filename_hbox;
@@ -268,9 +269,10 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     0);
 
   /* add 1 sample */
+  file = ags_pitch_sampler_file_new();
   ags_pitch_sampler_add_file(pitch_sampler,
-			     ags_pitch_sampler_file_new());
-
+			     file);
+  
   /* control */
   control_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 					  0);
@@ -475,7 +477,7 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
   AgsWindow *window;
   AgsPitchSampler *pitch_sampler;
 
-  GList *list;
+  GList *start_list, *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
@@ -485,6 +487,21 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
 
   pitch_sampler = AGS_PITCH_SAMPLER(connectable);
 
+  list = 
+    start_list = gtk_container_get_children(pitch_sampler->file);
+
+  while(list != NULL){
+    GList *child_start;
+
+    child_start = gtk_container_get_children(GTK_CONTAINER(list->data));
+    
+    ags_connectable_connect(AGS_CONNECTABLE(child_start->next->data));
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  
   /* filename */
   g_signal_connect(pitch_sampler->open, "clicked",
 		   G_CALLBACK(ags_pitch_sampler_open_callback), pitch_sampler);
@@ -525,7 +542,7 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 {
   AgsPitchSampler *pitch_sampler;
 
-  GList *list;
+  GList *start_list, *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
     return;
@@ -535,6 +552,23 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 
   pitch_sampler = AGS_PITCH_SAMPLER(connectable);
 
+  list = 
+    start_list = gtk_container_get_children(pitch_sampler->file);
+
+  while(list != NULL){
+    GList *child_start;
+   
+    child_start = gtk_container_get_children(GTK_CONTAINER(list->data));
+    
+    ags_connectable_disconnect(AGS_CONNECTABLE(child_start->next->data));
+
+    g_list_free(child_start);
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  
   /* filename */
   g_object_disconnect(pitch_sampler->open,
 		      "any_signal::clicked",
@@ -1768,6 +1802,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 
 	g_list_free(start_list);
 
+	/*  */
 	g_object_get(pitch_sampler->sfz_loader->audio_container->sound_container,
 		     "sample", &start_list,
 		     NULL);
@@ -1778,13 +1813,14 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  AgsSFZGroup *group;
 	  AgsSFZRegion *region;      
 
+	  gchar *filename;
 	  gchar *str_key, *str_pitch_keycenter;
 
-	  guint current_key;
-	  guint pitch_keycenter, current_pitch_keycenter;
+	  glong current_key;
+	  glong pitch_keycenter, current_pitch_keycenter;
 	  guint loop_start, loop_end;
 	  int retval;
-	  
+
 	  file = ags_pitch_sampler_file_new();
 	  ags_pitch_sampler_add_file(pitch_sampler,
 				     file);
@@ -1794,9 +1830,10 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  g_object_get(list->data,
 		       "group", &group,
 		       "region", &region,
+		       "filename", &filename,
 		       NULL);
 
-	  pitch_keycenter = 49;	  
+	  pitch_keycenter = 49;
 
 	  /* group */
 	  str_pitch_keycenter = ags_sfz_group_lookup_control(group,
@@ -1806,7 +1843,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 						 "key");
 
 	  if(str_pitch_keycenter != NULL){
-	    retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+	    retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
 	      pitch_keycenter = current_pitch_keycenter;
@@ -1819,7 +1856,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	      }
 	    }		
 	  }else if(str_key != NULL){
-	    retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
 	      pitch_keycenter = current_key;
@@ -1841,7 +1878,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 						  "key");
 
 	  if(str_pitch_keycenter != NULL){
-	    retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+	    retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
 	      pitch_keycenter = current_pitch_keycenter;
@@ -1854,7 +1891,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	      }
 	    }		
 	  }else if(str_key != NULL){
-	    retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
 	      pitch_keycenter = current_key;
@@ -1868,6 +1905,11 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	    }	
 	  }
 
+	  /* set filename */
+	  gtk_entry_set_text(file->filename,
+			     filename);
+	  g_free(filename);
+	  
 	  /* set pitch keycenter */
 	  gtk_spin_button_set_value(file->base_key,
 				    (gdouble) pitch_keycenter);

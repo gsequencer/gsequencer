@@ -21,12 +21,13 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/file/ags_sfz_group.h>
-#include <ags/audio/file/ags_sfz_region.h>
-#include <ags/audio/file/ags_sfz_sample.h>
+#include <ags/audio/ags_diatonic_scale.h>
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_sfz_group.h>
+#include <ags/audio/file/ags_sfz_region.h>
+#include <ags/audio/file/ags_sfz_sample.h>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -463,8 +464,8 @@ ags_sfz_file_set_property(GObject *gobject,
     }
 
     g_object_ref(group);
-    g_list_prepend(sfz_file->group,
-		   group);
+    sfz_file->group = g_list_prepend(sfz_file->group,
+				     group);
 
     pthread_mutex_unlock(sfz_file_mutex);
   }
@@ -485,8 +486,8 @@ ags_sfz_file_set_property(GObject *gobject,
     }
 
     g_object_ref(region);
-    g_list_prepend(sfz_file->region,
-		   region);
+    sfz_file->region = g_list_prepend(sfz_file->region,
+				      region);
 
     pthread_mutex_unlock(sfz_file_mutex);
   }
@@ -507,8 +508,8 @@ ags_sfz_file_set_property(GObject *gobject,
     }
 
     g_object_ref(sample);
-    g_list_prepend(sfz_file->sample,
-		   sample);
+    sfz_file->sample = g_list_prepend(sfz_file->sample,
+				      sample);
 
     pthread_mutex_unlock(sfz_file_mutex);
   }
@@ -674,7 +675,7 @@ ags_sfz_file_finalize(GObject *gobject)
 
   g_list_free_full(sfz_file->audio_signal,
 		   g_object_unref);
-    
+  
   /* call parent */
   G_OBJECT_CLASS(ags_sfz_file_parent_class)->finalize(gobject);
 }
@@ -893,6 +894,8 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
   sfz_file->filename = g_strdup(filename);
   
   if(!ags_sfz_file_check_suffix(filename)){
+    g_message("unsupported suffix");
+    
     return(FALSE);
   }
 
@@ -907,6 +910,8 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
   pthread_mutex_unlock(sfz_file_mutex);
 
   if(file == NULL){
+    g_message("failed to open file");
+
     return(FALSE);
   }
 
@@ -1405,15 +1410,15 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
  */
 void
 ags_sfz_file_get_range(AgsSFZFile *sfz_file,
-		       guint *hikey, guint *lokey)
+		       glong *hikey, glong *lokey)
 {
   GList *start_group, *group;
   GList *start_region, *region;
 
   gchar *str;
   
-  guint upper, lower;
-  guint value;
+  glong upper, lower;
+  glong value;
   int retval;
   
   if(!AGS_IS_SFZ_FILE(sfz_file)){
@@ -1438,10 +1443,10 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = 0;
     
     if(str != NULL){
-      retval = sscanf(str, "%u", &value);
+      retval = sscanf(str, "%lu", &value);
 
       if(retval <= 0){
-	guint tmp;
+	glong tmp;
 	guint tmp_retval;
 	
 	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
@@ -1464,10 +1469,10 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = AGS_SFZ_FILE_LOOP_MAX;
     
     if(str != NULL){
-      retval = sscanf(str, "%u", &value);
+      retval = sscanf(str, "%lu", &value);
 
       if(retval <= 0){
-	guint tmp;
+	glong tmp;
 	guint tmp_retval;
 	
 	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
@@ -1497,10 +1502,10 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = 0;
     
     if(str != NULL){
-      retval = sscanf(str, "%u", &value);
+      retval = sscanf(str, "%lu", &value);
 
       if(retval <= 0){
-	guint tmp;
+	glong tmp;
 	guint tmp_retval;
 	
 	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
@@ -1523,10 +1528,10 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
     value = AGS_SFZ_FILE_LOOP_MAX;
     
     if(str != NULL){
-      retval = sscanf(str, "%u", &value);
+      retval = sscanf(str, "%lu", &value);
 
       if(retval <= 0){
-	guint tmp;
+	glong tmp;
 	guint tmp_retval;
 	
 	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
@@ -1623,7 +1628,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 
   static regex_t opcode_regex;
 
-  static const gchar *opcode_pattern = "^([\w]+)=([\S]+)";
+  static const gchar *opcode_pattern = "^([a-zA-Z_]+)=([-0-9a-zA-z\\.\\&#\\\\]+)";
 
   static const size_t max_matches = 3;
   static gboolean regex_compiled = FALSE;
@@ -1688,6 +1693,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     return;
   }
 
+  g_message("SFZ parse");
+  
   /* get sfz_file mutex */
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
@@ -1708,6 +1715,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     return;
   }
 
+  g_free(filename);
+  
   /* read SFZ */
   pthread_mutex_lock(sfz_file_mutex);
 
@@ -1718,8 +1727,6 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){
-    g_free(filename);
-
     free(sb);
 
     return;
@@ -1767,6 +1774,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     if(!g_ascii_strncasecmp(iter,
 			    "<group>",
 			    7)){
+      g_message("SFZ group");
+      
       nth_group++;
 
       group_active = TRUE;
@@ -1777,9 +1786,13 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       g_object_set(sfz_file,
 		   "group", current_group,
 		   NULL);
+
+      iter += 7;
     }else if(!g_ascii_strncasecmp(iter,
 				  "<region>",
 				  8)){
+      g_message("SFZ region");
+      
       nth_region++;
 
       region_active = TRUE;
@@ -1789,20 +1802,35 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       g_object_set(sfz_file,
 		   "region", current_region,
 		   NULL);
+
+      iter += 8;
     }else if(ags_regexec(&opcode_regex, iter, max_matches, match_arr, 0) == 0){
       gchar *opcode;
       gchar *str;
 
-      opcode = g_strndup(match_arr[1].rm_so,
+      opcode = g_strndup(iter + match_arr[1].rm_so,
 			 match_arr[1].rm_eo - match_arr[1].rm_so);
 
-      str = g_strndup(match_arr[2].rm_so,
+      str = g_strndup(iter + match_arr[2].rm_so,
 		      match_arr[2].rm_eo - match_arr[2].rm_so);
+
+      g_message("opcode - %s=%s", opcode, str);
       
       if(!g_ascii_strncasecmp(opcode,
 			      "sample",
 			      6)){
 	gchar *filename;
+	gchar *tmp;
+
+	gboolean success;
+	
+	tmp = str;
+
+	while((tmp = strchr(tmp, '\\')) != NULL){
+	  tmp[0] = '/';
+	  
+	  tmp++;
+	}
 	
 	sample_active = TRUE;
 	
@@ -1819,8 +1847,17 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 	}
 	
 	current_sample = ags_sfz_sample_new();
-	ags_sound_resource_open(AGS_SOUND_RESOURCE(current_sample),
-				filename);
+	g_object_set(current_sample,
+		     "group", current_group,
+		     "region", current_region,
+		     NULL);
+	
+	success = ags_sound_resource_open(AGS_SOUND_RESOURCE(current_sample),
+					  filename);
+
+	if(!success){
+	  g_message("failed to open %s", filename);
+	}
 	
 	g_object_set(sfz_file,
 		     "sample", current_sample,
@@ -1835,6 +1872,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 		       "sample", current_sample,
  		       NULL);
 	}
+
+	g_free(filename);
       }
 
       if(region_active){

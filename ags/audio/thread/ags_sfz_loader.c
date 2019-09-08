@@ -21,11 +21,17 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_filter_util.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_sfz_file.h>
 #include <ags/audio/file/ags_sfz_group.h>
 #include <ags/audio/file/ags_sfz_region.h>
 
@@ -541,8 +547,8 @@ ags_sfz_loader_run(void *ptr)
   GList *start_audio_signal, *audio_signal;
   GList *start_list, *list;
 
-  guint key, current_key;
-  guint hikey, lokey, current_hikey, current_lokey;
+  glong key, current_key;
+  glong hikey, lokey, current_hikey, current_lokey;
   guint n_pads, current_pads;
   guint n_audio_channels, current_audio_channels;
   int retval;
@@ -563,6 +569,10 @@ ags_sfz_loader_run(void *ptr)
 							-1);
   ags_audio_container_open(sfz_loader->audio_container);
 
+  /* select */
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(sfz_loader->audio_container->sound_container),
+					    0);
+  
   g_object_get(sfz_loader->audio,
 	       "input", &start_input,
 	       "input-pads", &n_pads,
@@ -572,7 +582,7 @@ ags_sfz_loader_run(void *ptr)
   hikey = 0;
   lokey = 0;
   
-  ags_sfz_file_get_range(sfz_loader->audio_container->sound_container,
+  ags_sfz_file_get_range(AGS_SFZ_FILE(sfz_loader->audio_container->sound_container),
 			 &lokey, &hikey);
   
   /* resize */
@@ -585,7 +595,7 @@ ags_sfz_loader_run(void *ptr)
   
   while(list != NULL){
     guint tmp;
-    
+
     ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(list->data),
 				   &tmp,
 				   NULL,
@@ -634,16 +644,21 @@ ags_sfz_loader_run(void *ptr)
 
     list = start_list;
 
-    key = lokey + i;
-
     while(list != NULL){
-      gchar *str_key, *str_lokey, *str_hikey;
+      gchar *str_key, *str_pitch_keycenter;
+      gchar *str_lokey, *str_hikey;
+      
+      gboolean success;
       
       g_object_get(list->data,
 		   "group", &group,
 		   "region", &region,
 		   NULL);
 
+      /* group */
+      str_pitch_keycenter = ags_sfz_group_lookup_control(group,
+							 "pitch_keycenter");
+      
       str_key = ags_sfz_group_lookup_control(group,
 					     "key");
       
@@ -653,12 +668,52 @@ ags_sfz_loader_run(void *ptr)
       str_hikey = ags_sfz_group_lookup_control(group,
 					       "hikey");
 
-      if(str_key != NULL){
-	retval = sscanf(str_key, "%u", &current_key);
+      lokey = 0;
+      
+      if(str_lokey != NULL){	
+	retval = sscanf(str_lokey, "%lu", &current_lokey);
+
+	if(retval <= 0){
+	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
+						       &current_lokey);
+
+	  if(retval > 0){
+	    lokey = current_lokey;
+	  }
+	}else{
+	  lokey = current_lokey;
+	}
+      }
+      
+      key = lokey + i;
+
+      success = FALSE;
+      
+      if(str_pitch_keycenter != NULL){
+	retval = sscanf(str_pitch_keycenter, "%lu", &current_key);
 
 	if(retval > 0){
 	  if(current_key == key){
-	    break;
+	    success = TRUE;
+	  }	  
+	}else{
+	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
+						       &current_key);
+	  
+	  if(retval > 0){
+	    if(current_key == key){
+	      success = TRUE;
+	    }
+	  }
+	}	
+      }
+
+      if(str_key != NULL){
+	retval = sscanf(str_key, "%lu", &current_key);
+
+	if(retval > 0){
+	  if(current_key == key){
+	    success = TRUE;
 	  }	  
 	}else{
 	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
@@ -666,16 +721,26 @@ ags_sfz_loader_run(void *ptr)
 
 	  if(retval > 0){
 	    if(current_key == key){
-	      break;
+	      success = TRUE;
 	    }
 	  }
 	}	
-      }else if(str_hikey != NULL && str_lokey != NULL){
-	gboolean success;
 
+	if(success){
+	  g_free(str_pitch_keycenter);
+	  g_free(str_key);
+
+	  g_free(str_hikey);
+	  g_free(str_lokey);
+
+	  break;
+	}
+      }
+
+      if(str_hikey != NULL && str_lokey != NULL){
 	success = FALSE;
 	
-	retval = sscanf(str_hikey, "%u", &current_hikey);
+	retval = sscanf(str_hikey, "%lu", &current_hikey);
 
 	if(retval <= 0){
 	  retval = ags_diatonic_scale_note_to_midi_key(str_hikey,
@@ -692,7 +757,7 @@ ags_sfz_loader_run(void *ptr)
 	  }	  
 	}
 	
-	retval = sscanf(str_lokey, "%u", &current_lokey);
+	retval = sscanf(str_lokey, "%lu", &current_lokey);
 
 	if(retval <= 0){
 	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
@@ -716,10 +781,167 @@ ags_sfz_loader_run(void *ptr)
 	}
 
 	if(success){
+	  hikey = current_hikey;
+	  lokey = current_lokey;
+
+	  g_free(str_pitch_keycenter);
+	  g_free(str_key);
+
+	  g_free(str_hikey);
+	  g_free(str_lokey);
+
 	  break;
 	}
       }
 
+      g_free(str_pitch_keycenter);
+      g_free(str_key);
+
+      g_free(str_hikey);
+      g_free(str_lokey);
+
+      /* region */
+      str_pitch_keycenter = ags_sfz_region_lookup_control(region,
+							  "pitch_keycenter");
+      
+      str_key = ags_sfz_region_lookup_control(region,
+					      "key");
+      
+      str_lokey = ags_sfz_region_lookup_control(region,
+						"lokey");
+
+      str_hikey = ags_sfz_region_lookup_control(region,
+						"hikey");
+
+      lokey = 0;
+      
+      if(str_lokey != NULL){	
+	retval = sscanf(str_lokey, "%lu", &current_lokey);
+
+	if(retval <= 0){
+	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
+						       &current_lokey);
+
+	  if(retval > 0){
+	    lokey = current_lokey;
+	  }
+	}else{
+	  lokey = current_lokey;
+	}
+      }
+      
+      key = lokey + i;
+
+      success = FALSE;
+      
+      if(str_pitch_keycenter != NULL){
+	retval = sscanf(str_pitch_keycenter, "%lu", &current_key);
+
+	if(retval > 0){
+	  if(current_key == key){
+	    success = TRUE;
+	  }	  
+	}else{
+	  retval = ags_diatonic_scale_note_to_midi_key(str_pitch_keycenter,
+						       &current_key);
+	  
+	  if(retval > 0){
+	    if(current_key == key){
+	      success = TRUE;
+	    }
+	  }
+	}	
+      }
+
+      if(str_key != NULL){
+	retval = sscanf(str_key, "%lu", &current_key);
+
+	if(retval > 0){
+	  if(current_key == key){
+	    success = TRUE;
+	  }	  
+	}else{
+	  retval = ags_diatonic_scale_note_to_midi_key(str_key,
+						       &current_key);
+
+	  if(retval > 0){
+	    if(current_key == key){
+	      success = TRUE;
+	    }
+	  }
+	}	
+
+	if(success){
+	  g_free(str_pitch_keycenter);
+	  g_free(str_key);
+
+	  g_free(str_hikey);
+	  g_free(str_lokey);
+
+	  break;
+	}
+      }
+
+      if(str_hikey != NULL && str_lokey != NULL){
+	gboolean success;
+
+	success = FALSE;
+	
+	retval = sscanf(str_hikey, "%lu", &current_hikey);
+
+	if(retval <= 0){
+	  retval = ags_diatonic_scale_note_to_midi_key(str_hikey,
+						       &current_hikey);
+
+	  if(retval > 0){
+	    if(current_key <= current_hikey){
+	      success = TRUE;
+	    }	  
+	  }
+	}else{
+	  if(current_key <= current_hikey){
+	    success = TRUE;
+	  }	  
+	}
+	
+	retval = sscanf(str_lokey, "%lu", &current_lokey);
+
+	if(retval <= 0){
+	  retval = ags_diatonic_scale_note_to_midi_key(str_lokey,
+						       &current_lokey);
+
+	  if(retval > 0){
+	    if(current_key >= current_lokey){	      
+	      success = TRUE;
+	    }else{
+	      success = FALSE;
+	    }	  
+	  }else{
+	    success = FALSE;
+	  }
+	}else{
+	  if(current_key >= current_lokey){
+	    success = TRUE;
+	  }else{
+	    success = FALSE;
+	  }	  
+	}
+
+	if(success){
+	  hikey = current_hikey;
+	  lokey = current_lokey;
+
+	  g_free(str_pitch_keycenter);
+	  g_free(str_key);
+
+	  g_free(str_hikey);
+	  g_free(str_lokey);
+
+	  break;
+	}
+      }
+
+      g_free(str_pitch_keycenter);
       g_free(str_key);
 
       g_free(str_hikey);
@@ -747,12 +969,13 @@ ags_sfz_loader_run(void *ptr)
       GList *start_stream, *stream;
       
       gchar *str_key, *str_pitch_keycenter;
+      gchar *str_lokey;
 
       guint samplerate;
       guint buffer_size;
       guint format;
       guint loop_start, loop_end;
-      guint pitch_keycenter, current_pitch_keycenter;
+      glong pitch_keycenter, current_pitch_keycenter;
       guint x_offset;
 
       /* key center */
@@ -761,6 +984,7 @@ ags_sfz_loader_run(void *ptr)
 		   "region", &region,
 		   NULL);
 
+      key = lokey + i;
       pitch_keycenter = 49;
       
       /* group */
@@ -771,7 +995,7 @@ ags_sfz_loader_run(void *ptr)
 					     "key");
 
       if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+	retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
 	if(retval > 0){
 	  pitch_keycenter = current_pitch_keycenter;
@@ -782,9 +1006,9 @@ ags_sfz_loader_run(void *ptr)
 	  if(retval > 0){
 	    pitch_keycenter = current_pitch_keycenter;
 	  }
-	}		
+	}
       }else if(str_key != NULL){
-	retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+	retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	if(retval > 0){
 	  pitch_keycenter = current_key;
@@ -797,6 +1021,9 @@ ags_sfz_loader_run(void *ptr)
 	  }
 	}	
       }
+
+      g_free(str_pitch_keycenter);
+      g_free(str_key);
 
       /* region */
       str_pitch_keycenter = ags_sfz_region_lookup_control(region,
@@ -806,7 +1033,7 @@ ags_sfz_loader_run(void *ptr)
 					      "key");
 
       if(str_pitch_keycenter != NULL){
-	retval = sscanf(str_pitch_keycenter, "%u", &current_pitch_keycenter);
+	retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
 	if(retval > 0){
 	  pitch_keycenter = current_pitch_keycenter;
@@ -819,7 +1046,7 @@ ags_sfz_loader_run(void *ptr)
 	  }
 	}		
       }else if(str_key != NULL){
-	retval = sscanf(str_key, "%u", &current_pitch_keycenter);
+	retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	if(retval > 0){
 	  pitch_keycenter = current_key;
@@ -832,6 +1059,9 @@ ags_sfz_loader_run(void *ptr)
 	  }
 	}	
       }
+
+      g_free(str_pitch_keycenter);
+      g_free(str_key);
       
       /* loop start/end */
       g_object_get(audio_signal->data,
@@ -844,279 +1074,120 @@ ags_sfz_loader_run(void *ptr)
 
       /* create audio signal */
       current_audio_signal = ags_audio_signal_new(output_soundcard,
-						  first_recycling,
+						  (GObject *) first_recycling,
 						  NULL);
+      current_audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      
       g_object_set(current_audio_signal,
 		   "loop-start", loop_start,
 		   "loop-end", loop_end,
 		   NULL);
-      
+
       ags_audio_signal_duplicate_stream(current_audio_signal,
 					audio_signal->data);
       
-      ags_audio_signal_set_flags(current_audio_signal,
-				 AGS_AUDIO_SIGNAL_TEMPLATE);
-
       /* pitch */
       stream =
 	start_stream = current_audio_signal->stream;
 
       x_offset = 0;
-      
-      while(stream != NULL){
-	if(x_offset + buffer_size < loop_start){
 
-	  switch(format){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    ags_filter_util_pitch_s8((gint8 *) stream->data,
-				     buffer_size,
-				     samplerate,
-				     pitch_keycenter,
-				     ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    ags_filter_util_pitch_s16((gint16 *) stream->data,
+      key -= lokey;
+
+      while(stream != NULL){
+	switch(format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  ags_filter_util_pitch_s8((gint8 *) stream->data,
+				   buffer_size,
+				   samplerate,
+				   pitch_keycenter - 48.0,
+				   ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  ags_filter_util_pitch_s16((gint16 *) stream->data,
+				    buffer_size,
+				    samplerate,
+				    pitch_keycenter - 48.0,
+				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  ags_filter_util_pitch_s24((gint32 *) stream->data,
+				    buffer_size,
+				    samplerate,
+				    pitch_keycenter - 48.0,
+				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  ags_filter_util_pitch_s32((gint32 *) stream->data,
+				    buffer_size,
+				    samplerate,
+				    pitch_keycenter - 48.0,
+				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  ags_filter_util_pitch_s64((gint64 *) stream->data,
+				    buffer_size,
+				    samplerate,
+				    pitch_keycenter - 48.0,
+				    ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_FLOAT:
+	{
+	  ags_filter_util_pitch_float((gfloat *) stream->data,
 				      buffer_size,
 				      samplerate,
-				      pitch_keycenter,
+				      pitch_keycenter - 48.0,
 				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    ags_filter_util_pitch_s24((gint32 *) stream->data,
-				      buffer_size,
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    ags_filter_util_pitch_s32((gint32 *) stream->data,
-				      buffer_size,
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	  {
-	    ags_filter_util_pitch_s64((gint64 *) stream->data,
-				      buffer_size,
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_FLOAT:
-	  {
-	    ags_filter_util_pitch_float((gfloat *) stream->data,
+	}
+	break;
+	case AGS_SOUNDCARD_DOUBLE:
+	{
+	  ags_filter_util_pitch_double((gdouble *) stream->data,
+				       buffer_size,
+				       samplerate,
+				       pitch_keycenter - 48.0,
+				       ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
+	}
+	break;
+	case AGS_SOUNDCARD_COMPLEX:
+	{
+	  ags_filter_util_pitch_complex((AgsComplex *) stream->data,
 					buffer_size,
 					samplerate,
-					pitch_keycenter,
+					pitch_keycenter - 48.0,
 					((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_DOUBLE:
-	  {
-	    ags_filter_util_pitch_double((gdouble *) stream->data,
-					 buffer_size,
-					 samplerate,
-					 pitch_keycenter,
-					 ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_COMPLEX:
-	  {
-	    ags_filter_util_pitch_complex((AgsComplex *) stream->data,
-					  buffer_size,
-					  samplerate,
-					  pitch_keycenter,
-					  ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  }
-	  
-	  x_offset += buffer_size;
-	}else{
-
-	  /* before loop */
-	  switch(format){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    ags_filter_util_pitch_s8((gint8 *) stream->data,
-				     (loop_start - x_offset),
-				     samplerate,
-				     pitch_keycenter,
-				     ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    ags_filter_util_pitch_s16((gint16 *) stream->data,
-				      (loop_start - x_offset),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    ags_filter_util_pitch_s24((gint32 *) stream->data,
-				      (loop_start - x_offset),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    ags_filter_util_pitch_s32((gint32 *) stream->data,
-				      (loop_start - x_offset),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	  {
-	    ags_filter_util_pitch_s64((gint64 *) stream->data,
-				      (loop_start - x_offset),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_FLOAT:
-	  {
-	    ags_filter_util_pitch_float((gfloat *) stream->data,
-					(loop_start - x_offset),
-					samplerate,
-					pitch_keycenter,
-					((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_DOUBLE:
-	  {
-	    ags_filter_util_pitch_double((gdouble *) stream->data,
-					 (loop_start - x_offset),
-					 samplerate,
-					 pitch_keycenter,
-					 ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_COMPLEX:
-	  {
-	    ags_filter_util_pitch_complex((AgsComplex *) stream->data,
-					  (loop_start - x_offset),
-					  samplerate,
-					  pitch_keycenter,
-					  ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  }
-	  
-	  x_offset += (loop_start - x_offset);
-
-	  /* enter loop */
-	  switch(format){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    ags_filter_util_pitch_s8(((gint8 *) stream->data) + (x_offset - loop_start),
-				     (buffer_size - (x_offset - loop_start)),
-				     samplerate,
-				     pitch_keycenter,
-				     ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    ags_filter_util_pitch_s16(((gint16 *) stream->data) + (x_offset - loop_start),
-				      (buffer_size - (x_offset - loop_start)),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    ags_filter_util_pitch_s24(((gint32 *) stream->data) + (x_offset - loop_start),
-				      (buffer_size - (x_offset - loop_start)),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    ags_filter_util_pitch_s32(((gint32 *) stream->data) + (x_offset - loop_start),
-				      (buffer_size - (x_offset - loop_start)),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	  {
-	    ags_filter_util_pitch_s64(((gint64 *) stream->data) + (x_offset - loop_start),
-				      (buffer_size - (x_offset - loop_start)),
-				      samplerate,
-				      pitch_keycenter,
-				      ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_FLOAT:
-	  {
-	    ags_filter_util_pitch_float(((gfloat *) stream->data) + (x_offset - loop_start),
-					(buffer_size - (x_offset - loop_start)),
-					samplerate,
-					pitch_keycenter,
-					((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_DOUBLE:
-	  {
-	    ags_filter_util_pitch_double(((gdouble *) stream->data) + (x_offset - loop_start),
-					 (buffer_size - (x_offset - loop_start)),
-					 samplerate,
-					 pitch_keycenter,
-					 ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  case AGS_SOUNDCARD_COMPLEX:
-	  {
-	    ags_filter_util_pitch_complex(((AgsComplex *) stream->data) + (x_offset - loop_start),
-					  (buffer_size - (x_offset - loop_start)),
-					  samplerate,
-					  pitch_keycenter,
-					  ((gdouble) key - (gdouble) pitch_keycenter) * 100.0);
-	  }
-	  break;
-	  }
-	  
-	  x_offset += (buffer_size - (x_offset - loop_start));
 	}
+	break;
+	}	  
 
 	/* iterate */
+	x_offset += buffer_size;
+	
 	stream = stream->next;
       }
 
       /* add audio signal */
       ags_recycling_add_audio_signal(first_recycling,
 				     current_audio_signal);
+    }else{
+      g_message("SFZ audio signal not found: %d", j);
     }
+
+    g_object_unref(first_recycling);
     
     /* iterate */
     if(j + 1 < j_stop){
       j++;
-
-      if(audio_signal != NULL){
-	audio_signal = audio_signal->next;
-      }
     }else{
       g_list_free_full(start_audio_signal,
 		       g_object_unref);

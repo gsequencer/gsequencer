@@ -125,7 +125,7 @@ gboolean ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 				    guint sample_index);
 
 void ags_sfz_file_get_range(AgsSFZFile *sfz_file,
-			    guint *hikey, guint *lokey);
+			    glong *hikey, glong *lokey);
 
 gboolean ags_sfz_file_check_suffix(gchar *filename);
 

@@ -478,7 +478,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil(frame_count / target_buffer_size) + 1);
     audio_signal->stream_current = audio_signal->stream;
-
+    
     start_list = g_list_prepend(start_list,
 				audio_signal);
 
