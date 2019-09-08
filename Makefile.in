@@ -455,8 +455,9 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/ags_automation.c ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c ags/audio/ags_devin.c \
-	ags/audio/ags_input.c ags/audio/ags_filter_util.c \
-	ags/audio/ags_fifoout.c ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_diatonic_scale.c ags/audio/ags_input.c \
+	ags/audio/ags_filter_util.c ags/audio/ags_fifoout.c \
+	ags/audio/ags_fm_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
 	ags/audio/ags_frequency_map.c \
 	ags/audio/ags_frequency_map_manager.c \
@@ -490,6 +491,7 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
+	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c \
 	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
@@ -705,6 +707,7 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_char_buffer_util.lo \
 	ags/audio/libags_audio_la-ags_devout.lo \
 	ags/audio/libags_audio_la-ags_devin.lo \
+	ags/audio/libags_audio_la-ags_diatonic_scale.lo \
 	ags/audio/libags_audio_la-ags_input.lo \
 	ags/audio/libags_audio_la-ags_filter_util.lo \
 	ags/audio/libags_audio_la-ags_fifoout.lo \
@@ -758,6 +761,7 @@ am__objects_7 = $(am__objects_1) \
 	ags/audio/thread/libags_audio_la-ags_sequencer_thread.lo \
 	ags/audio/thread/libags_audio_la-ags_soundcard_thread.lo \
 	ags/audio/thread/libags_audio_la-ags_export_thread.lo \
+	ags/audio/thread/libags_audio_la-ags_sfz_loader.lo \
 	ags/audio/thread/libags_audio_la-ags_wave_loader.lo
 @WITH_LIBINSTPATCH_TRUE@am__objects_8 = ags/audio/file/libags_audio_la-ags_ipatch.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/libags_audio_la-ags_ipatch_sample.lo \
@@ -4382,6 +4386,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_char_buffer_util.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_devin.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_devout.Plo \
+	ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_fifoout.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo \
 	ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo \
@@ -4628,6 +4633,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_channel_thread.Plo \
 	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_export_thread.Plo \
 	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo \
+	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Plo \
 	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_soundcard_thread.Plo \
 	ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_wave_loader.Plo \
 	ags/file/$(DEPDIR)/libags_la-ags_file.Plo \
@@ -5413,8 +5419,8 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/ags_automation.h ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h ags/audio/ags_devin.h \
-	ags/audio/ags_filter_util.h ags/audio/ags_fifoout.h \
-	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_diatonic_scale.h ags/audio/ags_filter_util.h \
+	ags/audio/ags_fifoout.h ags/audio/ags_fm_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
 	ags/audio/ags_frequency_map.h \
 	ags/audio/ags_frequency_map_manager.h \
@@ -5448,6 +5454,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
+	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h \
 	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
@@ -8000,6 +8007,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
+	ags/audio/ags_diatonic_scale.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
@@ -8061,6 +8069,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
+	ags/audio/ags_diatonic_scale.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
@@ -8119,6 +8128,7 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
+	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h
 
 deprecated_libags_audio_thread_c_sources = 
@@ -8130,6 +8140,7 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
+	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c
 
 
@@ -9719,6 +9730,8 @@ ags/audio/libags_audio_la-ags_devout.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_devin.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_diatonic_scale.lo:  \
+	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_input.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_filter_util.lo:  \
@@ -9833,6 +9846,9 @@ ags/audio/thread/libags_audio_la-ags_soundcard_thread.lo:  \
 	ags/audio/thread/$(am__dirstamp) \
 	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
 ags/audio/thread/libags_audio_la-ags_export_thread.lo:  \
+	ags/audio/thread/$(am__dirstamp) \
+	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
+ags/audio/thread/libags_audio_la-ags_sfz_loader.lo:  \
 	ags/audio/thread/$(am__dirstamp) \
 	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
 ags/audio/thread/libags_audio_la-ags_wave_loader.lo:  \
@@ -13427,6 +13443,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_char_buffer_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_devin.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_devout.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_fifoout.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo@am__quote@ # am--include-marker
@@ -13673,6 +13690,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_channel_thread.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_export_thread.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_soundcard_thread.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_wave_loader.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file.Plo@am__quote@ # am--include-marker
@@ -14411,6 +14429,13 @@ ags/audio/libags_audio_la-ags_devin.lo: ags/audio/ags_devin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_devin.lo `test -f 'ags/audio/ags_devin.c' || echo '$(srcdir)/'`ags/audio/ags_devin.c
 
+ags/audio/libags_audio_la-ags_diatonic_scale.lo: ags/audio/ags_diatonic_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_diatonic_scale.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Tpo -c -o ags/audio/libags_audio_la-ags_diatonic_scale.lo `test -f 'ags/audio/ags_diatonic_scale.c' || echo '$(srcdir)/'`ags/audio/ags_diatonic_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_diatonic_scale.c' object='ags/audio/libags_audio_la-ags_diatonic_scale.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_diatonic_scale.lo `test -f 'ags/audio/ags_diatonic_scale.c' || echo '$(srcdir)/'`ags/audio/ags_diatonic_scale.c
+
 ags/audio/libags_audio_la-ags_input.lo: ags/audio/ags_input.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_input.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Tpo -c -o ags/audio/libags_audio_la-ags_input.lo `test -f 'ags/audio/ags_input.c' || echo '$(srcdir)/'`ags/audio/ags_input.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo
@@ -14774,6 +14799,13 @@ ags/audio/thread/libags_audio_la-ags_export_thread.lo: ags/audio/thread/ags_expo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_export_thread.c' object='ags/audio/thread/libags_audio_la-ags_export_thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_export_thread.lo `test -f 'ags/audio/thread/ags_export_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_export_thread.c
+
+ags/audio/thread/libags_audio_la-ags_sfz_loader.lo: ags/audio/thread/ags_sfz_loader.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_sfz_loader.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Tpo -c -o ags/audio/thread/libags_audio_la-ags_sfz_loader.lo `test -f 'ags/audio/thread/ags_sfz_loader.c' || echo '$(srcdir)/'`ags/audio/thread/ags_sfz_loader.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Tpo ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_sfz_loader.c' object='ags/audio/thread/libags_audio_la-ags_sfz_loader.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_sfz_loader.lo `test -f 'ags/audio/thread/ags_sfz_loader.c' || echo '$(srcdir)/'`ags/audio/thread/ags_sfz_loader.c
 
 ags/audio/thread/libags_audio_la-ags_wave_loader.lo: ags/audio/thread/ags_wave_loader.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_wave_loader.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_wave_loader.Tpo -c -o ags/audio/thread/libags_audio_la-ags_wave_loader.lo `test -f 'ags/audio/thread/ags_wave_loader.c' || echo '$(srcdir)/'`ags/audio/thread/ags_wave_loader.c
@@ -23847,6 +23879,7 @@ distclean: distclean-recursive
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_char_buffer_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_devin.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_devout.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fifoout.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo
@@ -24093,6 +24126,7 @@ distclean: distclean-recursive
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_channel_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_export_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo
+	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_soundcard_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_wave_loader.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file.Plo
@@ -24767,6 +24801,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_char_buffer_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_devin.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_devout.Plo
+	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_diatonic_scale.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fifoout.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_filter_util.Plo
 	-rm -f ags/audio/$(DEPDIR)/libags_audio_la-ags_fm_synth_util.Plo
@@ -25013,6 +25048,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_channel_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_export_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo
+	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sfz_loader.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_soundcard_thread.Plo
 	-rm -f ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_wave_loader.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file.Plo

@@ -1395,6 +1395,179 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 
 /**
  * ags_sfz_file_check_suffix:
+ * @sfz_file: the #AgsSFZFile
+ * @hikey: the return location of key high
+ * @lokey: the return location of key low
+ * 
+ * Get range of @sfz_file, set return location @hikey and @lokey.
+ * 
+ * Since: 2.3.0
+ */
+void
+ags_sfz_file_get_range(AgsSFZFile *sfz_file,
+		       guint *hikey, guint *lokey)
+{
+  GList *start_group, *group;
+  GList *start_region, *region;
+
+  gchar *str;
+  
+  guint upper, lower;
+  guint value;
+  int retval;
+  
+  if(!AGS_IS_SFZ_FILE(sfz_file)){
+    return;
+  }
+
+  g_object_get(sfz_file,
+	       "group", &start_group,
+	       "region", &start_region,
+	       NULL);
+
+  upper = 0;
+  lower = AGS_SFZ_FILE_LOOP_MAX;
+
+  group = start_group;
+
+  while(group != NULL){
+    /* hikey */
+    str = ags_sfz_group_lookup_control(group->data,
+				       "hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%u", &value);
+
+      if(retval <= 0){
+	guint tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  value = tmp;
+	}
+      }
+    }
+
+    if(value > upper){
+      upper = value;
+    }
+    
+    /* lokey */
+    str = ags_sfz_group_lookup_control(group->data,
+				       "hikey");
+
+    value = AGS_SFZ_FILE_LOOP_MAX;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%u", &value);
+
+      if(retval <= 0){
+	guint tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  value = tmp;
+	}
+      }
+    }
+
+    if(value < lower){
+      lower = value;
+    }
+
+    /* iterate */
+    group = group->next;
+  }
+
+  region = start_region;
+
+  while(region != NULL){
+    /* hikey */
+    str = ags_sfz_region_lookup_control(region->data,
+					"hikey");
+
+    value = 0;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%u", &value);
+
+      if(retval <= 0){
+	guint tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  value = tmp;
+	}
+      }
+    }
+
+    if(value > upper){
+      upper = value;
+    }
+    
+    /* lokey */
+    str = ags_sfz_region_lookup_control(region->data,
+					"hikey");
+
+    value = AGS_SFZ_FILE_LOOP_MAX;
+    
+    if(str != NULL){
+      retval = sscanf(str, "%u", &value);
+
+      if(retval <= 0){
+	guint tmp;
+	guint tmp_retval;
+	
+	tmp_retval = ags_diatonic_scale_note_to_midi_key(str,
+							 &tmp);
+
+	if(retval > 0){
+	  value = tmp;
+	}
+      }
+    }
+
+    if(value < lower){
+      lower = value;
+    }
+
+    /* iterate */
+    region = region->next;
+  }
+
+  /* set return location */
+  if(lokey < hikey){
+    if(lokey != NULL){
+      lokey[0] = lower;
+    }
+
+    if(hikey != NULL){
+      hikey[0] = upper;
+    }
+  }else{
+    if(lokey != NULL){
+      lokey[0] = 49;
+    }
+
+    if(hikey != NULL){
+      hikey[0] = 49;
+    }
+  }
+}
+
+/**
+ * ags_sfz_file_check_suffix:
  * @filename: the filename
  * 
  * Check @filename's suffix to be supported.

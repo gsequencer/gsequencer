@@ -794,6 +794,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
+	ags/audio/ags_diatonic_scale.h \
 	ags/audio/ags_filter_util.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_fm_synth_util.h \
@@ -856,6 +857,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
+	ags/audio/ags_diatonic_scale.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_filter_util.c \
 	ags/audio/ags_fifoout.c \
@@ -914,6 +916,7 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
+	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h
 
 deprecated_libags_audio_thread_c_sources =
@@ -926,6 +929,7 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
+	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c
 
 # libags-audio - plugin

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-
+guint ags_diatonic_scale_note_to_midi_key(gchar *note,
+					  glong *key);
+guint ags_diatonic_scale_midi_key_to_note(glong key,
+					  gchar **note);
 
 #endif /*__AGS_DIATONIC_SCALE_H__*/

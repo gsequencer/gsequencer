@@ -43,6 +43,10 @@
 typedef struct _AgsPitchSampler AgsPitchSampler;
 typedef struct _AgsPitchSamplerClass AgsPitchSamplerClass;
 
+typedef enum{
+  AGS_PITCH_SAMPLER_AUTO_UPDATE          = 1,
+}AgsPitch_SamplerFlags;
+
 struct _AgsPitchSampler
 {
   AgsMachine machine;
@@ -62,6 +66,11 @@ struct _AgsPitchSampler
   GtkEntry *filename;
   GtkButton *open;
 
+  AgsSFZLoader *sfz_loader;
+
+  gint position;
+  GtkLabel *loading;
+
   GtkButton *add;
   GtkButton *remove;
 
@@ -75,6 +84,8 @@ struct _AgsPitchSampler
 
   GtkSpinButton *lfo_depth;
   GtkSpinButton *lfo_tuning;
+
+  GtkFileChooserDialog *open_dialog;
 };
 
 struct _AgsPitchSamplerClass
@@ -93,6 +104,8 @@ void ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
 				     gchar *filename);
 
 void ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler);
+
+gboolean ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler);
 
 AgsPitchSampler* ags_pitch_sampler_new(GObject *soundcard);
 

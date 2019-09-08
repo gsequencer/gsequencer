@@ -37,6 +37,7 @@
 #define AGS_SFZ_FILE_GET_OBJ_MUTEX(obj) (((AgsSFZFile *) obj)->obj_mutex)
 
 #define AGS_SFZ_FILE_DEFAULT_CHANNELS (2)
+#define AGS_SFZ_FILE_LOOP_MAX (4294967296)
 
 #define AGS_SFZ_FILE_READ "r"
 #define AGS_SFZ_FILE_WRITE "w"
@@ -122,6 +123,9 @@ void ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags);
 
 gboolean ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 				    guint sample_index);
+
+void ags_sfz_file_get_range(AgsSFZFile *sfz_file,
+			    guint *hikey, guint *lokey);
 
 gboolean ags_sfz_file_check_suffix(gchar *filename);
 

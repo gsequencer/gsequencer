@@ -76,6 +76,7 @@ void ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler, guint in
 static gpointer ags_pitch_sampler_parent_class = NULL;
 static AgsConnectableInterface *ags_pitch_sampler_parent_connectable_interface;
 
+GHashTable *ags_pitch_sampler_sfz_loader_completed = NULL;
 extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
@@ -298,6 +299,19 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     FALSE, FALSE,
 		     0);
 
+  pitch_sampler->sfz_loader = NULL;
+
+  pitch_sampler->position = -1;
+
+  pitch_sampler->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) pitch_sampler->loading,
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_set_no_show_all((GtkWidget *) pitch_sampler->loading,
+			     TRUE);
+  gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
+  
   /* other controls */
   pitch_sampler->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) control_vbox,
@@ -420,6 +434,20 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* dialog */
+  pitch_sampler->open_dialog = NULL;
+
+  /* SFZ loader */
+  if(ags_pitch_sampler_sfz_loader_completed == NULL){
+    ags_pitch_sampler_sfz_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								   NULL,
+								   NULL);
+  }
+
+  g_hash_table_insert(ags_pitch_sampler_sfz_loader_completed,
+		      pitch_sampler, ags_pitch_sampler_sfz_loader_completed_timeout);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_pitch_sampler_sfz_loader_completed_timeout, (gpointer) pitch_sampler);
   
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
@@ -457,7 +485,39 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
 
   pitch_sampler = AGS_PITCH_SAMPLER(connectable);
 
-  //TODO:JK: implement me
+  /* filename */
+  g_signal_connect(pitch_sampler->open, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_open_callback), pitch_sampler);
+
+  /* add/remove */
+  g_signal_connect(pitch_sampler->add, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_add_callback), pitch_sampler);
+
+  g_signal_connect(pitch_sampler->remove, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_remove_callback), pitch_sampler);
+
+  /* auto-/update */
+  g_signal_connect((GObject *) pitch_sampler->auto_update, "toggled",
+		   G_CALLBACK(ags_pitch_sampler_auto_update_callback), pitch_sampler);
+
+  g_signal_connect((GObject *) pitch_sampler->update, "clicked",
+		   G_CALLBACK(ags_pitch_sampler_update_callback), (gpointer) pitch_sampler);
+
+  /* LFO */
+  g_signal_connect((GObject *) pitch_sampler->enable_lfo, "toggled",
+		   G_CALLBACK(ags_pitch_sampler_enable_lfo_callback), pitch_sampler);
+
+  g_signal_connect_after((GObject *) pitch_sampler->lfo_freq, "value-changed",
+			 G_CALLBACK(ags_pitch_sampler_lfo_freq_callback), (gpointer) pitch_sampler);
+  
+  g_signal_connect_after((GObject *) pitch_sampler->lfo_phase, "value-changed",
+			 G_CALLBACK(ags_pitch_sampler_lfo_phase_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect_after((GObject *) pitch_sampler->lfo_depth, "value-changed",
+			 G_CALLBACK(ags_pitch_sampler_lfo_depth_callback), (gpointer) pitch_sampler);
+
+  g_signal_connect_after((GObject *) pitch_sampler->lfo_tuning, "value-changed",
+			 G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback), (gpointer) pitch_sampler);
 }
 
 void
@@ -475,7 +535,69 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 
   pitch_sampler = AGS_PITCH_SAMPLER(connectable);
 
-  //TODO:JK: implement me
+  /* filename */
+  g_object_disconnect(pitch_sampler->open,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_open_callback),
+		      pitch_sampler,
+		      NULL);
+
+  /* add/remove */
+  g_object_disconnect(pitch_sampler->add,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_add_callback),
+		      pitch_sampler,
+		      NULL);
+
+  g_object_disconnect(pitch_sampler->remove,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_remove_callback),
+		      pitch_sampler,
+		      NULL);
+  
+  /* auto-/update */
+  g_object_disconnect((GObject *) pitch_sampler->auto_update,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pitch_sampler_auto_update_callback),
+		      pitch_sampler,
+		      NULL);
+  
+  g_object_disconnect((GObject *) pitch_sampler->update,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_pitch_sampler_update_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  /* LFO */
+  g_object_disconnect((GObject *) pitch_sampler->enable_lfo,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_pitch_sampler_enable_lfo_callback),
+		      pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->lfo_freq,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_lfo_freq_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+  
+  g_object_disconnect((GObject *) pitch_sampler->lfo_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_lfo_phase_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->lfo_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_lfo_depth_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
+
+  g_object_disconnect((GObject *) pitch_sampler->lfo_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback),
+		      (gpointer) pitch_sampler,
+		      NULL);
 }
 
 gchar*
@@ -1584,34 +1706,19 @@ void
 ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
 				gchar *filename)
 {
+  AgsSFZLoader *sfz_loader;
+
   if(!AGS_IS_PITCH_SAMPLER(pitch_sampler) ||
      filename == NULL){
     return;
   }
   
-  if(g_str_has_suffix(filename, ".sfz")){
-    AgsWindow *window;
-    
-    AgsAudioContainer *audio_container;
+  pitch_sampler->sfz_loader = 
+    sfz_loader = ags_sfz_loader_new(AGS_MACHINE(pitch_sampler)->audio,
+				    filename,
+				    TRUE);
 
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pitch_sampler);
-
-    /* SFZ related */
-    pitch_sampler->audio_container = 
-      audio_container = ags_audio_container_new(filename,
-						NULL,
-						NULL,
-						NULL,
-						window->soundcard,
-						-1);
-    ags_audio_container_open(audio_container);
-
-    if(audio_container->sound_container == NULL){
-      return;
-    }
-
-    //TODO:JK: implement me
-  }
+  ags_sfz_loader_start(sfz_loader);
 }
 
 /**
@@ -1626,6 +1733,72 @@ void
 ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_pitch_sampler_sfz_loader_completed_timeout:
+ * @widget: the widget
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed poll completed, otherwise %FALSE
+ *
+ * Since: 2.3.0
+ */
+gboolean
+ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
+{
+  if(g_hash_table_lookup(ags_pitch_sampler_sfz_loader_completed,
+			 pitch_sampler) != NULL){
+    if(pitch_sampler->sfz_loader != NULL){
+      if(ags_sfz_loader_test_flags(pitch_sampler->sfz_loader, AGS_SFZ_LOADER_HAS_COMPLETED)){
+	g_object_run_dispose((GObject *) pitch_sampler->sfz_loader);
+	g_object_unref(pitch_sampler->sfz_loader);
+
+	pitch_sampler->sfz_loader = NULL;
+
+	pitch_sampler->position = -1;
+	gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
+      }else{
+	if(pitch_sampler->position == -1){
+	  pitch_sampler->position = 0;
+
+	  gtk_widget_show((GtkWidget *) pitch_sampler->loading);
+	}
+
+	switch(pitch_sampler->position){
+	case 0:
+	  {
+	    pitch_sampler->position = 1;
+	    
+	    gtk_label_set_label(pitch_sampler->loading,
+				"loading ...  ");
+	  }
+	  break;
+	case 1:
+	  {
+	    pitch_sampler->position = 2;
+
+	    gtk_label_set_label(pitch_sampler->loading,
+				"loading  ... ");
+	  }
+	  break;
+	case 2:
+	  {
+	    pitch_sampler->position = 0;
+
+	    gtk_label_set_label(pitch_sampler->loading,
+				"loading   ...");
+	  }
+	  break;
+	}
+      }
+    }
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

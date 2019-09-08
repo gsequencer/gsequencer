@@ -29,6 +29,7 @@
 #include <ags/audio/file/ags_sound_resource.h>
 
 #include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_sfz_file.h>
 
 #include <ags/i18n.h>
 
@@ -1191,7 +1192,8 @@ ags_audio_container_check_suffix(gchar *filename)
 {
   if(g_str_has_suffix(filename, ".sf2") ||
      g_str_has_suffix(filename, ".gig") ||
-     g_str_has_suffix(filename, ".dls")){
+     g_str_has_suffix(filename, ".dls") ||
+     g_str_has_suffix(filename, ".sfz")){
     return(TRUE);
   }
 
@@ -1445,6 +1447,15 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
 	g_object_ref(audio_container->sound_container);
 
 	pthread_mutex_unlock(audio_container_mutex);
+      }else if(ags_sfz_file_check_suffix(audio_container->filename)){
+	/* SFZ file sound resource */
+	pthread_mutex_lock(audio_container_mutex);
+      
+	sound_container = 
+	  audio_container->sound_container = (GObject *) ags_sfz_file_new();
+	g_object_ref(audio_container->sound_container);
+      
+	pthread_mutex_unlock(audio_container_mutex);
       }
 
       if(ags_sound_container_open(AGS_SOUND_CONTAINER(sound_container),
@@ -1452,7 +1463,7 @@ ags_audio_container_open(AgsAudioContainer *audio_container)
 	return(TRUE);
       }
     }else{
-      g_message("ags_audio_container_open: unknown file type\n");
+      g_message("ags_audio_container_open: unknown file type");
     }
   }
   

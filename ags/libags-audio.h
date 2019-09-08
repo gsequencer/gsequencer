@@ -55,6 +55,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_filter_util.h>
 #include <ags/audio/ags_fm_synth_util.h>
@@ -110,6 +111,7 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_sfz_loader.h>
 #include <ags/audio/thread/ags_wave_loader.h>
 
 /* audio file */
@@ -124,6 +126,10 @@
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 #endif
+#include <ags/audio/file/ags_sfz_file.h>
+#include <ags/audio/file/ags_sfz_group.h>
+#include <ags/audio/file/ags_sfz_region.h>
+#include <ags/audio/file/ags_sfz_sample.h>
 #include <ags/audio/file/ags_sndfile.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
