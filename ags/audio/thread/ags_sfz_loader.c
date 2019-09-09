@@ -1180,7 +1180,7 @@ ags_sfz_loader_run(void *ptr)
       ags_recycling_add_audio_signal(first_recycling,
 				     current_audio_signal);
     }else{
-      g_message("SFZ audio signal not found: %d", j);
+      g_message("SFZ audio signal not found");
     }
 
     g_object_unref(first_recycling);

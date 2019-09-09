@@ -34,11 +34,6 @@
 #define AGS_IS_PITCH_SAMPLER_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PITCH_SAMPLER_FILE))
 #define AGS_PITCH_SAMPLER_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PITCH_SAMPLER_FILE, AgsPitchSamplerFileClass))
 
-#define AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT (G_MAXDOUBLE)
-
-#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MIN (-127.0)
-#define AGS_PITCH_SAMPLER_FILE_BASE_KEY_MAX (127.0)
-
 typedef struct _AgsPitchSamplerFile AgsPitchSamplerFile;
 typedef struct _AgsPitchSamplerFileClass AgsPitchSamplerFileClass;
 
@@ -53,15 +48,12 @@ struct _AgsPitchSamplerFile
   guint flags;
   
   GtkEntry *filename;
-  GtkButton *open;
 
   GtkLabel *freq;
-  GtkSpinButton *base_key;
+  GtkLabel *base_key;
 
-  GtkSpinButton *loop_start;
-  GtkSpinButton *loop_end;
-  
-  GtkFileChooserDialog *open_dialog;
+  GtkLabel *loop_start;
+  GtkLabel *loop_end;
 };
 
 struct _AgsPitchSamplerFileClass
@@ -72,9 +64,6 @@ struct _AgsPitchSamplerFileClass
 };
 
 GType ags_pitch_sampler_file_get_type(void);
-
-void ags_pitch_sampler_file_open_filename(AgsPitchSamplerFile *pitch_sampler_file,
-					  gchar *filename);
 
 AgsPitchSamplerFile* ags_pitch_sampler_file_new();
 

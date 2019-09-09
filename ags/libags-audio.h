@@ -222,6 +222,10 @@
 #include <ags/audio/recall/ags_feed_channel.h>
 #include <ags/audio/recall/ags_feed_channel_run.h>
 #include <ags/audio/recall/ags_feed_recycling.h>
+#include <ags/audio/recall/ags_lfo_audio_signal.h>
+#include <ags/audio/recall/ags_lfo_channel.h>
+#include <ags/audio/recall/ags_lfo_channel_run.h>
+#include <ags/audio/recall/ags_lfo_recycling.h>
 #include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_loop_channel_run.h>
 #include <ags/audio/recall/ags_mute_audio.h>

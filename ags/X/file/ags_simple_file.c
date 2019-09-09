@@ -3207,7 +3207,47 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     if(str != NULL){      
       xmlFree(str);
     }
+
+    str = xmlGetProp(node,
+		     "lfo-freq");
     
+    if(str != NULL){
+      gtk_spin_button_set_value(pitch_sampler->lfo_freq,
+				g_ascii_strtod(str,
+					       NULL));
+      xmlFree(str);
+    }
+
+    str = xmlGetProp(node,
+		     "lfo-phase");
+    
+    if(str != NULL){
+      gtk_spin_button_set_value(pitch_sampler->lfo_phase,
+				g_ascii_strtod(str,
+					       NULL));
+      xmlFree(str);
+    }
+
+    str = xmlGetProp(node,
+		     "lfo-depth");
+    
+    if(str != NULL){
+      gtk_spin_button_set_value(pitch_sampler->lfo_depth,
+				g_ascii_strtod(str,
+					       NULL));
+      xmlFree(str);
+    }
+    
+    str = xmlGetProp(node,
+		     "lfo-tuning");
+    
+    if(str != NULL){
+      gtk_spin_button_set_value(pitch_sampler->lfo_tuning,
+				g_ascii_strtod(str,
+					       NULL));
+      xmlFree(str);
+    }
+
     if(pitch_sampler->audio_container == NULL){
       return;
     }
@@ -8137,6 +8177,22 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "filename",
 		 pitch_sampler->audio_container->filename);
     }
+
+    xmlNewProp(node,
+	       "lfo-freq",
+	       g_strdup_printf("%f", gtk_spin_button_get_value(pitch_sampler->lfo_freq)));
+
+    xmlNewProp(node,
+	       "lfo-phase",
+	       g_strdup_printf("%f", gtk_spin_button_get_value(pitch_sampler->lfo_phase)));
+
+    xmlNewProp(node,
+	       "lfo-depth",
+	       g_strdup_printf("%f", gtk_spin_button_get_value(pitch_sampler->lfo_depth)));
+
+    xmlNewProp(node,
+	       "lfo-tuning",
+	       g_strdup_printf("%f", gtk_spin_button_get_value(pitch_sampler->lfo_tuning)));
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;

@@ -36,8 +36,8 @@
 #define AGS_IS_PITCH_SAMPLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PITCH_SAMPLER))
 #define AGS_PITCH_SAMPLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PITCH_SAMPLER, AgsPitchSamplerClass))
 
-#define AGS_PITCH_SAMPLER_LFO_FREQ_MIN (4.0)
-#define AGS_PITCH_SAMPLER_LFO_FREQ_MAX (8.0)
+#define AGS_PITCH_SAMPLER_LFO_FREQ_MIN (0.0)
+#define AGS_PITCH_SAMPLER_LFO_FREQ_MAX (20.0)
 #define AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ (6.0)
 
 typedef struct _AgsPitchSampler AgsPitchSampler;
@@ -70,12 +70,6 @@ struct _AgsPitchSampler
 
   gint position;
   GtkLabel *loading;
-
-  GtkButton *add;
-  GtkButton *remove;
-
-  GtkCheckButton *auto_update;
-  GtkButton *update;
 
   GtkCheckButton *enable_lfo;
     

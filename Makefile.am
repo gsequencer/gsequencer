@@ -1244,6 +1244,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_feed_channel.h \
 	ags/audio/recall/ags_feed_channel_run.h \
 	ags/audio/recall/ags_feed_recycling.h \
+	ags/audio/recall/ags_lfo_audio_signal.h \
+	ags/audio/recall/ags_lfo_channel.h \
+	ags/audio/recall/ags_lfo_channel_run.h \
+	ags/audio/recall/ags_lfo_recycling.h \
 	ags/audio/recall/ags_loop_channel.h \
 	ags/audio/recall/ags_loop_channel_run.h \
 	ags/audio/recall/ags_mute_audio.h \
@@ -1335,6 +1339,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_feed_channel.c \
 	ags/audio/recall/ags_feed_channel_run.c \
 	ags/audio/recall/ags_feed_recycling.c \
+	ags/audio/recall/ags_lfo_audio_signal.c \
+	ags/audio/recall/ags_lfo_channel.c \
+	ags/audio/recall/ags_lfo_channel_run.c \
+	ags/audio/recall/ags_lfo_recycling.c \
 	ags/audio/recall/ags_loop_channel.c \
 	ags/audio/recall/ags_loop_channel_run.c \
 	ags/audio/recall/ags_mute_audio.c \

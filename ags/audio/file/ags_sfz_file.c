@@ -1612,7 +1612,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   
   GList *start_list, *list;  
 
-  regmatch_t match_arr[3];
+  regmatch_t match_arr[2];
 
   gchar *filename;
   gchar *buffer, *iter;
@@ -1627,10 +1627,12 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   pthread_mutex_t *sfz_file_mutex;
 
   static regex_t opcode_regex;
+  static regex_t opcode_regex_next;
 
-  static const gchar *opcode_pattern = "^([a-zA-Z_]+)=([-0-9a-zA-z\\.\\&#\\\\]+)";
+  static const gchar *opcode_pattern = "^([a-zA-Z_]+)\\=";
+  static const gchar *opcode_pattern_next = "([a-zA-Z_]+)\\=";
 
-  static const size_t max_matches = 3;
+  static const size_t max_matches = 2;
   static gboolean regex_compiled = FALSE;
 
   auto gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar **iter);
@@ -1650,7 +1652,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     }
     
     /* skip whitespaces and comments */
-    for(; (look_ahead < &(buffer[sb->st_size])) && *look_ahead != '\0'; look_ahead++){
+    for(; (look_ahead < &(buffer[sb->st_size])) && *look_ahead != '\0';){
       /* skip comments */
       if(buffer == look_ahead){
 	if(look_ahead + 1 < &(buffer[sb->st_size]) && buffer[0] == '/' && buffer[1] == '/'){
@@ -1681,8 +1683,10 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       }
 
       /* spaces */
-      if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n')){
+      if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n' || look_ahead[0] == '\r')){
 	break;
+      }else{
+	look_ahead++;
       }
     }
 
@@ -1759,6 +1763,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     regex_compiled = TRUE;
     
     ags_regcomp(&opcode_regex, opcode_pattern, REG_EXTENDED);
+    ags_regcomp(&opcode_regex_next, opcode_pattern_next, REG_EXTENDED);
   }
 
   pthread_mutex_unlock(&regex_mutex);
@@ -1807,12 +1812,56 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     }else if(ags_regexec(&opcode_regex, iter, max_matches, match_arr, 0) == 0){
       gchar *opcode;
       gchar *str;
+      gchar *next, *tmp0_next, *tmp1_next;
 
-      opcode = g_strndup(iter + match_arr[1].rm_so,
+      iter += match_arr[1].rm_so;
+      
+      opcode = g_strndup(iter,
 			 match_arr[1].rm_eo - match_arr[1].rm_so);
 
-      str = g_strndup(iter + match_arr[2].rm_so,
-		      match_arr[2].rm_eo - match_arr[2].rm_so);
+      iter += strlen(opcode) + 1;
+      
+      if(ags_regexec(&opcode_regex_next, iter, max_matches, match_arr, 0) == 0){
+	tmp0_next = index(iter, '\n');
+	tmp1_next = index(iter, '\r');
+
+	if((tmp0_next != NULL || tmp1_next != NULL) &&
+	   ((tmp0_next != NULL && tmp0_next < iter + match_arr[1].rm_so) || (tmp1_next != NULL && tmp1_next < iter + match_arr[1].rm_so))){
+	  if(tmp0_next != NULL && (tmp1_next == NULL || tmp0_next < tmp1_next)){
+	    next = tmp0_next;
+	  }else{
+	    next = tmp1_next;
+	  }
+	}else{	
+	  next = iter + match_arr[1].rm_so;
+	}
+      }else{
+	tmp0_next = index(iter, '\n');
+	tmp1_next = index(iter, '\r');
+
+	if(tmp0_next != NULL || tmp1_next != NULL){
+	  if(tmp0_next != NULL && (tmp1_next == NULL || tmp0_next < tmp1_next)){
+	    next = tmp0_next;
+	  }else{
+	    next = tmp1_next;
+	  }
+	}else{
+	  next = &(buffer[sb->st_size]);
+	}
+      }
+
+      while(next > iter){
+	if((next - 1)[0] == ' '){
+	  next--;
+	}else{
+	  break;
+	}
+      }
+
+      str = g_strndup(iter,
+		      next - iter);
+
+      iter = next;
 
       g_message("opcode - %s=%s", opcode, str);
       
@@ -1885,12 +1934,10 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       }else{
 	g_warning("SFZ neither group nor region defined");
       }
-      
-      iter += (match_arr[0].rm_eo - match_arr[0].rm_so);
     }else{
       /* bad byte */
       iter++;
-    }        
+    }
   }while(iter < &(buffer[sb->st_size]));
   
   free(sb);

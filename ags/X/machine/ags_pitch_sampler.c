@@ -174,6 +174,7 @@ ags_pitch_sampler_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 {
+  GtkExpander *expander;
   GtkVBox *vbox;
   AgsPitchSamplerFile *file;
   GtkHBox *hbox;
@@ -261,13 +262,17 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		     0);
 
   /* file */
-  pitch_sampler->file = (GtkVBox *) gtk_vbox_new(FALSE,
-						 0);
+  expander = gtk_expander_new(i18n("file"));
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pitch_sampler->file,
+		     (GtkWidget *) expander,
 		     FALSE, FALSE,
 		     0);
-
+  
+  pitch_sampler->file = (GtkVBox *) gtk_vbox_new(FALSE,
+						 0);
+  gtk_container_add((GtkContainer *) expander,
+		    (GtkWidget *) pitch_sampler->file);
+  
   /* add 1 sample */
   file = ags_pitch_sampler_file_new();
   ags_pitch_sampler_add_file(pitch_sampler,
@@ -315,29 +320,6 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_widget_hide((GtkWidget *) pitch_sampler->loading);
   
   /* other controls */
-  pitch_sampler->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) control_vbox,
-		     (GtkWidget *) pitch_sampler->add,
-		     FALSE, FALSE,
-		     0);
-
-  pitch_sampler->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) control_vbox,
-		     (GtkWidget *) pitch_sampler->remove,
-		     FALSE, FALSE,
-		     0);
-
-  pitch_sampler->auto_update = gtk_check_button_new_with_label(i18n("auto update"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
-		     (GtkWidget *) pitch_sampler->auto_update,
-		     FALSE, FALSE,
-		     0);
-
-  pitch_sampler->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
-  gtk_box_pack_start((GtkBox *) control_vbox,
-		     (GtkWidget *) pitch_sampler->update,
-		     FALSE, FALSE,
-		     0);
   
   /* LFO table */
   lfo_table = (GtkTable *) gtk_table_new(3, 4,
@@ -364,8 +346,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   0, 0);
   
   pitch_sampler->lfo_freq = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_PITCH_SAMPLER_LFO_FREQ_MIN,
-									  AGS_PITCH_SAMPLER_LFO_FREQ_MAX,
-									  0.001);
+									     AGS_PITCH_SAMPLER_LFO_FREQ_MAX,
+									     0.001);
   gtk_spin_button_set_digits(pitch_sampler->lfo_freq,
 			     3);
   pitch_sampler->lfo_freq->adjustment->value = AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ;
@@ -385,7 +367,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   0, 0);
   
   pitch_sampler->lfo_phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      100000.0,
+									      G_MAXDOUBLE,
 									      1.0);
   pitch_sampler->lfo_phase->adjustment->value = 0.0;
   gtk_table_attach(lfo_table,
@@ -403,8 +385,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
-  pitch_sampler->lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      100000.0,
+  pitch_sampler->lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(-1200.0,
+									      1200.0,
 									      1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_depth,
 			     3);
@@ -424,8 +406,8 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
-  pitch_sampler->lfo_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-2400.0,
-									       2400.0,
+  pitch_sampler->lfo_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-1200.0,
+									       1200.0,
 									       1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_tuning,
 			     2);
@@ -506,23 +488,9 @@ ags_pitch_sampler_connect(AgsConnectable *connectable)
   g_signal_connect(pitch_sampler->open, "clicked",
 		   G_CALLBACK(ags_pitch_sampler_open_callback), pitch_sampler);
 
-  /* add/remove */
-  g_signal_connect(pitch_sampler->add, "clicked",
-		   G_CALLBACK(ags_pitch_sampler_add_callback), pitch_sampler);
-
-  g_signal_connect(pitch_sampler->remove, "clicked",
-		   G_CALLBACK(ags_pitch_sampler_remove_callback), pitch_sampler);
-
-  /* auto-/update */
-  g_signal_connect((GObject *) pitch_sampler->auto_update, "toggled",
-		   G_CALLBACK(ags_pitch_sampler_auto_update_callback), pitch_sampler);
-
-  g_signal_connect((GObject *) pitch_sampler->update, "clicked",
-		   G_CALLBACK(ags_pitch_sampler_update_callback), (gpointer) pitch_sampler);
-
   /* LFO */
-  g_signal_connect((GObject *) pitch_sampler->enable_lfo, "toggled",
-		   G_CALLBACK(ags_pitch_sampler_enable_lfo_callback), pitch_sampler);
+  g_signal_connect_after((GObject *) pitch_sampler->enable_lfo, "toggled",
+			 G_CALLBACK(ags_pitch_sampler_enable_lfo_callback), pitch_sampler);
 
   g_signal_connect_after((GObject *) pitch_sampler->lfo_freq, "value-changed",
 			 G_CALLBACK(ags_pitch_sampler_lfo_freq_callback), (gpointer) pitch_sampler);
@@ -574,32 +542,6 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_pitch_sampler_open_callback),
 		      pitch_sampler,
-		      NULL);
-
-  /* add/remove */
-  g_object_disconnect(pitch_sampler->add,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_pitch_sampler_add_callback),
-		      pitch_sampler,
-		      NULL);
-
-  g_object_disconnect(pitch_sampler->remove,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_pitch_sampler_remove_callback),
-		      pitch_sampler,
-		      NULL);
-  
-  /* auto-/update */
-  g_object_disconnect((GObject *) pitch_sampler->auto_update,
-		      "any_signal::toggled",
-		      G_CALLBACK(ags_pitch_sampler_auto_update_callback),
-		      pitch_sampler,
-		      NULL);
-  
-  g_object_disconnect((GObject *) pitch_sampler->update,
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_pitch_sampler_update_callback),
-		      (gpointer) pitch_sampler,
 		      NULL);
 
   /* LFO */
@@ -908,6 +850,18 @@ ags_pitch_sampler_resize_audio_channels(AgsMachine *machine,
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-envelope",
+			      audio_channels_old, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    /* ags-lfo */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-lfo",
 			      audio_channels_old, audio_channels, 
 			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
@@ -1436,6 +1390,18 @@ ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler, guint input_p
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  /* ags-lfo */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-lfo",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+  
   nth_channel = ags_channel_pad_nth(start_input,
 				    input_pad_start);
 
@@ -1815,7 +1781,8 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 
 	  gchar *filename;
 	  gchar *str_key, *str_pitch_keycenter;
-
+	  gchar *str;
+	  
 	  glong current_key;
 	  glong pitch_keycenter, current_pitch_keycenter;
 	  guint loop_start, loop_end;
@@ -1911,8 +1878,19 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	  g_free(filename);
 	  
 	  /* set pitch keycenter */
-	  gtk_spin_button_set_value(file->base_key,
-				    (gdouble) pitch_keycenter);
+	  str = g_strdup_printf("%f",
+				27.5 * exp2((gdouble) pitch_keycenter / 12.0));
+	  gtk_label_set_text(file->freq,
+			     str);
+	  
+	  g_free(str);
+
+	  str = g_strdup_printf("%d",
+				pitch_keycenter);
+	  gtk_label_set_text(file->base_key,
+			     str);
+
+	  g_free(str);
 
 	  /* set loop start/end */
 	  g_object_get(list->data,
@@ -1920,12 +1898,20 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 		       "loop-end", &loop_end,
 		       NULL);
 	  
-	  gtk_spin_button_set_value(file->loop_start,
-				    (gdouble) loop_start);
+	  str = g_strdup_printf("%d",
+				loop_start);
+	  gtk_label_set_text(file->loop_start,
+			     str);
 
-	  gtk_spin_button_set_value(file->loop_end,
-				    (gdouble) loop_end);	  
+	  g_free(str);
 	  
+	  str = g_strdup_printf("%d",
+				loop_end);
+	  gtk_label_set_text(file->loop_end,
+			     str);	  
+	  
+	  g_free(str);
+
 	  /* iterate */
 	  list = list->next;
 	}

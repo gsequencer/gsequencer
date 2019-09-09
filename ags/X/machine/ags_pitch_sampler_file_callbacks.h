@@ -27,11 +27,4 @@
 
 #include <ags/X/machine/ags_pitch_sampler_file.h>
 
-void ags_pitch_sampler_file_open_callback(GtkWidget *button, AgsPitchSamplerFile *pitch_sampler_file);
-
-void ags_pitch_sampler_file_base_key_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
-
-void ags_pitch_sampler_file_loop_start_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
-void ags_pitch_sampler_file_loop_end_callback(GtkSpinButton *spin_button, AgsPitchSamplerFile *pitch_sampler_file);
-
 #endif /*__AGS_PITCH_SAMPLER_FILE_CALLBACKS_H__ */

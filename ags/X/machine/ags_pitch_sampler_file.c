@@ -164,12 +164,6 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		     FALSE, FALSE,
 		     0);
 
-  pitch_sampler_file->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_box_pack_start((GtkBox *) filename_hbox,
-		     (GtkWidget *) pitch_sampler_file->open,
-		     FALSE, FALSE,
-		     0);
-
   /*  */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("frequency"),
@@ -183,7 +177,7 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		   0, 0);
 
   pitch_sampler_file->freq = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-						       "label", i18n("440.0"),
+						       "label", "440.0",
 						       "xalign", 0.0,
 						       NULL);
   gtk_table_attach(table,
@@ -204,8 +198,10 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  pitch_sampler_file->base_key = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_PITCH_SAMPLER_FILE_BASE_KEY_MIN, AGS_PITCH_SAMPLER_FILE_BASE_KEY_MAX, 0.01);
-  pitch_sampler_file->base_key->adjustment->value = 0.0;
+  pitch_sampler_file->base_key = g_object_new(GTK_TYPE_LABEL,
+					      "label", "48",
+					      "xalign", 0.0,
+					      NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(pitch_sampler_file->base_key),
 		   1, 2,
@@ -225,7 +221,10 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  pitch_sampler_file->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT, 1.0);
+  pitch_sampler_file->loop_start = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+							     "label", "0",
+							     "xalign", 0.0,
+							     NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(pitch_sampler_file->loop_start),
 		   1, 2,
@@ -245,7 +244,10 @@ ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  pitch_sampler_file->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_PITCH_SAMPLER_FILE_DEFAULT_FRAME_COUNT, 1.0);
+  pitch_sampler_file->loop_end = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+							   "label", "0",
+							   "xalign", 0.0,
+							   NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(pitch_sampler_file->loop_end),
 		   1, 2,

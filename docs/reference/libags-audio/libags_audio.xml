@@ -406,6 +406,11 @@
       <xi:include href="xml/ags_eq10_channel.xml"/>
       <xi:include href="xml/ags_eq10_channel_run.xml"/>
       <xi:include href="xml/ags_eq10_recycling.xml"/>
+
+      <xi:include href="xml/ags_lfo_channel.xml"/>
+      <xi:include href="xml/ags_lfo_channel_run.xml"/>
+      <xi:include href="xml/ags_lfo_recycling.xml"/>
+      <xi:include href="xml/ags_lfo_audio_signal.xml"/>
     </chapter>
     
     <chapter id="audio-recall-meter">

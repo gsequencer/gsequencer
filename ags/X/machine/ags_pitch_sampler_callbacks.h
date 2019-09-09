@@ -34,12 +34,6 @@ void ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_s
 void ags_pitch_sampler_file_control_changed_callback(AgsPitchSamplerFile *pitch_sampler_file,
 						     AgsPitchSampler *pitch_sampler);
 
-void ags_pitch_sampler_add_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
-void ags_pitch_sampler_remove_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
-
-void ags_pitch_sampler_auto_update_callback(GtkToggleButton *toggle, AgsPitchSampler *pitch_sampler);
-void ags_pitch_sampler_update_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
-
 void ags_pitch_sampler_enable_lfo_callback(GtkToggleButton *toggle, AgsPitchSampler *pitch_sampler);
 
 void ags_pitch_sampler_lfo_freq_callback(GtkSpinButton *spin_button, AgsPitchSampler *pitch_sampler);

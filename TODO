@@ -8,6 +8,9 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 * TODO:JK: break ABI in various headers to replace object field by gobject
+* TODO:JK: implemented ags-modify-synth-generator recall
+* TODO:JK: updated developer's handbook
+* TODO:JK: fixed AgsPiano border
 * TODO:JK: implement AgsUiProvider
 * TODO:JK: fix envelope related functions in ags_midi_util.h
 * TODO:JK: check recall id cleanup

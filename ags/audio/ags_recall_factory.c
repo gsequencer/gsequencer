@@ -91,6 +91,8 @@
 #include <ags/audio/recall/ags_eq10_channel_run.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 #include <ags/audio/recall/ags_envelope_channel_run.h>
+#include <ags/audio/recall/ags_lfo_channel.h>
+#include <ags/audio/recall/ags_lfo_channel_run.h>
 #include <ags/audio/recall/ags_record_midi_audio.h>
 #include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_route_dssi_audio.h>
@@ -242,6 +244,12 @@ GList* ags_recall_factory_create_envelope(AgsAudio *audio,
 					  guint start_audio_channel, guint stop_audio_channel,
 					  guint start_pad, guint stop_pad,
 					  guint create_flags, guint recall_flags);
+GList* ags_recall_factory_create_lfo(AgsAudio *audio,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     guint create_flags, guint recall_flags);
 GList* ags_recall_factory_create_ladspa(AgsAudio *audio,
 					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					gchar *plugin_name,
@@ -7683,6 +7691,302 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
 }
 
 GList*
+ags_recall_factory_create_lfo(AgsAudio *audio,
+			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+			      gchar *plugin_name,
+			      guint start_audio_channel, guint stop_audio_channel,
+			      guint start_pad, guint stop_pad,
+			      guint create_flags, guint recall_flags)
+{
+  AgsLfoChannel *lfo_channel;
+  AgsLfoChannelRun *lfo_channel_run;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *start, *channel, *next_channel, *nth_channel;
+  AgsPort *port;
+
+  GObject *output_soundcard;
+
+  GList *list_start, *list;
+  GList *recall;
+
+  guint audio_channels;
+  guint i, j;
+
+  pthread_mutex_t *audio_mutex;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output_soundcard = audio->output_soundcard;
+
+  audio_channels = audio->audio_channels;
+
+  start_output = audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+  
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get channel */
+  if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
+    start = ags_channel_nth(start_output,
+			    start_pad * audio_channels);
+  }else{
+    start = ags_channel_nth(start_input,
+			    start_pad * audio_channels);
+  }
+
+  recall = NULL;
+
+  /* play */
+  if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
+    channel = start;
+    
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    if(play_container == NULL){
+      play_container = ags_recall_container_new();
+    }
+
+    play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+    ags_audio_add_recall_container(audio, (GObject *) play_container);
+
+    nth_channel = NULL;
+
+    for(i = 0; i < stop_pad - start_pad; i++){
+      nth_channel = ags_channel_nth(channel,
+				    start_audio_channel);
+
+      g_object_unref(channel);
+      
+      channel = nth_channel;
+      
+      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	/* add recall container */
+	ags_channel_add_recall_container(channel,
+					 (GObject *) play_container);
+
+	/* AgsLfoChannel */
+	lfo_channel = (AgsLfoChannel *) g_object_new(AGS_TYPE_LFO_CHANNEL,
+						     "output-soundcard", output_soundcard,
+						     "source", channel,
+						     "recall-container", play_container,
+						     NULL);
+	ags_recall_set_flags((AgsRecall *) lfo_channel,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags((AgsRecall *) lfo_channel,
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
+				      AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_MIDI |
+				      AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags((AgsRecall *) lfo_channel,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) lfo_channel, TRUE);
+	recall = g_list_prepend(recall,
+				lfo_channel);
+
+	g_object_set(play_container,
+		     "recall-channel", lfo_channel,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(lfo_channel));
+
+	/* AgsLfoChannelRun */
+	lfo_channel_run = (AgsLfoChannelRun *) g_object_new(AGS_TYPE_LFO_CHANNEL_RUN,
+							    "output-soundcard", output_soundcard,
+							    "recall-channel", lfo_channel,
+							    "source", channel,
+							    "recall-container", play_container,
+							    NULL);
+	ags_recall_set_flags((AgsRecall *) lfo_channel_run,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags((AgsRecall *) lfo_channel_run,
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
+				      AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_MIDI |
+				      AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags((AgsRecall *) lfo_channel_run,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) lfo_channel_run, TRUE);
+	recall = g_list_prepend(recall,
+				lfo_channel_run);
+
+	g_object_set(play_container,
+		     "recall-channel-run", lfo_channel_run,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(lfo_channel_run));
+
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      nth_channel = ags_channel_nth(channel,
+				    audio_channels - stop_audio_channel);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = nth_channel;
+    }
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }
+
+  /* recall */
+  if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
+    channel = start;
+    
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    if(recall_container == NULL){
+      recall_container = ags_recall_container_new();
+    }
+
+    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+    nth_channel = NULL;
+
+    for(i = 0; i < stop_pad - start_pad; i++){
+      nth_channel = ags_channel_nth(channel,
+				    start_audio_channel);
+
+      g_object_unref(channel);
+      
+      channel = nth_channel;
+      
+      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	/* add recall container */
+	ags_channel_add_recall_container(channel,
+					 (GObject *) recall_container);
+
+	/* AgsLfoChannel */
+	lfo_channel = (AgsLfoChannel *) g_object_new(AGS_TYPE_LFO_CHANNEL,
+						     "output-soundcard", output_soundcard,
+						     "source", channel,
+						     "recall-container", recall_container,
+						     NULL);
+	ags_recall_set_flags((AgsRecall *) lfo_channel,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags((AgsRecall *) lfo_channel,
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
+				      AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_MIDI |
+				      AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags((AgsRecall *) lfo_channel,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) lfo_channel, FALSE);
+	recall = g_list_prepend(recall,
+				lfo_channel);
+
+	g_object_set(recall_container,
+		     "recall-channel", lfo_channel,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(lfo_channel));
+
+	/* AgsLfoChannelRun */
+	lfo_channel_run = (AgsLfoChannelRun *) g_object_new(AGS_TYPE_LFO_CHANNEL_RUN,
+							    "output-soundcard", output_soundcard,
+							    "recall-channel", lfo_channel,
+							    "source", channel,
+							    "recall-container", recall_container,
+							    NULL);
+	ags_recall_set_flags((AgsRecall *) lfo_channel_run,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags((AgsRecall *) lfo_channel_run,
+				     (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION |
+				      AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_MIDI |
+				      AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags((AgsRecall *) lfo_channel_run,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) lfo_channel_run, FALSE);
+	recall = g_list_prepend(recall,
+				lfo_channel_run);
+
+	g_object_set(recall_container,
+		     "recall-channel-run", lfo_channel_run,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(lfo_channel_run));
+
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      nth_channel = ags_channel_nth(channel,
+				    audio_channels - stop_audio_channel);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
+      channel = nth_channel;
+    }
+
+    if(nth_channel != NULL){
+      g_object_unref(nth_channel);
+    }
+  }
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(start != NULL){
+    g_object_unref(start);
+  }
+
+  /* return instantiated recall */
+  recall = g_list_reverse(recall);
+  g_list_foreach(recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
+  return(recall);
+}
+
+GList*
 ags_recall_factory_create_ladspa(AgsAudio *audio,
 				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				 gchar *plugin_name,
@@ -9274,6 +9578,15 @@ ags_recall_factory_create(AgsAudio *audio,
 						start_audio_channel, stop_audio_channel,
 						start_pad, stop_pad,
 						create_flags, recall_flags);
+  }else if(!strncmp(plugin_name,
+		    "ags-lfo",
+		    8)){
+    recall = ags_recall_factory_create_lfo(audio,
+					   play_container, recall_container,
+					   plugin_name,
+					   start_audio_channel, stop_audio_channel,
+					   start_pad, stop_pad,
+					   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-ladspa",
 		    11)){

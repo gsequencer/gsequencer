@@ -80,6 +80,10 @@
 	  base-note               NMTOKEN   #IMPLIED
 	  audio-loop-start        NMTOKEN   #IMPLIED
 	  audio-loop-end          NMTOKEN   #IMPLIED
+	  lfo-freq                NMTOKEN   #IMPLIED
+	  lfo-phase               NMTOKEN   #IMPLIED
+	  lfo-depth               NMTOKEN   #IMPLIED
+	  lfo-tuning              NMTOKEN   #IMPLIED
 	  >
 
 <!ELEMENT ags-sf-automation-port-list (ags-sf-automation-port*)>
