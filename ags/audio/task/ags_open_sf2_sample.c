@@ -523,6 +523,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
   ipatch_sample = open_sf2_sample->ipatch_sample;
   
   /* open audio file and read audio signal */
+  audio_container = NULL;
+  
   if(ipatch_sample == NULL){
     audio_container = ags_audio_container_new(open_sf2_sample->filename,
 					      open_sf2_sample->preset,

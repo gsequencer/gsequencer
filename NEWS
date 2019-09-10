@@ -18,7 +18,8 @@ Overview of Changes in AGS 2.3.0
 * Implemented ags_fm_synth_util.c to do frequency modulation oscillators.
   Used by AgsSynthGenerator.
 * Implemented ags_lfo_synth_util.c to do amplification using LFO oscillator.
-* TODO:JK:
+* Added new machines AgsFMSynth, AgsFMSyncsynth and AgsPitchSampler.
+* Added support for complex data type.
 
 Overview of Changes in AGS 2.2.39
 ================================

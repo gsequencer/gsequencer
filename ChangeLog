@@ -1,3 +1,8 @@
+ags (2.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_fourier_transform_util_test.c
+
 ags (2.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

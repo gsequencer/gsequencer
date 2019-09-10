@@ -405,7 +405,7 @@ ags_fourier_transform_util_test_inverse_stft_s8()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S8_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -457,7 +457,7 @@ ags_fourier_transform_util_test_inverse_stft_s16()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S16_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -509,7 +509,7 @@ ags_fourier_transform_util_test_inverse_stft_s24()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S24_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -561,7 +561,7 @@ ags_fourier_transform_util_test_inverse_stft_s32()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S32_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -613,7 +613,7 @@ ags_fourier_transform_util_test_inverse_stft_s64()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_S64_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -665,7 +665,7 @@ ags_fourier_transform_util_test_inverse_stft_float()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_FLOAT_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */
@@ -717,7 +717,7 @@ ags_fourier_transform_util_test_inverse_stft_double()
 
     z = sin(i * 2.0 * M_PI * AGS_FOURIER_TRANSFORM_UTIL_TEST_FREQUENCY / AGS_FOURIER_TRANSFORM_UTIL_TEST_SAMPLERATE) * h * cexp(-1.0 * I * 2.0 * M_PI * k * r / AGS_FOURIER_TRANSFORM_UTIL_TEST_INVERSE_STFT_DOUBLE_BUFFER_SIZE);
 
-    ags_complex_set(buffer[i] + i, z);
+    ags_complex_set(buffer + i, z);
   }
 
   /* test */

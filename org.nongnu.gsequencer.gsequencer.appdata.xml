@@ -35,6 +35,13 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.3.2" date="2019-09-10">
+      <description>
+        <p>Implemented new machines AgsFMSynth, AgsFMSyncsynth and AgsPitchSampler.</p>
+	<p>New impulse oscillator wave.</p>
+      </description>
+    </release>
+
     <release version="2.2.36" date="2019-08-07">
       <description>
         <p>Faster iterating on buffer in ags_audio_buffer_util.c.</p>
