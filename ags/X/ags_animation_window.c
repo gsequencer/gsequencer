@@ -23,6 +23,9 @@
 
 #include <ags/X/ags_ui_provider.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_show(GtkWidget *widget);

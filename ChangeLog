@@ -1,3 +1,8 @@
+ags (2.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing includes
+
 ags (2.3.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

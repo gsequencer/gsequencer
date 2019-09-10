@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_util.h>
 

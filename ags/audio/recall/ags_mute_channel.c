@@ -377,8 +377,8 @@ ags_mute_channel_get_muted_plugin_port()
     g_object_ref(plugin_port);
 
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			       AGS_PLUGIN_PORT_CONTROL |
-			       AGS_PLUGIN_PORT_TOGGLED);
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
 
     plugin_port->port_index = 0;
 

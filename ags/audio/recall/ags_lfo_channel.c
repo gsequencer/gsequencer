@@ -780,7 +780,8 @@ ags_lfo_channel_get_enabled_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			   AGS_PLUGIN_PORT_CONTROL);
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
 
     plugin_port->port_index = 0;
 
@@ -819,9 +820,10 @@ ags_lfo_channel_get_lfo_wave_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			   AGS_PLUGIN_PORT_CONTROL);
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_ENUMERATION);
 
-    plugin_port->port_index = 0;
+    plugin_port->port_index = 1;
 
     /* range */
     g_value_init(plugin_port->default_value,
@@ -860,7 +862,7 @@ ags_lfo_channel_get_lfo_freq_plugin_port()
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
 			   AGS_PLUGIN_PORT_CONTROL);
 
-    plugin_port->port_index = 0;
+    plugin_port->port_index = 2;
 
     /* range */
     g_value_init(plugin_port->default_value,
@@ -899,7 +901,7 @@ ags_lfo_channel_get_lfo_phase_plugin_port()
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
 			   AGS_PLUGIN_PORT_CONTROL);
 
-    plugin_port->port_index = 0;
+    plugin_port->port_index = 3;
 
     /* range */
     g_value_init(plugin_port->default_value,
@@ -938,7 +940,7 @@ ags_lfo_channel_get_lfo_depth_plugin_port()
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
 			   AGS_PLUGIN_PORT_CONTROL);
 
-    plugin_port->port_index = 0;
+    plugin_port->port_index = 4;
 
     /* range */
     g_value_init(plugin_port->default_value,
@@ -977,7 +979,7 @@ ags_lfo_channel_get_lfo_tuning_plugin_port()
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
 			   AGS_PLUGIN_PORT_CONTROL);
 
-    plugin_port->port_index = 0;
+    plugin_port->port_index = 5;
 
     /* range */
     g_value_init(plugin_port->default_value,
