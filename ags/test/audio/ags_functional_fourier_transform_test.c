@@ -64,7 +64,7 @@ void ags_functional_fourier_transform_test_s16();
   "\n"									\
   "[soundcard]\n"							\
   "backend=alsa\n"							\
-  "device=hw:0\n"							\
+  "device=default\n"							\
   "samplerate=44100\n"							\
   "buffer-size=1024\n"							\
   "pcm-channels=2\n"							\

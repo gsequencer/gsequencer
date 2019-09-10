@@ -42,10 +42,6 @@
 
 #include <stdlib.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/thread/ags_gui_thread.h>

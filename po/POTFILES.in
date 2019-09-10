@@ -1,8 +1,3 @@
-# List of files which contain translatable strings.
-# Copyright (C) 1995, 1998, 2001-2003, 2005-2006, 2016 Free Software
-# Foundation, Inc.
-# This file is free software, distributed under GNU GPL v3+.
-
 ./ags/X/ags_animation_window.c
 ./ags/X/ags_audio_preferences.c
 ./ags/X/ags_audio_preferences_callbacks.c
@@ -223,6 +218,15 @@
 ./ags/X/machine/ags_ffplayer_input_line_callbacks.c
 ./ags/X/machine/ags_ffplayer_input_pad.c
 ./ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+./ags/X/machine/ags_fm_oscillator.c
+./ags/X/machine/ags_fm_oscillator_callbacks.c
+./ags/X/machine/ags_fm_syncsynth.c
+./ags/X/machine/ags_fm_syncsynth_callbacks.c
+./ags/X/machine/ags_fm_synth.c
+./ags/X/machine/ags_fm_synth_callbacks.c
+./ags/X/machine/ags_fm_synth_input_line.c
+./ags/X/machine/ags_fm_synth_input_line_callbacks.c
+./ags/X/machine/ags_fm_synth_input_pad.c
 ./ags/X/machine/ags_ladspa_bridge.c
 ./ags/X/machine/ags_ladspa_bridge_callbacks.c
 ./ags/X/machine/ags_live_dssi_bridge.c
@@ -250,6 +254,10 @@
 ./ags/X/machine/ags_panel_input_pad.c
 ./ags/X/machine/ags_pattern_box.c
 ./ags/X/machine/ags_pattern_box_callbacks.c
+./ags/X/machine/ags_pitch_sampler.c
+./ags/X/machine/ags_pitch_sampler_callbacks.c
+./ags/X/machine/ags_pitch_sampler_file.c
+./ags/X/machine/ags_pitch_sampler_file_callbacks.c
 ./ags/X/machine/ags_spectrometer.c
 ./ags/X/machine/ags_spectrometer_callbacks.c
 ./ags/X/machine/ags_syncsynth.c
@@ -274,10 +282,13 @@
 ./ags/audio/ags_char_buffer_util.c
 ./ags/audio/ags_devin.c
 ./ags/audio/ags_devout.c
+./ags/audio/ags_diatonic_scale.c
 ./ags/audio/ags_fifoout.c
 ./ags/audio/ags_filter_util.c
 ./ags/audio/ags_fm_synth_util.c
 ./ags/audio/ags_fourier_transform_util.c
+./ags/audio/ags_frequency_map.c
+./ags/audio/ags_frequency_map_manager.c
 ./ags/audio/ags_generic_recall_channel_run.c
 ./ags/audio/ags_generic_recall_recycling.c
 ./ags/audio/ags_input.c
@@ -333,6 +344,10 @@
 ./ags/audio/file/ags_ipatch_gig_reader.c
 ./ags/audio/file/ags_ipatch_sample.c
 ./ags/audio/file/ags_ipatch_sf2_reader.c
+./ags/audio/file/ags_sfz_file.c
+./ags/audio/file/ags_sfz_group.c
+./ags/audio/file/ags_sfz_region.c
+./ags/audio/file/ags_sfz_sample.c
 ./ags/audio/file/ags_sndfile.c
 ./ags/audio/file/ags_sound_container.c
 ./ags/audio/file/ags_sound_resource.c
@@ -407,6 +422,10 @@
 ./ags/audio/recall/ags_feed_channel.c
 ./ags/audio/recall/ags_feed_channel_run.c
 ./ags/audio/recall/ags_feed_recycling.c
+./ags/audio/recall/ags_lfo_audio_signal.c
+./ags/audio/recall/ags_lfo_channel.c
+./ags/audio/recall/ags_lfo_channel_run.c
+./ags/audio/recall/ags_lfo_recycling.c
 ./ags/audio/recall/ags_loop_channel.c
 ./ags/audio/recall/ags_loop_channel_run.c
 ./ags/audio/recall/ags_mute_audio.c
@@ -511,6 +530,7 @@
 ./ags/audio/thread/ags_channel_thread.c
 ./ags/audio/thread/ags_export_thread.c
 ./ags/audio/thread/ags_sequencer_thread.c
+./ags/audio/thread/ags_sfz_loader.c
 ./ags/audio/thread/ags_soundcard_thread.c
 ./ags/audio/thread/ags_wave_loader.c
 ./ags/file/ags_file.c

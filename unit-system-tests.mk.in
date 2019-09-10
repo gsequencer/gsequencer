@@ -183,6 +183,7 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_audio_signal_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_audio_buffer_util_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_char_buffer_util_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_filter_util_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_fm_synth_util_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_fourier_transform_util_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_recall_test$(EXEEXT) \
@@ -1250,6 +1251,22 @@ ags_check_system_file_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_check_system_file_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_file_test_LDFLAGS) $(LDFLAGS) -o $@
+am__ags_check_system_filter_util_test_SOURCES_DIST =  \
+	ags/test/audio/ags_filter_util_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_filter_util_test_OBJECTS = ags/test/audio/check_system_filter_util_test-ags_filter_util_test.$(OBJEXT)
+ags_check_system_filter_util_test_OBJECTS =  \
+	$(am_ags_check_system_filter_util_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_filter_util_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_filter_util_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_filter_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_check_system_filter_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am__ags_check_system_fm_synth_util_test_SOURCES_DIST =  \
 	ags/test/audio/ags_fm_synth_util_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_fm_synth_util_test_OBJECTS = ags/test/audio/check_system_fm_synth_util_test-ags_fm_synth_util_test.$(OBJEXT)
@@ -3040,6 +3057,7 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_file_launch_test_SOURCES) \
 	$(ags_check_system_file_lookup_test_SOURCES) \
 	$(ags_check_system_file_test_SOURCES) \
+	$(ags_check_system_filter_util_test_SOURCES) \
 	$(ags_check_system_fm_synth_util_test_SOURCES) \
 	$(ags_check_system_fourier_transform_util_test_SOURCES) \
 	$(ags_check_system_free_selection_test_SOURCES) \
@@ -3205,6 +3223,7 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_file_launch_test_SOURCES_DIST) \
 	$(am__ags_check_system_file_lookup_test_SOURCES_DIST) \
 	$(am__ags_check_system_file_test_SOURCES_DIST) \
+	$(am__ags_check_system_filter_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_fm_synth_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_fourier_transform_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_free_selection_test_SOURCES_DIST) \
@@ -3676,6 +3695,7 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_audio_signal_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_audio_buffer_util_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_char_buffer_util_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_filter_util_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_fm_synth_util_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_fourier_transform_util_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_recall_test \
@@ -4140,6 +4160,12 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_char_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_char_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_char_buffer_util_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# filter util unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_filter_util_test_SOURCES = ags/test/audio/ags_filter_util_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_filter_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_filter_util_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_filter_util_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # FM synth util unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_fm_synth_util_test_SOURCES = ags/test/audio/ags_fm_synth_util_test.c
@@ -5237,6 +5263,12 @@ ags/test/file/check_system_file_test-ags_file_test.$(OBJEXT):  \
 ags_check_system_file_test$(EXEEXT): $(ags_check_system_file_test_OBJECTS) $(ags_check_system_file_test_DEPENDENCIES) $(EXTRA_ags_check_system_file_test_DEPENDENCIES) 
 	@rm -f ags_check_system_file_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_file_test_LINK) $(ags_check_system_file_test_OBJECTS) $(ags_check_system_file_test_LDADD) $(LIBS)
+ags/test/audio/check_system_filter_util_test-ags_filter_util_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp)
+
+ags_check_system_filter_util_test$(EXEEXT): $(ags_check_system_filter_util_test_OBJECTS) $(ags_check_system_filter_util_test_DEPENDENCIES) $(EXTRA_ags_check_system_filter_util_test_DEPENDENCIES) 
+	@rm -f ags_check_system_filter_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_filter_util_test_LINK) $(ags_check_system_filter_util_test_OBJECTS) $(ags_check_system_filter_util_test_LDADD) $(LIBS)
 ags/test/audio/check_system_fm_synth_util_test-ags_fm_synth_util_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp)
 
@@ -6270,6 +6302,12 @@ ags/test/file/check_system_file_test-ags_file_test.o: ags/test/file/ags_file_tes
 
 ags/test/file/check_system_file_test-ags_file_test.obj: ags/test/file/ags_file_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_file_test_CFLAGS) $(CFLAGS) -c -o ags/test/file/check_system_file_test-ags_file_test.obj `if test -f 'ags/test/file/ags_file_test.c'; then $(CYGPATH_W) 'ags/test/file/ags_file_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/file/ags_file_test.c'; fi`
+
+ags/test/audio/check_system_filter_util_test-ags_filter_util_test.o: ags/test/audio/ags_filter_util_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_filter_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_filter_util_test-ags_filter_util_test.o `test -f 'ags/test/audio/ags_filter_util_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_filter_util_test.c
+
+ags/test/audio/check_system_filter_util_test-ags_filter_util_test.obj: ags/test/audio/ags_filter_util_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_filter_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_filter_util_test-ags_filter_util_test.obj `if test -f 'ags/test/audio/ags_filter_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_filter_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_filter_util_test.c'; fi`
 
 ags/test/audio/check_system_fm_synth_util_test-ags_fm_synth_util_test.o: ags/test/audio/ags_fm_synth_util_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_fm_synth_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_fm_synth_util_test-ags_fm_synth_util_test.o `test -f 'ags/test/audio/ags_fm_synth_util_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_fm_synth_util_test.c
@@ -7415,6 +7453,7 @@ uninstall-am:
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_audio_signal_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_audio_buffer_util_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_char_buffer_util_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_filter_util_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_fm_synth_util_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_fourier_transform_util_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_recall_test

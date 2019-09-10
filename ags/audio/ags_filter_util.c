@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_filter_util.h>
 
-#include <libags.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>

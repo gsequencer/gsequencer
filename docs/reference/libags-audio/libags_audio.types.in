@@ -96,6 +96,8 @@ ags_feed_channel_run_get_type
 ags_feed_recycling_get_type
 ags_fifoout_get_type
 ags_free_selection_get_type
+ags_frequency_map_get_type
+ags_frequency_map_manager_get_type
 ags_generic_recall_channel_run_get_type
 ags_generic_recall_recycling_get_type
 ags_input_get_type
@@ -113,6 +115,10 @@ ags_jack_server_get_type
 ags_ladspa_conversion_get_type
 ags_ladspa_manager_get_type
 ags_ladspa_plugin_get_type
+ags_lfo_audio_signal_get_type
+ags_lfo_channel_get_type
+ags_lfo_channel_run_get_type
+ags_lfo_recycling_get_type
 ags_link_channel_get_type
 ags_loop_channel_get_type
 ags_loop_channel_run_get_type
@@ -248,6 +254,11 @@ ags_set_device_get_type
 ags_set_format_get_type
 ags_set_muted_get_type
 ags_set_samplerate_get_type
+ags_sfz_file_get_type
+ags_sfz_group_get_type
+ags_sfz_loader_get_type
+ags_sfz_region_get_type
+ags_sfz_sample_get_type
 ags_sndfile_get_type
 ags_sound_container_get_type
 ags_sound_provider_get_type

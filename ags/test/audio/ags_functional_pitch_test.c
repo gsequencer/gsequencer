@@ -77,7 +77,7 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
   "\n"							\
   "[soundcard]\n"					\
   "backend=alsa\n"					\
-  "device=hw:0\n"					\
+  "device=default\n"					\
   "samplerate=44100\n"					\
   "buffer-size=1024\n"					\
   "pcm-channels=2\n"					\

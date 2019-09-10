@@ -159,6 +159,7 @@ ags_buffer_util_s32_to_char_buffer
 ags_buffer_util_s64_to_char_buffer
 ags_buffer_util_float_to_char_buffer
 ags_buffer_util_double_to_char_buffer
+ags_buffer_util_complex_to_char_buffer
 ags_buffer_util_char_buffer_to_s8
 ags_buffer_util_char_buffer_to_s16
 ags_buffer_util_char_buffer_to_s24
@@ -166,6 +167,7 @@ ags_buffer_util_char_buffer_to_s32
 ags_buffer_util_char_buffer_to_s64
 ags_buffer_util_char_buffer_to_float
 ags_buffer_util_char_buffer_to_double
+ags_buffer_util_char_buffer_to_complex
 ags_buffer_util_char_buffer_read_s8
 ags_buffer_util_char_buffer_read_s16
 ags_buffer_util_char_buffer_read_s24
@@ -173,6 +175,7 @@ ags_buffer_util_char_buffer_read_s32
 ags_buffer_util_char_buffer_read_s64
 ags_buffer_util_char_buffer_read_float
 ags_buffer_util_char_buffer_read_double
+ags_buffer_util_char_buffer_read_complex
 ags_buffer_util_char_buffer_write_s8
 ags_buffer_util_char_buffer_write_s16
 ags_buffer_util_char_buffer_write_s24
@@ -180,6 +183,7 @@ ags_buffer_util_char_buffer_write_s32
 ags_buffer_util_char_buffer_write_s64
 ags_buffer_util_char_buffer_write_float
 ags_buffer_util_char_buffer_write_double
+ags_buffer_util_char_buffer_write_complex
 ags_buffer_util_char_buffer_swap_bytes
 </SECTION>
 
@@ -246,6 +250,8 @@ ags_certificate_manager_get_type
 
 <SECTION>
 <FILE>ags_complex</FILE>
+AGS_COMPLEX_M_E
+AGS_COMPLEX_M_PI
 ags_complex_alloc
 ags_complex_copy
 ags_complex_free
@@ -255,11 +261,6 @@ ags_complex_set
 AGS_TYPE_COMPLEX
 AgsComplex
 ags_complex_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_complex_buffer_util</FILE>
-
 </SECTION>
 
 <SECTION>
@@ -930,6 +931,7 @@ ags_cclosure_marshal_VOID__POINTER_INT
 ags_cclosure_marshal_VOID__POINTER_INT_POINTER
 ags_cclosure_marshal_VOID__POINTER_INT_INT_BOOLEAN
 ags_cclosure_marshal_VOID__POINTER_UINT
+ags_cclosure_marshal_VOID__POINTER_POINTER
 ags_cclosure_marshal_VOID__POINTER_UINT_UINT
 ags_cclosure_marshal_VOID__POINTER_UINT_POINTER
 ags_cclosure_marshal_VOID__POINTER_POINTER_UINT

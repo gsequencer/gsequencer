@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <libags.h>
+#include <ags/libags.h>
 
 /* sin LFO */
 void ags_lfo_synth_util_sin_s8(gint8 *buffer,

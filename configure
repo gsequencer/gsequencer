@@ -23303,7 +23303,7 @@ $as_echo "$as_me: generating resources for API Reference Manual" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc docs/reference/libags/version.xml docs/reference/libags-audio/version.xml docs/reference/libags-gui/version.xml docs/reference/libgsequencer/version.xml"
+ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
 
 cat >confcache <<\_ACEOF
@@ -24493,10 +24493,6 @@ do
     "libags_audio.pc") CONFIG_FILES="$CONFIG_FILES libags_audio.pc" ;;
     "libags_gui.pc") CONFIG_FILES="$CONFIG_FILES libags_gui.pc" ;;
     "libgsequencer.pc") CONFIG_FILES="$CONFIG_FILES libgsequencer.pc" ;;
-    "docs/reference/libags/version.xml") CONFIG_FILES="$CONFIG_FILES docs/reference/libags/version.xml" ;;
-    "docs/reference/libags-audio/version.xml") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-audio/version.xml" ;;
-    "docs/reference/libags-gui/version.xml") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-gui/version.xml" ;;
-    "docs/reference/libgsequencer/version.xml") CONFIG_FILES="$CONFIG_FILES docs/reference/libgsequencer/version.xml" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
