@@ -1850,7 +1850,8 @@ ags_dial_draw(AgsDial *dial)
   /* draw value */
   range = (dial->adjustment->upper - dial->adjustment->lower);
 
-  if(range != 0.0){
+  if(range != 0.0 &&
+     dial->adjustment->upper > dial->adjustment->lower){
     /* this is odd */
     translated_value = (dial->adjustment->value - dial->adjustment->lower);
     translated_value = (gdouble) scale_precision * (translated_value / range);
@@ -1870,7 +1871,7 @@ ags_dial_draw(AgsDial *dial)
 	      starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
     cairo_stroke(cr);
   }else{
-    g_warning("ags_dial.c - range = 0.0");
+    g_warning("ags_dial.c - invalid range");
   }
 
   cairo_destroy(cr);
