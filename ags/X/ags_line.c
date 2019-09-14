@@ -2698,9 +2698,9 @@ ags_line_message_monitor_timeout(AgsLine *line)
 		       "format", format,
 		       NULL);
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsChannel::add-effect",
-		       22)){
+					"method"),
+			     "AgsChannel::add-effect",
+			     22)){
 	  AgsMachine *machine;
 	  AgsMachineEditor *machine_editor;
 	  AgsLineMemberEditor *line_member_editor;
