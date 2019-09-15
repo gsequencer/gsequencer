@@ -105,7 +105,7 @@ typedef enum{
 
 struct _AgsWasapiDevout
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   
@@ -170,7 +170,7 @@ struct _AgsWasapiDevout
 
 struct _AgsWasapiDevoutClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_wasapi_devout_get_type();

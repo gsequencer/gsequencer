@@ -40,7 +40,7 @@ typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
 struct _AgsRecallID
 {
-  GObject object;
+  GObject gobject;
   
   guint flags;
   gint sound_scope;
@@ -55,7 +55,7 @@ struct _AgsRecallID
 
 struct _AgsRecallIDClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recall_id_get_type(void);

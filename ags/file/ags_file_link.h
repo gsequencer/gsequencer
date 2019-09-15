@@ -40,7 +40,7 @@ typedef struct _AgsFileLinkClass AgsFileLinkClass;
 
 struct _AgsFileLink
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -59,7 +59,7 @@ struct _AgsFileLink
 
 struct _AgsFileLinkClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_file_link_get_type();

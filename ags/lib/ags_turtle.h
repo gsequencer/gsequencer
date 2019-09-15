@@ -56,7 +56,7 @@ typedef enum{
 
 struct _AgsTurtle
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -72,7 +72,7 @@ struct _AgsTurtle
 
 struct _AgsTurtleClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_turtle_get_type(void);

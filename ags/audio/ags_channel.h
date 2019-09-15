@@ -93,7 +93,7 @@ typedef enum{
 
 struct _AgsChannel
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   guint ability_flags;
@@ -165,7 +165,7 @@ struct _AgsChannel
 
 struct _AgsChannelClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,

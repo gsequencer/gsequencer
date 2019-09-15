@@ -66,7 +66,7 @@ typedef enum{
 
 struct _AgsNote
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -100,7 +100,7 @@ struct _AgsNote
 
 struct _AgsNoteClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_note_get_type();

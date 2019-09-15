@@ -41,7 +41,7 @@ typedef struct _AgsDssiManagerClass AgsDssiManagerClass;
 
 struct _AgsDssiManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -52,7 +52,7 @@ struct _AgsDssiManager
 
 struct _AgsDssiManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_dssi_manager_get_type(void);

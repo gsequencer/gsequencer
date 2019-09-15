@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsTimestamp
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -74,7 +74,7 @@ struct _AgsTimestamp
 
 struct _AgsTimestampClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_timestamp_get_type(void);

@@ -37,7 +37,7 @@ typedef struct _AgsTurtleManagerClass AgsTurtleManagerClass;
 
 struct _AgsTurtleManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -47,7 +47,7 @@ struct _AgsTurtleManager
 
 struct _AgsTurtleManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_turtle_manager_get_type(void);

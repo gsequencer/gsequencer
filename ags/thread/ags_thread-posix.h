@@ -191,7 +191,7 @@ typedef enum{
 
 struct _AgsThread
 {
-  GObject object;
+  GObject gobject;
 
   volatile guint flags;
   volatile guint sync_flags;
@@ -271,7 +271,7 @@ struct _AgsThread
 
 struct _AgsThreadClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   guint (*clock)(AgsThread *thread);
   

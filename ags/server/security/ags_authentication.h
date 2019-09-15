@@ -35,7 +35,7 @@ typedef struct _AgsAuthenticationInterface AgsAuthenticationInterface;
 
 struct _AgsAuthenticationInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   gchar** (*get_authentication_module)(AgsAuthentication *authentication);
   

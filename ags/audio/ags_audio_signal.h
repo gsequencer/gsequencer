@@ -61,7 +61,7 @@ typedef enum{
 
 struct _AgsAudioSignal
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -116,7 +116,7 @@ struct _AgsAudioSignal
 
 struct _AgsAudioSignalClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*add_note)(AgsAudioSignal *audio_signal,
 		   GObject *note);

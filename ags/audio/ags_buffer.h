@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsBuffer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -73,7 +73,7 @@ struct _AgsBuffer
 
 struct _AgsBufferClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_buffer_get_type();

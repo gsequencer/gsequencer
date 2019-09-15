@@ -37,7 +37,7 @@ typedef struct _AgsXmlPasswordStoreClass AgsXmlPasswordStoreClass;
 
 struct _AgsXmlPasswordStore
 {
-  GObject object;
+  GObject gobject;
 
   gchar *filename;
   gchar *encoding;
@@ -49,7 +49,7 @@ struct _AgsXmlPasswordStore
 
 struct _AgsXmlPasswordStoreClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_xml_password_store_get_type();

@@ -65,7 +65,7 @@ typedef enum{
 
 struct _AgsCoreAudioClient
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -91,7 +91,7 @@ struct _AgsCoreAudioClient
 
 struct _AgsCoreAudioClientClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_core_audio_client_get_type();

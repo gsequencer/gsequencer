@@ -86,7 +86,7 @@ typedef enum{
 
 struct _AgsServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -126,7 +126,7 @@ struct _AgsServer
 
 struct _AgsServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
   
   void (*start)(AgsServer *server);
   void (*stop)(AgsServer *server);

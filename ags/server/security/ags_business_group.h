@@ -35,7 +35,7 @@ typedef struct _AgsBusinessGroupInterface AgsBusinessGroupInterface;
 
 struct _AgsBusinessGroupInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   void (*set_business_group_name)(AgsBusinessGroup *business_group,
 				  GObject *security_context,

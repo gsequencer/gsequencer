@@ -41,7 +41,7 @@ typedef struct _AgsLadspaManagerClass AgsLadspaManagerClass;
 
 struct _AgsLadspaManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -52,7 +52,7 @@ struct _AgsLadspaManager
 
 struct _AgsLadspaManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ladspa_manager_get_type(void);

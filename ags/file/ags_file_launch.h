@@ -39,7 +39,7 @@ typedef struct _AgsFileLaunchClass AgsFileLaunchClass;
 
 struct _AgsFileLaunch
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -54,7 +54,7 @@ struct _AgsFileLaunch
 
 struct _AgsFileLaunchClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*start)(AgsFileLaunch *file_launch);
 };

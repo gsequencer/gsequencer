@@ -112,7 +112,7 @@ typedef enum{
 
 struct _AgsCoreAudioDevin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -170,7 +170,7 @@ struct _AgsCoreAudioDevin
 
 struct _AgsCoreAudioDevinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_core_audio_devin_get_type();

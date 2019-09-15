@@ -58,7 +58,7 @@ typedef enum{
 
 struct _AgsRecycling
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -89,7 +89,7 @@ struct _AgsRecycling
 
 struct _AgsRecyclingClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*add_audio_signal)(AgsRecycling *recycling,
 			   AgsAudioSignal *audio_signal);

@@ -54,7 +54,7 @@ typedef enum{
 
 struct _AgsSFZSample
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -93,7 +93,7 @@ struct _AgsSFZSample
 
 struct _AgsSFZSampleClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_sfz_sample_get_type();

@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsRecyclingContext
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   gint sound_scope;
@@ -67,7 +67,7 @@ struct _AgsRecyclingContext
 
 struct _AgsRecyclingContextClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recycling_context_get_type();

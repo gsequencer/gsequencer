@@ -35,14 +35,14 @@ typedef struct _AgsConditionManagerClass AgsConditionManagerClass;
 
 struct _AgsConditionManager
 {
-  GObject object;
+  GObject gobject;
 
   GHashTable *lock_object;
 };
 
 struct _AgsConditionManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_condition_manager_get_type();

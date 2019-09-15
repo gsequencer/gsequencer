@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsTask
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -70,7 +70,7 @@ struct _AgsTask
 
 struct _AgsTaskClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*launch)(AgsTask *task);
 

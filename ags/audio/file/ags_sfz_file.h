@@ -72,7 +72,7 @@ typedef enum{
 
 struct _AgsSFZFile
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -110,7 +110,7 @@ struct _AgsSFZFile
 
 struct _AgsSFZFileClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_sfz_file_get_type();

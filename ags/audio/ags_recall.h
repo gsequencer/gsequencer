@@ -98,7 +98,7 @@ typedef enum{
 
 struct _AgsRecall
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   guint ability_flags;
@@ -163,7 +163,7 @@ struct _AgsRecall
 
 struct _AgsRecallClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolve_dependency)(AgsRecall *recall);
   void (*check_rt_data)(AgsRecall *recall);

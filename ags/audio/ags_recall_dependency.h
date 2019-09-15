@@ -41,7 +41,7 @@ typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
 struct _AgsRecallDependency
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -53,7 +53,7 @@ struct _AgsRecallDependency
 
 struct _AgsRecallDependencyClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recall_dependency_get_type(void);

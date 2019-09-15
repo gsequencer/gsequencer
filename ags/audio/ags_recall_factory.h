@@ -60,12 +60,12 @@ typedef enum{
 
 struct _AgsRecallFactory
 {
-  GObject object;
+  GObject gobject;
 };
 
 struct _AgsRecallFactoryClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recall_factory_get_type();

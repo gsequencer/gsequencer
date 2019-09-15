@@ -37,7 +37,7 @@ typedef struct _AgsLv2PresetManagerClass AgsLv2PresetManagerClass;
 
 struct _AgsLv2PresetManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -47,7 +47,7 @@ struct _AgsLv2PresetManager
 
 struct _AgsLv2PresetManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_lv2_preset_manager_get_type(void);

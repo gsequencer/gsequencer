@@ -37,7 +37,7 @@ typedef struct _AgsNoteCursorClass AgsNoteCursorClass;
 
 struct _AgsNoteCursor
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -67,7 +67,7 @@ struct _AgsNoteCursor
 
 struct _AgsNoteCursorClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_note_cursor_get_type();

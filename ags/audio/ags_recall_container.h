@@ -70,7 +70,7 @@ typedef enum{
 
 struct _AgsRecallContainer
 {
-  GObject object;
+  GObject gobject;
   
   guint flags;
 
@@ -94,7 +94,7 @@ struct _AgsRecallContainer
 
 struct _AgsRecallContainerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recall_container_get_type();

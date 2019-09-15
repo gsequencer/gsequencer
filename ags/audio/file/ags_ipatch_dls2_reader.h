@@ -72,7 +72,7 @@ typedef enum{
 
 struct _AgsIpatchDLS2Reader
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -111,7 +111,7 @@ struct _AgsIpatchDLS2Reader
 
 struct _AgsIpatchDLS2ReaderClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ipatch_dls2_reader_get_type();

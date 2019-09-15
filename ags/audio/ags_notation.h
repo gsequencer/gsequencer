@@ -75,7 +75,7 @@ typedef enum{
 
 struct _AgsNotation
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -98,7 +98,7 @@ struct _AgsNotation
 
 struct _AgsNotationClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_notation_get_type();

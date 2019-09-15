@@ -64,7 +64,7 @@ typedef enum{
 
 struct _AgsPort
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   
@@ -111,7 +111,7 @@ struct _AgsPort
 
 struct _AgsPortClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*safe_read)(AgsPort *port, GValue *value);
   void (*safe_write)(AgsPort *port, GValue *value);

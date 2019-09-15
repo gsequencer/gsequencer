@@ -57,7 +57,7 @@ typedef enum{
 
 struct _AgsSndfile
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -88,7 +88,7 @@ struct _AgsSndfile
 
 struct _AgsSndfileClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_sndfile_get_type();

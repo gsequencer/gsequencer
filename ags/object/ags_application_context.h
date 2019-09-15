@@ -79,7 +79,7 @@ typedef enum{
 
 struct _AgsApplicationContext
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -110,7 +110,7 @@ struct _AgsApplicationContext
 
 struct _AgsApplicationContextClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*load_config)(AgsApplicationContext *application_context);
   

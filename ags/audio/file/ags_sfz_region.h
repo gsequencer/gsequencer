@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsSFZRegion
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -71,7 +71,7 @@ struct _AgsSFZRegion
 
 struct _AgsSFZRegionClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_sfz_region_get_type();

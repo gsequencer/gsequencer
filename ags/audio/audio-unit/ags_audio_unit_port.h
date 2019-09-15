@@ -74,7 +74,7 @@ typedef enum{
 
 struct _AgsAudioUnitPort
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -128,7 +128,7 @@ struct _AgsAudioUnitPort
 
 struct _AgsAudioUnitPortClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_audio_unit_port_get_type();

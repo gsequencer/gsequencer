@@ -50,7 +50,7 @@ typedef enum{
 
 struct _AgsTrack
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -65,7 +65,7 @@ struct _AgsTrack
 
 struct _AgsTrackClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_track_get_type();

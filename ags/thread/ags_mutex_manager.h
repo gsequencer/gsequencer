@@ -35,14 +35,14 @@ typedef struct _AgsMutexManagerClass AgsMutexManagerClass;
 
 struct _AgsMutexManager
 {
-  GObject object;
+  GObject gobject;
 
   GHashTable *lock_object;
 };
 
 struct _AgsMutexManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_mutex_manager_get_type();

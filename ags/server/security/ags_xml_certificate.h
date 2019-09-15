@@ -37,7 +37,7 @@ typedef struct _AgsXmlCertificateClass AgsXmlCertificateClass;
 
 struct _AgsXmlCertificate
 {
-  GObject object;
+  GObject gobject;
 
   gchar *filename;
   gchar *encoding;
@@ -49,7 +49,7 @@ struct _AgsXmlCertificate
 
 struct _AgsXmlCertificateClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_xml_certificate_get_type();

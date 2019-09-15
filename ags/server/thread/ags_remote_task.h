@@ -40,14 +40,14 @@ typedef struct _AgsRemoteTaskClass AgsRemoteTaskClass;
 
 struct _AgsRemoteTask
 {
-  GObject object;
+  GObject gobject;
 
   GObject *server;
 };
 
 struct _AgsRemoteTaskClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_remote_task_get_type();

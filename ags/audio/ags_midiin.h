@@ -123,7 +123,7 @@ typedef enum{
 
 struct _AgsMidiin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -183,7 +183,7 @@ struct _AgsMidiin
 
 struct _AgsMidiinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_midiin_get_type();

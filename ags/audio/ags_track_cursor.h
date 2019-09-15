@@ -37,7 +37,7 @@ typedef struct _AgsTrackCursorClass AgsTrackCursorClass;
 
 struct _AgsTrackCursor
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -67,7 +67,7 @@ struct _AgsTrackCursor
 
 struct _AgsTrackCursorClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_track_cursor_get_type();

@@ -37,7 +37,7 @@ typedef struct _AgsAccelerationCursorClass AgsAccelerationCursorClass;
 
 struct _AgsAccelerationCursor
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -67,7 +67,7 @@ struct _AgsAccelerationCursor
 
 struct _AgsAccelerationCursorClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_acceleration_cursor_get_type();

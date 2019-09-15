@@ -37,14 +37,14 @@ typedef struct _AgsCertificateManagerClass AgsCertificateManagerClass;
 
 struct _AgsCertificateManager
 {
-  GObject object;
+  GObject gobject;
   
   GList *certificate;
 };
 
 struct _AgsCertificateManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_certificate_manager_get_type(void);

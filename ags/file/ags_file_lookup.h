@@ -41,7 +41,7 @@ typedef struct _AgsFileLookupClass AgsFileLookupClass;
 
 struct _AgsFileLookup
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -54,7 +54,7 @@ struct _AgsFileLookup
 
 struct _AgsFileLookupClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolve)(AgsFileLookup *lookup);
 };

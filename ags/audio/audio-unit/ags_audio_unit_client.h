@@ -63,7 +63,7 @@ typedef enum{
 
 struct _AgsAudioUnitClient
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   pthread_mutex_t *obj_mutex;
@@ -82,7 +82,7 @@ struct _AgsAudioUnitClient
 
 struct _AgsAudioUnitClientClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_audio_unit_client_get_type();

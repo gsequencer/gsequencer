@@ -63,7 +63,7 @@ typedef enum{
 
 struct _AgsThreadPool
 {
-  GObject object;
+  GObject gobject;
 
   volatile guint flags;
 
@@ -92,7 +92,7 @@ struct _AgsThreadPool
 
 struct _AgsThreadPoolClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*start)(AgsThreadPool *thread_pool);
 };

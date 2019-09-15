@@ -61,7 +61,7 @@ typedef enum{
 
 struct _AgsConfig
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -78,7 +78,7 @@ struct _AgsConfig
 
 struct _AgsConfigClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*load_defaults)(AgsConfig *config);
 

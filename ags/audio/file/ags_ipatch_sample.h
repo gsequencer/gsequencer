@@ -58,7 +58,7 @@ typedef enum{
 
 struct _AgsIpatchSample
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -92,7 +92,7 @@ struct _AgsIpatchSample
 
 struct _AgsIpatchSampleClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ipatch_sample_get_type();

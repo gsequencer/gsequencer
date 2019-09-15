@@ -46,7 +46,7 @@ typedef struct _AgsLv2ManagerClass AgsLv2ManagerClass;
 
 struct _AgsLv2Manager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -61,7 +61,7 @@ struct _AgsLv2Manager
 
 struct _AgsLv2ManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_lv2_manager_get_type(void);

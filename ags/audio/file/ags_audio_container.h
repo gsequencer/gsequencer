@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsAudioContainer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -86,7 +86,7 @@ struct _AgsAudioContainer
 
 struct _AgsAudioContainerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_audio_container_get_type();

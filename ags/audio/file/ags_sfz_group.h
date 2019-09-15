@@ -52,7 +52,7 @@ typedef enum{
 
 struct _AgsSFZGroup
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -71,7 +71,7 @@ struct _AgsSFZGroup
 
 struct _AgsSFZGroupClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_sfz_group_get_type();

@@ -37,7 +37,7 @@ typedef struct _AgsBufferCursorClass AgsBufferCursorClass;
 
 struct _AgsBufferCursor
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -67,7 +67,7 @@ struct _AgsBufferCursor
 
 struct _AgsBufferCursorClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_buffer_cursor_get_type();

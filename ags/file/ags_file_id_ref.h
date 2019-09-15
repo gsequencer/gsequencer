@@ -46,7 +46,7 @@ typedef void (*AgsFileResolve)(void);
 
 struct _AgsFileIdRef
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -61,7 +61,7 @@ struct _AgsFileIdRef
 
 struct _AgsFileIdRefClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolved)(AgsFileIdRef *file_id_ref);
 };
