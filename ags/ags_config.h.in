@@ -30,6 +30,8 @@
 
 #undef AGS_WITH_PULSE
 
+#undef AGS_WITH_WASAPI
+
 #undef AGS_WITH_LIBINSTPATCH
 
 #undef AGS_WITH_QUARTZ

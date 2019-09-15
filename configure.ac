@@ -226,7 +226,7 @@ AS_IF([test "x$enable_core_audio" != xno],
 AS_IF([test "x$enable_wasapi" != xno],
       [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled]
       )
-      WASAPI_CFLAGS="-Iwasapi"
+      WASAPI_CFLAGS="-I/usr/include/w32api"
       WASAPI_LIBS="-lole -luuid"
       AC_SUBST(WASAPI_CFLAGS)
       AC_SUBST(WASAPI_LIBS)
