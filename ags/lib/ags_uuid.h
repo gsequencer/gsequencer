@@ -23,14 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <uuid/uuid.h>
-
 #define AGS_TYPE_UUID                (ags_uuid_get_type())
 
 #define AGS_UUID_DEFAULT_LENGTH (16)
 #define AGS_UUID_STRING_DEFAULT_LENGTH (36)
 
-typedef uuid_t AgsUUID;
+typedef unsigned char AgsUUID[16];
 
 GType ags_uuid_get_type(void);
 

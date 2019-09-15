@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <uuid/uuid.h>
+
 /**
  * SECTION:ags_uuid
  * @short_description: Boxed type of uuid
