@@ -25,12 +25,14 @@
 
 #include <pthread.h>
 
+#include <ags/config.h>
+
 #ifdef AGS_WITH_WASAPI
 #include <windows.h>
 #include <tchar.h>
 #include <math.h>
 #include <float.h>
-#include <Mmdeviceapi.h>
+#include <mmdeviceapi.h>
 #include <audioclient.h>
 #include <avrt.h>
 #include <functiondiscoverykeys_devpkey.h>

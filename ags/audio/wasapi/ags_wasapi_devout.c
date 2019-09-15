@@ -35,6 +35,10 @@
 #include <math.h>
 #include <time.h>
 
+#ifdef AGS_WITH_WASAPI
+#include <ole2.h>
+#endif
+
 #include <ags/config.h>
 #include <ags/i18n.h>
 
@@ -191,10 +195,13 @@ static gpointer ags_wasapi_devout_parent_class = NULL;
 
 static pthread_mutex_t ags_wasapi_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static const GUID CLSID_MMDeviceEnumerator = __uidof(MMDeviceEnumerator); // {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
-static const GUID IID_IMMDeviceEnumerator = __uidof(IMMDeviceEnumerator); // {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
-static const GUID IID_IAudioClient = __uidof(IAudioClient); //{0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
-static const GUID IID_IAudioRenderClient = __uidof(IAudioRenderClient); // {0xF294ACFC, 0x3146, 0x4483, 0xA7, 0xBF, 0xAD, 0xDC, 0xA7, 0xC2, 0x60, 0xE2};
+#if 0
+static const GUID CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
+static const GUID IID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
+static const GUID IID_IAudioClient = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
+static const GUID IID_IAudioRenderClient = {0xF294ACFC, 0x3146, 0x4483, 0xA7, 0xBF, 0xAD, 0xDC, 0xA7, 0xC2, 0x60, 0xE2};
+#endif
+
 static const GUID PcmSubformatGuid = {STATIC_KSDATAFORMAT_SUBTYPE_PCM};
 
 GType
@@ -575,8 +582,6 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
 
   /* flags */
   wasapi_devout->flags = 0;
-  g_atomic_int_set(&(wasapi_devout->sync_flags),
-		   AGS_WASAPI_DEVOUT_PASS_THROUGH);
 
   /* devout mutex */
   wasapi_devout->obj_mutexattr = 
@@ -760,7 +765,7 @@ ags_wasapi_devout_set_property(GObject *gobject,
 
       pthread_mutex_lock(wasapi_devout_mutex);
 
-      wasapi_devout->card_uri = g_strdup(device);
+      wasapi_devout->device = g_strdup(device);
 
       pthread_mutex_unlock(wasapi_devout_mutex);
     }
@@ -961,7 +966,7 @@ ags_wasapi_devout_get_property(GObject *gobject,
     {
       pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_string(value, wasapi_devout->card_uri);
+      g_value_set_string(value, wasapi_devout->device);
 
       pthread_mutex_unlock(wasapi_devout_mutex);
     }
@@ -1534,7 +1539,7 @@ ags_wasapi_devout_get_device(AgsSoundcard *soundcard)
   /* get device */
   pthread_mutex_lock(wasapi_devout_mutex);
 
-  device = g_strdup(wasapi_devout->card_uri);
+  device = g_strdup(wasapi_devout->device);
 
   pthread_mutex_unlock(wasapi_devout_mutex);
   
@@ -1602,7 +1607,6 @@ void
 ags_wasapi_devout_list_cards(AgsSoundcard *soundcard,
 			     GList **card_id, GList **card_name)
 {
-  AgsWasapiClient *wasapi_client;
   AgsWasapiDevout *wasapi_devout;
 
   AgsApplicationContext *application_context;
@@ -1626,10 +1630,10 @@ ags_wasapi_devout_list_cards(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   CoInitialize(0);
 
-  if(!CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, &dev_enumrator)){
+  if(!CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, &dev_enumerator)){
     IMMDeviceCollection *dev_collection;
 
-    if(!dev_enumerator>lpVtbl->EnumAudioEndpoints(dev_enumerator, eRender, DEVICE_STATE_ACTIVE, &dev_collection)){
+    if(!dev_enumerator->lpVtbl->EnumAudioEndpoints(dev_enumerator, eRender, DEVICE_STATE_ACTIVE, &dev_collection)){
       IMMDevice *device;
       register UINT dev_num;
 
@@ -1879,7 +1883,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 			   NULL,
 			   NULL);
 
-  if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, DevID, &mm_device)){
+  if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
     if(error != NULL){
       g_set_error(error,
 		  AGS_WASAPI_DEVOUT_ERROR,
@@ -1887,7 +1891,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 		  "unable to open pcm device: Can't get IMMDevice.");
     }
 
-    dev_numerator->lpVtbl->Release(dev_enumerator);
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
     CoUninitialize();
 
     pthread_mutex_unlock(wasapi_devout_mutex);
@@ -1907,7 +1911,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
     }
 
     mm_device->lpVtbl->Release(mm_device);
-    dev_numerator->lpVtbl->Release(dev_enumerator);
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
     CoUninitialize();
 
     pthread_mutex_unlock(wasapi_devout_mutex);
@@ -1944,11 +1948,11 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
   }
   
   desired_format.Format.wBitsPerSample = desired_format.Samples.wValidBitsPerSample = bit_resolution;
-  desired_format.Format.nBlockAlign = 2 * (BitResolution/8);
+  desired_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
 
   if(bit_resolution == 24){
     desired_format.Format.wBitsPerSample = 32;
-    desired_format.Format.nBlockAlign = 2 * (32/8);
+    desired_format.Format.nBlockAlign = 2 * (32 / 8);
   }
   
   CopyMemory(&(desired_format.SubFormat), &PcmSubformatGuid, sizeof(GUID));
@@ -1964,7 +1968,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
     }
 
     mm_device->lpVtbl->Release(mm_device);
-    dev_numerator->lpVtbl->Release(dev_enumerator);
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
     CoUninitialize();
 
     return;
@@ -1988,8 +1992,6 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
   wasapi_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devout)));
   wasapi_devout->tic_counter = 0;
 
-  wasapi_devout->nth_ring_buffer = 0;
-  
   ags_soundcard_get_poll_fd(soundcard);
   
 #ifdef AGS_WITH_WASAPI
@@ -2039,9 +2041,11 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
   pthread_mutex_t *wasapi_devout_mutex;
   
+  wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
+
   application_context = ags_application_context_get_instance();
 
-  /* get wasapi_devout mutex */
+  /* get wasapi devout mutex */
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
   /* lock */
@@ -2119,7 +2123,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   audio_client->lpVtbl->GetBufferSize(audio_client, &buffer_frame_count);
   
   do{
-    audio_client->lpVtbl->GetCurrentPadding(audio_client, &num_frames_available)
+    audio_client->lpVtbl->GetCurrentPadding(audio_client, &num_frames_available);
   }while(num_frames_available < buffer_frame_count);
 
   audio_client->lpVtbl->GetService(audio_client, &IID_IAudioRenderClient, (void **) &audio_render_client);
@@ -2152,16 +2156,6 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
   audio_render_client->lpVtbl->ReleaseBuffer(audio_render_client, buffer_frame_count, 0);
 #endif
-  
-  /* increment nth ring-buffer */
-  g_atomic_int_set(&(wasapi_devout->available),
-		   FALSE);
-  
-  if(wasapi_devout->nth_ring_buffer + 1 >= wasapi_devout->ring_buffer_size){
-    wasapi_devout->nth_ring_buffer = 0;
-  }else{
-    wasapi_devout->nth_ring_buffer += 1;
-  }
   
   pthread_mutex_unlock(wasapi_devout_mutex);
 
@@ -2203,6 +2197,7 @@ ags_wasapi_devout_client_free(AgsSoundcard *soundcard)
 #ifdef AGS_WITH_WASAPI
   IAudioClient *audio_client;
   IAudioRenderClient *audio_render_client;
+  IMMDevice *mm_device;
 #endif
 
   guint i;
@@ -2211,7 +2206,7 @@ ags_wasapi_devout_client_free(AgsSoundcard *soundcard)
   
   wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
 
-  /* get wasapi_devout mutex */
+  /* get wasapi devout mutex */
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
   /* lock */
@@ -2228,11 +2223,9 @@ ags_wasapi_devout_client_free(AgsSoundcard *soundcard)
 #ifdef AGS_WITH_WASAPI
   audio_client = wasapi_devout->audio_client;
   audio_client->lpVtbl->GetService(audio_client, &IID_IAudioRenderClient, (void **) &audio_render_client);
-#endif
-  
-  pthread_mutex_unlock(wasapi_devout_mutex);
-  
-#ifdef AGS_WITH_WASAPI
+
+  mm_device = wasapi_devout->mm_device;
+
   audio_client->lpVtbl->Stop(audio_client);
 
   audio_render_client->lpVtbl->Release(audio_render_client);

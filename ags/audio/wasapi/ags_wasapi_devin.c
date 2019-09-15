@@ -35,6 +35,10 @@
 #include <math.h>
 #include <time.h>
 
+#ifdef AGS_WITH_WASAPI
+#include <ole2.h>
+#endif
+
 #include <ags/config.h>
 #include <ags/i18n.h>
 
@@ -184,11 +188,13 @@ static gpointer ags_wasapi_devin_parent_class = NULL;
 
 static pthread_mutex_t ags_wasapi_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#if 0
+static const GUID CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
+static const GUID IID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
+static const GUID IID_IAudioClient = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
+static const GUID IID_IAudioCaptureClient = {0xc8adbd64, 0xe71e, 0x48a0, 0xa4,0xde, 0x18,0x5c,0x39,0x5c,0xd3,0x17};
+#endif
 
-static const GUID CLSID_MMDeviceEnumerator = __uidof(MMDeviceEnumerator); // {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
-static const GUID IID_IMMDeviceEnumerator = __uidof(IMMDeviceEnumerator); // {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
-static const GUID IID_IAudioClient = __uidof(IAudioClient); //{0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
-static const GUID IID_IAudioCaptureClient = __uidof(IAudioCaptureClient);
 static const GUID PcmSubformatGuid = {STATIC_KSDATAFORMAT_SUBTYPE_PCM};
 
 GType
@@ -549,8 +555,6 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
 
   /* flags */
   wasapi_devin->flags = 0;
-  g_atomic_int_set(&(wasapi_devin->sync_flags),
-		   AGS_WASAPI_DEVIN_PASS_THROUGH);
 
   /* devin mutex */
   wasapi_devin->obj_mutexattr = 
@@ -724,7 +728,7 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
       pthread_mutex_lock(wasapi_devin_mutex);
 
-      wasapi_devin->card_uri = g_strdup(device);
+      wasapi_devin->device = g_strdup(device);
 
       pthread_mutex_unlock(wasapi_devin_mutex);
     }
@@ -904,7 +908,7 @@ ags_wasapi_devin_get_property(GObject *gobject,
     {
       pthread_mutex_lock(wasapi_devin_mutex);
 
-      g_value_set_string(value, wasapi_devin->card_uri);
+      g_value_set_string(value, wasapi_devin->device);
 
       pthread_mutex_unlock(wasapi_devin_mutex);
     }
@@ -1255,7 +1259,7 @@ ags_wasapi_devin_get_device(AgsSoundcard *soundcard)
   /* get device */
   pthread_mutex_lock(wasapi_devin_mutex);
 
-  device = g_strdup(wasapi_devin->card_uri);
+  device = g_strdup(wasapi_devin->device);
 
   pthread_mutex_unlock(wasapi_devin_mutex);
   
@@ -1333,7 +1337,6 @@ void
 ags_wasapi_devin_list_cards(AgsSoundcard *soundcard,
 			    GList **card_id, GList **card_name)
 {
-  AgsWasapiClient *wasapi_client;
   AgsWasapiDevin *wasapi_devin;
 
   AgsApplicationContext *application_context;
@@ -1357,10 +1360,10 @@ ags_wasapi_devin_list_cards(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   CoInitialize(0);
 
-  if(!CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, &dev_enumrator)){
+  if(!CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, &dev_enumerator)){
     IMMDeviceCollection *dev_collection;
 
-    if(!dev_enumerator>lpVtbl->EnumAudioEndpoints(dev_enumerator, eCapture, DEVICE_STATE_ACTIVE, &dev_collection)){
+    if(!dev_enumerator->lpVtbl->EnumAudioEndpoints(dev_enumerator, eCapture, DEVICE_STATE_ACTIVE, &dev_collection)){
       IMMDevice *device;
       register UINT dev_num;
 
@@ -1558,17 +1561,446 @@ void
 ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 			     GError **error)
 {
+  AgsWasapiDevin *wasapi_devin;
+
+#ifdef AGS_WITH_WASAPI
+  IMMDeviceEnumerator *dev_enumerator;
+  IMMDevice *mm_device;
+  IAudioClient *audio_client;
+  IAudioCaptureClient *audio_capture_client;
+
+  WAVEFORMATEXTENSIBLE desired_format;
+
+  WCHAR *dev_id;
+
+  REFERENCE_TIME min_duration;
+
+  register HRESULT hr;
+
+  unsigned char bit_resolution;
+#endif
+
+  pthread_mutex_t *wasapi_devin_mutex; 
+
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  /* get wasapi devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  pthread_mutex_lock(wasapi_devin_mutex);
+
+#ifdef AGS_WITH_WASAPI
+  CoInitialize(0);
+  
+  if(CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, (void **) &dev_enumerator)){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_WASAPI_DEVIN_ERROR,
+		  AGS_WASAPI_DEVIN_ERROR_LOCKED_SOUNDCARD,
+		  "unable to open pcm device: Can't get IMMDeviceEnumerator.");
+    }
+    
+    CoUninitialize();
+
+    pthread_mutex_unlock(wasapi_devin_mutex);
+
+    return;
+  }
+
+  dev_id = g_utf8_to_utf16(wasapi_devin->device,
+			   -1,
+			   NULL,
+			   NULL,
+			   NULL);
+
+  if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_WASAPI_DEVIN_ERROR,
+		  AGS_WASAPI_DEVIN_ERROR_LOCKED_SOUNDCARD,
+		  "unable to open pcm device: Can't get IMMDevice.");
+    }
+
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
+    CoUninitialize();
+
+    pthread_mutex_unlock(wasapi_devin_mutex);
+
+    return;
+  }
+
+  wasapi_devin->mm_device = mm_device;
+  
+  // Get its IAudioClient (used to set audio format, latency, and start/stop)
+  if(mm_device->lpVtbl->Activate(mm_device, &IID_IAudioClient, CLSCTX_ALL, 0, (void **) &audio_client)){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_WASAPI_DEVIN_ERROR,
+		  AGS_WASAPI_DEVIN_ERROR_LOCKED_SOUNDCARD,
+		  "unable to open pcm device: Can't get IAudioClient.");
+    }
+
+    mm_device->lpVtbl->Release(mm_device);
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
+    CoUninitialize();
+
+    pthread_mutex_unlock(wasapi_devin_mutex);
+
+    return;
+  }
+  
+  wasapi_devin->audio_client = audio_client;
+  
+  ZeroMemory(&desired_format, sizeof(WAVEFORMATEXTENSIBLE));
+  desired_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+  desired_format.Format.cbSize = 22;
+  desired_format.Format.nChannels = wasapi_devin->pcm_channels;
+  desired_format.Format.nSamplesPerSec = wasapi_devin->samplerate;
+
+  bit_resolution = 16;
+  
+  switch(wasapi_devin->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      bit_resolution = 16;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      bit_resolution = 24;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      bit_resolution = 32;
+    }
+    break;
+  }
+  
+  desired_format.Format.wBitsPerSample = desired_format.Samples.wValidBitsPerSample = bit_resolution;
+  desired_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
+
+  if(bit_resolution == 24){
+    desired_format.Format.wBitsPerSample = 32;
+    desired_format.Format.nBlockAlign = 2 * (32 / 8);
+  }
+  
+  CopyMemory(&(desired_format.SubFormat), &PcmSubformatGuid, sizeof(GUID));
+  desired_format.Format.nAvgBytesPerSec = wasapi_devin->samplerate * desired_format.Format.nBlockAlign;
+  
+  if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, (WAVEFORMATEX *) &desired_format, 0))){
+  ags_wasapi_devin_client_init_BROKEN_CONFIGURATION:
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_WASAPI_DEVIN_ERROR,
+		  AGS_WASAPI_DEVIN_ERROR_BROKEN_CONFIGURATION,
+		  "unable to open pcm device: Broken configuration.");
+    }
+
+    mm_device->lpVtbl->Release(mm_device);
+    dev_enumerator->lpVtbl->Release(dev_enumerator);
+    CoUninitialize();
+
+    return;
+  }
+  
+  audio_client->lpVtbl->GetDevicePeriod(audio_client, 0, &min_duration);
+
+  if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, (WAVEFORMATEX *) &desired_format, 0))){
+    if(hr == AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED){
+      audio_client->lpVtbl->Release(audio_client);
+
+      goto ags_wasapi_devin_client_init_BROKEN_CONFIGURATION;
+    }
+  }  
+
+  // Start audio playback
+  audio_client->lpVtbl->Start(audio_client);
+#endif
+  
+  wasapi_devin->tact_counter = 0.0;
+  wasapi_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devin)));
+  wasapi_devin->tic_counter = 0;
+
+  ags_soundcard_get_poll_fd(soundcard);
+  
+#ifdef AGS_WITH_WASAPI
+  wasapi_devin->flags |= AGS_WASAPI_DEVIN_INITIALIZED;
+#endif
+  wasapi_devin->flags |= AGS_WASAPI_DEVIN_BUFFER0;
+  wasapi_devin->flags &= (~(AGS_WASAPI_DEVIN_BUFFER1 |
+			     AGS_WASAPI_DEVIN_BUFFER2 |
+			     AGS_WASAPI_DEVIN_BUFFER3));
+  
+  pthread_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
 ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
-			     GError **error)
+			       GError **error)
 {
+  AgsWasapiDevin *wasapi_devin;
+
+  AgsNotifySoundcard *notify_soundcard;
+  AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
+  AgsPollFd *poll_fd;
+
+  AgsApplicationContext *application_context;
+
+  GList *task;
+  GList *list;
+  
+  gchar *str;
+  
+#ifdef AGS_WITH_WASAPI
+  IAudioClient *audio_client;
+  IAudioCaptureClient *audio_capture_client;
+
+  BYTE *data;
+
+  UINT32 buffer_frame_count;  
+  UINT32 num_frames_available;
+  DWORD pdw_flags;
+#endif
+
+  guint word_size;
+  guint nth_buffer;
+  
+  pthread_mutex_t *wasapi_devin_mutex;
+  
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  application_context = ags_application_context_get_instance();
+
+  /* get wasapi_devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  /* lock */
+  pthread_mutex_lock(wasapi_devin_mutex);
+  
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(wasapi_devin->notify_soundcard);
+
+  /* notify cyclic task */
+  pthread_mutex_lock(notify_soundcard->return_mutex);
+
+  g_atomic_int_or(&(notify_soundcard->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
+  
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
+  }
+  
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
+
+  /* retrieve word size */
+  switch(wasapi_devin->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(wasapi_devin_mutex);
+    
+    g_warning("ags_wasapi_devin_client_record(): unsupported word size");
+
+    return;
+  }
+
+  /* do capture */
+  wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_START_RECORD);
+
+  if((AGS_WASAPI_DEVIN_INITIALIZED & (wasapi_devin->flags)) == 0){
+    pthread_mutex_unlock(wasapi_devin_mutex);
+    
+    return;
+  }
+
+  //  g_message("record - 0x%0x", ((AGS_WASAPI_DEVIN_BUFFER0 |
+  //				AGS_WASAPI_DEVIN_BUFFER1 |
+  //				AGS_WASAPI_DEVIN_BUFFER2 |
+  //				AGS_WASAPI_DEVIN_BUFFER3) & (wasapi_devin->flags)));
+
+  /* check buffer flag */
+  nth_buffer = 0;
+  
+  if((AGS_WASAPI_DEVIN_BUFFER0 & (wasapi_devin->flags)) != 0){
+    nth_buffer = 0;
+  }else if((AGS_WASAPI_DEVIN_BUFFER1 & (wasapi_devin->flags)) != 0){
+    nth_buffer = 1;
+  }else if((AGS_WASAPI_DEVIN_BUFFER2 & (wasapi_devin->flags)) != 0){
+    nth_buffer = 2;
+  }else if((AGS_WASAPI_DEVIN_BUFFER3 & (wasapi_devin->flags)) != 0){
+    nth_buffer = 3;
+  }
+
+#ifdef AGS_WITH_WASAPI
+  /* wait until available */
+  audio_client = wasapi_devin->audio_client;
+  
+  audio_client->lpVtbl->GetBufferSize(audio_client, &buffer_frame_count);
+  
+  do{
+    audio_client->lpVtbl->GetCurrentPadding(audio_client, &num_frames_available);
+  }while(num_frames_available < buffer_frame_count);
+
+  audio_client->lpVtbl->GetService(audio_client, &IID_IAudioCaptureClient, (void **) &audio_capture_client);
+  audio_capture_client->lpVtbl->GetBuffer(audio_capture_client, &data, &num_frames_available, &pdw_flags, NULL, NULL);
+
+  /* retrieve word size */
+  switch(wasapi_devin->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_audio_buffer_util_copy_s16_to_s16(wasapi_devin->buffer[nth_buffer], 1,
+					    data, 1,
+					    wasapi_devin->pcm_channels * wasapi_devin->buffer_size);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_audio_buffer_util_copy_s24_to_s24(wasapi_devin->buffer[nth_buffer], 1,
+					    data, 1,
+					    wasapi_devin->pcm_channels * wasapi_devin->buffer_size);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_audio_buffer_util_copy_s32_to_s32(wasapi_devin->buffer[nth_buffer], 1,
+					    data, 1,
+					    wasapi_devin->pcm_channels * wasapi_devin->buffer_size);
+    }
+    break;
+  }
+
+  audio_capture_client->lpVtbl->ReleaseBuffer(audio_capture_client, buffer_frame_count);
+#endif
+
+  /* update soundcard */
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  task = NULL;
+  
+  /* tic soundcard */
+  tic_device = ags_tic_device_new((GObject *) wasapi_devin);
+  task = g_list_append(task,
+		       tic_device);
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) wasapi_devin);
+  task = g_list_append(task,
+		       clear_buffer);
+
+  /* reset - switch buffer flags */
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) wasapi_devin);
+  task = g_list_append(task,
+		       switch_buffer_flag);
+
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
+  
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void
 ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
 {
+  AgsWasapiDevin *wasapi_devin;
+
+  AgsNotifySoundcard *notify_soundcard;
+
+  AgsApplicationContext *application_context;
+
+#ifdef AGS_WITH_WASAPI
+  IAudioClient *audio_client;
+  IAudioCaptureClient *audio_capture_client;
+  IMMDevice *mm_device;
+#endif
+
+  GList *poll_fd;
+
+  guint i;
+  
+  pthread_mutex_t *wasapi_devin_mutex;
+  
+  wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
+
+  /* get wasapi devin mutex */
+  wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
+
+  /* lock */
+  pthread_mutex_lock(wasapi_devin_mutex);
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(wasapi_devin->notify_soundcard);
+
+  if((AGS_WASAPI_DEVIN_INITIALIZED & (wasapi_devin->flags)) == 0){
+    pthread_mutex_unlock(wasapi_devin_mutex);
+    
+    return;
+  }
+  
+#ifdef AGS_WITH_ALSA
+  audio_client = wasapi_devin->audio_client;
+  audio_client->lpVtbl->GetService(audio_client, &IID_IAudioCaptureClient, (void **) &audio_capture_client);
+
+  mm_device = wasapi_devin->mm_device;
+
+  audio_client->lpVtbl->Stop(audio_client);
+
+  audio_capture_client->lpVtbl->Release(audio_capture_client);
+  audio_client->lpVtbl->Release(audio_client);
+  mm_device->lpVtbl->Release(mm_device);
+#endif
+
+  /* reset flags */
+  wasapi_devin->flags &= (~(AGS_WASAPI_DEVIN_BUFFER0 |
+			    AGS_WASAPI_DEVIN_BUFFER1 |
+			    AGS_WASAPI_DEVIN_BUFFER2 |
+			    AGS_WASAPI_DEVIN_BUFFER3 |
+			    AGS_WASAPI_DEVIN_RECORD |
+			    AGS_WASAPI_DEVIN_INITIALIZED));
+
+  /* notify cyclic task */
+  pthread_mutex_lock(notify_soundcard->return_mutex);
+
+  g_atomic_int_or(&(notify_soundcard->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
+  
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
+  }
+  
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
+
+  wasapi_devin->note_offset = wasapi_devin->start_note_offset;
+  wasapi_devin->note_offset_absolute = wasapi_devin->start_note_offset;
+
+  pthread_mutex_unlock(wasapi_devin_mutex);
 }
 
 void

@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/config.h>
+
 #ifdef AGS_WITH_WASAPI
 #include <windows.h>
 #include <tchar.h>
@@ -74,32 +76,33 @@ typedef struct _AgsWasapiDevinClass AgsWasapiDevinClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_WASAPI_DEVIN_ADDED_TO_REGISTRY              = 1,
-  AGS_WASAPI_DEVIN_CONNECTED                      = 1 <<  1,
+	     AGS_WASAPI_DEVIN_ADDED_TO_REGISTRY              = 1,
+	     AGS_WASAPI_DEVIN_CONNECTED                      = 1 <<  1,
 
-  AGS_WASAPI_DEVIN_BUFFER0                        = 1 <<  2,
-  AGS_WASAPI_DEVIN_BUFFER1                        = 1 <<  3,
-  AGS_WASAPI_DEVIN_BUFFER2                        = 1 <<  4,
-  AGS_WASAPI_DEVIN_BUFFER3                        = 1 <<  5,
-  AGS_WASAPI_DEVIN_BUFFER4                        = 1 <<  6,
-  AGS_WASAPI_DEVIN_BUFFER5                        = 1 <<  7,
-  AGS_WASAPI_DEVIN_BUFFER6                        = 1 <<  8,
-  AGS_WASAPI_DEVIN_BUFFER7                        = 1 <<  9,
+	     AGS_WASAPI_DEVIN_BUFFER0                        = 1 <<  2,
+	     AGS_WASAPI_DEVIN_BUFFER1                        = 1 <<  3,
+	     AGS_WASAPI_DEVIN_BUFFER2                        = 1 <<  4,
+	     AGS_WASAPI_DEVIN_BUFFER3                        = 1 <<  5,
+	     AGS_WASAPI_DEVIN_BUFFER4                        = 1 <<  6,
+	     AGS_WASAPI_DEVIN_BUFFER5                        = 1 <<  7,
+	     AGS_WASAPI_DEVIN_BUFFER6                        = 1 <<  8,
+	     AGS_WASAPI_DEVIN_BUFFER7                        = 1 <<  9,
 
-  AGS_WASAPI_DEVIN_ATTACK_FIRST                   = 1 << 10,
+	     AGS_WASAPI_DEVIN_ATTACK_FIRST                   = 1 << 10,
 
-  AGS_WASAPI_DEVIN_RECORD                         = 1 << 11,
-  AGS_WASAPI_DEVIN_SHUTDOWN                       = 1 << 12,
-  AGS_WASAPI_DEVIN_START_RECORD                   = 1 << 13,
+	     AGS_WASAPI_DEVIN_RECORD                         = 1 << 11,
+	     AGS_WASAPI_DEVIN_SHUTDOWN                       = 1 << 12,
+	     AGS_WASAPI_DEVIN_START_RECORD                   = 1 << 13,
 
-  AGS_WASAPI_DEVIN_NONBLOCKING                    = 1 << 14,
-  AGS_WASAPI_DEVIN_INITIALIZED                    = 1 << 15,
+	     AGS_WASAPI_DEVIN_NONBLOCKING                    = 1 << 14,
+	     AGS_WASAPI_DEVIN_INITIALIZED                    = 1 << 15,
 }AgsWasapiDevinFlags;
 
 #define AGS_WASAPI_DEVIN_ERROR (ags_wasapi_devin_error_quark())
 
 typedef enum{
-  AGS_WASAPI_DEVIN_ERROR_LOCKED_SOUNDCARD,
+	     AGS_WASAPI_DEVIN_ERROR_LOCKED_SOUNDCARD,
+	     AGS_WASAPI_DEVIN_ERROR_BROKEN_CONFIGURATION,
 }AgsWasapiDevinError;
 
 struct _AgsWasapiDevin
