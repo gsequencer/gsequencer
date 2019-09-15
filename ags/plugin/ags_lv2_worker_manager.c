@@ -180,7 +180,7 @@ ags_lv2_worker_manager_new()
   AgsLv2WorkerManager *lv2_worker_manager;
 
   lv2_worker_manager = (AgsLv2WorkerManager *) g_object_new(AGS_TYPE_LV2_WORKER_MANAGER,
-						      NULL);
-
+							    NULL);
+  
   return(lv2_worker_manager);
 }

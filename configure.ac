@@ -54,6 +54,11 @@ AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
 	      [],
 	      [enable_core_audio=no])
 
+AC_ARG_ENABLE(wasapi, [AS_HELP_STRING([--enable-wasapi],
+				      [enable WASAPI (default is no)])],
+	      [],
+	      [enable_wasapi=no])
+
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
 					    [enable libinstpatch (default is yes)])],
 	      [],
@@ -73,6 +78,11 @@ AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
 	      [],
 	      [enable_xmlrpc=no])
+
+AC_ARG_ENABLE(x11, [AS_HELP_STRING([--enable-x11],
+				   [enable X11 (default is yes)])],
+	      [],
+	      [enable_x11=yes])
 
 AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
 				      [enable quartz (default is no)])],
@@ -123,16 +133,19 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
+AS_IF([test "x$enable_x11" != xno],
+      [AC_DEFINE([AGS_WITH_X11], [1], [X11 enabled])
+       AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
+       X11_LIBS="-lX11"],
+      [AC_MSG_NOTICE([X11 disabled])])
+
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
        PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk2 >= 2.0.7])
        AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
        AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],
-      [AC_MSG_NOTICE([quartz disabled])
-       AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
-       X11_LIBS="-lX11"
-       ])
+      [AC_MSG_NOTICE([quartz disabled])])
 
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
@@ -209,6 +222,17 @@ AS_IF([test "x$enable_core_audio" != xno],
 
       AC_MSG_NOTICE([core audio enabled])],
       AC_MSG_NOTICE([core audio disabled]))
+
+AS_IF([test "x$enable_wasapi" != xno],
+      [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled]
+      )
+      WASAPI_CFLAGS="-Iwasapi"
+      WASAPI_LIBS="-lole -luuid"
+      AC_SUBST(WASAPI_CFLAGS)
+      AC_SUBST(WASAPI_LIBS)
+
+      AC_MSG_NOTICE([wasapi enabled])],
+      AC_MSG_NOTICE([wasapi disabled]))
 
 AS_IF([test "x$enable_jack" != xno],
       [AC_DEFINE([AGS_WITH_JACK], [1], [JACK enabled])

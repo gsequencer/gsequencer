@@ -27,6 +27,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <unistd.h>
+
 int ags_lv2_worker_manager_test_init_suite();
 int ags_lv2_worker_manager_test_clean_suite();
 
