@@ -1,7 +1,7 @@
 ags (2.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed AgsDial invalid range
+	* improved AgsDial invalid range
 	* fixed memory leaks related to g_strdup_printf() in ags_simple_file.c
 
 ags (2.3.3)

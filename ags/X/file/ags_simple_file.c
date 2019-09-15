@@ -198,7 +198,7 @@ xmlNode* ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode
 
 xmlNode* ags_simple_file_write_notation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotationEditor *notation_editor);
 void ags_simple_file_write_notation_editor_resolve_machine(AgsFileLookup *file_lookup,
-						  AgsNotationEditor *notation_editor);
+							   AgsNotationEditor *notation_editor);
 xmlNode* ags_simple_file_write_automation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomationEditor *automation_editor);
 void ags_simple_file_write_automation_editor_resolve_machine(AgsFileLookup *file_lookup,
 							     AgsAutomationEditor *automation_editor);
@@ -596,79 +596,79 @@ ags_simple_file_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    {
-      gchar *filename;
+  {
+    gchar *filename;
 
-      filename = g_value_get_string(value);
+    filename = g_value_get_string(value);
 
-      if(simple_file->filename == filename){
-	return;
-      }
-
-      if(simple_file->filename != NULL){
-	g_free(simple_file->filename);
-      }
-      
-      simple_file->filename = g_strdup(filename);
+    if(simple_file->filename == filename){
+      return;
     }
-    break;
+
+    if(simple_file->filename != NULL){
+      g_free(simple_file->filename);
+    }
+      
+    simple_file->filename = g_strdup(filename);
+  }
+  break;
   case PROP_ENCODING:
-    {
-      gchar *encoding;
+  {
+    gchar *encoding;
 
-      encoding = g_value_get_string(value);
+    encoding = g_value_get_string(value);
 
-      simple_file->encoding = encoding;
-    }
-    break;
+    simple_file->encoding = encoding;
+  }
+  break;
   case PROP_AUDIO_FORMAT:
-    {
-      gchar *audio_format;
+  {
+    gchar *audio_format;
 
-      audio_format = g_value_get_string(value);
+    audio_format = g_value_get_string(value);
 
-      simple_file->audio_format = audio_format;
-    }
-    break;
+    simple_file->audio_format = audio_format;
+  }
+  break;
   case PROP_AUDIO_ENCODING:
-    {
-      gchar *audio_encoding;
+  {
+    gchar *audio_encoding;
 
-      audio_encoding = g_value_get_string(value);
+    audio_encoding = g_value_get_string(value);
 
-      simple_file->audio_encoding = audio_encoding;
-    }
-    break;
+    simple_file->audio_encoding = audio_encoding;
+  }
+  break;
   case PROP_XML_DOC:
-    {
-      xmlDoc *doc;
+  {
+    xmlDoc *doc;
 
-      doc = (xmlDoc *) g_value_get_pointer(value);
+    doc = (xmlDoc *) g_value_get_pointer(value);
       
-      simple_file->doc = doc;
-    }
-    break;
+    simple_file->doc = doc;
+  }
+  break;
   case PROP_APPLICATION_CONTEXT:
-    {
-      GObject *application_context;
+  {
+    GObject *application_context;
 
-      application_context = g_value_get_object(value);
+    application_context = g_value_get_object(value);
 
-      if(simple_file->application_context == application_context){
-	return;
-      }
-
-      if(simple_file->application_context != NULL){
-	g_object_unref(simple_file->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      simple_file->application_context = application_context;
+    if(simple_file->application_context == application_context){
+      return;
     }
-    break;
+
+    if(simple_file->application_context != NULL){
+      g_object_unref(simple_file->application_context);
+    }
+
+    if(application_context != NULL){
+      g_object_ref(application_context);
+    }
+
+    simple_file->application_context = application_context;
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -687,35 +687,35 @@ ags_simple_file_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    {
-      g_value_set_string(value, simple_file->filename);
-    }
-    break;
+  {
+    g_value_set_string(value, simple_file->filename);
+  }
+  break;
   case PROP_ENCODING:
-    {
-      g_value_set_string(value, simple_file->encoding);
-    }
-    break;
+  {
+    g_value_set_string(value, simple_file->encoding);
+  }
+  break;
   case PROP_AUDIO_FORMAT:
-    {
-      g_value_set_string(value, simple_file->audio_format);
-    }
-    break;
+  {
+    g_value_set_string(value, simple_file->audio_format);
+  }
+  break;
   case PROP_AUDIO_ENCODING:
-    {
-      g_value_set_string(value, simple_file->audio_encoding);
-    }
-    break;
+  {
+    g_value_set_string(value, simple_file->audio_encoding);
+  }
+  break;
   case PROP_XML_DOC:
-    {
-      g_value_set_pointer(value, simple_file->doc);
-    }
-    break;
+  {
+    g_value_set_pointer(value, simple_file->doc);
+  }
+  break;
   case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, simple_file->application_context);
-    }
-    break;
+  {
+    g_value_set_object(value, simple_file->application_context);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1200,8 +1200,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-sf-window",
-			   child->name,
-			   14)){
+		     child->name,
+		     14)){
 	ags_simple_file_read_window(simple_file,
 				    child,
 				    (AgsWindow **) &(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
@@ -2586,8 +2586,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	      if(str != NULL){
 		line = g_ascii_strtoull(str,
-				       NULL,
-				       10);
+					NULL,
+					10);
 
 		xmlFree(str);
 	      }
@@ -2719,8 +2719,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(str != NULL){
     g_object_set(gobject->audio,
 		 "audio-start-mapping", g_ascii_strtoull(str,
-							   NULL,
-							   10),
+							 NULL,
+							 10),
 		 NULL);
     
     xmlFree(str);
@@ -2732,8 +2732,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(str != NULL){
     g_object_set(gobject->audio,
 		 "audio-end-mapping", g_ascii_strtoull(str,
-							 NULL,
-							 10),
+						       NULL,
+						       10),
 		 NULL);
     
     xmlFree(str);
@@ -2745,8 +2745,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(str != NULL){
     g_object_set(gobject->audio,
 		 "midi-start-mapping", g_ascii_strtoull(str,
-							  NULL,
-							  10),
+							NULL,
+							10),
 		 NULL);
     
     xmlFree(str);
@@ -2758,8 +2758,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   if(str != NULL){
     g_object_set(gobject->audio,
 		 "midi-end-mapping", g_ascii_strtoull(str,
-							NULL,
-							10),
+						      NULL,
+						      10),
 		 NULL);
     
     xmlFree(str);
@@ -2786,8 +2786,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-			   (xmlChar *) "ags-sf-automation-list",
-			   23)){
+		     (xmlChar *) "ags-sf-automation-list",
+		     23)){
 	GList *automation;
 
 	gchar *version;
@@ -2855,7 +2855,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   
   auto void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec);
 
- auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
+  auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
   auto void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
   auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
   auto void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
@@ -4213,8 +4213,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
 				 val);
       }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	 gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				      ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				     ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
       }else{
 	g_warning("ags_simple_file_read_line() - unknown line member type");
       }
@@ -4464,10 +4464,10 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 			
 			if(((filename == NULL && effect == NULL) ||
 			    (strlen(filename) == 0 && strlen(effect) == 0) ||
-			     (!g_strcmp0(line_member->filename,
-					 filename) &&
-			      !g_strcmp0(line_member->effect,
-					 effect))) &&
+			    (!g_strcmp0(line_member->filename,
+					filename) &&
+			     !g_strcmp0(line_member->effect,
+					effect))) &&
 			   !g_strcmp0(line_member->specifier,
 				      specifier)){
 			  ags_simple_file_read_line_member(simple_file,
@@ -4629,9 +4629,9 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 		   "filename");
     
   if(str != NULL &&
-    !g_ascii_strncasecmp(str,
-			 "file://",
-			 7)){
+     !g_ascii_strncasecmp(str,
+			  "file://",
+			  7)){
     AgsAudioFile *audio_file;
     AgsAudioFileLink *file_link;
     
@@ -6072,7 +6072,7 @@ ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 	      ags_machine_selector_add_index(wave_editor->machine_selector);
 
 	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-										  str);
+								  str);
 
 	      if(file_id_ref != NULL &&
 		 file_id_ref->data != NULL &&
@@ -6469,8 +6469,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 
 	if(str != NULL){
 	  note->x[0] = g_ascii_strtoull(str,
-				       NULL,
-				       10);
+					NULL,
+					10);
 
 	  xmlFree(str);
 	}
@@ -6480,8 +6480,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 
 	if(str != NULL){
 	  note->x[1] = g_ascii_strtoull(str,
-				       NULL,
-				       10);
+					NULL,
+					10);
 
 	  xmlFree(str);
 	}
@@ -7325,7 +7325,7 @@ ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **
 
   while(*current != NULL){
     child = xmlNewNode(NULL,
-		      "ags-sf-str");
+		       "ags-sf-str");
     
     xmlNodeAddContent(child,
 		      *current);
@@ -8920,7 +8920,8 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
   GList *list;
 
   gchar *id;
-
+  gchar *str;
+  
   gboolean found_content;
 
   found_content = FALSE;
@@ -9051,7 +9052,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   GList *list_start, *list;
 
   gchar *id;
-
+  gchar *str;
+  
   gboolean found_content;
   
   auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
@@ -10386,8 +10388,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     }
 
     str = g_strdup_printf("%Lf %Lf",
-			       AGS_NOTE(list->data)->attack[0],
-			       AGS_NOTE(list->data)->attack[1]);
+			  AGS_NOTE(list->data)->attack[0],
+			  AGS_NOTE(list->data)->attack[1]);
     
     xmlNewProp(child,
 	       "attack",
@@ -10396,8 +10398,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
     
     str = g_strdup_printf("%Lf %Lf",
-			       AGS_NOTE(list->data)->decay[0],
-			       AGS_NOTE(list->data)->decay[1]);
+			  AGS_NOTE(list->data)->decay[0],
+			  AGS_NOTE(list->data)->decay[1]);
     
     xmlNewProp(child,
 	       "decay",
@@ -10406,8 +10408,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			       AGS_NOTE(list->data)->sustain[0],
-			       AGS_NOTE(list->data)->sustain[1]);
+			  AGS_NOTE(list->data)->sustain[0],
+			  AGS_NOTE(list->data)->sustain[1]);
     
     xmlNewProp(child,
 	       "sustain",
@@ -10416,8 +10418,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-    			       AGS_NOTE(list->data)->release[0],
-			       AGS_NOTE(list->data)->release[1]);
+			  AGS_NOTE(list->data)->release[0],
+			  AGS_NOTE(list->data)->release[1]);
     
     xmlNewProp(child,
 	       "release",
@@ -10426,12 +10428,12 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			       AGS_NOTE(list->data)->ratio[0],
-			       AGS_NOTE(list->data)->ratio[1]);
+			  AGS_NOTE(list->data)->ratio[0],
+			  AGS_NOTE(list->data)->ratio[1]);
     
     xmlNewProp(child,
 	       "ratio",
-	       );
+	       str);
 
     g_free(str);
     
