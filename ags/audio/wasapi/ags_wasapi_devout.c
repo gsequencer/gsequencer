@@ -195,14 +195,12 @@ static gpointer ags_wasapi_devout_parent_class = NULL;
 
 static pthread_mutex_t ags_wasapi_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-#if 0
-static const GUID CLSID_MMDeviceEnumerator = {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
-static const GUID IID_IMMDeviceEnumerator = {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
-static const GUID IID_IAudioClient = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
-static const GUID IID_IAudioRenderClient = {0xF294ACFC, 0x3146, 0x4483, 0xA7, 0xBF, 0xAD, 0xDC, 0xA7, 0xC2, 0x60, 0xE2};
-#endif
-
-static const GUID PcmSubformatGuid = {STATIC_KSDATAFORMAT_SUBTYPE_PCM};
+static const GUID ags_wasapi_clsid_mm_device_enumerator_guid = {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
+static const GUID ags_wasapi_iid_mm_device_enumerator_guid = {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
+static const GUID ags_wasapi_iid_audio_client_guid = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
+static const GUID ags_wasapi_iid_audio_render_client_guid = {0xF294ACFC, 0x3146, 0x4483, 0xA7, 0xBF, 0xAD, 0xDC, 0xA7, 0xC2, 0x60, 0xE2};
+static const GUID ags_wasapi_pcm_subformat_guid = {STATIC_KSDATAFORMAT_SUBTYPE_PCM};
+static const GUID ags_wasapi_pkey_device_friendly_name_guid = {0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0, 14};
 
 GType
 ags_wasapi_devout_get_type (void)
@@ -226,14 +224,14 @@ ags_wasapi_devout_get_type (void)
 
     static const GInterfaceInfo ags_connectable_interface_info = {
 								  (GInterfaceInitFunc) ags_wasapi_devout_connectable_interface_init,
-								  NULL, /* interface_finalize */
-								  NULL, /* interface_data */
+								  NULL, /* \*ginterface_finalize */
+								  NULL, /* \*ginterface_data */
     };
 
     static const GInterfaceInfo ags_soundcard_interface_info = {
 								(GInterfaceInitFunc) ags_wasapi_devout_soundcard_interface_init,
-								NULL, /* interface_finalize */
-								NULL, /* interface_data */
+								NULL, /* \*ginterface_finalize */
+								NULL, /* \*ginterface_data */
     };
 
     ags_type_wasapi_devout = g_type_register_static(G_TYPE_OBJECT,
@@ -1630,7 +1628,7 @@ ags_wasapi_devout_list_cards(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   CoInitialize(0);
 
-  if(!CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, &dev_enumerator)){
+  if(!CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, &dev_enumerator)){
     IMMDeviceCollection *dev_collection;
 
     if(!dev_enumerator->lpVtbl->EnumAudioEndpoints(dev_enumerator, eRender, DEVICE_STATE_ACTIVE, &dev_collection)){
@@ -1642,7 +1640,7 @@ ags_wasapi_devout_list_cards(AgsSoundcard *soundcard,
       while(!dev_collection->lpVtbl->Item(dev_collection, dev_num++, &device)){
 	IAudioClient *audio_client;
 
-	if(!device->lpVtbl->Activate(device, &IID_IAudioClient, CLSCTX_ALL, 0, (void **) &audio_client)){
+	if(!device->lpVtbl->Activate(device, &ags_wasapi_iid_audio_client_guid, CLSCTX_ALL, 0, (void **) &audio_client)){
 	  IPropertyStore *prop_store;
 
 	  if(!device->lpVtbl->OpenPropertyStore(device, STGM_READ, &prop_store)){
@@ -1650,7 +1648,7 @@ ags_wasapi_devout_list_cards(AgsSoundcard *soundcard,
 
 	    PropVariantInit(&var_name);
 
-	    if(!prop_store->lpVtbl->GetValue(prop_store, &PKEY_Device_FriendlyName, &var_name)){
+	    if(!prop_store->lpVtbl->GetValue(prop_store, &ags_wasapi_pkey_device_friendly_name_guid, &var_name)){
 	      WCHAR *dev_id = 0;
 
 	      // Get this device's ID and name
@@ -1862,7 +1860,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   CoInitialize(0);
   
-  if(CoCreateInstance(&CLSID_MMDeviceEnumerator, 0, CLSCTX_ALL, &IID_IMMDeviceEnumerator, (void **) &dev_enumerator)){
+  if(CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, (void **) &dev_enumerator)){
     if(error != NULL){
       g_set_error(error,
 		  AGS_WASAPI_DEVOUT_ERROR,
@@ -1902,7 +1900,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
   wasapi_devout->mm_device = mm_device;
   
   // Get its IAudioClient (used to set audio format, latency, and start/stop)
-  if(mm_device->lpVtbl->Activate(mm_device, &IID_IAudioClient, CLSCTX_ALL, 0, (void **) &audio_client)){
+  if(mm_device->lpVtbl->Activate(mm_device, &ags_wasapi_iid_audio_client_guid, CLSCTX_ALL, 0, (void **) &audio_client)){
     if(error != NULL){
       g_set_error(error,
 		  AGS_WASAPI_DEVOUT_ERROR,
@@ -1955,7 +1953,7 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
     desired_format.Format.nBlockAlign = 2 * (32 / 8);
   }
   
-  CopyMemory(&(desired_format.SubFormat), &PcmSubformatGuid, sizeof(GUID));
+  CopyMemory(&(desired_format.SubFormat), &ags_wasapi_pcm_subformat_guid, sizeof(GUID));
   desired_format.Format.nAvgBytesPerSec = wasapi_devout->samplerate * desired_format.Format.nBlockAlign;
   
   if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, (WAVEFORMATEX *) &desired_format, 0))){
@@ -2126,7 +2124,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     audio_client->lpVtbl->GetCurrentPadding(audio_client, &num_frames_available);
   }while(num_frames_available < buffer_frame_count);
 
-  audio_client->lpVtbl->GetService(audio_client, &IID_IAudioRenderClient, (void **) &audio_render_client);
+  audio_client->lpVtbl->GetService(audio_client, &ags_wasapi_iid_audio_render_client_guid, (void **) &audio_render_client);
   audio_render_client->lpVtbl->GetBuffer(audio_render_client, buffer_frame_count, &data);
 
   /* retrieve word size */
@@ -2222,7 +2220,7 @@ ags_wasapi_devout_client_free(AgsSoundcard *soundcard)
 
 #ifdef AGS_WITH_WASAPI
   audio_client = wasapi_devout->audio_client;
-  audio_client->lpVtbl->GetService(audio_client, &IID_IAudioRenderClient, (void **) &audio_render_client);
+  audio_client->lpVtbl->GetService(audio_client, &ags_wasapi_iid_audio_render_client_guid, (void **) &audio_render_client);
 
   mm_device = wasapi_devout->mm_device;
 
