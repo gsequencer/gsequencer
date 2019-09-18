@@ -32,15 +32,16 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
-#include <sys/resource.h>
-#include <sys/mman.h>
 
 //#include <ao/ao.h>
 
 #include <pthread.h>
 
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 

@@ -78,7 +78,7 @@ struct _AgsOscClient
   
   int ip4_fd;
   int ip6_fd;
-  
+
 #ifdef AGS_W32API
   gpointer ip4_address;
   gpointer ip6_address;

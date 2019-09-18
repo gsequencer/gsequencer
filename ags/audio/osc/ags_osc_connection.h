@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
+#ifndef AGS_W32API
 #include <netinet/in.h>
+#endif
 
 #define AGS_TYPE_OSC_CONNECTION                (ags_osc_connection_get_type ())
 #define AGS_OSC_CONNECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CONNECTION, AgsOscConnection))

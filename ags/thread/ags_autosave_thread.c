@@ -25,7 +25,10 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -232,20 +235,30 @@ ags_autosave_thread_run(AgsThread *thread)
     autosave_thread->counter += 1;
   }else{
     AgsFile *file;
+
+#ifndef AGS_W32API
     struct passwd *pw;
+    
     uid_t uid;
+#endif
+    
     gchar *filename;
 
     autosave_thread->counter = 0;
 
+#ifdef AGS_W32API
+    filename = g_strdup_printf("%s/var/run/%d-%s",
+			       DESTDIR);
+#else
     uid = getuid();
-    pw = getpwuid(uid);
+    pw = getpwuid(uid);    
 
     filename = g_strdup_printf("%s/%s/%d-%s",
 			       pw->pw_dir,
 			       AGS_DEFAULT_DIRECTORY,
 			       getpid(),
 			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#endif
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "application-context", autosave_thread->application_context,

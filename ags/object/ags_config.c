@@ -28,7 +28,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <ags/config.h>
 #include <ags/i18n.h>
@@ -497,7 +500,10 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "max-precision", "250");
 
-#if defined(AGS_WITH_CORE_AUDIO)
+#if defined(AGS_WITH_WASAPI)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "wasapi");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
+#elif defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
 #elif defined(AGS_WITH_PULSE)
@@ -792,9 +798,13 @@ ags_config_to_data(AgsConfig *config,
 void
 ags_config_save(AgsConfig *config)
 {
+#ifdef AGS_W32API
+#else
   struct passwd *pw;
 
   uid_t uid;
+#endif
+  
   gchar *path, *filename;
   gchar *content;
   gsize length;
@@ -812,14 +822,19 @@ ags_config_save(AgsConfig *config)
   /* save */
   pthread_mutex_lock(config_mutex);
 
+  /* open conf dir */
+#ifdef AGS_W32API
+  path = g_strdup_printf("%s/etc/gsequencer",
+			 DESTDIR);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
-  /* open conf dir */
   path = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
-
+#endif
+    
   if(!g_mkdir_with_parents(path,
 			   0755)){
     filename = g_strdup_printf("%s/%s",

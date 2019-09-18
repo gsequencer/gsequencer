@@ -272,15 +272,17 @@ ags_polling_thread_run(AgsThread *thread)
     
     /* poll */	
     if(polling_thread->fds != NULL){
-#ifndef __APPLE__
+#if defined AGS_W32API
+      //TODO:JK: implement me
+#elif defined __APPLE__
+      poll(polling_thread->fds,
+	   g_list_length(polling_thread->poll_fd),
+	   timeout.tv_nsec / 1000);
+#else
       ppoll(polling_thread->fds,
 	    g_list_length(polling_thread->poll_fd),
 	    &timeout,
 	    &sigmask);
-#else
-      poll(polling_thread->fds,
-	   g_list_length(polling_thread->poll_fd),
-	   timeout.tv_nsec / 1000);
 #endif
     }
     

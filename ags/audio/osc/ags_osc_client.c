@@ -27,6 +27,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+
+#ifndef AGS_W32API
 #include <fcntl.h>
 
 #include <sys/types.h>
@@ -34,6 +36,7 @@
 #include <netdb.h>
 
 #include <arpa/inet.h>
+#endif
 
 #ifdef __APPLE__
 #include <mach/clock.h>
@@ -322,13 +325,18 @@ ags_osc_client_init(AgsOscClient *osc_client)
   
   osc_client->ip4_fd = -1;
   osc_client->ip6_fd = -1;
-  
+
+#ifdef AGS_W32API
+  osc_client->ip4_address = NULL;
+  osc_client->ip6_address = NULL;
+#else
   osc_client->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(osc_client->ip4_address, 0, sizeof(struct sockaddr_in));
   
   osc_client->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(osc_client->ip6_address, 0, sizeof(struct sockaddr_in6));
-
+#endif
+  
   osc_client->max_retry_count = AGS_OSC_CLIENT_DEFAULT_MAX_RETRY;
 
   osc_client->retry_delay = (struct timespec *) malloc(sizeof(struct timespec));
@@ -723,6 +731,8 @@ ags_osc_client_timeout_expired(struct timespec *start_time,
 void
 ags_osc_client_real_resolve(AgsOscClient *osc_client)
 {
+#if AGS_W32API
+#else
   struct addrinfo hints, *res;
 
   int rc;
@@ -731,7 +741,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 
   /* get osc client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
-
+  
   /* lock */
   pthread_mutex_lock(osc_client_mutex);
   
@@ -767,6 +777,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 
   /* unlock */
   pthread_mutex_unlock(osc_client_mutex);
+#endif
 }
 
 /**
@@ -791,6 +802,8 @@ ags_osc_client_resolve(AgsOscClient *osc_client)
 void
 ags_osc_client_real_connect(AgsOscClient *osc_client)
 {
+#if AGS_W32API
+#else
   gboolean ip4_success, ip6_success;
   gboolean ip4_udp_success, ip4_tcp_success;
   gboolean ip6_udp_success, ip6_tcp_success;
@@ -960,6 +973,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
   if(!ip4_connected && !ip6_connected){
     g_message("failed to connect to server");
   }
+#endif
 }
   
 /**

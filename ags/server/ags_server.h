@@ -23,10 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifndef AGS_W32API
 #include <netinet/in.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#endif
 
 #include <ags/config.h>
 
@@ -114,9 +116,14 @@ struct _AgsServer
   int ip4_fd;
   int ip6_fd;
   
+#if defined AGS_W32API
+  gpointer ip4_address;
+  gpointer ip6_address;
+#else
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
-
+#endif
+  
   gchar *auth_module;
   
   GList *controller;

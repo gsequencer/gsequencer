@@ -35,14 +35,17 @@
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
+#include <unistd.h>
+
+#ifndef AGS_W32API
+#include <fcntl.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
+
 #include <netinet/in.h>
-
 #include <arpa/inet.h>
-
-#include <unistd.h>
-#include <fcntl.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -371,13 +374,18 @@ ags_osc_server_init(AgsOscServer *osc_server)
   
   osc_server->ip4_fd = -1;
   osc_server->ip6_fd = -1;
-  
+
+#ifdef AGS_W32API
+  osc_server->ip4_address = NULL;
+  osc_server->ip6_address = NULL;
+#else
   osc_server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(osc_server->ip4_address, 0, sizeof(struct sockaddr_in));
   
   osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
-
+#endif
+  
   osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->accept_delay->tv_sec = 0;
@@ -1046,6 +1054,8 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 void
 ags_osc_server_real_start(AgsOscServer *osc_server)
 {
+#ifdef AGS_W32API
+#else
   AgsOscFrontController *osc_front_controller;
   
   GList *start_controller, *controller;
@@ -1240,6 +1250,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   
   g_list_free_full(start_controller,
 		   g_object_unref);
+#endif
 }
 
 /**
@@ -1346,6 +1357,9 @@ ags_osc_server_stop(AgsOscServer *osc_server)
 gboolean
 ags_osc_server_real_listen(AgsOscServer *osc_server)
 {
+#ifdef AGS_W32API
+  return(FALSE);
+#else
   gboolean created_connection;
   
   if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
@@ -1423,6 +1437,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
   }
 
   return(created_connection);
+#endif
 }
 
 /**

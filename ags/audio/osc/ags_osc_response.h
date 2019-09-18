@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_OSC_RESPONSE                (ags_osc_response_get_type ())
 #define AGS_OSC_RESPONSE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponse))
 #define AGS_OSC_RESPONSE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))

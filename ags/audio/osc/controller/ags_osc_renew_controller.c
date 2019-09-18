@@ -2699,7 +2699,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 
       guint length;
 
-      if((offset = index(path + path_offset + 2, '"')) == NULL){
+      if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -4051,7 +4051,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
 	guint length;
 
-	if((offset = index(path + path_offset + 2, '"')) == NULL){
+	if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	  osc_response = ags_osc_response_new();
 	  start_response = g_list_prepend(start_response,
 					  osc_response);

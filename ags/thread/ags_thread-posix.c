@@ -779,8 +779,10 @@ ags_thread_finalize(GObject *gobject)
   }
 
   /*  */
+#ifndef AGS_W32API
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
+#endif
   
   pthread_mutexattr_destroy(thread->mutexattr);
   free(thread->mutexattr);
@@ -838,9 +840,11 @@ ags_thread_finalize(GObject *gobject)
   //  free(*thread_ptr);
   free(thread_ptr);
 
+#ifndef AGS_W32API
   if(stackaddr != NULL){
     //   free(stackaddr);
   }
+#endif
   
   if(do_exit){
     pthread_exit(NULL);
@@ -1191,6 +1195,7 @@ ags_thread_unset_sync_flags(AgsThread *thread, guint sync_flags)
 void
 ags_thread_resume_handler(int sig)
 {
+#ifndef AGS_W32API
   if(ags_thread_self() == NULL){
     return;
   }
@@ -1203,11 +1208,13 @@ ags_thread_resume_handler(int sig)
 		   (~AGS_THREAD_SUSPENDED));
 
   ags_thread_resume(ags_thread_self());
+#endif
 }
 
 void
 ags_thread_suspend_handler(int sig)
 {
+#ifndef AGS_W32API
 #ifdef AGS_DEBUG
   g_message("thread suspend");
 #endif
@@ -1224,6 +1231,7 @@ ags_thread_suspend_handler(int sig)
   ags_thread_suspend(ags_thread_self());
 
   do sigsuspend(&(ags_thread_self()->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self()->flags)))) != 0);
+#endif
 }
 
 /**
@@ -3758,7 +3766,8 @@ ags_thread_loop(void *ptr)
     }
     
     /* yield */
-#ifndef __APPLE__
+#if defined __APPLE__ || AGS_W32API
+#else
     if(main_loop != NULL &&
        main_loop->tic_delay != main_loop->delay &&
        thread->cycle_iteration % (guint) floor(AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_YIELD_JIFFIE) == 0){

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/audio/osc/ags_osc_connection.h>
 
 #define AGS_TYPE_OSC_CONTROLLER                (ags_osc_controller_get_type())

@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
+#ifndef AGS_W32API
 #include <netinet/in.h>
+#endif
 
 #define AGS_TYPE_OSC_SERVER                (ags_osc_server_get_type ())
 #define AGS_OSC_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_SERVER, AgsOscServer))
@@ -89,10 +93,15 @@ struct _AgsOscServer
   
   int ip4_fd;
   int ip6_fd;
-  
+
+#ifdef AGS_W32API
+  gpointer ip4_address;
+  gpointer ip6_address;
+#else
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
-
+#endif
+  
   struct timespec *accept_delay;
   struct timespec *dispatch_delay;
 

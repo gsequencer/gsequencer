@@ -17,6 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -47,8 +49,6 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include "gsequencer_main.h"
-
-#include "config.h"
 
 #include <ags/i18n.h>
 
@@ -200,9 +200,7 @@ ags_setup_thread(void *ptr)
   
   pthread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif
 }
 
 void
@@ -248,17 +246,23 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
 #endif
+
+#ifndef AGS_W32API
   struct passwd *pw;
 
+  uid_t uid;
+#endif
+  
   gchar *wdir, *config_file;
   gchar *rc_filename;
 
   gboolean has_file;
-  uid_t uid;
   int result;
 
+#ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
+#endif
+  
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
@@ -337,9 +341,23 @@ main(int argc, char **argv)
     }
   }
 
+#ifdef AGS_W32API
+  if(!builtin_theme_disabled){
+    if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
+      rc_filename = g_strdup_printf("%s%s",
+				    DESTDIR,
+				    "/gsequencer/styles/ags.rc");
+    }else{
+      rc_filename = g_strdup(rc_filename);
+    }
+  
+    gtk_rc_parse(rc_filename);
+    g_free(rc_filename);
+  }
+#else
   uid = getuid();
   pw = getpwuid(uid);
-
+  
   /* parse rc file */
   if(!builtin_theme_disabled){
     rc_filename = g_strdup_printf("%s/%s/ags.rc",
@@ -366,6 +384,7 @@ main(int argc, char **argv)
     gtk_rc_parse(rc_filename);
     g_free(rc_filename);
   }
+#endif
   
   /**/
   LIBXML_TEST_VERSION;
@@ -418,10 +437,15 @@ main(int argc, char **argv)
   
   /* setup */
   if(!has_file){
+#ifdef AGS_W32API
+    wdir = g_strdup_printf("%s/etc/gsequencer",
+			   DESTDIR);
+#else
     wdir = g_strdup_printf("%s/%s",
 			   pw->pw_dir,
 			   AGS_DEFAULT_DIRECTORY);
-
+#endif
+    
     config_file = g_strdup_printf("%s/%s",
 				  wdir,
 				  AGS_DEFAULT_CONFIG);

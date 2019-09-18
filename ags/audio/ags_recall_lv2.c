@@ -970,9 +970,13 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   if(plugin_so == NULL){
     g_message("open %s", filename);
     
+#ifdef AGS_W32API
+    plugin_so = LoadLibrary(filename);
+#else
     plugin_so = dlopen(filename,
 		       RTLD_NOW);
-    
+#endif
+        
     g_object_set(lv2_plugin,
 		 "plugin-so", plugin_so,
 		 NULL);
@@ -982,10 +986,23 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   g_free(effect);
 
   if(plugin_so != NULL){
+    gboolean success;
+
+    success = FALSE;    
+
+#ifdef AGS_W32API
+    lv2_descriptor = (LV2_Descriptor_Function) GetProcAddress(plugin_so,
+							      "lv2_descriptor");
+
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       effect_index = 0;
   
       for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){

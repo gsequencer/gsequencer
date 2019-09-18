@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#define _GL_ALREADY_INCLUDING_SYS_SOCKET_H
+
 #include <ags/lib/ags_uuid.h>
 
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())

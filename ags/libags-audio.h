@@ -162,6 +162,10 @@
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
+/* audio wasapi */
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 /* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>

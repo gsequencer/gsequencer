@@ -451,7 +451,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	audio = g_list_nth_data(start_list,
 				nth_audio);
       
-	path_offset = index(path + path_offset, ']') - path + 1;
+	path_offset = strchr(path + path_offset, ']') - path + 1;
 	
 	g_list_free_full(start_list,
 			 g_object_unref);
@@ -461,7 +461,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 
 	guint length;
 
-	if((offset = index(path + path_offset + 2, '"')) == NULL){
+	if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	  osc_response = ags_osc_response_new();
 	  start_response = g_list_prepend(start_response,
 					  osc_response);

@@ -2005,9 +2005,7 @@ ags_pulse_server_do_poll_loop(void *ptr)
 
   pthread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 void

@@ -3004,7 +3004,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 
       guint length;
 
-      if((offset = index(path + path_offset + 2, '"')) == NULL){
+      if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -4508,7 +4508,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 
 	guint length;
 
-	if((offset = index(path + path_offset + 2, '"')) == NULL){
+	if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	  osc_response = ags_osc_response_new();
 	  start_response = g_list_prepend(start_response,
 					  osc_response);
