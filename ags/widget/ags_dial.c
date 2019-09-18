@@ -680,6 +680,8 @@ ags_accessible_dial_get_range(AtkValue *value)
   range = atk_range_new(gtk_adjustment_get_lower(dial->adjustment),
 			gtk_adjustment_get_upper(dial->adjustment),
 			"Valid lower and upper input range of this dial");
+
+  return(range);
 }
 #endif
 

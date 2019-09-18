@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 
-void ags_ui_provider_class_init(AgsUiProviderInterface *interface);
+void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
 
 /**
  * SECTION:ags_ui_provider
@@ -52,7 +52,7 @@ ags_ui_provider_get_type()
 }
 
 void
-ags_ui_provider_class_init(AgsUiProviderInterface *interface)
+ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 {
   /* empty */
 }

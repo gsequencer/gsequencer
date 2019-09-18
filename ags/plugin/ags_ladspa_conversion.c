@@ -224,7 +224,7 @@ ags_ladspa_conversion_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      uint samplerate;
+      guint samplerate;
 
       samplerate = g_value_get_uint(value);
 

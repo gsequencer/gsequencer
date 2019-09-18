@@ -493,6 +493,10 @@ ags_gui_thread_do_poll_loop(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 void
@@ -549,7 +553,9 @@ ags_gui_thread_run(AgsThread *thread)
     sigemptyset(&ags_gui_thread_get_sigact()->sa_mask);
     ags_gui_thread_get_sigact()->sa_flags = 0;
 
-    sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);    
+#ifndef AGS_W32API    
+    sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);
+#endif
   }
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -690,9 +696,11 @@ ags_gui_thread_interrupted(AgsThread *thread,
     		    AGS_THREAD_INTERRUPTED);
     
     if(g_atomic_int_get(&(gui_thread->dispatching))){      
+#ifndef AGS_W32API    
       pthread_kill(*(thread->thread),
 		   SIGIO);
-
+#endif
+      
 #ifdef AGS_PTHREAD_SUSPEND
       pthread_suspend(thread->thread);
 #else
@@ -1765,7 +1773,9 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   sigemptyset(&(ags_gui_thread_get_sigact()->sa_mask));
   ags_gui_thread_get_sigact()->sa_flags = 0;
 
+#ifndef AGS_W32API    
   sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);
+#endif
   
   /* notify start */
   pthread_mutex_lock(thread->start_mutex);

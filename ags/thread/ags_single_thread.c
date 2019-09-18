@@ -171,6 +171,10 @@ ags_single_thread_loop(void *ptr)
   ags_single_thread_run(AGS_THREAD(ptr));
 
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif
 }
 
 void

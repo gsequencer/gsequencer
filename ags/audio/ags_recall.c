@@ -130,23 +130,23 @@ void ags_recall_child_done(AgsRecall *child,
  */
 
 enum{
-  RESOLVE_DEPENDENCY,
-  CHECK_RT_DATA,  
-  RUN_INIT_PRE,
-  RUN_INIT_INTER,
-  RUN_INIT_POST,
-  FEED_INPUT_QUEUE,
-  AUTOMATE,
-  RUN_PRE,
-  RUN_INTER,
-  RUN_POST,
-  DO_FEEDBACK,
-  FEED_OUTPUT_QUEUE,
-  STOP_PERSISTENT,
-  CANCEL,
-  DONE,
-  DUPLICATE,
-  NOTIFY_DEPENDENCY,
+  PLAY_RESOLVE_DEPENDENCY,
+  PLAY_CHECK_RT_DATA,  
+  PLAY_RUN_INIT_PRE,
+  PLAY_RUN_INIT_INTER,
+  PLAY_RUN_INIT_POST,
+  PLAY_FEED_INPUT_QUEUE,
+  PLAY_AUTOMATE,
+  PLAY_RUN_PRE,
+  PLAY_RUN_INTER,
+  PLAY_RUN_POST,
+  PLAY_DO_FEEDBACK,
+  PLAY_FEED_OUTPUT_QUEUE,
+  PLAY_STOP_PERSISTENT,
+  PLAY_CANCEL,
+  PLAY_DONE,
+  PLAY_DUPLICATE,
+  PLAY_NOTIFY_DEPENDENCY,
   CHILD_ADDED,
   LAST_SIGNAL,
 };
@@ -644,7 +644,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RESOLVE_DEPENDENCY] =
+  recall_signals[PLAY_RESOLVE_DEPENDENCY] =
     g_signal_new("resolve-dependency",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -662,7 +662,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[CHECK_RT_DATA] =
+  recall_signals[PLAY_CHECK_RT_DATA] =
     g_signal_new("check-rt-data",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -680,7 +680,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_INIT_PRE] =
+  recall_signals[PLAY_RUN_INIT_PRE] =
     g_signal_new("run-init-pre",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -698,7 +698,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_INIT_INTER] =
+  recall_signals[PLAY_RUN_INIT_INTER] =
     g_signal_new("run-init-inter",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -716,7 +716,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_INIT_POST] =
+  recall_signals[PLAY_RUN_INIT_POST] =
     g_signal_new("run-init-post",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -734,7 +734,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[FEED_INPUT_QUEUE] =
+  recall_signals[PLAY_FEED_INPUT_QUEUE] =
     g_signal_new("feed-input-queue",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -752,7 +752,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[AUTOMATE] =
+  recall_signals[PLAY_AUTOMATE] =
     g_signal_new("automate",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -770,7 +770,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_PRE] =
+  recall_signals[PLAY_RUN_PRE] =
     g_signal_new("run-pre",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -788,7 +788,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_INTER] =
+  recall_signals[PLAY_RUN_INTER] =
     g_signal_new("run-inter",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -806,7 +806,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[RUN_POST] =
+  recall_signals[PLAY_RUN_POST] =
     g_signal_new("run-post",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -824,7 +824,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[DO_FEEDBACK] =
+  recall_signals[PLAY_DO_FEEDBACK] =
     g_signal_new("do-feedback",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -842,7 +842,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[FEED_OUTPUT_QUEUE] =
+  recall_signals[PLAY_FEED_OUTPUT_QUEUE] =
     g_signal_new("feed-output-queue",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -860,7 +860,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[STOP_PERSISTENT] =
+  recall_signals[PLAY_STOP_PERSISTENT] =
     g_signal_new("stop_persistent",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -877,7 +877,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[CANCEL] =
+  recall_signals[PLAY_CANCEL] =
     g_signal_new("cancel",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -894,7 +894,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[DONE] =
+  recall_signals[PLAY_DONE] =
     g_signal_new("done",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -915,7 +915,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[DUPLICATE] =
+  recall_signals[PLAY_DUPLICATE] =
     g_signal_new("duplicate",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -937,7 +937,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * Since: 2.0.0
    */
-  recall_signals[NOTIFY_DEPENDENCY] =
+  recall_signals[PLAY_NOTIFY_DEPENDENCY] =
     g_signal_new("notify-dependency",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
@@ -4377,7 +4377,7 @@ ags_recall_resolve_dependency(AgsRecall *recall)
   
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RESOLVE_DEPENDENCY], 0);
+		recall_signals[PLAY_RESOLVE_DEPENDENCY], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4449,7 +4449,7 @@ ags_recall_check_rt_data(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[CHECK_RT_DATA], 0);
+		recall_signals[PLAY_CHECK_RT_DATA], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4524,7 +4524,7 @@ ags_recall_run_init_pre(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_PRE], 0);
+		recall_signals[PLAY_RUN_INIT_PRE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4598,7 +4598,7 @@ ags_recall_run_init_inter(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_INTER], 0);
+		recall_signals[PLAY_RUN_INIT_INTER], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4680,7 +4680,7 @@ ags_recall_run_init_post(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_POST], 0);
+		recall_signals[PLAY_RUN_INIT_POST], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4754,7 +4754,7 @@ ags_recall_feed_input_queue(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[FEED_INPUT_QUEUE], 0);
+		recall_signals[PLAY_FEED_INPUT_QUEUE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4821,7 +4821,7 @@ ags_recall_automate(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[AUTOMATE], 0);
+		recall_signals[PLAY_AUTOMATE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4895,7 +4895,7 @@ ags_recall_run_pre(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_PRE], 0);
+		recall_signals[PLAY_RUN_PRE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -4969,7 +4969,7 @@ ags_recall_run_inter(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INTER], 0);
+		recall_signals[PLAY_RUN_INTER], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5044,7 +5044,7 @@ ags_recall_run_post(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_POST], 0);
+		recall_signals[PLAY_RUN_POST], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5118,7 +5118,7 @@ ags_recall_do_feedback(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[DO_FEEDBACK], 0);
+		recall_signals[PLAY_DO_FEEDBACK], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5192,7 +5192,7 @@ ags_recall_feed_output_queue(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[FEED_OUTPUT_QUEUE], 0);
+		recall_signals[PLAY_FEED_OUTPUT_QUEUE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5243,7 +5243,7 @@ ags_recall_stop_persistent(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[STOP_PERSISTENT], 0);
+		recall_signals[PLAY_STOP_PERSISTENT], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5298,7 +5298,7 @@ ags_recall_cancel(AgsRecall *recall)
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[CANCEL], 0);
+		recall_signals[PLAY_CANCEL], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5356,7 +5356,7 @@ ags_recall_done(AgsRecall *recall)
   g_return_if_fail(AGS_IS_RECALL(recall));
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[DONE], 0);
+		recall_signals[PLAY_DONE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -5580,7 +5580,7 @@ ags_recall_duplicate(AgsRecall *recall,
   g_return_val_if_fail(AGS_IS_RECALL(recall), NULL);
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[DUPLICATE], 0,
+		recall_signals[PLAY_DUPLICATE], 0,
 		recall_id,
 		n_params, parameter_name, value,
 		&recall_copy);
@@ -5606,7 +5606,7 @@ ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean incre
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[NOTIFY_DEPENDENCY], 0,
+		recall_signals[PLAY_NOTIFY_DEPENDENCY], 0,
 		dependency, increase);
   g_object_unref(G_OBJECT(recall));
 }

@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.3.3],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.3.4],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -28,6 +28,11 @@ AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
 			          [enable rt (default is yes)])],
 	      [],
 	      [enable_rt=yes])
+
+AC_ARG_ENABLE(w32api, [AS_HELP_STRING([--enable-w32api],
+		      		      [enable w32 API (default is no)])],
+	      [],
+	      [enable_w32api=no])
 
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
@@ -184,7 +189,14 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
 
-PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
+AS_IF([test "x$enable_w32api" != xno],
+      [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
+      W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
+      W32API_LIBS="-L./lib -lgnu"
+      AC_MSG_NOTICE([w32api enabled])],
+      AC_MSG_NOTICE([w32api disabled]))
+
+PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
@@ -224,8 +236,7 @@ AS_IF([test "x$enable_core_audio" != xno],
       AC_MSG_NOTICE([core audio disabled]))
 
 AS_IF([test "x$enable_wasapi" != xno],
-      [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled]
-      )
+      [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled])
       WASAPI_CFLAGS="-I/usr/include/w32api"
       WASAPI_LIBS="-L/usr/lib/w32api -lwinmm -ldsound -lsetupapi -lole32 -luuid"
       AC_SUBST(WASAPI_CFLAGS)
@@ -268,7 +279,7 @@ PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.5])
+PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.4])
 AC_SUBST(FFTW_CFLAGS)
 AC_SUBST(FFTW_LIBS)
 

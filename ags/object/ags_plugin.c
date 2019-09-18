@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_plugin_base_init(AgsPluginInterface *interface);
+void ags_plugin_base_init(AgsPluginInterface *ginterface);
 
 /**
  * SECTION:ags_plugin
@@ -59,7 +59,7 @@ ags_plugin_get_type()
 }
 
 void
-ags_plugin_base_init(AgsPluginInterface *interface)
+ags_plugin_base_init(AgsPluginInterface *ginterface)
 {
   /* empty */
 }

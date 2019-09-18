@@ -295,6 +295,10 @@ ags_woker_thread_do_poll_loop(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 /**

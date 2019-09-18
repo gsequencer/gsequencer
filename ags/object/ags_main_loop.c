@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-void ags_main_loop_class_init(AgsMainLoopInterface *interface);
+void ags_main_loop_class_init(AgsMainLoopInterface *ginterface);
 
 /**
  * SECTION:ags_main_loop
@@ -66,7 +66,7 @@ ags_main_loop_get_type()
 }
 
 void
-ags_main_loop_class_init(AgsMainLoopInterface *interface)
+ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
 {
   /**
    * AgsMainLoop::interrupt:
@@ -81,7 +81,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[INTERRUPT] = 
     g_signal_new("interrupt",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
 		 NULL, NULL,
@@ -103,7 +103,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[MONITOR] =
     g_signal_new("monitor",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
 		 NULL, NULL,
@@ -122,7 +122,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, change_frequency),
 		 NULL, NULL,

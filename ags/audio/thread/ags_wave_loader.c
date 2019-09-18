@@ -637,6 +637,10 @@ ags_wave_loader_run(void *ptr)
 			    AGS_WAVE_LOADER_HAS_COMPLETED);
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 void

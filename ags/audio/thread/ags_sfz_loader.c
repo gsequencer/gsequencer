@@ -1217,6 +1217,10 @@ ags_sfz_loader_run(void *ptr)
 			   AGS_SFZ_LOADER_HAS_COMPLETED);
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 void

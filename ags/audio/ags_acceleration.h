@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_ACCELERATION                (ags_acceleration_get_type())
 #define AGS_ACCELERATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCELERATION, AgsAcceleration))
 #define AGS_ACCELERATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ACCELERATION, AgsAccelerationClass))

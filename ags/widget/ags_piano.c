@@ -615,6 +615,8 @@ ags_accessible_piano_get_range(AtkValue *value)
   range = atk_range_new((gdouble) piano->base_key_code,
 			(gdouble) (piano->base_key_code + piano->key_count),
 			"Valid lower and upper input range of this piano");
+
+  return(range);
 }
 #endif
 

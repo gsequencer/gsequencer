@@ -19,13 +19,15 @@
 
 #include <ags/lib/ags_regex.h>
 
-#ifdef __APPLE__
+#if defined __APPLE__ || AGS_W32API
 #include <stdlib.h>
 #endif
 
 #define _GNU_SOURCE
 #include <locale.h>
 #include <pthread.h>
+
+#include <ags/config.h>
 
 /**
  * SECTION:ags_regex
@@ -40,11 +42,12 @@
 
 static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-#ifndef __APPLE__
-static locale_t c_locale;
-#else
+#if defined __APPLE__ || AGS_W32API
 static char *locale_env;
+#else
+static locale_t c_locale;
 #endif
+
 static gboolean locale_initialized = FALSE;
 
 /**
@@ -63,17 +66,18 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
 {
   int retval;
 
-#ifndef __APPLE__
+#if defined __APPLE__ || AGS_W32API
+#else
   locale_t current;
 #endif
 
   pthread_mutex_lock(&locale_mutex);
 
   if(!locale_initialized){
-#ifndef __APPLE__
-    c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
-#else
+#if defined __APPLE__ || AGS_W32API
     locale_env = getenv("LC_ALL");
+#else
+    c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
 #endif
     
     locale_initialized = TRUE;
@@ -81,18 +85,18 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
 
   pthread_mutex_unlock(&locale_mutex);
 
-#ifndef __APPLE__
-  current = uselocale(c_locale);
-#else
+#if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, "C");
+#else
+  current = uselocale(c_locale);
 #endif
 
   retval = regcomp(preg, regex, cflags);
 
-#ifndef __APPLE__  
-  uselocale(current);
-#else
+#if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, locale_env);
+#else
+  uselocale(current);
 #endif
   
   return(retval);
@@ -117,17 +121,18 @@ ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
 {
   int retval;
 
-#ifndef __APPLE__
+#if defined __APPLE__ || AGS_W32API
+#else
   locale_t current;
 #endif
 
   pthread_mutex_lock(&locale_mutex);
   
   if(!locale_initialized){
-#ifndef __APPLE__
-    c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
-#else
+#if defined __APPLE__ || AGS_W32API
     locale_env = getenv("LC_ALL");
+#else
+    c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
 #endif
     
     locale_initialized = TRUE;
@@ -135,18 +140,18 @@ ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
 
   pthread_mutex_unlock(&locale_mutex);
 
-#ifndef __APPLE__
-  current = uselocale(c_locale);
-#else
+#if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, "C");
+#else
+  current = uselocale(c_locale);
 #endif
 
   retval = regexec(preg, string, nmatch, pmatch, eflags);
 
-#ifndef __APPLE__
-  uselocale(current);
-#else
+#if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, locale_env);
+#else
+  uselocale(current);
 #endif
     
   return(retval);

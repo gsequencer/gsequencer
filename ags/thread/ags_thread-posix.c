@@ -3915,6 +3915,10 @@ ags_thread_loop(void *ptr)
   
   /* exit thread */
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif
 }
 
 /**

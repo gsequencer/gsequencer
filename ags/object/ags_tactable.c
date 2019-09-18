@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_tactable_class_init(AgsTactableInterface *interface);
+void ags_tactable_class_init(AgsTactableInterface *ginterface);
 
 /**
  * SECTION:ags_tactable
@@ -66,7 +66,7 @@ ags_tactable_get_type()
 }
 
 void
-ags_tactable_class_init(AgsTactableInterface *interface)
+ags_tactable_class_init(AgsTactableInterface *ginterface)
 {
   /**
    * AgsTactable::change-sequencer-duration:
@@ -80,7 +80,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_SEQUENCER_DURATION] = 
     g_signal_new("change-sequencer-duration",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
 		 NULL, NULL,
@@ -100,7 +100,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_NOTATION_DURATION] = 
     g_signal_new("change-notation-duration",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
 		 NULL, NULL,
@@ -120,7 +120,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_WAVE_DURATION] = 
     g_signal_new("change-wave-duration",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_wave_duration),
 		 NULL, NULL,
@@ -140,7 +140,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_MIDI_DURATION] = 
     g_signal_new("change-midi-duration",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_midi_duration),
 		 NULL, NULL,
@@ -159,7 +159,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_TACT] = 
     g_signal_new("change-tact",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
 		 NULL, NULL,
@@ -178,7 +178,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    */
   tactable_signals[CHANGE_BPM] = 
     g_signal_new("change-bpm",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
 		 NULL, NULL,

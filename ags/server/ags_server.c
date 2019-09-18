@@ -32,9 +32,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef AGS_W32API
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 #include <unistd.h>
 
@@ -331,7 +333,7 @@ ags_server_init(AgsServer *server)
   /*  */
   server->server_info = ags_server_info_alloc("localhost", ags_uuid_to_string(server->uuid));
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
   server->abyss_server = (TServer *) malloc(sizeof(TServer));
   server->socket = NULL;
 #else
@@ -348,12 +350,17 @@ ags_server_init(AgsServer *server)
   server->ip4_fd = -1;
   server->ip6_fd = -1;
   
+#if defined AGS_W32API
+  server->ip4_address = NULL;
+  server->ip6_address = NULL;
+#else
   server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(server->ip4_address, 0, sizeof(struct sockaddr_in));
   
   server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(server->ip6_address, 0, sizeof(struct sockaddr_in6));
-
+#endif
+  
   server->auth_module = AGS_SERVER_DEFAULT_AUTH_MODULE;
   
   server->controller = NULL;
@@ -946,13 +953,14 @@ ags_server_real_start(AgsServer *server)
   
   ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
 
+#ifndef AGS_W32API
 #if 0
   //  xmlrpc_registry_set_shutdown(registry,
   //			       &requestShutdown, &terminationRequested);
   server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
   bind(server->socket_fd, server->address, sizeof(struct sockaddr_in));
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C
   SocketUnixCreateFd(server->socket_fd, &(server->socket));
 
   ServerCreateSocket2(server->abyss_server, server->socket, &error);
@@ -970,6 +978,7 @@ ags_server_real_start(AgsServer *server)
   } 
 #endif /* AGS_WITH_XMLRPC_C */
 #endif
+#endif /* AGS_W32API */
 }
 
 /**

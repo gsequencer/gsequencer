@@ -990,6 +990,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   
     /* log feature */
+#ifndef AGS_W32API    
     log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
   
     log_feature->handle = NULL;
@@ -1001,7 +1002,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     feature[nth]->data = log_feature;
 
     nth++;
-  
+#endif
+    
     /* event feature */
     event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
   

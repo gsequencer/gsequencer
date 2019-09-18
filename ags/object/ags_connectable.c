@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-void ags_connectable_base_init(AgsConnectableInterface *interface);
+void ags_connectable_base_init(AgsConnectableInterface *ginterface);
 
 /**
  * SECTION:ags_connectable
@@ -57,7 +57,7 @@ ags_connectable_get_type()
 }
 
 void
-ags_connectable_base_init(AgsConnectableInterface *interface)
+ags_connectable_base_init(AgsConnectableInterface *ginterface)
 {
   /* empty */
 }

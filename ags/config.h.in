@@ -3,6 +3,9 @@
 /* striping rt-events enabled */
 #undef AGS_STRIP_RT_EVENTS
 
+/* w32api enabled */
+#undef AGS_W32API
+
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
@@ -29,6 +32,12 @@
 
 /* VST3 enabled */
 #undef AGS_WITH_VST3
+
+/* wasapi enabled */
+#undef AGS_WITH_WASAPI
+
+/* X11 enabled */
+#undef AGS_WITH_X11
 
 /* Disable if you don't want xmlrpc-c */
 #undef AGS_WITH_XMLRPC_C

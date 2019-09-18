@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <alsa/asoundlib.h>
 
 #define AGS_TYPE_BUFFER                (ags_buffer_get_type())

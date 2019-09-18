@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/ags_track.h>

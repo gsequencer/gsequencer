@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-void ags_applicable_base_init(AgsApplicableInterface *interface);
+void ags_applicable_base_init(AgsApplicableInterface *ginterface);
 
 /**
  * SECTION:ags_applicable
@@ -58,7 +58,7 @@ ags_applicable_get_type()
 }
 
 void
-ags_applicable_base_init(AgsApplicableInterface *interface)
+ags_applicable_base_init(AgsApplicableInterface *ginterface)
 {
   /* empty */
 }

@@ -188,12 +188,14 @@ static gpointer ags_wasapi_devin_parent_class = NULL;
 
 static pthread_mutex_t ags_wasapi_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#ifdef AGS_WITH_WASAPI
 static const GUID ags_wasapi_clsid_mm_device_enumerator_guid = {0xBCDE0395, 0xE52F, 0x467C, 0x8E, 0x3D, 0xC4, 0x57, 0x92, 0x91, 0x69, 0x2E};
 static const GUID ags_wasapi_iid_mm_device_enumerator_guid = {0xA95664D2, 0x9614, 0x4F35, 0xA7, 0x46, 0xDE, 0x8D, 0xB6, 0x36, 0x17, 0xE6};
 static const GUID ags_wasapi_iid_audio_client_guid = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
 static const GUID ags_wasapi_iid_audio_capture_client_guid = {0xc8adbd64, 0xe71e, 0x48a0, 0xa4,0xde, 0x18,0x5c,0x39,0x5c,0xd3,0x17};
 static const GUID ags_wasapi_pcm_subformat_guid = {STATIC_KSDATAFORMAT_SUBTYPE_PCM};
 static const GUID ags_wasapi_pkey_device_friendly_name_guid = {0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0, 14};
+#endif
 
 GType
 ags_wasapi_devin_get_type (void)
@@ -1962,7 +1964,7 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
     return;
   }
   
-#ifdef AGS_WITH_ALSA
+#ifdef AGS_WITH_WASAPI
   audio_client = wasapi_devin->audio_client;
   audio_client->lpVtbl->GetService(audio_client, &ags_wasapi_iid_audio_capture_client_guid, (void **) &audio_capture_client);
 

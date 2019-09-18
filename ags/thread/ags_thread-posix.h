@@ -43,8 +43,13 @@
 
 #define AGS_THREAD_GET_OBJ_MUTEX(obj) (((AgsThread *) obj)->obj_mutex)
 
+#ifdef AGS_W32API
+#define AGS_THREAD_RESUME_SIG SIG_IGN
+#define AGS_THREAD_SUSPEND_SIG SIG_IGN
+#else
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
+#endif
 
 #ifndef AGS_RT_PRIORITY
 #define AGS_RT_PRIORITY (45)

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_LV2_PRESET_MANAGER                (ags_lv2_preset_manager_get_type())
 #define AGS_LV2_PRESET_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PRESET_MANAGER, AgsLv2PresetManager))
 #define AGS_LV2_PRESET_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_PRESET_MANAGER, AgsLv2PresetManagerClass))

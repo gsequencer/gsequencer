@@ -564,6 +564,8 @@ ags_accessible_level_get_range(AtkValue *value)
   range = atk_range_new(level->lower,
 			level->upper,
 			"Valid lower and upper input range of this level");
+
+  return(range);
 }
 #endif
 

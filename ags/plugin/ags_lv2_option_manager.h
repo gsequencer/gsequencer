@@ -26,6 +26,8 @@
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_LV2_OPTION_MANAGER                (ags_lv2_option_manager_get_type())
 #define AGS_LV2_OPTION_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManager))
 #define AGS_LV2_OPTION_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManagerClass))

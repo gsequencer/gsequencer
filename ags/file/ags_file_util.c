@@ -939,13 +939,13 @@ ags_file_util_write_object(AgsFile *file,
 }
 
 void
-ags_file_read_history(AgsFile *file, xmlNode *node, AgsHistory **history)
+ags_file_util_read_history(AgsFile *file, xmlNode *node, AgsHistory **history)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_file_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history)
+ags_file_util_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history)
 {
   xmlNode *node;
 

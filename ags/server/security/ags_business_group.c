@@ -19,7 +19,7 @@
 
 #include <ags/server/security/ags_business_group.h>
 
-void ags_business_group_base_init(AgsBusinessGroupInterface *interface);
+void ags_business_group_base_init(AgsBusinessGroupInterface *ginterface);
 
 /**
  * SECTION:ags_business_group
@@ -56,7 +56,7 @@ ags_business_group_get_type()
 }
 
 void
-ags_business_group_base_init(AgsBusinessGroupInterface *interface)
+ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
 {
   /* empty */
 }

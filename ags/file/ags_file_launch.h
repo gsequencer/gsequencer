@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_FILE_LAUNCH                (ags_file_launch_get_type())
 #define AGS_FILE_LAUNCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LAUNCH, AgsFileLaunch))
 #define AGS_FILE_LAUNCH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE_LAUNCH, AgsFileLaunchClass))

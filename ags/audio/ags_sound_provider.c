@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
-void ags_sound_provider_class_init(AgsSoundProviderInterface *interface);
+void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
 
 /**
  * SECTION:ags_sound_provider
@@ -52,7 +52,7 @@ ags_sound_provider_get_type()
 }
 
 void
-ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
+ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface)
 {
   /* empty */
 }

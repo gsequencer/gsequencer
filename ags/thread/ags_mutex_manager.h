@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_MUTEX_MANAGER                (ags_mutex_manager_get_type())
 #define AGS_MUTEX_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MUTEX_MANAGER, AgsMutexManager))
 #define AGS_MUTEX_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MUTEX_MANAGER, AgsMutexManagerClass))

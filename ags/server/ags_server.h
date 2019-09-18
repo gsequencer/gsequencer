@@ -30,7 +30,7 @@
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
 #include <xmlrpc-c/util.h>
 
 #include <xmlrpc-c/base.h>
@@ -97,7 +97,7 @@ struct _AgsServer
 
   AgsServerInfo *server_info;
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
   TServer *abyss_server;
   TSocket *socket;
 #else

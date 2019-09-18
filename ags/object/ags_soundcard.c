@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_soundcard_class_init(AgsSoundcardInterface *interface);
+void ags_soundcard_class_init(AgsSoundcardInterface *ginterface);
 
 /**
  * SECTION:ags_soundcard
@@ -69,7 +69,7 @@ ags_soundcard_error_quark()
 }
 
 void
-ags_soundcard_class_init(AgsSoundcardInterface *interface)
+ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
 {
   /**
    * AgsSoundcard::tic:
@@ -82,7 +82,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[TIC] =
     g_signal_new("tic",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
 		 NULL, NULL,
@@ -101,7 +101,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[OFFSET_CHANGED] =
     g_signal_new("offset-changed",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
 		 NULL, NULL,
@@ -120,7 +120,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[STOP] =
     g_signal_new("stop",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, stop),
 		 NULL, NULL,

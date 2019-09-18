@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_seekable_class_init(AgsSeekableInterface *interface);
+void ags_seekable_class_init(AgsSeekableInterface *ginterface);
 
 /**
  * SECTION:ags_seekable
@@ -62,7 +62,7 @@ ags_seekable_get_type()
 }
 
 void
-ags_seekable_class_init(AgsSeekableInterface *interface)
+ags_seekable_class_init(AgsSeekableInterface *ginterface)
 {
   /**
    * AgsSeekable::seek:
@@ -77,7 +77,7 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
    */
   seekable_signals[SEEK] =
     g_signal_new("seek",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSeekableInterface, seek),
 		 NULL, NULL,
@@ -88,7 +88,7 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
 }
 
 void
-ags_seekable_base_init(AgsSeekableInterface *interface)
+ags_seekable_base_init(AgsSeekableInterface *ginterface)
 {
   /* empty */
 }

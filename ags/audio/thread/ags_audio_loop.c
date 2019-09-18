@@ -1195,6 +1195,10 @@ ags_audio_loop_timing_thread(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif
 }
 
 /**

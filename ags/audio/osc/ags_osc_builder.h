@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gmodule.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_OSC_BUILDER                (ags_osc_builder_get_type ())
 #define AGS_OSC_BUILDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_BUILDER, AgsOscBuilder))
 #define AGS_OSC_BUILDER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OSC_BUILDER, AgsOscBuilderClass))

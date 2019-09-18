@@ -1576,6 +1576,10 @@ ags_osc_server_listen_thread(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif   
 }
 
 void*
@@ -1592,6 +1596,10 @@ ags_osc_server_dispatch_thread(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 /**

@@ -199,6 +199,10 @@ ags_setup_thread(void *ptr)
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif
 }
 
 void

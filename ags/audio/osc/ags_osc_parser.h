@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_OSC_PARSER                (ags_osc_parser_get_type ())
 #define AGS_OSC_PARSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_PARSER, AgsOscParser))
 #define AGS_OSC_PARSER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OSC_PARSER, AgsOscParserClass))

@@ -682,6 +682,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     nth++;
   
     /* log feature */
+#if 0
     log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
   
     log_feature->handle = NULL;
@@ -693,7 +694,8 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     feature[nth]->data = log_feature;
 
     nth++;
-  
+#endif
+    
     /* event feature */
     event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
   

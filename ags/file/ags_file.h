@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_FILE                (ags_file_get_type())
 #define AGS_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE, AgsFile))
 #define AGS_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE, AgsFileClass))

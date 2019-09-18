@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 /**
  * SECTION:ags_string_util

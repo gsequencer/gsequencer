@@ -601,6 +601,8 @@ ags_accessible_scale_get_range(AtkValue *value)
   range = atk_range_new(scale->lower,
 			scale->upper,
 			"Valid lower and upper input range of this scale");
+
+  return(range);
 }
 #endif
 

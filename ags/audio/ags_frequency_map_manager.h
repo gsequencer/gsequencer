@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/ags_frequency_map.h>

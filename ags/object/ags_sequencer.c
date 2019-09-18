@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_sequencer_class_init(AgsSequencerInterface *interface);
+void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
 
 /**
  * SECTION:ags_sequencer
@@ -60,7 +60,7 @@ ags_sequencer_error_quark()
 }
 
 void
-ags_sequencer_class_init(AgsSequencerInterface *interface)
+ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 {
   /**
    * AgsSequencer::tic:
@@ -72,7 +72,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * Since: 2.0.0
    */
   g_signal_new("tic",
-	       G_TYPE_FROM_INTERFACE(interface),
+	       G_TYPE_FROM_INTERFACE(ginterface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSequencerInterface, tic),
 	       NULL, NULL,
@@ -90,7 +90,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * Since: 2.0.0
    */
   g_signal_new("offset-changed",
-	       G_TYPE_FROM_INTERFACE(interface),
+	       G_TYPE_FROM_INTERFACE(ginterface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSequencerInterface, offset_changed),
 	       NULL, NULL,

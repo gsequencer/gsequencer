@@ -501,6 +501,8 @@ UUID_LIBS = @UUID_LIBS@
 VERSION = @VERSION@
 VST3_CXXFLAGS = @VST3_CXXFLAGS@
 VST3_LIBS = @VST3_LIBS@
+WASAPI_CFLAGS = @WASAPI_CFLAGS@
+WASAPI_LIBS = @WASAPI_LIBS@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -747,9 +749,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

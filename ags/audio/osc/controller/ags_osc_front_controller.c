@@ -588,6 +588,10 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 		   g_object_unref);
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 /**

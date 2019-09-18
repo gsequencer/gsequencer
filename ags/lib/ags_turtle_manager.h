@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_TURTLE_MANAGER                (ags_turtle_manager_get_type())
 #define AGS_TURTLE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManager))
 #define AGS_TURTLE_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManagerClass))

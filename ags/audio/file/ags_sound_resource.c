@@ -28,7 +28,7 @@
 
 #include <math.h>
 
-void ags_sound_resource_base_init(AgsSoundResourceInterface *interface);
+void ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface);
 
 /**
  * SECTION:ags_sound_resource
@@ -67,7 +67,7 @@ ags_sound_resource_get_type()
 
 
 void
-ags_sound_resource_base_init(AgsSoundResourceInterface *interface)
+ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface)
 {
   /* empty */
 }

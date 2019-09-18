@@ -1824,6 +1824,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   atexit(ags_xorg_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
+#ifndef AGS_W32API
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -1838,6 +1839,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #else
   timer_id = (timer_t *) malloc(sizeof(timer_t));
   

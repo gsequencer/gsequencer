@@ -23,7 +23,7 @@
 
 #include <math.h>
 
-void ags_service_provider_class_init(AgsServiceProviderInterface *interface);
+void ags_service_provider_class_init(AgsServiceProviderInterface *ginterface);
 
 GType
 ags_service_provider_get_type()
@@ -46,7 +46,7 @@ ags_service_provider_get_type()
 }
 
 void
-ags_service_provider_class_init(AgsServiceProviderInterface *interface)
+ags_service_provider_class_init(AgsServiceProviderInterface *ginterface)
 {
   /* empty */
 }
