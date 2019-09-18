@@ -55,7 +55,7 @@ ags_string_util_escape_single_quote(gchar *str)
   iter = str;
   count = 0;
   
-  while((iter = index(iter, '\'')) != NULL){
+  while((iter = strchr(iter, '\'')) != NULL){
     count++;
     iter++;
   }
@@ -70,7 +70,7 @@ ags_string_util_escape_single_quote(gchar *str)
     prev = str;
     offset = 0;
     
-    while((iter = index(iter, '\'')) != NULL){
+    while((iter = strchr(iter, '\'')) != NULL){
       memcpy(&(retval[offset]), prev, (iter - prev) * sizeof(char));      
       retval[offset + (iter - prev)] = '&';
       retval[offset + (iter - prev + 1)] = 'a';
@@ -84,7 +84,7 @@ ags_string_util_escape_single_quote(gchar *str)
       prev = iter;
     }
 
-    memcpy(&(retval[offset]), prev, (index(str, '\0') - prev) * sizeof(char));
+    memcpy(&(retval[offset]), prev, (strchr(str, '\0') - prev) * sizeof(char));
   }else{
     retval = g_strdup(str);
   }

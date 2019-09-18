@@ -36,6 +36,9 @@
 
 #include <stdio.h>
 
+#include <string.h>
+#include <strings.h>
+
 #include <ags/config.h>
 
 void ags_lv2ui_manager_class_init(AgsLv2uiManagerClass *lv2ui_manager);
@@ -137,7 +140,7 @@ ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
       iter = lv2ui_env;
       i = 0;
       
-      while((next = index(iter, ':')) != NULL){
+      while((next = strchr(iter, ':')) != NULL){
 	ags_lv2ui_default_path = (gchar **) realloc(ags_lv2ui_default_path,
 						    (i + 2) * sizeof(gchar *));
 	ags_lv2ui_default_path[i] = g_strndup(iter,
@@ -588,10 +591,12 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
     file = fopen(blacklist_filename,
 		 "r");
 
+#ifndef AGS_W32API    
     while(getline(&str, NULL, file) != -1){
       lv2ui_manager->lv2ui_plugin_blacklist = g_list_prepend(lv2ui_manager->lv2ui_plugin_blacklist,
 							     str);
     }
+#endif
   }
 
   pthread_mutex_unlock(lv2ui_manager_mutex);

@@ -651,10 +651,23 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 	       NULL);
 
   if(plugin_so){
+    gboolean success;
+    
+    success = FALSE;
+
+#ifdef AGS_W32API
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(plugin_so,
+								"dssi_descriptor");
+    
+    success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor");
+  
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
 
-    if(dlerror() == NULL && dssi_descriptor){
+    if(success && dssi_descriptor){
       pthread_mutex_lock(recall_mutex);
       
       recall_dssi->plugin_descriptor = 

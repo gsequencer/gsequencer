@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include <string.h>
+#include <strings.h>
 
 #include <dssi.h>
 
@@ -136,7 +137,7 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
       iter = dssi_env;
       i = 0;
       
-      while((next = index(iter, ':')) != NULL){
+      while((next = strchr(iter, ':')) != NULL){
 	ags_dssi_default_path = (gchar **) realloc(ags_dssi_default_path,
 						   (i + 2) * sizeof(gchar *));
 	ags_dssi_default_path[i] = g_strndup(iter,
@@ -488,10 +489,12 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
     file = fopen(blacklist_filename,
 		 "r");
 
+#ifndef AGS_W32API    
     while(getline(&str, NULL, file) != -1){
       dssi_manager->dssi_plugin_blacklist = g_list_prepend(dssi_manager->dssi_plugin_blacklist,
 							   str);
     }
+#endif
   }
 
   pthread_mutex_unlock(dssi_manager_mutex);
@@ -521,7 +524,8 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
   unsigned long i;
-
+  gboolean success;
+  
   pthread_mutex_t *dssi_manager_mutex;
 
   if(!AGS_IS_DSSI_MANAGER(dssi_manager) ||
@@ -542,23 +546,40 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   
   g_message("ags_dssi_manager.c loading - %s", path);
 
+#ifdef AGS_W32API
+  plugin_so = LoadLibrary(path);
+#else
   plugin_so = dlopen(path,
 		     RTLD_NOW);
+#endif
 	
   if(plugin_so == NULL){
     g_warning("ags_dssi_manager.c - failed to load static object file");
       
+#ifndef AGS_W32API
     dlerror();
-
+#endif
+    
     pthread_mutex_unlock(dssi_manager_mutex);
     
     return;
   }
 
+  success = FALSE;
+
+#ifdef AGS_W32API
+  dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(plugin_so,
+							      "dssi_descriptor");
+    
+  success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						     "dssi_descriptor");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
     
-  if(dlerror() == NULL && dssi_descriptor){
+  if(success && dssi_descriptor){
     for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
       if(ags_base_plugin_find_effect(dssi_manager->dssi_plugin,
 				     path,

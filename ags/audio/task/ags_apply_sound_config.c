@@ -58,6 +58,9 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
@@ -863,6 +866,14 @@ ags_apply_sound_config_launch(AgsTask *task)
 							is_output);
 
 	has_jack = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) application_context);
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) application_context);
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){

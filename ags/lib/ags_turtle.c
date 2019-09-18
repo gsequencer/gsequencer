@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 
 #include <sys/types.h>
 #include <regex.h>
@@ -1164,7 +1165,7 @@ ags_turtle_read_echar(gchar *offset,
   str = NULL;
 
   if(*offset == '\\'){
-    if(index(echar,
+    if(strchr(echar,
 	     offset[1]) != NULL){
       str = g_strndup(offset,
 		      2);
@@ -1196,7 +1197,7 @@ ags_turtle_read_ws(gchar *offset,
   str = NULL;
 
   if(offset < end_ptr &&
-     index(ws, *offset) != NULL){
+     strchr(ws, *offset) != NULL){
     str = g_strndup(offset,
 		    1);
   }
@@ -1235,14 +1236,14 @@ ags_turtle_read_anon(gchar *offset,
   success = FALSE;
   
   if(*offset == '['){
-    tmp = index(offset + 1,
+    tmp = strchr(offset + 1,
 		']');
 
     if(tmp != NULL){
       success = TRUE;
       
       for(tmp_str = offset + 1; tmp_str < tmp; tmp_str++){
-	if(index(ws,
+	if(strchr(ws,
 		 *tmp_str) == NULL){
 	  success = FALSE;
 	  
@@ -1809,7 +1810,7 @@ ags_turtle_read_pn_local_esc(gchar *offset,
   if(offset != NULL &&
      offset + 1 < end_ptr &&
      *offset == '\\' &&
-     (index(escapes,
+     (strchr(escapes,
 	    offset[1])) != NULL){
     str = g_strndup(offset,
 		    2);
@@ -2008,7 +2009,7 @@ ags_turtle_load(AgsTurtle *turtle,
       /* skip comments */
       if(buffer == look_ahead){
 	if(*buffer == '#'){
-	  next = index(look_ahead, '\n');
+	  next = strchr(look_ahead, '\n');
 
 	  if(next != NULL){
 	    look_ahead = next + 1;
@@ -2021,7 +2022,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
-	next = index(look_ahead, '\n');
+	next = strchr(look_ahead, '\n');
 
 	if(next != NULL){
 	  look_ahead = next + 1;
@@ -2736,7 +2737,7 @@ ags_turtle_load(AgsTurtle *turtle,
       g_message("====");
 #endif
       
-      next = index(look_ahead,
+      next = strchr(look_ahead,
 		   '.');
 
       if(next != NULL){
@@ -2759,7 +2760,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	g_message("-----");
 #endif
 	
-	next = index(look_ahead,
+	next = strchr(look_ahead,
 		     '.');
 
 	if(next != NULL){
@@ -3277,7 +3278,7 @@ ags_turtle_load(AgsTurtle *turtle,
 		    object_node);
       }
 
-      end_ptr = index(look_ahead,
+      end_ptr = strchr(look_ahead,
 		      ')');
 
       if(end_ptr != NULL){
@@ -3377,7 +3378,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    predicate_object_list_node);
 
-	end_ptr = index(look_ahead,
+	end_ptr = strchr(look_ahead,
 			']');
 
 	if(end_ptr != NULL){

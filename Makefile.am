@@ -445,7 +445,7 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 
 # library libags-vst
 if WITH_VST3
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS)
+libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
 libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 endif

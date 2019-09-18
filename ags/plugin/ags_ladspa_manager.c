@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include <string.h>
+#include <strings.h>
 
 #include <ladspa.h>
 
@@ -141,7 +142,7 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
       iter = ladspa_env;
       i = 0;
       
-      while((next = index(iter, ':')) != NULL){
+      while((next = strchr(iter, ':')) != NULL){
 	ags_ladspa_default_path = (gchar **) realloc(ags_ladspa_default_path,
 						     (i + 2) * sizeof(gchar *));
 	ags_ladspa_default_path[i] = g_strndup(iter,
@@ -492,10 +493,12 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
     file = fopen(blacklist_filename,
 		 "r");
 
+#ifndef AGS_W32API    
     while(getline(&str, NULL, file) != -1){
       ladspa_manager->ladspa_plugin_blacklist = g_list_prepend(ladspa_manager->ladspa_plugin_blacklist,
 							       str);
     }
+#endif
   }
 
   pthread_mutex_unlock(ladspa_manager_mutex);
@@ -525,6 +528,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   unsigned long i;
+  gboolean success;
   
   pthread_mutex_t *ladspa_manager_mutex;
 
@@ -546,23 +550,40 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   
   g_message("ags_ladspa_manager.c loading - %s", path);
 
+#ifdef AGS_W32API
+  plugin_so = LoadLibrary(path);
+#else
   plugin_so = dlopen(path,
 		     RTLD_NOW);
+#endif
 	
   if(plugin_so == NULL){
     g_warning("ags_ladspa_manager.c - failed to load static object file");
       
+#ifndef AGS_W32API
     dlerror();
-
+#endif
+    
     pthread_mutex_unlock(ladspa_manager_mutex);
 
     return;
   }
 
-  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							 "ladspa_descriptor");
+  success = FALSE;
     
-  if(dlerror() == NULL && ladspa_descriptor){
+#ifdef AGS_W32API
+  ladspa_descriptor = (LADSPA_Descriptor_Function) GetProcAddress((void *) plugin_so,
+								  "ladspa_descriptor");
+
+  success = (!ladspa_descriptor) ? FALSE: TRUE;
+#else
+  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym((void *) plugin_so,
+							 "ladspa_descriptor");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+    
+  if(success && ladspa_descriptor){
     for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
       if(ags_base_plugin_find_effect(ladspa_manager->ladspa_plugin,
 				     path,

@@ -99,6 +99,23 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
+				  "wasapi",
+				  5)){
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
+			       FALSE);
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
+			       FALSE);
+
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			       TRUE);
+  
+      gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			       TRUE);
+
+      ags_soundcard_editor_load_wasapi_card(soundcard_editor);
+
+      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
+    }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),

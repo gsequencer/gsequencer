@@ -29,6 +29,9 @@
 #include <ags/audio/file/ags_sfz_region.h>
 #include <ags/audio/file/ags_sfz_sample.h>
 
+#include <string.h>
+#include <strings.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -1656,7 +1659,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       /* skip comments */
       if(buffer == look_ahead){
 	if(look_ahead + 1 < &(buffer[sb->st_size]) && buffer[0] == '/' && buffer[1] == '/'){
-	  next = index(look_ahead, '\n');
+	  next = strchr(look_ahead, '\n');
 
 	  if(next != NULL){
 	    look_ahead = next + 1;
@@ -1669,7 +1672,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && look_ahead + 1 < &(buffer[sb->st_size]) && look_ahead[0] == '/' && look_ahead[1] == '/'){
-	next = index(look_ahead, '\n');
+	next = strchr(look_ahead, '\n');
       
 	if(next != NULL){
 	  look_ahead = next + 1;
@@ -1822,8 +1825,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
       iter += strlen(opcode) + 1;
       
       if(ags_regexec(&opcode_regex_next, iter, max_matches, match_arr, 0) == 0){
-	tmp0_next = index(iter, '\n');
-	tmp1_next = index(iter, '\r');
+	tmp0_next = strchr(iter, '\n');
+	tmp1_next = strchr(iter, '\r');
 
 	if((tmp0_next != NULL || tmp1_next != NULL) &&
 	   ((tmp0_next != NULL && tmp0_next < iter + match_arr[1].rm_so) || (tmp1_next != NULL && tmp1_next < iter + match_arr[1].rm_so))){
@@ -1836,8 +1839,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 	  next = iter + match_arr[1].rm_so;
 	}
       }else{
-	tmp0_next = index(iter, '\n');
-	tmp1_next = index(iter, '\r');
+	tmp0_next = strchr(iter, '\n');
+	tmp1_next = strchr(iter, '\r');
 
 	if(tmp0_next != NULL || tmp1_next != NULL){
 	  if(tmp0_next != NULL && (tmp1_next == NULL || tmp0_next < tmp1_next)){

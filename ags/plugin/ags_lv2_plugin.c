@@ -46,6 +46,7 @@
 
 #include <math.h>
 
+#define _LIBINTL_H
 #include <ags/i18n.h>
 
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
@@ -897,20 +898,38 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   plugin_so = base_plugin->plugin_so;
 
   if(plugin_so == NULL){    
+    gboolean success;
+    
     g_message("open %s", base_plugin->filename);
     
+#ifdef AGS_W32API
+    plugin_so = LoadLibrary(base_plugin->filename);
+#else
     plugin_so = dlopen(base_plugin->filename,
 		       RTLD_NOW);
+#endif
     
     g_object_set(lv2_plugin,
 		 "plugin-so", plugin_so,
 		 NULL);
+
+    success = FALSE;    
     
+#ifdef AGS_W32API
+    base_plugin->plugin_handle = 
+      lv2_descriptor = (LV2_Descriptor_Function) GetProcAddress(plugin_so,
+								"lv2_descriptor");
+
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
     base_plugin->plugin_handle = 
       lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						       "lv2_descriptor");
-    
-    if(dlerror() == NULL && lv2_descriptor){
+
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
 	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 			       lv2_plugin->uri)){
@@ -990,18 +1009,20 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   
     /* log feature */
-#ifndef AGS_W32API    
-    log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+#if 0
+    {
+      log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
   
-    log_feature->handle = NULL;
-    log_feature->printf = ags_lv2_log_manager_printf;
-    log_feature->vprintf = ags_lv2_log_manager_vprintf;
+      log_feature->handle = NULL;
+      log_feature->printf = ags_lv2_log_manager_printf;
+      log_feature->vprintf = ags_lv2_log_manager_vprintf;
 
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[nth]->URI = LV2_LOG__log;
-    feature[nth]->data = log_feature;
+      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth]->URI = LV2_LOG__log;
+      feature[nth]->data = log_feature;
 
-    nth++;
+      nth++;
+    }
 #endif
     
     /* event feature */
@@ -1065,10 +1086,23 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   instantiate = NULL;
   
   if(plugin_so != NULL){
+    gboolean success;
+    
+    success = FALSE;    
+    
+#ifdef AGS_W32API
+    lv2_descriptor = (LV2_Descriptor_Function) GetProcAddress(plugin_so,
+							      "lv2_descriptor");
+
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       pthread_mutex_lock(base_plugin_mutex);
       
       base_plugin->plugin_descriptor = 

@@ -1681,10 +1681,23 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
   if(effect_index != -1 &&
      plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor");
+    gboolean success;
 
-    if(dlerror() == NULL && dssi_descriptor){
+    success = FALSE;
+
+#ifdef AGS_W32API
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(plugin_so,
+                                                                "dssi_descriptor");
+
+    success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+                                                       "dssi_descriptor");
+
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+    
+    if(success && dssi_descriptor){
       dssi_bridge->dssi_descriptor = 
 	plugin_descriptor = dssi_descriptor(effect_index);
 

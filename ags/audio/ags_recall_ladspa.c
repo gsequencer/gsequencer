@@ -559,10 +559,23 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 	       NULL);
 
   if(plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor");
+    gboolean success;
+    
+    success = FALSE;
+    
+#ifdef AGS_W32API
+    ladspa_descriptor = (LADSPA_Descriptor_Function) GetProcAddress((void *) plugin_so,
+								    "ladspa_descriptor");
 
-    if(dlerror() == NULL && ladspa_descriptor){
+    success = (!ladspa_descriptor) ? FALSE: TRUE;
+#else
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym((void *) plugin_so,
+							   "ladspa_descriptor");
+  
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && ladspa_descriptor){
       pthread_mutex_lock(recall_mutex);
 
       recall_ladspa->plugin_descriptor = 

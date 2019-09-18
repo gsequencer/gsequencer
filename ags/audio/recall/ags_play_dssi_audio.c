@@ -621,10 +621,23 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 
   /* dssi descriptor function - dlsym */
   if(plugin_so){
+    gboolean success;
+    
+    success = FALSE;
+
+#ifdef AGS_W32API
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(plugin_so,
+								"dssi_descriptor");
+    
+    success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor");
+  
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
 
-    if(dlerror() == NULL && dssi_descriptor){
+    if(success && dssi_descriptor){
       pthread_mutex_lock(recall_mutex);
       
       play_dssi_audio->plugin_descriptor = 

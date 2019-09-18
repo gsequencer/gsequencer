@@ -58,6 +58,9 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 #include <ags/audio/osc/ags_osc_server.h>
 
 #include <ags/audio/recall/ags_play_audio.h>
@@ -1492,6 +1495,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   atexit(ags_audio_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
+#ifndef AGS_W32API
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -1506,6 +1510,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #else
   timer_id = (timer_t *) malloc(sizeof(timer_t));
   
@@ -1712,6 +1717,14 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 							is_output);
 
 	has_jack = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) audio_application_context);
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) audio_application_context);
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){

@@ -490,6 +490,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long effect_index;
   unsigned long port_count;
   unsigned long i;
+  gboolean success;
   
   pthread_mutex_t *base_plugin_mutex;
   
@@ -501,25 +502,44 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   /* dlopen */
   pthread_mutex_lock(base_plugin_mutex);
 
+#ifdef AGS_W32API
+  base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
+#else
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
+#endif
   
   if(base_plugin->plugin_so == NULL){
     g_warning("ags_dssi_plugin.c - failed to load static object file");
     
+#ifndef AGS_W32API    
     dlerror();
-
+#endif
+    
     pthread_mutex_unlock(base_plugin_mutex);
 
     return;
   }
 
-  dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
-						     "dssi_descriptor");
+  success = FALSE;
+
+#ifdef AGS_W32API
+  base_plugin->plugin_handle = 
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(base_plugin->plugin_so,
+								"dssi_descriptor");
+    
+  success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
+  base_plugin->plugin_handle = 
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
+						       "dssi_descriptor");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
   
   pthread_mutex_unlock(base_plugin_mutex);
 
-  if(dlerror() == NULL && dssi_descriptor){
+  if(success && dssi_descriptor){
     gpointer plugin_descriptor;
 
     guint unique_id;

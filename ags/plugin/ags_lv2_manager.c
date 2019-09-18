@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include <string.h>
+#include <strings.h>
 
 #include <ags/config.h>
 
@@ -179,7 +180,7 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
       iter = lv2_env;
       i = 0;
       
-      while((next = index(iter, ':')) != NULL){
+      while((next = strchr(iter, ':')) != NULL){
 	ags_lv2_default_path = (gchar **) realloc(ags_lv2_default_path,
 						  (i + 2) * sizeof(gchar *));
 	ags_lv2_default_path[i] = g_strndup(iter,
@@ -646,10 +647,12 @@ ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
     file = fopen(blacklist_filename,
 		 "r");
 
+#ifndef AGS_W32API    
     while(getline(&str, NULL, file) != -1){
       lv2_manager->lv2_plugin_blacklist = g_list_prepend(lv2_manager->lv2_plugin_blacklist,
 							 str);
     }
+#endif
   }
 
   pthread_mutex_unlock(lv2_manager_mutex);

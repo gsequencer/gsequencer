@@ -190,6 +190,11 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 				 "jack");
 #endif
   
+#ifdef AGS_WITH_WASAPI
+  gtk_combo_box_text_append_text(soundcard_editor->backend,
+				 "wasapi");
+#endif
+
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(soundcard_editor->backend,
 				 "alsa");
@@ -592,7 +597,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   guint buffer_size;
   guint cache_buffer_size;
   guint format;
-  gboolean use_core_audio, use_pulse, use_jack, use_alsa, use_oss;
+  gboolean use_core_audio, use_pulse, use_jack, use_wasapi, use_alsa, use_oss;
   
   GValue value =  {0,};
 
@@ -616,9 +621,21 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   g_list_free(list);
   
   /* backend */
-#ifdef AGS_WITH_CORE_AUDIO
+#if defined AGS_WITH_WASAPI
+  use_wasapi = TRUE;
+  
+  use_core_audio = FALSE;
+  
+  use_pulse = FALSE;
+#elif defined AGS_WITH_CORE_AUDIO
+  use_wasapi = FALSE;
+
   use_core_audio = TRUE;
+
+  use_pulse = FALSE;
 #else
+  use_wasapi = FALSE;
+
   use_core_audio = FALSE;
   
   use_pulse = TRUE;
@@ -647,16 +664,29 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			    "jack",
 			    5)){
       use_jack = TRUE;
+
+      use_wasapi = FALSE;
+      use_core_audio = FALSE;
       use_pulse = FALSE;
+    }else if(!g_ascii_strncasecmp(backend,
+			    "wasapi",
+			    7)){
+      use_wasapi = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
 			    "alsa",
 			    5)){
       use_alsa = TRUE;
+
+      use_wasapi = FALSE;
+      use_core_audio = FALSE;
       use_pulse = FALSE;
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){
       use_oss = TRUE;
+
+      use_wasapi = FALSE;
+      use_core_audio = FALSE;
       use_pulse = FALSE;
     }
   }
@@ -760,6 +790,11 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			 soundcard_group,
 			 "device",
 			 device);
+  }else if(use_wasapi){
+    ags_config_set_value(config,
+			 soundcard_group,
+			 "device",
+			 device);
   }else if(use_alsa){
     ags_config_set_value(config,
 			 soundcard_group,
@@ -839,6 +874,10 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     backend = "jack";
 
     capability = AGS_SOUNDCARD_CAPABILITY_PLAYBACK;
+  }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
+    backend = "wasapi";
+
+    capability = AGS_SOUNDCARD_CAPABILITY_PLAYBACK;
   }else if(AGS_IS_DEVOUT(soundcard)){
     if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
       backend = "alsa";
@@ -857,6 +896,10 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
   }else if(AGS_IS_JACK_DEVIN(soundcard)){
     backend = "jack";
+
+    capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
+  }else if(AGS_IS_WASAPI_DEVIN(soundcard)){
+    backend = "wasapi";
 
     capability = AGS_SOUNDCARD_CAPABILITY_CAPTURE;
   }else if(AGS_IS_DEVIN(soundcard)){
@@ -960,6 +1003,26 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       FALSE);
 
       //      ags_soundcard_editor_load_jack_card(soundcard_editor);
+    }else if(!g_ascii_strncasecmp(backend,
+				  "wasapi",
+				  7)){
+#ifdef AGS_WITH_WASAPI
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       nth_backend);
+#else
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       -1);
+#endif
+      
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
+			       TRUE);
+
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
+			       FALSE);
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
+			       FALSE);
+
+      //      ags_soundcard_editor_load_wasapi_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "alsa",
 				  5)){
@@ -1742,6 +1805,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
     }else{
       g_warning("unknown soundcard implementation");
     }
+  }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
+    //nothing
   }else{
     g_warning("unknown soundcard implementation");
   }
@@ -2129,6 +2194,77 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   
   g_list_free_full(start_soundcard,
 		   g_object_unref);
+}
+
+void
+ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsDevout *devout;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  GList *card_id;
+
+  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+
+  window = AGS_WINDOW(preferences->window);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  /*  */
+  devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
+			NULL);
+  g_object_set(devout,
+	       "application-context", application_context,
+	       NULL);
+
+  card_id = NULL;
+  ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
+
+  while(card_id != NULL){
+    if(card_id != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
+    
+    card_id = card_id->next;
+  }
+
+  /* remove previous */
+  if(soundcard_editor->soundcard != NULL){
+    ags_soundcard_editor_remove_soundcard(soundcard_editor,
+					  (GObject *) soundcard_editor->soundcard);
+  }
+
+  /* add new */
+  ags_soundcard_editor_add_soundcard(soundcard_editor,
+				     (GObject *) devout);
+
+  /*  */
+  list = gtk_container_get_children((GtkContainer *) GTK_WIDGET(soundcard_editor)->parent);
+
+  if(list->data == soundcard_editor){
+    gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			     TRUE);
+  }
+  
+  g_list_free(list);
+  
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
 }
 
 void

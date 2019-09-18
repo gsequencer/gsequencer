@@ -66,12 +66,16 @@
 #endif
 
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <sys/mman.h>
 
 #include <stdbool.h>
 
+#include <sys/types.h>
 #include <signal.h>
 
 #include <math.h>
@@ -1785,8 +1789,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   GList *list;  
   
+#ifndef AGS_W32API
   struct passwd *pw;
-
+  
+  uid_t uid;
+#endif
+  
 #ifdef AGS_USE_TIMER
   timer_t *timer_id;
 #endif
@@ -1798,8 +1806,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
-  
-  uid_t uid;
   
   guint i, j;
   gboolean single_thread_enabled;
@@ -1833,7 +1839,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGCHLD, SIG_IGN);
   signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
   signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
+  
   ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
@@ -1967,10 +1973,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
   }
 
-  /* get user information */
-  uid = getuid();
-  pw = getpwuid(uid);
-
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -1981,6 +1983,64 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   audio_message_queue = ags_message_queue_new("libags-audio");
   ags_message_delivery_add_queue(message_delivery,
 				 (GObject *) audio_message_queue);
+
+#ifdef AGS_W32API
+  /* load ladspa manager */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/ladspa_plugin.blacklist",
+				       DESTDIR);
+  ags_ladspa_manager_load_blacklist(ladspa_manager,
+				    blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading LADSPA plugins");
+  
+  ags_ladspa_manager_load_default_directory(ladspa_manager);
+
+  /* load dssi manager */
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/dssi_plugin.blacklist",
+				       DESTDIR);
+  ags_dssi_manager_load_blacklist(dssi_manager,
+				  blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading DSSI plugins");
+
+  ags_dssi_manager_load_default_directory(dssi_manager);
+
+  /* load lv2 manager */
+  lv2_manager = ags_lv2_manager_get_instance();
+  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
+
+  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/lv2_plugin.blacklist",
+				       DESTDIR);
+  ags_lv2_manager_load_blacklist(lv2_manager,
+				 blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading Lv2 plugins");
+
+  ags_lv2_manager_load_default_directory(lv2_manager);
+
+  /* load lv2ui manager */
+  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+
+  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/lv2ui_plugin.blacklist",
+				       DESTDIR);
+  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
+				   blacklist_filename);
+  
+  ags_log_add_message(log,
+		      "* Loading Lv2ui plugins");
+
+  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
+#else
+  /* get user information */
+  uid = getuid();
+  pw = getpwuid(uid);
     
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
@@ -2038,6 +2098,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 		      "* Loading Lv2ui plugins");
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
+#endif
   
   /* launch GUI */
   ags_log_add_message(log,
@@ -2184,6 +2245,14 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	  
 	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
 	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	}
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) xorg_application_context);	  
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) xorg_application_context);
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
@@ -3032,15 +3101,20 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
   if(autosave_thread_enabled){
     GFile *autosave_file;
 
+#ifndef AGS_W32API
     struct passwd *pw;
 
+    uid_t uid;
+#endif
+    
     gchar *autosave_filename;
 
-    uid_t uid;
-    
+#ifdef AGS_W32API
+#else 
     uid = getuid();
     pw = getpwuid(uid);
-
+#endif
+    
     autosave_filename = NULL;
     
     if(g_strcmp0(ags_config_get_value(config,
@@ -3050,11 +3124,17 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
       gchar *filename, *offset;
     
+#ifdef AGS_W32API
+      filename = g_strdup_printf("%s/var/run/%s",
+				 DESTDIR,
+				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#else 
       filename = g_strdup_printf("%s/%s/%s",
 				 pw->pw_dir,
 				 AGS_DEFAULT_DIRECTORY,
 				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-
+#endif
+      
       if((offset = strstr(filename,
 			  "{PID}")) != NULL){
 	gchar *tmp;
@@ -3070,11 +3150,18 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 	g_free(filename);
       }
     }else{
+#ifdef AGS_W32API
+      autosave_filename = g_strdup_printf("%s/var/run/%d-%s",
+					  DESTDIR,
+					  getpid(),
+					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#else
       autosave_filename = g_strdup_printf("%s/%s/%d-%s",
 					  pw->pw_dir,
 					  AGS_DEFAULT_DIRECTORY,
 					  getpid(),
 					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#endif
     }
 
     autosave_file = g_file_new_for_path(autosave_filename);

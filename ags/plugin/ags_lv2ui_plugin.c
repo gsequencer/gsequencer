@@ -550,20 +550,38 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   ui_effect_index = 0;
 
   if(ui_plugin_so == NULL){
+    gboolean success;
+    
     g_message("open %s", base_plugin->ui_filename);
     
-    ui_plugin_so = dlopen(base_plugin->ui_filename,
+#ifdef AGS_W32API
+    ui_plugin_so = LoadLibrary(base_plugin->filename);
+#else
+    ui_plugin_so = dlopen(base_plugin->filename,
 			  RTLD_NOW);
+#endif
     
     g_object_set(lv2ui_plugin,
 		 "ui-plugin-so", ui_plugin_so,
 		 NULL);
 
+    success = FALSE;    
+    
+#ifdef AGS_W32API
     base_plugin->ui_plugin_handle = 
-      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
-							  "lv2ui_descriptor");
+      lv2ui_descriptor = (LV2_Descriptor_Function) GetProcAddress(ui_plugin_so,
+								  "lv2ui_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
+    base_plugin->ui_plugin_handle = 
+      lv2ui_descriptor = (LV2_Descriptor_Function) dlsym(ui_plugin_so,
+							 "lv2ui_descriptor");
+
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2ui_descriptor((uint32_t) i)) != NULL; i++){
 	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 			       lv2ui_plugin->gui_uri)){
