@@ -24,7 +24,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

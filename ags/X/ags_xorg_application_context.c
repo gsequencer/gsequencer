@@ -71,8 +71,6 @@
 #include <pwd.h>
 #endif
 
-#include <sys/mman.h>
-
 #include <stdbool.h>
 
 #include <sys/types.h>
@@ -1799,6 +1797,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   timer_t *timer_id;
 #endif
 
+  gchar *blacklist_path;
   gchar *blacklist_filename;
   gchar *filename;
   gchar *soundcard_group;
@@ -1806,6 +1805,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
   
   guint i, j;
   gboolean single_thread_enabled;
@@ -1984,70 +1986,48 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_message_delivery_add_queue(message_delivery,
 				 (GObject *) audio_message_queue);
 
-#ifdef AGS_W32API
-  /* load ladspa manager */
-  ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/ladspa_plugin.blacklist",
-				       DESTDIR);
-  ags_ladspa_manager_load_blacklist(ladspa_manager,
-				    blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading LADSPA plugins");
-  
-  ags_ladspa_manager_load_default_directory(ladspa_manager);
-
-  /* load dssi manager */
-  dssi_manager = ags_dssi_manager_get_instance();
-
-  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/dssi_plugin.blacklist",
-				       DESTDIR);
-  ags_dssi_manager_load_blacklist(dssi_manager,
-				  blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading DSSI plugins");
-
-  ags_dssi_manager_load_default_directory(dssi_manager);
-
-  /* load lv2 manager */
-  lv2_manager = ags_lv2_manager_get_instance();
-  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
-
-  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/lv2_plugin.blacklist",
-				       DESTDIR);
-  ags_lv2_manager_load_blacklist(lv2_manager,
-				 blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading Lv2 plugins");
-
-  ags_lv2_manager_load_default_directory(lv2_manager);
-
-  /* load lv2ui manager */
-  lv2ui_manager = ags_lv2ui_manager_get_instance();  
-
-  blacklist_filename = g_strdup_printf("%s/etc/gsequencer/lv2ui_plugin.blacklist",
-				       DESTDIR);
-  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
-				   blacklist_filename);
-  
-  ags_log_add_message(log,
-		      "* Loading Lv2ui plugins");
-
-  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
-#else
   /* get user information */
+#if defined AGS_W32API
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+  }else{
+    app_dir = NULL;
+  }
+  
+  blacklist_path = g_strdup_printf("%s\\%s",
+				   g_get_current_dir(),
+				   app_dir);
+
+  g_free(app_dir);
+#else
   uid = getuid();
   pw = getpwuid(uid);
+
+  blacklist_path = g_strdup_printf("%s/%s",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
+#endif
+  
+  /* message delivery */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_queue_new("libags");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) message_queue);
+
+  audio_message_queue = ags_message_queue_new("libags-audio");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) audio_message_queue);
     
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/ladspa_plugin.blacklist",
+				       blacklist_path);
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -2059,9 +2039,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/dssi_plugin.blacklist",
+				       blacklist_path);
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -2074,9 +2053,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/lv2_plugin.blacklist",
+				       blacklist_path);
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
@@ -2085,12 +2063,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_lv2_manager_load_default_directory(lv2_manager);
 
+
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/lv2ui_plugin.blacklist",
+				       blacklist_path);
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
   
@@ -2098,7 +2076,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 		      "* Loading Lv2ui plugins");
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
-#endif
   
   /* launch GUI */
   ags_log_add_message(log,

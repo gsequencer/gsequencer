@@ -39,7 +39,6 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

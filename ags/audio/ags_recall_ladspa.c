@@ -28,7 +28,12 @@
 
 #include <ags/audio/ags_port.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

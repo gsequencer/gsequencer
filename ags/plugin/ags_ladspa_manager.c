@@ -23,7 +23,12 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -162,6 +167,32 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 
       ags_ladspa_default_path[i] = NULL;
     }else{
+#if defined(AGS_W32API)
+      AgsApplicationContext *application_context;
+      
+      gchar *app_dir;
+      
+      guint i;
+
+      i = 0;
+      
+      application_context = ags_application_context_get_instance();
+
+      app_dir = NULL;
+          
+      if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+	app_dir = g_strndup(application_context->argv[0],
+			    strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+      }
+
+      ags_ladspa_default_path = (gchar **) malloc(2 * sizeof(gchar *));
+
+      ags_ladspa_default_path[i++] = g_strdup_printf("%s\\%s\\ladspa",
+						     g_get_current_dir(),
+						     app_dir);
+    
+      ags_ladspa_default_path[i++] = NULL;
+#else
       gchar *home_dir;
       guint i;
 
@@ -197,6 +228,7 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
       }
     
       ags_ladspa_default_path[i++] = NULL;
+#endif
     }
   }
 }

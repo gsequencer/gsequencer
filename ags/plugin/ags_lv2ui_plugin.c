@@ -27,7 +27,12 @@
 #include <ags/plugin/ags_lv2_log_manager.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

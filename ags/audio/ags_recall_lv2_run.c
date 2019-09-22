@@ -39,7 +39,6 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

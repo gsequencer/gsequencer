@@ -30,7 +30,12 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#if defined AGS_W32API
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

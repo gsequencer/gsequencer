@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <pwd.h>
 
 #include <ags/i18n.h>
 
@@ -356,7 +355,6 @@ void
 ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
-  struct passwd *pw;
 
   application_context->flags = 0;
 

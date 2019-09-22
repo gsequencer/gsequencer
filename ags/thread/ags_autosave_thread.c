@@ -24,9 +24,10 @@
 #include <ags/object/ags_main_loop.h>
 
 #include <unistd.h>
-#include <sys/types.h>
 
 #ifndef AGS_W32API
+#include <sys/types.h>
+
 #include <pwd.h>
 #endif
 

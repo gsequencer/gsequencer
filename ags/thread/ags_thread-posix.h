@@ -26,6 +26,8 @@
 #include <ags/lib/ags_uuid.h>
 #include <ags/lib/ags_time.h>
 
+#include <sys/types.h>
+
 #define _GNU_SOURCE
 #include <signal.h>
 

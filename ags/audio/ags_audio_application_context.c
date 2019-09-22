@@ -100,7 +100,10 @@
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <stdbool.h>
 
@@ -1457,12 +1460,11 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   GList *list;  
   
-  struct passwd *pw;
-
 #ifdef AGS_USE_TIMER
   timer_t *timer_id;
 #endif
 
+  gchar *blacklist_path;
   gchar *blacklist_filename;
   gchar *filename;
   gchar *soundcard_group;
@@ -1470,8 +1472,15 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
   
+#ifndef AGS_W32API
+  struct passwd *pw;
+
   uid_t uid;
+#endif
   
   guint i;
   gboolean single_thread_enabled;
@@ -1556,9 +1565,30 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   }
 
   /* get user information */
+#if defined AGS_W32API
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+  }else{
+    app_dir = NULL;
+  }
+  
+  blacklist_path = g_strdup_printf("%s/%s",
+				   g_get_current_dir(),
+				   app_dir);
+
+  g_free(app_dir);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
+  blacklist_path = g_strdup_printf("%s/%s",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
+#endif
+  
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -1573,9 +1603,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/ladspa_plugin.blacklist",
+				       blacklist_path);
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -1587,9 +1616,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/dssi_plugin.blacklist",
+				       blacklist_path);
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -1602,9 +1630,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/lv2_plugin.blacklist",
+				       blacklist_path);
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 

@@ -33,10 +33,14 @@
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <machine/endian.h>
 #else
+#ifndef AGS_W32API
 #include <endian.h>
 #endif
+#endif
 
+#ifndef AGS_W32API
 #include <dlfcn.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

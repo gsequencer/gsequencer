@@ -29,7 +29,6 @@
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_bulk_member.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

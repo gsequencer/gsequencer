@@ -40,7 +40,6 @@
 #include <ags/X/ags_lv2_browser.h>
 
 #include <ladspa.h>
-#include <dlfcn.h>
 
 #include <ags/i18n.h>
 

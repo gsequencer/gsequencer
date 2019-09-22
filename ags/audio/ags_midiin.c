@@ -28,12 +28,18 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <fcntl.h>
 #include <sys/ioctl.h>
+
 #ifndef __APPLE__
 #include <sys/soundcard.h>
 #endif
+
 #include <sys/utsname.h>
+#endif
+
 #ifdef AGS_WITH_ALSA
 #include <alsa/rawmidi.h>
 #endif

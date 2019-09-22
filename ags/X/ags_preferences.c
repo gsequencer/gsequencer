@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <pwd.h>
 
 #include <ags/i18n.h>
 
@@ -282,9 +281,6 @@ ags_preferences_apply(AgsApplicable *applicable)
   AgsConfig *config;
 
   gchar *filename;
-
-  struct passwd *pw;
-  uid_t uid;
 
   gchar **argv;
 

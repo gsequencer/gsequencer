@@ -62,7 +62,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#ifndef __APPLE__
+#if defined __APPLE__ || AGS_W32API
+#else
 #include <X11/Xlib.h>
 #endif
 
@@ -1407,6 +1408,9 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   gchar *license_filename;
   gchar *logo_filename;
   gchar *str;
+#if defined(AGS_W32API)
+  gchar *app_dir;
+#endif
   
   int n_read;
   
@@ -1414,11 +1418,29 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   gchar *authors[] = { "Joël Krähemann", NULL }; 
 
+#if defined AGS_W32API
+  app_dir = NULL;
+#endif
+  
 #ifdef AGS_LICENSE_FILENAME
-  license_filename = AGS_LICENSE_FILENAME;
+  license_filename = g_strdup(AGS_LICENSE_FILENAME);
 #else
   if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
-    license_filename = "/usr/share/common-licenses/GPL-3";
+#if defined (AGS_W32API)
+    application_context = ags_application_context_get_instance();
+    
+    if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+    }
+  
+    license_filename = g_strdup_printf("%s\\%s\\%s",
+				       g_get_current_dir(),
+				       app_dir,
+				       "\\share\\gsequencer\\license\\GPL-3");
+#else
+    license_filename = g_strdup("/usr/share/common-licenses/GPL-3");
+#endif
   }
 #endif
   
@@ -1442,7 +1464,16 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
       logo_filename = g_strdup(AGS_LOGO_FILENAME);
 #else
       if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
-	logo_filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+#if defined AGS_W32API
+	logo_filename = g_strdup_printf("%s\\%s",
+					g_get_current_dir(),
+					app_dir,
+					"\\share\\gsequencer\\images\\ags.png");
+#else
+	logo_filename = g_strdup_printf("%s/%s",
+					DESTDIR,
+					"/gsequencer/images/ags.png");
+#endif
       }else{
 	logo_filename = g_strdup(logo_filename);
       }
@@ -1476,4 +1507,10 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 			"title", "Advanced Gtk+ Sequencer",
 			"logo", logo,
 			NULL);
+
+  g_free(license_filename);
+
+#if defined AGS_W32API
+  g_free(app_dir);
+#endif
 }

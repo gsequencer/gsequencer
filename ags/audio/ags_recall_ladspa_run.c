@@ -32,7 +32,6 @@
 #include <ags/audio/ags_recall_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

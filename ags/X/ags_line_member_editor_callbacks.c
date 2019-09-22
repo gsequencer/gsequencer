@@ -39,7 +39,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -32,7 +32,6 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

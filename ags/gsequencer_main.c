@@ -44,6 +44,11 @@
 
 #include <stdlib.h>
 
+#ifndef AGS_W32API
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
+
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -237,6 +242,9 @@ main(int argc, char **argv)
   AgsConfig *config;
 
   gchar *filename;
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
 
   gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
@@ -343,16 +351,26 @@ main(int argc, char **argv)
 
 #ifdef AGS_W32API
   if(!builtin_theme_disabled){
+    if(strlen(argv[0]) > strlen("gsequencer.exe")){
+      app_dir = g_strndup(argv[0],
+			  strlen(argv[0]) - strlen("gsequencer.exe"));
+    }else{
+      app_dir = NULL;
+    }
+    
     if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
       rc_filename = g_strdup_printf("%s%s",
-				    DESTDIR,
-				    "/gsequencer/styles/ags.rc");
+				    g_get_current_dir(),
+				    app_dir,
+				    "\\share\\gsequencer\\styles\\ags.rc");
     }else{
       rc_filename = g_strdup(rc_filename);
     }
   
     gtk_rc_parse(rc_filename);
+    
     g_free(rc_filename);
+    g_free(app_dir);
   }
 #else
   uid = getuid();
