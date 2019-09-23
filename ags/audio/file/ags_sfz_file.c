@@ -29,11 +29,11 @@
 #include <ags/audio/file/ags_sfz_region.h>
 #include <ags/audio/file/ags_sfz_sample.h>
 
-#include <string.h>
-#include <strings.h>
-
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <string.h>
+#include <strings.h>
 
 #include <ags/i18n.h>
 

@@ -166,6 +166,7 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
       AgsApplicationContext *application_context;
       
       gchar *app_dir;
+      gchar *path;
       
       guint i;
 
@@ -174,19 +175,31 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
       application_context = ags_application_context_get_instance();
 
       app_dir = NULL;
-      
-      if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+          
+      if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
 	app_dir = g_strndup(application_context->argv[0],
-			    strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+			    strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
       }
 
       ags_dssi_default_path = (gchar **) malloc(2 * sizeof(gchar *));
 
-      ags_dssi_default_path[i++] = g_strdup_printf("%s\\%s\\dssi",
-						   g_get_current_dir(),
-						   app_dir);
-    
+      path = g_strdup_printf("%s\\dssi",
+			     g_get_current_dir());
+      
+      if(g_file_test(path,
+		     G_FILE_TEST_IS_DIR)){
+	ags_dssi_default_path[i++] = path;
+      }else{
+	g_free(path);
+	
+	ags_dssi_default_path[i++] = g_strdup_printf("%s\\%s\\dssi",
+						     g_get_current_dir(),
+						     app_dir);
+      }
+      
       ags_dssi_default_path[i++] = NULL;
+
+      g_free(app_dir);
 #else
       gchar *home_dir;
       guint i;

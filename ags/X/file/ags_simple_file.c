@@ -909,6 +909,8 @@ void
 ags_simple_file_real_open(AgsSimpleFile *simple_file,
 			  GError **error)
 {
+  xmlInitParser();
+
   /* parse the file and get the DOM */
   simple_file->doc = xmlReadFile(simple_file->filename,
 				 NULL,
@@ -948,6 +950,8 @@ ags_simple_file_real_open_from_data(AgsSimpleFile *simple_file,
 				    gchar *data, guint length,
 				    GError **error)
 {
+  xmlInitParser();
+
   simple_file->doc = xmlReadMemory(data, length, simple_file->filename, NULL, 0);
 
   if(simple_file->doc == NULL){
@@ -986,6 +990,8 @@ ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
 			     gboolean create,
 			     GError **error)
 {
+  xmlInitParser();
+
   simple_file->out = fopen(simple_file->filename, "w+");
 
   simple_file->doc = xmlNewDoc("1.0");
@@ -1058,12 +1064,12 @@ ags_simple_file_close(AgsSimpleFile *simple_file)
    * Free the global variables that may
    * have been allocated by the parser.
    */
-  xmlCleanupParser();
+//  xmlCleanupParser();
 
   /*
    * this is to debug memory for regression tests
    */
-  xmlMemoryDump();
+//  xmlMemoryDump();
 
   simple_file->filename = NULL;
 }

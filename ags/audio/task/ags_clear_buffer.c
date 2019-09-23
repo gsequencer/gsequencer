@@ -448,8 +448,16 @@ ags_clear_buffer_launch(AgsTask *task)
     }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER1)){
       nth_buffer = 3;
     }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER2)){
-      nth_buffer = 0;
+      nth_buffer = 4;
     }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER3)){
+      nth_buffer = 5;
+    }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER4)){
+      nth_buffer = 6;
+    }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER5)){
+      nth_buffer = 7;
+    }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER6)){
+      nth_buffer = 0;
+    }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER7)){
       nth_buffer = 1;
     }
             
@@ -464,13 +472,21 @@ ags_clear_buffer_launch(AgsTask *task)
     wasapi_devin = (AgsWasapiDevin *) clear_buffer->device;
     
     /* retrieve nth buffer */    
-    if(ags_wasapi_devin_test_flags(wasapi_devin, AGS_WASAPI_DEVIN_BUFFER0)){
+    if((AGS_WASAPI_DEVIN_BUFFER0 & (wasapi_devin->flags)) != 0){
       nth_buffer = 2;
-    }else if(ags_wasapi_devin_test_flags(wasapi_devin, AGS_WASAPI_DEVIN_BUFFER1)){
+    }else if((AGS_WASAPI_DEVIN_BUFFER1 & (wasapi_devin->flags)) != 0){
       nth_buffer = 3;
-    }else if(ags_wasapi_devin_test_flags(wasapi_devin, AGS_WASAPI_DEVIN_BUFFER2)){
+    }else if((AGS_WASAPI_DEVIN_BUFFER2 & (wasapi_devin->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_WASAPI_DEVIN_BUFFER3 & (wasapi_devin->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_WASAPI_DEVIN_BUFFER4 & (wasapi_devin->flags)) != 0){
+      nth_buffer = 6;
+    }else if((AGS_WASAPI_DEVIN_BUFFER5 & (wasapi_devin->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_WASAPI_DEVIN_BUFFER6 & (wasapi_devin->flags)) != 0){
       nth_buffer = 0;
-    }else if(ags_wasapi_devin_test_flags(wasapi_devin, AGS_WASAPI_DEVIN_BUFFER3)){
+    }else if((AGS_WASAPI_DEVIN_BUFFER7 & (wasapi_devin->flags)) != 0){
       nth_buffer = 1;
     }
     

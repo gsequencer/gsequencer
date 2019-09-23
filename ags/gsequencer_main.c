@@ -244,6 +244,7 @@ main(int argc, char **argv)
   gchar *filename;
 #if defined AGS_W32API
   gchar *app_dir;
+  gchar *path;
 #endif
 
   gboolean single_thread_enabled;
@@ -351,18 +352,32 @@ main(int argc, char **argv)
 
 #ifdef AGS_W32API
   if(!builtin_theme_disabled){
-    if(strlen(argv[0]) > strlen("gsequencer.exe")){
+    app_dir = NULL;
+    
+    if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
       app_dir = g_strndup(argv[0],
-			  strlen(argv[0]) - strlen("gsequencer.exe"));
-    }else{
-      app_dir = NULL;
+			  strlen(argv[0]) - strlen("\\gsequencer.exe"));
     }
     
     if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-      rc_filename = g_strdup_printf("%s%s",
-				    g_get_current_dir(),
-				    app_dir,
-				    "\\share\\gsequencer\\styles\\ags.rc");
+      rc_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.rc",
+				    g_get_current_dir());
+    
+      if(!g_file_test(rc_filename,
+		      G_FILE_TEST_IS_REGULAR)){
+	g_free(rc_filename);
+
+	if(g_path_is_absolute(app_dir)){
+	  rc_filename = g_strdup_printf("%s\\%s",
+					app_dir,
+					"\\share\\gsequencer\\styles\\ags.rc");
+	}else{
+	  rc_filename = g_strdup_printf("%s\\%s\\%s",
+					g_get_current_dir(),
+					app_dir,
+					"\\share\\gsequencer\\styles\\ags.rc");
+	}
+      }
     }else{
       rc_filename = g_strdup(rc_filename);
     }
@@ -406,7 +421,8 @@ main(int argc, char **argv)
   
   /**/
   LIBXML_TEST_VERSION;
-
+  xmlInitParser();
+  
   //ao_initialize();
 
   //  gdk_threads_enter();
@@ -456,24 +472,54 @@ main(int argc, char **argv)
   /* setup */
   if(!has_file){
 #ifdef AGS_W32API
-    wdir = g_strdup_printf("%s/etc/gsequencer",
-			   DESTDIR);
-#else
-    wdir = g_strdup_printf("%s/%s",
-			   pw->pw_dir,
-			   AGS_DEFAULT_DIRECTORY);
-#endif
+  app_dir = NULL;
+
+  if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
+    app_dir = g_strndup(argv[0],
+			strlen(argv[0]) - strlen("\\gsequencer.exe"));
+  }
+  
+  path = g_strdup_printf("%s\\etc\\gsequencer",
+			 g_get_current_dir());
     
-    config_file = g_strdup_printf("%s/%s",
-				  wdir,
-				  AGS_DEFAULT_CONFIG);
+  if(!g_file_test(path,
+		  G_FILE_TEST_IS_DIR)){
+    g_free(path);
+
+    if(g_path_is_absolute(app_dir)){
+      path = g_strdup_printf("%s\\%s",
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }else{
+      path = g_strdup_printf("%s\\%s\\%s",
+			     g_get_current_dir(),
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }
+  }
+    
+  config_file = g_strdup_printf("%s/%s",
+				path,
+				AGS_DEFAULT_CONFIG);
+
+  g_free(path);
+#else
+  wdir = g_strdup_printf("%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+    
+  config_file = g_strdup_printf("%s/%s",
+				wdir,
+				AGS_DEFAULT_CONFIG);
+
+  g_free(wdir);
+#endif
 
     config = ags_config_get_instance();
 
     ags_config_load_from_file(config,
 			      config_file);
 
-    g_free(wdir);
     g_free(config_file);
   }
 

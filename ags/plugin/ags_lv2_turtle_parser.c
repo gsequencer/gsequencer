@@ -4634,7 +4634,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   }
 #endif
 
-  xmlCleanupParser();
+//  xmlCleanupParser();
 }
 
 /**

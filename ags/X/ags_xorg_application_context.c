@@ -2601,6 +2601,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
       if(AGS_IS_DEVOUT(list->data)){
 	AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+      }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
+	AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_JACK_DEVOUT(list->data)){
 	AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_PULSE_DEVOUT(list->data)){
@@ -2609,6 +2611,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_DEVIN(list->data)){
 	AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+      }else if(AGS_IS_WASAPI_DEVIN(list->data)){
+	AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_JACK_DEVIN(list->data)){
 	AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_PULSE_DEVIN(list->data)){
@@ -2622,6 +2626,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       /* export thread */
       if(AGS_IS_DEVOUT(list->data) ||
+	 AGS_IS_WASAPI_DEVOUT(list->data) ||
 	 AGS_IS_JACK_DEVOUT(list->data) ||
 	 AGS_IS_PULSE_DEVOUT(list->data) ||
 	 AGS_IS_CORE_AUDIO_DEVOUT(list->data)){

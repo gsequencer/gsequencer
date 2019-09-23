@@ -85,6 +85,12 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 {
   cairo_surface_t *surface;
   
+#if defined(AGS_W32API)
+  AgsApplicationContext *application_context;
+      
+  gchar *app_dir;
+#endif
+  
   gchar *filename;
   
   unsigned char *image_data;
@@ -102,7 +108,37 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   filename = g_strdup(AGS_ANIMATION_FILENAME);
 #else
   if((filename = getenv("AGS_ANIMATION_FILENAME")) == NULL){
+#if defined(AGS_W32API)
+    application_context = ags_application_context_get_instance();
+
+    app_dir = NULL;
+          
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+    }
+
+    filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags_supermoon-800x450.png",
+			       g_get_current_dir());
+    
+    if(!g_file_test(filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(filename);
+
+      if(g_path_is_absolute(app_dir)){
+	filename = g_strdup_printf("%s\\%s",
+				   app_dir,
+				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+      }else{
+	filename = g_strdup_printf("%s\\%s\\%s",
+				   g_get_current_dir(),
+				   app_dir,
+				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+      }
+    }
+#else
     filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
+#endif
   }else{
     filename = g_strdup(filename);
   }

@@ -116,6 +116,7 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 
 # Checks for programs.
 AC_PROG_CC
+gl_EARLY
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -153,7 +154,7 @@ AS_IF([test "x$enable_quartz" != xno],
       [AC_MSG_NOTICE([quartz disabled])])
 
 # FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
+# AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
@@ -176,7 +177,7 @@ AS_IF([test "x$enable_rt" != xno],
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
+# AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -195,6 +196,7 @@ AS_IF([test "x$enable_w32api" != xno],
       W32API_LIBS="-L./lib -lgnu"
       AC_MSG_NOTICE([w32api enabled])],
       AC_MSG_NOTICE([w32api disabled]))
+AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)
@@ -237,8 +239,8 @@ AS_IF([test "x$enable_core_audio" != xno],
 
 AS_IF([test "x$enable_wasapi" != xno],
       [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled])
-      WASAPI_CFLAGS="-I/usr/include/w32api"
-      WASAPI_LIBS="-L/usr/lib/w32api -lwinmm -ldsound -lsetupapi -lole32 -luuid"
+      WASAPI_CFLAGS=""
+      WASAPI_LIBS="-lwinmm -ldsound -lsetupapi -lole32"
       AC_SUBST(WASAPI_CFLAGS)
       AC_SUBST(WASAPI_LIBS)
 
@@ -395,9 +397,12 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
 
+gl_INIT
+
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+lib/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile

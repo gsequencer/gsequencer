@@ -131,6 +131,14 @@ struct _AgsWasapiDevout
 
   void** buffer;
 
+  gboolean use_cache;
+  guint cache_buffer_size;
+
+  guint current_cache;
+  guint completed_cache;
+  guint cache_offset;
+  void **cache;
+
   double bpm; // beats per minute
   gdouble delay_factor;
   

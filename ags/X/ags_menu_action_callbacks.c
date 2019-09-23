@@ -1428,16 +1428,30 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
 #if defined (AGS_W32API)
     application_context = ags_application_context_get_instance();
-    
-    if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
       app_dir = g_strndup(application_context->argv[0],
-			  strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
     }
   
-    license_filename = g_strdup_printf("%s\\%s\\%s",
-				       g_get_current_dir(),
-				       app_dir,
-				       "\\share\\gsequencer\\license\\GPL-3");
+    license_filename = g_strdup_printf("%s\\share\\gsequencer\\license\\GPL-3",
+				       g_get_current_dir());
+    
+    if(!g_file_test(license_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(license_filename);
+
+      if(g_path_is_absolute(app_dir)){
+	license_filename = g_strdup_printf("%s\\%s",
+					   app_dir,
+					   "\\share\\gsequencer\\license\\GPL-3");
+      }else{
+	license_filename = g_strdup_printf("%s\\%s\\%s",
+					   g_get_current_dir(),
+					   app_dir,
+					   "\\share\\gsequencer\\license\\GPL-3");
+      }
+    }
 #else
     license_filename = g_strdup("/usr/share/common-licenses/GPL-3");
 #endif
@@ -1465,10 +1479,24 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 #else
       if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
 #if defined AGS_W32API
-	logo_filename = g_strdup_printf("%s\\%s",
-					g_get_current_dir(),
-					app_dir,
-					"\\share\\gsequencer\\images\\ags.png");
+	logo_filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags.png",
+				      g_get_current_dir());
+    
+	if(!g_file_test(logo_filename,
+			G_FILE_TEST_IS_REGULAR)){
+	  g_free(logo_filename);
+
+	  if(g_path_is_absolute(app_dir)){
+	    logo_filename = g_strdup_printf("%s\\%s",
+					    app_dir,
+					    "\\share\\gsequencer\\images\\ags.png");
+	  }else{
+	    logo_filename = g_strdup_printf("%s\\%s\\%s",
+					    g_get_current_dir(),
+					    app_dir,
+					    "\\share\\gsequencer\\images\\ags.png");
+	  }
+	}
 #else
 	logo_filename = g_strdup_printf("%s/%s",
 					DESTDIR,

@@ -3461,8 +3461,8 @@ ags_turtle_load(AgsTurtle *turtle,
   free(sb);
   free(buffer);
 
-  xmlCleanupParser();
-  xmlMemoryDump();
+//  xmlCleanupParser();
+//  xmlMemoryDump();
   
   return(doc);
 }

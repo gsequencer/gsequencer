@@ -209,6 +209,7 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
       AgsApplicationContext *application_context;
       
       gchar *app_dir;
+      gchar *path;
       
       guint i;
 
@@ -218,18 +219,30 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 
       app_dir = NULL;
           
-      if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+      if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
 	app_dir = g_strndup(application_context->argv[0],
-			    strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+			    strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
       }
 
       ags_lv2_default_path = (gchar **) malloc(2 * sizeof(gchar *));
 
-      ags_lv2_default_path[i++] = g_strdup_printf("%s\\%s\\lv2",
-						  g_get_current_dir(),
-						  app_dir);
-    
+      path = g_strdup_printf("%s\\lv2",
+			     g_get_current_dir());
+      
+      if(g_file_test(path,
+		     G_FILE_TEST_IS_DIR)){
+	ags_lv2_default_path[i++] = path;
+      }else{
+	g_free(path);
+	
+	ags_lv2_default_path[i++] = g_strdup_printf("%s\\%s\\lv2",
+						    g_get_current_dir(),
+						    app_dir);
+      }
+      
       ags_lv2_default_path[i++] = NULL;
+
+      g_free(app_dir);
 #else
       gchar *home_dir;
       guint i;
@@ -756,6 +769,8 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
   }
 
   turtle_manager = ags_turtle_manager_get_instance();
+
+  xmlInitParser();
   
   lv2_path = ags_lv2_default_path;
 
