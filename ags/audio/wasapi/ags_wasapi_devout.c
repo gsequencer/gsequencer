@@ -2048,7 +2048,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
     wasapi_devout->audio_client = audio_client;
 
-#if 0
+#if 1
     wave_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
     wave_format.Format.nSamplesPerSec = wasapi_devout->samplerate; // necessary
     wave_format.Format.nChannels = wasapi_devout->pcm_channels; // presumed
@@ -2071,8 +2071,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 	bit_resolution = 32;
       }
       break;
-    }
-  
+    }  
 
     if(bit_resolution == 24){
       wave_format.Format.wBitsPerSample = 32;
@@ -2145,8 +2144,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 	bit_resolution = 32;
       }
       break;
-    }
-  
+    }  
 
     if(bit_resolution == 24){
       wave_format.Format.wBitsPerSample = 32;
@@ -2194,7 +2192,9 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
     audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-    if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
+    min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
+    
+    if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, min_duration, desired_format, NULL))){
       g_message("debug 1");
       
       audio_client->lpVtbl->Release(audio_client);
@@ -2226,7 +2226,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   if((AGS_WASAPI_DEVOUT_SHUTDOWN & (wasapi_devout->flags)) == 0){
     /* check buffer flag */
     nth_buffer = 0;
-  
+
     if((AGS_WASAPI_DEVOUT_BUFFER0 & (wasapi_devout->flags)) != 0){
       nth_buffer = 0;
     }else if((AGS_WASAPI_DEVOUT_BUFFER1 & (wasapi_devout->flags)) != 0){
@@ -2244,7 +2244,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     }else if((AGS_WASAPI_DEVOUT_BUFFER7 & (wasapi_devout->flags)) != 0){
       nth_buffer = 7;
     }
-  
+    
 #ifdef AGS_WITH_WASAPI
     audio_client->lpVtbl->GetBufferSize(audio_client, &buffer_frame_count);
 
@@ -2289,12 +2289,73 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
     if(audio_render_client == NULL){
       pthread_mutex_unlock(wasapi_devout_mutex);
-    
+
+      g_message("audio_render_client = NULL");
+      
       return;
     }
-  
-    audio_render_client->lpVtbl->GetBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, &data);
 
+    {
+      UINT32 padding_frames;
+
+      audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
+      
+      while(padding_frames > 0){
+	usleep(4);
+
+	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
+      }
+    }
+    
+    {
+      HRESULT res;
+      
+      res = audio_render_client->lpVtbl->GetBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, &data);
+      
+      switch(res){
+      case AUDCLNT_E_BUFFER_ERROR:
+      {
+	g_message("buffer error");
+      }
+      break;
+      case AUDCLNT_E_BUFFER_TOO_LARGE:
+      {
+	g_message("buffer too large");
+      }
+      break;
+      case AUDCLNT_E_BUFFER_SIZE_ERROR:
+      {
+	g_message("buffer size error");
+      }
+      break;
+      case AUDCLNT_E_OUT_OF_ORDER:
+      {
+	g_message("out of order");
+      }
+      break;
+      case AUDCLNT_E_DEVICE_INVALIDATED:
+      {
+	g_message("invalidated");
+      }
+      break;
+      case AUDCLNT_E_BUFFER_OPERATION_PENDING:
+      {
+	g_message("operation pending");
+      }
+      break;
+      case AUDCLNT_E_SERVICE_NOT_RUNNING:
+      {
+	g_message("no service");
+      }
+      break;
+      case E_POINTER:
+      {
+	g_message("pointer");
+      }
+      break;
+      }
+    }
+    
     /* retrieve word size */
     if(data != NULL){
       ags_soundcard_lock_buffer(soundcard,
@@ -2329,9 +2390,11 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
       ags_soundcard_unlock_buffer(soundcard,
 				  wasapi_devout->buffer[nth_buffer]);
-
-      audio_render_client->lpVtbl->ReleaseBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, 0);
+    }else{
+      g_message("data = NULL");
     }
+
+    audio_render_client->lpVtbl->ReleaseBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, 0);
 
     audio_render_client->lpVtbl->Release(audio_render_client);
 #endif
@@ -2753,6 +2816,8 @@ ags_wasapi_devout_get_buffer(AgsSoundcard *soundcard)
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
   pthread_mutex_lock(wasapi_devout_mutex);
+
+  buffer = wasapi_devout->buffer[0];
 
   if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER0)){
     buffer = wasapi_devout->buffer[0];
