@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.3.3\n"
+"Project-Id-Version: gsequencer 2.3.4\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-09-10 16:49+0200\n"
+"POT-Creation-Date: 2019-09-25 18:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:297 ags/X/ags_preferences.c:178
+#: ags/X/ags_automation_editor.c:297 ags/X/ags_preferences.c:177
 msgid "audio"
 msgstr ""
 
@@ -56,8 +56,8 @@ msgstr ""
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:645 ags/X/machine/ags_dssi_bridge.c:424
-#: ags/X/machine/ags_live_dssi_bridge.c:427
+#: ags/X/ags_bulk_member.c:645 ags/X/machine/ags_dssi_bridge.c:429
+#: ags/X/machine/ags_live_dssi_bridge.c:432
 msgid "Plugin file not present"
 msgstr ""
 
@@ -73,138 +73,138 @@ msgstr ""
 msgid "connect input"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:348
-#: ags/X/ags_menu_bar.c:148
+#: ags/X/ags_context_menu.c:150 ags/X/ags_export_window.c:348
+#: ags/X/ags_menu_bar.c:147
 msgid "export"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:179 ags/X/ags_menu_bar.c:176
+#: ags/X/ags_context_menu.c:178 ags/X/ags_menu_bar.c:175
 msgid "Panel"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:182 ags/X/ags_menu_bar.c:179
+#: ags/X/ags_context_menu.c:181 ags/X/ags_menu_bar.c:178
 msgid "Mixer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:185 ags/X/ags_menu_bar.c:182
+#: ags/X/ags_context_menu.c:184 ags/X/ags_menu_bar.c:181
 msgid "Spectrometer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:188 ags/X/ags_menu_bar.c:185
+#: ags/X/ags_context_menu.c:187 ags/X/ags_menu_bar.c:184
 msgid "Equalizer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:191 ags/X/ags_menu_bar.c:188
+#: ags/X/ags_context_menu.c:190 ags/X/ags_menu_bar.c:187
 msgid "Drum"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:194 ags/X/ags_menu_bar.c:191
+#: ags/X/ags_context_menu.c:193 ags/X/ags_menu_bar.c:190
 msgid "Matrix"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:197 ags/X/ags_menu_bar.c:194
+#: ags/X/ags_context_menu.c:196 ags/X/ags_menu_bar.c:193
 msgid "Synth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:200 ags/X/ags_menu_bar.c:197
+#: ags/X/ags_context_menu.c:199 ags/X/ags_menu_bar.c:196
 msgid "FM Synth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:200
+#: ags/X/ags_context_menu.c:202 ags/X/ags_menu_bar.c:199
 msgid "Syncsynth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:206 ags/X/ags_menu_bar.c:203
+#: ags/X/ags_context_menu.c:205 ags/X/ags_menu_bar.c:202
 msgid "FM Syncsynth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:210 ags/X/ags_menu_bar.c:207
+#: ags/X/ags_context_menu.c:209 ags/X/ags_menu_bar.c:206
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:214 ags/X/ags_menu_bar.c:211
+#: ags/X/ags_context_menu.c:213 ags/X/ags_menu_bar.c:210
 msgid "Sampler"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:217 ags/X/ags_menu_bar.c:214
+#: ags/X/ags_context_menu.c:216 ags/X/ags_menu_bar.c:213
 msgid "Audiorec"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:221 ags/X/ags_menu_bar.c:218
+#: ags/X/ags_context_menu.c:220 ags/X/ags_menu_bar.c:217
 msgid "LADSPA"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:225 ags/X/ags_context_menu.c:240
-#: ags/X/ags_menu_bar.c:222 ags/X/ags_menu_bar.c:237
+#: ags/X/ags_context_menu.c:224 ags/X/ags_context_menu.c:239
+#: ags/X/ags_menu_bar.c:221 ags/X/ags_menu_bar.c:236
 msgid "DSSI"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:229 ags/X/ags_context_menu.c:244
-#: ags/X/ags_menu_bar.c:226 ags/X/ags_menu_bar.c:241
+#: ags/X/ags_context_menu.c:228 ags/X/ags_context_menu.c:243
+#: ags/X/ags_menu_bar.c:225 ags/X/ags_menu_bar.c:240
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:249 ags/X/ags_menu_bar.c:246
+#: ags/X/ags_context_menu.c:248 ags/X/ags_menu_bar.c:245
 msgid "Automation"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:255 ags/X/ags_menu_bar.c:252
+#: ags/X/ags_context_menu.c:254 ags/X/ags_menu_bar.c:251
 msgid "Wave"
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:156 ags/X/ags_ladspa_browser.c:149
-#: ags/X/ags_lv2_browser.c:153 ags/X/machine/ags_audiorec.c:248
+#: ags/X/ags_dssi_browser.c:155 ags/X/ags_ladspa_browser.c:148
+#: ags/X/ags_lv2_browser.c:152 ags/X/machine/ags_audiorec.c:248
 msgid "filename: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:185 ags/X/ags_ladspa_browser.c:177
-#: ags/X/ags_lv2_browser.c:181
+#: ags/X/ags_dssi_browser.c:184 ags/X/ags_ladspa_browser.c:176
+#: ags/X/ags_lv2_browser.c:180
 msgid "effect: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:208 ags/X/ags_ladspa_browser.c:199
+#: ags/X/ags_dssi_browser.c:207 ags/X/ags_ladspa_browser.c:198
 msgid "Label: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:218 ags/X/ags_ladspa_browser.c:209
+#: ags/X/ags_dssi_browser.c:217 ags/X/ags_ladspa_browser.c:208
 msgid "Maker: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:228 ags/X/ags_ladspa_browser.c:219
+#: ags/X/ags_dssi_browser.c:227 ags/X/ags_ladspa_browser.c:218
 msgid "Copyright: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:237 ags/X/ags_ladspa_browser.c:228
+#: ags/X/ags_dssi_browser.c:236 ags/X/ags_ladspa_browser.c:227
 msgid "Ports: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:166
-#: ags/X/ags_dssi_browser_callbacks.c:243
-#: ags/X/ags_ladspa_browser_callbacks.c:166
-#: ags/X/ags_ladspa_browser_callbacks.c:243
+#: ags/X/ags_dssi_browser_callbacks.c:165
+#: ags/X/ags_dssi_browser_callbacks.c:242
+#: ags/X/ags_ladspa_browser_callbacks.c:165
+#: ags/X/ags_ladspa_browser_callbacks.c:242
 msgid "Label"
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:175
-#: ags/X/ags_dssi_browser_callbacks.c:250
-#: ags/X/ags_ladspa_browser_callbacks.c:175
-#: ags/X/ags_ladspa_browser_callbacks.c:250
+#: ags/X/ags_dssi_browser_callbacks.c:174
+#: ags/X/ags_dssi_browser_callbacks.c:249
+#: ags/X/ags_ladspa_browser_callbacks.c:174
+#: ags/X/ags_ladspa_browser_callbacks.c:249
 msgid "Maker"
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:184
-#: ags/X/ags_dssi_browser_callbacks.c:257
-#: ags/X/ags_ladspa_browser_callbacks.c:184
-#: ags/X/ags_ladspa_browser_callbacks.c:257
+#: ags/X/ags_dssi_browser_callbacks.c:183
+#: ags/X/ags_dssi_browser_callbacks.c:256
+#: ags/X/ags_ladspa_browser_callbacks.c:183
+#: ags/X/ags_ladspa_browser_callbacks.c:256
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:546 ags/X/ags_line.c:579
+#: ags/X/ags_effect_line.c:545 ags/X/ags_line.c:578
 msgid "group"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:959 ags/X/ags_effect_line.c:965
-#: ags/X/ags_line.c:1031 ags/X/ags_line.c:1037 ags/X/ags_notation_editor.c:303
+#: ags/X/ags_effect_line.c:958 ags/X/ags_effect_line.c:964
+#: ags/X/ags_line.c:1030 ags/X/ags_line.c:1036 ags/X/ags_notation_editor.c:303
 msgid "channel"
 msgstr ""
 
@@ -214,7 +214,7 @@ msgid "backend"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:218 ags/X/ags_input_collection_editor.c:248
-#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:208
+#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:213
 msgid "soundcard"
 msgstr ""
 
@@ -309,23 +309,23 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:201 ags/X/ags_lv2_browser_callbacks.c:194
-#: ags/X/ags_lv2_browser_callbacks.c:321
+#: ags/X/ags_lv2_browser.c:200 ags/X/ags_lv2_browser_callbacks.c:193
+#: ags/X/ags_lv2_browser_callbacks.c:320
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:214 ags/X/ags_lv2_browser_callbacks.c:204
-#: ags/X/ags_lv2_browser_callbacks.c:330
+#: ags/X/ags_lv2_browser.c:213 ags/X/ags_lv2_browser_callbacks.c:203
+#: ags/X/ags_lv2_browser_callbacks.c:329
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:227 ags/X/ags_lv2_browser_callbacks.c:214
-#: ags/X/ags_lv2_browser_callbacks.c:339
+#: ags/X/ags_lv2_browser.c:226 ags/X/ags_lv2_browser_callbacks.c:213
+#: ags/X/ags_lv2_browser_callbacks.c:338
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:240 ags/X/ags_lv2_browser_callbacks.c:225
-#: ags/X/ags_lv2_browser_callbacks.c:348
+#: ags/X/ags_lv2_browser.c:239 ags/X/ags_lv2_browser_callbacks.c:224
+#: ags/X/ags_lv2_browser_callbacks.c:347
 msgid "Ports"
 msgstr ""
 
@@ -539,27 +539,27 @@ msgstr ""
 msgid "Plugin type:"
 msgstr ""
 
-#: ags/X/ags_preferences.c:159
+#: ags/X/ags_preferences.c:158
 msgid "preferences"
 msgstr ""
 
-#: ags/X/ags_preferences.c:173
+#: ags/X/ags_preferences.c:172
 msgid "generic"
 msgstr ""
 
-#: ags/X/ags_preferences.c:183
+#: ags/X/ags_preferences.c:182
 msgid "midi"
 msgstr ""
 
-#: ags/X/ags_preferences.c:188
+#: ags/X/ags_preferences.c:187
 msgid "performance"
 msgstr ""
 
-#: ags/X/ags_preferences.c:197
+#: ags/X/ags_preferences.c:196
 msgid "OSC server"
 msgstr ""
 
-#: ags/X/ags_preferences.c:208
+#: ags/X/ags_preferences.c:207
 msgid "server"
 msgstr ""
 
@@ -569,7 +569,7 @@ msgstr ""
 msgid "enabled"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:157 ags/X/ags_soundcard_editor.c:288
+#: ags/X/ags_resize_editor.c:157 ags/X/ags_soundcard_editor.c:293
 msgid "audio channels"
 msgstr ""
 
@@ -601,27 +601,27 @@ msgstr ""
 msgid "password"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:254
+#: ags/X/ags_soundcard_editor.c:259
 msgid "capability"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:310
+#: ags/X/ags_soundcard_editor.c:315
 msgid "samplerate"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:331
+#: ags/X/ags_soundcard_editor.c:336
 msgid "buffer size"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:353
+#: ags/X/ags_soundcard_editor.c:358
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:386
+#: ags/X/ags_soundcard_editor.c:391
 msgid "use cache"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:398
+#: ags/X/ags_soundcard_editor.c:403
 msgid "cache buffer size"
 msgstr ""
 
@@ -630,29 +630,29 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2201
-#: ags/audio/ags_audio_application_context.c:1744
-#: ags/audio/task/ags_apply_sound_config.c:895
+#: ags/X/ags_xorg_application_context.c:2249
+#: ags/audio/ags_audio_application_context.c:1784
+#: ags/audio/task/ags_apply_sound_config.c:906
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2211
-#: ags/audio/ags_audio_application_context.c:1754
-#: ags/audio/task/ags_apply_sound_config.c:905
+#: ags/X/ags_xorg_application_context.c:2259
+#: ags/audio/ags_audio_application_context.c:1794
+#: ags/audio/task/ags_apply_sound_config.c:916
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2459
-#: ags/audio/ags_audio_application_context.c:2001
-#: ags/audio/task/ags_apply_sound_config.c:1149
+#: ags/X/ags_xorg_application_context.c:2507
+#: ags/audio/ags_audio_application_context.c:2041
+#: ags/audio/task/ags_apply_sound_config.c:1160
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2469
-#: ags/audio/ags_audio_application_context.c:2011
-#: ags/audio/task/ags_apply_sound_config.c:1159
+#: ags/X/ags_xorg_application_context.c:2517
+#: ags/audio/ags_audio_application_context.c:2051
+#: ags/audio/task/ags_apply_sound_config.c:1170
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -1109,7 +1109,7 @@ msgstr ""
 msgid "channel: "
 msgstr ""
 
-#: ags/X/machine/ags_dssi_bridge.c:334 ags/X/machine/ags_live_dssi_bridge.c:337
+#: ags/X/machine/ags_dssi_bridge.c:339 ags/X/machine/ags_live_dssi_bridge.c:342
 #: ags/X/machine/ags_live_lv2_bridge.c:1723 ags/X/machine/ags_lv2_bridge.c:2011
 msgid "program"
 msgstr ""
@@ -1272,11 +1272,11 @@ msgstr ""
 msgid "The assigned server"
 msgstr ""
 
-#: ags/server/ags_server.c:172
+#: ags/server/ags_server.c:174
 msgid "application context object"
 msgstr ""
 
-#: ags/server/ags_server.c:173
+#: ags/server/ags_server.c:175
 msgid "The application context object"
 msgstr ""
 

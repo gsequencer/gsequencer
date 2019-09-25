@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 
+#include <sys/types.h>
 #include <regex.h>
 
 #include <ags/i18n.h>

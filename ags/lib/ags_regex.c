@@ -19,13 +19,12 @@
 
 #include <ags/lib/ags_regex.h>
 
-#if defined __APPLE__ || AGS_W32API
-#include <stdlib.h>
-#endif
-
 #define _GNU_SOURCE
 #include <locale.h>
 #include <pthread.h>
+
+#include <sys/types.h>
+#include <regex.h>
 
 #include <ags/config.h>
 

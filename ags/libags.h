@@ -20,8 +20,6 @@
 #ifndef __LIBAGS_H__
 #define __LIBAGS_H__
 
-#include <ags/config.h>
-
 #include <ags/util/ags_destroy_util.h>
 #include <ags/util/ags_list_util.h>
 #include <ags/util/ags_id_generator.h>

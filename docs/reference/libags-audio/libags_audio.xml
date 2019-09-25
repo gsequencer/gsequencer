@@ -128,14 +128,17 @@
     <chapter id="audio-io">
       <title>Audio sinks and sources</title>
       <para>
-	Here are objects listed to interact your sound devices using ALSA, JACK,
-	Pulseaudio or CoreAudio.
+	Here are objects listed to interact your sound devices using ALSA, WASAPI,
+	JACK, Pulseaudio or CoreAudio.
       </para>
 
       <xi:include href="xml/ags_devout.xml"/>
       <xi:include href="xml/ags_devin.xml"/>
       <xi:include href="xml/ags_midiin.xml"/>
       <xi:include href="xml/ags_fifoout.xml"/>
+
+      <xi:include href="xml/ags_wasapi_devout.xml"/>
+      <xi:include href="xml/ags_wasapi_devin.xml"/>
 
       <xi:include href="xml/ags_jack_server.xml"/>
       <xi:include href="xml/ags_jack_client.xml"/>

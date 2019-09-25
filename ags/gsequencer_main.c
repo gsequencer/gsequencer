@@ -17,8 +17,6 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
-
 #include <glib.h>
 #include <glib-object.h>
 
@@ -53,6 +51,7 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include "config.h"
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
