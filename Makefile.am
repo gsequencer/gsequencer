@@ -68,6 +68,7 @@ EXTRA_DIST = config.rpath \
 	gsequencer.share \
 	acsite.m4 \
 	aclocal.m4 \
+	m4/gnulib-cache.m4 \
 	gsequencer.1 \
 	README \
 	ags_example.xml \

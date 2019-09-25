@@ -1969,13 +1969,17 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     unsigned char bit_resolution;
 
     g_message("WASAPI initialize");
-
-    ags_soundcard_list_cards(soundcard,
-			     NULL, NULL);
     
     CoInitialize(0);
 
     if(CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, (void **) &dev_enumerator)){
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_WASAPI_DEVOUT_ERROR,
+		    AGS_WASAPI_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: Can't get IMMDeviceEnumerator.");
+      }
+
       CoUninitialize();
 
       pthread_mutex_unlock(wasapi_devout_mutex);
@@ -1998,6 +2002,13 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 				    NULL);
     
       if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
+	if(error != NULL){
+	  g_set_error(error,
+		      AGS_WASAPI_DEVOUT_ERROR,
+		      AGS_WASAPI_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		      "unable to open pcm device: Can't get IAudioClient.");
+	}
+	
 	dev_enumerator->lpVtbl->Release(dev_enumerator);
 	CoUninitialize();
 
@@ -2013,6 +2024,13 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 #endif
     
       if(dev_enumerator->lpVtbl->GetDefaultAudioEndpoint(dev_enumerator, eRender, eMultimedia, &mm_device)){
+	if(error != NULL){
+	  g_set_error(error,
+		      AGS_WASAPI_DEVOUT_ERROR,
+		      AGS_WASAPI_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		      "unable to open pcm device: Can't get IAudioClient.");
+	}
+
 	dev_enumerator->lpVtbl->Release(dev_enumerator);
 	CoUninitialize();
 
@@ -2033,6 +2051,13 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
     // Get its IAudioClient (used to set audio format, latency, and start/stop)
     if(mm_device->lpVtbl->Activate(mm_device, &ags_wasapi_iid_audio_client_guid, CLSCTX_ALL, 0, (void **) &audio_client)){
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_WASAPI_DEVOUT_ERROR,
+		    AGS_WASAPI_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: Can't get IAudioClient.");
+      }
+
       mm_device->lpVtbl->Release(mm_device);
       dev_enumerator->lpVtbl->Release(dev_enumerator);
       CoUninitialize();
@@ -2048,160 +2073,156 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
     wasapi_devout->audio_client = audio_client;
 
-#if 1
-    wave_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-    wave_format.Format.nSamplesPerSec = wasapi_devout->samplerate; // necessary
-    wave_format.Format.nChannels = wasapi_devout->pcm_channels; // presumed
+    if((AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE & (wasapi_devout->flags)) != 0){
+      wave_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+      wave_format.Format.nSamplesPerSec = wasapi_devout->samplerate; // necessary
+      wave_format.Format.nChannels = wasapi_devout->pcm_channels; // presumed
 
-    bit_resolution = 16;
+      bit_resolution = 16;
   
-    switch(wasapi_devout->format){
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      switch(wasapi_devout->format){
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	bit_resolution = 16;
       }
       break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	bit_resolution = 24;
       }
       break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	bit_resolution = 32;
       }
       break;
-    }  
+      }  
 
-    if(bit_resolution == 24){
-      wave_format.Format.wBitsPerSample = 32;
-      wave_format.Format.nBlockAlign = 2 * (32 / 8);
-      wave_format.Samples.wValidBitsPerSample = 24;
+      if(bit_resolution == 24){
+	wave_format.Format.wBitsPerSample = 32;
+	wave_format.Format.nBlockAlign = 2 * (32 / 8);
+	wave_format.Samples.wValidBitsPerSample = 24;
+      }else{
+	wave_format.Format.wBitsPerSample =
+	  wave_format.Samples.wValidBitsPerSample = bit_resolution;
+	wave_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
+      }
+    
+      wave_format.Format.nBlockAlign = wave_format.Format.nChannels * wave_format.Format.wBitsPerSample / 8;
+      wave_format.Format.nAvgBytesPerSec = wave_format.Format.nSamplesPerSec * wave_format.Format.nBlockAlign;
+      wave_format.Format.cbSize = 22;
+      wave_format.dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT;
+      wave_format.SubFormat = ags_wasapi_pcm_subformat_guid;
+
+      if((hr = audio_client->lpVtbl->GetMixFormat(audio_client, &internal_format))){
+	g_message("get mix format");
+      }
+      
+      desired_format = &(wave_format.Format);
+
+      desired_format->wFormatTag = 0xFFFE;
+      desired_format->cbSize = 22;
+  
+      if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, desired_format, NULL))){
+      ags_wasapi_devout_client_init_EXCLUSIVE_BROKEN_CONFIGURATION:
+
+	mm_device->lpVtbl->Release(mm_device);
+	dev_enumerator->lpVtbl->Release(dev_enumerator);
+	CoUninitialize();
+
+	wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_START_PLAY);
+      
+	pthread_mutex_unlock(wasapi_devout_mutex);
+
+	g_message("WASAPI failed - broken configuration");
+    
+	return;
+      }
+  
+      audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
+
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
+	audio_client->lpVtbl->Release(audio_client);
+
+	goto ags_wasapi_devout_client_init_EXCLUSIVE_BROKEN_CONFIGURATION;
+      }
     }else{
-      wave_format.Format.wBitsPerSample =
-	wave_format.Samples.wValidBitsPerSample = bit_resolution;
-      wave_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
-    }
-    
-    wave_format.Format.nBlockAlign = wave_format.Format.nChannels * wave_format.Format.wBitsPerSample / 8;
-    wave_format.Format.nAvgBytesPerSec = wave_format.Format.nSamplesPerSec * wave_format.Format.nBlockAlign;
-    wave_format.Format.cbSize = 22;
-    wave_format.dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT;
-    wave_format.SubFormat = ags_wasapi_pcm_subformat_guid;
+      wave_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+      wave_format.Format.nSamplesPerSec = wasapi_devout->samplerate; // necessary
+      wave_format.Format.nChannels = wasapi_devout->pcm_channels; // presumed
 
-    if((hr = audio_client->lpVtbl->GetMixFormat(audio_client, &internal_format))){
-      g_message("get mix format");
-    }
-      
-    desired_format = &(wave_format.Format);
-
-    desired_format->wFormatTag = 0xFFFE;
-    desired_format->cbSize = 22;
+      bit_resolution = 16;
   
-    if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, desired_format, NULL))){
-    ags_wasapi_devout_client_init_BROKEN_CONFIGURATION:
-
-      mm_device->lpVtbl->Release(mm_device);
-      dev_enumerator->lpVtbl->Release(dev_enumerator);
-      CoUninitialize();
-
-      wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_START_PLAY);
-      
-      pthread_mutex_unlock(wasapi_devout_mutex);
-
-      g_message("WASAPI failed - broken configuration");
-    
-      return;
-    }
-  
-    audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
-
-    if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
-      audio_client->lpVtbl->Release(audio_client);
-
-      goto ags_wasapi_devout_client_init_BROKEN_CONFIGURATION;
-    }
-#else
-    wave_format.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-    wave_format.Format.nSamplesPerSec = wasapi_devout->samplerate; // necessary
-    wave_format.Format.nChannels = wasapi_devout->pcm_channels; // presumed
-
-    bit_resolution = 16;
-  
-    switch(wasapi_devout->format){
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      switch(wasapi_devout->format){
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	bit_resolution = 16;
       }
       break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	bit_resolution = 24;
       }
       break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	bit_resolution = 32;
       }
       break;
-    }  
+      }  
 
-    if(bit_resolution == 24){
-      wave_format.Format.wBitsPerSample = 32;
-      wave_format.Format.nBlockAlign = 2 * (32 / 8);
-      wave_format.Samples.wValidBitsPerSample = 24;
-    }else{
-      wave_format.Format.wBitsPerSample =
-	wave_format.Samples.wValidBitsPerSample = bit_resolution;
-      wave_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
-    }
+      if(bit_resolution == 24){
+	wave_format.Format.wBitsPerSample = 32;
+	wave_format.Format.nBlockAlign = 2 * (32 / 8);
+	wave_format.Samples.wValidBitsPerSample = 24;
+      }else{
+	wave_format.Format.wBitsPerSample =
+	  wave_format.Samples.wValidBitsPerSample = bit_resolution;
+	wave_format.Format.nBlockAlign = 2 * (bit_resolution / 8);
+      }
     
-    wave_format.Format.nBlockAlign = wave_format.Format.nChannels * wave_format.Format.wBitsPerSample / 8;
-    wave_format.Format.nAvgBytesPerSec = wave_format.Format.nSamplesPerSec * wave_format.Format.nBlockAlign;
-    wave_format.Format.cbSize = 22;
-    wave_format.dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT;
-    wave_format.SubFormat = ags_wasapi_pcm_subformat_guid;
+      wave_format.Format.nBlockAlign = wave_format.Format.nChannels * wave_format.Format.wBitsPerSample / 8;
+      wave_format.Format.nAvgBytesPerSec = wave_format.Format.nSamplesPerSec * wave_format.Format.nBlockAlign;
+      wave_format.Format.cbSize = 22;
+      wave_format.dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT;
+      wave_format.SubFormat = ags_wasapi_pcm_subformat_guid;
 
-    if((hr = audio_client->lpVtbl->GetMixFormat(audio_client, &internal_format))){
-      g_message("get mix format");
+      if((hr = audio_client->lpVtbl->GetMixFormat(audio_client, &internal_format))){
+	g_message("get mix format");
 
-    ags_wasapi_devout_client_init_BROKEN_CONFIGURATION:
+      ags_wasapi_devout_client_init_SHARED_BROKEN_CONFIGURATION:
 
-      mm_device->lpVtbl->Release(mm_device);
-      dev_enumerator->lpVtbl->Release(dev_enumerator);
-      CoUninitialize();
+	mm_device->lpVtbl->Release(mm_device);
+	dev_enumerator->lpVtbl->Release(dev_enumerator);
+	CoUninitialize();
 
-      wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_START_PLAY);
+	wasapi_devout->flags &= (~AGS_WASAPI_DEVOUT_START_PLAY);
       
-      pthread_mutex_unlock(wasapi_devout_mutex);
+	pthread_mutex_unlock(wasapi_devout_mutex);
 
-      g_message("WASAPI failed - broken configuration");
+	g_message("WASAPI failed - broken configuration");
     
-      return;
-    }
+	return;
+      }
 
-    desired_format = internal_format;
+      desired_format = internal_format;
 
-    if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_SHARED, desired_format, &desired_format))){
-      g_message("debug 0");
-      
-      goto ags_wasapi_devout_client_init_BROKEN_CONFIGURATION;
-    }
+      if((hr = audio_client->lpVtbl->IsFormatSupported(audio_client, AUDCLNT_SHAREMODE_SHARED, desired_format, &desired_format))){
+	goto ags_wasapi_devout_client_init_SHARED_BROKEN_CONFIGURATION;
+      }
 
-    desired_format = internal_format;
+      desired_format = internal_format;
     
-    audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
+      audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-    min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
     
-    if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, min_duration, desired_format, NULL))){
-      g_message("debug 1");
-      
-      audio_client->lpVtbl->Release(audio_client);
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, min_duration, desired_format, NULL))){
+	audio_client->lpVtbl->Release(audio_client);
 
-      goto ags_wasapi_devout_client_init_BROKEN_CONFIGURATION;
+	goto ags_wasapi_devout_client_init_SHARED_BROKEN_CONFIGURATION;
+      }
     }
-#endif
     
     // Start audio playback
     audio_client->lpVtbl->Start(audio_client);
@@ -2358,9 +2379,6 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
     /* retrieve word size */
     if(data != NULL){
-      ags_soundcard_lock_buffer(soundcard,
-				wasapi_devout->buffer[nth_buffer]);
-    
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
@@ -2387,9 +2405,6 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 	}
 	break;
       }
-    
-      ags_soundcard_unlock_buffer(soundcard,
-				  wasapi_devout->buffer[nth_buffer]);
     }else{
       g_message("data = NULL");
     }
@@ -2437,7 +2452,6 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
     CoUninitialize();    
 #endif
-
     application_context = ags_application_context_get_instance();
     
     /* get main loop */
@@ -2815,10 +2829,6 @@ ags_wasapi_devout_get_buffer(AgsSoundcard *soundcard)
   /* get wasapi devout mutex */
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
 
-  pthread_mutex_lock(wasapi_devout_mutex);
-
-  buffer = wasapi_devout->buffer[0];
-
   if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER0)){
     buffer = wasapi_devout->buffer[0];
   }else if(ags_wasapi_devout_test_flags(wasapi_devout, AGS_WASAPI_DEVOUT_BUFFER1)){
@@ -2839,8 +2849,6 @@ ags_wasapi_devout_get_buffer(AgsSoundcard *soundcard)
     buffer = NULL;
   }
   
-  pthread_mutex_unlock(wasapi_devout_mutex);
-
   return(buffer);
 }
 

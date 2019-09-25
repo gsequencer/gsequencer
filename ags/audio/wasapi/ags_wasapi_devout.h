@@ -96,6 +96,8 @@ typedef enum{
 
 	     AGS_WASAPI_DEVOUT_NONBLOCKING                    = 1 << 14,
 	     AGS_WASAPI_DEVOUT_INITIALIZED                    = 1 << 15,
+
+	     AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE           = 1 << 16,
 }AgsWasapiDevoutFlags;
 
 #define AGS_WASAPI_DEVOUT_ERROR (ags_wasapi_devout_error_quark())

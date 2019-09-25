@@ -96,6 +96,8 @@ typedef enum{
 
 	     AGS_WASAPI_DEVIN_NONBLOCKING                    = 1 << 14,
 	     AGS_WASAPI_DEVIN_INITIALIZED                    = 1 << 15,
+
+	     AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE           = 1 << 16,
 }AgsWasapiDevinFlags;
 
 #define AGS_WASAPI_DEVIN_ERROR (ags_wasapi_devin_error_quark())

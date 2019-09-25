@@ -580,9 +580,22 @@ ags_soundcard_thread_stop(AgsThread *thread)
     if((AGS_WASAPI_DEVIN_SHUTDOWN & (AGS_WASAPI_DEVIN(soundcard)->flags)) == 0){
       ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
     }else{
-      AGS_WASAPI_DEVIN(soundcard)->flags &= (~AGS_WASAPI_DEVIN_SHUTDOWN);
+      /* reset flags */
+      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_BUFFER0 |
+					       AGS_WASAPI_DEVIN_BUFFER1 |
+					       AGS_WASAPI_DEVIN_BUFFER2 |
+					       AGS_WASAPI_DEVIN_BUFFER3 |
+					       AGS_WASAPI_DEVIN_BUFFER4 |
+					       AGS_WASAPI_DEVIN_BUFFER5 |
+					       AGS_WASAPI_DEVIN_BUFFER6 |
+					       AGS_WASAPI_DEVIN_BUFFER7 |
+					       AGS_WASAPI_DEVIN_RECORD |
+					       AGS_WASAPI_DEVIN_INITIALIZED |
+					       AGS_WASAPI_DEVIN_SHUTDOWN));
       
       AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
+
+      g_message("WASAPI thread stopped");
     }
   }else{
     AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
