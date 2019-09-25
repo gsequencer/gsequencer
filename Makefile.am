@@ -2395,40 +2395,40 @@ html:
 	cd $(top_srcdir)
 
 install-data-local:
-	mkdir -p $(includedir)/ags
-	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(includedir)/ags/config.h
-	mkdir -p $(datadir)/doc-base
-	mkdir -p $(datadir)/gsequencer/icons
-	mkdir -p $(datadir)/icons/hicolor/32x32/apps
-	mkdir -p $(datadir)/icons/hicolor/48x48/apps
-	mkdir -p $(datadir)/icons/hicolor/64x64/apps
-	mkdir -p $(datadir)/icons/hicolor/128x128/apps
-	mkdir -p $(datadir)/gsequencer/images
-	mkdir -p $(datadir)/gsequencer/styles
-	mkdir -p $(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
-	mkdir -p $(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
-	mkdir -p $(datadir)/mime/packages
-	mkdir -p $(datadir)/metainfo
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(datadir)/gsequencer/icons/ags.xpm
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(datadir)/gsequencer/icons/jumper.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(datadir)/gsequencer/icons/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(datadir)/gsequencer/images/ags.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(datadir)/gsequencer/images/ags_supermoon-800x450.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(datadir)/gsequencer/styles/ags.rc
-	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	install -c -p -m 644 $(top_srcdir)/ags.xsl $(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(datadir)/mime/packages/gsequencer.xml
-	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(datadir)/metainfo/
-	mkdir -p $(docdir)/
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(docdir)/changelog.gz
+	mkdir -p $(DESTDIR)/$(includedir)/ags
+	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
+	mkdir -p $(DESTDIR)/$(datadir)/doc-base
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
+	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps
+	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps
+	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps
+	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
+	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)
+	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml
+	mkdir -p $(DESTDIR)/$(datadir)/mime/packages
+	mkdir -p $(DESTDIR)/$(datadir)/metainfo
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)/$(datadir)/gsequencer/icons/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-32x32.png $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-48x48.png $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-64x64.png $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
+	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
+	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
+	mkdir -p $(DESTDIR)/$(docdir)/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
 fix-local-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
@@ -2463,53 +2463,53 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html: fix-local-html 
-	mkdir -p $(docdir)/images
-	mkdir -p $(docdir)/html
-	mkdir -p $(datadir)/doc/libags-audio-doc/images
-	mkdir -p $(datadir)/doc/libags-audio-doc/html
-	mkdir -p $(datadir)/doc/libags-audio-doc/osc-server
-	install -c -p -m 644 $(userdocimages) $(docdir)/images/
-	install -c -p -m 644 $(devdocimages) $(datadir)/doc/libags-audio-doc/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(docdir)/html/
-	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(datadir)/doc/libags-audio-doc/html/
-	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(datadir)/doc/libags-audio-doc/osc-server/
-	mkdir -p $(datadir)/gtk-doc/html
-	mkdir -p $(datadir)/doc/libags-doc/api
-	mkdir -p $(datadir)/doc/libags-audio-doc/api
-	mkdir -p $(datadir)/doc/libags-gui-doc/api
-	mkdir -p $(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../../gtk-doc/html/libags $(datadir)/doc/libags-doc/api
-	ln -s ../../../gtk-doc/html/libags_audio $(datadir)/doc/libags-audio-doc/api
-	ln -s ../../../gtk-doc/html/libags_gui $(datadir)/doc/libags-gui-doc/api
-	ln -s ../../../gtk-doc/html/libgsequencer $(datadir)/doc/libgsequencer-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(datadir)/doc/libags-gui-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(datadir)/doc/libgsequencer-doc/api
+	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/html
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
-	rm -rf $(includedir)/ags/config.h
-	rm -rf $(datadir)/gsequencer
-	rm -rf $(docdir)
-	rm -rf $(datadir)/xml/gsequencer
-	rm -rf $(datadir)/doc/libags-doc
-	rm -rf $(datadir)/doc/libags-audio-doc
-	rm -rf $(datadir)/doc/libags-gui-doc
-	rm -rf $(datadir)/doc/libgsequencer-doc
-	rm -rf $(datadir)/gtk-doc/html/libags
-	rm -rf $(datadir)/gtk-doc/html/libags_audio
-	rm -rf $(datadir)/gtk-doc/html/libags_gui
-	rm -rf $(datadir)/gtk-doc/html/libgsequencer
-	rm -f $(datadir)/icons/hicolor/32x32/apps/gsequencer.png
-	rm -f $(datadir)/icons/hicolor/48x48/apps/gsequencer.png
-	rm -f $(datadir)/icons/hicolor/64x64/apps/gsequencer.png
-	rm -f $(datadir)/icons/hicolor/128x128/apps/gsequencer.png
-	rm -f $(datadir)/mime/packages/gsequencer.xml
-	rm -f $(datadir)/metainfo/org.nongnu.gsequencer.gsequencer.appdata.xml
-	rm -f $(pkgconfigdir)/libags.pc
-	rm -f $(pkgconfigdir)/libags_audio.pc
-	rm -f $(pkgconfigdir)/libags_gui.pc
-	rm -f $(pkgconfigdir)/libgsequencer.pc
+	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
+	rm -rf $(DESTDIR)/$(datadir)/gsequencer
+	rm -rf $(DESTDIR)/$(docdir)
+	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-doc
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
+	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
+	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps/gsequencer.png
+	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
+	rm -f $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
+	rm -f $(DESTDIR)/$(datadir)/metainfo/org.nongnu.gsequencer.gsequencer.appdata.xml
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
 	rm -rf $(top_srcdir)/html
