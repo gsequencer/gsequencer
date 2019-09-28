@@ -8,9 +8,9 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
-# if WITH_GNULIB
-# SUBDIRS += lib
-# endif
+if WITH_GNULIB
+SUBDIRS += lib
+endif
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h

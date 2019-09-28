@@ -583,7 +583,7 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   pthread_mutexattr_t *attr;
 
   /* flags */
-  wasapi_devout->flags = 0;
+  wasapi_devout->flags = AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE;
 
   /* devout mutex */
   wasapi_devout->obj_mutexattr = 
@@ -2143,7 +2143,9 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
+
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, 16 * min_duration, 16 * min_duration, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
 
 	goto ags_wasapi_devout_client_init_EXCLUSIVE_BROKEN_CONFIGURATION;
@@ -2219,7 +2221,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
       min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
     
-      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, min_duration, desired_format, NULL))){
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
 
 	goto ags_wasapi_devout_client_init_SHARED_BROKEN_CONFIGURATION;
@@ -2323,7 +2325,8 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
       audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       
-      while(padding_frames > 0){
+      while(buffer_frame_count - padding_frames < wasapi_devout->pcm_channels * wasapi_devout->buffer_size &&
+	    padding_frames != 0){
 	usleep(4);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
@@ -2381,6 +2384,9 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
     /* retrieve word size */
     if(data != NULL){
+      ags_soundcard_lock_buffer(soundcard,
+				wasapi_devout->buffer[nth_buffer]);
+      
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
@@ -2407,6 +2413,9 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 	}
 	break;
       }
+      
+      ags_soundcard_unlock_buffer(soundcard,
+				  wasapi_devout->buffer[nth_buffer]);
     }else{
       g_message("data = NULL");
     }

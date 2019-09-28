@@ -324,7 +324,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::timelock:
    * @thread: the #AgsThread
    *
-   * The ::timelock() signal is invoked as standard compution
+   * The ::timelock() signal is invoked as standard computation
    * time exceeded.
    * 
    * Since: 2.0.0

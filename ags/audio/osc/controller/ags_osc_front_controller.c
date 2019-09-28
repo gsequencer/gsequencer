@@ -153,7 +153,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    * AgsOscFrontController::start-delegate:
    * @osc_front_controller: the #AgsOscFrontController
    *
-   * The ::start-delegate signal is emited during start of delegateing front.
+   * The ::start-delegate signal is emited during start of delegating front.
    *
    * Since: 2.1.0
    */
@@ -170,7 +170,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    * AgsOscFrontController::stop-delegate:
    * @osc_front_controller: the #AgsOscFrontController
    *
-   * The ::stop-delegate signal is emited during stop of delegateing front.
+   * The ::stop-delegate signal is emited during stop of delegating front.
    *
    * Since: 2.1.0
    */
@@ -798,7 +798,7 @@ ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message)
  * @osc_front_controller: the #AgsOscFrontController
  * @message: the #AgsOscFrontControllerMessage-struct
  * 
- * Add @message to @osc_front_contrller.
+ * Add @message to @osc_front_controller.
  * 
  * Since: 2.1.0
  */
@@ -833,7 +833,7 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
  * @osc_front_controller: the #AgsOscFrontController
  * @message: the #AgsOscFrontControllerMessage-struct
  * 
- * Remove @message from @osc_front_contrller.
+ * Remove @message from @osc_front_controller.
  * 
  * Since: 2.1.0
  */
@@ -892,7 +892,7 @@ ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_co
  * ags_osc_front_controller_start_delegate:
  * @osc_front_controller: the #AgsOscFrontController
  * 
- * Start delegateing.
+ * Start delegating.
  * 
  * Since: 2.1.0
  */
@@ -928,7 +928,7 @@ ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_con
  * ags_osc_front_controller_stop_delegate:
  * @osc_front_controller: the #AgsOscFrontController
  * 
- * Stop delegateing.
+ * Stop delegating.
  * 
  * Since: 2.1.0
  */

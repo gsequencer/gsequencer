@@ -556,7 +556,7 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   pthread_mutexattr_t *attr;
 
   /* flags */
-  wasapi_devin->flags = 0;
+  wasapi_devin->flags = AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE;
 
   /* devin mutex */
   wasapi_devin->obj_mutexattr = 
@@ -1950,10 +1950,18 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
       min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->buffer_size;
     
-      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, min_duration, desired_format, NULL))){
-	audio_client->lpVtbl->Release(audio_client);
+      if((AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE & (wasapi_devin->flags)) != 0){
+	if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
+	  audio_client->lpVtbl->Release(audio_client);
 
-	goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
+	  goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
+	}
+      }else{
+	if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
+	  audio_client->lpVtbl->Release(audio_client);
+
+	  goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
+	}
       }
     }
 
@@ -2059,7 +2067,8 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
       audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       
-      while(padding_frames > 0){
+      while(buffer_frame_count - padding_frames < wasapi_devin->buffer_size &&
+	    padding_frames != 0){
 	usleep(4);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
