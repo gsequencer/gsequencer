@@ -583,7 +583,7 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   pthread_mutexattr_t *attr;
 
   /* flags */
-  wasapi_devout->flags = AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE;
+  wasapi_devout->flags = 0;
 
   /* devout mutex */
   wasapi_devout->obj_mutexattr = 
@@ -614,6 +614,45 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   wasapi_devout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   wasapi_devout->format = ags_soundcard_helper_config_get_format(config);
 
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "wasapi-buffer-size");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "wasapi-buffer-size");
+  }
+
+  if(str != NULL){
+    wasapi_devout->wasapi_buffer_size = g_ascii_strtoull(str,
+							 NULL,
+							 10);
+  }else{
+    wasapi_devout->wasapi_buffer_size = AGS_WASAPI_DEVOUT_DEFAULT_WASAPI_BUFFER_SIZE;
+  }
+  
+  g_free(str);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "wasapi-share-mode");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "wasapi-share-mode");
+  }
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "exclusive",
+			  10)){
+    wasapi_devout->flags |= AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE;
+  }
+
+  g_free(str);
+  
   /* device */
   wasapi_devout->device = NULL;
 
@@ -2143,9 +2182,9 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->wasapi_buffer_size;
 
-      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, 16 * min_duration, 16 * min_duration, desired_format, NULL))){
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
 
 	goto ags_wasapi_devout_client_init_EXCLUSIVE_BROKEN_CONFIGURATION;
@@ -2219,7 +2258,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->buffer_size;
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devout->samplerate * wasapi_devout->wasapi_buffer_size;
     
       if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);

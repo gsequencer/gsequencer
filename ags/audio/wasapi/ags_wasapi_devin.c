@@ -556,7 +556,7 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   pthread_mutexattr_t *attr;
 
   /* flags */
-  wasapi_devin->flags = AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE;
+  wasapi_devin->flags = 0;
 
   /* devin mutex */
   wasapi_devin->obj_mutexattr = 
@@ -586,6 +586,33 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   wasapi_devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   wasapi_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   wasapi_devin->format = ags_soundcard_helper_config_get_format(config);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "wasapi-buffer-size");
+
+  if(str != NULL){
+    wasapi_devin->wasapi_buffer_size = g_ascii_strtoull(str,
+							NULL,
+							10);
+  }else{
+    wasapi_devin->wasapi_buffer_size = AGS_WASAPI_DEVIN_DEFAULT_WASAPI_BUFFER_SIZE;
+  }
+  
+  g_free(str);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "wasapi-share-mode");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "exclusive",
+			  10)){
+    wasapi_devin->flags |= AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE;
+  }
+
+  g_free(str);
 
   /* device */
   wasapi_devin->device = NULL;
@@ -1874,6 +1901,8 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
+
       if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
 
@@ -1949,19 +1978,13 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
       min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->buffer_size;
+
+      min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
     
-      if((AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE & (wasapi_devin->flags)) != 0){
-	if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
-	  audio_client->lpVtbl->Release(audio_client);
+      if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
+	audio_client->lpVtbl->Release(audio_client);
 
-	  goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
-	}
-      }else{
-	if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
-	  audio_client->lpVtbl->Release(audio_client);
-
-	  goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
-	}
+	goto ags_wasapi_devin_client_init_SHARED_BROKEN_CONFIGURATION;
       }
     }
 

@@ -50,6 +50,8 @@
 
 #define AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsWasapiDevout *) obj)->obj_mutex)
 
+#define AGS_WASAPI_DEVOUT_DEFAULT_WASAPI_BUFFER_SIZE (8192)
+
 typedef struct _AgsWasapiDevout AgsWasapiDevout;
 typedef struct _AgsWasapiDevoutClass AgsWasapiDevoutClass;
 
@@ -141,6 +143,8 @@ struct _AgsWasapiDevout
   guint cache_offset;
   void **cache;
 
+  guint wasapi_buffer_size;
+  
   double bpm; // beats per minute
   gdouble delay_factor;
   

@@ -871,12 +871,72 @@ ags_apply_sound_config_launch(AgsTask *task)
 				    7)){
 	if(is_output){
 	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+										NULL,
+										10);
+	    
+	    g_free(str);
+	  }
 	}else{
 	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devin_set_flags(AGS_WASAPI_DEVIN(soundcard),
+				       AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devin_unset_flags(AGS_WASAPI_DEVIN(soundcard),
+					 AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+									       NULL,
+									       10);
+	    
+	    g_free(str);
+	  }
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
+	gchar *str;
+	
 	if(is_output){
 	  soundcard = (GObject *) ags_devout_new((GObject *) application_context);
 	  

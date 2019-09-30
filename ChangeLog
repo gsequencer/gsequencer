@@ -1,3 +1,9 @@
+ags (2.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented WASAPI configuration options to adjust system buffer size and share mode
+	* improved WASAPI IO
+
 ags (2.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

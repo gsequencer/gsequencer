@@ -50,6 +50,8 @@
 
 #define AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(obj) (((AgsWasapiDevin *) obj)->obj_mutex)
 
+#define AGS_WASAPI_DEVIN_DEFAULT_WASAPI_BUFFER_SIZE (8192)
+
 typedef struct _AgsWasapiDevin AgsWasapiDevin;
 typedef struct _AgsWasapiDevinClass AgsWasapiDevinClass;
 
@@ -128,6 +130,8 @@ struct _AgsWasapiDevin
 
   pthread_mutex_t **buffer_mutex;
   void** buffer;
+
+  guint wasapi_buffer_size;
 
   double bpm; // beats per minute
   gdouble delay_factor;
