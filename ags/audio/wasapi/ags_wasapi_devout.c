@@ -39,6 +39,7 @@
 #include <windows.h>
 #include <ole2.h>
 #include <ksmedia.h>
+#include <wchar.h>
 #endif
 
 #include <ags/config.h>
@@ -2001,7 +2002,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     WAVEFORMATEXTENSIBLE wave_format;
     WAVEFORMATEX *desired_format, *internal_format;
 
-    WCHAR *dev_id;
+    wchar_t dev_id[1024];
 
     REFERENCE_TIME min_duration;
 
@@ -2032,16 +2033,10 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
       return;
     }
 
-#if 0
     if(wasapi_devout->device != NULL){
-      dev_id = g_convert_with_iconv(wasapi_devout->device,
-				    -1,
-				    g_iconv_open("CP1255",
-						 "UTF-8"),
-				    NULL,
-				    NULL,
-				    NULL);
-    
+      memset(dev_id, 0, 1024 * sizeof(WCHAR));
+      swprintf(dev_id, 1024, L"%S", wasapi_devout->device);
+      
       if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
 	if(error != NULL){
 	  g_set_error(error,
@@ -2062,8 +2057,6 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 	return;
       }
     }else{
-#endif
-    
       if(dev_enumerator->lpVtbl->GetDefaultAudioEndpoint(dev_enumerator, eRender, eMultimedia, &mm_device)){
 	if(error != NULL){
 	  g_set_error(error,
@@ -2083,10 +2076,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     
 	return;
       }
-    
-#if 0
     }
-#endif
   
     wasapi_devout->mm_device = mm_device;
   

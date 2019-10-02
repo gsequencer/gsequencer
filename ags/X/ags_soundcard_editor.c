@@ -150,7 +150,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->soundcard = NULL;
   soundcard_editor->soundcard_thread = NULL;
   
-  table = (GtkTable *) gtk_table_new(3, 10,
+  table = (GtkTable *) gtk_table_new(3, 12,
 				     FALSE);
   gtk_box_pack_start(GTK_BOX(soundcard_editor),
 		     GTK_WIDGET(table),
@@ -466,12 +466,12 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
 #if defined(AGS_WITH_WASAPI)
   /* wasapi share mode */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("WASAPI share mode"),
-				    "xalign", 0.0,
-				    NULL);
+  soundcard_editor->wasapi_share_mode_label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+									"label", i18n("WASAPI share mode"),
+									"xalign", 0.0,
+									NULL);
   gtk_table_attach(table,
-		   GTK_WIDGET(label),
+		   GTK_WIDGET(soundcard_editor->wasapi_share_mode_label),
 		   0, 1,
 		   y0, y0 + 1,
 		   GTK_FILL, GTK_FILL,
@@ -494,12 +494,12 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   y0++;
 
   /* wasapi buffer size */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("WASAPI buffer size"),
-				    "xalign", 0.0,
-				    NULL);
+  soundcard_editor->wasapi_buffer_size_label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+									 "label", i18n("WASAPI buffer size"),
+									 "xalign", 0.0,
+									 NULL);
   gtk_table_attach(table,
-		   GTK_WIDGET(label),
+		   GTK_WIDGET(soundcard_editor->wasapi_buffer_size_label),
 		   0, 1,
 		   y0, y0 + 1,
 		   GTK_FILL, GTK_FILL,
@@ -517,7 +517,10 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   y0++;
 #else
+  soundcard_editor->wasapi_share_mode_label = NULL;
   soundcard_editor->wasapi_share_mode = NULL;
+
+  soundcard_editor->wasapi_buffer_size_label = NULL;
   soundcard_editor->wasapi_buffer_size = NULL;
 #endif
   
@@ -1505,6 +1508,10 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   gboolean is_output;
   gboolean initial_soundcard;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
@@ -1740,6 +1747,10 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   
   gboolean use_core_audio, use_pulse, use_jack;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
 
@@ -1934,6 +1945,10 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   
   gboolean initial_soundcard;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   if(soundcard == NULL ||
      AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
      AGS_IS_PULSE_DEVOUT(soundcard) ||
@@ -2087,6 +2102,10 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   GList *machine, *machine_start;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   if(soundcard == NULL ||
      AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
      AGS_IS_PULSE_DEVOUT(soundcard) ||
@@ -2170,6 +2189,10 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
   GList *start_soundcard, *soundcard;
   GList *card_id;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
 
@@ -2236,6 +2259,10 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
   GList *start_sound_server, *sound_server;
   GList *start_soundcard, *soundcard;
   GList *card_id;
+
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
@@ -2304,6 +2331,10 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   GList *start_soundcard, *soundcard;
   GList *card_id;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
 
@@ -2369,6 +2400,10 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 
   GList *list;
   GList *card_id;
+
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
 
   if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
     return;
@@ -2441,6 +2476,10 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   GList *list;
   GList *card_id;
 
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+  
   if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
     return;
   }
@@ -2513,6 +2552,10 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 
   GList *list;
   GList *card_id;
+
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
@@ -2564,6 +2607,38 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   }
 
   g_list_free(list);
+}
+
+void
+ags_soundcard_editor_show_wasapi_control(AgsSoundcardEditor *soundcard_editor)
+{
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
+#if defined(AGS_WITH_WASAPI)
+  gtk_widget_show(soundcard_editor->wasapi_share_mode_label);
+  gtk_widget_show(soundcard_editor->wasapi_share_mode);
+
+  gtk_widget_show(soundcard_editor->wasapi_buffer_size_label);
+  gtk_widget_show(soundcard_editor->wasapi_buffer_size);
+#endif
+}
+
+void
+ags_soundcard_editor_hide_wasapi_control(AgsSoundcardEditor *soundcard_editor)
+{
+  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
+    return;
+  }
+
+#if defined(AGS_WITH_WASAPI)
+  gtk_widget_hide(soundcard_editor->wasapi_share_mode_label);
+  gtk_widget_hide(soundcard_editor->wasapi_share_mode);
+
+  gtk_widget_hide(soundcard_editor->wasapi_buffer_size_label);
+  gtk_widget_hide(soundcard_editor->wasapi_buffer_size);
+#endif
 }
 
 /**

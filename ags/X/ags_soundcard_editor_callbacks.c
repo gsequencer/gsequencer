@@ -43,8 +43,16 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
-			    "core-audio",
+			    "wasapi",
 			    6)){
+      ags_soundcard_editor_show_wasapi_control(soundcard_editor);
+    }else{
+      ags_soundcard_editor_hide_wasapi_control(soundcard_editor);
+    }
+    
+    if(!g_ascii_strncasecmp(str,
+			    "core-audio",
+			    11)){
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
 			       TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
@@ -100,7 +108,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "wasapi",
-				  5)){
+				  6)){      
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
 			       FALSE);
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),

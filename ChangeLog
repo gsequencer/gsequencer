@@ -1,3 +1,8 @@
+ags (2.3.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved hide WASAPI related configuration controls if not needed
+
 ags (2.3.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

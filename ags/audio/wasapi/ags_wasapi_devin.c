@@ -39,6 +39,7 @@
 #include <windows.h>
 #include <ole2.h>
 #include <ksmedia.h>
+#include <wchar.h>
 #endif
 
 #include <ags/config.h>
@@ -1369,11 +1370,14 @@ ags_wasapi_devin_list_cards(AgsSoundcard *soundcard,
   AgsWasapiDevin *wasapi_devin;
 
   AgsApplicationContext *application_context;
-  
+
 #ifdef AGS_WITH_WASAPI
   IMMDeviceEnumerator *dev_enumerator;
-#endif
+  IMMDeviceCollection *dev_collection;
 
+  UINT i, i_stop;
+#endif
+  
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
   application_context = ags_application_context_get_instance();
@@ -1389,63 +1393,60 @@ ags_wasapi_devin_list_cards(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   CoInitialize(0);
 
-  if(!CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, &dev_enumerator)){
-    IMMDeviceCollection *dev_collection;
+  CoCreateInstance(&ags_wasapi_clsid_mm_device_enumerator_guid, 0, CLSCTX_ALL, &ags_wasapi_iid_mm_device_enumerator_guid, &dev_enumerator);
 
-    if(!dev_enumerator->lpVtbl->EnumAudioEndpoints(dev_enumerator, eCapture, DEVICE_STATE_ACTIVE, &dev_collection)){
-      IMMDevice *device;
-      register UINT dev_num;
+  dev_enumerator->lpVtbl->EnumAudioEndpoints(dev_enumerator, eCapture, DEVICE_STATE_ACTIVE, &dev_collection);
 
-      dev_num = 0;
+  dev_collection->lpVtbl->GetCount(dev_collection,
+				   &i_stop);
+  
+  for(i = 0; i < i_stop; i++){
+    IMMDevice *device;
 
-      while(!dev_collection->lpVtbl->Item(dev_collection, dev_num++, &device)){
-	IAudioClient *audio_client;
+    IPropertyStore *prop_store;
 
-	if(!device->lpVtbl->Activate(device, &ags_wasapi_iid_audio_client_guid, CLSCTX_ALL, 0, (void **) &audio_client)){
-	  IPropertyStore *prop_store;
-
-	  if(!device->lpVtbl->OpenPropertyStore(device, STGM_READ, &prop_store)){
-	    PROPVARIANT var_name;
-
-	    PropVariantInit(&var_name);
-
-	    if(!prop_store->lpVtbl->GetValue(prop_store, &ags_wasapi_pkey_device_friendly_name_guid, &var_name)){
-	      WCHAR *dev_id = 0;
-
-	      // Get this device's ID and name
-	      device->lpVtbl->GetId(device, &dev_id);
-	      
-	      *card_id = g_list_prepend(*card_id,
-					g_utf16_to_utf8(dev_id,
-							-1,
-							NULL,
-							NULL,
-							NULL));
-		
-	      *card_name = g_list_prepend(*card_name,
-					  g_utf16_to_utf8(var_name.pwszVal,
-							  -1,
-							  NULL,
-							  NULL,
-							  NULL));
-
-	      PropVariantClear(&var_name);
-	    }
-
-	    prop_store->lpVtbl->Release(prop_store);
-	  }	  
-
-	  audio_client->lpVtbl->Release(audio_client);
-	}
-
-	device->lpVtbl->Release(device);
-      }
+    LPWSTR dev_id = NULL;
+    PROPVARIANT var_name;
+    gchar *str;
     
-      dev_collection->lpVtbl->Release(dev_collection);
+    dev_collection->lpVtbl->Item(dev_collection, i, &device);
+
+    device->lpVtbl->GetId(device, &dev_id);
+
+    device->lpVtbl->OpenPropertyStore(device, STGM_READ, &prop_store);
+
+    PropVariantInit(&var_name);
+
+    prop_store->lpVtbl->GetValue(prop_store, &ags_wasapi_pkey_device_friendly_name_guid, &var_name);
+
+    g_message("%S %S", dev_id, var_name.pwszVal);
+    
+    if(card_id != NULL){
+      str = g_strdup_printf("%S", dev_id);
+
+      *card_id = g_list_prepend(*card_id,
+				str);
     }
 
-    dev_enumerator->lpVtbl->Release(dev_enumerator);
+    if(card_name != NULL){
+      str = g_strdup_printf("%S", var_name.pwszVal);
+	      
+      *card_name = g_list_prepend(*card_name,
+				  str);
+    }
+    
+    CoTaskMemFree(dev_id);
+
+    PropVariantClear(&var_name);
+
+    prop_store->lpVtbl->Release(prop_store);
+
+    device->lpVtbl->Release(device);
   }
+    
+  dev_collection->lpVtbl->Release(dev_collection);
+
+  dev_enumerator->lpVtbl->Release(dev_enumerator);
 
   CoUninitialize();
 #endif
@@ -1732,7 +1733,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     WAVEFORMATEXTENSIBLE wave_format;
     WAVEFORMATEX *desired_format, *internal_format;
 
-    WCHAR *dev_id;
+    wchar_t dev_id[1024];
 
     REFERENCE_TIME min_duration;
 
@@ -1759,13 +1760,9 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
       return;
     }
 
-#if 0
     if(wasapi_devin->device != NULL){
-      dev_id = g_utf8_to_utf16(wasapi_devin->device,
-			       -1,
-			       NULL,
-			       NULL,
-			       NULL);
+      memset(dev_id, 0, 1024 * sizeof(WCHAR));
+      swprintf(dev_id, 1024, L"%S", wasapi_devin->device);
 
       if(dev_enumerator->lpVtbl->GetDevice(dev_enumerator, dev_id, &mm_device)){
 	if(error != NULL){
@@ -1783,8 +1780,6 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 	return;
       }
     }else{
-#endif
-    
       if(dev_enumerator->lpVtbl->GetDefaultAudioEndpoint(dev_enumerator, eCapture, eMultimedia, &mm_device)){
 	if(error != NULL){
 	  g_set_error(error,
@@ -1804,10 +1799,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     
 	return;
       }
-    
-#if 0
     }
-#endif
 
     wasapi_devin->mm_device = mm_device;
   
