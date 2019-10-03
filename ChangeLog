@@ -2,6 +2,7 @@ ags (2.3.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed WASAPI friendly name
+	* fixed don't initialize device if its already playing/recording
 
 ags (2.3.6)
 

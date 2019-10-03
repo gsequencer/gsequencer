@@ -1985,6 +1985,10 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   
   pthread_mutex_t *pulse_port_mutex;
   pthread_mutex_t *pulse_devout_mutex;
+
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 

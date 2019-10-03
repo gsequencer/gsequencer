@@ -1977,6 +1977,10 @@ ags_core_audio_devout_port_init(AgsSoundcard *soundcard,
   pthread_mutex_t *core_audio_port_mutex;
   pthread_mutex_t *core_audio_devout_mutex;
   
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
+
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
 
   /* get core-audio devout mutex */

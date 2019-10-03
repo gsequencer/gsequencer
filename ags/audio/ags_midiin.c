@@ -1511,6 +1511,10 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
 
   pthread_mutex_t *midiin_mutex;
 
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
@@ -1806,6 +1810,10 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   
   pthread_mutex_t *midiin_mutex;
   
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */

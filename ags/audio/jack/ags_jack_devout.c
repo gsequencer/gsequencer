@@ -1968,6 +1968,10 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   guint format, word_size;
   
   pthread_mutex_t *jack_devout_mutex;
+
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   

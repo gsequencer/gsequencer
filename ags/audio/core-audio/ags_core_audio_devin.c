@@ -1685,6 +1685,10 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
   guint format, word_size;
   
   pthread_mutex_t *core_audio_devin_mutex;
+
+  if(ags_soundcard_is_recording(soundcard)){
+    return;
+  }
   
   core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
 

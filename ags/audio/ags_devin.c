@@ -2340,6 +2340,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
 
   pthread_mutex_t *devin_mutex;
 
+  if(ags_soundcard_is_recording(soundcard)){
+    return;
+  }
+
   devin = AGS_DEVIN(soundcard);
 
   /* get devin mutex */
@@ -2976,6 +2980,10 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
  
   static unsigned int period_time = 100000;
   static unsigned int buffer_time = 100000;
+
+  if(ags_soundcard_is_recording(soundcard)){
+    return;
+  }
 
   devin = AGS_DEVIN(soundcard);
 

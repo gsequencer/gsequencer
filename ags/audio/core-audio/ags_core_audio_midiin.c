@@ -1402,6 +1402,10 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
 
   pthread_mutex_t *core_audio_midiin_mutex;
   
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio midiin mutex */

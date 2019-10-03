@@ -1400,7 +1400,11 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   AgsJackMidiin *jack_midiin;
 
   pthread_mutex_t *jack_midiin_mutex;
-  
+
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack midiin mutex */

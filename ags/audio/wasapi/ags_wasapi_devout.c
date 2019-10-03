@@ -1885,6 +1885,10 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 
   pthread_mutex_t *wasapi_devout_mutex; 
 
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
+
   wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
 
   /* get wasapi devout mutex */

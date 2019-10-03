@@ -1937,6 +1937,10 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
   guint format, word_size;
   
   pthread_mutex_t *jack_devin_mutex;
+
+  if(ags_soundcard_is_recording(soundcard)){
+    return;
+  }
   
   jack_devin = AGS_JACK_DEVIN(soundcard);
   

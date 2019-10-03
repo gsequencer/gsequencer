@@ -524,7 +524,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "8192");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "2048");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
 #else
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");

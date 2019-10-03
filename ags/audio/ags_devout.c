@@ -2432,6 +2432,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 
   pthread_mutex_t *devout_mutex;
 
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
+
   devout = AGS_DEVOUT(soundcard);
 
   /* get devout mutex */
@@ -3063,6 +3067,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   static unsigned int period_time = 100000;
   static unsigned int buffer_time = 100000;
 
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
+  
   devout = AGS_DEVOUT(soundcard);
 
   /* get devout mutex */

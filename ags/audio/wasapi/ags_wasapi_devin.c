@@ -1603,6 +1603,10 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 
   pthread_mutex_t *wasapi_devin_mutex; 
 
+  if(ags_soundcard_is_recording(soundcard)){
+    return;
+  }
+
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
   /* get wasapi devin mutex */
