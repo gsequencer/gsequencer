@@ -122,7 +122,7 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 
 # Checks for programs.
 AC_PROG_CC
-# gl_EARLY
+gl_EARLY
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -405,11 +405,12 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
 
-# gl_INIT
+gl_INIT
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+lib/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile
@@ -422,7 +423,5 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
-
-# lib/Makefile
 
 AC_OUTPUT

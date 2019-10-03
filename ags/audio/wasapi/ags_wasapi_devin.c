@@ -197,7 +197,15 @@ static const GUID ags_wasapi_iid_mm_device_enumerator_guid = {0xA95664D2, 0x9614
 static const GUID ags_wasapi_iid_audio_client_guid = {0x1CB9AD4C, 0xDBFA, 0x4c32, 0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2};
 static const GUID ags_wasapi_iid_audio_capture_client_guid = {0xc8adbd64, 0xe71e, 0x48a0, 0xa4,0xde, 0x18,0x5c,0x39,0x5c,0xd3,0x17};
 static const GUID ags_wasapi_pcm_subformat_guid = {0x00000001, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71};
-static const GUID ags_wasapi_pkey_device_friendly_name_guid = {0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0, 14};
+static const GUID ags_wasapi_pkey_device_friendly_name_guid = {0xa45c254e, 0xdf1c, 0x4efd, 0x80, 0x20, 0x67, 0xd1, 0x46, 0xa8, 0x50, 0xe0};
+
+struct _PROPERTYKEY{
+  GUID fmtid;
+  DWORD id;
+};
+
+static struct _PROPERTYKEY ags_wasapi_pkey_device_friendly_name_key = {ags_wasapi_pkey_device_friendly_name_guid,
+								       14};
 #endif
 
 GType
@@ -1417,7 +1425,7 @@ ags_wasapi_devin_list_cards(AgsSoundcard *soundcard,
 
     PropVariantInit(&var_name);
 
-    prop_store->lpVtbl->GetValue(prop_store, &ags_wasapi_pkey_device_friendly_name_guid, &var_name);
+    prop_store->lpVtbl->GetValue(prop_store, &ags_wasapi_pkey_device_friendly_name_key, &var_name);
 
     g_message("%S %S", dev_id, var_name.pwszVal);
     
