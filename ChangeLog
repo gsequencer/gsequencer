@@ -1,3 +1,8 @@
+ags (2.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed libags-audio API reference manual
+
 ags (2.3.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

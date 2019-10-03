@@ -182,3 +182,5 @@ AgsSFZGroup AgsConnectable
 AgsSFZRegion AgsConnectable
 AgsSFZSample AgsConnectable AgsSoundResource
 AgsSndfile AgsConnectable AgsSoundResource
+AgsWasapiDevin AgsConnectable AgsSoundcard
+AgsWasapiDevout AgsConnectable AgsSoundcard

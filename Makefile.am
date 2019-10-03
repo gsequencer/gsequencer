@@ -446,6 +446,7 @@ libags_la_LIBADD = -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) 
 
 if WITH_W32API
 else
+libags_la_LDFLAGS += -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
 endif
 
@@ -456,6 +457,7 @@ libags_thread_la_LIBADD = libags.la -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API
 
 if WITH_W32API
 else
+libags_thread_la_LDFLAGS += -Wl,-soname,libags_thread.so
 libags_thread_la_LIBADD += -ldl -lcrypt
 endif
 
@@ -466,6 +468,7 @@ libags_server_la_LIBADD = libags_thread.la libags.la -lm $(LIBXML2_LIBS) $(GOBJE
 
 if WITH_W32API
 else
+libags_server_la_LDFLAGS += -Wl,-soname,libags_server.so
 libags_server_la_LIBADD += -ldl -lcrypt
 endif
 
@@ -476,6 +479,7 @@ libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -lm $(CORE_
 
 if WITH_W32API
 else
+libags_audio_la_LDFLAGS += -Wl,-soname,libags_audio.so
 libags_audio_la_LIBADD += -ldl
 endif
 
@@ -486,6 +490,7 @@ libags_gui_la_LIBADD = -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK
 
 if WITH_W32API
 else
+libags_gui_la_LDFLAGS += -Wl,-soname,libags_gui.so
 libags_gui_la_LIBADD += -ldl
 endif
 
@@ -504,6 +509,12 @@ if WITH_VST3
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
+
+if WITH_W32API
+else
+libags_vst_la_LDFLAGS += -Wl,-soname,libags_vst.so
+libags_vst_la_LIBADD += -ldl
+endif
 endif
 
 # gsequencer
