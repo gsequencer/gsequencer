@@ -236,6 +236,9 @@ ags_preferences_connect(AgsConnectable *connectable)
   if(preferences->server_preferences != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
   }
+
+  g_signal_connect(G_OBJECT(preferences), "delete-event",
+		   G_CALLBACK(ags_preferences_delete_event_callback), NULL);
   
   g_signal_connect_after(G_OBJECT(preferences), "response",
 			 G_CALLBACK(ags_preferences_response_callback), NULL);

@@ -2092,11 +2092,16 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     {
       UINT32 padding_frames;
 
+      static const struct timespec poll_delay = {
+	0,
+	400,
+      };
+
       audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       
       while(buffer_frame_count - padding_frames < wasapi_devin->buffer_size &&
 	    padding_frames != 0){
-	usleep(4);
+	nanosleep(&poll_delay, NULL);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       }
@@ -2180,7 +2185,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
       g_message("data = NULL");
     }
 
-    audio_capture_client->lpVtbl->ReleaseBuffer(audio_capture_client, wasapi_devin->pcm_channels * wasapi_devin->buffer_size);
+    audio_capture_client->lpVtbl->ReleaseBuffer(audio_capture_client, wasapi_devin->buffer_size);
 
     audio_capture_client->lpVtbl->Release(audio_capture_client);
 #endif

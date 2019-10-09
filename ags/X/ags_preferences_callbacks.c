@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,15 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
+
+gboolean
+ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
+				      gpointer user_data)
+{
+  AGS_WINDOW(AGS_PREFERENCES(widget)->window)->preferences = NULL;
+  
+  return(FALSE);
+}
 
 void
 ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)

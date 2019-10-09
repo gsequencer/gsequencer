@@ -2364,11 +2364,16 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     {
       UINT32 padding_frames;
 
+      static const struct timespec poll_delay = {
+	0,
+	400,
+      };
+      
       audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       
-      while(buffer_frame_count - padding_frames < wasapi_devout->pcm_channels * wasapi_devout->buffer_size &&
+      while(buffer_frame_count - padding_frames < wasapi_devout->buffer_size &&
 	    padding_frames != 0){
-	usleep(4);
+	nanosleep(&poll_delay, NULL);
 
 	audio_client->lpVtbl->GetCurrentPadding(audio_client, &padding_frames);
       }
@@ -2377,7 +2382,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
     {
       HRESULT res;
       
-      res = audio_render_client->lpVtbl->GetBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, &data);
+      res = audio_render_client->lpVtbl->GetBuffer(audio_render_client, wasapi_devout->buffer_size, &data);
       
       switch(res){
       case AUDCLNT_E_BUFFER_ERROR:
@@ -2461,7 +2466,7 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
       g_message("data = NULL");
     }
 
-    audio_render_client->lpVtbl->ReleaseBuffer(audio_render_client, wasapi_devout->pcm_channels * wasapi_devout->buffer_size, 0);
+    audio_render_client->lpVtbl->ReleaseBuffer(audio_render_client, wasapi_devout->buffer_size, 0);
 
     audio_render_client->lpVtbl->Release(audio_render_client);
 #endif

@@ -1,3 +1,9 @@
+ags (2.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed WASAPI size of buffer request
+	* fixed AgsPreferences missing delete-event callback
+
 ags (2.3.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
