@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,8 +75,22 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "alsa",
-			    5)){
+			    "wasapi",
+			    7)){
+      if(AGS_IS_WASAPI_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;
+	
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "alsa",
+				  5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA) &&
 	 !g_ascii_strcasecmp(device,
@@ -134,7 +148,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  6)){
+				  11)){
       if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
@@ -209,6 +223,20 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "wasapi",
+			    6)){
+      if(AGS_IS_WASAPI_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;
+	
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
 			    "alsa",
 			    5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
@@ -254,7 +282,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
-				  5)){
+				  6)){
       if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
@@ -268,7 +296,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  5)){
+				  11)){
       if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){

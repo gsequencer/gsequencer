@@ -1,3 +1,9 @@
+ags (2.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing WASAPI export backend
+	* fixed AgsApplySoundConfig accessing invalid pointer
+
 ags (2.3.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

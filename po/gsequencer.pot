@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.3.9\n"
+"Project-Id-Version: gsequencer 2.3.10\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-10-10 01:03+0200\n"
+"POT-Creation-Date: 2019-10-10 13:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,21 +213,21 @@ msgstr ""
 msgid "backend"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:218 ags/X/ags_input_collection_editor.c:248
+#: ags/X/ags_export_soundcard.c:223 ags/X/ags_input_collection_editor.c:248
 #: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:219
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:238 ags/X/machine/ags_audiorec.c:229
+#: ags/X/ags_export_soundcard.c:243 ags/X/machine/ags_audiorec.c:229
 #: ags/X/machine/ags_pitch_sampler.c:265
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:266
+#: ags/X/ags_export_soundcard.c:271
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:273
+#: ags/X/ags_export_soundcard.c:278
 msgid "output format"
 msgstr ""
 
@@ -640,27 +640,27 @@ msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2309
 #: ags/audio/ags_audio_application_context.c:1844
-#: ags/audio/task/ags_apply_sound_config.c:966
+#: ags/audio/task/ags_apply_sound_config.c:978
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2319
 #: ags/audio/ags_audio_application_context.c:1854
-#: ags/audio/task/ags_apply_sound_config.c:976
+#: ags/audio/task/ags_apply_sound_config.c:988
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2567
 #: ags/audio/ags_audio_application_context.c:2101
-#: ags/audio/task/ags_apply_sound_config.c:1220
+#: ags/audio/task/ags_apply_sound_config.c:1232
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2577
 #: ags/audio/ags_audio_application_context.c:2111
-#: ags/audio/task/ags_apply_sound_config.c:1230
+#: ags/audio/task/ags_apply_sound_config.c:1242
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

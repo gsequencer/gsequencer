@@ -185,6 +185,11 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
+#ifdef AGS_WITH_WASAPI
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "wasapi");
+#endif
+
 #ifdef AGS_WITH_CORE_AUDIO
   gtk_combo_box_text_append_text(export_soundcard->backend,
 				 "core-audio");
@@ -517,8 +522,23 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "alsa",
-			    5)){
+			    "wasapi",
+			    7)){
+      while(soundcard != NULL){
+	if(AGS_IS_WASAPI_DEVOUT(soundcard->data)){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
+      
+	soundcard = soundcard->next;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "alsa",
+				  5)){
       while(soundcard != NULL){
 	if(AGS_IS_DEVOUT(soundcard->data) &&
 	   ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
@@ -580,7 +600,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  6)){
+				  11)){
       while(soundcard != NULL){
 	if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));

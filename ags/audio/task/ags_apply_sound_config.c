@@ -625,6 +625,10 @@ ags_apply_sound_config_launch(AgsTask *task)
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   while(soundcard_thread != NULL){
+    AgsThread *next;
+    
+    next = g_atomic_pointer_get(&(soundcard_thread->next));
+    
     if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
       ags_thread_remove_child(audio_loop,
 			      soundcard_thread);
@@ -638,13 +642,17 @@ ags_apply_sound_config_launch(AgsTask *task)
       }
     }
 
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    soundcard_thread = next;
   }
   
   export_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_EXPORT_THREAD);
     
   while(export_thread != NULL){
+    AgsThread *next;
+    
+    next = g_atomic_pointer_get(&(export_thread->next));
+    
     if(AGS_IS_EXPORT_THREAD(export_thread)){
       ags_thread_remove_child(audio_loop,
 			      export_thread);
@@ -652,14 +660,18 @@ ags_apply_sound_config_launch(AgsTask *task)
       g_object_run_dispose((GObject *) export_thread);
       g_object_unref((GObject *) export_thread);
     }
-    
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+
+    export_thread = next;
   }
 
   sequencer_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SEQUENCER_THREAD);
 
   while(sequencer_thread != NULL){
+    AgsThread *next;
+
+    next = g_atomic_pointer_get(&(sequencer_thread->next));    
+    
     if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
       ags_thread_remove_child(audio_loop,
 			      sequencer_thread);
@@ -668,7 +680,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       g_object_unref((GObject *) sequencer_thread);
     }
 
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
+    sequencer_thread = next;
   }
   
   /* unregister soundcard and sequencer */
