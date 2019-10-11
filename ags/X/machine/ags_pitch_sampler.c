@@ -1769,7 +1769,10 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	g_list_free(start_list);
 
 	/*  */
-	g_object_get(pitch_sampler->sfz_loader->audio_container->sound_container,
+	pitch_sampler->audio_container = pitch_sampler->sfz_loader->audio_container;
+	pitch_sampler->sfz_loader->audio_container = NULL;
+	
+	g_object_get(pitch_sampler->audio_container->sound_container,
 		     "sample", &start_list,
 		     NULL);
 

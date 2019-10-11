@@ -953,8 +953,9 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 	
 	if(path != NULL &&
 	   so_filename != NULL){
-	  filename = g_strdup_printf("%s/%s",
+	  filename = g_strdup_printf("%s%c%s",
 				     path,
+				     G_DIR_SEPARATOR,
 				     so_filename);
 	}
 	
@@ -1177,8 +1178,9 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 	    path = g_path_get_dirname(turtle[0]->filename);
 
 	    ttl_length = strlen(str) - 2;
-	    filename = g_strdup_printf("%s/%.*s",
+	    filename = g_strdup_printf("%s%c%.*s",
 				       path,
+				       G_DIR_SEPARATOR,
 				       ttl_length, &(str[1]));
 
 	    skip = TRUE;
@@ -1951,8 +1953,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	
 	if(path != NULL &&
 	   so_filename != NULL){
-	  filename = g_strdup_printf("%s/%s",
+	  filename = g_strdup_printf("%s%c%s",
 				     path,
+				     G_DIR_SEPARATOR,
 				     so_filename);
 	}
 	
@@ -2088,8 +2091,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	  g_list_free(current_start_xpath_result);
 	}
 	
-	filename = g_strdup_printf("%s/%s",
+	filename = g_strdup_printf("%s%c%s",
 				   path,
+				   G_DIR_SEPARATOR,
 				   so_filename);
 
 #if AGS_DEBUG	
@@ -4410,8 +4414,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	  path = g_path_get_dirname(turtle[0]->filename);
 
 	  ttl_length = strlen(str) - 2;
-	  filename = g_strdup_printf("%s/%.*s",
+	  filename = g_strdup_printf("%s%c%.*s",
 				     path,
+				     G_DIR_SEPARATOR,
 				     ttl_length, &(str[1]));
 
 	  if(ags_lv2_manager_global_get_parse_names()){

@@ -97,8 +97,15 @@ void
 ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+#if defined(AGS_W32API)
+    AgsApplicationContext *application_context;
+#endif
+    
     char *filename;
     gchar *str;
+#if defined(AGS_W32API)
+    gchar *app_dir;
+#endif
     
     GError *error;
 
@@ -106,8 +113,54 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
     error = NULL;
 
+#if defined(AGS_W32API)
+    application_context = ags_application_context_get_instance();
+
+    if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+    }else{
+      app_dir = NULL;
+    }
+  
+    if(g_path_is_absolute(app_dir)){
+      str = g_strdup_printf("%s\\gsequencer.exe --filename %s",
+			    app_dir,
+			    filename);
+    }else{
+      str = g_strdup_printf("%s\\%s\\gsequencer.exe --filename %s",
+			    g_get_current_dir(),
+			    app_dir,
+			    filename);
+    }
+    
+    g_free(app_dir);
+
+    {
+      STARTUPINFO si;
+      PROCESS_INFORMATION pi;
+
+      ZeroMemory(&si, sizeof(si));
+      si.cb = sizeof(si);
+      ZeroMemory(&pi, sizeof(pi));
+
+      g_message("launch %s", str);
+      
+      CreateProcess(NULL,
+		    str,
+		    NULL,
+		    NULL,
+		    FALSE,
+		    0,
+		    NULL,
+		    NULL,
+		    &si,
+		    &pi);
+    }
+#else
     str = g_strdup_printf("gsequencer --filename %s",
 			  filename);
+
     g_spawn_command_line_async(str,
 			       &error);
 
@@ -116,6 +169,7 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
 
       g_error_free(error);
     }
+#endif    
     
     g_free(filename);
     g_free(str);

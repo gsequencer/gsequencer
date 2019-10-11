@@ -185,7 +185,7 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
       iter = lv2_env;
       i = 0;
       
-      while((next = strchr(iter, ':')) != NULL){
+      while((next = strchr(iter, G_SEARCHPATH_SEPARATOR)) != NULL){
 	ags_lv2_default_path = (gchar **) realloc(ags_lv2_default_path,
 						  (i + 2) * sizeof(gchar *));
 	ags_lv2_default_path[i] = g_strndup(iter,
@@ -235,9 +235,14 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
       }else{
 	g_free(path);
 	
-	ags_lv2_default_path[i++] = g_strdup_printf("%s\\%s\\lv2",
-						    g_get_current_dir(),
-						    app_dir);
+	if(g_path_is_absolute(app_dir)){
+	  ags_lv2_default_path[i++] = g_strdup_printf("%s\\lv2",
+						      app_dir);
+	}else{
+	  ags_lv2_default_path[i++] = g_strdup_printf("%s\\%s\\lv2",
+						      g_get_current_dir(),
+						      app_dir);
+	}
       }
       
       ags_lv2_default_path[i++] = NULL;
@@ -807,8 +812,9 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	continue;
       }
     
-      plugin_path = g_strdup_printf("%s/%s",
+      plugin_path = g_strdup_printf("%s%c%s",
 				    *lv2_path,
+				    G_DIR_SEPARATOR,
 				    path);
 
       if(g_file_test(plugin_path,
@@ -822,8 +828,10 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	
 	guint n_turtle;
 	
-	manifest_filename = g_strdup_printf("%s/manifest.ttl",
-					    plugin_path);
+	manifest_filename = g_strdup_printf("%s%c%s",
+					    plugin_path,
+					    G_DIR_SEPARATOR,
+					    "manifest.ttl");
 
 	if(!g_file_test(manifest_filename,
 			G_FILE_TEST_EXISTS)){

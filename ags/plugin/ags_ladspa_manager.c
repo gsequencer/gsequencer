@@ -147,7 +147,7 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
       iter = ladspa_env;
       i = 0;
       
-      while((next = strchr(iter, ':')) != NULL){
+      while((next = strchr(iter, G_SEARCHPATH_SEPARATOR)) != NULL){
 	ags_ladspa_default_path = (gchar **) realloc(ags_ladspa_default_path,
 						     (i + 2) * sizeof(gchar *));
 	ags_ladspa_default_path[i] = g_strndup(iter,
@@ -196,10 +196,15 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 	ags_ladspa_default_path[i++] = path;
       }else{
 	g_free(path);
-	
-	ags_ladspa_default_path[i++] = g_strdup_printf("%s\\%s\\ladspa",
-						       g_get_current_dir(),
-						       app_dir);
+
+	if(g_path_is_absolute(app_dir)){
+	  ags_ladspa_default_path[i++] = g_strdup_printf("%s\\ladspa",
+							 app_dir);
+	}else{
+	  ags_ladspa_default_path[i++] = g_strdup_printf("%s\\%s\\ladspa",
+							 g_get_current_dir(),
+							 app_dir);
+	}
       }
       
       ags_ladspa_default_path[i++] = NULL;
@@ -589,8 +594,9 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   /* load */
   pthread_mutex_lock(ladspa_manager_mutex);
 
-  path = g_strdup_printf("%s/%s",
+  path = g_strdup_printf("%s%c%s",
 			 ladspa_path,
+			 G_DIR_SEPARATOR,
 			 filename);
   
   g_message("ags_ladspa_manager.c loading - %s", path);

@@ -142,7 +142,7 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
       iter = dssi_env;
       i = 0;
       
-      while((next = strchr(iter, ':')) != NULL){
+      while((next = strchr(iter, G_SEARCHPATH_SEPARATOR)) != NULL){
 	ags_dssi_default_path = (gchar **) realloc(ags_dssi_default_path,
 						   (i + 2) * sizeof(gchar *));
 	ags_dssi_default_path[i] = g_strndup(iter,
@@ -192,9 +192,14 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
       }else{
 	g_free(path);
 	
-	ags_dssi_default_path[i++] = g_strdup_printf("%s\\%s\\dssi",
-						     g_get_current_dir(),
-						     app_dir);
+	if(g_path_is_absolute(app_dir)){
+	  ags_dssi_default_path[i++] = g_strdup_printf("%s\\dssi",
+						       app_dir);
+	}else{
+	  ags_dssi_default_path[i++] = g_strdup_printf("%s\\%s\\dssi",
+						       g_get_current_dir(),
+						       app_dir);
+	}
       }
       
       ags_dssi_default_path[i++] = NULL;
@@ -585,8 +590,9 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   /* load */
   pthread_mutex_lock(dssi_manager_mutex);
 
-  path = g_strdup_printf("%s/%s",
+  path = g_strdup_printf("%s%c%s",
 			 dssi_path,
+			 G_DIR_SEPARATOR,
 			 filename);
   
   g_message("ags_dssi_manager.c loading - %s", path);

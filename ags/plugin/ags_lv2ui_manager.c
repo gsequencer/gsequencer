@@ -145,7 +145,7 @@ ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
       iter = lv2ui_env;
       i = 0;
       
-      while((next = strchr(iter, ':')) != NULL){
+      while((next = strchr(iter, G_SEARCHPATH_SEPARATOR)) != NULL){
 	ags_lv2ui_default_path = (gchar **) realloc(ags_lv2ui_default_path,
 						    (i + 2) * sizeof(gchar *));
 	ags_lv2ui_default_path[i] = g_strndup(iter,
@@ -195,9 +195,14 @@ ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
       }else{
 	g_free(path);
 	
-	ags_lv2ui_default_path[i++] = g_strdup_printf("%s\\%s\\lv2ui",
-						      g_get_current_dir(),
-						      app_dir);
+	if(g_path_is_absolute(app_dir)){
+	  ags_lv2ui_default_path[i++] = g_strdup_printf("%s\\lv2ui",
+							app_dir);
+	}else{
+	  ags_lv2ui_default_path[i++] = g_strdup_printf("%s\\%s\\lv2ui",
+							g_get_current_dir(),
+							app_dir);
+	}
       }
       
       ags_lv2ui_default_path[i++] = NULL;

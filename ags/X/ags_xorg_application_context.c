@@ -2026,8 +2026,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/ladspa_plugin.blacklist",
-				       blacklist_path);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "ladspa_plugin.blacklist");
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -2039,8 +2041,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/dssi_plugin.blacklist",
-				       blacklist_path);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "dssi_plugin.blacklist");
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -2053,8 +2057,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/lv2_plugin.blacklist",
-				       blacklist_path);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "lv2_plugin.blacklist");
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
