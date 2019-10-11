@@ -35,6 +35,13 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.3.12" date="2019-10-11">
+      <description>
+	<p>Improved AgsPitchSampler and fixed persistence.</p>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="2.3.2" date="2019-09-10">
       <description>
         <p>Implemented new machines AgsFMSynth, AgsFMSyncsynth and AgsPitchSampler.</p>

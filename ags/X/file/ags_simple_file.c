@@ -3207,6 +3207,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     str = xmlGetProp(node,
 		     "filename");
     
+    gtk_entry_set_text(pitch_sampler->filename,
+		       str);
     ags_pitch_sampler_open_filename(pitch_sampler,
 				    str);
 

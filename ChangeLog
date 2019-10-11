@@ -1,3 +1,8 @@
+ags (2.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsPitchSampler missing filename after restore from XML
+
 ags (2.3.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
