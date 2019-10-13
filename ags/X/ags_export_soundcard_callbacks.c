@@ -224,7 +224,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
 			    "wasapi",
-			    6)){
+			    7)){
       if(AGS_IS_WASAPI_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){

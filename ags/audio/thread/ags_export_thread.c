@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_devout.h>
+
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
@@ -517,7 +519,8 @@ ags_export_thread_run(AgsThread *thread)
 
   soundcard_buffer = NULL;
   
-  if(AGS_IS_DEVOUT(soundcard)){
+  if(AGS_IS_DEVOUT(soundcard) ||
+     AGS_IS_WASAPI_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 	   AGS_IS_PULSE_DEVOUT(soundcard)){
