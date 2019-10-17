@@ -1,5 +1,8 @@
 /* ags/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* OS X api enabled */
+#undef AGS_OSXAPI
+
 /* striping rt-events enabled */
 #undef AGS_STRIP_RT_EVENTS
 
@@ -8,6 +11,9 @@
 
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
+
+/* core-audio enabled */
+#undef AGS_WITH_AUDIO_UNIT
 
 /* core-audio enabled */
 #undef AGS_WITH_CORE_AUDIO

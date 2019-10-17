@@ -43,6 +43,8 @@
 #define AGS_IS_AUDIO_UNIT_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_SERVER))
 #define AGS_AUDIO_UNIT_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_SERVER, AgsAudioUnitServerClass))
 
+#define AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(obj) (((AgsAudioUnitServer *) obj)->obj_mutex)
+
 typedef struct _AgsAudioUnitServer AgsAudioUnitServer;
 typedef struct _AgsAudioUnitServerClass AgsAudioUnitServerClass;
 

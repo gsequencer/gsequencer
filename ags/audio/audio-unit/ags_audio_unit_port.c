@@ -332,11 +332,7 @@ ags_audio_unit_port_set_property(GObject *gobject,
   audio_unit_port = AGS_AUDIO_UNIT_PORT(gobject);
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   switch(prop_id){
   case PROP_AUDIO_UNIT_CLIENT:
@@ -435,11 +431,7 @@ ags_audio_unit_port_get_property(GObject *gobject,
   audio_unit_port = AGS_AUDIO_UNIT_PORT(gobject);
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
   
   switch(prop_id){
   case PROP_AUDIO_UNIT_CLIENT:
@@ -542,11 +534,7 @@ ags_audio_unit_port_get_uuid(AgsConnectable *connectable)
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
   /* get audio_unit port signal mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* get UUID */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -576,11 +564,7 @@ ags_audio_unit_port_is_ready(AgsConnectable *connectable)
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* check is added */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -663,11 +647,7 @@ ags_audio_unit_port_is_connected(AgsConnectable *connectable)
   audio_unit_port = AGS_AUDIO_UNIT_PORT(connectable);
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* check is connected */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -746,11 +726,7 @@ ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
   }
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* test */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -781,11 +757,7 @@ ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
   }
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   //TODO:JK: add more?
 
@@ -816,11 +788,7 @@ ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
   }
 
   /* get audio_unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   //TODO:JK: add more?
 
@@ -853,11 +821,7 @@ ags_audio_unit_port_find(GList *audio_unit_port,
 
   while(audio_unit_port != NULL){
     /* get audio_unit port mutex */
-    pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-    audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT(audio_unit_port->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+    audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port->data);
 
     /* check port name */
     pthread_mutex_lock(audio_unit_port_mutex);
@@ -982,11 +946,7 @@ ags_audio_unit_port_set_format(AgsAudioUnitPort *audio_unit_port,
   pthread_mutex_t *audio_unit_port_mutex;
 
   /* get audio-unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /*  */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -1003,11 +963,7 @@ ags_audio_unit_port_set_samplerate(AgsAudioUnitPort *audio_unit_port,
   pthread_mutex_t *audio_unit_port_mutex;
 
   /* get audio-unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /*  */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -1028,11 +984,7 @@ ags_audio_unit_port_set_buffer_size(AgsAudioUnitPort *audio_unit_port,
   pthread_mutex_t *audio_unit_port_mutex;
 
   /* get audio-unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /*  */
   pthread_mutex_lock(audio_unit_port_mutex);
@@ -1053,11 +1005,7 @@ ags_audio_unit_port_set_pcm_channels(AgsAudioUnitPort *audio_unit_port,
   pthread_mutex_t *audio_unit_port_mutex;
 
   /* get audio-unit port mutex */
-  pthread_mutex_lock(ags_audio_unit_port_get_class_mutex());
-  
-  audio_unit_port_mutex = audio_unit_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_unit_port_get_class_mutex());
+  audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /*  */
   pthread_mutex_lock(audio_unit_port_mutex);

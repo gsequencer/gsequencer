@@ -370,6 +370,8 @@ ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
+AUDIO_UNIT_CFLAGS = @AUDIO_UNIT_CFLAGS@
+AUDIO_UNIT_LIBS = @AUDIO_UNIT_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -744,9 +746,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags-gui/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags-gui/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libags-gui/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags-gui/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

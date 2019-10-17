@@ -2142,7 +2142,8 @@ ags_audio_unit_devout_port_play(AgsSoundcard *soundcard,
 
   pthread_mutex_unlock(audio_unit_devout_mutex);
 
-  /* get port mutex */
+  /* get client and port mutex */
+  audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(audio_unit_client);
   audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(audio_unit_port);
 
   /* get activated */

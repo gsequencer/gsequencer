@@ -1,3 +1,9 @@
+ags (2.3.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAudioUnitDevout and AgsAudioUnitDevin
+	* fixed AgsPiano don't flush surface
+
 ags (2.3.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

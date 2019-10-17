@@ -1271,6 +1271,8 @@ deprecated_libags_audio_audio_unit_h_sources =
 libags_audio_audio_unit_h_sources = \
 	$(deprecated_libags_audio_audio_unit_h_sources) \
 	ags/audio/audio-unit/ags_audio_unit_client.h \
+	ags/audio/audio-unit/ags_audio_unit_devin.h \
+	ags/audio/audio-unit/ags_audio_unit_devout.h \
 	ags/audio/audio-unit/ags_audio_unit_port.h \
 	ags/audio/audio-unit/ags_audio_unit_server.h
 
@@ -1279,6 +1281,8 @@ deprecated_libags_audio_audio_unit_c_sources =
 libags_audio_audio_unit_c_sources = \
 	$(deprecated_libags_audio_audio_unit_c_sources) \
 	ags/audio/audio-unit/ags_audio_unit_client.c \
+	ags/audio/audio-unit/ags_audio_unit_devin.c \
+	ags/audio/audio-unit/ags_audio_unit_devout.c \
 	ags/audio/audio-unit/ags_audio_unit_port.c \
 	ags/audio/audio-unit/ags_audio_unit_server.c
 
@@ -2611,7 +2615,7 @@ gen-symbols-ags-audio:
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_audio.sym.in
 	echo -e -n "\n" >> libags_audio.sym.in
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
-	find ags/audio -path ags/audio/audio-unit -prune -o -name "*.h" -print | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in

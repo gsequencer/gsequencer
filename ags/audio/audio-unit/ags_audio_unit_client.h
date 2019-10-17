@@ -41,6 +41,8 @@
 #define AGS_IS_AUDIO_UNIT_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_CLIENT))
 #define AGS_AUDIO_UNIT_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_CLIENT, AgsAudioUnitClientClass))
 
+#define AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(obj) (((AgsAudioUnitClient *) obj)->obj_mutex)
+
 typedef struct _AgsAudioUnitClient AgsAudioUnitClient;
 typedef struct _AgsAudioUnitClientClass AgsAudioUnitClientClass;
 
