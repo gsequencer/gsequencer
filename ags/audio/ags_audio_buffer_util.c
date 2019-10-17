@@ -4816,7 +4816,7 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00787401574803149606;
-  static const gdouble normalize_divisor = exp2(7.0);
+  static const gdouble normalize_divisor = 127.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -4929,7 +4929,7 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00787401574803149606;
-  static const gdouble normalize_divisor = exp2(7.0);
+  static const gdouble normalize_divisor = 127.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -5598,7 +5598,7 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00003051850947599719;
-  static const gdouble normalize_divisor = exp2(15.0);
+  static const gdouble normalize_divisor = 32767.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -5711,7 +5711,7 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00003051850947599719;
-  static const gdouble normalize_divisor = exp2(15.0);
+  static const gdouble normalize_divisor = 32767.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -6381,7 +6381,7 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000011920930376163;
-  static const gdouble normalize_divisor = exp2(23.0);
+  static const gdouble normalize_divisor = 8388607.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -6494,7 +6494,7 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000011920930376163;
-  static const gdouble normalize_divisor = exp2(23.0);
+  static const gdouble normalize_divisor = 8388607.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -7161,7 +7161,7 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000000465661291210;
-  static const gdouble normalize_divisor = exp2(31.0);
+  static const gdouble normalize_divisor = 214748363.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -7274,7 +7274,7 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000000465661291210;
-  static const gdouble normalize_divisor = exp2(31.0);
+  static const gdouble normalize_divisor = 214748363.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -7944,7 +7944,7 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000000000000000010;
-  static const gdouble normalize_divisor = exp2(63.0);
+  static const gdouble normalize_divisor = 9223372036854775807.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -8057,7 +8057,7 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const gdouble scale = 0.00000000000000000010;
-  static const gdouble normalize_divisor = exp2(63.0);
+  static const gdouble normalize_divisor = 9223372036854775807.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -9721,7 +9721,7 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const Float64 scale = 0.0078740157480314960629854564334861866115034L;
-  static const gdouble normalize_divisor = exp2(7.0);
+  static const gdouble normalize_divisor = 128.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -9834,7 +9834,7 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const Float64 scale = 0.0000305185094759971922971274004400890622613L;
-  static const gdouble normalize_divisor = exp2(15.0);
+  static const gdouble normalize_divisor = 32767.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -9947,7 +9947,7 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const Float64 scale = 0.0000001192093037616376592678982260231634882L;
-  static const gdouble normalize_divisor = exp2(23.0);
+  static const gdouble normalize_divisor = 8388607.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -10060,7 +10060,7 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const Float64 scale = 0.0000000004656612875245796924105750826697801L;
-  static const gdouble normalize_divisor = exp2(31.0);
+  static const gdouble normalize_divisor = 214748363.0;
   guint limit;
   guint current_dchannel, current_schannel;
   guint i;
@@ -10173,8 +10173,9 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
 {
   //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
   //  static const Float64 scale = 0.0000000000000000000722801448323667726912712L;
-  static const gdouble normalize_divisor = exp2(63.0);
+  static const gdouble normalize_divisor = 9223372036854775807.0;
   guint limit;
+  guint current_dchannel, current_schannel;
   guint i;
 
   i = 0;
@@ -11734,7 +11735,7 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
 
     f_value = source[0];
     
-    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(f_value, 1,
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_FLOAT_FRAME(f_ptr, 1,
 							i, count,
 							c_ptr_ptr);
 
@@ -12541,9 +12542,9 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32:
     {
-      ags_audio_buffer_util_copy_gdouble_to_float32((Float32 *) destination + doffset, dchannels,
-						    (gdouble *) source + soffset, schannels,
-						    count);
+      ags_audio_buffer_util_copy_double_to_float32((Float32 *) destination + doffset, dchannels,
+						   (gdouble *) source + soffset, schannels,
+						   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32:
@@ -12594,13 +12595,6 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
       ags_audio_buffer_util_copy_float32_to_float((gfloat *) destination + doffset, dchannels,
 						  (Float32 *) source + soffset, schannels,
 						  count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_float32_to_gdouble((gdouble *) destination + doffset, dchannels,
-						    (Float32 *) source + soffset, schannels,
-						    count);
     }
     break;
 #endif    

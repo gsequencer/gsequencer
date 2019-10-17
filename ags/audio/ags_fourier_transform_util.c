@@ -55,7 +55,7 @@ ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble normalize_factor = M_PI / exp2(7.0);
+  static const gdouble normalize_factor = M_PI / 127.0;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -101,7 +101,7 @@ ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble normalize_factor = M_PI / exp2(15.0);
+  static const gdouble normalize_factor = M_PI / 32767.0;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -147,7 +147,7 @@ ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble normalize_factor = M_PI / exp2(23.0);
+  static const gdouble normalize_factor = M_PI / 8388607.0;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -193,7 +193,7 @@ ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const gdouble normalize_factor = M_PI / exp2(31.0);
+  static const gdouble normalize_factor = M_PI / 214748363.0;
 
   if(buffer == NULL ||
      retval == NULL ||
@@ -239,7 +239,7 @@ ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
   guint n;
   guint i, i_stop;
 
-  static const long double normalize_factor = M_PI / exp2(63.0);
+  static const long double normalize_factor = M_PI / 9223372036854775807.0;
 
   if(buffer == NULL ||
      retval == NULL ||

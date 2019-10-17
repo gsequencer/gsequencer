@@ -97,6 +97,8 @@ struct _AgsAudioUnitPort
   guint format;
 
 #ifdef AGS_WITH_AUDIO_UNIT
+  AudioStreamBasicDescription *data_format;
+  
   AUGraph *graph;
 
   AudioComponentDescription *description;
@@ -107,6 +109,8 @@ struct _AgsAudioUnitPort
 
   AURenderCallbackStruct *render_callback;
 #else
+  gpointer data_format;
+  
   gpointer graph;
 
   gpointer description;

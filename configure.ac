@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.3.13],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.3.8],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -40,6 +40,11 @@ AC_ARG_ENABLE(w32api, [AS_HELP_STRING([--enable-w32api],
 	      [],
 	      [enable_w32api=no])
 
+AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
+		      		      [enable OS X API (default is no)])],
+	      [],
+	      [enable_osxapi=no])
+
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
 	      [],
@@ -64,6 +69,11 @@ AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
 					  [enable core audio (default is no)])],
 	      [],
 	      [enable_core_audio=no])
+
+AC_ARG_ENABLE(audio-unit, [AS_HELP_STRING([--enable-audio-unit],
+					  [enable audio unit (default is no)])],
+	      [],
+	      [enable_audio_unit=no])
 
 AC_ARG_ENABLE(wasapi, [AS_HELP_STRING([--enable-wasapi],
 				      [enable WASAPI (default is no)])],
@@ -206,6 +216,14 @@ AS_IF([test "x$enable_w32api" != xno],
       AC_MSG_NOTICE([w32api disabled]))
 AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
 
+AS_IF([test "x$enable_osxapi" != xno],
+      [AC_DEFINE([AGS_OSXAPI], [1], [OS X api enabled])
+      OSXAPI_CFLAGS=""
+      OSXAPI_LIBS=""
+      AC_MSG_NOTICE([OS X api enabled])],
+      AC_MSG_NOTICE([OS X api disabled]))
+AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
+
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
@@ -238,9 +256,20 @@ AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
 
       CORE_AUDIO_CFLAGS= 
-      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework CoreMIDI"
+      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
       AC_SUBST(CORE_AUDIO_CFLAGS)
       AC_SUBST(CORE_AUDIO_LIBS)
+
+      AC_MSG_NOTICE([core audio enabled])],
+      AC_MSG_NOTICE([core audio disabled]))
+
+AS_IF([test "x$enable_audio_unit" != xno],
+      [AC_DEFINE([AGS_WITH_AUDIO_UNIT], [1], [core-audio enabled])
+
+      AUDIO_UNIT_CFLAGS= 
+      AUDIO_UNIT_LIBS="-framework AudioUnit -framework AudioToolbox"
+      AC_SUBST(AUDIO_UNIT_CFLAGS)
+      AC_SUBST(AUDIO_UNIT_LIBS)
 
       AC_MSG_NOTICE([core audio enabled])],
       AC_MSG_NOTICE([core audio disabled]))

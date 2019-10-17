@@ -33,7 +33,7 @@
     gdouble l_k;							\
     gdouble l_r;							\
 									\
-    static const gdouble normalize_factor = M_PI / exp2(7.0);		\
+    static const gdouble normalize_factor = M_PI / 127.0;		\
 									\
     l_k = (gdouble) x_n;						\
     l_r = (gdouble) x_n;						\
@@ -49,7 +49,7 @@
     gdouble l_k;							\
     gdouble l_r;							\
 									\
-    static const gdouble normalize_factor = M_PI / exp2(15.0);		\
+    static const gdouble normalize_factor = M_PI / 32767.0;		\
 									\
     l_k = (gdouble) x_n;						\
     l_r = (gdouble) x_n;						\
@@ -65,7 +65,7 @@
     gdouble l_k;							\
     gdouble l_r;							\
 									\
-    static const gdouble normalize_factor = M_PI / exp2(23.0);		\
+    static const gdouble normalize_factor = M_PI / 8388607.0;		\
 									\
     l_k = (gdouble) x_n;						\
     l_r = (gdouble) x_n;						\
@@ -81,7 +81,7 @@
     gdouble l_k;							\
     gdouble l_r;							\
 									\
-    static const gdouble normalize_factor = M_PI / exp2(31.0);		\
+    static const gdouble normalize_factor = M_PI / 214748363.0;		\
 									\
     l_k = (gdouble) x_n;						\
     l_r = (gdouble) x_n;						\
@@ -97,7 +97,7 @@
     gdouble l_k;							\
     gdouble l_r;							\
 									\
-    static const long double normalize_factor = M_PI / exp2(63.0);	\
+    static const long double normalize_factor = M_PI / 9223372036854775807.0; \
 									\
     l_k = (gdouble) x_n;						\
     l_r = (gdouble) x_n;						\

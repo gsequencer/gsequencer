@@ -29,7 +29,8 @@
 #include <ags/audio/audio-unit/ags_audio_unit_port.h>
 #include <ags/audio/audio-unit/ags_audio_unit_devout.h>
 #include <ags/audio/audio-unit/ags_audio_unit_devin.h>
-#include <ags/audio/audio-unit/ags_audio_unit_midiin.h>
+
+#include <stdlib.h>
 
 #include <ags/i18n.h>
 
@@ -519,11 +520,6 @@ ags_audio_unit_client_finalize(GObject *gobject)
     g_object_unref(audio_unit_client->audio_unit_server);
   }
 
-  /* core audio graph */
-  if(audio_unit_client->graph != NULL){
-    free(audio_unit_client->graph);
-  }
-
   /* device */
   if(audio_unit_client->device != NULL){
     g_list_free_full(audio_unit_client->device,
@@ -912,8 +908,7 @@ ags_audio_unit_client_find_uuid(GList *audio_unit_client,
 				gchar *client_uuid)
 {
   while(audio_unit_client != NULL){
-    if(AGS_AUDIO_UNIT_CLIENT(audio_unit_client->data)->graph != NULL &&
-       !g_ascii_strcasecmp(AGS_AUDIO_UNIT_CLIENT(audio_unit_client->data)->client_uuid,
+    if(!g_ascii_strcasecmp(AGS_AUDIO_UNIT_CLIENT(audio_unit_client->data)->client_uuid,
 			   client_uuid)){
       return(audio_unit_client);
     }
@@ -956,8 +951,7 @@ ags_audio_unit_client_find(GList *audio_unit_client,
     /* check uuid */
     pthread_mutex_lock(audio_unit_client_mutex);
     
-    success = (current_audio_unit_client->graph != NULL &&
-	       !g_ascii_strcasecmp(current_audio_unit_client->client_name,
+    success = (!g_ascii_strcasecmp(current_audio_unit_client->client_name,
 				   client_name)) ? TRUE: FALSE;
 
     pthread_mutex_unlock(audio_unit_client_mutex);
@@ -1011,7 +1005,7 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
   /* check already open */
   pthread_mutex_lock(audio_unit_client_mutex);
 
-  if(audio_unit_client->graph != NULL){
+  if(ags_audio_unit_client_test_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED)){
     pthread_mutex_unlock(audio_unit_client_mutex);
 
     g_message("Advanced Gtk+ Sequencer audio-unit client already open");
@@ -1035,19 +1029,6 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
   audio_unit_server_mutex = audio_unit_server->obj_mutex;
   
   pthread_mutex_unlock(ags_audio_unit_server_get_class_mutex());
-
-#ifdef AGS_WITH_AUDIO_UNIT
-  audio_unit_client->graph = (AUGraph *) malloc(sizeof(AUGraph));
-  memset(audio_unit_client->graph, 0, sizeof(AUGraph));
-  
-  retval = NewAUGraph(audio_unit_client->graph);
-
-  if(retval != noErr){
-    free(audio_unit_client->graph);
-    
-    audio_unit_client->graph = NULL;
-  }
-#endif
 }
 
 /**
@@ -1061,12 +1042,6 @@ ags_audio_unit_client_open(AgsAudioUnitClient *audio_unit_client,
 void
 ags_audio_unit_client_activate(AgsAudioUnitClient *audio_unit_client)
 {
-#ifdef AGS_WITH_AUDIO_UNIT
-  AUGraph *graph;
-#else
-  gpointer graph;
-#endif
-
   GList *port_start, *port;
   
   int ret;
@@ -1084,15 +1059,7 @@ ags_audio_unit_client_activate(AgsAudioUnitClient *audio_unit_client)
   
   pthread_mutex_unlock(ags_audio_unit_client_get_class_mutex());
 
-  /* get graph */
-  pthread_mutex_lock(audio_unit_client_mutex);
-
-  graph = audio_unit_client->graph;
-  
-  pthread_mutex_unlock(audio_unit_client_mutex);
-
-  if(ags_audio_unit_client_test_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED) ||
-     graph == NULL){
+  if(ags_audio_unit_client_test_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED)){
     return;
   }  
 
@@ -1136,12 +1103,6 @@ ags_audio_unit_client_activate(AgsAudioUnitClient *audio_unit_client)
 void
 ags_audio_unit_client_deactivate(AgsAudioUnitClient *audio_unit_client)
 {
-#ifdef AGS_WITH_AUDIO_UNIT
-  AUGraph *graph;
-#else
-  gpointer graph;
-#endif
-
   pthread_mutex_t *audio_unit_client_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_CLIENT(audio_unit_client)){
@@ -1154,28 +1115,6 @@ ags_audio_unit_client_deactivate(AgsAudioUnitClient *audio_unit_client)
   audio_unit_client_mutex = audio_unit_client->obj_mutex;
   
   pthread_mutex_unlock(ags_audio_unit_client_get_class_mutex());
-
-  /* get graph */
-  pthread_mutex_lock(audio_unit_client_mutex);
-
-  graph = audio_unit_client->graph;
-  
-  pthread_mutex_unlock(audio_unit_client_mutex);
-
-  if(graph == NULL){
-    return;
-  }
-
-#ifdef AGS_WITH_AUDIO_UNIT
-  AUGraphStop(graph);
-#endif
-  
-  /* set graph */
-  pthread_mutex_lock(audio_unit_client_mutex);
-
-  audio_unit_client->graph = NULL;
-  
-  pthread_mutex_unlock(audio_unit_client_mutex);
 
   ags_audio_unit_client_unset_flags(audio_unit_client, AGS_AUDIO_UNIT_CLIENT_ACTIVATED);
 }
