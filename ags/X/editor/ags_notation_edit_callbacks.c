@@ -806,12 +806,14 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								  AGS_TYPE_NOTATION_EDITOR);
 
+
   g_object_get(notation_editor->scrolled_piano->viewport,
 	       "vadjustment", &piano_adjustment,
 	       NULL);
+
   gtk_adjustment_set_value(piano_adjustment,
 			   range->adjustment->value);
-  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
 
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);

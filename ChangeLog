@@ -2,7 +2,7 @@ ags (2.3.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsAudioUnitDevout and AgsAudioUnitDevin
-	* fixed AgsPiano don't flush surface
+	* improved AgsScrolledPiano to draw properly on Win64
 
 ags (2.3.13)
 

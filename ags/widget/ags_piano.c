@@ -1195,7 +1195,7 @@ ags_piano_draw(AgsPiano *piano)
   x_start = 0;
   y_start = 0;
 
-//  cairo_surface_flush(cairo_get_target(cr));
+  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
   
   /* fill bg */
