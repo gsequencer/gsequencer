@@ -948,7 +948,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   gtk_adjustment_set_upper(adjustment,
 			   upper);
 
-  /* piano - only upper */
+  /* piano - upper */
   gtk_adjustment_set_upper(piano_adjustment,
 			   upper);
 
@@ -956,7 +956,10 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   if(old_upper != 0.0){
     gtk_adjustment_set_value(adjustment,
 			     adjustment->value / old_upper * upper);
-  }
+
+    gtk_adjustment_set_value(piano_adjustment,
+			     adjustment->value);
+  }  
 }
 
 void

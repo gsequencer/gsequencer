@@ -755,6 +755,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     
     if(AGS_IS_DEVOUT(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_DEVOUT(orig_soundcard->data)->notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVOUT(orig_soundcard->data)){
+      notify_soundcard = (AgsNotifySoundcard *) AGS_WASAPI_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(orig_soundcard->data)){
@@ -763,6 +765,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       notify_soundcard = (AgsNotifySoundcard *) AGS_CORE_AUDIO_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_DEVIN(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_DEVIN(orig_soundcard->data)->notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVIN(orig_soundcard->data)){
+      notify_soundcard = (AgsNotifySoundcard *) AGS_WASAPI_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(orig_soundcard->data)){
@@ -1301,6 +1305,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     
     if(AGS_IS_DEVOUT(list->data)){
       AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
+      AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
@@ -1309,6 +1315,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_DEVIN(list->data)){
       AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVIN(list->data)){
+      AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(list->data)){
       AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(list->data)){
@@ -1322,6 +1330,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
+       AGS_IS_WASAPI_DEVOUT(list->data) ||
        AGS_IS_JACK_DEVOUT(list->data) ||
        AGS_IS_PULSE_DEVOUT(list->data) ||
        AGS_IS_CORE_AUDIO_DEVOUT(list->data)){

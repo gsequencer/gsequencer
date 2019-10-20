@@ -1,3 +1,10 @@
+ags (2.3.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_strv_contains() to compare strings
+	* fixed AgsApplySoundConfig task to setup AgsWasapiDevout's AgsNotifySoundcard and AgsExportThread
+	* minor improvements
+
 ags (2.3.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

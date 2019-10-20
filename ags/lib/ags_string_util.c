@@ -137,8 +137,10 @@ ags_strv_contains(gchar **str_array,
     return(FALSE);
   }
 
-  for(i = 0; *str_array != NULL; i++, str_array++){
-    if(*str_array == str){
+  for(i = 0; str_array[0] != NULL; i++, str_array++){
+    if(str_array[0] == str ||
+       !g_strcmp0(str_array[0],
+		  str)){
       return(TRUE);
     }
   }
