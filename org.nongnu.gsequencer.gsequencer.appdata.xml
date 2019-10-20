@@ -32,9 +32,16 @@
     </screenshot>
   </screenshots>
 
-  <url type="homepage">http://nongnu.org/gsequencer</url>
+  <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.3.15" date="2019-10-20">
+      <description>
+	<p>Fixed AgsAudiorec open audio files with different samplerate.</p>
+	<p>Minor improvements.</p>
+      </description>
+    </release>
+
     <release version="2.3.12" date="2019-10-11">
       <description>
 	<p>Improved AgsPitchSampler and fixed persistence.</p>

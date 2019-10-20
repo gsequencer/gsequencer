@@ -415,7 +415,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				 &audio_channels,
 				 &samplerate,
 				 &buffer_size,
-				 NULL);
+				 &format);
   
   g_object_get(G_OBJECT(sound_resource),
 	       "format", &format,
@@ -453,6 +453,14 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
   data = NULL;
 
   if(samplerate != target_samplerate){
+    buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
+    
+    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(sound_resource),
+				   audio_channels,
+				   samplerate,
+				   buffer_size,
+				   format);
+    
     data = ags_stream_alloc(buffer_size,
 			    format);
   }
@@ -589,7 +597,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 				 &audio_channels,
 				 &samplerate,
 				 &buffer_size,
-				 NULL);
+				 &format);
 
   g_object_get(G_OBJECT(sound_resource),
 	       "format", &format,
@@ -629,6 +637,14 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   data = NULL;
 
   if(samplerate != target_samplerate){
+    buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
+    
+    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(sound_resource),
+				   audio_channels,
+				   samplerate,
+				   buffer_size,
+				   format);
+    
     data = ags_stream_alloc(buffer_size,
 			    format);
   }
@@ -712,7 +728,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 	free(target_data);
 
-	num_read = (guint) ceil(num_read / buffer_size * frame_count);
+	num_read = (guint) (ceil((double) num_read / (double) buffer_size * (double) frame_count));
       }else{
 	num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					   buffer->data, 1,

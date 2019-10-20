@@ -1343,10 +1343,14 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   for(i = 0; i < frame_count && sndfile->offset + i < total_frame_count; ){
     sf_count_t retval;
     
-    if(sndfile->offset + frame_count > total_frame_count){
+    if(sndfile->offset + read_count > total_frame_count){
       read_count = total_frame_count - sndfile->offset;
     }
 
+    if(i + read_count > frame_count){
+      read_count = frame_count - i;
+    }
+    
     multi_frames = read_count * sndfile->info->channels;
 
     retval = -1;
