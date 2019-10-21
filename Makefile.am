@@ -8,9 +8,11 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
-# if WITH_GNULIB
-# SUBDIRS += lib
-# endif
+if WITH_GNULIB
+SUBDIRS += lib
+endif
+
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-threads=posix --without-included-regex
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h
@@ -980,6 +982,7 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
 	ags/audio/thread/ags_export_thread.h \
+	ags/audio/thread/ags_sf2_loader.h \
 	ags/audio/thread/ags_sfz_loader.h \
 	ags/audio/thread/ags_wave_loader.h
 
@@ -993,6 +996,7 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
 	ags/audio/thread/ags_export_thread.c \
+	ags/audio/thread/ags_sf2_loader.c \
 	ags/audio/thread/ags_sfz_loader.c \
 	ags/audio/thread/ags_wave_loader.c
 

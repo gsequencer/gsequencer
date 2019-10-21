@@ -220,11 +220,7 @@ ags_sfz_loader_set_property(GObject *gobject,
   sfz_loader = AGS_SFZ_LOADER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_sfz_loader_get_class_mutex());
-  
-  sfz_loader_mutex = sfz_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sfz_loader_get_class_mutex());
+  sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -323,11 +319,7 @@ ags_sfz_loader_get_property(GObject *gobject,
   sfz_loader = AGS_SFZ_LOADER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_sfz_loader_get_class_mutex());
-  
-  sfz_loader_mutex = sfz_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sfz_loader_get_class_mutex());
+  sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -452,11 +444,7 @@ ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
   }
   
   /* get sfz loader mutex */
-  pthread_mutex_lock(ags_sfz_loader_get_class_mutex());
-  
-  sfz_loader_mutex = sfz_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sfz_loader_get_class_mutex());
+  sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* test flags */
   pthread_mutex_lock(sfz_loader_mutex);
@@ -487,11 +475,7 @@ ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
   }
   
   /* get sfz loader mutex */
-  pthread_mutex_lock(ags_sfz_loader_get_class_mutex());
-  
-  sfz_loader_mutex = sfz_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sfz_loader_get_class_mutex());
+  sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* set flags */
   pthread_mutex_lock(sfz_loader_mutex);
@@ -520,11 +504,7 @@ ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags)
   }
   
   /* get sfz loader mutex */
-  pthread_mutex_lock(ags_sfz_loader_get_class_mutex());
-  
-  sfz_loader_mutex = sfz_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sfz_loader_get_class_mutex());
+  sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* unset flags */
   pthread_mutex_lock(sfz_loader_mutex);

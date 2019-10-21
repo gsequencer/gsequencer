@@ -211,11 +211,7 @@ ags_wave_loader_set_property(GObject *gobject,
   wave_loader = AGS_WAVE_LOADER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_wave_loader_get_class_mutex());
-  
-  wave_loader_mutex = wave_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_loader_get_class_mutex());
+  wave_loader_mutex = AGS_WAVE_LOADER_GET_OBJ_MUTEX(wave_loader);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -314,11 +310,7 @@ ags_wave_loader_get_property(GObject *gobject,
   wave_loader = AGS_WAVE_LOADER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_wave_loader_get_class_mutex());
-  
-  wave_loader_mutex = wave_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_loader_get_class_mutex());
+  wave_loader_mutex = AGS_WAVE_LOADER_GET_OBJ_MUTEX(wave_loader);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -443,11 +435,7 @@ ags_wave_loader_test_flags(AgsWaveLoader *wave_loader, guint flags)
   }
   
   /* get wave loader mutex */
-  pthread_mutex_lock(ags_wave_loader_get_class_mutex());
-  
-  wave_loader_mutex = wave_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_loader_get_class_mutex());
+  wave_loader_mutex = AGS_WAVE_LOADER_GET_OBJ_MUTEX(wave_loader);
 
   /* test flags */
   pthread_mutex_lock(wave_loader_mutex);
@@ -478,11 +466,7 @@ ags_wave_loader_set_flags(AgsWaveLoader *wave_loader, guint flags)
   }
   
   /* get wave loader mutex */
-  pthread_mutex_lock(ags_wave_loader_get_class_mutex());
-  
-  wave_loader_mutex = wave_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_loader_get_class_mutex());
+  wave_loader_mutex = AGS_WAVE_LOADER_GET_OBJ_MUTEX(wave_loader);
 
   /* set flags */
   pthread_mutex_lock(wave_loader_mutex);
@@ -511,11 +495,7 @@ ags_wave_loader_unset_flags(AgsWaveLoader *wave_loader, guint flags)
   }
   
   /* get wave loader mutex */
-  pthread_mutex_lock(ags_wave_loader_get_class_mutex());
-  
-  wave_loader_mutex = wave_loader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_loader_get_class_mutex());
+  wave_loader_mutex = AGS_WAVE_LOADER_GET_OBJ_MUTEX(wave_loader);
 
   /* unset flags */
   pthread_mutex_lock(wave_loader_mutex);

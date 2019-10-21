@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,6 +111,7 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_sf2_loader.h>
 #include <ags/audio/thread/ags_sfz_loader.h>
 #include <ags/audio/thread/ags_wave_loader.h>
 
@@ -173,6 +174,13 @@
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_server.h>
+
+/* audio audio-unit */
+#include <ags/audio/audio-unit/ags_audio_unit_client.h>
+#include <ags/audio/audio-unit/ags_audio_unit_devout.h>
+#include <ags/audio/audio-unit/ags_audio_unit_devin.h>
+#include <ags/audio/audio-unit/ags_audio_unit_port.h>
+#include <ags/audio/audio-unit/ags_audio_unit_server.h>
 
 /* audio pulse */
 #include <ags/audio/pulse/ags_pulse_client.h>

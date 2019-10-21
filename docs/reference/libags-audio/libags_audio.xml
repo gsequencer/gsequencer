@@ -159,6 +159,12 @@
       <xi:include href="xml/ags_core_audio_devin.xml"/>
       <xi:include href="xml/ags_core_audio_devout.xml"/>
       <xi:include href="xml/ags_core_audio_midiin.xml"/>
+
+      <xi:include href="xml/ags_audio_unit_server.xml"/>
+      <xi:include href="xml/ags_audio_unit_client.xml"/>
+      <xi:include href="xml/ags_audio_unit_port.xml"/>
+      <xi:include href="xml/ags_audio_unit_devin.xml"/>
+      <xi:include href="xml/ags_audio_unit_devout.xml"/>
     </chapter>
     
     <chapter id="audio-tree">
@@ -235,6 +241,8 @@
       <xi:include href="xml/ags_export_thread.xml"/>
       <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
+      <xi:include href="xml/ags_sf2_loader.xml"/>
+      <xi:include href="xml/ags_sfz_loader.xml"/>
       <xi:include href="xml/ags_wave_loader.xml"/>
     </chapter>
     

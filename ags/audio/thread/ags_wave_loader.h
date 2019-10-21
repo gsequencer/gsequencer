@@ -36,6 +36,8 @@
 #define AGS_IS_WAVE_LOADER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_WAVE_LOADER))
 #define AGS_WAVE_LOADER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_WAVE_LOADER, AgsWaveLoaderClass))
 
+#define AGS_WAVE_LOADER_GET_OBJ_MUTEX(obj) (((AgsWaveLoader *) obj)->obj_mutex)
+
 typedef struct _AgsWaveLoader AgsWaveLoader;
 typedef struct _AgsWaveLoaderClass AgsWaveLoaderClass;
 

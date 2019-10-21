@@ -141,6 +141,11 @@ AgsTaskThread AgsConnectable AgsAsyncQueue
 AgsReturnableThread AgsConnectable
 AgsWorkerThread AgsConnectable
 AgsAudioSignal AgsConnectable
+AgsAudioUnitClient AgsConnectable
+AgsAudioUnitDevin AgsConnectable AgsSoundcard
+AgsAudioUnitDevout AgsConnectable AgsSoundcard
+AgsAudioUnitPort AgsConnectable
+AgsAudioUnitServer AgsConnectable AgsSoundServer
 AgsChannel AgsConnectable
 AgsInput AgsConnectable
 AgsOutput AgsConnectable

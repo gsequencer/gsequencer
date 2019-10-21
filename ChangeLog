@@ -1,3 +1,11 @@
+ags (2.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented playback as clicking AgsPiano of AgsNotationEditor
+	* TODO:JK: implemented AgsSF2Loader
+	* TODO:JK: improved AgsFFPlayer to use AgsSF2Loader
+	* TODO:JK: updated the API reference manual
+
 ags (2.3.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -40,6 +40,11 @@ ags_audio_get_type
 ags_audio_loop_get_type
 ags_audio_signal_get_type
 ags_audio_thread_get_type
+ags_audio_unit_client_get_type
+ags_audio_unit_devin_get_type
+ags_audio_unit_devout_get_type
+ags_audio_unit_port_get_type
+ags_audio_unit_server_get_type
 ags_automation_get_type
 ags_base_plugin_get_type
 ags_buffer_audio_signal_get_type
@@ -254,6 +259,7 @@ ags_set_device_get_type
 ags_set_format_get_type
 ags_set_muted_get_type
 ags_set_samplerate_get_type
+ags_sf2_loader_get_type
 ags_sfz_file_get_type
 ags_sfz_group_get_type
 ags_sfz_loader_get_type
