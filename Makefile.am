@@ -433,8 +433,8 @@ libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libag
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 
-libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_osc_controller_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_osc_controller_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 if WITH_VST3
 libags_vst_la_SOURCES = $(libags_vst_c_sources)
@@ -1904,6 +1904,19 @@ libgsequencer_c_sources = \
 	ags/X/ags_soundcard_editor.c \
 	ags/X/ags_window_callbacks.c \
 	ags/X/ags_xorg_application_context.c
+
+# libgsequencer - OSC conotroller
+deprecated_libgsequencer_osc_controller_h_sources =
+
+libgsequencer_osc_controller_h_sources = \
+	$(deprecated_libgsequencer_osc_controller_h_sources) \
+	ags/X/osc/controller/ags_ui_osc_renew_controller.h
+
+deprecated_libgsequencer_osc_controller_c_sources =
+
+libgsequencer_osc_controller_c_sources = \
+	$(deprecated_libgsequencer_osc_controller_c_sources) \
+	ags/X/osc/controller/ags_ui_osc_renew_controller.c
 
 # libgsequencer - file
 deprecated_libgsequencer_file_h_sources =
