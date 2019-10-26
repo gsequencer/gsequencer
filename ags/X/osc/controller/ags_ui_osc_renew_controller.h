@@ -58,6 +58,11 @@ gpointer ags_ui_osc_renew_controller_set_data(AgsUiOscRenewController *ui_osc_re
 					      AgsOscConnection *osc_connection,
 					      unsigned char *message, guint message_size);
 
+void ags_ui_osc_renew_controller_add_monitor(AgsUiOscRenewController *ui_osc_renew_controller);
+void ags_ui_osc_renew_controller_remove_monitor(AgsUiOscRenewController *ui_osc_renew_controller);
+
+gboolean ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_osc_renew_controller);
+
 AgsUiOscRenewController* ags_ui_osc_renew_controller_new();
 
 #endif /*__AGS_UI_OSC_RENEW_CONTROLLER_H__*/
