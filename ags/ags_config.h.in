@@ -17,8 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_CONFIG_H__
-#define __AGS_CONFIG_H__
+#ifndef __AGS_API_CONFIG_H__
+#define __AGS_API_CONFIG_H__
+
+#undef AGS_WITH_W32API
+
+#undef AGS_WITH_OSXAPI
 
 #undef AGS_WITH_ALSA
 
@@ -38,4 +42,4 @@
 
 #undef AGS_WITH_XMLRPC_C
 
-#endif /*__AGS_CONFIG_H__*/
+#endif /*__AGS_API_CONFIG_H__*/

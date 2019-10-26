@@ -497,7 +497,7 @@ main(int argc, char **argv)
     }
   }
     
-  config_file = g_strdup_printf("%s/%s",
+  config_file = g_strdup_printf("%s\\%s",
 				path,
 				AGS_DEFAULT_CONFIG);
 
