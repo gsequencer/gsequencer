@@ -281,3 +281,48 @@ ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
   ui_provider_interface->set_animation_window(ui_provider,
 					      animation_window);
 }
+
+/**
+ * ags_ui_provider_get_machine:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get machine.
+ * 
+ * Returns: the #GList-struct containing #AgsMachine
+ * 
+ * Since: 2.4.0
+ */
+GList*
+ags_ui_provider_get_machine(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_machine, NULL);
+
+  return(ui_provider_interface->get_machine(ui_provider));
+}
+
+/**
+ * ags_ui_provider_get_machine:
+ * @ui_provider: the #AgsUiProvider
+ * @machine: the #GList-struct containing #AgsMachine
+ * 
+ * Set machine.
+ * 
+ * Since: 2.4.0
+ */
+void
+ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
+			    GList *machine)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_machine);
+
+  ui_provider_interface->set_machine(ui_provider,
+				     machine);
+}

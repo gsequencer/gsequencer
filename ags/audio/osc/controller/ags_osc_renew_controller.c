@@ -2591,15 +2591,13 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
       path_offset += 3;
 
       if(start_port != NULL){
-	GList *retval;
-	
-	retval = ags_osc_renew_controller_set_data_port(osc_renew_controller,
-							osc_connection,
-							recall,
-							start_port->data,
-							message, message_size,
-							type_tag,
-							path, path_offset);
+	start_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
+								osc_connection,
+								recall,
+								start_port->data,
+								message, message_size,
+								type_tag,
+								path, path_offset);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -2741,6 +2739,8 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 							       message, message_size,
 							       type_tag,
 							       path, path_offset);
+
+      free(port_specifier);
     }else{
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
@@ -2759,7 +2759,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
       g_object_unref(task_thread);
       
       return(start_response);
-    }    
+    }
 
     g_list_free_full(start_port,
 		     g_object_unref);
