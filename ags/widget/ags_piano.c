@@ -816,7 +816,17 @@ ags_piano_realize(GtkWidget *widget)
   attributes.visual = gtk_widget_get_visual (widget);
   attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK |
+                            GDK_BUTTON_PRESS_MASK |
+                            GDK_BUTTON_RELEASE_MASK |
+			    GDK_KEY_PRESS_MASK | 
+			    GDK_KEY_RELEASE_MASK |
+                            GDK_BUTTON1_MOTION_MASK |
+                            GDK_BUTTON3_MOTION_MASK |
+                            GDK_POINTER_MOTION_HINT_MASK |
+                            GDK_POINTER_MOTION_MASK |
+                            GDK_ENTER_NOTIFY_MASK |
+                            GDK_LEAVE_NOTIFY_MASK);
 
   widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
 				  &attributes, attributes_mask);
@@ -1334,7 +1344,7 @@ ags_piano_key_code_to_note(gint key_code)
   guint tic_count;
   guint i;
   
-  static const gchar **note_map = {
+  static const gchar* note_map[] = {
     AGS_PIANO_KEYS_OCTAVE_2_C,
     AGS_PIANO_KEYS_OCTAVE_2_CIS,
     AGS_PIANO_KEYS_OCTAVE_2_D,

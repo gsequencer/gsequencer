@@ -31,6 +31,26 @@ ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selecto
 }
 
 void
+ags_notation_editor_piano_key_pressed_callback(AgsPiano *piano,
+					       gchar *note, gint key_code,
+					       AgsNotationEditor *notation_editor)
+{
+  g_message("AgsPiano - key pressed %s %d", note, key_code);
+
+  g_free(note);
+}
+
+void
+ags_notation_editor_piano_key_released_callback(AgsPiano *piano,
+						gchar *note, gint key_code,
+						AgsNotationEditor *notation_editor)
+{
+  g_message("AgsPiano - key released %s %d", note, key_code);
+
+  g_free(note);
+}
+
+void
 ags_notation_editor_resize_audio_channels_callback(AgsMachine *machine, 
 						   guint audio_channels, guint audio_channels_old,
 						   AgsNotationEditor *notation_editor)

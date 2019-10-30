@@ -426,6 +426,12 @@ ags_notation_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) notation_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_notation_editor_machine_changed_callback), (gpointer) notation_editor);
 
+  g_signal_connect((GObject *) notation_editor->scrolled_piano->piano, "key-pressed",
+		   G_CALLBACK(ags_notation_editor_piano_key_pressed_callback), (gpointer) notation_editor);
+
+  g_signal_connect((GObject *) notation_editor->scrolled_piano->piano, "key-released",
+		   G_CALLBACK(ags_notation_editor_piano_key_released_callback), (gpointer) notation_editor);
+  
   /* toolbar */
   ags_connectable_connect(AGS_CONNECTABLE(notation_editor->notation_toolbar));
 
@@ -450,8 +456,17 @@ ags_notation_editor_disconnect(AgsConnectable *connectable)
   notation_editor->flags &= (~AGS_NOTATION_EDITOR_CONNECTED);
 
   g_object_disconnect((GObject *) notation_editor->machine_selector,
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_notation_editor_machine_changed_callback),
+		      (gpointer) notation_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) notation_editor->scrolled_piano->piano,
+		      "any_signal::key-pressed",
+		      G_CALLBACK(ags_notation_editor_piano_key_pressed_callback),
+		      (gpointer) notation_editor,
+		      "any_signal::key-released",
+		      G_CALLBACK(ags_notation_editor_piano_key_released_callback),
 		      (gpointer) notation_editor,
 		      NULL);
 
