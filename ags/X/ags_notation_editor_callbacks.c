@@ -37,6 +37,9 @@ ags_notation_editor_piano_key_pressed_callback(AgsPiano *piano,
 {
   g_message("AgsPiano - key pressed %s %d", note, key_code);
 
+  ags_notation_editor_start_play_key(notation_editor,
+				     key_code);
+  
   g_free(note);
 }
 
@@ -46,6 +49,9 @@ ags_notation_editor_piano_key_released_callback(AgsPiano *piano,
 						AgsNotationEditor *notation_editor)
 {
   g_message("AgsPiano - key released %s %d", note, key_code);
+
+  ags_notation_editor_stop_play_key(notation_editor,
+				    key_code);
 
   g_free(note);
 }

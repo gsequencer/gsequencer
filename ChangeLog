@@ -7,6 +7,7 @@ ags (2.4.0)
 	* improved AgsFFPlayer to use AgsSF2Loader
 	* improved AgsPiano missing event mask
 	* fixed ags_piano_key_code_to_note() static const array note_map
+	* fixed ref count in ags_notation_editor_do_feedback()
 	* TODO:JK: updated the API reference manual
 
 ags (2.3.15)

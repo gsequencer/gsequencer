@@ -230,6 +230,10 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->tact_counter = 0;
   notation_editor->current_tact = 0.0;
 
+  /* active keys */
+  notation_editor->active_key = NULL;
+  notation_editor->active_key_count = 0;
+  
   /* soundcard */
   notation_editor->soundcard = NULL;
 
@@ -879,7 +883,7 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) notation_edit);
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* get soundcard */
   g_object_get(channel,
@@ -923,40 +927,28 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 void
 ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 {
-  AgsNotationEdit *notation_edit;
-  AgsMachine *machine;
-  
-  AgsNotation *notation;
-
-  AgsTimestamp *timestamp;
-
-  GList *start_list_notation, *list_notation;
-
-  gint i;
-
   if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
     return;
   }
   
   if(notation_editor->selected_machine != NULL){
+    AgsNotationEdit *notation_edit;
+    AgsMachine *machine;
+  
     AgsChannel *start_output, *start_input;
     AgsChannel *channel, *nth_channel, *nth_pad;
+    AgsNotation *notation;
     
-    guint audio_flags;
+    AgsTimestamp *timestamp;
+    
+    GList *start_list_notation, *list_notation;
+    
     guint output_pads, input_pads;
+    gint i;
 
-    pthread_mutex_t *audio_mutex;
-    
     notation_edit = notation_editor->notation_edit;
     machine = notation_editor->selected_machine;
   
-    /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
-
     /* check all active tabs */
     timestamp = ags_timestamp_new();
 
@@ -967,28 +959,11 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 
     i = 0;
 
-    pthread_mutex_lock(audio_mutex);
-
-    audio_flags = machine->audio->flags;
-
-    output_pads = machine->audio->output_pads;
-    input_pads = machine->audio->input_pads;
-
-    start_output = machine->audio->output;
-
-    if(start_output != NULL){
-      g_object_ref(start_output);
-    }
-    
-    start_input = machine->audio->input;
-
-    if(start_input != NULL){
-      g_object_ref(start_input);
-    }
-    
-    pthread_mutex_unlock(audio_mutex);
-
     g_object_get(machine->audio,
+		 "output", &start_output,
+		 "output-pads", &output_pads,
+		 "input", &start_input,
+		 "input-pads", &input_pads,
 		 "notation", &start_list_notation,
 		 NULL);
 
@@ -1033,12 +1008,13 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 				       nth_pad,
 				       current_note);
 
+	/* unref */
 	if(nth_channel != NULL){
-	  g_object_ref(nth_channel);
+	  g_object_unref(nth_channel);
 	}
 
 	if(nth_pad != NULL){
-	  g_object_ref(nth_pad);
+	  g_object_unref(nth_pad);
 	}
       }
 
@@ -1058,6 +1034,150 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
       g_object_unref(start_input);
     }
   }
+}
+
+/**
+ * ags_notation_editor_start_play_key:
+ * @notation_editor: the #AgsNotationEditor
+ * @key_code: the key to play
+ * 
+ * Start play @key_code.
+ *
+ * Since: 2.4.0
+ */
+void
+ags_notation_editor_start_play_key(AgsNotationEditor *notation_editor,
+				   gint key_code)
+{
+  if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
+    return;
+  }
+
+  if(notation_editor->selected_machine != NULL){
+    AgsMachine *machine;
+
+    AgsChannel *start_output, *start_input;
+    AgsChannel *channel, *nth_channel, *nth_pad;
+
+    AgsStartSoundcard *start_soundcard;
+    AgsStartChannel *start_channel;
+
+    GObject *output_soundcard;
+    
+    guint output_pads, input_pads;
+    guint audio_channels;
+    guint y;
+    gint i;
+
+    machine = notation_editor->selected_machine;
+
+    i = 0;
+
+    g_object_get(machine->audio,
+		 "output", &start_output,
+		 "output-pads", &output_pads,
+		 "input", &start_input,
+		 "input-pads", &input_pads,
+		 "audio-channels", &audio_channels,
+		 NULL);
+
+    for(i = 0; i < audio_channels; i++){
+      //TODO:JK: improve me
+      y = key_code;
+      
+      if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
+	nth_channel = ags_channel_nth(start_output,
+				      i);
+      }else{
+	nth_channel = ags_channel_nth(start_input,
+				      i);
+      }
+
+      if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+	nth_pad = ags_channel_pad_nth(nth_channel,
+				      (ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT) ? output_pads: input_pads) - y - 1);
+      }else{
+	nth_pad = ags_channel_pad_nth(nth_channel,
+				      y);
+      }
+
+      /* get soundcard */
+      output_soundcard = NULL;
+
+      if(nth_pad != NULL){
+	g_object_get(nth_pad,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
+      }
+      
+      if(output_soundcard != NULL){
+	AgsApplicationContext *application_context;
+	
+	GList *task;
+
+	application_context = ags_application_context_get_instance();
+	
+	/* create tasks */
+	task = NULL;
+
+	/* start playback */
+	start_channel = ags_start_channel_new(nth_pad,
+					      AGS_SOUND_SCOPE_PLAYBACK);
+	task = g_list_prepend(task,
+			      start_channel);
+
+	/* create start task */
+	start_soundcard = ags_start_soundcard_new(application_context);
+	task = g_list_prepend(task,
+			      start_soundcard);
+
+	/* perform playback */
+	task = g_list_reverse(task);
+	ags_xorg_application_context_schedule_task_list(application_context,
+							task);
+
+	g_object_unref(output_soundcard);
+      }
+      
+      /* unref */
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+
+      if(nth_pad != NULL){
+	g_object_unref(nth_pad);
+      }
+    }
+
+    /* unref */
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+  }
+}
+
+/**
+ * ags_notation_editor_stop_play_key:
+ * @notation_editor: the #AgsNotationEditor
+ * @key_code: the key to stop
+ * 
+ * Stop play @key_code.
+ *
+ * Since: 2.4.0
+ */
+void
+ags_notation_editor_stop_play_key(AgsNotationEditor *notation_editor,
+				  gint key_code)
+{
+  if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
+    return;
+  }
+
+  //TODO:JK: implement me
 }
 
 /**
