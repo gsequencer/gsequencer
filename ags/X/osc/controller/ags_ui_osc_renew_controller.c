@@ -169,7 +169,7 @@ ags_ui_osc_renew_controller_get_type()
     };    
 
     static const GInterfaceInfo ags_osc_plugin_controller_interface_info = {
-      (GInterfaceInitFunc) ags_ui_osc_controller_osc_plugin_controller_interface_init,
+      (GInterfaceInitFunc) ags_ui_osc_renew_controller_osc_plugin_controller_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -325,9 +325,13 @@ ags_ui_osc_renew_controller_do_request(AgsOscPluginController *osc_plugin_contro
 				       AgsOscConnection *osc_connection,
 				       unsigned char *message, guint message_size)
 {
-  ags_ui_osc_renew_controller_set_data(AGS_UI_OSC_RENEW_CONTROLLER(osc_plugin_controller),
-				       osc_connection,
-				       message, message_size);
+  gpointer response;
+  
+  response = ags_ui_osc_renew_controller_set_data(AGS_UI_OSC_RENEW_CONTROLLER(osc_plugin_controller),
+						  osc_connection,
+						  message, message_size);
+
+  return(response);
 }
 
 gpointer
@@ -852,7 +856,7 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
 		 "AgsUiOscRenewController::set-data");
 
       /* add message */
-      message = ags_message_envelope_alloc((GObject *) audio,
+      message = ags_message_envelope_alloc((GObject *) ui_osc_renew_controller,
 					   NULL,
 					   doc);
 
@@ -1046,6 +1050,8 @@ ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_
 	  AgsOscConnection *osc_connection;
 	  AgsOscResponse *osc_response;
 
+	  AgsApplicationContext *application_context;
+	  
 	  GList *start_response;
 
 	  unsigned char *duplicated_message;
@@ -1406,7 +1412,7 @@ ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_
 
 		while(machine != NULL){
 		  if(G_OBJECT_TYPE(machine->data) == machine_type &&
-		     !g_ascii_strcasecmp(AGS_MACHINE(machine->data)->name,
+		     !g_ascii_strcasecmp(AGS_MACHINE(machine->data)->machine_name,
 					 machine_name)){
 		    GList *retval;
 	

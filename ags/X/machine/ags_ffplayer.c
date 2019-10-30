@@ -80,6 +80,7 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
+GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
 extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GtkStyle *ffplayer_style = NULL;
@@ -188,6 +189,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkAlignment *alignment;
   GtkTable *table;
   GtkHBox *hbox;
+  GtkHBox *filename_hbox;
   GtkVBox *piano_vbox;
   GtkLabel *label;
   
@@ -278,6 +280,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->name = NULL;
   ffplayer->xml_type = "ags-ffplayer";
 
+  /* audio container */
+  ffplayer->audio_container = NULL;
+
   /* create widgets */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
@@ -294,9 +299,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
-
-  /* audio container */
-  ffplayer->audio_container = NULL;
   
   /* preset and instrument */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -337,16 +339,40 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     TRUE, FALSE,
 		     0);
 
-  ffplayer->open = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					      "label", GTK_STOCK_OPEN,
-					      "use-stock", TRUE,
-					      NULL);
+  /* filename */
+  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					   0);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->open),
+		     GTK_WIDGET(filename_hbox),
 		     FALSE, FALSE,
 		     0);
-  ffplayer->open_dialog = NULL;
-  
+
+  ffplayer->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->filename,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->open,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->sf2_loader = NULL;
+
+  ffplayer->position = -1;
+
+  ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->loading,
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->loading,
+			     TRUE);
+  gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+  /* piano */
   piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
   gtk_table_attach(table, (GtkWidget *) piano_vbox,
 		   1, 2,
@@ -390,6 +416,20 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
+
+  /* dialog */
+  ffplayer->open_dialog = NULL;
+
+  /* SF2 loader */
+  if(ags_ffplayer_sf2_loader_completed == NULL){
+    ags_ffplayer_sf2_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							      NULL,
+							      NULL);
+  }
+
+  g_hash_table_insert(ags_ffplayer_sf2_loader_completed,
+		      ffplayer, ags_ffplayer_sf2_loader_completed_timeout);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_ffplayer_sf2_loader_completed_timeout, (gpointer) ffplayer);
 
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
@@ -1797,41 +1837,20 @@ void
 ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
+  AgsSF2Loader *sf2_loader;
+
   if(!AGS_IS_FFPLAYER(ffplayer) ||
      filename == NULL){
     return;
   }
   
-  if(g_str_has_suffix(filename, ".sf2")){
-    AgsWindow *window;
-    
-    AgsAudioContainer *audio_container;
+  ffplayer->sf2_loader = 
+    sf2_loader = ags_sf2_loader_new(AGS_MACHINE(ffplayer)->audio,
+				    filename,
+				    NULL,
+				    NULL);
 
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
-    
-    /* clear preset and instrument */
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
-
-    /* Ipatch related */
-    ffplayer->audio_container = 
-      audio_container = ags_audio_container_new(filename,
-						NULL,
-						NULL,
-						NULL,
-						window->soundcard,
-						-1);
-    ags_audio_container_open(audio_container);
-
-    if(audio_container->sound_container == NULL){
-      return;
-    }
-    
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container), 0);
-    AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
-    
-    ags_ffplayer_load_preset(ffplayer);
-  }
+  ags_sf2_loader_start(sf2_loader);
 }
 
 void
@@ -1897,6 +1916,90 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 				   instrument[0]);
 
     instrument++;
+  }
+}
+
+/**
+ * ags_ffplayer_sf2_loader_completed_timeout:
+ * @widget: the widget
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed poll completed, otherwise %FALSE
+ *
+ * Since: 2.4.0
+ */
+gboolean
+ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
+{
+  if(g_hash_table_lookup(ags_ffplayer_sf2_loader_completed,
+			 ffplayer) != NULL){
+    if(ffplayer->sf2_loader != NULL){
+      if(ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+	/* reassign audio container */
+	ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
+	ffplayer->sf2_loader->audio_container = NULL;
+
+	/* clear preset and instrument */
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
+
+	/* level select */
+	if(ffplayer->audio_container->sound_container != NULL){
+	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
+	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
+    
+	  ags_ffplayer_load_preset(ffplayer);
+	}
+
+	/* cleanup */	
+	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
+	g_object_unref(ffplayer->sf2_loader);
+
+	ffplayer->sf2_loader = NULL;
+
+	ffplayer->position = -1;
+	gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+      }else{
+	if(ffplayer->position == -1){
+	  ffplayer->position = 0;
+
+	  gtk_widget_show((GtkWidget *) ffplayer->loading);
+	}
+
+	switch(ffplayer->position){
+	case 0:
+	  {
+	    ffplayer->position = 1;
+	    
+	    gtk_label_set_label(ffplayer->loading,
+				"loading ...  ");
+	  }
+	  break;
+	case 1:
+	  {
+	    ffplayer->position = 2;
+
+	    gtk_label_set_label(ffplayer->loading,
+				"loading  ... ");
+	  }
+	  break;
+	case 2:
+	  {
+	    ffplayer->position = 0;
+
+	    gtk_label_set_label(ffplayer->loading,
+				"loading   ...");
+	  }
+	  break;
+	}
+      }
+    }
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
   }
 }
 

@@ -1768,7 +1768,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 
 	g_list_free(start_list);
 
-	/*  */
+	/* reassign audio container */
 	pitch_sampler->audio_container = pitch_sampler->sfz_loader->audio_container;
 	pitch_sampler->sfz_loader->audio_container = NULL;
 	
