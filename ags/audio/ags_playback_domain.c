@@ -658,7 +658,7 @@ AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
 				     gint sound_scope)
 {
-  AgsThread *thread;
+  AgsThread *audio_thread;
   
   pthread_mutex_t *playback_domain_mutex;
 
@@ -673,11 +673,15 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
   /* get */
   pthread_mutex_lock(playback_domain_mutex);
 
-  thread = (playback_domain->audio_thread != NULL) ? playback_domain->audio_thread[sound_scope]: NULL;
+  audio_thread = (playback_domain->audio_thread != NULL) ? playback_domain->audio_thread[sound_scope]: NULL;
 
+  if(audio_thread != NULL){
+    g_object_ref(audio_thread);
+  }
+  
   pthread_mutex_unlock(playback_domain_mutex);
   
-  return(thread);
+  return(audio_thread);
 }
 
 

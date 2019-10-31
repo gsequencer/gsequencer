@@ -1648,6 +1648,99 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 }
 
 /**
+ * ags_audio_loop_test_flags:
+ * @audio_loop: the #AgsAudioLoop
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.4.0
+ */
+gboolean
+ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *audio_loop_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return(FALSE);
+  }
+  
+  /* get audio loop mutex */
+  audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* test flags */
+  pthread_mutex_lock(audio_loop_mutex);
+
+  retval = ((flags & (audio_loop->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_loop_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_audio_loop_set_flags:
+ * @audio_loop: the #AgsAudioLoop
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.4.0
+ */
+void
+ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags)
+{
+  pthread_mutex_t *audio_loop_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return;
+  }
+  
+  /* get audio loop mutex */
+  audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* set flags */
+  pthread_mutex_lock(audio_loop_mutex);
+
+  audio_loop->flags |= flags;
+  
+  pthread_mutex_unlock(audio_loop_mutex);
+}
+
+/**
+ * ags_audio_loop_unset_flags:
+ * @audio_loop: the #AgsAudioLoop
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.4.0
+ */
+void
+ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags)
+{
+  pthread_mutex_t *audio_loop_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop)){
+    return;
+  }
+  
+  /* get audio loop mutex */
+  audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+
+  /* unset flags */
+  pthread_mutex_lock(audio_loop_mutex);
+
+  audio_loop->flags &= (~flags);
+  
+  pthread_mutex_unlock(audio_loop_mutex);
+}
+
+/**
  * ags_audio_loop_add_audio:
  * @audio_loop: the #AgsAudioLoop
  * @audio: an #AgsAudio

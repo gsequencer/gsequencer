@@ -7,6 +7,7 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: refactor AgsAudioThreadFlags and AgsChannelThreadFlags
 * TODO:JK: move ags/X to ags/ui
 * TODO:JK: implemented AgsMessageEnvelope as object
 * TODO:JK: implemented AgsMessageQueue by consumer

@@ -118,6 +118,10 @@ struct _AgsAudioLoopClass
 
 GType ags_audio_loop_get_type();
 
+gboolean ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags);
+void ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags);
+void ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags);
+
 void ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 

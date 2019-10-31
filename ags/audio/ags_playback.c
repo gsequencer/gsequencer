@@ -738,6 +738,10 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
 
   channel_thread = (playback->channel_thread != NULL) ? playback->channel_thread[sound_scope]: NULL;
 
+  if(channel_thread != NULL){
+    g_object_ref(channel_thread);
+  }
+  
   pthread_mutex_unlock(playback_mutex);
   
   return(channel_thread);
@@ -823,6 +827,10 @@ ags_playback_get_recall_id(AgsPlayback *playback,
   }
   
   recall_id = playback->recall_id[sound_scope];
+
+  if(recall_id != NULL){
+    g_object_ref(recall_id);
+  }
 
   pthread_mutex_unlock(playback_mutex);
   
