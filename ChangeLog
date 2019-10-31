@@ -1,17 +1,13 @@
-2019-10-31  gettextize  <bug-gnu-gettext@gnu.org>
-
-	* m4/lib-ld.m4: Upgrade to gettext-0.19.8.1.
-	* m4/lib-link.m4: Upgrade to gettext-0.19.8.1.
-	* m4/lib-prefix.m4: Upgrade to gettext-0.19.8.1.
-
 ags (2.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsUiOscRenewController
 	* TODO:JK: implemented playback as clicking AgsPiano of AgsNotationEditor
 	* TODO:JK: implemented missing feedback of AgsNotationEditor
+	* implemented AgsResetNote
 	* implemented AgsSF2Loader
 	* implemented ags_audio_loop_test_flags(), ags_audio_loop_set_flags() and ags_audio_loop_unset_flags()
+	* TODO:JK: refactored unified playback of AgsMachine's samples with AGS_SOUND_SCOPE_PLAYBACK
 	* refactored AgsStartAudio task to use ags_audio_start()
 	* refactored AgsStartChannel task to use ags_channel_start()
 	* improved AgsFFPlayer to use AgsSF2Loader
@@ -22,6 +18,9 @@ ags (2.4.0)
 	* fixed ref count in ags_notation_editor_do_feedback()
 	* TODO:JK: updated the API reference manual
 	* minor improvements
+	* m4/lib-ld.m4: Upgrade to gettext-0.19.8.1.
+	* m4/lib-link.m4: Upgrade to gettext-0.19.8.1.
+	* m4/lib-prefix.m4: Upgrade to gettext-0.19.8.1.
 
 ags (2.3.15)
 

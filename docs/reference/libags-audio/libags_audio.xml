@@ -526,6 +526,7 @@
       <xi:include href="xml/ags_remove_note.xml"/>
       <xi:include href="xml/ags_remove_soundcard.xml"/>
       <xi:include href="xml/ags_reset_amplitude.xml"/>
+      <xi:include href="xml/ags_reset_note.xml"/>
       <xi:include href="xml/ags_reset_peak.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
       <xi:include href="xml/ags_seek_soundcard.xml"/>

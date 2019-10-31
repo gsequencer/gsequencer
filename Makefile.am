@@ -1530,6 +1530,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_sequencer_length.h \
 	ags/audio/task/ags_apply_tact.h \
 	ags/audio/task/ags_reset_amplitude.h \
+	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h \
 	ags/audio/task/ags_set_muted.h
 
@@ -1588,6 +1589,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_sequencer_length.c \
 	ags/audio/task/ags_apply_tact.c \
 	ags/audio/task/ags_reset_amplitude.c \
+	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c \
 	ags/audio/task/ags_set_muted.c
 

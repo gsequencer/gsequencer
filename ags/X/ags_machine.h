@@ -112,7 +112,7 @@ struct _AgsMachine
   guint bank_1;
 
   AgsAudio *audio;
-
+  
   GtkToggleButton *play;
 
   GType output_pad_type;

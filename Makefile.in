@@ -650,6 +650,7 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/task/ags_apply_sequencer_length.c \
 	ags/audio/task/ags_apply_tact.c \
 	ags/audio/task/ags_reset_amplitude.c \
+	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c ags/audio/task/ags_set_muted.c \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c \
@@ -948,6 +949,7 @@ am__objects_19 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_apply_sequencer_length.lo \
 	ags/audio/task/libags_audio_la-ags_apply_tact.lo \
 	ags/audio/task/libags_audio_la-ags_reset_amplitude.lo \
+	ags/audio/task/libags_audio_la-ags_reset_note.lo \
 	ags/audio/task/libags_audio_la-ags_reset_peak.lo \
 	ags/audio/task/libags_audio_la-ags_set_muted.lo \
 	$(am__objects_18)
@@ -4696,6 +4698,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_note.Plo \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_amplitude.Plo \
+	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Plo \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo \
 	ags/audio/task/$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo \
@@ -5648,6 +5651,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/task/ags_apply_sequencer_length.h \
 	ags/audio/task/ags_apply_tact.h \
 	ags/audio/task/ags_reset_amplitude.h \
+	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h ags/audio/task/ags_set_muted.h \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h \
@@ -9259,6 +9263,7 @@ libags_audio_task_h_sources =  \
 	ags/audio/task/ags_apply_sequencer_length.h \
 	ags/audio/task/ags_apply_tact.h \
 	ags/audio/task/ags_reset_amplitude.h \
+	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h ags/audio/task/ags_set_muted.h \
 	$(am__append_28)
 deprecated_libags_audio_task_c_sources = 
@@ -9308,6 +9313,7 @@ libags_audio_task_c_sources =  \
 	ags/audio/task/ags_apply_sequencer_length.c \
 	ags/audio/task/ags_apply_tact.c \
 	ags/audio/task/ags_reset_amplitude.c \
+	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c ags/audio/task/ags_set_muted.c \
 	$(am__append_29)
 
@@ -10903,6 +10909,9 @@ ags/audio/task/libags_audio_la-ags_apply_tact.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_reset_amplitude.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_reset_note.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_reset_peak.lo:  \
@@ -14381,6 +14390,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_note.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_amplitude.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo@am__quote@ # am--include-marker
@@ -16300,6 +16310,13 @@ ags/audio/task/libags_audio_la-ags_reset_amplitude.lo: ags/audio/task/ags_reset_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_reset_amplitude.c' object='ags/audio/task/libags_audio_la-ags_reset_amplitude.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_reset_amplitude.lo `test -f 'ags/audio/task/ags_reset_amplitude.c' || echo '$(srcdir)/'`ags/audio/task/ags_reset_amplitude.c
+
+ags/audio/task/libags_audio_la-ags_reset_note.lo: ags/audio/task/ags_reset_note.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_reset_note.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Tpo -c -o ags/audio/task/libags_audio_la-ags_reset_note.lo `test -f 'ags/audio/task/ags_reset_note.c' || echo '$(srcdir)/'`ags/audio/task/ags_reset_note.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_reset_note.c' object='ags/audio/task/libags_audio_la-ags_reset_note.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_reset_note.lo `test -f 'ags/audio/task/ags_reset_note.c' || echo '$(srcdir)/'`ags/audio/task/ags_reset_note.c
 
 ags/audio/task/libags_audio_la-ags_reset_peak.lo: ags/audio/task/ags_reset_peak.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_reset_peak.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_peak.Tpo -c -o ags/audio/task/libags_audio_la-ags_reset_peak.lo `test -f 'ags/audio/task/ags_reset_peak.c' || echo '$(srcdir)/'`ags/audio/task/ags_reset_peak.c
@@ -24903,6 +24920,7 @@ distclean: distclean-recursive
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_note.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_amplitude.Plo
+	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo
@@ -25835,6 +25853,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_note.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_amplitude.Plo
+	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_note.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo
 	-rm -f ags/audio/task/$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo
