@@ -51,7 +51,7 @@
 
 #include <math.h>
 
-#define _LIBINTL_H
+//#define _LIBINTL_H
 #include <ags/i18n.h>
 
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);

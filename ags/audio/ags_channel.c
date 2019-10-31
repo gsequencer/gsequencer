@@ -10123,8 +10123,8 @@ ags_channel_real_start(AgsChannel *channel,
 				     "recycling-context", recycling_context,
 				     NULL);
     ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
-    ags_audio_add_recall_id(audio,
-			    (GObject *) channel_recall_id);
+    ags_channel_add_recall_id(channel,
+			      (GObject *) channel_recall_id);
 
     /* prepend recall id */
     recall_id = g_list_prepend(recall_id,
@@ -10151,8 +10151,13 @@ ags_channel_real_start(AgsChannel *channel,
     ags_thread_add_start_queue(audio_loop,
 			       channel_thread);
 
-    g_object_unref(audio_thread);
-    g_object_unref(channel_thread);
+    if(audio_thread != NULL){
+      g_object_unref(audio_thread);
+    }
+
+    if(channel_thread != NULL){
+      g_object_unref(channel_thread);
+    }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* recycling context */
@@ -10186,8 +10191,8 @@ ags_channel_real_start(AgsChannel *channel,
 				       "recycling-context", recycling_context,
 				       NULL);
       ags_recall_id_set_sound_scope(channel_recall_id, i);
-      ags_audio_add_recall_id(audio,
-			      (GObject *) channel_recall_id);
+      ags_channel_add_recall_id(channel,
+				(GObject *) channel_recall_id);
       
       /* prepend recall id */
       recall_id = g_list_prepend(recall_id,
@@ -10214,8 +10219,13 @@ ags_channel_real_start(AgsChannel *channel,
       ags_thread_add_start_queue(audio_loop,
 				 channel_thread);
 
-      g_object_unref(audio_thread);
-      g_object_unref(channel_thread);
+      if(audio_thread != NULL){
+	g_object_unref(audio_thread);
+      }
+      
+      if(channel_thread != NULL){
+	g_object_unref(channel_thread);
+      }
     }
   }
 
@@ -10274,10 +10284,10 @@ ags_channel_real_start(AgsChannel *channel,
     message->parameter_name[1] = "recall-id";
     g_value_init(&(message->value[1]),
 		 G_TYPE_POINTER);
-    g_value_set_int(&(message->value[1]),
-		    g_list_copy_deep(recall_id,
-				     (GCopyFunc) g_object_ref,
-				     NULL));
+    g_value_set_pointer(&(message->value[1]),
+			g_list_copy_deep(recall_id,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
     
     /* terminate string vector */
     message->parameter_name[2] = NULL;

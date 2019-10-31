@@ -1,3 +1,9 @@
+2019-10-31  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* m4/lib-ld.m4: Upgrade to gettext-0.19.8.1.
+	* m4/lib-link.m4: Upgrade to gettext-0.19.8.1.
+	* m4/lib-prefix.m4: Upgrade to gettext-0.19.8.1.
+
 ags (2.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

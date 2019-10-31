@@ -10302,8 +10302,6 @@ ags_audio_real_start(AgsAudio *audio,
       recycling_context = ags_recycling_context_new(1);
       ags_audio_add_recycling_context(audio,
 				      (GObject *) recycling_context);
-
-      /* set recycling */
       ags_recycling_context_replace(recycling_context,
 				    first_recycling,
 				    0);
@@ -10325,8 +10323,8 @@ ags_audio_real_start(AgsAudio *audio,
 				       "recycling-context", recycling_context,
 				       NULL);
       ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
-      ags_audio_add_recall_id(audio,
-			      (GObject *) channel_recall_id);
+      ags_channel_add_recall_id(channel,
+				(GObject *) channel_recall_id);
 
       /* prepend recall id */
       recall_id = g_list_prepend(recall_id,
@@ -10378,14 +10376,18 @@ ags_audio_real_start(AgsAudio *audio,
       /* unref */
       g_object_unref(channel);
 
-      g_object_unref(channel_thread);
-
+      if(channel_thread != NULL){
+	g_object_unref(channel_thread);
+      }
+      
       /* iterate */
       output_playback = output_playback->next;
     }
 
     /* unref */
-    g_object_unref(audio_thread);
+    if(audio_thread != NULL){
+      g_object_unref(audio_thread);
+    }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       output_playback = start_output_playback;
@@ -10429,8 +10431,8 @@ ags_audio_real_start(AgsAudio *audio,
 					 "recycling-context", recycling_context,
 					 NULL);
 	ags_recall_id_set_sound_scope(channel_recall_id, i);
-	ags_audio_add_recall_id(audio,
-				(GObject *) channel_recall_id);
+	ags_channel_add_recall_id(channel,
+				  (GObject *) channel_recall_id);
 
 	/* prepend recall id */
 	recall_id = g_list_prepend(recall_id,
@@ -10482,14 +10484,18 @@ ags_audio_real_start(AgsAudio *audio,
 	/* unref */
 	g_object_unref(channel);
 
-	g_object_unref(channel_thread);
-
+	if(channel_thread != NULL){
+	  g_object_unref(channel_thread);
+	}
+	
 	/* iterate */
 	output_playback = output_playback->next;
       }
 
       /* unref */
-      g_object_unref(audio_thread);
+      if(audio_thread != NULL){
+	g_object_unref(audio_thread);
+      }
     }
   }
     
@@ -10546,10 +10552,10 @@ ags_audio_real_start(AgsAudio *audio,
     message->parameter_name[1] = "recall-id";
     g_value_init(&(message->value[1]),
 		 G_TYPE_POINTER);
-    g_value_set_int(&(message->value[1]),
-		    g_list_copy_deep(recall_id,
-				     (GCopyFunc) g_object_ref,
-				     NULL));
+    g_value_set_pointer(&(message->value[1]),
+			g_list_copy_deep(recall_id,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
     /* terminate string vector */
     message->parameter_name[2] = NULL;
