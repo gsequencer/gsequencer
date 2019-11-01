@@ -20,13 +20,6 @@
 #include <ags/audio/task/ags_cancel_audio.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_audio_thread.h>
-#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/i18n.h>
 

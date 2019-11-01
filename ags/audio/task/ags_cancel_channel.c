@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,11 +19,7 @@
 
 #include <ags/audio/task/ags_cancel_channel.h>
 
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/ags_channel.h>
 
 #include <ags/i18n.h>
 
@@ -264,90 +260,29 @@ void
 ags_cancel_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
-  AgsPlaybackDomain *playback_domain;
-  AgsPlayback *playback;
   
   AgsCancelChannel *cancel_channel;
 
-  AgsAudioLoop *audio_loop;
-
-  AgsApplicationContext *application_context;
-
+  GList *start_recall_id;
 
   gint sound_scope;
 
-  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
-				      AGS_SOUND_STAGING_REMOVE);
-
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
-  channel = cancel_channel->channel;
-
-  sound_scope = cancel_channel->sound_scope;
-
-  application_context = ags_application_context_get_instance();
-
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  g_object_get(channel,
-	       "playback", &playback,
+  g_object_get(cancel_channel,
+	       "channel", &channel,
+	       "sound-scope", &sound_scope,
 	       NULL);
 
-  g_object_get(playback,
-	       "playback-domain", &playback_domain,
-	       NULL);
-
-  if(sound_scope >= 0){
-    /* cancel */
-    ags_channel_recursive_run_stage(channel,
-				    sound_scope, staging_flags);
-
-    ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
-							 sound_scope));
-    
-    ags_thread_stop(ags_playback_get_channel_thread(playback,
-						    sound_scope));
-    
-    ags_channel_recursive_run_stage(channel,
-				    sound_scope, AGS_SOUND_STAGING_FINI);
-
-    ags_playback_set_recall_id(playback,
-			       NULL,
-			       sound_scope);
-  }else{
-    gint i;
-
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
-      /* cancel */
-      ags_channel_recursive_run_stage(channel,
-				      i, staging_flags);
-      
-      ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
-							   i));
-
-      ags_thread_stop(ags_playback_get_channel_thread(playback,
-						      i));
-    }
-
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
-      ags_channel_recursive_run_stage(channel,
-				      i, AGS_SOUND_STAGING_FINI);
-      
-      ags_playback_set_recall_id(playback,
-				 NULL,
-				 i);
-    }
-  }
+  start_recall_id = ags_channel_check_scope(channel, sound_scope);
   
-  /* add channel to AgsAudioLoop */
-  ags_audio_loop_remove_channel(audio_loop,
-				(GObject *) channel);
+  ags_channel_stop(channel,
+		   start_recall_id, sound_scope);
+  
+  g_object_unref(channel);
 
-  g_object_unref(playback);
-
-  g_object_unref(playback_domain);
-
-  g_object_unref(audio_loop);
+  g_list_free_full(start_recall_id,
+		   g_object_unref);
 }
 
 /**

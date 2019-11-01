@@ -10346,47 +10346,111 @@ void
 ags_channel_real_stop(AgsChannel *channel,
 		      GList *recall_id, gint sound_scope)
 {
+  AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
+  AgsThread *audio_loop;
+  AgsThread *audio_thread;
+  AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
+  AgsApplicationContext *application_context;
+
   gint i;
 
-  pthread_mutex_t *channel_mutex;
+  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
+				      AGS_SOUND_STAGING_REMOVE);
 
-#if 0
-  /* get channel mutex */
-  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+  if(recall_id == NULL ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* get some fields */
-  pthread_mutex_lock(channel_mutex);
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
 
-  playback = (AgsPlayback *) channel->playback;
-  
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(playback,
+	       "playback-domain", &playback_domain,
+	       NULL);
 
-  /* run stage */
   if(sound_scope >= 0){
+    /* cancel */
     ags_channel_recursive_run_stage(channel,
-				    sound_scope, (AGS_SOUND_STAGING_CANCEL |
-						  AGS_SOUND_STAGING_DONE |
-						  AGS_SOUND_STAGING_REMOVE));
+				    sound_scope, staging_flags);
+
+    /* stop thread */
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							sound_scope);
+
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     sound_scope);
+
+    if(audio_thread != NULL){
+      ags_thread_stop(audio_thread);
+
+      g_object_unref(audio_thread);
+    }
+
+    if(channel_thread != NULL){
+      ags_thread_stop(channel_thread);
+
+      g_object_unref(channel_thread);
+    }
+
+    /* clean - fini */
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, AGS_SOUND_STAGING_FINI);
+
     ags_playback_set_recall_id(playback,
 			       NULL,
 			       sound_scope);
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* cancel */
       ags_channel_recursive_run_stage(channel,
-				      i, (AGS_SOUND_STAGING_CANCEL |
-					  AGS_SOUND_STAGING_DONE |
-					  AGS_SOUND_STAGING_REMOVE));
+				      i, staging_flags);
+
+      /* stop thread */
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+
+      channel_thread = ags_playback_get_channel_thread(playback,
+						       i);
+
+      if(audio_thread != NULL){
+	ags_thread_stop(audio_thread);
+
+	g_object_unref(audio_thread);
+      }
+
+      if(channel_thread != NULL){
+	ags_thread_stop(channel_thread);
+
+	g_object_unref(channel_thread);
+      }
+    }
+    
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* clean - fini */
+      ags_channel_recursive_run_stage(channel,
+				      i, AGS_SOUND_STAGING_FINI);
+
       ags_playback_set_recall_id(playback,
 				 NULL,
 				 i);
     }
   }
-#endif
+    
+  /* remove channel from AgsAudioLoop */
+  ags_audio_loop_remove_channel(audio_loop,
+				(GObject *) channel);
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();

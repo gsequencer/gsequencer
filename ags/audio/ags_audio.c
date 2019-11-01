@@ -10776,7 +10776,7 @@ ags_audio_real_stop(AgsAudio *audio,
     }
   }
 
-  /* remove channel from AgsAudioLoop */
+  /* remove audio from AgsAudioLoop */
   sequencer = ags_audio_check_scope(audio,
 				    (AGS_SOUND_SCOPE_SEQUENCER));
   sequencer_recall_id = ags_recall_id_find_parent_recycling_context(sequencer,
