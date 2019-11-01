@@ -831,7 +831,10 @@ ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
   AgsChannel *start_output, *start_input;
   AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
 
+  GList *start_play, *play;
+
   guint output_pads, input_pads;
+  guint i, j;
   
   audio = machine->audio;
 
@@ -1045,40 +1048,70 @@ ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
 				0);
     }
     
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play",
-			      audio_channels_old, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+    for(i = 0; i < input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	AgsPlayChannelRun *play_channel_run;
+	AgsStreamChannelRun *stream_channel_run;
 
-    /* ags-stream */
-    if(!ags_recall_global_get_rt_safe()){
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-    }else{
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-rt-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
+	channel = ags_channel_nth(start_input,
+				  i * audio_channels + j);
+
+	/* ags-play */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-play",
+				  j, j + 1,
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* ags-stream */
+	if(!ags_recall_global_get_rt_safe()){
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-stream",
+				    j, j + 1, 
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+
+	  /* set up dependencies */
+	  g_object_get(channel,
+		       "play", &start_play,
+		       NULL);
+    
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_PLAY_CHANNEL_RUN);
+	  play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_STREAM_CHANNEL_RUN);
+	  stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	  g_object_set(G_OBJECT(play_channel_run),
+		       "stream-channel-run", stream_channel_run,
+		       NULL);
+
+	  g_list_free_full(start_play,
+			   g_object_unref);
+	}else{
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-rt-stream",
+				    j, j + 1, 
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+	}
+      }
     }
     
     /* AgsOutput */
@@ -1225,9 +1258,12 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
 
+  GList *start_play, *play;
+
   guint input_pads;
   guint audio_channels;
-
+  guint i, j;
+  
   if(fm_syncsynth->mapped_input_pad > input_pad_start){
     return;
   }
@@ -1348,55 +1384,85 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
   }
-  
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
 
-  /* ags-feed */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-feed",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  for(i = input_pad_start; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayChannelRun *play_channel_run;
+      AgsStreamChannelRun *stream_channel_run;
+
+      channel = ags_channel_nth(start_input,
+				i * audio_channels + j);
+      
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play",
+				j, j + 1,
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-feed */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-feed",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
   
-  /* ags-stream */
-  if(!(ags_recall_global_get_rt_safe() ||
-       ags_recall_global_get_performance_mode())){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      0, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }else{
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      0, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }
+      /* ags-stream */
+      if(!(ags_recall_global_get_rt_safe() ||
+	   ags_recall_global_get_performance_mode())){
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* set up dependencies */
+	g_object_get(channel,
+		     "play", &start_play,
+		     NULL);
+    
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_PLAY_CHANNEL_RUN);
+	play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_STREAM_CHANNEL_RUN);
+	stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	g_object_set(G_OBJECT(play_channel_run),
+		     "stream-channel-run", stream_channel_run,
+		     NULL);
+
+	g_list_free_full(start_play,
+			 g_object_unref);
+      }else{
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-rt-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+    }
+  }  
   
   fm_syncsynth->mapped_input_pad = input_pads;
 

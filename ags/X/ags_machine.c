@@ -3019,6 +3019,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     AgsMessageDelivery *message_delivery;
 
     GList *message_start, *message;
+    GList *active_playback;
     
     /* retrieve message */
     message_delivery = ags_message_delivery_get_instance();
@@ -3153,9 +3154,53 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 
       message = message->next;
     }
-    
+      
     g_list_free_full(message_start,
 		     (GDestroyNotify) ags_message_envelope_free);
+
+    /*  */
+    active_playback = machine->active_playback;
+
+    while(active_playback != NULL){
+      AgsChannel *channel;
+
+      g_object_get(active_playback->data,
+		   "channel", &channel,
+		   NULL);
+      
+      message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags-audio",
+						   (GObject *) channel);
+
+      while(message != NULL){
+	xmlNode *root_node;
+
+	root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+	if(!xmlStrncmp(root_node->name,
+		       "ags-command",
+		       12)){
+	  if(!xmlStrncmp(xmlGetProp(root_node,
+				    "method"),
+			 "AgsChannel::stop",
+			 18)){
+	    ags_machine_playback_set_active(machine,
+					    active_playback->data,
+					    FALSE);
+	  }
+	}
+	
+	message = message->next;
+      }
+      
+      g_list_free_full(message_start,
+		       (GDestroyNotify) ags_message_envelope_free);
+
+      g_object_unref(channel);
+      
+      active_playback = active_playback->next;
+    }
 
     return(TRUE);
   }else{

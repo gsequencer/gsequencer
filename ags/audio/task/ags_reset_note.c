@@ -183,11 +183,11 @@ ags_reset_note_launch(AgsTask *task)
   note = reset_note->note;
   
   while(note != NULL){
-    g_object_get(note,
+    g_object_get(note->data,
 		 "x1", &x1,
 		 NULL);  
 
-    g_object_set(note,
+    g_object_set(note->data,
 		 "x1", x1 + 1,
 		 NULL);  
 

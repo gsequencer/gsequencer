@@ -740,7 +740,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	gdouble y0_offset;
       
 	if(notation_edit->cursor_position_y > 0){
-	  notation_edit->cursor_position_y -= 1;
+	  notation_edit->cursor_position_y += 1;
 	
 	  do_feedback = TRUE;
 	}

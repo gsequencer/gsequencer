@@ -2864,7 +2864,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 					"method"),
 			     "AgsChannel::stop",
-			     16)){
+			     18)){
 	  GList *recall_id;
 
 	  gint sound_scope;

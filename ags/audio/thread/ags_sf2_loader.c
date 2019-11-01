@@ -642,6 +642,9 @@ ags_sf2_loader_run(void *ptr)
 
   g_object_unref(output_soundcard);
   
+  ags_sf2_loader_set_flags(sf2_loader,
+			   AGS_SF2_LOADER_HAS_COMPLETED);
+
   pthread_exit(NULL);
 
 #ifdef AGS_W32API

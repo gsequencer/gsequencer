@@ -1122,8 +1122,19 @@ ags_pad_play(AgsPad *pad)
       next_channel = NULL;
       
       while(channel != next_pad){
+	AgsNote *play_note;
+	
 	g_object_get(channel,
 		     "playback", &playback,
+		     NULL);
+
+	g_object_get(playback,
+		     "play-note", &play_note,
+		     NULL);
+
+	g_object_set(play_note,
+		     "x0", 0,
+		     "x1", 1,
 		     NULL);
 
 	ags_machine_playback_set_active(machine,

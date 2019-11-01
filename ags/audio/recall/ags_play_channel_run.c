@@ -553,6 +553,8 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
 		   g_object_unref);
   
   /* check recall dependency */
+  list_start = NULL;
+  
   g_object_get(template,
 	       "recall-dependency", &list_start,
 	       NULL);
