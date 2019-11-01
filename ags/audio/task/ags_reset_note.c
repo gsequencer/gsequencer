@@ -171,14 +171,14 @@ ags_reset_note_launch(AgsTask *task)
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   pthread_mutex_lock(task_mutex);
-
-  note_offset = reset_note->note_offset;
   
-  if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) == note_offset){
+  if((note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard))) == reset_note->note_offset){
     pthread_mutex_unlock(task_mutex);
 
     return;
   }
+
+  reset_note->note_offset = note_offset;
   
   note = reset_note->note;
   

@@ -10235,6 +10235,7 @@ ags_audio_real_start(AgsAudio *audio,
   AgsPlayback *playback;
   AgsRecallID *audio_recall_id;
   AgsRecallID *channel_recall_id;
+  AgsRecallID *current_recall_id;
   AgsRecyclingContext *recycling_context;
   
   AgsThread *audio_loop;
@@ -10246,7 +10247,7 @@ ags_audio_real_start(AgsAudio *audio,
   AgsApplicationContext *application_context;  
 
   GList *start_output_playback, *output_playback;
-  GList *recall_id;
+  GList *start_recall_id;
 
   guint audio_channels;
   guint output_pads;
@@ -10257,7 +10258,8 @@ ags_audio_real_start(AgsAudio *audio,
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
   
-  if(!ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
+  if(!ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING) ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
@@ -10281,7 +10283,7 @@ ags_audio_real_start(AgsAudio *audio,
 	       NULL);
 
   /* initialize channel */
-  recall_id = NULL;
+  start_recall_id = NULL;
 
   if(sound_scope >= 0){
     output_playback = start_output_playback;
@@ -10289,58 +10291,66 @@ ags_audio_real_start(AgsAudio *audio,
     while(output_playback != NULL){
       playback = AGS_PLAYBACK(output_playback->data);
 
-      /* get some fields */
-      g_object_get(playback,
-		   "channel", &channel,
-		   NULL);
+      current_recall_id = ags_playback_get_recall_id(playback,
+						     sound_scope);
 
-      g_object_get(channel,
-		   "first-recycling", &first_recycling,
-		   NULL);
+      if(current_recall_id == NULL){
+	/* get some fields */
+	g_object_get(playback,
+		     "channel", &channel,
+		     NULL);
 
-      /* recycling context */
-      recycling_context = ags_recycling_context_new(1);
-      ags_audio_add_recycling_context(audio,
-				      (GObject *) recycling_context);
-      ags_recycling_context_replace(recycling_context,
-				    first_recycling,
-				    0);
+	g_object_get(channel,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
-      /* create audio recall id */
-      audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				     "recycling-context", recycling_context,
-				     NULL);
-      ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
-      ags_audio_add_recall_id(audio,
-			      (GObject *) audio_recall_id);
+	/* recycling context */
+	recycling_context = ags_recycling_context_new(1);
+	ags_audio_add_recycling_context(audio,
+					(GObject *) recycling_context);
+	ags_recycling_context_replace(recycling_context,
+				      first_recycling,
+				      0);
 
-      g_object_set(recycling_context,
-		   "recall-id", audio_recall_id,
-		   NULL);
-      
-      /* create channel recall id */
-      channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+	/* create audio recall id */
+	audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				       "recycling-context", recycling_context,
 				       NULL);
-      ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
-      ags_channel_add_recall_id(channel,
-				(GObject *) channel_recall_id);
+	ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
+	ags_audio_add_recall_id(audio,
+				(GObject *) audio_recall_id);
 
-      /* prepend recall id */
-      recall_id = g_list_prepend(recall_id,
-				 channel_recall_id);
-
-      /* set playback's recall id */
-      //NOTE:JK: we use audio recall id, although on AgsPlayback
-      ags_playback_set_recall_id(playback,
-				 audio_recall_id,
-				 sound_scope);
-
-      /* unref */
-      g_object_unref(channel);
+	g_object_set(recycling_context,
+		     "recall-id", audio_recall_id,
+		     NULL);
       
-      g_object_unref(first_recycling);
+	/* create channel recall id */
+	channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context", recycling_context,
+					 NULL);
+	ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
+	ags_channel_add_recall_id(channel,
+				  (GObject *) channel_recall_id);
 
+	/* prepend recall id */
+	start_recall_id = g_list_prepend(start_recall_id,
+					 channel_recall_id);
+
+	/* set playback's recall id */
+	//NOTE:JK: we use audio recall id, although on AgsPlayback
+	ags_playback_set_recall_id(playback,
+				   audio_recall_id,
+				   sound_scope);
+
+	/* unref */
+	g_object_unref(channel);
+      
+	g_object_unref(first_recycling);
+      }else{
+	start_recall_id = g_list_prepend(start_recall_id,
+					 current_recall_id);
+      }
+      
       /* iterate */
       output_playback = output_playback->next;
     }
@@ -10352,8 +10362,8 @@ ags_audio_real_start(AgsAudio *audio,
     output_playback = start_output_playback;
 
     /* add to start queue */
-    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
-									   sound_scope);
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							sound_scope);
         
     ags_thread_add_start_queue(audio_loop,
 			       audio_thread);
@@ -10370,7 +10380,7 @@ ags_audio_real_start(AgsAudio *audio,
 						       sound_scope);
       
       /* add to start queue */
-      ags_thread_add_start_queue((AgsThread *) audio_loop,
+      ags_thread_add_start_queue(audio_loop,
 				 channel_thread);
 
       /* unref */
@@ -10395,59 +10405,67 @@ ags_audio_real_start(AgsAudio *audio,
       while(output_playback != NULL){
 	playback = AGS_PLAYBACK(output_playback->data);
 
-	/* get some fields */
-	g_object_get(playback,
-		     "channel", &channel,
-		     NULL);
+	current_recall_id = ags_playback_get_recall_id(playback,
+						       i);
 
-	g_object_get(channel,
-		     "first-recycling", &first_recycling,
-		     NULL);
+	if(current_recall_id == NULL){
+	  /* get some fields */
+	  g_object_get(playback,
+		       "channel", &channel,
+		       NULL);
 
-	/* recycling context */
-	recycling_context = ags_recycling_context_new(1);
-	ags_audio_add_recycling_context(audio,
-					(GObject *) recycling_context);
+	  g_object_get(channel,
+		       "first-recycling", &first_recycling,
+		       NULL);
 
-	/* set recycling */
-	ags_recycling_context_replace(recycling_context,
-				      first_recycling,
-				      0);
+	  /* recycling context */
+	  recycling_context = ags_recycling_context_new(1);
+	  ags_audio_add_recycling_context(audio,
+					  (GObject *) recycling_context);
 
-	/* create audio recall id */
-	audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				       "recycling-context", recycling_context,
-				       NULL);
-	ags_recall_id_set_sound_scope(audio_recall_id, i);
-	ags_audio_add_recall_id(audio,
-				(GObject *) audio_recall_id);
+	  /* set recycling */
+	  ags_recycling_context_replace(recycling_context,
+					first_recycling,
+					0);
 
-	g_object_set(recycling_context,
-		     "recall-id", audio_recall_id,
-		     NULL);
-      
-	/* create channel recall id */
-	channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+	  /* create audio recall id */
+	  audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					 "recycling-context", recycling_context,
 					 NULL);
-	ags_recall_id_set_sound_scope(channel_recall_id, i);
-	ags_channel_add_recall_id(channel,
-				  (GObject *) channel_recall_id);
+	  ags_recall_id_set_sound_scope(audio_recall_id, i);
+	  ags_audio_add_recall_id(audio,
+				  (GObject *) audio_recall_id);
 
-	/* prepend recall id */
-	recall_id = g_list_prepend(recall_id,
-				   channel_recall_id);
-
-	/* set playback's recall id */
-	//NOTE:JK: we use audio recall id, although on AgsPlayback
-	ags_playback_set_recall_id(playback,
-				   audio_recall_id,
-				   i);
-
-	/* unref */
-	g_object_unref(channel);
+	  g_object_set(recycling_context,
+		       "recall-id", audio_recall_id,
+		       NULL);
       
-	g_object_unref(first_recycling);
+	  /* create channel recall id */
+	  channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					   "recycling-context", recycling_context,
+					   NULL);
+	  ags_recall_id_set_sound_scope(channel_recall_id, i);
+	  ags_channel_add_recall_id(channel,
+				    (GObject *) channel_recall_id);
+
+	  /* prepend recall id */
+	  start_recall_id = g_list_prepend(start_recall_id,
+					   channel_recall_id);
+
+	  /* set playback's recall id */
+	  //NOTE:JK: we use audio recall id, although on AgsPlayback
+	  ags_playback_set_recall_id(playback,
+				     audio_recall_id,
+				     i);
+
+	  /* unref */
+	  g_object_unref(channel);
+      
+	  g_object_unref(first_recycling);
+	}else{
+	  start_recall_id = g_list_prepend(start_recall_id,
+					   current_recall_id);
+	}
 
 	/* iterate */
 	output_playback = output_playback->next;
@@ -10460,8 +10478,8 @@ ags_audio_real_start(AgsAudio *audio,
       output_playback = start_output_playback;
 
       /* add to start queue */
-      audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
-									     i);
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
         
       ags_thread_add_start_queue(audio_loop,
 				 audio_thread);
@@ -10478,7 +10496,7 @@ ags_audio_real_start(AgsAudio *audio,
 							 i);
       
 	/* add to start queue */
-	ags_thread_add_start_queue((AgsThread *) audio_loop,
+	ags_thread_add_start_queue(audio_loop,
 				   channel_thread);
 
 	/* unref */
@@ -10504,7 +10522,7 @@ ags_audio_real_start(AgsAudio *audio,
   g_list_free_full(start_output_playback,
 		   g_object_unref);
 
-  recall_id = g_list_reverse(recall_id);
+  start_recall_id = g_list_reverse(start_recall_id);
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
@@ -10553,7 +10571,7 @@ ags_audio_real_start(AgsAudio *audio,
     g_value_init(&(message->value[1]),
 		 G_TYPE_POINTER);
     g_value_set_pointer(&(message->value[1]),
-			g_list_copy_deep(recall_id,
+			g_list_copy_deep(start_recall_id,
 					 (GCopyFunc) g_object_ref,
 					 NULL));
 
@@ -10566,7 +10584,7 @@ ags_audio_real_start(AgsAudio *audio,
 				     message);
   }
 
-  return(recall_id);
+  return(start_recall_id);
 }
 
 /**
@@ -10606,70 +10624,200 @@ ags_audio_real_stop(AgsAudio *audio,
 		    GList *recall_id, gint sound_scope)
 {
   AgsChannel *channel;
+  AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
-
+  AgsRecallID *sequencer_recall_id, *notation_recall_id, *wave_recall_id, *midi_recall_id;
+  
+  AgsThread *audio_loop;
+  AgsThread *audio_thread;
+  AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
-  
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *playback_mutex;
 
+  AgsApplicationContext *application_context;
+
+  GList *start_output_playback, *output_playback;
+  GList *sequencer, *notation, *wave, *midi;
+  
+  gint i;
+  
+  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
+				      AGS_SOUND_STAGING_REMOVE);
+  
   if(recall_id == NULL ||
-     sound_scope < 0 ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
-  
-#if 0  
-  /* get audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  application_context = ags_application_context_get_instance();
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
 
-  channel = audio->output;
-  
-  pthread_mutex_unlock(audio_mutex);
-  
-  while(channel != NULL){
-    AgsRecallID *current_recall_id;
+  g_object_get(playback_domain,
+	       "output-playback", &start_output_playback,
+	       NULL);
+
+  if(sound_scope >= 0){
+    /* cancel */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, staging_flags);
+
+    /* stop thread */
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							sound_scope);
+
+    if(audio_thread != NULL){
+      ags_thread_stop(audio_thread);
+
+      g_object_unref(audio_thread);
+    }
+
+    output_playback = start_output_playback;
     
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    while(output_playback != NULL){
+      playback = AGS_PLAYBACK(output_playback->data);
 
-    /* get current recall id */
-    pthread_mutex_lock(channel_mutex);
+      g_object_get(playback,
+		   "channel", &channel,
+		   NULL);
+
+      channel_thread = ags_playback_get_channel_thread(playback,
+						       sound_scope);
+
+      if(channel_thread != NULL){
+	ags_thread_stop(channel_thread);
+
+	g_object_unref(channel_thread);
+      }
+
+      g_object_unref(channel);
+      
+      /* iterate */
+      output_playback = output_playback->next;
+    }
+
+    /* clean - fini */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, AGS_SOUND_STAGING_FINI);
+
+    output_playback = start_output_playback;
     
-    playback = (AgsPlayback *) channel->playback;
+    while(output_playback != NULL){
+      playback = AGS_PLAYBACK(output_playback->data);
 
-    pthread_mutex_unlock(channel_mutex);
+      ags_playback_set_recall_id(playback,
+				 NULL,
+				 sound_scope);
+      
+      /* iterate */
+      output_playback = output_playback->next;
+    }
+  }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* cancel */
+      ags_audio_recursive_run_stage(audio,
+				    i, staging_flags);
 
-    /* get playback mutex */
-    playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
+      /* stop thread */
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
 
-    /* recursive cancel */
-    ags_channel_recursive_run_stage(channel,
-				    sound_scope, (AGS_SOUND_STAGING_CANCEL |
-						  AGS_SOUND_STAGING_REMOVE));
+      if(audio_thread != NULL){
+	ags_thread_stop(audio_thread);
 
-    /* get/set recall id */
-    pthread_mutex_lock(playback_mutex);
+	g_object_unref(audio_thread);
+      }
+
+      output_playback = start_output_playback;
     
-    current_recall_id = playback->recall_id[sound_scope];
+      while(output_playback != NULL){
+	playback = AGS_PLAYBACK(output_playback->data);
+
+	g_object_get(playback,
+		     "channel", &channel,
+		     NULL);
+
+	channel_thread = ags_playback_get_channel_thread(playback,
+							 i);
+
+	if(channel_thread != NULL){
+	  ags_thread_stop(channel_thread);
+
+	  g_object_unref(channel_thread);
+	}
+
+	g_object_unref(channel);
+      
+	/* iterate */
+	output_playback = output_playback->next;
+      }
+
+      /* clean - fini */
+      ags_audio_recursive_run_stage(audio,
+				    sound_scope, AGS_SOUND_STAGING_FINI);
+
+      output_playback = start_output_playback;
     
-    playback->recall_id[sound_scope] = NULL;
+      while(output_playback != NULL){
+	playback = AGS_PLAYBACK(output_playback->data);
 
-    pthread_mutex_unlock(playback_mutex);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);    
-    
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+	ags_playback_set_recall_id(playback,
+				   NULL,
+				   sound_scope);
+      
+	/* iterate */
+	output_playback = output_playback->next;
+      }
+    }
   }
-#endif
+
+  /* remove channel from AgsAudioLoop */
+  sequencer = ags_audio_check_scope(audio,
+				    (AGS_SOUND_SCOPE_SEQUENCER));
+  sequencer_recall_id = ags_recall_id_find_parent_recycling_context(sequencer,
+								    NULL);
+
+  notation = ags_audio_check_scope(audio,
+				   (AGS_SOUND_SCOPE_NOTATION));
+  notation_recall_id = ags_recall_id_find_parent_recycling_context(notation,
+								   NULL);
+
+  wave = ags_audio_check_scope(audio,
+			       (AGS_SOUND_SCOPE_WAVE));
+  wave_recall_id = ags_recall_id_find_parent_recycling_context(wave,
+							       NULL);
+
+  midi = ags_audio_check_scope(audio,
+			       (AGS_SOUND_SCOPE_MIDI));
+  midi_recall_id = ags_recall_id_find_parent_recycling_context(midi,
+							       NULL);
+
+  if(sequencer_recall_id == NULL &&
+     notation_recall_id == NULL &&
+     wave_recall_id == NULL &&
+     midi_recall_id == NULL){
+    ags_audio_loop_remove_audio(audio_loop,
+				(GObject *) audio);
+  }
+
+  g_list_free_full(sequencer,
+		   g_object_unref);
+  g_list_free_full(notation,
+		   g_object_unref);
+  g_list_free_full(wave,
+		   g_object_unref);
+  g_list_free_full(midi,
+		   g_object_unref);
+  
+  g_object_unref(playback_domain);
+  
+  g_list_free_full(start_output_playback,
+		   g_object_unref);
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();

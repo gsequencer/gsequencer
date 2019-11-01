@@ -10032,6 +10032,7 @@ ags_channel_real_start(AgsChannel *channel,
   AgsPlayback *playback;
   AgsRecallID *audio_recall_id;
   AgsRecallID *channel_recall_id;
+  AgsRecallID *current_recall_id;
   AgsRecyclingContext *recycling_context;
   
   AgsThread *audio_loop;
@@ -10042,7 +10043,7 @@ ags_channel_real_start(AgsChannel *channel,
 
   AgsApplicationContext *application_context;  
 
-  GList *recall_id;
+  GList *start_recall_id;
 
   gint i;
 
@@ -10051,7 +10052,8 @@ ags_channel_real_start(AgsChannel *channel,
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
 
-  if(!AGS_IS_INPUT(channel)){
+  if(!AGS_IS_INPUT(channel) ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
@@ -10089,51 +10091,55 @@ ags_channel_real_start(AgsChannel *channel,
 	       NULL);
 
   /* run stage */
-  recall_id = NULL;
+  start_recall_id = NULL;
 
   if(sound_scope >= 0){
-    /* recycling context */
-    recycling_context = ags_recycling_context_new(1);
-    ags_audio_add_recycling_context(audio,
-				    (GObject *) recycling_context);
+    current_recall_id = ags_playback_get_recall_id(playback,
+						   sound_scope);
 
-    /* set recycling */
-    ags_recycling_context_replace(recycling_context,
-				  first_recycling,
-				  0);
+    if(current_recall_id == NULL){
+      /* recycling context */
+      recycling_context = ags_recycling_context_new(1);
+      ags_audio_add_recycling_context(audio,
+				      (GObject *) recycling_context);
 
-    /* create audio recall id */
-    audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				   "recycling-context", recycling_context,
-				   NULL);
-    ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
-    ags_audio_add_recall_id(audio,
-			    (GObject *) audio_recall_id);
+      /* set recycling */
+      ags_recycling_context_replace(recycling_context,
+				    first_recycling,
+				    0);
 
-    g_object_set(recycling_context,
-		 "recall-id", audio_recall_id,
-		 NULL);
-    
-    /* prepend recall id */
-    recall_id = g_list_prepend(recall_id,
-			       audio_recall_id);
-
-    /* create channel recall id */
-    channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+      /* create audio recall id */
+      audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				     "recycling-context", recycling_context,
 				     NULL);
-    ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
-    ags_channel_add_recall_id(channel,
-			      (GObject *) channel_recall_id);
+      ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
+      ags_audio_add_recall_id(audio,
+			      (GObject *) audio_recall_id);
 
-    /* prepend recall id */
-    recall_id = g_list_prepend(recall_id,
-			       channel_recall_id);
+      g_object_set(recycling_context,
+		   "recall-id", audio_recall_id,
+		   NULL);
+
+      /* create channel recall id */
+      channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+				       "recycling-context", recycling_context,
+				       NULL);
+      ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
+      ags_channel_add_recall_id(channel,
+				(GObject *) channel_recall_id);
+
+      /* prepend recall id */
+      start_recall_id = g_list_prepend(start_recall_id,
+				       channel_recall_id);
     
-    /* set playback's recall id */
-    ags_playback_set_recall_id(playback,
-			       channel_recall_id,
-			       sound_scope);
+      /* set playback's recall id */
+      ags_playback_set_recall_id(playback,
+				 channel_recall_id,
+				 sound_scope);
+    }else{
+      start_recall_id = g_list_prepend(start_recall_id,
+				       current_recall_id);
+    }
 
     /* run stage */
     ags_channel_recursive_run_stage(channel,
@@ -10160,48 +10166,52 @@ ags_channel_real_start(AgsChannel *channel,
     }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      /* recycling context */
-      recycling_context = ags_recycling_context_new(1);
-      ags_audio_add_recycling_context(audio,
-				      (GObject *) recycling_context);
+      current_recall_id = ags_playback_get_recall_id(playback,
+						     i);
 
-      /* set recycling */
-      ags_recycling_context_replace(recycling_context,
-				    first_recycling,
-				    0);
+      if(current_recall_id == NULL){
+	/* recycling context */
+	recycling_context = ags_recycling_context_new(1);
+	ags_audio_add_recycling_context(audio,
+					(GObject *) recycling_context);
 
-      /* create audio recall id */
-      audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				     "recycling-context", recycling_context,
-				     NULL);
-      ags_recall_id_set_sound_scope(audio_recall_id, i);
-      ags_audio_add_recall_id(audio,
-			      (GObject *) audio_recall_id);
+	/* set recycling */
+	ags_recycling_context_replace(recycling_context,
+				      first_recycling,
+				      0);
 
-      g_object_set(recycling_context,
-		   "recall-id", audio_recall_id,
-		   NULL);
-
-      /* prepend recall id */
-      recall_id = g_list_prepend(recall_id,
-				 audio_recall_id);
-      
-      /* create channel recall id */
-      channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+	/* create audio recall id */
+	audio_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				       "recycling-context", recycling_context,
 				       NULL);
-      ags_recall_id_set_sound_scope(channel_recall_id, i);
-      ags_channel_add_recall_id(channel,
-				(GObject *) channel_recall_id);
+	ags_recall_id_set_sound_scope(audio_recall_id, i);
+	ags_audio_add_recall_id(audio,
+				(GObject *) audio_recall_id);
+
+	g_object_set(recycling_context,
+		     "recall-id", audio_recall_id,
+		     NULL);
       
-      /* prepend recall id */
-      recall_id = g_list_prepend(recall_id,
-				 channel_recall_id);
+	/* create channel recall id */
+	channel_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context", recycling_context,
+					 NULL);
+	ags_recall_id_set_sound_scope(channel_recall_id, i);
+	ags_channel_add_recall_id(channel,
+				  (GObject *) channel_recall_id);
+      
+	/* prepend recall id */
+	start_recall_id = g_list_prepend(start_recall_id,
+					 channel_recall_id);
     
-      /* set playback's recall id */
-      ags_playback_set_recall_id(playback,
-				 channel_recall_id,
-				 i);
+	/* set playback's recall id */
+	ags_playback_set_recall_id(playback,
+				   channel_recall_id,
+				   i);
+      }else{
+	start_recall_id = g_list_prepend(start_recall_id,
+					 current_recall_id);
+      }
       
       /* run stage */
       ags_channel_recursive_run_stage(channel,
@@ -10236,7 +10246,7 @@ ags_channel_real_start(AgsChannel *channel,
   g_object_unref(first_recycling);
   g_object_unref(playback);
   
-  recall_id = g_list_reverse(recall_id);
+  start_recall_id = g_list_reverse(start_recall_id);
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
@@ -10285,7 +10295,7 @@ ags_channel_real_start(AgsChannel *channel,
     g_value_init(&(message->value[1]),
 		 G_TYPE_POINTER);
     g_value_set_pointer(&(message->value[1]),
-			g_list_copy_deep(recall_id,
+			g_list_copy_deep(start_recall_id,
 					 (GCopyFunc) g_object_ref,
 					 NULL));
     
@@ -10298,7 +10308,7 @@ ags_channel_real_start(AgsChannel *channel,
 				     message);
   }
 
-  return(recall_id);
+  return(start_recall_id);
 }
 
 /**
