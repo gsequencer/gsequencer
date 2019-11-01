@@ -10756,10 +10756,12 @@ ags_audio_real_stop(AgsAudio *audio,
 	/* iterate */
 	output_playback = output_playback->next;
       }
-
+    }
+    
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* clean - fini */
       ags_audio_recursive_run_stage(audio,
-				    sound_scope, AGS_SOUND_STAGING_FINI);
+				    i, AGS_SOUND_STAGING_FINI);
 
       output_playback = start_output_playback;
     
@@ -10768,7 +10770,7 @@ ags_audio_real_stop(AgsAudio *audio,
 
 	ags_playback_set_recall_id(playback,
 				   NULL,
-				   sound_scope);
+				   i);
       
 	/* iterate */
 	output_playback = output_playback->next;

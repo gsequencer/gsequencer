@@ -1163,6 +1163,11 @@ ags_link_channel_get_type
 ags_link_channel_new
 ags_stop_sequencer_get_type
 ags_stop_sequencer_new
+ags_reset_note_get_type
+ags_reset_note_add
+ags_reset_note_remove
+ags_reset_note_get_instance
+ags_reset_note_new
 ags_tic_device_get_type
 ags_tic_device_new
 ags_apply_sequencer_length_get_type
@@ -1512,6 +1517,9 @@ ags_sfz_loader_unset_flags
 ags_sfz_loader_start
 ags_sfz_loader_new
 ags_audio_loop_get_type
+ags_audio_loop_test_flags
+ags_audio_loop_set_flags
+ags_audio_loop_unset_flags
 ags_audio_loop_add_audio
 ags_audio_loop_remove_audio
 ags_audio_loop_add_channel

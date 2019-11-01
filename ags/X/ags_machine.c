@@ -539,6 +539,8 @@ ags_machine_init(AgsMachine *machine)
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine_widget = (GObject *) machine;
 
+  machine->active_playback = NULL;
+  
   /* AgsAudio related forwarded signals */
   g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
 			 G_CALLBACK(ags_machine_resize_audio_channels_callback), NULL);
@@ -2245,6 +2247,132 @@ ags_machine_find_by_name(GList *list, char *name)
 }
 
 /**
+ * ags_machine_playback_set_active:
+ * @machine: the #AgsMachine
+ * @playback: the #AgsPlayback
+ * @is_active: if %TRUE playback is started, otherwise stopped
+ *
+ * Start/stop @playback of @machine.
+ *
+ * Since: 2.4.0
+ */
+void
+ags_machine_playback_set_active(AgsMachine *machine,
+				AgsPlayback *playback,
+				gboolean is_active)
+{
+  AgsChannel *channel;
+  AgsNote *play_note;
+
+  AgsStartSoundcard *start_soundcard;
+  AgsStartChannel *start_channel;
+  AgsCancelChannel *cancel_channel;
+  AgsResetNote *reset_note;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_task;
+  
+  if(!AGS_IS_MACHINE(machine) ||
+     !AGS_IS_PLAYBACK(playback)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  start_task = NULL;
+  
+  if(is_active){
+    if(g_list_find(machine->active_playback, playback) != NULL){
+      return;
+    }
+    
+    machine->active_playback = g_list_prepend(machine->active_playback,
+					      playback);
+    g_object_ref(playback);
+
+    /* start playback of channel */
+    g_object_get(playback,
+		 "channel", &channel,
+		 NULL);
+
+    start_channel = ags_start_channel_new(channel,
+					  AGS_SOUND_SCOPE_PLAYBACK);
+    g_signal_connect_after(G_OBJECT(start_channel), "launch",
+			   G_CALLBACK(ags_machine_active_playback_start_channel_launch_callback), playback);
+    start_task = g_list_prepend(start_task,
+				start_channel);
+
+    /* start soundcard */
+    start_soundcard = ags_start_soundcard_new(application_context);
+    start_task = g_list_prepend(start_task,
+				start_soundcard);
+
+    /* launch task */
+    start_task = g_list_reverse(start_task);
+
+    ags_xorg_application_context_schedule_task_list(application_context,
+						    start_task);
+
+    /* feed note */
+    g_object_get(playback,
+		 "play-note", &play_note,
+		 NULL);
+
+    if(ags_note_test_flags(play_note, AGS_NOTE_FEED)){
+      reset_note = ags_reset_note_get_instance();
+      ags_reset_note_add(reset_note,
+			 play_note);
+    }
+
+    /* unref */
+    g_object_unref(channel);
+
+    g_object_unref(play_note);
+  }else{
+    if(g_list_find(machine->active_playback, playback) == NULL){
+      return;
+    }
+
+    machine->active_playback = g_list_remove(machine->active_playback,
+					     playback);
+    g_object_unref(playback);
+
+    /* cancel playback of channel */
+    g_object_get(playback,
+		 "channel", &channel,
+		 NULL);
+    
+    cancel_channel = ags_cancel_channel_new(channel,
+					    AGS_SOUND_SCOPE_PLAYBACK);
+    start_task = g_list_prepend(start_task,
+				cancel_channel);
+
+    /* launch task */
+    start_task = g_list_reverse(start_task);
+
+    ags_xorg_application_context_schedule_task_list(application_context,
+						    start_task);
+    
+    /* feed note */
+    g_object_get(playback,
+		 "play-note", &play_note,
+		 NULL);
+
+    if(ags_note_test_flags(play_note, AGS_NOTE_FEED)){
+      reset_note = ags_reset_note_get_instance();
+      ags_reset_note_remove(reset_note,
+			    play_note);      
+    }
+
+    /* unref */
+    g_object_unref(channel);
+
+    g_object_unref(play_note);
+  }
+}
+
+/**
  * ags_machine_set_run:
  * @machine: the #AgsMachine
  * @run: if %TRUE playback is started, otherwise stopped
@@ -2288,6 +2416,10 @@ ags_machine_set_run_extended(AgsMachine *machine,
   
   gboolean no_soundcard;
 
+  if(!AGS_IS_MACHINE(machine)){
+    return;
+  }
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = (AgsApplicationContext *) window->application_context;

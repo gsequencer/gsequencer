@@ -66,4 +66,8 @@ void ags_machine_stop_callback(AgsMachine *machine,
 			       GList *recall_id, gint sound_scope,
 			       gpointer data);
 
+/* library callbacks */
+void ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
+							       AgsPlayback *playback);
+
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

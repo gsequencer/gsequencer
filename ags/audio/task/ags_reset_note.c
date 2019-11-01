@@ -177,7 +177,7 @@ ags_reset_note_launch(AgsTask *task)
 
     return;
   }
-
+  
   reset_note->note_offset = note_offset;
   
   note = reset_note->note;

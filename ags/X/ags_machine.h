@@ -112,6 +112,8 @@ struct _AgsMachine
   guint bank_1;
 
   AgsAudio *audio;
+
+  GList *active_playback;
   
   GtkToggleButton *play;
 
@@ -207,6 +209,10 @@ void ags_machine_stop(AgsMachine *machine,
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
+
+void ags_machine_playback_set_active(AgsMachine *machine,
+				     AgsPlayback *playback,
+				     gboolean is_active);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);

@@ -900,3 +900,121 @@ ags_machine_stop_callback(AgsMachine *machine,
 
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP_CALLBACK);
 }
+
+void
+ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
+							  AgsPlayback *playback)
+{
+  AgsChannel *channel;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *next_recycling, *end_recycling;
+  AgsAudioSignal *audio_signal; 
+  AgsRecallID *recall_id;
+  AgsNote *play_note;
+
+  GObject *output_soundcard;
+  
+  g_object_get(playback,
+	       "channel", &channel,
+	       "play-note", &play_note,
+	       NULL);
+
+  recall_id = ags_playback_get_recall_id(playback,
+					 AGS_SOUND_SCOPE_PLAYBACK);
+
+  /* get some fields */
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       "last-recycling", &last_recycling,
+	       NULL);
+
+  end_recycling = ags_recycling_next(last_recycling);
+
+  recycling = first_recycling;
+  g_object_ref(recycling);
+
+  next_recycling = NULL;
+  
+  while(recycling != end_recycling){
+    g_object_get(recycling,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
+    if(!ags_recall_global_get_rt_safe()){
+      /* instantiate audio signal */
+      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					  (GObject *) recycling,
+					  (GObject *) recall_id);
+      g_object_set(audio_signal,
+		   "note", play_note,
+		   NULL);
+
+      /* add audio signal */
+      ags_recycling_create_audio_signal_with_defaults(recycling,
+						      audio_signal,
+						      0.0, 0);
+      audio_signal->stream_current = audio_signal->stream;
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+	
+      /*
+       * emit add_audio_signal on AgsRecycling
+       */
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+    }else{
+      GList *start_list, *list;
+
+      g_object_get(recycling,
+		   "audio-signal", &start_list,
+		   NULL);
+      
+      audio_signal = NULL;
+      list = ags_audio_signal_find_by_recall_id(start_list,
+						(GObject *) recall_id);
+	    
+      if(list != NULL){
+	audio_signal = list->data;
+
+	g_object_set(audio_signal,
+		     "note", play_note,
+		     NULL);
+      }
+
+      g_list_free_full(start_list,
+		       g_object_unref);
+
+      g_object_set(play_note,
+		   "rt-offset", 0,
+		   NULL);
+    }
+
+    g_object_unref(output_soundcard);
+    
+    /* iterate */
+    next_recycling = ags_recycling_next(recycling);
+
+    g_object_unref(recycling);
+
+    recycling = next_recycling;
+  }
+
+  if(next_recycling != NULL){
+    g_object_unref(next_recycling);
+  }
+  
+  /* unref */
+  g_object_unref(channel);
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
+  
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+  
+  g_object_unref(recall_id);
+
+  g_object_unref(play_note);
+}
