@@ -1111,6 +1111,8 @@ ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
 				     AGS_RECALL_FACTORY_ADD),
 				    0);
 	}
+
+	g_object_unref(channel);
       }
     }
     
@@ -1461,6 +1463,8 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
 				   AGS_RECALL_FACTORY_ADD),
 				  0);
       }
+
+      g_object_unref(channel);
     }
   }  
   

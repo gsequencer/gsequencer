@@ -1058,6 +1058,9 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 	AgsPlayChannelRun *play_channel_run;
 	AgsStreamChannelRun *stream_channel_run;
 
+	channel = ags_channel_nth(start_input,
+				  i * audio_channels + j);
+
 	/* ags-play */
 	ags_recall_factory_create(audio,
 				  NULL, NULL,
@@ -1113,6 +1116,8 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 				     AGS_RECALL_FACTORY_ADD),
 				    0);
 	}
+
+	g_object_unref(channel);
       }
     }
     
@@ -1463,6 +1468,8 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 				   AGS_RECALL_FACTORY_ADD),
 				  0);
       }
+
+      g_object_unref(channel);
     }
   }
   

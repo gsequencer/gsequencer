@@ -667,8 +667,10 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
     g_object_unref(recycling_context);
 
-    g_object_unref(parent_recycling_context);
-
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+    
     g_object_unref(recall_recycling);
     
     g_object_unref(recall_channel_run);

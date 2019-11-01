@@ -6764,7 +6764,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po $(am__append_1)
-AM_DISTCHECK_CONFIGURE_FLAGS = DESTDIR="" --enable-threads=posix --without-included-regex
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-threads=posix --without-included-regex
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h $(am__append_2) \
 	$(am__append_3) $(am__append_4) $(am__append_5) \

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.3.15\n"
+"Project-Id-Version: gsequencer 2.4.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-10-20 21:38+0200\n"
+"POT-Creation-Date: 2019-11-01 20:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -329,85 +329,85 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/X/ags_machine.c:2619 ags/X/machine/ags_audiorec_callbacks.c:68
+#: ags/X/ags_machine.c:2751 ags/X/machine/ags_audiorec_callbacks.c:68
 #: ags/X/machine/ags_pitch_sampler_callbacks.c:69
 msgid "Open audio files"
 msgstr ""
 
-#: ags/X/ags_machine.c:2627
+#: ags/X/ags_machine.c:2759
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:2632
+#: ags/X/ags_machine.c:2764
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:3233 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3410 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:3236 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3413 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:3239
+#: ags/X/ags_machine.c:3416
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:3242
+#: ags/X/ags_machine.c:3419
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:3245
+#: ags/X/ags_machine.c:3422
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3248 ags/X/ags_machine_callbacks.c:195
+#: ags/X/ags_machine.c:3425 ags/X/ags_machine_callbacks.c:195
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3251 ags/X/ags_machine_callbacks.c:267
+#: ags/X/ags_machine.c:3428 ags/X/ags_machine_callbacks.c:267
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3254 ags/X/ags_machine_callbacks.c:352
+#: ags/X/ags_machine.c:3431 ags/X/ags_machine_callbacks.c:352
 msgid "reposition audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3257 ags/X/ags_machine_editor.c:207
+#: ags/X/ags_machine.c:3434 ags/X/ags_machine_editor.c:207
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:3260
+#: ags/X/ags_machine.c:3437
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:3326 ags/X/editor/ags_pattern_envelope.c:225
+#: ags/X/ags_machine.c:3503 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:193
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:3337
+#: ags/X/ags_machine.c:3514
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3347
+#: ags/X/ags_machine.c:3524
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3357
+#: ags/X/ags_machine.c:3534
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:3386
+#: ags/X/ags_machine.c:3563
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3397
+#: ags/X/ags_machine.c:3574
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3407
+#: ags/X/ags_machine.c:3584
 msgid "MIDI dialog"
 msgstr ""
 
@@ -778,8 +778,8 @@ msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
-#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:311
-#: ags/X/machine/ags_live_lv2_bridge.c:1801 ags/X/machine/ags_lv2_bridge.c:2089
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:313
+#: ags/X/machine/ags_live_lv2_bridge.c:1801 ags/X/machine/ags_lv2_bridge.c:2122
 msgid "preset"
 msgstr ""
 
@@ -1068,7 +1068,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:346
-#: ags/X/machine/ags_ffplayer.c:326
+#: ags/X/machine/ags_ffplayer.c:328
 msgid "instrument"
 msgstr ""
 
@@ -1076,7 +1076,8 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_audiorec.c:270 ags/X/machine/ags_pitch_sampler.c:313
+#: ags/X/machine/ags_audiorec.c:270 ags/X/machine/ags_ffplayer.c:366
+#: ags/X/machine/ags_pitch_sampler.c:313
 msgid "loading ...  "
 msgstr ""
 
@@ -1118,7 +1119,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:339 ags/X/machine/ags_live_dssi_bridge.c:342
-#: ags/X/machine/ags_live_lv2_bridge.c:1723 ags/X/machine/ags_lv2_bridge.c:2011
+#: ags/X/machine/ags_live_lv2_bridge.c:1723 ags/X/machine/ags_lv2_bridge.c:2044
 msgid "program"
 msgstr ""
 
