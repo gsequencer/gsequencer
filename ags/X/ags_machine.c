@@ -3194,8 +3194,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	message = message->next;
       }
       
-      g_list_free_full(message_start,
-		       (GDestroyNotify) ags_message_envelope_free);
+      g_list_free(message_start);
 
       g_object_unref(channel);
       

@@ -698,6 +698,9 @@ ags_file_write_embedded_audio_list
 AGS_AUDIO_LOOP_DEFAULT_JIFFIE
 AgsAudioLoopFlags
 AgsAudioLoopTimingFlags
+ags_audio_loop_test_flags
+ags_audio_loop_set_flags
+ags_audio_loop_unset_flags
 ags_audio_loop_add_audio
 ags_audio_loop_remove_audio
 ags_audio_loop_add_channel
@@ -5569,6 +5572,24 @@ AGS_TYPE_RESET_AMPLITUDE
 AgsResetAmplitude
 AgsResetAmplitudeClass
 ags_reset_amplitude_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_reset_note</FILE>
+<TITLE>AgsResetNote</TITLE>
+ags_reset_note_add
+ags_reset_note_remove
+ags_reset_note_get_instance
+ags_reset_note_new
+<SUBSECTION Public>
+AGS_IS_RESET_NOTE
+AGS_RESET_NOTE
+AGS_RESET_NOTE_CLASS
+AGS_RESET_NOTE_GET_CLASS
+AGS_TYPE_RESET_NOTE
+AgsResetNote
+AgsResetNoteClass
+ags_reset_note_get_type
 </SECTION>
 
 <SECTION>

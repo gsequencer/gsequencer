@@ -82,6 +82,7 @@ static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
 extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GtkStyle *ffplayer_style = NULL;
 
@@ -347,12 +348,16 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+#if 0
   ffplayer->filename = (GtkEntry *) gtk_entry_new();
   gtk_box_pack_start((GtkBox *) filename_hbox,
 		     (GtkWidget *) ffplayer->filename,
 		     FALSE, FALSE,
 		     0);
-
+#else
+  ffplayer->filename = NULL;
+#endif
+  
   ffplayer->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
   gtk_box_pack_start((GtkBox *) filename_hbox,
 		     (GtkWidget *) ffplayer->open,
@@ -438,6 +443,15 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) ffplayer);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      ffplayer,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) ffplayer);
 }
 

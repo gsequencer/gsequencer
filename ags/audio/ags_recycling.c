@@ -802,6 +802,7 @@ ags_recycling_get_property(GObject *gobject,
 
       pthread_mutex_unlock(recycling_mutex);
     }
+    break;
   case PROP_BUFFER_SIZE:
     {
       pthread_mutex_lock(recycling_mutex);
@@ -810,6 +811,7 @@ ags_recycling_get_property(GObject *gobject,
 
       pthread_mutex_unlock(recycling_mutex);
     }
+    break;
   case PROP_FORMAT:
     {
       pthread_mutex_lock(recycling_mutex);
@@ -818,6 +820,7 @@ ags_recycling_get_property(GObject *gobject,
 
       pthread_mutex_unlock(recycling_mutex);
     }
+    break;
   case PROP_PARENT:
     {
       pthread_mutex_lock(recycling_mutex);
@@ -1572,7 +1575,7 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
  * @recycling: the #AgsRecycling
  * @samplerate: the samplerate
  *
- * Sets buffer-size.
+ * Sets samplerate.
  *
  * Since: 2.0.0
  */

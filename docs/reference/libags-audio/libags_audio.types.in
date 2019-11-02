@@ -241,6 +241,7 @@ ags_remove_audio_signal_get_type
 ags_remove_note_get_type
 ags_remove_soundcard_get_type
 ags_reset_amplitude_get_type
+ags_reset_note_get_type
 ags_reset_peak_get_type
 ags_resize_audio_get_type
 ags_route_dssi_audio_get_type

@@ -208,7 +208,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
 	/* feed audio signal */
 	frame_count = (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) ((note_offset + 1) - x0));
-
+	
 	ags_audio_signal_feed(audio_signal,
 			      template,
 			      frame_count);

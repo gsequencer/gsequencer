@@ -905,6 +905,7 @@ void
 ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 							  AgsPlayback *playback)
 {
+  AgsAudio *audio;
   AgsChannel *channel;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *next_recycling, *end_recycling;
@@ -919,6 +920,10 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 	       "play-note", &play_note,
 	       NULL);
 
+  g_object_get(channel,
+	       "audio", &audio,
+	       NULL);
+  
   recall_id = ags_playback_get_recall_id(playback,
 					 AGS_SOUND_SCOPE_PLAYBACK);
 
@@ -950,9 +955,32 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 		   NULL);
 
       /* add audio signal */
-      ags_recycling_create_audio_signal_with_defaults(recycling,
-						      audio_signal,
-						      0.0, 0);
+      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
+	ags_recycling_create_audio_signal_with_defaults(recycling,
+							audio_signal,
+							0.0, 0);
+      }else{
+	gdouble notation_delay;
+	guint buffer_size;
+	guint note_x0, note_x1;
+
+	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+
+	g_object_get(recycling,
+		     "buffer-size", &buffer_size,
+		     NULL);
+	
+	g_object_get(play_note,
+		     "x0", &note_x0,
+		     "x1", &note_x1,
+		     NULL);
+
+	ags_recycling_create_audio_signal_with_frame_count(recycling,
+							   audio_signal,
+							   (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
+							   0.0, 0);
+      }
+      
       audio_signal->stream_current = audio_signal->stream;
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 	
@@ -1003,6 +1031,8 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   }
   
   /* unref */
+  g_object_unref(audio);
+  
   g_object_unref(channel);
 
   if(first_recycling != NULL){
