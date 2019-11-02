@@ -9,7 +9,13 @@ ags (3.0.0)
 	* TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
 	* TODO:JK: migrated to gi18n.h?
 	* TODO:JK: migrated unit-tests to GTest?
+	* TODO:JK: implemented support for GtkApplication
 	* TODO:JK: implemented introspection support
+	* TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
+	* TODO:JK: removed AgsMenuBar
+	* TODO:JK: removed barriers of AgsThread
+	* TODO:JK: removed nested functions
+	* TODO:JK: added G_BEGIN_DECLS and G_END_DECLS to header files
 
 ags (2.4.0)
 
