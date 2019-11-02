@@ -73,7 +73,8 @@ typedef enum{
   AGS_OSC_SERVER_INET6          = 1 <<  4,
   AGS_OSC_SERVER_UDP            = 1 <<  5,
   AGS_OSC_SERVER_TCP            = 1 <<  6,
-  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  7,
+  AGS_OSC_SERVER_UNIX           = 1 <<  7,
+  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  8,
 }AgsOscServerFlags;
 
 struct _AgsOscServer
