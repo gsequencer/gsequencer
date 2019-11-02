@@ -142,7 +142,7 @@ void ags_function_pop_equation(AgsFunction *function,
 gchar* ags_function_get_expanded(AgsFunction *function,
 				 gchar **symbol,
 				 guint symbol_count);
-gchar* ags_funciton_get_normalized(AgsFunction *function);
+gchar* ags_function_get_normalized(AgsFunction *function);
 
 AgsComplex* ags_function_compute_term(gchar *term,
 				      gchar *substitute_symbol, AgsComplex *substitute_value);

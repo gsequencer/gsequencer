@@ -868,7 +868,7 @@ ags_function_get_expanded(AgsFunction *function,
 }
 
 /**
- * ags_funciton_get_normalized:
+ * ags_function_get_normalized:
  * @function: the #AgsFunction
  *
  * Get internal normalized string.
@@ -878,7 +878,7 @@ ags_function_get_expanded(AgsFunction *function,
  * Since: 2.0.0
  */
 gchar*
-ags_funciton_get_normalized(AgsFunction *function)
+ags_function_get_normalized(AgsFunction *function)
 {
   if(!AGS_IS_FUNCTION(function)){
     return(NULL);
