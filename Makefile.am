@@ -557,6 +557,8 @@ libags_h_sources = \
 	ags/lib/ags_log.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_regex.h \
+	ags/lib/ags_solver_matrix.h \
+	ags/lib/ags_solver_vector.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
@@ -575,6 +577,8 @@ libags_c_sources = \
 	ags/lib/ags_log.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_regex.c \
+	ags/lib/ags_solver_matrix.c \
+	ags/lib/ags_solver_vector.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \

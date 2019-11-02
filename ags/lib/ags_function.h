@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
+#define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (((AgsFunction *) obj)->obj_mutex)
+
 #define AGS_SYMBOLIC_EULER "ℯ"
 #define AGS_SYMBOLIC_PI "𝜋"
 #define AGS_SYMBOLIC_INFINIT "∞"
@@ -40,7 +42,6 @@
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
-typedef struct _AgsSolverMatrix AgsSolverMatrix;
 typedef struct _AgsSolverVector AgsSolverVector;
 
 /**
@@ -72,6 +73,9 @@ struct _AgsFunction
 
   guint flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   gboolean is_pushing;
 
   gchar **equation;
@@ -104,28 +108,9 @@ struct _AgsFunctionClass
   void (*literal_solve)(AgsFunction *function);
 };
 
-struct _AgsSolverMatrix
-{
-  gchar **function_history;
-
-  gchar *source_function;
-  
-  AgsSolverVector **term_table;
-  guint row_count;
-  guint column_count;
-};
-
-struct _AgsSolverVector
-{
-  gchar *term;
-  gchar *term_exp;
-
-  AgsComplex *numeric_value;
-  gchar *symbol;
-  AgsComplex *exp_value;
-};
-
 GType ags_function_get_type(void);
+
+pthread_mutex_t* ags_function_get_class_mutex();
 
 gchar** ags_function_collapse_parantheses(AgsFunction *function,
 					  guint *function_count);

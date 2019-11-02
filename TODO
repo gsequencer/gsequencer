@@ -20,7 +20,6 @@ Free Documentation License".
 * TODO:JK: check recall id cleanup
 * TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
 * TODO:JK: implemented AgsSoundContainer manager
-* TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: added OSC server handbook
 * TODO:JK: added unit-tests
@@ -34,7 +33,6 @@ Free Documentation License".
 * TODO:JK: improved ags-feed recall thread-safety
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
 * TODO:JK: improved AgsApplySynth thread-safety
-* TODO:JK: implemented AgsFunction
 * TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
 * TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
 * TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
