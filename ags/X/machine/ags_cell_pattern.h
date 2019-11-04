@@ -109,6 +109,8 @@ void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChann
 void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
 void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
 
+void ags_cell_pattern_play(AgsCellPattern *cell_pattern, guint line);
+
 void* ags_cell_pattern_blink_worker(void *data);
 
 gboolean ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern);

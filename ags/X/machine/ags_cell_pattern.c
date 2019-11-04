@@ -939,6 +939,71 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
 		     cell_pattern->cell_width - 1, cell_pattern->cell_height - 1);
 }
 
+void
+ags_cell_pattern_play(AgsCellPattern *cell_pattern, guint line)
+{
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsChannel *start_input;
+  AgsChannel *channel;
+  AgsPlayback *playback;
+  
+  GList *start_list, *list;
+
+  gboolean play_all;
+
+  if(!AGS_IS_CELL_PATTERN(cell_pattern)){
+    return;
+  }
+
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
+
+  audio = machine->audio;
+  
+  /* get some fields */
+  g_object_get(audio,
+	       "input", &start_input,
+	       NULL);
+  
+  channel = ags_channel_nth(start_input,
+			    line);
+
+  if(channel != NULL){
+    AgsNote *play_note;
+
+    g_object_get(channel,
+		 "playback", &playback,
+		 NULL);
+
+    g_object_get(playback,
+		 "play-note", &play_note,
+		 NULL);
+
+    g_object_set(play_note,
+		 "x0", 0,
+		 "x1", 1,
+		 NULL);
+
+    ags_machine_playback_set_active(machine,
+				    playback,
+				    TRUE);
+
+    /* unref */
+    g_object_unref(channel);
+
+    g_object_unref(playback);
+
+    g_object_unref(play_note);
+  }
+  
+  /* unref */
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+}
+
 /**
  * ags_cell_pattern_led_queue_draw_timeout:
  * @cell_pattern: the #AgsCellPattern
