@@ -139,9 +139,9 @@ ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
  *
  * Returns: the mutex
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-pthread_mutex_t*
+GRecMutex*
 ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 {
   AgsMainLoopInterface *main_loop_interface;

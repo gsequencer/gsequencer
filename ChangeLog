@@ -9,12 +9,19 @@ ags (3.0.0)
 	* TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
 	* TODO:JK: migrated to gi18n.h?
 	* TODO:JK: migrated unit-tests to GTest?
+	* TODO:JK: replaced AgsAudioLoop by AgsAudioAsyncMainLoop
+	* TODO:JK: replaced AgsGenericMainLoop by AgsGenericAsyncMainLoop
+	* TODO:JK: implemented AgsAudioMainLoop
+	* TODO:JK: implemented AgsOscMainLoop
 	* TODO:JK: implemented support for GtkApplication
 	* TODO:JK: implemented introspection support
+	* TODO:JK: refactored AgsTask to inherit GTask
 	* TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
 	* TODO:JK: added G_BEGIN_DECLS and G_END_DECLS to header files
+	* TODO:JK: moved ags_thread-posix.[ch] to ags_thread.[ch]
 	* TODO:JK: removed ags_thread_file_xml.[ch], ags_audio_file_xml.[ch] and ags_gui_file_xml.[ch]
 	* TODO:JK: removed AgsPlugin?
+	* TODO:JK: removed AgsTaskThread?
 	* TODO:JK: removed AgsMenuBar
 	* TODO:JK: removed barriers of AgsThread
 	* TODO:JK: removed nested functions

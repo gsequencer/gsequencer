@@ -25,8 +25,6 @@
 
 #include <ags/object/ags_application_context.h>
 
-#include <pthread.h>
-
 #define AGS_TYPE_MAIN_LOOP                    (ags_main_loop_get_type())
 #define AGS_MAIN_LOOP(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MAIN_LOOP, AgsMainLoop))
 #define AGS_MAIN_LOOP_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_MAIN_LOOP, AgsMainLoopInterface))
@@ -41,7 +39,7 @@ struct _AgsMainLoopInterface
 {
   GTypeInterface ginterface;
   
-  pthread_mutex_t* (*get_tree_lock)(AgsMainLoop *main_loop);
+  GRecMutex* (*get_tree_lock)(AgsMainLoop *main_loop);
   
   void (*set_application_context)(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsMainLoop *main_loop);
@@ -74,7 +72,7 @@ struct _AgsMainLoopInterface
 
 GType ags_main_loop_get_type();
 
-pthread_mutex_t* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
+GRecMutex* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
 AgsApplicationContext* ags_main_loop_get_application_context(AgsMainLoop *main_loop);
