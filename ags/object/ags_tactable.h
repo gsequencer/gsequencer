@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TACTABLE                    (ags_tactable_get_type())
 #define AGS_TACTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TACTABLE, AgsTactable))
@@ -71,5 +73,7 @@ void ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 duration);
 
 void ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 void ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
+
+G_END_DECLS
 
 #endif /*__AGS_TACTABLE_H__*/

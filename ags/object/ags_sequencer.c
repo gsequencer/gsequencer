@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/object/ags_sequencer.h>
-
-#include <math.h>
 
 void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
 
@@ -64,12 +62,12 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 {
   /**
    * AgsSequencer::tic:
-   * @sequencer: the object
+   * @sequencer: the #AgsSequencer object
    *
    * The ::tic signal is emitted every tic of the sequencer. This notifies
    * about a newly played buffer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   g_signal_new("tic",
 	       G_TYPE_FROM_INTERFACE(ginterface),
@@ -81,13 +79,13 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 
   /**
    * AgsSequencer::offset-changed:
-   * @sequencer: the object
+   * @sequencer: the #AgsSequencer object
    * @note_offset: new notation offset
    *
    * The ::offset-changed signal notifies about changed position within
    * notation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   g_signal_new("offset-changed",
 	       G_TYPE_FROM_INTERFACE(ginterface),
@@ -100,58 +98,13 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 }
 
 /**
- * ags_sequencer_set_application_context:
- * @sequencer: the #AgsSequencer
- * @application_context: the application context to set
- *
- * Set application context.
- *
- * Since: 2.0.0
- */
-void
-ags_sequencer_set_application_context(AgsSequencer *sequencer,
-				      AgsApplicationContext *application_context)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_application_context);
-  sequencer_interface->set_application_context(sequencer,
-					       application_context);
-}
-
-/**
- * ags_sequencer_get_application_context:
- * @sequencer: the #AgsSequencer
- *
- * Get application context. 
- *
- * Returns: #AgsApplicationContext
- *
- * Since: 2.0.0
- */
-AgsApplicationContext*
-ags_sequencer_get_application_context(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_application_context, NULL);
-
-  return(sequencer_interface->get_application_context(sequencer));
-}
-
-
-/**
  * ags_sequencer_set_device:
  * @sequencer: the #AgsSequencer
  * @device_id: the device to set
  *
  * Set device.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_set_device(AgsSequencer *sequencer,
@@ -174,7 +127,7 @@ ags_sequencer_set_device(AgsSequencer *sequencer,
  *
  * Returns: the device's identifier
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_sequencer_get_device(AgsSequencer *sequencer)
@@ -196,7 +149,7 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_list_cards(AgsSequencer *sequencer,
@@ -218,7 +171,7 @@ ags_sequencer_list_cards(AgsSequencer *sequencer,
  *
  * Returns: %TRUE if starting, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sequencer_is_starting(AgsSequencer *sequencer)
@@ -240,7 +193,7 @@ ags_sequencer_is_starting(AgsSequencer *sequencer)
  *
  * Returns: %TRUE if playing, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sequencer_is_playing(AgsSequencer *sequencer)
@@ -262,7 +215,7 @@ ags_sequencer_is_playing(AgsSequencer *sequencer)
  *
  * Returns: %TRUE if recording, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sequencer_is_recording(AgsSequencer *sequencer)
@@ -283,7 +236,7 @@ ags_sequencer_is_recording(AgsSequencer *sequencer)
  *
  * Initializes the sequencer for playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_play_init(AgsSequencer *sequencer,
@@ -305,7 +258,7 @@ ags_sequencer_play_init(AgsSequencer *sequencer,
  *
  * Plays the current buffer of sequencer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_play(AgsSequencer *sequencer,
@@ -327,7 +280,7 @@ ags_sequencer_play(AgsSequencer *sequencer,
  *
  * Initializes the sequencer for recordback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_record_init(AgsSequencer *sequencer,
@@ -349,7 +302,7 @@ ags_sequencer_record_init(AgsSequencer *sequencer,
  *
  * Records the current buffer of sequencer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_record(AgsSequencer *sequencer,
@@ -370,7 +323,7 @@ ags_sequencer_record(AgsSequencer *sequencer,
  *
  * Stops the sequencer from playing to it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_stop(AgsSequencer *sequencer)
@@ -389,7 +342,7 @@ ags_sequencer_stop(AgsSequencer *sequencer)
  *
  * Every call to play may generate a tic. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_tic(AgsSequencer *sequencer)
@@ -408,7 +361,7 @@ ags_sequencer_tic(AgsSequencer *sequencer)
  *
  * Callback when counter expires minor note offset.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_offset_changed(AgsSequencer *sequencer,
@@ -432,7 +385,7 @@ ags_sequencer_offset_changed(AgsSequencer *sequencer,
  *
  * Returns: current playback buffer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void*
 ags_sequencer_get_buffer(AgsSequencer *sequencer,
@@ -457,7 +410,7 @@ ags_sequencer_get_buffer(AgsSequencer *sequencer,
  *
  * Returns: next playback buffer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void*
 ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
@@ -480,7 +433,7 @@ ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
  *
  * Lock @buffer. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_lock_buffer(AgsSequencer *sequencer,
@@ -503,7 +456,7 @@ ags_sequencer_lock_buffer(AgsSequencer *sequencer,
  *
  * Unlock @buffer. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
@@ -526,7 +479,7 @@ ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
  *
  * Set current playback bpm. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_set_bpm(AgsSequencer *sequencer,
@@ -549,7 +502,7 @@ ags_sequencer_set_bpm(AgsSequencer *sequencer,
  *
  * Returns: bpm
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_sequencer_get_bpm(AgsSequencer *sequencer)
@@ -570,7 +523,7 @@ ags_sequencer_get_bpm(AgsSequencer *sequencer)
  *
  * Set current playback delay factor. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
@@ -593,7 +546,7 @@ ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
  *
  * Returns: delay factor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
@@ -615,7 +568,7 @@ ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
  *
  * Returns: the start note offset
  *
- * Since: 2.1.24
+ * Since: 3.0.0
  */
 guint
 ags_sequencer_get_start_note_offset(AgsSequencer *sequencer)
@@ -636,7 +589,7 @@ ags_sequencer_get_start_note_offset(AgsSequencer *sequencer)
  *
  * Set start playback note offset. 
  *
- * Since: 2.1.24
+ * Since: 3.0.0
  */
 void
 ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
@@ -659,7 +612,7 @@ ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
  *
  * Returns: offset
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sequencer_get_note_offset(AgsSequencer *sequencer)
@@ -680,7 +633,7 @@ ags_sequencer_get_note_offset(AgsSequencer *sequencer)
  *
  * Set current playback note offset. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sequencer_set_note_offset(AgsSequencer *sequencer,

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SEEKABLE                    (ags_seekable_get_type())
 #define AGS_SEEKABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SEEKABLE, AgsSeekable))
 #define AGS_SEEKABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SEEKABLE, AgsSeekableInterface))
@@ -49,5 +51,7 @@ struct _AgsSeekableInterface
 GType ags_seekable_get_type();
 
 void ags_seekable_seek(AgsSeekable *seekable, gint64 offset, guint whence);
+
+G_END_DECLS
 
 #endif /*__AGS_SEEKABLE_H__*/

@@ -71,7 +71,7 @@ ags_cursor_base_init(AgsCursorInterface *ginterface)
  * 
  * Returns: the default offset
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gdouble
 ags_cursor_get_default_offset(AgsCursor *cursor)
@@ -93,7 +93,7 @@ ags_cursor_get_default_offset(AgsCursor *cursor)
  * 
  * Returns: the tact
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gdouble
 ags_cursor_cursor_get_tact(AgsCursor *cursor)
@@ -115,7 +115,7 @@ ags_cursor_cursor_get_tact(AgsCursor *cursor)
  * 
  * Returns: the BPM 
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gdouble
 ags_cursor_cursor_get_bpm(AgsCursor *cursor)
@@ -137,7 +137,7 @@ ags_cursor_cursor_get_bpm(AgsCursor *cursor)
  * 
  * Returns: 
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 guint
 ags_cursor_cursor_get_rate(AgsCursor *cursor)
@@ -159,7 +159,7 @@ ags_cursor_cursor_get_rate(AgsCursor *cursor)
  * 
  * Returns: the delay
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gdouble
 ags_cursor_cursor_get_delay(AgsCursor *cursor)
@@ -181,7 +181,7 @@ ags_cursor_cursor_get_delay(AgsCursor *cursor)
  * 
  * Returns: the duration
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 guint64
 ags_cursor_cursor_get_duration(AgsCursor *cursor)
@@ -203,7 +203,7 @@ ags_cursor_cursor_get_duration(AgsCursor *cursor)
  * 
  * Returns: the delay counter
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gdouble
 ags_cursor_get_delay_counter(AgsCursor *cursor)
@@ -225,7 +225,7 @@ ags_cursor_get_delay_counter(AgsCursor *cursor)
  * 
  * Returns: the offset
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 guint64
 ags_cursor_get_offset(AgsCursor *cursor)
@@ -247,7 +247,7 @@ ags_cursor_get_offset(AgsCursor *cursor)
  * 
  * Returns: the #GList-struct pointing to previous
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_cursor_get_prev(AgsCursor *cursor)
@@ -269,7 +269,7 @@ ags_cursor_get_prev(AgsCursor *cursor)
  * 
  * Returns: the #GList-struct pointing to next
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_cursor_get_next(AgsCursor *cursor)
@@ -291,7 +291,7 @@ ags_cursor_get_next(AgsCursor *cursor)
  * 
  * Returns: the #GList-struct of current as copy
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_cursor_get_current_copy(AgsCursor *cursor)
@@ -313,7 +313,7 @@ ags_cursor_get_current_copy(AgsCursor *cursor)
  * 
  * Returns: the #GList-struct pointing to current
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_cursor_get_current(AgsCursor *cursor)

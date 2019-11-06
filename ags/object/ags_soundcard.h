@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
@@ -112,10 +110,6 @@ typedef enum{
 struct _AgsSoundcardInterface
 {
   GTypeInterface ginterface;
-
-  void (*set_application_context)(AgsSoundcard *soundcard,
-				  AgsApplicationContext *application_context);
-  AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
 
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
@@ -328,5 +322,7 @@ gboolean ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
 					 void *buffer, guint sub_block);
 void ags_soundcard_unlock_sub_block(AgsSoundcard *soundcard,
 				    void *buffer, guint sub_block);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_H__*/

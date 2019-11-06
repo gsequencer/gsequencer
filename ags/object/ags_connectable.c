@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,7 +70,7 @@ ags_connectable_base_init(AgsConnectableInterface *ginterface)
  *
  * Returns: the assigned #AgsUUID
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsUUID*
 ags_connectable_get_uuid(AgsConnectable *connectable)
@@ -92,7 +92,7 @@ ags_connectable_get_uuid(AgsConnectable *connectable)
  *
  * Returns: %TRUE if @connectable can be added to registry, otherwise %FALSE.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_connectable_has_resource(AgsConnectable *connectable)
@@ -114,7 +114,7 @@ ags_connectable_has_resource(AgsConnectable *connectable)
  *
  * Returns: %TRUE if is added to registry, otherwise %FALSE.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_connectable_is_ready(AgsConnectable *connectable)
@@ -134,7 +134,7 @@ ags_connectable_is_ready(AgsConnectable *connectable)
  *
  * Add connectable to registry.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_add_to_registry(AgsConnectable *connectable)
@@ -153,7 +153,7 @@ ags_connectable_add_to_registry(AgsConnectable *connectable)
  *
  * Remove connectable from registry.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_remove_from_registry(AgsConnectable *connectable)
@@ -174,7 +174,7 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
  *
  * Returns: the #xmlNode-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_connectable_list_resource(AgsConnectable *connectable)
@@ -196,7 +196,7 @@ ags_connectable_list_resource(AgsConnectable *connectable)
  *
  * Returns: the #xmlNode-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_connectable_xml_compose(AgsConnectable *connectable)
@@ -217,7 +217,7 @@ ags_connectable_xml_compose(AgsConnectable *connectable)
  *
  * Parse @node as XML element and apply it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_xml_parse(AgsConnectable *connectable,
@@ -240,7 +240,7 @@ ags_connectable_xml_parse(AgsConnectable *connectable,
  *
  * Returns: %TRUE if is connected, otherwise %FALSE.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_connectable_is_connected(AgsConnectable *connectable)
@@ -260,7 +260,7 @@ ags_connectable_is_connected(AgsConnectable *connectable)
  *
  * Connect the connectable.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_connect(AgsConnectable *connectable)
@@ -280,7 +280,7 @@ ags_connectable_connect(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_disconnect(AgsConnectable *connectable)
@@ -300,7 +300,7 @@ ags_connectable_disconnect(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_connect_connection(AgsConnectable *connectable,
@@ -322,7 +322,7 @@ ags_connectable_connect_connection(AgsConnectable *connectable,
  *
  * Disconnect the connectable.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connectable_disconnect_connection(AgsConnectable *connectable,

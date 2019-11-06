@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CURSOR                    (ags_cursor_get_type())
 #define AGS_CURSOR(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CURSOR, AgsCursor))
 #define AGS_CURSOR_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_CURSOR, AgsCursorInterface))
@@ -77,5 +79,7 @@ GList* ags_cursor_get_next(AgsCursor *cursor);
 
 GList* ags_cursor_get_current_copy(AgsCursor *cursor);
 GList* ags_cursor_get_current(AgsCursor *cursor);
+
+G_END_DECLS
 
 #endif /*__AGS_CURSOR_H__*/

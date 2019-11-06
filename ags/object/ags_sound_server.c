@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ ags_sound_server_class_init(AgsSoundServerInterface *ginterface)
  *
  * Sets the url of @sound_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_set_url(AgsSoundServer *sound_server,
@@ -88,7 +88,7 @@ ags_sound_server_set_url(AgsSoundServer *sound_server,
  *
  * Returns: the URL as string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_sound_server_get_url(AgsSoundServer *sound_server)
@@ -110,7 +110,7 @@ ags_sound_server_get_url(AgsSoundServer *sound_server)
  *
  * Sets the ports of @sound_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_set_ports(AgsSoundServer *sound_server,
@@ -135,7 +135,7 @@ ags_sound_server_set_ports(AgsSoundServer *sound_server,
  *
  * Returns: the port as string %NULL-terminated array
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint*
 ags_sound_server_get_ports(AgsSoundServer *sound_server,
@@ -159,7 +159,7 @@ ags_sound_server_get_ports(AgsSoundServer *sound_server,
  *
  * Sets the soundcard at @client_uuid.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_set_soundcard(AgsSoundServer *sound_server,
@@ -186,7 +186,7 @@ ags_sound_server_set_soundcard(AgsSoundServer *sound_server,
  *
  * Returns: the soundcard as #GList-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_server_get_soundcard(AgsSoundServer *sound_server,
@@ -210,7 +210,7 @@ ags_sound_server_get_soundcard(AgsSoundServer *sound_server,
  *
  * Sets the sequencer at @client_uuid.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_set_sequencer(AgsSoundServer *sound_server,
@@ -237,7 +237,7 @@ ags_sound_server_set_sequencer(AgsSoundServer *sound_server,
  *
  * Returns: the sequencer as #GList-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_server_get_sequencer(AgsSoundServer *sound_server,
@@ -262,7 +262,7 @@ ags_sound_server_get_sequencer(AgsSoundServer *sound_server,
  *
  * Returns: a new #AgsSoundcard
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_server_register_soundcard(AgsSoundServer *sound_server,
@@ -285,7 +285,7 @@ ags_sound_server_register_soundcard(AgsSoundServer *sound_server,
  *
  * Releases @soundcard in @sound_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_unregister_soundcard(AgsSoundServer *sound_server,
@@ -310,7 +310,7 @@ ags_sound_server_unregister_soundcard(AgsSoundServer *sound_server,
  *
  * Returns: a new #AgsSequencer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_server_register_sequencer(AgsSoundServer *sound_server,
@@ -333,7 +333,7 @@ ags_sound_server_register_sequencer(AgsSoundServer *sound_server,
  *
  * Releases @sequencer in @sound_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_server_unregister_sequencer(AgsSoundServer *sound_server,

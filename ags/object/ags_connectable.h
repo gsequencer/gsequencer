@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,9 @@
 
 #include <libxml/tree.h>
 
-#define _GL_ALREADY_INCLUDING_SYS_SOCKET_H
-
 #include <ags/lib/ags_uuid.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())
 #define AGS_CONNECTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONNECTABLE, AgsConnectable))
@@ -89,5 +89,7 @@ void ags_connectable_connect_connection(AgsConnectable *connectable,
 					GObject *connection);
 void ags_connectable_disconnect_connection(AgsConnectable *connectable,
 					   GObject *connection);
+
+G_END_DECLS
 
 #endif /*__AGS_CONNECTABLE_H__*/

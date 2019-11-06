@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUND_SERVER                    (ags_sound_server_get_type())
 #define AGS_SOUND_SERVER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_SERVER, AgsSoundServer))
@@ -101,5 +103,7 @@ GObject* ags_sound_server_register_sequencer(AgsSoundServer *sound_server,
 					     gboolean is_output);
 void ags_sound_server_unregister_sequencer(AgsSoundServer *sound_server,
 					   GObject *sequencer);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_SERVER_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/object/ags_applicable.h>
-
-#include <stdio.h>
 
 void ags_applicable_base_init(AgsApplicableInterface *ginterface);
 
@@ -70,7 +68,7 @@ ags_applicable_base_init(AgsApplicableInterface *ginterface)
  *
  * Update behaviour.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
@@ -89,7 +87,7 @@ ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
  *
  * Apply all changes done so far.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_applicable_apply(AgsApplicable *applicable)
@@ -108,7 +106,7 @@ ags_applicable_apply(AgsApplicable *applicable)
  *
  * Reset all changes within the user interface.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_applicable_reset(AgsApplicable *applicable)
