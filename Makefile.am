@@ -611,7 +611,6 @@ libags_object_h_sources =  \
 	$(deprecated_libags_object_h_sources) \
 	ags/object/ags_applicable.h \
 	ags/object/ags_application_context.h \
-	ags/object/ags_async_queue.h \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
@@ -635,7 +634,6 @@ libags_object_c_sources = \
 	$(deprecated_libags_object_c_sources) \
 	ags/object/ags_applicable.c \
 	ags/object/ags_application_context.c \
-	ags/object/ags_async_queue.c \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
@@ -693,10 +691,9 @@ libags_thread_h_sources = \
 	ags/thread/ags_poll_fd.h \
 	ags/thread/ags_polling_thread.h \
 	ags/thread/ags_returnable_thread.h \
-	ags/thread/ags_single_thread.h \
 	ags/thread/ags_task_completion.h \
 	ags/thread/ags_task.h \
-	ags/thread/ags_task_thread.h \
+	ags/thread/ags_task_launcher.h \
 	ags/thread/ags_thread_application_context.h \
 	ags/thread/ags_thread_pool.h \
 	ags/thread/ags_thread.h \
@@ -719,10 +716,9 @@ libags_thread_c_sources = \
 	ags/thread/ags_poll_fd.c \
 	ags/thread/ags_polling_thread.c \
 	ags/thread/ags_returnable_thread.c \
-	ags/thread/ags_single_thread.c \
 	ags/thread/ags_task_completion.c \
 	ags/thread/ags_task.c \
-	ags/thread/ags_task_thread.c \
+	ags/thread/ags_task_launcher.c \
 	ags/thread/ags_thread_application_context.c \
 	ags/thread/ags_thread_pool.c \
 	ags/thread/ags_thread.c \
