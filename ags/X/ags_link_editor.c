@@ -259,7 +259,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 		 NULL);
 
     /* application context */  
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     /* get model */
     model = gtk_combo_box_get_model(link_editor->combo);

@@ -1365,7 +1365,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) bulk_member,
 						 AGS_TYPE_WINDOW);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
     ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);

@@ -24,7 +24,6 @@
 #include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/X/ags_midi_preferences.h>
@@ -419,7 +418,6 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
 void
 ags_sequencer_editor_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
@@ -555,7 +553,6 @@ void
 ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 				gchar *device)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsJackServer *jack_server;
@@ -572,9 +569,8 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
   
   /* create sequencer */
   sound_server =
@@ -652,7 +648,6 @@ void
 ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 				   gchar *device)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
  
   AgsJackMidiin *jack_midiin;
@@ -666,8 +661,8 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
-  application_context = (AgsApplicationContext *) window->application_context;
+
+  application_context = ags_application_context_get_instance();
   
   /* create sequencer */
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -776,7 +771,6 @@ void
 ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 				   GObject *sequencer)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsThread *main_loop;
@@ -794,9 +788,7 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
 
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
@@ -851,7 +843,6 @@ void
 ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 				      GObject *sequencer)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsThread *main_loop;
@@ -866,9 +857,7 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
 
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;  
+  application_context = ags_application_context_get_instance();
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
     
@@ -909,7 +898,6 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 void
 ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsJackMidiin *jack_midiin;
@@ -923,9 +911,7 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
 
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create sequencer */
   sound_server =
@@ -978,7 +964,6 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 void
 ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsMidiin *midiin;
@@ -990,8 +975,8 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
-  application_context = (AgsApplicationContext *) window->application_context;
+
+  application_context = ags_application_context_get_instance();
   
   /*  */
   midiin = g_object_new(AGS_TYPE_MIDIIN,
@@ -1031,7 +1016,6 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 void
 ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
 
   AgsMidiin *midiin;
@@ -1044,9 +1028,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							   AGS_TYPE_PREFERENCES);
 
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
   
   /*  */  
   midiin = g_object_new(AGS_TYPE_MIDIIN,

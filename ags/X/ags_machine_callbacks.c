@@ -130,7 +130,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
   
   /* destroy editor */
   list =

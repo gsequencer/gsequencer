@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #include <ags/lib/ags_uuid.h>
 
 #include <ags/object/ags_config.h>

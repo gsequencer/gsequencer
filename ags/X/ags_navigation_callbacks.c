@@ -38,8 +38,6 @@ ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   navigation = AGS_NAVIGATION(widget);
-
-  navigation->soundcard = window->soundcard;
 }
 
 void
@@ -70,18 +68,14 @@ void
 ags_navigation_bpm_callback(GtkWidget *widget,
 			    AgsNavigation *navigation)
 {
-  AgsWindow *window;
   AgsApplyBpm *apply_bpm;
 
   AgsApplicationContext *application_context;
   
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
-  
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* get task thread */
-  apply_bpm = ags_apply_bpm_new(window->application_context,
+  apply_bpm = ags_apply_bpm_new(application_context,
 				navigation->bpm->adjustment->value);
   
   ags_xorg_application_context_schedule_task(application_context,
@@ -92,12 +86,17 @@ void
 ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
-  AgsWindow *window;
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gdouble tact;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -108,12 +107,17 @@ void
 ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  AgsWindow *window;
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gdouble tact;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -126,7 +130,13 @@ ags_navigation_play_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
+
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *machines, *machines_start;
+
   gboolean initialized_time;
   
   if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
@@ -134,7 +144,11 @@ ags_navigation_play_callback(GtkWidget *widget,
   }
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  application_context = ags_application_context_get_instance();
   
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
   machines_start =
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
   
@@ -151,7 +165,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
       
       ags_machine_set_run_extended(machine,
@@ -164,7 +178,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
       }
       
       ags_machine_set_run_extended(machine,
@@ -184,10 +198,21 @@ ags_navigation_stop_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
+
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *machines,*machines_start;
+
   gchar *timestr;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
@@ -229,12 +254,12 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   timestr = ags_time_get_uptime_from_offset(0.0,
 					    navigation->bpm->adjustment->value,
-					    ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard)),
-					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
+					    ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard)),
+					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard)));
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
-  ags_soundcard_set_note_offset(AGS_SOUNDCARD(window->soundcard),
+  ags_soundcard_set_note_offset(AGS_SOUNDCARD(default_soundcard),
 				0);
 }
 
@@ -242,12 +267,17 @@ void
 ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  AgsWindow *window;
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gdouble tact;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -258,12 +288,17 @@ void
 ags_navigation_forward_callback(GtkWidget *widget,
 				AgsNavigation *navigation)
 {
-  AgsWindow *window;
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gdouble tact;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -280,6 +315,10 @@ ags_navigation_loop_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *machines, *machines_start;
   GList *list, *list_start;
 
@@ -288,13 +327,18 @@ ags_navigation_loop_callback(GtkWidget *widget,
   GValue do_loop_value = {0,};
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 			 
@@ -424,6 +468,10 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *machines, *machines_start;
   GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
@@ -432,13 +480,18 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
 
@@ -556,6 +609,10 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   GList *machines, *machines_start;
   GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
@@ -564,13 +621,18 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
 

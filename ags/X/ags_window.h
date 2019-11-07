@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_history_browser.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
 #define AGS_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WINDOW, AgsWindow))
 #define AGS_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_WINDOW, AgsWindowClass))
@@ -66,12 +68,7 @@ struct _AgsWindow
   gchar *filename;
   
   char *name;
-
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
   
-  GObject *soundcard;
-
   AgsMenuBar *menu_bar;
   AgsContextMenu *context_menu;
   
@@ -135,6 +132,8 @@ void ags_window_show_error(AgsWindow *window,
 
 gboolean ags_window_load_file_timeout(AgsWindow *window);
 
-AgsWindow* ags_window_new(GObject *application_context);
+AgsWindow* ags_window_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WINDOW_H__*/

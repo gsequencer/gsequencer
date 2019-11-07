@@ -19,7 +19,7 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <stdlib.h>
+#include <ags/thread/ags_task_launcher.h>
 
 #include <ags/i18n.h>
 

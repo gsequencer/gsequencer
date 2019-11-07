@@ -24,8 +24,7 @@
 #include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_preferences.h>
+#include <ags/X/ags_audio_preferences.h>
 
 #include <ags/config.h>
 #include <ags/i18n.h>
@@ -666,7 +665,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   
   GtkListStore *model;
   GtkTreeIter current;
-    
+
   AgsConfig *config;
 
   GList *tasks;
@@ -938,8 +937,6 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 void
 ags_soundcard_editor_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
   GObject *soundcard;
@@ -1474,9 +1471,6 @@ void
 ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 			      gchar *device)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsPulseServer *pulse_server;
   AgsPulseDevout *pulse_devout;
 
@@ -1491,6 +1485,7 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   AgsThread *main_loop;
   AgsThread *soundcard_thread, *default_soundcard_thread;
   AgsThread *export_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -1512,11 +1507,7 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   core_audio_server = NULL;
   core_audio_devout = NULL;
@@ -1665,9 +1656,13 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 				soundcard_thread,
 				TRUE, TRUE);
 
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+  
   /* notify soundcard */
   notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-  AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+  g_object_set(notify_soundcard,
+	       "task-launcher", task_launcher,
+	       NULL);
 
   if(use_core_audio){
     core_audio_devout->notify_soundcard = (GObject *) notify_soundcard;
@@ -1677,8 +1672,8 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
     jack_devout->notify_soundcard = (GObject *) notify_soundcard;
   }
   
-  ags_task_thread_append_cyclic_task((AgsTaskThread *) application_context->task_thread,
-				     (AgsTask *) notify_soundcard);
+  ags_task_launcher_add_cyclic_task(task_launcher,
+				    (AgsTask *) notify_soundcard);
 
   if((default_soundcard_thread = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
@@ -1719,9 +1714,6 @@ void
 ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 				 gchar *device)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-  
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
 
@@ -1751,12 +1743,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = aggs_application_context_get_instance();
 
   core_audio_server = NULL;
   core_audio_devout = NULL;
@@ -1930,14 +1917,12 @@ void
 ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 				   GObject *soundcard)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsNotifySoundcard *notify_soundcard;
   
   AgsThread *main_loop;
   AgsThread *soundcard_thread, *default_soundcard_thread;
   AgsThread *export_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -1962,12 +1947,7 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_ADD;
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   initial_soundcard = FALSE;
   
@@ -2057,16 +2037,20 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 				soundcard_thread,
 				TRUE, TRUE);
 
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+  
   /* notify soundcard */
   notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-  AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+  g_object_set(notify_soundcard,
+	       "task-launcher", task_launcher,
+	       NULL);
   
   if(AGS_IS_DEVOUT(soundcard)){
     AGS_DEVOUT(soundcard)->notify_soundcard = (GObject *) notify_soundcard;
   }
   
-  ags_task_thread_append_cyclic_task((AgsTaskThread *) application_context->task_thread,
-				     (AgsTask *) notify_soundcard);
+  ags_task_launcher_add_cyclic_task(task_launcher,
+				    (AgsTask *) notify_soundcard);
 
   if((default_soundcard_thread = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
@@ -2092,9 +2076,6 @@ void
 ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 				      GObject *soundcard)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
 
@@ -2113,12 +2094,7 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     return;
   }
   
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;  
+  application_context = ags_application_context_get_instance();
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
@@ -2178,9 +2154,6 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 void
 ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsCoreAudioDevout *core_audio_devout;
 
   AgsApplicationContext *application_context;
@@ -2193,12 +2166,7 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create soundcard */
   sound_server =
@@ -2249,9 +2217,6 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsPulseDevout *pulse_devout;
 
   AgsApplicationContext *application_context;
@@ -2264,12 +2229,7 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create soundcard */
   sound_server =
@@ -2320,9 +2280,6 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsJackDevout *jack_devout;
 
   AgsApplicationContext *application_context;
@@ -2335,12 +2292,7 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
     return;
   }
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create soundcard */
   sound_server =
@@ -2391,9 +2343,6 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsDevout *devout;
 
   AgsApplicationContext *application_context;
@@ -2411,12 +2360,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /*  */
   devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
@@ -2466,9 +2410,6 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsDevout *devout;
 
   AgsApplicationContext *application_context;
@@ -2486,12 +2427,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /*  */
   devout = g_object_new(AGS_TYPE_DEVOUT,
@@ -2543,9 +2479,6 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
   AgsDevout *devout;
 
   AgsApplicationContext *application_context;
@@ -2557,12 +2490,7 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
     return;
   }
   
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-
-  window = AGS_WINDOW(preferences->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
   
   /*  */
   devout = g_object_new(AGS_TYPE_DEVOUT,

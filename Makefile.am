@@ -8,18 +8,10 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
-if WITH_GNULIB
-SUBDIRS += lib
-endif
-
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-threads=posix --without-included-regex
+# AM_DISTCHECK_CONFIGURE_FLAGS = 
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h
-
-if WITH_GNULIB
-AM_CPPFLAGS += -I$(top_srcdir)/lib
-endif
 
 if WITH_W32API
 AM_CPPFLAGS += -DAGS_W32API=1 -DHAVE_GLIB_2_6=1 -DHAVE_GLIB_2_44=1 -DHAVE_GLIB_2_54=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include-fixed -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include  -I/usr/x86_64-w64-mingw32/include -I/home/joelkraehemann/mingw64/target/include -I/home/joelkraehemann/mingw64/target/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
@@ -55,10 +47,6 @@ if WITH_W32API
 LDFLAGS += -no-undefined
 endif
 
-if WITH_GNULIB
-LDFLAGS += -L./lib -lgnu
-endif
-
 # 
 # TARGETS = gsequencer
 
@@ -90,7 +78,6 @@ EXTRA_DIST = config.rpath \
 	gsequencer.share \
 	acsite.m4 \
 	aclocal.m4 \
-	m4/gnulib-cache.m4 \
 	gsequencer.1 \
 	README \
 	ags_example.xml \

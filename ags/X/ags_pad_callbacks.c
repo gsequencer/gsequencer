@@ -79,7 +79,6 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 void
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   GtkContainer *container;
 
@@ -96,9 +95,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /*  */
   start_task = NULL;

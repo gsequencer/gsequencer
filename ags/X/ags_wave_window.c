@@ -58,7 +58,6 @@ gboolean ags_wave_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
 };
 
 static gpointer ags_wave_window_parent_class = NULL;
@@ -120,22 +119,6 @@ ags_wave_window_class_init(AgsWaveWindowClass *wave_window)
 
   gobject->finalize = ags_wave_window_finalize;
 
-  /**
-   * AgsWaveWindow:soundcard:
-   *
-   * The assigned #AgsSoundcard acting as default sink.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
-
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) wave_window;
 
@@ -160,8 +143,6 @@ ags_wave_window_init(AgsWaveWindow *wave_window)
 
   wave_window->flags = 0;
 
-  wave_window->soundcard = NULL;
-  
   wave_window->wave_editor = ags_wave_editor_new();
   gtk_container_add((GtkContainer *) wave_window,
 		    (GtkWidget *) wave_window->wave_editor);		    
@@ -178,31 +159,6 @@ ags_wave_window_set_property(GObject *gobject,
   wave_window = AGS_WAVE_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-
-      soundcard = g_value_get_object(value);
-
-      if(wave_window->soundcard == soundcard){
-	return;
-      }
-
-      if(wave_window->soundcard != NULL){
-	g_object_unref(wave_window->soundcard);
-      }
-      
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
-      }
-      
-      wave_window->soundcard = soundcard;
-
-      g_object_set(G_OBJECT(wave_window->wave_editor),
-		   "soundcard", soundcard,
-		   NULL);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -220,9 +176,6 @@ ags_wave_window_get_property(GObject *gobject,
   wave_window = AGS_WAVE_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, wave_window->soundcard);
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -272,10 +225,7 @@ ags_wave_window_finalize(GObject *gobject)
 
   wave_window = (AgsWaveWindow *) gobject;
 
-  if(wave_window->soundcard != NULL){
-    g_object_unref(G_OBJECT(wave_window->soundcard));
-  }
-  
+  /* call parent */
   G_OBJECT_CLASS(ags_wave_window_parent_class)->finalize(gobject);
 }
 

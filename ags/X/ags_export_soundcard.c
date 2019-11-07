@@ -498,6 +498,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   AgsExportWindow *export_window;
   
   GtkTreeModel *model;
+
+  AgsApplicationContext *application_context;
   
   GList *start_soundcard, *soundcard;
   GList *card, *card_start;
@@ -507,12 +509,13 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
- 
+
+  application_context = ags_application_context_get_instance();
+  
   start_soundcard = NULL;
   
-  if(export_window != NULL &&
-     export_window->application_context != NULL){
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
+  if(export_window != NULL){
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
   card_start = NULL;

@@ -929,7 +929,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget * )effect_bulk,
 						 AGS_TYPE_WINDOW);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
@@ -1485,7 +1485,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						 AGS_TYPE_WINDOW);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,

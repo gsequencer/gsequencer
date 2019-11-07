@@ -63,8 +63,6 @@ Build using mingw
 The commands below might compile a native build of gsequencer on x86_64-mingw32 architecture using MinGW compiler assuming installing to
 home directory. To perform a parallel build using 8 threads, invoke following commands in shell:
 
-$ ./gnulib/gnulib-tool --import langinfo regex poll-h signal-h netinet_in sigaction strings sys_types
-
 Follow the instructions on screen, edit configure.ac and Makefile.am or apply win32.patch.
 
 $ patch -p1 < win32.patch

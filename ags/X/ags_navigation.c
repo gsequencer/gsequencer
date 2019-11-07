@@ -539,12 +539,12 @@ void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact_counter)
 {
-  AgsWindow *window;
-
   AgsSeekSoundcard *seek_soundcard;
 
   AgsApplicationContext *application_context;
 
+  GObject *default_soundcard;
+  
   GList *start_list, *list;
   
   gchar *timestr;
@@ -554,19 +554,19 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gint64 new_offset;
   guint note_offset;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* seek soundcard */
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
   
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
   
   new_offset = (16 * tact_counter);
   
-  seek_soundcard = ags_seek_soundcard_new(window->soundcard,
+  seek_soundcard = ags_seek_soundcard_new(default_soundcard,
 					  new_offset,
 					  AGS_SEEK_SET);
   
@@ -833,15 +833,19 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
   AgsNavigation *navigation;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gchar *str;
 
   navigation = AGS_NAVIGATION(widget);
 
-  if(!AGS_IS_SOUNDCARD(navigation->soundcard)){
-    return(TRUE);
-  }
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  str = ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard));
+  str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
 
   g_object_set(navigation->duration_time,
 	       "label", str,

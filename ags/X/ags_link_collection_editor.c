@@ -462,7 +462,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     /* get window and application_context  */
     window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     /* get first line */
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);

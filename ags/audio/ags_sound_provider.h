@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOUND_PROVIDER                    (ags_sound_provider_get_type())
 #define AGS_SOUND_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_PROVIDER, AgsSoundProvider))
 #define AGS_SOUND_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUND_PROVIDER, AgsSoundProviderInterface))
@@ -95,5 +97,7 @@ GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
 void ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
 				       GList *sound_server);
 GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

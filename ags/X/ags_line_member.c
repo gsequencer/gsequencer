@@ -1395,7 +1395,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) line_member,
 						   AGS_TYPE_WINDOW);
   
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,

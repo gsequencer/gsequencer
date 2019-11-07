@@ -580,8 +580,6 @@ ags_machine_init(AgsMachine *machine)
   machine->connection_editor = NULL;
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
-
-  machine->application_context = NULL;
 }
 
 void
@@ -2422,7 +2420,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   no_soundcard = FALSE;
 
@@ -2483,12 +2481,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       /* start soundcard */
-      start_soundcard = ags_start_soundcard_new((AgsApplicationContext *) window->application_context);
+      start_soundcard = ags_start_soundcard_new(application_context);
       list = g_list_prepend(list,
 			    start_soundcard);
 
       /* start sequencer */
-      start_sequencer = ags_start_sequencer_new((AgsApplicationContext *) window->application_context);
+      start_sequencer = ags_start_sequencer_new(application_context);
       list = g_list_prepend(list,
 			    start_sequencer);
       
@@ -2569,11 +2567,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
-  if(window != NULL){
-    application_context = (AgsApplicationContext *) window->application_context;
-  }else{
-    application_context = NULL;
-  }
+  application_context = ags_application_context_get_instance();
   
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -2640,7 +2634,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 						 AGS_TYPE_WINDOW);
 
   if(window != NULL){
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
   }else{
     application_context = NULL;
   }
@@ -2794,7 +2788,7 @@ ags_machine_open_files(AgsMachine *machine,
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,

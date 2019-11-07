@@ -114,7 +114,7 @@ ags_concurrency_provider_set_main_loop(AgsConcurrencyProvider *concurrency_provi
  * 
  * Since: 3.0.0
  */
-AgsThread*
+AgsTaskLauncher*
 ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider *concurrency_provider)
 {
   AgsConcurrencyProviderInterface *concurrency_provider_interface;

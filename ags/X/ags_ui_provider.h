@@ -42,53 +42,114 @@ typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 struct _AgsUiProviderInterface
 {
   GTypeInterface ginterface;
-  
-  GtkWidget* (*get_window)(AgsUiProvider *ui_provider);
-  void (*set_window)(AgsUiProvider *ui_provider,
-		     GtkWidget *window);
-
-  AgsThread* (*get_gui_thread)(AgsUiProvider *ui_provider);
-  void (*set_gui_thread)(AgsUiProvider *ui_provider,
-			 AgsThread *gui_thread);
-  
+    
   gboolean (*get_show_animation)(AgsUiProvider *ui_provider);
   void (*set_show_animation)(AgsUiProvider *ui_provider,
-			     gboolean do_show_animation);
+			     gboolean show_animation);
 
   gboolean (*get_gui_ready)(AgsUiProvider *ui_provider);
   void (*set_gui_ready)(AgsUiProvider *ui_provider,
-			gboolean is_gui_ready);  
+			gboolean gui_ready);  
 
+  gboolean (*get_file_ready)(AgsUiProvider *ui_provider);
+  void (*set_file_ready)(AgsUiProvider *ui_provider,
+			gboolean is_file_ready);
+
+  gdouble (*get_gui_scale_factor)(AgsUiProvider *ui_provider);
+  void (*set_gui_scale_factor)(AgsUiProvider *ui_provider,
+			       gdouble gui_scale_factor);
+
+  void (*schedule_task)(AgsUiProvider *ui_provider,
+			AgsTask *task);
+  void (*schedule_task_all)(AgsUiProvider *ui_provider,
+			    GList *task);
+  
   GtkWidget* (*get_animation_window)(AgsUiProvider *ui_provider);
   void (*set_animation_window)(AgsUiProvider *ui_provider,
 			       GtkWidget *animation_window);
 
+  GtkWidget* (*get_window)(AgsUiProvider *ui_provider);
+  void (*set_window)(AgsUiProvider *ui_provider,
+		     GtkWidget *window);
+
+  GtkWidget* (*get_automation_window)(AgsUiProvider *ui_provider);
+  void (*set_automation_window)(AgsUiProvider *ui_provider,
+				GtkWidget *automation_window);
+
+  GtkWidget* (*get_wave_window)(AgsUiProvider *ui_provider);
+  void (*set_wave_window)(AgsUiProvider *ui_provider,
+			  GtkWidget *wave_window);
+  
+  GtkWidget* (*get_sheet_window)(AgsUiProvider *ui_provider);
+  void (*set_sheet_window)(AgsUiProvider *ui_provider,
+			   GtkWidget *sheet_window);
+  
+  GtkWidget* (*get_export_window)(AgsUiProvider *ui_provider);
+  void (*set_export_window)(AgsUiProvider *ui_provider,
+			    GtkWidget *export_window);
+
+  GtkWidget* (*get_preferences)(AgsUiProvider *ui_provider);
+  void (*set_preferences)(AgsUiProvider *ui_provider,
+			  GtkWidget *preferences);
+  
+  GtkWidget* (*get_history_browser)(AgsUiProvider *ui_provider);
+  void (*set_history_browser)(AgsUiProvider *ui_provider,
+			      GtkWidget *history_browser);
+
+  GtkWidget* (*get_midi_browser)(AgsUiProvider *ui_provider);
+  void (*set_midi_browser)(AgsUiProvider *ui_provider,
+			   GtkWidget *midi_browser);
+
+  GtkWidget* (*get_sample_browser)(AgsUiProvider *ui_provider);
+  void (*set_sample_browser)(AgsUiProvider *ui_provider,
+			     GtkWidget *sample_browser);
+  
+  GtkWidget* (*get_midi_import_wizard)(AgsUiProvider *ui_provider);
+  void (*set_midi_import_wizard)(AgsUiProvider *ui_provider,
+				 GtkWidget *midi_import_wizard);
+
+  GtkWidget* (*get_midi_export_wizard)(AgsUiProvider *ui_provider);
+  void (*set_midi_export_wizard)(AgsUiProvider *ui_provider,
+				 GtkWidget *midi_export_wizard);
+  
   GList* (*get_machine)(AgsUiProvider *ui_provider);
   void (*set_machine)(AgsUiProvider *ui_provider,
 		      GList *machine);
+
+  GtkWidget* (*get_composite_editor)(AgsUiProvider *ui_provider);
+  void (*set_composite_editor)(AgsUiProvider *ui_provider,
+			       GtkWidget *composite_editor);  
+
+  GtkWidget* (*get_navigation)(AgsUiProvider *ui_provider);
+  void (*set_navigation)(AgsUiProvider *ui_provider,
+			 GtkWidget *navigation);
 };
 
 GType ags_ui_provider_get_type();
 
-GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
-void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
-				GtkWidget *window);
-
-AgsThread* ags_ui_provider_get_gui_thread(AgsUiProvider *ui_provider);
-void ags_ui_provider_set_gui_thread(AgsUiProvider *ui_provider,
-				    AgsThread *gui_thread);
-
 gboolean ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
-					gboolean do_show_animation);
+					gboolean show_animation);
 
 gboolean ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
-				   gboolean is_gui_ready);
+				   gboolean gui_ready);
+
+gboolean ags_ui_provider_get_file_ready(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_file_ready(AgsUiProvider *ui_provider,
+				    gboolean file_ready);
+
+gdouble ags_ui_provider_get_gui_scale_factor(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_gui_scale_factor(AgsUiProvider *ui_provider,
+					  gdouble gui_scale_factor);
 
 GtkWidget* ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
 					  GtkWidget *animation_window);
+
+GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
+				GtkWidget *window);
 
 GList* ags_ui_provider_get_machine(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_machine(AgsUiProvider *ui_provider,

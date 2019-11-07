@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,10 +18,6 @@
  */
 
 #include <ags/server/ags_service_provider.h>
-
-#include <ags/server/ags_server.h>
-
-#include <math.h>
 
 void ags_service_provider_class_init(AgsServiceProviderInterface *ginterface);
 
@@ -59,7 +55,7 @@ ags_service_provider_class_init(AgsServiceProviderInterface *ginterface)
  *
  * Returns: %TRUE if operating, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 is_operating(AgsServiceProvider *service_provider)
@@ -81,7 +77,7 @@ is_operating(AgsServiceProvider *service_provider)
  *
  * Returns: the #AgsServerStatus
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServerStatus*
 ags_service_provider_server_status(AgsServiceProvider *service_provider)
@@ -96,39 +92,17 @@ ags_service_provider_server_status(AgsServiceProvider *service_provider)
 }
 
 /**
- * ags_service_provider_get_env:
- * @service_provider: the #AgsServiceProvider
- * 
- * Get xmlrpc_env.
- *
- * Returns: the xmlrpc_env
- *
- * Since: 2.0.0
- */
-gpointer
-ags_service_provider_get_env(AgsServiceProvider *service_provider)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_val_if_fail(service_provider_interface->get_env, NULL);
-
-  return(service_provider_interface->get_env(service_provider));
-}
-
-/**
  * ags_service_provider_set_registry:
  * @service_provider: the #AgsServiceProvider
  * @registry: the #AgsRegistry
  * 
  * Set registry.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_service_provider_set_registry(AgsServiceProvider *service_provider,
-				  GObject *registry)
+				  AgsRegistry *registry)
 {
   AgsServiceProviderInterface *service_provider_interface;
 
@@ -148,9 +122,9 @@ ags_service_provider_set_registry(AgsServiceProvider *service_provider,
  *
  * Returns: the #AgsRegistry
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-GObject*
+AgsRegistry*
 ags_service_provider_get_registry(AgsServiceProvider *service_provider)
 {
   AgsServiceProviderInterface *service_provider_interface;
@@ -169,7 +143,7 @@ ags_service_provider_get_registry(AgsServiceProvider *service_provider)
  * 
  * Set server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_service_provider_set_server(AgsServiceProvider *service_provider,
@@ -193,7 +167,7 @@ ags_service_provider_set_server(AgsServiceProvider *service_provider,
  *
  * Returns: the #GList-struct containing #AgsServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_service_provider_get_server(AgsServiceProvider *service_provider)
@@ -205,139 +179,4 @@ ags_service_provider_get_server(AgsServiceProvider *service_provider)
   g_return_val_if_fail(service_provider_interface->get_server, NULL);
 
   return(service_provider_interface->get_server(service_provider));
-}
-
-/**
- * ags_service_provider_set_certificate_manager:
- * @service_provider: the #AgsServiceProvider
- * @certificate_manager: the #AgsCertificateManager
- * 
- * Set certificate manager.
- *
- * Since: 2.0.0
- */
-void
-ags_service_provider_set_certificate_manager(AgsServiceProvider *service_provider,
-					     AgsCertificateManager *certificate_manager)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider));
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_if_fail(service_provider_interface->set_certificate_manager);
-
-  service_provider_interface->set_certificate_manager(service_provider,
-						      certificate_manager);
-}
-
-/**
- * ags_service_provider_get_certificate_manager:
- * @service_provider: the #AgsServiceProvider
- * 
- * Get certificate manager.
- *
- * Returns: the #AgsCertificateManager
- *
- * Since: 2.0.0
- */
-AgsCertificateManager*
-ags_service_provider_get_certificate_manager(AgsServiceProvider *service_provider)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_val_if_fail(service_provider_interface->get_certificate_manager, NULL);
-
-  return(service_provider_interface->get_certificate_manager(service_provider));
-}
-
-/**
- * ags_service_provider_set_password_store_manager:
- * @service_provider: the #AgsServiceProvider
- * @password_store_manager: the #AgsPasswordStoreManager
- * 
- * Set password store manager.
- *
- * Since: 2.0.0
- */
-void
-ags_service_provider_set_password_store_manager(AgsServiceProvider *service_provider,
-						AgsPasswordStoreManager *password_store_manager)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider));
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_if_fail(service_provider_interface->set_password_store_manager);
-
-  service_provider_interface->set_password_store_manager(service_provider,
-							 password_store_manager);
-}
-
-/**
- * ags_service_provider_get_password_store_manager:
- * @service_provider: the #AgsServiceProvider
- * 
- * Get password store manager.
- *
- * Returns: the #AgsPasswordStoreManager
- *
- * Since: 2.0.0
- */
-AgsPasswordStoreManager*
-ags_service_provider_get_password_store_manager(AgsServiceProvider *service_provider)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_val_if_fail(service_provider_interface->get_password_store_manager, NULL);
-
-  return(service_provider_interface->get_password_store_manager(service_provider));
-}
-
-/**
- * ags_service_provider_set_authentication_manager:
- * @service_provider: the #AgsServiceProvider
- * @authentication_manager: the #AgsAuthenticationManager
- * 
- * Set authentication manager.
- *
- * Since: 2.0.0
- */
-void
-ags_service_provider_set_authentication_manager(AgsServiceProvider *service_provider,
-						AgsAuthenticationManager *authentication_manager)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider));
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_if_fail(service_provider_interface->set_authentication_manager);
-
-  service_provider_interface->set_authentication_manager(service_provider,
-							 authentication_manager);
-}
-
-/**
- * ags_service_provider_get_authentication_manager:
- * @service_provider: the #AgsServiceProvider
- * 
- * Get authentication manager.
- *
- * Returns: the #AgsAuthenticationManager
- *
- * Since: 2.0.0
- */
-AgsAuthenticationManager*
-ags_service_provider_get_authentication_manager(AgsServiceProvider *service_provider)
-{
-  AgsServiceProviderInterface *service_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
-  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
-  g_return_val_if_fail(service_provider_interface->get_authentication_manager, NULL);
-
-  return(service_provider_interface->get_authentication_manager(service_provider));
 }

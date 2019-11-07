@@ -145,8 +145,6 @@ struct _AgsMachine
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;
-  
-  GObject *application_context;
 };
 
 struct _AgsMachineClass

@@ -20,11 +20,6 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
-AC_ARG_ENABLE(gnulib, [AS_HELP_STRING([--enable-gnulib],
-				      [gnulib builtin functions (default is no)])],
-	      [],			       
-	      [enable_gnulib=no])
-
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -132,7 +127,6 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 
 # Checks for programs.
 AC_PROG_CC
-gl_EARLY
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -142,8 +136,6 @@ LT_PREREQ([2.4.2])
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
-
-AM_CONDITIONAL([WITH_GNULIB], [test "x$enable_gnulib" == xyes])
 
 AC_SUBST([GSEQUENCER_CFLAGS])
 AC_SUBST([GSEQUENCER_LDFLAGS])
@@ -434,12 +426,9 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
 
-gl_INIT
-
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
-lib/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile

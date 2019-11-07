@@ -117,7 +117,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-      application_context = (AgsApplicationContext *) window->application_context;
+      application_context = ags_application_context_get_instance();
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;

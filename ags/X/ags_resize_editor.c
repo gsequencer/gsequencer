@@ -24,7 +24,6 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
 
 #include <ags/i18n.h>
@@ -247,7 +246,6 @@ ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_resize_editor_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
 
@@ -267,11 +265,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
-
-  /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine_editor->machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* get audio */
   audio = machine_editor->machine->audio;

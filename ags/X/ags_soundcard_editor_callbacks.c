@@ -25,7 +25,6 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/config.h>
@@ -254,17 +253,15 @@ void
 ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 						     AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  GObject *soundcard;
   AgsSetAudioChannels *set_audio_channels;
 
   AgsApplicationContext *application_context;
 
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = window->soundcard;
+  GObject *soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  soundcard = soundcard_editor->soundcard;
+
+  application_context = ags_application_context_get_instance();
 
   /* create set output device task */
   set_audio_channels = ags_set_audio_channels_new(soundcard,
@@ -279,17 +276,15 @@ void
 ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 						 AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  GObject *soundcard;
   AgsSetSamplerate *set_samplerate;
 
   AgsApplicationContext *application_context;
+
+  GObject *soundcard;
   
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create set output device task */
   set_samplerate = ags_set_samplerate_new(soundcard,
@@ -304,17 +299,15 @@ void
 ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 						  AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  GObject *soundcard;
   AgsSetBufferSize *set_buffer_size;
 
   AgsApplicationContext *application_context;
-  
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
+
+  GObject *soundcard;
+
   soundcard = soundcard_editor->soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* create set output device task */
   set_buffer_size = ags_set_buffer_size_new(soundcard,
@@ -329,20 +322,17 @@ void
 ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 					     AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  GObject *soundcard;
   AgsSetFormat *set_format;
 
   AgsApplicationContext *application_context;
 
+  GObject *soundcard;
+
   guint format;
-  
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
 
   soundcard = soundcard_editor->soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* format */
   switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){

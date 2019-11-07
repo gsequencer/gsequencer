@@ -71,7 +71,7 @@ void ags_concurrency_provider_set_task_launcher(AgsConcurrencyProvider *concurre
 						AgsTaskLauncher *task_launcher);
 
 AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
-void ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+void ags_concurrency_provider_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
 					      AgsThreadPool *thread_pool);
 
 GList* ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider);

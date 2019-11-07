@@ -30,17 +30,12 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
 							 AgsGenericPreferences *generic_preferences)
 {
   AgsApplicationContext *application_context;
-  AgsAutosaveThread *autosave_thread;
   AgsPreferences *preferences;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  application_context = (AgsApplicationContext *) AGS_WINDOW(preferences->window)->application_context;
-
-  g_object_get(application_context,
-	       "autosave-thread", &autosave_thread,
-	       NULL);
+  application_context = ags_application_context_get_instance();
 
   //FIXME:JK: defunct
 #if 0

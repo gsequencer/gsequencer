@@ -60,7 +60,7 @@ struct _AgsTask
 
   gchar *task_name;
 
-  AgsTaskLauncher *task_launcher;
+  GObject *task_launcher;
 };
 
 struct _AgsTaskClass

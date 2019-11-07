@@ -277,6 +277,9 @@ ags_config_finalize(GObject *gobject)
 
   config = (AgsConfig *) gobject;
 
+  g_free(config->version);
+  g_free(config->build_id);
+
   /* key file */
   if(config->key_file != NULL){
     g_key_file_unref(config->key_file);

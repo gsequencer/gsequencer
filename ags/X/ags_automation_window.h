@@ -51,8 +51,6 @@ struct _AgsAutomationWindow
 
   guint flags;
 
-  GObject *soundcard;
-  
   GtkWidget *parent_window;
 
   AgsAutomationEditor *automation_editor;

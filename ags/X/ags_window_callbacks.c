@@ -31,9 +31,13 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   GtkDialog *dialog;
   GtkWidget *cancel_button;
 
+  AgsApplicationContext *application_context;
+  
   gint response;
   
   window = AGS_WINDOW(widget);
+
+  application_context = ags_application_context_get_instance();
 
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
@@ -49,11 +53,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
-    AgsApplicationContext *application_context;
-
-    application_context = (AgsApplicationContext *) window->application_context;
-
-    if(g_strcmp0(ags_config_get_value(application_context->config,
+    if(g_strcmp0(ags_config_get_value(ags_config_get_instance(),
 				      AGS_CONFIG_GENERIC,
 				      "simple-file"),
 		 "false")){
@@ -62,7 +62,6 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
       GError *error;
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "application-context", window->application_context,
 						   "filename", window->name,
 						   NULL);
       
@@ -87,7 +86,6 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
       GError *error;
       
       file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "application-context", window->application_context,
 				      "filename", window->name,
 				      NULL);
       
@@ -110,7 +108,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_application_context_quit(AGS_APPLICATION_CONTEXT(window->application_context));
+    ags_application_context_quit(application_context);
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

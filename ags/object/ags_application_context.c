@@ -423,29 +423,29 @@ ags_application_context_set_property(GObject *gobject,
       g_rec_mutex_unlock(application_context_mutex);
     }
     break;
-  case PROP_TASK_THREAD:
+  case PROP_TASK_LAUNCHER:
     {
-      GObject *task_thread;
+      GObject *task_launcher;
       
-      task_thread = (GObject *) g_value_get_object(value);
+      task_launcher = (GObject *) g_value_get_object(value);
 
       g_rec_mutex_lock(application_context_mutex);
       
-      if(task_thread == application_context->task_thread){  
+      if(task_launcher == application_context->task_launcher){  
 	g_rec_mutex_unlock(application_context_mutex);
 
 	return;
       }
 
-      if(application_context->task_thread != NULL){
-	g_object_unref(application_context->task_thread);
+      if(application_context->task_launcher != NULL){
+	g_object_unref(application_context->task_launcher);
       }
       
-      if(task_thread != NULL){
-	g_object_ref(G_OBJECT(task_thread));
+      if(task_launcher != NULL){
+	g_object_ref(G_OBJECT(task_launcher));
       }
       
-      application_context->task_thread = task_thread;
+      application_context->task_launcher = task_launcher;
   
       g_rec_mutex_unlock(application_context_mutex);
     }
@@ -536,11 +536,11 @@ ags_application_context_get_property(GObject *gobject,
       g_rec_mutex_unlock(application_context_mutex);
     }
     break;
-  case PROP_TASK_THREAD:
+  case PROP_TASK_LAUNCHER:
     {
       g_rec_mutex_lock(application_context_mutex);
 
-      g_value_set_object(value, application_context->task_thread);
+      g_value_set_object(value, application_context->task_launcher);
   
       g_rec_mutex_unlock(application_context_mutex);
     }
@@ -584,11 +584,7 @@ ags_application_context_dispose(GObject *gobject)
   }
 
   /* config */
-  if(application_context->config != NULL){
-    g_object_set(application_context->config,
-		 "application-context", NULL,
-		 NULL);
-    
+  if(application_context->config != NULL){    
     g_object_unref(application_context->config);
 
     application_context->config = NULL;
@@ -601,30 +597,15 @@ ags_application_context_dispose(GObject *gobject)
     application_context->main_loop = NULL;
   }
 
-  /* autosave thread */
-  if(application_context->autosave_thread != NULL){
-    g_object_set(application_context->autosave_thread,
-		 "application-context", NULL,
-		 NULL);
+  /* task launcher */
+  if(application_context->task_launcher != NULL){
+    g_object_unref(application_context->task_launcher);
 
-    g_object_unref(application_context->autosave_thread);
-
-    application_context->autosave_thread = NULL;
-  }
-
-  /* task thread */
-  if(application_context->task_thread != NULL){
-    g_object_unref(application_context->task_thread);
-
-    application_context->task_thread = NULL;
+    application_context->task_launcher = NULL;
   }
 
   /* file */
   if(application_context->file != NULL){
-    g_object_set(application_context->file,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->file);
 
     application_context->file = NULL;
@@ -641,6 +622,9 @@ ags_application_context_finalize(GObject *gobject)
 
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
+  g_free(application_context->version);
+  g_free(application_context->build_id);
+
   /* log */
   if(application_context->log != NULL){
     g_object_unref(application_context->log);
@@ -648,25 +632,17 @@ ags_application_context_finalize(GObject *gobject)
 
   /* config */
   if(application_context->config != NULL){
-    g_object_set(application_context->config,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->config);
   }
   
   /* main loop */
   if(application_context->main_loop != NULL){
-    g_object_set(application_context->main_loop,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->main_loop);
   }
 
-  /* task thread */
-  if(application_context->task_thread != NULL){
-    g_object_unref(application_context->task_thread);
+  /* task launcher */
+  if(application_context->task_launcher != NULL){
+    g_object_unref(application_context->task_launcher);
   }
 
   /* file */

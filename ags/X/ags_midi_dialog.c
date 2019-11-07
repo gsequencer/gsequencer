@@ -673,7 +673,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 						 AGS_TYPE_WINDOW);
 
   /* application context and mutex manager */
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* clear model */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device))));
