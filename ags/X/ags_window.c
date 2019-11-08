@@ -20,9 +20,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -50,8 +47,6 @@
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
 #include <ags/X/file/ags_simple_file.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
 #include <gtkmacintegration/gtkosxapplication.h>

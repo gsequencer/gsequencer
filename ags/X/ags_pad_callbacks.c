@@ -19,15 +19,10 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_callbacks.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)

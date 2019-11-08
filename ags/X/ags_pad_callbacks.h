@@ -25,10 +25,11 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_pad.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/thread/ags_task.h>
-#include <ags/thread/ags_task_completion.h>
+#include <ags/X/ags_pad.h>
 
 void ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
 void ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);

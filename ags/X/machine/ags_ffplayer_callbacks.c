@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -166,9 +162,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     return;
   }
   
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
+  application_context = ags_application_context_get_instance();
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
 

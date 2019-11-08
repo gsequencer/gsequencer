@@ -20,17 +20,11 @@
 #include <ags/X/machine/ags_fm_syncsynth.h>
 #include <ags/X/machine/ags_fm_syncsynth_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-
-#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
 
@@ -38,7 +32,6 @@
 
 void ags_fm_syncsynth_class_init(AgsFMSyncsynthClass *fm_syncsynth);
 void ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fm_syncsynth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_finalize(GObject *gobject);
 
@@ -47,14 +40,6 @@ void ags_fm_syncsynth_disconnect(AgsConnectable *connectable);
 
 void ags_fm_syncsynth_show(GtkWidget *widget);
 void ags_fm_syncsynth_map_recall(AgsMachine *machine);
-gchar* ags_fm_syncsynth_get_name(AgsPlugin *plugin);
-void ags_fm_syncsynth_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_fm_syncsynth_get_xml_type(AgsPlugin *plugin);
-void ags_fm_syncsynth_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_fm_syncsynth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_fm_syncsynth_read_resolve_audio(AgsFileLookup *file_lookup,
-					 AgsMachine *machine);
-xmlNode* ags_fm_syncsynth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
 					    guint audio_channels, guint audio_channels_old,
@@ -109,12 +94,6 @@ ags_fm_syncsynth_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_fm_syncsynth_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_fm_syncsynth = g_type_register_static(AGS_TYPE_MACHINE,
 						   "AgsFMSyncsynth", &ags_fm_syncsynth_info,
@@ -123,10 +102,6 @@ ags_fm_syncsynth_get_type(void)
     g_type_add_interface_static(ags_type_fm_syncsynth,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_fm_syncsynth,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fm_syncsynth);
   }
@@ -162,17 +137,6 @@ ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable
 
   connectable->connect = ags_fm_syncsynth_connect;
   connectable->disconnect = ags_fm_syncsynth_disconnect;
-}
-
-void
-ags_fm_syncsynth_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_fm_syncsynth_get_name;
-  plugin->set_name = ags_fm_syncsynth_set_name;
-  plugin->get_xml_type = ags_fm_syncsynth_get_xml_type;
-  plugin->set_xml_type = ags_fm_syncsynth_set_xml_type;
-  plugin->read = ags_fm_syncsynth_read;
-  plugin->write = ags_fm_syncsynth_write;
 }
 
 void
@@ -688,138 +652,6 @@ ags_fm_syncsynth_map_recall(AgsMachine *machine)
 
   /* call parent */
   AGS_MACHINE_CLASS(ags_fm_syncsynth_parent_class)->map_recall(machine);  
-}
-
-gchar*
-ags_fm_syncsynth_get_name(AgsPlugin *plugin)
-{
-  return(AGS_FM_SYNCSYNTH(plugin)->name);
-}
-
-void
-ags_fm_syncsynth_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_FM_SYNCSYNTH(plugin)->name = name;
-}
-
-gchar*
-ags_fm_syncsynth_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_FM_SYNCSYNTH(plugin)->xml_type);
-}
-
-void
-ags_fm_syncsynth_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_FM_SYNCSYNTH(plugin)->xml_type = xml_type;
-}
-
-void
-ags_fm_syncsynth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFMSyncsynth *gobject;
-  AgsFileLookup *file_lookup;
-  GList *list;
-
-  gobject = AGS_FM_SYNCSYNTH(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  /* lookup */
-  list = file->lookup;
-
-  while((list = ags_file_lookup_find_by_node(list,
-					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(list->data);
-    
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
-			     G_CALLBACK(ags_fm_syncsynth_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-}
-
-void
-ags_fm_syncsynth_read_resolve_audio(AgsFileLookup *file_lookup,
-				    AgsMachine *machine)
-{
-  AgsFMSyncsynth *fm_syncsynth;
-
-  fm_syncsynth = AGS_FM_SYNCSYNTH(machine);
-
-  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
-			 G_CALLBACK(ags_fm_syncsynth_resize_audio_channels), NULL);
-
-  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
-			 G_CALLBACK(ags_fm_syncsynth_resize_pads), NULL);
-
-  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
-    /* ags-play-notation */
-    ags_recall_factory_create(machine->audio,
-			      NULL, NULL,
-			      "ags-play-notation",
-			      0, machine->audio->audio_channels,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_REMAP |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-
-    ags_fm_syncsynth_output_map_recall(fm_syncsynth, 0);
-    ags_fm_syncsynth_input_map_recall(fm_syncsynth, 0);
-  }else{
-    fm_syncsynth->mapped_output_pad = machine->audio->output_pads;
-    fm_syncsynth->mapped_input_pad = machine->audio->input_pads;
-  }
-}
-
-xmlNode*
-ags_fm_syncsynth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFMSyncsynth *fm_syncsynth;
-  xmlNode *node;
-  gchar *id;
-
-  fm_syncsynth = AGS_FM_SYNCSYNTH(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-fm_syncsynth");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", fm_syncsynth,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void
@@ -1714,9 +1546,9 @@ ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
   AgsComplex **sync_point;
   guint sync_point_count;
 
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) fm_syncsynth);
+  application_context = ags_application_context_get_instance();
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) fm_syncsynth);
 
   audio = AGS_MACHINE(fm_syncsynth)->audio;
 

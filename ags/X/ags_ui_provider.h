@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_UI_PROVIDER                    (ags_ui_provider_get_type())
 #define AGS_UI_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_PROVIDER, AgsUiProvider))
@@ -53,7 +55,7 @@ struct _AgsUiProviderInterface
 
   gboolean (*get_file_ready)(AgsUiProvider *ui_provider);
   void (*set_file_ready)(AgsUiProvider *ui_provider,
-			gboolean is_file_ready);
+			gboolean file_ready);
 
   gdouble (*get_gui_scale_factor)(AgsUiProvider *ui_provider);
   void (*set_gui_scale_factor)(AgsUiProvider *ui_provider,
@@ -143,6 +145,11 @@ gdouble ags_ui_provider_get_gui_scale_factor(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_gui_scale_factor(AgsUiProvider *ui_provider,
 					  gdouble gui_scale_factor);
 
+void ags_ui_provider_schedule_task(AgsUiProvider *ui_provider,
+				   AgsTask *task);
+void ags_ui_provider_schedule_task_all(AgsUiProvider *ui_provider,
+				       GList *task);
+
 GtkWidget* ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
 					  GtkWidget *animation_window);
@@ -151,8 +158,56 @@ GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
 				GtkWidget *window);
 
+GtkWidget* ags_ui_provider_get_automation_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_automation_window(AgsUiProvider *ui_provider,
+					   GtkWidget *automation_window);
+
+GtkWidget* ags_ui_provider_get_wave_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_wave_window(AgsUiProvider *ui_provider,
+				     GtkWidget *wave_window);
+  
+GtkWidget* ags_ui_provider_get_sheet_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_sheet_window(AgsUiProvider *ui_provider,
+				      GtkWidget *sheet_window);
+  
+GtkWidget* ags_ui_provider_get_export_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_export_window(AgsUiProvider *ui_provider,
+				       GtkWidget *export_window);
+
+GtkWidget* ags_ui_provider_get_preferences(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_preferences(AgsUiProvider *ui_provider,
+				     GtkWidget *preferences);
+  
+GtkWidget* ags_ui_provider_get_history_browser(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_history_browser(AgsUiProvider *ui_provider,
+					 GtkWidget *history_browser);
+
+GtkWidget* ags_ui_provider_get_midi_browser(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_midi_browser(AgsUiProvider *ui_provider,
+				      GtkWidget *midi_browser);
+
+GtkWidget* ags_ui_provider_get_sample_browser(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_sample_browser(AgsUiProvider *ui_provider,
+					GtkWidget *sample_browser);
+  
+GtkWidget* ags_ui_provider_get_midi_import_wizard(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_midi_import_wizard(AgsUiProvider *ui_provider,
+					    GtkWidget *midi_import_wizard);
+
+GtkWidget* ags_ui_provider_get_midi_export_wizard(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_midi_export_wizard(AgsUiProvider *ui_provider,
+					    GtkWidget *midi_export_wizard);
+
 GList* ags_ui_provider_get_machine(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
 				 GList *machine);
+
+GtkWidget* ags_ui_provider_get_composite_editor(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_composite_editor(AgsUiProvider *ui_provider,
+					  GtkWidget *composite_editor);  
+
+GtkWidget* ags_ui_provider_get_navigation(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,
+				    GtkWidget *navigation);
 
 #endif /*__AGS_UI_PROVIDER_H__*/

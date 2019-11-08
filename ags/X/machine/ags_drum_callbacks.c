@@ -22,10 +22,6 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -230,7 +226,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;

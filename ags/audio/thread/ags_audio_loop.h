@@ -87,10 +87,7 @@ struct _AgsAudioLoop
 
   guint sync_tic;
   guint sync_counter[6];
-  
-  GObject *application_context;
-  GObject *default_output_soundcard;
-  
+    
   GObject *async_queue;
     
   pthread_mutexattr_t *tree_lock_mutexattr;
@@ -128,6 +125,6 @@ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
-AgsAudioLoop* ags_audio_loop_new(GObject *soundcard, GObject *application_context);
+AgsAudioLoop* ags_audio_loop_new();
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

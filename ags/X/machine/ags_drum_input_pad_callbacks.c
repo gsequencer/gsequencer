@@ -21,10 +21,6 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
@@ -123,13 +119,12 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   pthread_mutex_t *application_mutex;
 
+  application_context = ags_application_context_get_instance();
+
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
 						 AGS_TYPE_WINDOW);
 
   file_chooser = drum_input_pad->file_chooser;
-
-  
-  application_context = (AgsApplicationContext *) window->application_context;
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);

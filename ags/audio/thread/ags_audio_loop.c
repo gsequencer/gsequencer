@@ -50,8 +50,6 @@ void ags_audio_loop_dispose(GObject *gobject);
 void ags_audio_loop_finalize(GObject *gobject);
 
 pthread_mutex_t* ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
-GObject* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
 void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
@@ -98,8 +96,6 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
-  PROP_DEFAULT_OUTPUT_SOUNDCARD,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
 };
@@ -178,38 +174,6 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 
   /* properties */
   /**
-   * AgsAudioLoop:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:default-output-soundcard:
-   *
-   * The assigned default soundcard.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("default-output-soundcard",
-				   i18n_pspec("default output soundcard assigned to"),
-				   i18n_pspec("The default output AgsSoundcard it is assigned to"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEFAULT_OUTPUT_SOUNDCARD,
-				  param_spec);
-
-  /**
    * AgsAudioLoop:play-channel:
    *
    * An #AgsChannel to add for playback.
@@ -258,9 +222,6 @@ void
 ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_audio_loop_get_tree_lock;
-
-  main_loop->set_async_queue = ags_audio_loop_set_async_queue;
-  main_loop->get_async_queue = ags_audio_loop_get_async_queue;
 
   main_loop->set_tic = ags_audio_loop_set_tic;
   main_loop->get_tic = ags_audio_loop_get_tic;
@@ -321,12 +282,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   for(i = 0; i < 6; i++){
     audio_loop->sync_counter[i] = 0;
   }
-
-
-  audio_loop->application_context = NULL;
-  audio_loop->default_output_soundcard = NULL;
-
-  audio_loop->async_queue = NULL;
     
   /* tree lock mutex */
   audio_loop->tree_lock_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -373,67 +328,9 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(thread_mutex);
-
-      if(audio_loop->application_context == (GObject *) application_context){
-	pthread_mutex_unlock(thread_mutex);
-
-	return;
-      }
-
-      if(audio_loop->application_context != NULL){
-	g_object_unref(G_OBJECT(audio_loop->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-      
-      audio_loop->application_context = (GObject *) application_context;
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
-  case PROP_DEFAULT_OUTPUT_SOUNDCARD:
-    {
-      GObject *default_output_soundcard;
-
-      default_output_soundcard = g_value_get_object(value);
-
-      pthread_mutex_lock(thread_mutex);
-
-      if(audio_loop->default_output_soundcard == default_output_soundcard){
-	pthread_mutex_unlock(thread_mutex);
-
-	return;
-      }
-
-      if(audio_loop->default_output_soundcard != NULL){
-	g_object_unref(audio_loop->default_output_soundcard);
-      }
-
-      if(default_output_soundcard != NULL){
-	g_object_ref(default_output_soundcard);
-      }
-
-      audio_loop->default_output_soundcard = default_output_soundcard;
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   case PROP_PLAY_CHANNEL:
     {
       AgsPlayback *playback;
@@ -489,31 +386,9 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(thread_mutex);
-
-      g_value_set_object(value, audio_loop->application_context);
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
-  case PROP_DEFAULT_OUTPUT_SOUNDCARD:
-    {
-      pthread_mutex_lock(thread_mutex);
-
-      g_value_set_object(value, audio_loop->default_output_soundcard);
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   case PROP_PLAY_CHANNEL:
     {
       pthread_mutex_lock(thread_mutex);
@@ -549,27 +424,6 @@ ags_audio_loop_dispose(GObject *gobject)
 
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
-  /* application context */
-  if(audio_loop->application_context != NULL){
-    g_object_unref(audio_loop->application_context);
-
-    audio_loop->application_context = NULL;
-  }
-
-  /* soundcard */
-  if(audio_loop->default_output_soundcard != NULL){
-    g_object_unref(audio_loop->default_output_soundcard);
-
-    audio_loop->default_output_soundcard = NULL;
-  }
-
-  /* async queue */
-  if(audio_loop->async_queue != NULL){
-    g_object_unref(audio_loop->async_queue);
-
-    audio_loop->async_queue = NULL;
-  }
-
   /* unref AgsPlayback lists */
   if(audio_loop->play_channel != NULL){
     g_list_free_full(audio_loop->play_channel,
@@ -595,21 +449,6 @@ ags_audio_loop_finalize(GObject *gobject)
   AgsAudioLoop *audio_loop;
 
   audio_loop = AGS_AUDIO_LOOP(gobject);
-
-  /* application context */
-  if(audio_loop->application_context != NULL){
-    g_object_unref(audio_loop->application_context);
-  }
-
-  /* soundcard */
-  if(audio_loop->default_output_soundcard != NULL){
-    g_object_unref(audio_loop->default_output_soundcard);
-  }
-
-  /* async queue */
-  if(audio_loop->async_queue != NULL){
-    g_object_unref(audio_loop->async_queue);
-  }
 
   /* tree lock and recall mutex */
   pthread_mutex_destroy(audio_loop->tree_lock);
@@ -654,64 +493,6 @@ ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop)
   pthread_mutex_unlock(ags_thread_get_class_mutex());
   
   return(tree_lock);
-}
-
-void
-ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
-{
-  pthread_mutex_t *thread_mutex;
-
-  /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(main_loop)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
-
-  /* set */
-  pthread_mutex_lock(thread_mutex);
-  
-  if(AGS_AUDIO_LOOP(main_loop)->async_queue == async_queue){
-    pthread_mutex_unlock(thread_mutex);
-    
-    return;
-  }
-
-  if(AGS_AUDIO_LOOP(main_loop)->async_queue != NULL){
-    g_object_unref(AGS_AUDIO_LOOP(main_loop)->async_queue);
-  }
-  
-  if(async_queue != NULL){
-    g_object_ref(async_queue);
-  }
-  
-  AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
-
-  pthread_mutex_unlock(thread_mutex);
-}
-
-GObject*
-ags_audio_loop_get_async_queue(AgsMainLoop *main_loop)
-{
-  GObject *async_queue;
-  
-  pthread_mutex_t *thread_mutex;
-
-  /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(main_loop)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
-
-  /* get */
-  pthread_mutex_lock(thread_mutex);
-  
-  async_queue = AGS_AUDIO_LOOP(main_loop)->async_queue;
-  
-  pthread_mutex_unlock(thread_mutex);
-
-  return(async_queue);
 }
 
 void
@@ -1830,8 +1611,6 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 
 /**
  * ags_audio_loop_new:
- * @soundcard: the #GObject
- * @application_context: the #AgsApplicationContext
  *
  * Create a new #AgsAudioLoop.
  *
@@ -1840,18 +1619,12 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
  * Since: 2.0.0
  */
 AgsAudioLoop*
-ags_audio_loop_new(GObject *soundcard, GObject *application_context)
+ags_audio_loop_new()
 {
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
-					     "default-output-soundcard", soundcard,
 					     NULL);
-
-  if(application_context != NULL){
-    g_object_ref(G_OBJECT(application_context));
-    audio_loop->application_context = application_context;
-  }
 
   return(audio_loop);
 }

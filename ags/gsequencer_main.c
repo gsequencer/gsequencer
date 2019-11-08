@@ -49,8 +49,6 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include "config.h"
 #include "gsequencer_main.h"
 

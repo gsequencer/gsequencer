@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher);
 void ags_task_launcher_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_launcher_init(AgsTaskLauncher *task_launcher);

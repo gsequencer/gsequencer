@@ -20,15 +20,9 @@
 #include <ags/X/import/ags_track_collection_mapper.h>
 #include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
@@ -452,6 +446,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
   
   GList *imported_notation;
   
@@ -467,8 +463,10 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
   window = (AgsWindow *) midi_import_wizard->main_window;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
   /* create machine */
   machine = NULL;
   
@@ -476,21 +474,21 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   
   if(!g_ascii_strcasecmp(machine_type,
 			 g_type_name(AGS_TYPE_DRUM))){
-    machine = (AgsMachine *) ags_drum_new(window->soundcard);
+    machine = (AgsMachine *) ags_drum_new(default_soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_MATRIX))){
-    machine = (AgsMachine *) ags_matrix_new(window->soundcard);
+    machine = (AgsMachine *) ags_matrix_new(default_soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNCSYNTH))){
-    machine = (AgsMachine *) ags_syncsynth_new(window->soundcard);
+    machine = (AgsMachine *) ags_syncsynth_new(default_soundcard);
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FFPLAYER))){
-    machine = (AgsMachine *) ags_ffplayer_new(window->soundcard);
+    machine = (AgsMachine *) ags_ffplayer_new(default_soundcard);
 #endif
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNTH))){
-    machine = (AgsMachine *) ags_synth_new(window->soundcard);
+    machine = (AgsMachine *) ags_synth_new(default_soundcard);
   }else{
     g_warning("unknown machine type");
   }

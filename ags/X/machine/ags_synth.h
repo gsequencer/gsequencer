@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_SYNTH                (ags_synth_get_type())

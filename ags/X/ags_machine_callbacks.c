@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -31,8 +27,6 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 #include <ags/X/editor/ags_machine_radio_button.h>

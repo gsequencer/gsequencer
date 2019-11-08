@@ -20,9 +20,6 @@
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_crop_note_dialog_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -62,7 +59,6 @@ gboolean ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -137,22 +133,6 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
   gobject->finalize = ags_crop_note_dialog_finalize;
 
   /* properties */
-  /**
-   * AgsCropNoteDialog:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsCropNoteDialog:main-window:
    *
@@ -303,27 +283,6 @@ ags_crop_note_dialog_set_property(GObject *gobject,
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) crop_note_dialog->application_context == application_context){
-	return;
-      }
-      
-      if(crop_note_dialog->application_context != NULL){
-	g_object_unref(crop_note_dialog->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      crop_note_dialog->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -362,11 +321,6 @@ ags_crop_note_dialog_get_property(GObject *gobject,
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, crop_note_dialog->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, crop_note_dialog->main_window);
@@ -432,10 +386,6 @@ ags_crop_note_dialog_finalize(GObject *gobject)
   AgsCropNoteDialog *crop_note_dialog;
 
   crop_note_dialog = (AgsCropNoteDialog *) gobject;
-
-  if(crop_note_dialog->application_context != NULL){
-    g_object_unref(crop_note_dialog->application_context);
-  }
   
   G_OBJECT_CLASS(ags_crop_note_dialog_parent_class)->finalize(gobject);
 }
@@ -474,6 +424,9 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(applicable);
 
+  /* application context */
+  application_context = ags_application_context_get_instance();
+
   window = (AgsWindow *) crop_note_dialog->main_window;
   notation_editor = window->notation_editor;
 
@@ -493,10 +446,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   in_place = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->in_place);
   do_resize = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->do_resize);
-  
-  /* application context and mutex manager */
-  application_context = (AgsApplicationContext *) window->application_context;
-  
+    
   /* crop note */
   g_object_get(audio,
 	       "notation", &start_notation,
@@ -541,8 +491,8 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 		   g_object_unref);
   
   /* append tasks */
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  task);
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    task);
 }
 
 void

@@ -23,6 +23,7 @@ ags (3.0.0)
 	* removed AgsTaskThread
 	* removed AgsAsyncQueue
 	* removed AgsSingleThread
+	* TODO:JK: strip AgsPlugin from machines
 	* TODO:JK: removed AgsMenuBar
 	* removed barriers of AgsThread
 	* TODO:JK: removed nested functions

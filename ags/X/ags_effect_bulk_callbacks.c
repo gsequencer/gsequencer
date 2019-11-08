@@ -28,10 +28,6 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_plugin_browser.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
-#include <ags/i18n.h>
-
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)

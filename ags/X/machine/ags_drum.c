@@ -20,16 +20,10 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-
-#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_line.h>
@@ -43,7 +37,6 @@
 
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_init(AgsDrum *drum);
 void ags_drum_finalize(GObject *gobject);
 
@@ -53,16 +46,6 @@ void ags_drum_disconnect(AgsConnectable *connectable);
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_show_all(GtkWidget *widget);
 void ags_drum_map_recall(AgsMachine *machine);
-
-gchar* ags_drum_get_name(AgsPlugin *plugin);
-void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
-void ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum);
-xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
-				 AgsMachine *machine);
 
 void ags_drum_resize_pads(AgsDrum *drum, GType gtype,
 			  guint pads, guint pads_old,
@@ -108,12 +91,6 @@ ags_drum_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_drum_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
 					   "AgsDrum", &ags_drum_info,
 					   0);
@@ -121,10 +98,6 @@ ags_drum_get_type(void)
     g_type_add_interface_static(ags_type_drum,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_drum,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_drum);
   }
@@ -165,17 +138,6 @@ ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_drum_connect;
   connectable->disconnect = ags_drum_disconnect;
-}
-
-void
-ags_drum_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_drum_get_name;
-  plugin->set_name = ags_drum_set_name;
-  plugin->get_xml_type = ags_drum_get_xml_type;
-  plugin->set_xml_type = ags_drum_set_xml_type;
-  plugin->read = ags_drum_read;
-  plugin->write = ags_drum_write;
 }
 
 void
@@ -748,186 +710,6 @@ ags_drum_map_recall(AgsMachine *machine)
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
-}
-
-gchar*
-ags_drum_get_name(AgsPlugin *plugin)
-{
-  return(AGS_DRUM(plugin)->name);
-}
-
-void
-ags_drum_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_DRUM(plugin)->name = name;
-}
-
-gchar*
-ags_drum_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DRUM(plugin)->xml_type);
-}
-
-void
-ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DRUM(plugin)->xml_type = xml_type;
-}
-
-void
-ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsDrum *gobject;
-  AgsFileLookup *file_lookup;
-  AgsFileLaunch *file_launch;
-  GList *list;
-
-  gobject = AGS_DRUM(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  list = file->lookup;
-
-  while((list = ags_file_lookup_find_by_node(list,
-					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(list->data);
-    
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
-			     G_CALLBACK(ags_drum_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-
-  /*  */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       "file", file,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_drum_launch_task), gobject);
-  ags_file_add_launch(file,
-		      (GObject *) file_launch);
-}
-
-void
-ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
-			    AgsMachine *machine)
-{
-  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
-			 G_CALLBACK(ags_drum_resize_pads), NULL);
-}
-
-void
-ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
-{
-  xmlNode *node;
-  guint64 length, index;
-
-  node = file_launch->node;
-
-  /* length */
-  length = (gdouble) g_ascii_strtod(xmlGetProp(node,
-					       "length"),
-				    NULL);
-  gtk_spin_button_set_value(drum->length_spin,
-			    length);
-
-  /* loop */
-  if(!g_strcmp0(xmlGetProp(node,
-			   "loop"),
-		AGS_FILE_TRUE)){
-    gtk_button_clicked((GtkButton *) drum->loop_button);
-  }
-
-  /* index */
-  index = g_ascii_strtoull(xmlGetProp(node,
-				      "bank-index-0"),
-			   NULL,
-			   10);
-
-  if(index != 0){
-    gtk_button_clicked((GtkButton *) drum->index0[index]);
-  }
-
-  index = g_ascii_strtoull(xmlGetProp(node,
-				      "bank-index-1"),
-			   NULL,
-			   10);
-
-  if(index != 0){
-    gtk_button_clicked((GtkButton *) drum->index1[index]);
-  }
-}
-
-xmlNode*
-ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsDrum *drum;
-  xmlNode *node;
-  GList *list;
-  gchar *id;
-  guint i;
-
-  drum = AGS_DRUM(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-drum");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", drum,
-				   NULL));
-
-  xmlNewProp(node,
-	     "length",
-	     g_strdup_printf("%d", (gint) gtk_spin_button_get_value(drum->length_spin)));
-
-  for(i = 0; drum->selected0 != drum->index0[i]; i++);
-
-  xmlNewProp(node,
-	     "bank-index-0",
-	     g_strdup_printf("%d", i));
-
-  for(i = 0; drum->selected1 != drum->index1[i]; i++);
-
-  xmlNewProp(node,
-	     "bank-index-1",
-	     g_strdup_printf("%d", i));
-
-  xmlNewProp(node,
-	     "loop",
-	     g_strdup_printf("%s", ((gtk_toggle_button_get_active((GtkToggleButton *) drum->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void

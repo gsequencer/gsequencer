@@ -19,9 +19,6 @@
 
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -208,7 +205,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     GList *task;
 
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
     
     /* get soundcard */
     g_object_get(channel,

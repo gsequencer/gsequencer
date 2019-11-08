@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -36,8 +32,6 @@
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <stdio.h>
 #include <stdlib.h>

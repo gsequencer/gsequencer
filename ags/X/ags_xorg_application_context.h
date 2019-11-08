@@ -52,6 +52,8 @@ struct _AgsXorgApplicationContext
 
   GList *worker;
 
+  GMainContext *server_main_context;
+
   gboolean is_operating;
 
   AgsServerStatus *server_status;
@@ -60,12 +62,13 @@ struct _AgsXorgApplicationContext
   
   GList *server;
 
+  GMainContext *audio_main_context;
+  GMainContext *osc_server_main_context;
+  
   GObject *default_soundcard;
 
   AgsThread *default_soundcard_thread;
   AgsThread *default_export_thread;
-
-  AgsThread *gui_thread;
   
   GList *soundcard;
   GList *sequencer;
@@ -116,11 +119,6 @@ struct _AgsXorgApplicationContextClass
 GType ags_xorg_application_context_get_type();
 
 void ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context);
-
-void ags_xorg_application_schedule_task(AgsXorgApplicationContext *xorg_application_context,
-					GObject *task);
-void ags_xorg_application_schedule_task_list(AgsXorgApplicationContext *xorg_application_context,
-					     GList *task);
 
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
 gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);

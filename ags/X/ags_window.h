@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>

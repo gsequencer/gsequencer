@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -173,10 +169,10 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   
   gdouble length;
 
+  application_context = ags_application_context_get_instance();
+
   /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
-
-  application_context = (AgsApplicationContext *) window->application_context;
 
   /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
