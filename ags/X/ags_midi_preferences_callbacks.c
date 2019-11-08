@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_midi_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_sequencer_editor.h>
@@ -53,7 +49,6 @@ ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_paren
 void
 ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
@@ -69,7 +64,6 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
   application_context = ags_application_context_get_instance();
 

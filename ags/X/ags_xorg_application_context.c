@@ -121,10 +121,12 @@ void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider
 GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						GList *sequencer);
-GList* ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider);
 GList* ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
 					    GList *soundcard);
+GList* ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_sound_server(AgsSoundProvider *sound_provider,
+						   GList *sound_server);
 GList* ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 						 GList *soundcard);
@@ -149,12 +151,10 @@ void ags_xorg_application_context_setup(AgsApplicationContext *application_conte
 
 void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
 
-void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
-xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
-
 void ags_xorg_application_context_quit(AgsApplicationContext *application_context);
 
-void ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context);
+void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
 /**
  * SECTION:ags_xorg_application_context
@@ -251,7 +251,6 @@ ags_xorg_application_context_get_type()
   return g_define_type_id__volatile;
 }
 
-#ifndef AGS_USE_TIMER
 void
 ags_xorg_application_context_signal_handler(int signr)
 {
@@ -273,7 +272,6 @@ ags_xorg_application_context_signal_cleanup()
 {
   sigemptyset(&(ags_sigact.sa_mask));
 }
-#endif
 
 void
 ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context)
@@ -367,6 +365,7 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
   sound_provider->set_sequencer = ags_xorg_application_context_set_sequencer;
 
   sound_provider->get_sound_server = ags_xorg_application_context_get_sound_server;
+  sound_provider->set_sound_server = ags_xorg_application_context_set_sound_server;
 
   sound_provider->get_audio = ags_xorg_application_context_get_audio;
   sound_provider->set_audio = ags_xorg_application_context_set_audio;
@@ -1407,6 +1406,36 @@ ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider)
   return(sound_server);
 }
 
+void
+ags_xorg_application_context_set_sound_server(AgsSoundProvider *concurrency_provider,
+					      GList *sound_server)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  /* set sound_server */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(xorg_application_context->sound_server == sound_server){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  g_list_free_full(xorg_application_context->sound_server,
+		   g_object_unref);
+  
+  xorg_application_context->sound_server = sound_server;
+
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
 GList*
 ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider)
 {
@@ -1699,6 +1728,155 @@ ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
   xorg_application_context->gui_ready = gui_ready;
    
   g_rec_mutex_unlock(application_context_mutex);
+}
+
+void
+ags_xorg_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
+						  gdouble gui_scale_factor)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  
+  GParamSpec *param_spec;
+
+  gchar *str;
+  
+  gint default_slider_width;
+  gint default_stepper_size;
+  guint i;
+  
+  GValue *value;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+  
+  /* horizontal scrollbar */
+  default_slider_width = 14;
+  default_stepper_size = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						    "stepper-size");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_stepper_size = g_value_get_int(value);
+  }
+    
+  str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkVScrollbar*\" style \"ags-default-vscrollbar-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width),
+			(gint) (gui_scale_factor * default_stepper_size));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* vertical scrollbar */
+  default_slider_width = 14;
+  default_stepper_size = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						    "stepper-size");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_stepper_size = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkHScrollbar*\" style \"ags-default-hscrollbar-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width),
+			(gint) (gui_scale_factor * default_stepper_size));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* horizontal scale */
+  default_slider_width = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCALE),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* vertical scale */
+  default_slider_width = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCALE),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width));
+  gtk_rc_parse_string(str);
+  g_free(str);
+}
+
+void
+ags_xorg_application_context_schedule_task(AgsUiProvider *ui_provider,
+					   AgsTask *task)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  
+  AgsTaskLauncher *task_launcher;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_launcher == NULL){
+    return;
+  }
+  
+  xorg_application_context->task = g_list_prepend(xorg_application_context->task,
+						  task);
+  
+  /* unref */
+  g_object_unref(task_launcher);
+}
+
+void
+ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
+					       GList *task)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  
+  AgsTaskLauncher *task_launcher;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_launcher == NULL){
+    return;
+  }
+
+  xorg_application_context->task = g_list_concat(g_list_reverse(task),
+						 xorg_application_context->task);
+
+  /* unref */
+  g_object_unref(task_launcher);
 }
   
 void
@@ -3218,346 +3396,19 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 void
 ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
 {
-  AgsXorgApplicationContext *gobject;
-
-  AgsConfig *config;
-
-  AgsFileLaunch *file_launch;
-
-  xmlNode *child;
-
-  if(*application_context == NULL){
-    gobject = (AgsXorgApplicationContext *) g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
-							 NULL);
-
-    *application_context = (GObject *) gobject;
-  }else{
-    gobject = (AgsXorgApplicationContext *) *application_context;
-  }
-
-  g_object_set(G_OBJECT(file),
-	       "application-context", gobject,
-	       NULL);
-
-  config = ags_config_get_instance();
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-  
-  /* properties */
-  AGS_APPLICATION_CONTEXT(gobject)->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
-					    NULL,
-					    16);
-
-  AGS_APPLICATION_CONTEXT(gobject)->version = xmlGetProp(node,
-							 AGS_FILE_VERSION_PROP);
-
-  AGS_APPLICATION_CONTEXT(gobject)->build_id = xmlGetProp(node,
-							  AGS_FILE_BUILD_ID_PROP);
-
-  //TODO:JK: check version compatibelity
-
-  /* child elements */
-  child = node->children;
-
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-config",
-		     child->name,
-		     11)){
-	ags_file_read_config(file,
-			     child,
-			     (GObject **) &(config));
-      }else if(!xmlStrncmp("ags-window",
-		     child->name,
-		     11)){
-	ags_file_read_window(file,
-			     child,
-			     &(gobject->window));
-      }else if(!xmlStrncmp("ags-soundcard-list",
-			   child->name,
-			   19)){
-	if(gobject->soundcard != NULL){
-	  g_list_free_full(gobject->soundcard,
-			   g_object_unref);
-
-	  gobject->soundcard = NULL;
-	}
-	
-	ags_file_read_soundcard_list(file,
-				     child,
-				     &(gobject->soundcard));
-      }
-    }
-
-    child = child->next;
-  }
-
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_xorg_application_context_launch), gobject);
-  ags_file_add_launch(file,
-		      (GObject *) file_launch);
-}
-
-void
-ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
-{
-  GtkWidget *window;
-  
-  AgsThread *main_loop;
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  /* show all */
-  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-  gtk_widget_show_all(window);
-
-  ags_thread_start(main_loop);
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
-{
-  AgsConfig *config;
+{  
+  xmlNode *node;
   
-  xmlNode *node, *child;
+  node = NULL;
+
+  //TODO:JK: implement me
   
-  gchar *id;
-
-  config = ags_config_get_instance();
-  
-  id = ags_id_generator_create_uuid();
-
-  node = xmlNewNode(NULL,
-		    "ags-main");
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", application_context,
-				   NULL));
-
-  xmlNewProp(node,
-	     AGS_FILE_CONTEXT_PROP,
-	     "xorg");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
-
-  xmlNewProp(node,
-	     AGS_FILE_VERSION_PROP,
-	     AGS_APPLICATION_CONTEXT(application_context)->version);
-
-  xmlNewProp(node,
-	     AGS_FILE_BUILD_ID_PROP,
-	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
-
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
-
-  ags_file_write_config(file,
-			node,
-			(GObject *) config);
-  
-  ags_file_write_soundcard_list(file,
-				node,
-				AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard);
-  
-  ags_file_write_window(file,
-			node,
-			AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
-
   return(node);
-}
-
-void
-ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context)
-{
-  AgsConfig *config;
-  
-  GParamSpec *param_spec;
-
-  char **argv;
-  gchar *str;
-
-  int argc;    
-  gdouble gui_scale_factor;
-  gint default_slider_width;
-  gint default_stepper_size;
-  guint i;
-  
-  GValue *value;
-
-  argc = AGS_APPLICATION_CONTEXT(xorg_application_context)->argc;
-  argv = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv;
-
-  for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--no-builtin-theme", 19)){
-      return;
-    }
-  }
-  
-  config = ags_config_get_instance();
-  
-  gui_scale_factor = 1.0;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
-    
-  /* horizontal scrollbar */
-  default_slider_width = 14;
-  default_stepper_size = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
-						    "stepper-size");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_stepper_size = g_value_get_int(value);
-  }
-    
-  str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkVScrollbar*\" style \"ags-default-vscrollbar-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width),
-			(gint) (gui_scale_factor * default_stepper_size));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* vertical scrollbar */
-  default_slider_width = 14;
-  default_stepper_size = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
-						    "stepper-size");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_stepper_size = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkHScrollbar*\" style \"ags-default-hscrollbar-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width),
-			(gint) (gui_scale_factor * default_stepper_size));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* horizontal scale */
-  default_slider_width = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCALE),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width));
-  gtk_rc_parse_string(str);
-  g_free(str);
-
-  /* vertical scale */
-  default_slider_width = 14;
-
-  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCALE),
-						    "slider-width");
-  value = g_param_spec_get_default_value(param_spec);
-
-  if(value != NULL){
-    default_slider_width = g_value_get_int(value);
-  }
-
-  str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
-			(gint) (gui_scale_factor * default_slider_width));
-  gtk_rc_parse_string(str);
-  g_free(str);
-}
-
-void
-ags_xorg_application_context_schedule_task(AgsUiProvider *ui_provider,
-					   AgsTask *task)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-  
-  AgsTaskLauncher *task_launcher;
-
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
-
-  if(task_launcher == NULL){
-    return;
-  }
-  
-  xorg_application_context->task = g_list_prepend(xorg_application_context->task,
-						  task);
-  
-  /* unref */
-  g_object_unref(task_launcher);
-}
-
-void
-ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
-					       GList *task)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-  
-  AgsTaskLauncher *task_launcher;
-
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
-
-  if(task_launcher == NULL){
-    return;
-  }
-
-  xorg_application_context->task = g_list_concat(g_list_reverse(task),
-						 xorg_application_context->task);
-
-  /* unref */
-  g_object_unref(task_launcher);
 }
 
 gboolean

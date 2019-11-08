@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -78,8 +75,8 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   apply_bpm = ags_apply_bpm_new(application_context,
 				navigation->bpm->adjustment->value);
   
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_bpm);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) apply_bpm);
 }
 
 void

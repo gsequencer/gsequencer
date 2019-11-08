@@ -19,11 +19,7 @@
 
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_soundcard.h>
@@ -389,8 +385,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* append AgsStartSoundcard */
       task = g_list_reverse(task);
       
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_list(AGS_UI_PROVIDER(application_context),
+					 task);
       
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 void ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data);

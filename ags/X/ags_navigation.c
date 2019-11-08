@@ -20,9 +20,6 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/libags.h> 
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -570,8 +567,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 					  new_offset,
 					  AGS_SEEK_SET);
   
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) seek_soundcard);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) seek_soundcard);
 
   /* soundcard - start offset */
   list = 

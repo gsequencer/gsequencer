@@ -118,8 +118,6 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-void ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context);
-
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
 gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);
 

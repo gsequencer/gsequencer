@@ -20,10 +20,6 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -1401,8 +1397,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 				    line_member->control_port, port_data,
 				    NULL);
 
-    ags_xorg_application_context_schedule_task(application_context,
-					       G_OBJECT(task));
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) task);
   }
 }
 

@@ -232,8 +232,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     /* perform playback */
     task = g_list_reverse(task);
-    ags_xorg_application_context_schedule_task_list(application_context,
-				      task);
+    ags_ui_provider_schedule_task_list(AGS_UI_PROVIDER(application_context),
+				       task);
 
     g_object_unref(soundcard);
 

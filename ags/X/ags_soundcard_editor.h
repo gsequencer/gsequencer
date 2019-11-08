@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #define AGS_TYPE_SOUNDCARD_EDITOR                (ags_soundcard_editor_get_type())
 #define AGS_SOUNDCARD_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD_EDITOR, AgsSoundcardEditor))
 #define AGS_SOUNDCARD_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SOUNDCARD_EDITOR, AgsSoundcardEditorClass))

@@ -207,8 +207,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 						    0);
   
   /* append task */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) open_sf2_instrument);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) open_sf2_instrument);
 }
 
 gboolean

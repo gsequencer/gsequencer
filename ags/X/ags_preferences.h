@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,14 @@
 #ifndef __AGS_PREFERENCES_H__
 #define __AGS_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_audio_preferences.h>
@@ -51,7 +58,7 @@ struct _AgsPreferences
 
   guint flags;
 
-  GtkWindow *window;
+  GtkWindow *main_window;
 
   GtkNotebook *notebook;
 

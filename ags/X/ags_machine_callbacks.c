@@ -171,8 +171,8 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   remove_audio = ags_remove_audio_new(application_context,
 				      audio);
   
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) remove_audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) remove_audio);
 }
 
 void

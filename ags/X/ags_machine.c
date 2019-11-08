@@ -29,7 +29,6 @@
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_machine_init(AgsMachine *machine);
 void ags_machine_set_property(GObject *gobject,
 			      guint prop_id,
@@ -43,11 +42,6 @@ static void ags_machine_finalize(GObject *gobject);
 
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
-
-gchar* ags_machine_get_version(AgsPlugin *plugin);
-void ags_machine_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_machine_get_build_id(AgsPlugin *plugin);
-void ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_machine_show(GtkWidget *widget);
 
@@ -127,12 +121,6 @@ ags_machine_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_machine_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
 					      "AgsMachine", &ags_machine_info,
 					      0);
@@ -140,10 +128,6 @@ ags_machine_get_type(void)
     g_type_add_interface_static(ags_type_machine,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_machine,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_machine);
   }
@@ -444,22 +428,6 @@ ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_machine_connect;
   connectable->disconnect = ags_machine_disconnect;
-}
-
-void
-ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_machine_get_version;
-  plugin->set_version = ags_machine_set_version;
-  plugin->get_build_id = ags_machine_get_build_id;
-  plugin->set_build_id = ags_machine_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->get_ports = NULL;
 }
 
 void
@@ -1351,35 +1319,6 @@ ags_machine_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
   g_signal_handlers_disconnect_by_data(machine->audio,
 				       machine);
-}
-
-
-gchar*
-ags_machine_get_version(AgsPlugin *plugin)
-{
-  return(AGS_MACHINE(plugin)->version);
-}
-
-void
-ags_machine_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AGS_MACHINE(plugin)->version = version;
-
-  //TODO:JK: implement me
-}
-
-gchar*
-ags_machine_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_MACHINE(plugin)->build_id);
-}
-
-void
-ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AGS_MACHINE(plugin)->build_id = build_id;
-
-  //TODO:JK: implement me
 }
 
 void
@@ -2303,8 +2242,8 @@ ags_machine_playback_set_active(AgsMachine *machine,
     /* launch task */
     start_task = g_list_reverse(start_task);
 
-    ags_xorg_application_context_schedule_task_list(application_context,
-						    start_task);
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      start_task);
 
     /* feed note */
     g_object_get(playback,
@@ -2343,8 +2282,8 @@ ags_machine_playback_set_active(AgsMachine *machine,
     /* launch task */
     start_task = g_list_reverse(start_task);
 
-    ags_xorg_application_context_schedule_task_list(application_context,
-						    start_task);
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      start_task);
     
     /* feed note */
     g_object_get(playback,
@@ -2487,8 +2426,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
       
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      list);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					list);
     }
   }else{
     AgsCancelAudio *cancel_audio;
@@ -2499,8 +2438,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_SEQUENCER);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(notation){
@@ -2509,8 +2448,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_NOTATION);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(wave){
@@ -2519,8 +2458,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_WAVE);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(midi){
@@ -2529,8 +2468,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_MIDI);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
   }
 }
@@ -2790,8 +2729,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) open_file);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) open_file);
 }
 
 void

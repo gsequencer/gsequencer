@@ -190,8 +190,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_xorg_application_context_schedule_task(application_context,
-						       (GObject *) add_effect);
+	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					  (AgsTask *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -266,8 +266,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_xorg_application_context_schedule_task(application_context,
-						       (GObject *) add_effect);
+	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					  (AgsTask *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,

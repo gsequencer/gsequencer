@@ -180,8 +180,8 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(matrix)->audio,
 							  length);
 
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_sequencer_length);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(GObject *) apply_sequencer_length);
 }
 
 void

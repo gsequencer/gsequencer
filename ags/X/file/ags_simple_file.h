@@ -25,6 +25,12 @@
 
 #include <libxml/tree.h>
 
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #define AGS_TYPE_SIMPLE_FILE                (ags_simple_file_get_type())
 #define AGS_SIMPLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SIMPLE_FILE, AgsSimpleFile))
 #define AGS_SIMPLE_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SIMPLE_FILE, AgsSimpleFileClass))
@@ -80,8 +86,6 @@ struct _AgsSimpleFile
   GList *id_ref;
   GList *lookup;
   GList *launch;
-
-  GObject *application_context;
 };
 
 struct _AgsSimpleFileClass

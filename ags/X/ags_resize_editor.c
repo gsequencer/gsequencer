@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -283,8 +279,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      audio_channels);
       
   /* append AgsResizeAudio */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) resize_audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) resize_audio);
 }
 
 void

@@ -522,8 +522,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   /* add audio */  
   add_audio = ags_add_audio_new(application_context,
 				machine->audio);
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) add_audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(machine),

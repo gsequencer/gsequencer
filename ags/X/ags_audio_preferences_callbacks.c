@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_soundcard_editor.h>
@@ -54,7 +50,6 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
 void
 ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
@@ -70,9 +65,9 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
   application_context = ags_application_context_get_instance();
+
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* retrieve first soundcard */
@@ -119,10 +114,6 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   gtk_widget_show_all((GtkWidget *) soundcard_editor);
 
   /* reset default card */  
-  g_object_set(window,
-	       "soundcard", soundcard,
-	       NULL);
-
   g_object_unref(main_loop);  
 }
 

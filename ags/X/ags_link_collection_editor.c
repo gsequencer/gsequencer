@@ -513,8 +513,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
     }else{
       guint first_link;
 
@@ -561,8 +561,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       }
 
       task = g_list_reverse(task);
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
 
       g_object_unref(start_link);
 

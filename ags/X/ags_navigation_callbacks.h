@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_navigation.h>
 
 void ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,

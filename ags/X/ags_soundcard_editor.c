@@ -20,10 +20,6 @@
 #include <ags/X/ags_soundcard_editor.h>
 #include <ags/X/ags_soundcard_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_audio_preferences.h>
 
 #include <ags/config.h>

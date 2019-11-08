@@ -20,10 +20,6 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -289,8 +285,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 						      filename,
 						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button));
 	  /* append AgsLinkChannel */
-	  ags_xorg_application_context_schedule_task(application_context,
-						     (GObject *) open_single_file);
+	  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					(AgsTask *) open_single_file);
 	}
       }else{
 	/* create task */
@@ -298,8 +294,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 					    NULL);
 	
 	/* append AgsLinkChannel */
-	ags_xorg_application_context_schedule_task(application_context,
-						   (GObject *) link_channel);
+	ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				      (AgsTask *) link_channel);
       }
     }else{
       guint link_line;
@@ -338,8 +334,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       }
       
       /* append AgsLinkChannel */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) link_channel);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) link_channel);
     }
 
     g_object_unref(audio);

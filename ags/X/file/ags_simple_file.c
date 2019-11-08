@@ -24,7 +24,6 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_window.h>
@@ -580,8 +579,6 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
   simple_file->id_ref = NULL;
   simple_file->lookup = NULL;
   simple_file->launch = NULL;
-
-  simple_file->application_context = NULL;
 }
 
 void
@@ -648,27 +645,6 @@ ags_simple_file_set_property(GObject *gobject,
     simple_file->doc = doc;
   }
   break;
-  case PROP_APPLICATION_CONTEXT:
-  {
-    GObject *application_context;
-
-    application_context = g_value_get_object(value);
-
-    if(simple_file->application_context == application_context){
-      return;
-    }
-
-    if(simple_file->application_context != NULL){
-      g_object_unref(simple_file->application_context);
-    }
-
-    if(application_context != NULL){
-      g_object_ref(application_context);
-    }
-
-    simple_file->application_context = application_context;
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -709,11 +685,6 @@ ags_simple_file_get_property(GObject *gobject,
   case PROP_XML_DOC:
   {
     g_value_set_pointer(value, simple_file->doc);
-  }
-  break;
-  case PROP_APPLICATION_CONTEXT:
-  {
-    g_value_set_object(value, simple_file->application_context);
   }
   break;
   default:
@@ -1091,7 +1062,7 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
     return;
   }
 
-  application_context = (AgsApplicationContext *) simple_file->application_context;
+  application_context = ags_application_context_get_instance();
   config = ags_config_get_instance();
   
   id = ags_id_generator_create_uuid();
@@ -1116,7 +1087,7 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   
   ags_simple_file_write_window(simple_file,
 			       node,
-			       AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   /* resolve */
   ags_simple_file_write_resolve(simple_file);
@@ -1175,7 +1146,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
   xmlNode *root_node, *child;
   
-  application_context = (AgsApplicationContext *) simple_file->application_context;
+  application_context = ags_application_context_get_instance();
 
   root_node = simple_file->root_node;
 
@@ -1208,9 +1179,18 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
       if(!xmlStrncmp("ags-sf-window",
 		     child->name,
 		     14)){
+	AgsWindow *orig_window, *window;
+
+	window =
+	  orig_window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 	ags_simple_file_read_window(simple_file,
 				    child,
-				    (AgsWindow **) &(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
+				    (AgsWindow **) &window);
+
+	if(orig_window != window){
+	  ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
+				     window);
+	}
       }
     }
 
@@ -1225,7 +1205,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* connect */  
   ags_connectable_connect(AGS_CONNECTABLE(application_context));
 
-  gtk_widget_show_all((GtkWidget *) AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+  gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   g_message("XML simple file connected");
 
@@ -1233,9 +1213,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   ags_simple_file_read_start(simple_file);
 
   /* set file ready */
-  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->file_ready),
-		   TRUE);
-    
+  ags_ui_provider_set_file_ready(AGS_UI_PROVIDER(application_context),
+				 TRUE);
 }
 
 void
@@ -1305,7 +1284,7 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
-  AgsConfig *gobject;
+  AgsConfig *config;
 
   char *buffer;
   gchar *id;
@@ -1315,6 +1294,7 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   gdouble samplerate;
   guint buffer_size;
   gdouble frequency;
+  gdouble gui_scale_factor;
 
   auto void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
 							     gdouble max_precision);
@@ -1338,11 +1318,11 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
     }
   }
 
-  gobject = *ags_config;
-  gobject->version = xmlGetProp(node,
+  config = *ags_config;
+  config->version = xmlGetProp(node,
 				AGS_FILE_VERSION_PROP);
 
-  gobject->build_id = xmlGetProp(node,
+  config->build_id = xmlGetProp(node,
 				 AGS_FILE_BUILD_ID_PROP);
 
   application_context = ags_application_context_get_instance();
@@ -1352,13 +1332,13 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 
   g_message("%s", buffer);
   
-  ags_config_load_from_data(gobject,
+  ags_config_load_from_data(config,
 			    buffer, buffer_length);
 
   /* max-precision */
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  str = ags_config_get_value(gobject,
+  str = ags_config_get_value(config,
 			     AGS_CONFIG_THREAD,
 			     "max-precision");
   
@@ -1373,8 +1353,8 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 						     max_precision);  
   }
 
-  samplerate = ags_soundcard_helper_config_get_samplerate(gobject);
-  buffer_size = ags_soundcard_helper_config_get_buffer_size(gobject);
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   
   frequency = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   ags_main_loop_change_frequency(AGS_MAIN_LOOP(main_loop),
@@ -1383,7 +1363,21 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   g_object_unref(main_loop);
 
   /* some GUI scaling */
-  ags_xorg_application_context_load_gui_scale(application_context);
+  gui_scale_factor = 1.0;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  ags_ui_provider_set_gui_scale_factor(AGS_UI_PROVIDER(application_context),
+				       gui_scale_factor);
 }
 
 void
@@ -1699,12 +1693,15 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  application_context = ags_application_context_get_instance();
   
   if(*window != NULL){
     gobject = *window;
   }else{
-    gobject = ags_window_new(simple_file->application_context);
-    AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window = gobject;
+    gobject = ags_window_new();
+    ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
+			       gobject);
     
     *window = gobject;
   }
@@ -1962,13 +1959,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   AgsMachine *gobject;
 
   AgsConfig *config;
-  GObject *soundcard;
 
   AgsFileLaunch *file_launch;
 
+  AgsApplicationContext *application_context;
+  
+  GObject *soundcard;
+
   xmlNode *child;
   
-  GList *list;
+  GList *start_list, *list;
   GList *output_pad;
   GList *input_pad;
 
@@ -2007,17 +2007,18 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
      !AGS_IS_MACHINE(gobject)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
 					  NULL));
   
   /* retrieve window */  
-  window = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   config = ags_config_get_instance();
   
@@ -2026,9 +2027,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   device = xmlGetProp(node,
 		      "soundcard-device");
 
-  if(device != NULL){
-    list = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard;
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  if(device != NULL){
+    list = start_list;
+    
     for(i = 0; list != NULL; i++){
       str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
@@ -2049,9 +2052,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
   
   if(soundcard == NULL &&
-     AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard != NULL){
-    soundcard = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard->data;
+     start_list != NULL){
+    soundcard = start_list->data;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   g_object_set(gobject->audio,
 	       "output-soundcard", soundcard,
@@ -2774,16 +2780,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   gtk_widget_show_all((GtkWidget *) gobject);
 
   /* add audio to soundcard */
-  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
-  g_list_foreach(list,
-		 (GFunc) g_object_unref,
-		 NULL);
+  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   g_object_ref(G_OBJECT(gobject->audio));
-  list = g_list_append(list,
+  list = g_list_append(start_list,
 		       gobject->audio);
   
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 			       list);
   
   /* children */
@@ -3928,7 +3931,6 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
@@ -4103,16 +4105,18 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 {
   AgsPad *pad;
   GObject *gobject;
-
-  AgsConfig *config;
-  GObject *soundcard;
   
   AgsFileLaunch *file_launch;
   AgsFileIdRef *file_id_ref;
 
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  GObject *soundcard;
+
   xmlNode *child;
 
-  GList *list;
+  GList *start_list, *list;
 
   xmlChar *device;
   xmlChar *str;
@@ -4333,22 +4337,25 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
 					  NULL));
 
   /* device */
+  application_context = ags_application_context_get_instance();
+  
   config = ags_config_get_instance();
   
   /* find soundcard */
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
   soundcard = NULL;
   device = xmlGetProp(node,
 		      "soundcard-device");  
   if(device != NULL){
-    list = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard;
-  
+    list = start_list;
+    
     for(i = 0; list != NULL; i++){
       str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
@@ -4356,6 +4363,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	 !g_ascii_strcasecmp(str,
 			     device)){
 	soundcard = list->data;
+	
 	break;
       }
 
@@ -4367,9 +4375,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   }
   
   if(soundcard == NULL &&
-     AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard != NULL){
-    soundcard = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard->data;
+     start_list != NULL){
+    soundcard = start_list->data;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(AGS_IS_LINE(gobject)){
     g_object_set(AGS_LINE(gobject)->channel,
@@ -7173,7 +7184,6 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsCon
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "xpath", str,
@@ -7585,8 +7595,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	if(channel->link != NULL){
 	  ags_simple_file_add_id_ref(simple_file,
 				     g_object_new(AGS_TYPE_FILE_ID_REF,
-						  "application-context", simple_file->application_context,
-						  "file", simple_file,
+							  "file", simple_file,
 						  "node", line,
 						  "reference", channel,
 						  NULL));
@@ -7862,7 +7871,6 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", machine,
@@ -9163,7 +9171,6 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   if(line->channel->link != NULL){
     ags_simple_file_add_id_ref(simple_file,
 			       g_object_new(AGS_TYPE_FILE_ID_REF,
-					    "application-context", simple_file->application_context,
 					    "file", simple_file,
 					    "node", node,
 					    "reference", line->channel,

@@ -527,8 +527,8 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   
   g_list_free(input_pad_start);
   
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  g_list_reverse(task));
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    g_list_reverse(task));
 }
 
 /**

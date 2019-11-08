@@ -20,10 +20,6 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_plugin_browser.h>
@@ -1432,8 +1428,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  task);
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    task);
 
   return(retport);
 }
@@ -1984,8 +1980,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  task);
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    task);
 
   return(retport);
 }

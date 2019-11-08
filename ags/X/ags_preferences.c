@@ -20,9 +20,6 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -152,7 +149,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->window = NULL;
+  preferences->main_window = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       i18n("preferences"));
@@ -311,8 +308,8 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   apply_sound_config = ags_apply_sound_config_new(application_context,
 						  NULL);
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_sound_config);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) apply_sound_config);
 
   /* notify user about safe GSequencer */
   dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,

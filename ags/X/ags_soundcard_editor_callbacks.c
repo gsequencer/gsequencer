@@ -19,12 +19,7 @@
 
 #include <ags/X/ags_soundcard_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/config.h>
@@ -268,8 +263,8 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) set_audio_channels);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_audio_channels);
 }
 
 void
@@ -291,8 +286,8 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) set_samplerate);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_samplerate);
 }
 
 void
@@ -314,8 +309,8 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) set_buffer_size);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) set_buffer_size);
 }
 
 void
@@ -362,6 +357,6 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 				  format);
 
   /* append AgsSetBufferSize */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) set_format);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(GObject *) set_format);
 }
