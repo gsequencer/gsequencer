@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,10 @@
 
 #include <ags/libags.h>
 
-pthread_mutex_t* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
+G_BEGIN_DECLS
+
+GRecMutex* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_UTIL_H__*/

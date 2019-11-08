@@ -25,9 +25,12 @@
 
 #include <dssi.h>
 
-#include <ags/audio/ags_recall_audio_signal.h>
+#include <ags/libags.h>
+
+#include <ags/plugin/ags_dssi_plugin.h>
 
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_RECALL_DSSI_RUN                (ags_recall_dssi_run_get_type())
 #define AGS_RECALL_DSSI_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI_RUN, AgsRecallDssiRun))

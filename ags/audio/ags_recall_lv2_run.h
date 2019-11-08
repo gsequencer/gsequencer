@@ -25,9 +25,14 @@
 
 #include <lv2.h>
 
-#include <ags/audio/ags_recall_audio_signal.h>
+#include <ags/libags.h>
+
+#include <ags/plugin/ags_lv2_plugin.h>
 
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio_signal.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_LV2_RUN                (ags_recall_lv2_run_get_type())
 #define AGS_RECALL_LV2_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LV2_RUN, AgsRecallLv2Run))
@@ -72,5 +77,7 @@ struct _AgsRecallLv2RunClass
 GType ags_recall_lv2_run_get_type();
 
 AgsRecallLv2Run* ags_recall_lv2_run_new(AgsAudioSignal *source);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_LV2_RUN_H__*/

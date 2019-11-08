@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_UI_PROVIDER                    (ags_ui_provider_get_type())
 #define AGS_UI_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_PROVIDER, AgsUiProvider))
 #define AGS_UI_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_UI_PROVIDER, AgsUiProviderInterface))
@@ -209,5 +211,7 @@ void ags_ui_provider_set_composite_editor(AgsUiProvider *ui_provider,
 GtkWidget* ags_ui_provider_get_navigation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_navigation(AgsUiProvider *ui_provider,
 				    GtkWidget *navigation);
+
+G_END_DECLS
 
 #endif /*__AGS_UI_PROVIDER_H__*/

@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_FILTER_UTIL_DEFAULT_TMP_BUFFER_SIZE (8192)
 
 void ags_filter_util_pitch_s8(gint8 *buffer,
@@ -67,5 +69,7 @@ void ags_filter_util_pitch_complex(AgsComplex *buffer,
 				   guint samplerate,
 				   gdouble base_key,
 				   gdouble tuning);
+
+G_END_DECLS
 
 #endif /*__AGS_FILTER_UTIL_H__*/

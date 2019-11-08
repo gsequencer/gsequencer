@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_frequency_map.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FREQUENCY_MAP_MANAGER                (ags_frequency_map_manager_get_type())
 #define AGS_FREQUENCY_MAP_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FREQUENCY_MAP_MANAGER, AgsFrequencyMapManager))
@@ -36,7 +36,7 @@
 #define AGS_IS_FREQUENCY_MAP_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FREQUENCY_MAP_MANAGER))
 #define AGS_FREQUENCY_MAP_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FREQUENCY_MAP_MANAGER, AgsFrequencyMapManagerClass))
 
-#define AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(obj) (((AgsFrequencyMapManager *) obj)->obj_mutex)
+#define AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsFrequencyMapManager *) obj)->obj_mutex))
 
 #define AGS_FREQUENCY_MAP_MANAGER_EQUINOX (22000)
 
@@ -60,8 +60,7 @@ struct _AgsFrequencyMapManager
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *frequency_map;
   GList *factorized_frequency_map;
@@ -73,8 +72,6 @@ struct _AgsFrequencyMapManagerClass
 };
 
 GType ags_frequency_map_manager_get_type(void);
-
-pthread_mutex_t* ags_frequency_map_manager_get_class_mutex();
 
 gboolean ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
 void ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags);
@@ -97,5 +94,7 @@ void ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_ma
 AgsFrequencyMapManager* ags_frequency_map_manager_get_instance();
 
 AgsFrequencyMapManager* ags_frequency_map_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FREQUENCY_MAP_MANAGER_H__*/

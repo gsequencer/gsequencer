@@ -34,7 +34,7 @@
 #define AGS_IS_RECALL_DEPENDENCY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL_DEPENDENCY))
 #define AGS_RECALL_DEPENDENCY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
 
-#define AGS_RECALL_DEPENDENCY_GET_OBJ_MUTEX(obj) (((AgsRecallDependency *) obj)->obj_mutex)
+#define AGS_RECALL_DEPENDENCY_GET_OBJ_MUTEX(obj) (&(((AgsRecallDependency *) obj)->obj_mutex))
 
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
@@ -45,8 +45,7 @@ struct _AgsRecallDependency
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   GObject *dependency;
 };
@@ -58,8 +57,6 @@ struct _AgsRecallDependencyClass
 
 GType ags_recall_dependency_get_type(void);
 
-pthread_mutex_t* ags_recall_dependency_get_class_mutex();
-
 GList* ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *dependency);
 GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
 							 GObject *provider);
@@ -67,5 +64,7 @@ GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependenc
 GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id);
 
 AgsRecallDependency* ags_recall_dependency_new(GObject *dependency);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_DEPENDENCY_H__*/

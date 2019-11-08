@@ -28,6 +28,8 @@
 #include <math.h>
 #include <complex.h>
 
+G_BEGIN_DECLS
+
 #define AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_S8_FRAME(x_buffer, x_channels, x_n, x_buffer_length, x_retval) { complex l_z; \
     gdouble l_h;							\
     gdouble l_k;							\
@@ -275,5 +277,7 @@ void ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint cha
 void ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channels,
 						    guint buffer_length,
 						    gdouble **retval);
+
+G_END_DECLS
 
 #endif /*__AGS_FOURIER_TRANSFORM_UTIL_H__*/

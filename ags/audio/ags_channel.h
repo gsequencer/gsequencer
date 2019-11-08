@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
@@ -33,8 +31,9 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_notation.h>
 
-#include <stdarg.h>
 #include <math.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CHANNEL                (ags_channel_get_type())
 #define AGS_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL, AgsChannel))
@@ -43,9 +42,9 @@
 #define AGS_IS_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CHANNEL))
 #define AGS_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CHANNEL, AgsChannelClass))
 
-#define AGS_CHANNEL_GET_OBJ_MUTEX(obj) (((AgsChannel *) obj)->obj_mutex)
-#define AGS_CHANNEL_GET_PLAY_MUTEX(obj) (((AgsChannel *) obj)->play_mutex)
-#define AGS_CHANNEL_GET_RECALL_MUTEX(obj) (((AgsChannel *) obj)->recall_mutex)
+#define AGS_CHANNEL_GET_OBJ_MUTEX(obj) (&(((AgsChannel *) obj)->obj_mutex))
+#define AGS_CHANNEL_GET_PLAY_MUTEX(obj) (&(((AgsChannel *) obj)->play_mutex))
+#define AGS_CHANNEL_GET_RECALL_MUTEX(obj) (&(((AgsChannel *) obj)->recall_mutex))
 
 #define AGS_CHANNEL_MINIMUM_OCTAVE (0)
 #define AGS_CHANNEL_MAXIMUM_OCTAVE (10)
@@ -100,8 +99,7 @@ struct _AgsChannel
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
@@ -149,13 +147,11 @@ struct _AgsChannel
 
   GList *recall_container;
 
-  pthread_mutexattr_t *play_mutexattr;
-  pthread_mutex_t *play_mutex;
+  GRecMutex play_mutex;
 
   GList *play;
 
-  pthread_mutexattr_t *recall_mutexattr;
-  pthread_mutex_t *recall_mutex;
+  GRecMutex recall_mutex;
 
   GList *recall;
 
@@ -211,8 +207,6 @@ struct _AgsChannelClass
 GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
-
-pthread_mutex_t* ags_channel_get_class_mutex();
 
 gboolean ags_channel_test_flags(AgsChannel *channel, guint flags);
 void ags_channel_set_flags(AgsChannel *channel, guint flags);
@@ -343,5 +337,7 @@ void ags_channel_recursive_run_stage(AgsChannel *channel,
 
 /* instantiate */
 AgsChannel* ags_channel_new(GObject *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_CHANNEL_H__*/

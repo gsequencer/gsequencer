@@ -58,6 +58,7 @@ struct _AgsServiceProviderInterface
 GType ags_service_provider_get_type();
 
 gboolean ags_service_provider_is_operating(AgsServiceProvider *service_provider);
+
 AgsServerStatus* ags_service_provider_server_status(AgsServiceProvider *service_provider);
 
 void ags_service_provider_set_registry(AgsServiceProvider *service_provider,

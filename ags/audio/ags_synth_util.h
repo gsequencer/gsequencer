@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 /* zero-crossing */
 guint ags_synth_util_get_xcross_count_s8(gint8 *buffer,
 					 guint buffer_size);
@@ -242,5 +244,7 @@ void ags_synth_util_impulse(void *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate, guint audio_buffer_util_format,
 			    guint offset, guint n_frames);
+
+G_END_DECLS
 
 #endif /*__AGS_SYNTH_UTIL_H__*/

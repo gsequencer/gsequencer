@@ -25,11 +25,11 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_track.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI                (ags_midi_get_type())
 #define AGS_MIDI(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI, AgsMidi))
@@ -38,7 +38,7 @@
 #define AGS_IS_MIDI_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI))
 #define AGS_MIDI_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MIDI, AgsMidiClass))
 
-#define AGS_MIDI_GET_OBJ_MUTEX(obj) (((AgsMidi *) obj)->obj_mutex)
+#define AGS_MIDI_GET_OBJ_MUTEX(obj) (&(((AgsMidi *) obj)->obj_mutex))
 
 #define AGS_MIDI_DEFAULT_BPM (120.0)
 
@@ -74,8 +74,7 @@ struct _AgsMidi
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio;
   guint audio_channel;
@@ -92,8 +91,6 @@ struct _AgsMidiClass
 };
 
 GType ags_midi_get_type(void);
-
-pthread_mutex_t* ags_midi_get_class_mutex();
 
 gboolean ags_midi_test_flags(AgsMidi *midi, guint flags);
 void ags_midi_set_flags(AgsMidi *midi, guint flags);
@@ -114,5 +111,7 @@ void ags_midi_remove_track(AgsMidi *midi,
 
 AgsMidi* ags_midi_new(GObject *audio,
 		      guint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_H__*/

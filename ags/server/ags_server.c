@@ -88,7 +88,6 @@ enum{
   PROP_SERVER_PORT,
   PROP_IP4,
   PROP_IP6,
-  PROP_APPLICATION_CONTEXT,
 };
 
 enum{
@@ -163,22 +162,6 @@ ags_server_class_init(AgsServerClass *server)
   gobject->finalize = ags_server_finalize;
 
   /* properties */
-  /**
-   * AgsServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n("application context object"),
-				   i18n("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsServer:domain:
    *
@@ -464,33 +447,6 @@ ags_server_set_property(GObject *gobject,
       pthread_mutex_unlock(server_mutex);
     }
     break;
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(server_mutex);
-
-      if(server->application_context == (GObject *) application_context){
-	pthread_mutex_unlock(server_mutex);
-
-	return;
-      }
-
-      if(server->application_context != NULL){
-	g_object_unref(G_OBJECT(server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      server->application_context = application_context;
-
-      pthread_mutex_unlock(server_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -557,15 +513,6 @@ ags_server_get_property(GObject *gobject,
       pthread_mutex_unlock(server_mutex);
     }
     break;    
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(server_mutex);
-
-      g_value_set_object(value, server->application_context);
-
-      pthread_mutex_unlock(server_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -579,12 +526,6 @@ ags_server_dispose(GObject *gobject)
 
   server = AGS_SERVER(gobject);
   
-  if(server->application_context != NULL){
-    g_object_unref(server->application_context);
-
-    server->application_context = NULL;
-  }
-  
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->dispose(gobject);
 }
@@ -596,21 +537,10 @@ ags_server_finalize(GObject *gobject)
 
   server = AGS_SERVER(gobject);
 
-  /* mutex */
-  pthread_mutex_destroy(server->obj_mutex);
-  free(server->obj_mutex);
-
-  pthread_mutexattr_destroy(server->obj_mutexattr);
-  free(server->obj_mutexattr);
-
   g_free(server->domain);
   
   g_free(server->ip4);
   g_free(server->ip6);
-
-  if(server->application_context != NULL){
-    g_object_unref(server->application_context);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);

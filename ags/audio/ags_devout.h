@@ -24,16 +24,11 @@
 #include <glib-object.h>
 
 #include <sys/types.h>
-
-#include <pthread.h>
-
-#include <ags/config.h>
-
-#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
-#endif
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
@@ -42,7 +37,7 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
-#define AGS_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsDevout *) obj)->obj_mutex)
+#define AGS_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsDevout *) obj)->obj_mutex))
 
 #define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
@@ -115,10 +110,7 @@ struct _AgsDevout
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -128,7 +120,7 @@ struct _AgsDevout
   guint buffer_size;
   guint samplerate; // sample_rate
   
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
 
   guint sub_block_count;
   pthread_mutex_t **sub_block_mutex;
@@ -186,7 +178,6 @@ struct _AgsDevout
 #endif
   }out;
 
-  GList *poll_fd;
   GObject *notify_soundcard;
 };
 
@@ -199,8 +190,6 @@ GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
 
-pthread_mutex_t* ags_devout_get_class_mutex();
-
 gboolean ags_devout_test_flags(AgsDevout *devout, guint flags);
 void ags_devout_set_flags(AgsDevout *devout, guint flags);
 void ags_devout_unset_flags(AgsDevout *devout, guint flags);
@@ -210,6 +199,8 @@ void ags_devout_switch_buffer_flag(AgsDevout *devout);
 void ags_devout_adjust_delay_and_attack(AgsDevout *devout);
 void ags_devout_realloc_buffer(AgsDevout *devout);
 
-AgsDevout* ags_devout_new(GObject *application_context);
+AgsDevout* ags_devout_new();
+
+G_END_DECLS
 
 #endif /*__AGS_DEVOUT_H__*/

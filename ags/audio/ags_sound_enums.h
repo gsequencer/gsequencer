@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 typedef enum{
   AGS_SOUND_ABILITY_PLAYBACK            = 1,
   AGS_SOUND_ABILITY_SEQUENCER           = 1 <<  1,
@@ -82,5 +86,7 @@ typedef enum{
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
   AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
 }AgsSoundStateFlags;
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_ENUMS_H__*/

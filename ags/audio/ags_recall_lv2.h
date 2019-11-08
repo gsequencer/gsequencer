@@ -27,12 +27,13 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_channel.h>
-
 #include <ags/plugin/ags_lv2_plugin.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_LV2                (ags_recall_lv2_get_type())
 #define AGS_RECALL_LV2(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LV2, AgsRecallLv2))
@@ -111,5 +112,7 @@ AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
 				 gchar *effect,
 				 gchar *uri,
 				 guint effect_index);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_LV2_H__*/

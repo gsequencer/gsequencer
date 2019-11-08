@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <alsa/asoundlib.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
@@ -36,7 +36,7 @@
 #define AGS_IS_NOTE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTE))
 #define AGS_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTE, AgsNoteClass))
 
-#define AGS_NOTE_GET_OBJ_MUTEX(obj) (((AgsNote *) obj)->obj_mutex)
+#define AGS_NOTE_GET_OBJ_MUTEX(obj) (&(((AgsNote *) obj)->obj_mutex))
 
 #define AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE (16.0)
 
@@ -72,8 +72,7 @@ struct _AgsNote
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   gboolean is_minor;
   guint sharp_flats;
@@ -106,8 +105,6 @@ struct _AgsNoteClass
 };
 
 GType ags_note_get_type();
-
-pthread_mutex_t* ags_note_get_class_mutex();
 
 gboolean ags_note_test_flags(AgsNote *note, guint flags);
 void ags_note_set_flags(AgsNote *note, guint flags);
@@ -170,5 +167,7 @@ AgsNote* ags_note_new();
 AgsNote* ags_note_new_with_offset(guint x0, guint x1,
 				  guint y,
 				  gdouble stream_delay, gdouble stream_attack);
+
+G_END_DECLS
 
 #endif /*__AGS_NOTE_H__*/

@@ -23,13 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_note.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTATION                (ags_notation_get_type())
 #define AGS_NOTATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION, AgsNotation))
@@ -38,7 +38,7 @@
 #define AGS_IS_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTATION))
 #define AGS_NOTATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTATION, AgsNotationClass))
 
-#define AGS_NOTATION_GET_OBJ_MUTEX(obj) (((AgsNotation *) obj)->obj_mutex)
+#define AGS_NOTATION_GET_OBJ_MUTEX(obj) (&(((AgsNotation *) obj)->obj_mutex))
 
 #define AGS_NOTATION_DEFAULT_BPM (120.0)
 
@@ -79,8 +79,7 @@ struct _AgsNotation
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio;
   guint audio_channel;
@@ -102,8 +101,6 @@ struct _AgsNotationClass
 };
 
 GType ags_notation_get_type();
-
-pthread_mutex_t* ags_notation_get_class_mutex();
 
 gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
 void ags_notation_set_flags(AgsNotation *notation, guint flags);
@@ -186,5 +183,7 @@ AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
 
 AgsNotation* ags_notation_new(GObject *audio,
 			      guint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_H__*/

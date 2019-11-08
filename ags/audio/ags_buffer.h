@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <alsa/asoundlib.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_BUFFER                (ags_buffer_get_type())
 #define AGS_BUFFER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BUFFER, AgsBuffer))
@@ -34,7 +34,7 @@
 #define AGS_IS_BUFFER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_BUFFER))
 #define AGS_BUFFER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_BUFFER, AgsBufferClass))
 
-#define AGS_BUFFER_GET_OBJ_MUTEX(obj) (((AgsBuffer *) obj)->obj_mutex)
+#define AGS_BUFFER_GET_OBJ_MUTEX(obj) (&(((AgsBuffer *) obj)->obj_mutex))
 
 #define AGS_BUFFER_DEFAULT_TICKS_PER_QUARTER_BUFFER (16.0)
 
@@ -58,8 +58,7 @@ struct _AgsBuffer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   guint64 x;
   
@@ -80,8 +79,6 @@ struct _AgsBufferClass
 
 GType ags_buffer_get_type();
 
-pthread_mutex_t* ags_buffer_get_class_mutex();
-
 gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);
@@ -99,5 +96,7 @@ gint ags_buffer_sort_func(gconstpointer a,
 AgsBuffer* ags_buffer_duplicate(AgsBuffer *buffer);
 
 AgsBuffer* ags_buffer_new();
+
+G_END_DECLS
 
 #endif /*__AGS_BUFFER_H__*/

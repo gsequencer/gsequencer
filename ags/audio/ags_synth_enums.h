@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 typedef enum{
   AGS_SYNTH_OSCILLATOR_SIN,
   AGS_SYNTH_OSCILLATOR_SAWTOOTH,
@@ -31,5 +35,7 @@ typedef enum{
   AGS_SYNTH_OSCILLATOR_IMPULSE,
   AGS_SYNTH_OSCILLATOR_LAST,
 }AgsSynthOscillatorMode;
+
+G_END_DECLS
 
 #endif /*__AGS_SYNTH_ENUMS_H__*/

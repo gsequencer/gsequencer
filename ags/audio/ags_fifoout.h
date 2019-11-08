@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,9 @@
 
 #include <sys/types.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FIFOOUT                (ags_fifoout_get_type())
 #define AGS_FIFOOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FIFOOUT, AgsFifoout))
@@ -35,6 +35,8 @@
 #define AGS_IS_FIFOOUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FIFOOUT))
 #define AGS_IS_FIFOOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FIFOOUT))
 #define AGS_FIFOOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FIFOOUT, AgsFifooutClass))
+
+#define AGS_FIFOOUT_GET_OBJ_MUTEX(obj) (&(((AgsFifoout *) obj)->obj_mutex))
 
 #define AGS_FIFOOUT_DEFAULT_DEVICE "/dev/null"
 
@@ -94,10 +96,7 @@ struct _AgsFifoout
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -138,7 +137,6 @@ struct _AgsFifoout
   gchar *device;
   int fifo_fd;
   
-  GList *poll_fd;
   GObject *notify_soundcard;
 };
 
@@ -151,8 +149,6 @@ GType ags_fifoout_get_type();
 
 GQuark ags_fifoout_error_quark();
 
-pthread_mutex_t* ags_fifoout_get_class_mutex();
-
 gboolean ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags);
 void ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags);
 void ags_fifoout_unset_flags(AgsFifoout *fifoout, guint flags);
@@ -163,5 +159,7 @@ void ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout);
 void ags_fifoout_realloc_buffer(AgsFifoout *fifoout);
 
 AgsFifoout* ags_fifoout_new(GObject *application_context);
+
+G_END_DECLS
 
 #endif /*__AGS_FIFOOUT_H__*/

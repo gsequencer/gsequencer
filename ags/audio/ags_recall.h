@@ -23,14 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
 #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
@@ -41,10 +41,7 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
-#define AGS_RECALL_GET_OBJ_MUTEX(obj) (((AgsRecall *) obj)->obj_mutex)
-
-#define AGS_RECALL_LOCK_CLASS()
-#define AGS_RECALL_UNLOCK_CLASS()
+#define AGS_RECALL_GET_OBJ_MUTEX(obj) (&(((AgsRecall *) obj)->obj_mutex))
 
 #define AGS_RECALL_DEFAULT_VERSION "2.0.0"
 #define AGS_RECALL_DEFAULT_BUILD_ID "Tue Feb  6 14:27:35 UTC 2018"
@@ -109,8 +106,7 @@ struct _AgsRecall
   
   //  gboolean rt_safe; note replace by globals
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   AgsUUID *uuid;
 
@@ -212,8 +208,6 @@ struct _AgsRecallHandler
 };
 
 GType ags_recall_get_type();
-
-pthread_mutex_t* ags_recall_get_class_mutex();
 
 gboolean ags_recall_global_get_children_lock_free();
 gboolean ags_recall_global_get_omit_event();
@@ -338,5 +332,7 @@ void ags_recall_unlock_port(AgsRecall *recall);
 
 /* instantiate */
 AgsRecall* ags_recall_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_H__*/

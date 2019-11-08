@@ -64,7 +64,7 @@ struct _AgsSoundProviderInterface
   GList* (*get_sound_server)(AgsSoundProvider *sound_provider);
 
   void (*set_osc_server)(AgsSoundProvider *sound_provider,
-			 GList *sound_server);
+			 GList *osc_server);
   GList* (*get_osc_server)(AgsSoundProvider *sound_provider);
 };
 
@@ -95,7 +95,7 @@ void ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
 GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
-				       GList *sound_server);
+				       GList *osc_server);
 GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
 
 G_END_DECLS

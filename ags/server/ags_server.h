@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,27 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
-
-#include <ags/config.h>
-
-#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
-#include <xmlrpc-c/util.h>
-
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/abyss.h>
-#include <xmlrpc-c/server.h>
-#include <xmlrpc-c/server_abyss.h>
-#endif
-
-#include <pthread.h>
-
 #include <ags/lib/ags_uuid.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
@@ -51,6 +33,8 @@
 #define AGS_IS_SERVER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SERVER))
 #define AGS_IS_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER))
 #define AGS_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER, AgsServerClass))
+
+#define AGS_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsServer *) obj)->obj_mutex))
 
 #define AGS_SERVER_DEFAULT_SERVER_PORT (8080)
 #define AGS_SERVER_DEFAULT_DOMAIN "localhost"
@@ -92,8 +76,7 @@ struct _AgsServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -127,8 +110,6 @@ struct _AgsServer
   gchar *auth_module;
   
   GList *controller;
-  
-  GObject *application_context;
 };
 
 struct _AgsServerClass
@@ -154,8 +135,6 @@ struct _AgsServerInfo
 
 GType ags_server_get_type();
 
-pthread_mutex_t* ags_server_get_class_mutex();
-
 gboolean ags_server_test_flags(AgsServer *server, guint flags);
 void ags_server_set_flags(AgsServer *server, guint flags);
 void ags_server_unset_flags(AgsServer *server, guint flags);
@@ -167,6 +146,8 @@ void ags_server_stop(AgsServer *server);
 
 AgsServer* ags_server_lookup(AgsServerInfo *server_info);
 
-AgsServer* ags_server_new(GObject *application_context);
+AgsServer* ags_server_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_H__*/

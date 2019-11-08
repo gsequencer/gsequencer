@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_RECYCLING                (ags_recall_recycling_get_type())
 #define AGS_RECALL_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_RECYCLING, AgsRecallRecycling))
@@ -79,5 +81,7 @@ struct _AgsRecallRecyclingClass
 GType ags_recall_recycling_get_type();
 
 AgsRecallRecycling* ags_recall_recycling_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_RECYCLING_H__*/

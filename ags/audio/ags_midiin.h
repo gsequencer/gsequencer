@@ -24,16 +24,11 @@
 #include <glib-object.h>
 
 #include <sys/types.h>
-
-#include <pthread.h>
-
-#include <ags/config.h>
-
-#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
-#endif
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDIIN                (ags_midiin_get_type())
 #define AGS_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDIIN, AgsMidiin))
@@ -42,7 +37,7 @@
 #define AGS_IS_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDIIN))
 #define AGS_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIDIIN, AgsMidiinClass))
 
-#define AGS_MIDIIN_GET_OBJ_MUTEX(obj) (((AgsMidiin *) obj)->obj_mutex)
+#define AGS_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsMidiin *) obj)->obj_mutex))
 
 #define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00"
@@ -128,10 +123,7 @@ struct _AgsMidiin
   guint flags;
   volatile guint sync_flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
@@ -190,14 +182,14 @@ GType ags_midiin_get_type();
 
 GQuark ags_midiin_error_quark();
 
-pthread_mutex_t* ags_midiin_get_class_mutex();
-
 gboolean ags_midiin_test_flags(AgsMidiin *midiin, guint flags);
 void ags_midiin_set_flags(AgsMidiin *midiin, guint flags);
 void ags_midiin_unset_flags(AgsMidiin *midiin, guint flags);
 
 void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
 
-AgsMidiin* ags_midiin_new(GObject *application_context);
+AgsMidiin* ags_midiin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_MIDIIN_H__*/

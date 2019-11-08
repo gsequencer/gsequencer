@@ -23,13 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_acceleration.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUTOMATION                (ags_automation_get_type())
 #define AGS_AUTOMATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION, AgsAutomation))
@@ -38,7 +38,7 @@
 #define AGS_IS_AUTOMATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION))
 #define AGS_AUTOMATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION, AgsAutomationClass))
 
-#define AGS_AUTOMATION_GET_OBJ_MUTEX(obj) (((AgsAutomation *) obj)->obj_mutex)
+#define AGS_AUTOMATION_GET_OBJ_MUTEX(obj) (&(((AgsAutomation *) obj)->obj_mutex))
 
 #define AGS_AUTOMATION_DEFAULT_BPM (120.0)
 
@@ -79,8 +79,7 @@ struct _AgsAutomation
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio;
   GType channel_type;
@@ -109,8 +108,6 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
-
-pthread_mutex_t* ags_automation_get_class_mutex();
 
 gboolean ags_automation_test_flags(AgsAutomation *automation, guint flags);
 void ags_automation_set_flags(AgsAutomation *automation, guint flags);
@@ -203,5 +200,7 @@ AgsAutomation* ags_automation_new(GObject *audio,
 				  guint line,
 				  GType channel_type,
 				  gchar *control_name);
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_H__*/
