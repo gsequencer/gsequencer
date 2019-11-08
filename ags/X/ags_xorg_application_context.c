@@ -131,18 +131,63 @@ GList* ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provi
 void ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 						 GList *soundcard);
 
-GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
-void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
-					     GtkWidget *widget);
 gboolean ags_xorg_application_context_get_show_animation(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
 						     gboolean show_animation);
 gboolean ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
 						gboolean gui_ready);
+gboolean ags_xorg_application_context_get_file_ready(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_file_ready(AgsUiProvider *ui_provider,
+						 gboolean file_ready);
+gdouble ags_xorg_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
+						       gdouble gui_scale_factor);
 GtkWidget* ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
 						       GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
+					     GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_automation_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_automation_window(AgsUiProvider *ui_provider,
+							GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_wave_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_wave_window(AgsUiProvider *ui_provider,
+						  GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_sheet_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_sheet_window(AgsUiProvider *ui_provider,
+						   GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_export_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_export_window(AgsUiProvider *ui_provider,
+						    GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_preferences(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_preferences(AgsUiProvider *ui_provider,
+						  GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_history_browser(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_history_browser(AgsUiProvider *ui_provider,
+						      GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_midi_browser(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_midi_browser(AgsUiProvider *ui_provider,
+						   GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_sample_browser(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_sample_browser(AgsUiProvider *ui_provider,
+						     GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_midi_import_wizard(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
+							 GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_midi_export_wizard(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
+							 GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_machine(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_machine(AgsUiProvider *ui_provider,
+					      GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_composite_editor(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_composite_editor(AgsUiProvider *ui_provider,
+						       GtkWidget *widget);
+GtkWidget* ags_xorg_application_context_get_navigation(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_navigation(AgsUiProvider *ui_provider,
+						 GtkWidget *widget);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
 
@@ -383,11 +428,56 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
   ui_provider->get_gui_ready = ags_xorg_application_context_get_gui_ready;
   ui_provider->set_gui_ready = ags_xorg_application_context_set_gui_ready;
 
+  ui_provider->get_file_ready = ags_xorg_application_context_get_file_ready;
+  ui_provider->set_file_ready = ags_xorg_application_context_set_file_ready;
+
+  ui_provider->get_gui_scale_factor = ags_xorg_application_context_get_gui_scale_factor;
+  ui_provider->set_gui_scale_factor = ags_xorg_application_context_set_gui_scale_factor;
+  
   ui_provider->get_animation_window = ags_xorg_application_context_get_animation_window;
   ui_provider->set_animation_window = ags_xorg_application_context_set_animation_window;
 
   ui_provider->get_window = ags_xorg_application_context_get_window;
   ui_provider->set_window = ags_xorg_application_context_set_window;
+
+  ui_provider->get_automation_window = ags_xorg_application_context_get_automation_window;
+  ui_provider->set_automation_window = ags_xorg_application_context_set_automation_window;
+
+  ui_provider->get_wave_window = ags_xorg_application_context_get_wave_window;
+  ui_provider->set_wave_window = ags_xorg_application_context_set_wave_window;
+
+  ui_provider->get_sheet_window = ags_xorg_application_context_get_sheet_window;
+  ui_provider->set_sheet_window = ags_xorg_application_context_set_sheet_window;
+
+  ui_provider->get_export_window = ags_xorg_application_context_get_export_window;
+  ui_provider->set_export_window = ags_xorg_application_context_set_export_window;
+
+  ui_provider->get_preferences = ags_xorg_application_context_get_preferences;
+  ui_provider->set_preferences = ags_xorg_application_context_set_preferences;
+
+  ui_provider->get_history_browser = ags_xorg_application_context_get_history_browser;
+  ui_provider->set_history_browser = ags_xorg_application_context_set_history_browser;
+
+  ui_provider->get_midi_browser = ags_xorg_application_context_get_midi_browser;
+  ui_provider->set_midi_browser = ags_xorg_application_context_set_midi_browser;
+
+  ui_provider->get_sample_browser = ags_xorg_application_context_get_sample_browser;
+  ui_provider->set_sample_browser = ags_xorg_application_context_set_sample_browser;
+
+  ui_provider->get_midi_import_wizard = ags_xorg_application_context_get_midi_import_wizard;
+  ui_provider->set_midi_import_wizard = ags_xorg_application_context_set_midi_import_wizard;
+
+  ui_provider->get_midi_export_wizard = ags_xorg_application_context_get_midi_export_wizard;
+  ui_provider->set_midi_export_wizard = ags_xorg_application_context_set_midi_export_wizard;
+
+  ui_provider->get_machine = ags_xorg_application_context_get_machine;
+  ui_provider->set_machine = ags_xorg_application_context_set_machine;
+
+  ui_provider->get_composite_editor = ags_xorg_application_context_get_composite_editor;
+  ui_provider->set_composite_editor = ags_xorg_application_context_set_composite_editor;
+
+  ui_provider->get_navigation = ags_xorg_application_context_get_navigation;
+  ui_provider->set_navigation = ags_xorg_application_context_set_navigation;
 }
 
 void
@@ -482,26 +572,26 @@ ags_xorg_application_context_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_WINDOW:
-    {
-      AgsWindow *window;
+  {
+    AgsWindow *window;
       
-      window = (AgsWindow *) g_value_get_object(value);
+    window = (AgsWindow *) g_value_get_object(value);
 
-      if(window == xorg_application_context->window){
-	return;
-      }
-
-      if(xorg_application_context->window != NULL){
-	g_object_unref(xorg_application_context->window);
-      }
-      
-      if(window != NULL){
-	g_object_ref(G_OBJECT(window));
-      }
-      
-      xorg_application_context->window = window;
+    if(window == xorg_application_context->window){
+      return;
     }
-    break;
+
+    if(xorg_application_context->window != NULL){
+      g_object_unref(xorg_application_context->window);
+    }
+      
+    if(window != NULL){
+      g_object_ref(G_OBJECT(window));
+    }
+      
+    xorg_application_context->window = window;
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -520,10 +610,10 @@ ags_xorg_application_context_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_WINDOW:
-    {
-      g_value_set_object(value, xorg_application_context->window);
-    }
-    break;
+  {
+    g_value_set_object(value, xorg_application_context->window);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1342,7 +1432,7 @@ ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
   
   sequencer = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer,
 			       (GCopyFunc) g_object_ref,
-				NULL);
+			       NULL);
 
   g_rec_mutex_unlock(application_context_mutex);
   
@@ -1550,96 +1640,6 @@ ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
   g_rec_mutex_unlock(application_context_mutex);
 }
 
-GtkWidget*
-ags_xorg_application_context_get_window(AgsUiProvider *ui_provider)
-{
-  GtkWidget *window;
-  
-  AgsApplicationContext *application_context;
-
-  GRecMutex *application_context_mutex;
-
-  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
-  
-  /* get mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
-
-  /* get window */
-  g_rec_mutex_lock(application_context_mutex);
-
-  window = AGS_XORG_APPLICATION_CONTEXT(application_context)->window;
-  
-  g_rec_mutex_unlock(application_context_mutex);
-
-  return(window);
-}
-
-void
-ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
-					GtkWidget *widget)
-{
-  AgsApplicationContext *application_context;
-
-  GRecMutex *application_context_mutex;
-
-  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
-  
-  /* get mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
-
-  /* set window */
-  g_rec_mutex_lock(application_context_mutex);
-
-  AGS_XORG_APPLICATION_CONTEXT(application_context)->window = (AgsWindow *) widget;
-   
-  g_rec_mutex_unlock(application_context_mutex);
-}
-
-GtkWidget*
-ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
-{
-  GtkWidget *animation_window;
-  
-  AgsApplicationContext *application_context;
-
-  GRecMutex *application_context_mutex;
-
-  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
-  
-  /* get mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
-
-  /* get animation window */
-  g_rec_mutex_lock(application_context_mutex);
-
-  animation_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window;
-  
-  g_rec_mutex_unlock(application_context_mutex);
-
-  return(animation_window);
-}
-
-void
-ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
-						  GtkWidget *widget)
-{
-  AgsApplicationContext *application_context;
-
-  GRecMutex *application_context_mutex;
-
-  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
-  
-  /* get mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
-
-  /* set animation window */
-  g_rec_mutex_lock(application_context_mutex);
-
-  AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window = (GtkWindow *) widget;
-   
-  g_rec_mutex_unlock(application_context_mutex);
-}
-
 gboolean
 ags_xorg_application_context_get_show_animation(AgsUiProvider *ui_provider)
 {
@@ -1677,7 +1677,7 @@ ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
   /* get mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
 
-  /* get show animation */
+  /* set show animation */
   g_rec_mutex_lock(application_context_mutex);
 
   xorg_application_context->show_animation = show_animation;
@@ -1699,7 +1699,7 @@ ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider)
   /* get mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
 
-  /* get show animation */
+  /* get gui ready */
   g_rec_mutex_lock(application_context_mutex);
 
   gui_ready = xorg_application_context->gui_ready;
@@ -1722,12 +1722,72 @@ ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
   /* get mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
 
-  /* get show animation */
+  /* set gui ready */
   g_rec_mutex_lock(application_context_mutex);
 
   xorg_application_context->gui_ready = gui_ready;
    
   g_rec_mutex_unlock(application_context_mutex);
+}
+
+gboolean
+ags_xorg_application_context_get_file_ready(AgsUiProvider *ui_provider)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  gboolean file_ready;
+  
+  GRecMutex *application_context_mutex;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  /* get file ready */
+  g_rec_mutex_lock(application_context_mutex);
+
+  file_ready = xorg_application_context->file_ready;
+   
+  g_rec_mutex_unlock(application_context_mutex);
+
+  return(file_ready);
+}
+
+void
+ags_xorg_application_context_set_file_ready(AgsUiProvider *ui_provider,
+					    gboolean file_ready)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  GRecMutex *application_context_mutex;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  /* set file ready */
+  g_rec_mutex_lock(application_context_mutex);
+
+  xorg_application_context->file_ready = file_ready;
+   
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
+gboolean
+ags_xorg_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  gdouble gui_scale_factor;
+  
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);  
+
+  /* get gui scale facotr */
+  gui_scale_factor = xorg_application_context->gui_scale_factor;
+
+  return(gui_scale_factor);
 }
 
 void
@@ -1747,6 +1807,8 @@ ags_xorg_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
   GValue *value;
 
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  xorg_application_context->gui_scale_factor = gui_scale_factor;
   
   /* horizontal scrollbar */
   default_slider_width = 14;
@@ -1878,11 +1940,411 @@ ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
   /* unref */
   g_object_unref(task_launcher);
 }
-  
-void
-ags_xorg_application_context_load_config(AgsApplicationContext *application_context)
+GtkWidget*
+ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
 {
-  //TODO:JK: implement me
+  GtkWidget *animation_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get animation window */
+  animation_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window;
+
+  return(animation_window);
+}
+
+void
+ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
+						  GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set animation window */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get window */
+  window = AGS_XORG_APPLICATION_CONTEXT(application_context)->window;
+
+  return(window);
+}
+
+void
+ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
+					GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+
+  /* set window */
+  xorg_application_context->window = (AgsWindow *) widget;
+}
+  
+GtkWidget*
+ags_xorg_application_context_get_automation_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *automation_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get automation window */
+  automation_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->automation_window;
+
+  return(automation_window);
+}
+
+void
+ags_xorg_application_context_set_automation_window(AgsUiProvider *ui_provider,
+						   GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set automation window */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->automation_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_wave_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *wave_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get wave window */
+  wave_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->wave_window;
+
+  return(wave_window);
+}
+
+void
+ags_xorg_application_context_set_wave_window(AgsUiProvider *ui_provider,
+					     GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set wave window */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->wave_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_sheet_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *sheet_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get sheet window */
+  sheet_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->sheet_window;
+
+  return(sheet_window);
+}
+
+void
+ags_xorg_application_context_set_sheet_window(AgsUiProvider *ui_provider,
+					      GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set sheet window */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->sheet_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_export_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *export_window;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get export window */
+  export_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->export_window;
+
+  return(export_window);
+}
+
+void
+ags_xorg_application_context_set_export_window(AgsUiProvider *ui_provider,
+					       GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set export window */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->export_window = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_preferences(AgsUiProvider *ui_provider)
+{
+  GtkWidget *preferences;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get preferences */
+  preferences = AGS_XORG_APPLICATION_CONTEXT(application_context)->preferences;
+
+  return(preferences);
+}
+
+void
+ags_xorg_application_context_set_preferences(AgsUiProvider *ui_provider,
+					     GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set preferences */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->preferences = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_history_browser(AgsUiProvider *ui_provider)
+{
+  GtkWidget *history_browser;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get history browser */
+  history_browser = AGS_XORG_APPLICATION_CONTEXT(application_context)->history_browser;
+
+  return(history_browser);
+}
+
+void
+ags_xorg_application_context_set_history_browser(AgsUiProvider *ui_provider,
+						 GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set history browser */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->history_browser = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_midi_browser(AgsUiProvider *ui_provider)
+{
+  GtkWidget *midi_browser;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get midi browser */
+  midi_browser = AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_browser;
+
+  return(midi_browser);
+}
+
+void
+ags_xorg_application_context_set_midi_browser(AgsUiProvider *ui_provider,
+					      GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set midi browser */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_browser = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_sample_browser(AgsUiProvider *ui_provider)
+{
+  GtkWidget *sample_browser;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get sample browser */
+  sample_browser = AGS_XORG_APPLICATION_CONTEXT(application_context)->sample_browser;
+
+  return(sample_browser);
+}
+
+void
+ags_xorg_application_context_set_sample_browser(AgsUiProvider *ui_provider,
+						GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set sample browser */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->sample_browser = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_midi_import_wizard(AgsUiProvider *ui_provider)
+{
+  GtkWidget *midi_import_wizard;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get midi import wizard */
+  midi_import_wizard = AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_import_wizard;
+
+  return(midi_import_wizard);
+}
+
+void
+ags_xorg_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
+						    GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set midi import wizard */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_import_wizard = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_midi_export_wizard(AgsUiProvider *ui_provider)
+{
+  GtkWidget *midi_export_wizard;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get midi export wizard */
+  midi_export_wizard = AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_export_wizard;
+
+  return(midi_export_wizard);
+}
+
+void
+ags_xorg_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
+						    GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set midi export wizard */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->midi_export_wizard = widget;
+}
+
+GList*
+ags_xorg_application_context_get_machine(AgsUiProvider *ui_provider)
+{
+  GList *machine;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get machine */
+  machine = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(application_context)->machine);
+
+  return(machine);
+}
+
+void
+ags_xorg_application_context_set_machine(AgsUiProvider *ui_provider,
+					 GList *machine)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set machine */
+  g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->machine);
+  
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->machine = machine;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_composite_editor(AgsUiProvider *ui_provider)
+{
+  GtkWidget *composite_editor;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get composite editor */
+  composite_editor = AGS_XORG_APPLICATION_CONTEXT(application_context)->composite_editor;
+
+  return(composite_editor);
+}
+
+void
+ags_xorg_application_context_set_composite_editor(AgsUiProvider *ui_provider,
+						  GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set composite editor */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->composite_editor = widget;
+}
+
+GtkWidget*
+ags_xorg_application_context_get_navigation(AgsUiProvider *ui_provider)
+{
+  GtkWidget *navigation;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* get navigation */
+  navigation = AGS_XORG_APPLICATION_CONTEXT(application_context)->navigation;
+
+  return(navigation);
+}
+
+void
+ags_xorg_application_context_set_navigation(AgsUiProvider *ui_provider,
+					    GtkWidget *widget)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  /* set navigation */
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->navigation = widget;
 }
 
 void

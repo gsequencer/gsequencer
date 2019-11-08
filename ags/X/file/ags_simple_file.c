@@ -229,7 +229,6 @@ enum{
   PROP_AUDIO_FORMAT,
   PROP_AUDIO_ENCODING,
   PROP_XML_DOC,
-  PROP_APPLICATION_CONTEXT,
 };
 
 enum{
@@ -374,22 +373,6 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 				  PROP_XML_DOC,
 				  param_spec);
 
-  /**
-   * AgsSimpleFile:application-context:
-   *
-   * The application context assigned with.
-   *
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   "application context of file",
-				   "The application context to write to file.",
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /* AgsSimpleFileClass */
   simple_file->open = ags_simple_file_real_open;
   simple_file->rw_open = ags_simple_file_real_rw_open;
@@ -531,23 +514,6 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_resolve),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
-
-  /**
-   * AgsSimpleFile::read-start:
-   * @simple_file: the #AgsSimpleFile
-   *
-   * Hook after reading XML document to update or start the application.
-   * 
-   * Since: 2.0.0
-   */
-  simple_file_signals[READ_START] =
-    g_signal_new("read_start",
-		 G_TYPE_FROM_CLASS(simple_file),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_start),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
