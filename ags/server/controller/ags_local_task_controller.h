@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/thread/ags_task.h>
 #include <ags/thread/ags_timestamp.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LOCAL_TASK_CONTROLLER                (ags_local_task_controller_get_type())
 #define AGS_LOCAL_TASK_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOCAL_TASK_CONTROLLER, AgsLocalTaskController))
@@ -63,5 +65,7 @@ gpointer ags_local_task_controller_launch_timed(AgsLocalTaskController *local_ta
 						AgsTask *task, AgsTimestamp *timestamp);
 
 AgsLocalTaskController* ags_local_task_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LOCAL_TASK_CONTROLLER_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SECURITY_CONTEXT                (ags_security_context_get_type())
 #define AGS_SECURITY_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SECURITY_CONTEXT, AgsSecurityContext))
@@ -74,5 +76,7 @@ gboolean ags_security_context_remove_server_context(AgsSecurityContext *security
 						    gchar *server_context);
 
 AgsSecurityContext* ags_security_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SECURITY_CONTEXT_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_BUSINESS_GROUP                    (ags_business_group_get_type())
 #define AGS_BUSINESS_GROUP(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BUSINESS_GROUP, AgsBusinessGroup))
 #define AGS_BUSINESS_GROUP_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_BUSINESS_GROUP, AgsBusinessGroupInterface))
@@ -30,7 +32,7 @@
 #define AGS_IS_BUSINESS_GROUP_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_BUSINESS_GROUP))
 #define AGS_BUSINESS_GROUP_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_BUSINESS_GROUP, AgsBusinessGroupInterface))
 
-  typedef struct _AgsBusinessGroup AgsBusinessGroup;
+typedef struct _AgsBusinessGroup AgsBusinessGroup;
 typedef struct _AgsBusinessGroupInterface AgsBusinessGroupInterface;
 
 struct _AgsBusinessGroupInterface
@@ -179,5 +181,6 @@ gchar** ags_business_group_get_context_path_with_execute_permission(AgsBusinessG
 								    gchar *security_token,
 								    gchar *business_group_name,
 								    GError **error);
+G_END_DECLS
 
 #endif /*__AGS_BUSINESS_GROUP_H__*/

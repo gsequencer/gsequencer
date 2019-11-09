@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/thread/ags_timestamp.h>
 
 #include <ags/server/ags_registry.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LOCAL_REGISTRY_CONTROLLER                (ags_local_registry_controller_get_type())
 #define AGS_LOCAL_REGISTRY_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOCAL_REGISTRY_CONTROLLER, AgsLocalRegistryController))
@@ -58,5 +60,7 @@ GType ags_local_registry_controller_get_type();
 gpointer ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_registry_controller);
 
 AgsLocalRegistryController* ags_local_registry_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LOCAL_REGISTRY_CONTROLLER_H__*/

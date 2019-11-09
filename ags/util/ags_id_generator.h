@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,12 @@
 #define __AGS_ID_GENERATOR_H__
 
 #include <glib.h>
+#include <glib-object.h>
+
+G_BEGIN_DECLS
 
 gchar* ags_id_generator_create_uuid();
+
+G_BEGIN_DECLS
 
 #endif /*__AGS_ID_GENERATOR_H__*/

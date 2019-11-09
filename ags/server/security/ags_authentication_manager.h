@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/server/security/ags_authentication.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUTHENTICATION_MANAGER                (ags_authentication_manager_get_type())
 #define AGS_AUTHENTICATION_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTHENTICATION_MANAGER, AgsAuthenticationManager))
@@ -73,5 +75,7 @@ gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *
 AgsAuthenticationManager* ags_authentication_manager_get_instance();
 
 AgsAuthenticationManager* ags_authentication_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUTHENTICATION_MANAGER_H__*/

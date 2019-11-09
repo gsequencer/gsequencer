@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,12 +28,16 @@
 #include <xmlrpc_server.h>
 #endif
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_REMOTE_TASK                (ags_remote_task_get_type())
 #define AGS_REMOTE_TASK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOTE_TASK, AgsRemoteTask))
 #define AGS_REMOTE_TASK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_REMOTE_TASK, AgsRemoteTaskClass))
 #define AGS_IS_REMOTE_TASK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_REMOTE_TASK))
 #define AGS_IS_REMOTE_TASK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_REMOTE_TASK))
 #define AGS_REMOTE_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_REMOTE_TASK, AgsRemoteTaskClass))
+
+#define AGS_REMOTE_TASK_GET_OBJ_MUTEX(obj) (&(((AgsRemoteTask *) obj)->obj_mutex))
 
 typedef struct _AgsRemoteTask AgsRemoteTask;
 typedef struct _AgsRemoteTaskClass AgsRemoteTaskClass;
@@ -64,5 +68,7 @@ xmlrpc_value* ags_remote_task_launch_timed(xmlrpc_env *env,
 #endif
 
 AgsRemoteTask* ags_remote_task_new();
+
+G_END_DECLS
 
 #endif /*__AGS_REMOTE_TASK_H__*/

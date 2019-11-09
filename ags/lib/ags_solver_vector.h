@@ -25,6 +25,8 @@
 
 #include <ags/lib/ags_complex.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOLVER_VECTOR                (ags_solver_vector_get_type())
 #define AGS_SOLVER_VECTOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOLVER_VECTOR, AgsSolverVector))
 #define AGS_SOLVER_VECTOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SOLVER_VECTOR, AgsSolverVectorClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_SOLVER_VECTOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SOLVER_VECTOR))
 #define AGS_SOLVER_VECTOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SOLVER_VECTOR, AgsSolverVectorClass))
 
-#define AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(obj) (((AgsSolverVector *) obj)->obj_mutex)
+#define AGS_SOLVER_VECTOR_GET_OBJ_MUTEX(obj) (&(((AgsSolverVector *) obj)->obj_mutex))
 
 typedef struct _AgsSolverVector AgsSolverVector;
 typedef struct _AgsSolverVectorClass AgsSolverVectorClass;
@@ -43,8 +45,7 @@ struct _AgsSolverVector
   
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gchar *term;
   gchar *term_exp;
@@ -61,8 +62,8 @@ struct _AgsSolverVector
 
 GType ags_solver_vector_get_type(void);
 
-pthread_mutex_t* ags_solver_vector_get_class_mutex();
-
 AgsSolverVector* ags_solver_vector_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SOLVER_VECTOR_H__*/

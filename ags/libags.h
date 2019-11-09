@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,8 +66,6 @@
 #include <ags/file/ags_file_launch.h>
 #include <ags/file/ags_file_link.h>
 #include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_util.h>
 
 /* thread */
 #include <ags/thread/ags_autosave_thread.h>

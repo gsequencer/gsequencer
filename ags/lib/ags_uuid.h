@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_UUID                (ags_uuid_get_type())
 
 #define AGS_UUID_DEFAULT_LENGTH (16)
@@ -44,5 +46,7 @@ gint ags_uuid_compare(AgsUUID *a,
 
 gchar* ags_uuid_to_string(AgsUUID *ptr);
 AgsUUID* ags_uuid_from_string(gchar *str);
+
+G_END_DECLS
 
 #endif /*__AGS_UUID__*/

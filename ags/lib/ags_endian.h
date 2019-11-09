@@ -21,6 +21,9 @@
 #define __AGS_ENDIAN__
 
 #include <glib.h>
+#include <glib-object.h>
+
+G_BEGIN_DECLS
 
 typedef enum{
   AGS_BYTE_ORDER_LE,
@@ -31,5 +34,7 @@ gboolean ags_endian_host_is_le();
 gboolean ags_endian_host_is_be();
 
 gfloat ags_endian_swap_float(gfloat x);
+
+G_END_DECLS
 
 #endif /*__AGS_ENDIAN__*/

@@ -33,7 +33,7 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
-#define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (((AgsFunction *) obj)->obj_mutex)
+#define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (&(((AgsFunction *) obj)->obj_mutex))
 
 #define AGS_SYMBOLIC_EULER "ℯ"
 #define AGS_SYMBOLIC_PI "𝜋"
@@ -73,8 +73,7 @@ struct _AgsFunction
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gboolean is_pushing;
 
@@ -110,8 +109,6 @@ struct _AgsFunctionClass
 
 GType ags_function_get_type(void);
 
-pthread_mutex_t* ags_function_get_class_mutex();
-
 gchar** ags_function_collapse_parantheses(AgsFunction *function,
 					  guint *function_count);
 
@@ -142,5 +139,7 @@ AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
 
 AgsFunction* ags_function_new(gchar *source_function);
+
+G_END_DECLS
 
 #endif /*__AGS_FUNCTION_H__*/

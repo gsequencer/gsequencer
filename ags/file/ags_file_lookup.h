@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,7 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_LOOKUP                (ags_file_lookup_get_type())
 #define AGS_FILE_LOOKUP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LOOKUP, AgsFileLookup))
@@ -36,7 +36,7 @@
 #define AGS_IS_FILE_LOOKUP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LOOKUP))
 #define AGS_FILE_LOOKUP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_LOOKUP, AgsFileLookupClass))
 
-#define AGS_FILE_LOOKUP_GET_OBJ_MUTEX(obj) (((AgsFileLookup *) obj)->obj_mutex)
+#define AGS_FILE_LOOKUP_GET_OBJ_MUTEX(obj) (&(((AgsFileLookup *) obj)->obj_mutex))
 
 typedef struct _AgsFileLookup AgsFileLookup;
 typedef struct _AgsFileLookupClass AgsFileLookupClass;
@@ -45,8 +45,7 @@ struct _AgsFileLookup
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsFile *file;
 
@@ -63,8 +62,6 @@ struct _AgsFileLookupClass
 
 GType ags_file_lookup_get_type(void);
 
-pthread_mutex_t* ags_file_lookup_get_class_mutex();
-
 GList* ags_file_lookup_find_by_node(GList *file_lookup,
 				    xmlNode *node);
 GList* ags_file_lookup_find_by_reference(GList *file_lookup,
@@ -74,5 +71,7 @@ void ags_file_lookup_resolve(AgsFileLookup *file_lookup);
 
 /* */
 AgsFileLookup* ags_file_lookup_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FILE_LOOKUP_H__*/

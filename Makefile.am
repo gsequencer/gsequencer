@@ -646,9 +646,7 @@ libags_file_h_sources = \
 	ags/file/ags_file_id_ref.h \
 	ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h \
-	ags/file/ags_file_lookup.h \
-	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h
+	ags/file/ags_file_lookup.h
 
 deprecated_libags_file_c_sources =
 
@@ -658,8 +656,7 @@ libags_file_c_sources = \
 	ags/file/ags_file_id_ref.c \
 	ags/file/ags_file_launch.c \
 	ags/file/ags_file_link.c \
-	ags/file/ags_file_lookup.c \
-	ags/file/ags_file_util.c
+	ags/file/ags_file_lookup.c
 
 # libags-thread all files
 deprecated_libags_thread_h_sources =

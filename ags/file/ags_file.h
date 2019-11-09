@@ -25,7 +25,7 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE                (ags_file_get_type())
 #define AGS_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE, AgsFile))
@@ -34,7 +34,7 @@
 #define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
-#define AGS_FILE_GET_OBJ_MUTEX(obj) (((AgsFile *) obj)->obj_mutex)
+#define AGS_FILE_GET_OBJ_MUTEX(obj) (&(((AgsFile *) obj)->obj_mutex))
 
 #define AGS_FILE_DEFAULT_ENCODING "UTF-8"
 #define AGS_FILE_DEFAULT_DTD "ags_file.dtd"
@@ -86,8 +86,7 @@ struct _AgsFile
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   FILE *out;
   xmlChar *buffer;
@@ -105,8 +104,6 @@ struct _AgsFile
   GList *id_refs;
   GList *lookup;
   GList *launch;
-
-  GObject *application_context;
 
   GObject *clipboard;
   GList *property;
@@ -144,8 +141,6 @@ struct _AgsFileClass
 };
 
 GType ags_file_get_type(void);
-
-pthread_mutex_t* ags_file_get_class_mutex();
 
 gchar* ags_file_str2md5(gchar *content, guint content_length);
 
@@ -191,5 +186,7 @@ void ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject 
 
 /* */
 AgsFile* ags_file_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FILE_H__*/

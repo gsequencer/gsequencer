@@ -25,6 +25,8 @@
 
 #include <ags/lib/ags_complex.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOLVER_MATRIX                (ags_solver_matrix_get_type())
 #define AGS_SOLVER_MATRIX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOLVER_MATRIX, AgsSolverMatrix))
 #define AGS_SOLVER_MATRIX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SOLVER_MATRIX, AgsSolverMatrixClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_SOLVER_MATRIX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SOLVER_MATRIX))
 #define AGS_SOLVER_MATRIX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SOLVER_MATRIX, AgsSolverMatrixClass))
 
-#define AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(obj) (((AgsSolverMatrix *) obj)->obj_mutex)
+#define AGS_SOLVER_MATRIX_GET_OBJ_MUTEX(obj) (&(((AgsSolverMatrix *) obj)->obj_mutex))
 
 typedef struct _AgsSolverMatrix AgsSolverMatrix;
 typedef struct _AgsSolverMatrixClass AgsSolverMatrixClass;
@@ -43,8 +45,7 @@ struct _AgsSolverMatrix
   
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gchar **function_history;
 
@@ -62,8 +63,8 @@ struct _AgsSolverMatrix
 
 GType ags_solver_matrix_get_type(void);
 
-pthread_mutex_t* ags_solver_matrix_get_class_mutex();
-
 AgsSolverMatrix* ags_solver_matrix_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SOLVER_MATRIX_H__*/

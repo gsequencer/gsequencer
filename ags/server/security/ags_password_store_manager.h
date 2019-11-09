@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/server/security/ags_password_store.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PASSWORD_STORE_MANAGER                (ags_password_store_manager_get_type())
 #define AGS_PASSWORD_STORE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManager))
@@ -65,5 +67,7 @@ gboolean ags_password_store_manager_check_password(AgsPasswordStoreManager *pass
 AgsPasswordStoreManager* ags_password_store_manager_get_instance();
 
 AgsPasswordStoreManager* ags_password_store_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PASSWORD_STORE_MANAGER_H__*/

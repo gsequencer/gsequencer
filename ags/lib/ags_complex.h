@@ -26,6 +26,8 @@
 #include <math.h>
 #include <complex.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_COMPLEX                (ags_complex_get_type())
 
 #define AGS_COMPLEX_M_E (M_E + I * 0.0)
@@ -42,5 +44,7 @@ void ags_complex_free(AgsComplex *ptr);
 
 complex ags_complex_get(AgsComplex *ptr);
 void ags_complex_set(AgsComplex *ptr, complex z);
+
+G_END_DECLS
 
 #endif /*__AGS_COMPLEX__*/

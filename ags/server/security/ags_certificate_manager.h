@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/server/security/ags_certificate.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CERTIFICATE_MANAGER                (ags_certificate_manager_get_type())
 #define AGS_CERTIFICATE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CERTIFICATE_MANAGER, AgsCertificateManager))
@@ -64,5 +66,7 @@ gboolean ags_certificate_manager_verify_certificate(AgsCertificateManager *certi
 AgsCertificateManager* ags_certificate_manager_get_instance();
 
 AgsCertificateManager* ags_certificate_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CERTIFICATE_MANAGER_H__*/

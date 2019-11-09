@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/server/controller/ags_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LOCAL_FACTORY_CONTROLLER                (ags_local_factory_controller_get_type())
 #define AGS_LOCAL_FACTORY_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOCAL_FACTORY_CONTROLLER, AgsLocalFactoryController))
@@ -60,5 +62,7 @@ gpointer ags_local_factory_controller_create_instance(AgsLocalFactoryController 
 						      guint n_params, gchar **parameter_name, GValue *value);
 
 AgsLocalFactoryController* ags_local_factory_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LOCAL_FACTORY_CONTROLLER_H__*/

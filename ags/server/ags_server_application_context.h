@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,8 @@
 #include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_certificate_manager.h>
 #include <ags/server/security/ags_password_store_manager.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER_APPLICATION_CONTEXT                (ags_server_application_context_get_type())
 #define AGS_SERVER_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContext))
@@ -98,5 +100,7 @@ struct _AgsServerApplicationContextClass
 GType ags_server_application_context_get_type();
 
 AgsServerApplicationContext* ags_server_application_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_APPLICATION_CONTEXT_H__*/

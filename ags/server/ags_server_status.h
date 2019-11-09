@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SERVER_STATUS                (ags_server_status_get_type())
 #define AGS_SERVER_STATUS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER_STATUS, AgsServerStatus))
 #define AGS_SERVER_STATUS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SERVER_STATUS, AgsServerStatusClass))
 #define AGS_IS_SERVER_STATUS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SERVER_STATUS))
 #define AGS_IS_SERVER_STATUS_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER_STATUS))
 #define AGS_SERVER_STATUS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER_STATUS, AgsServerStatusClass))
+
+#define AGS_SERVER_STATUS_GET_OBJ_MUTEX(obj) (&(((AgsServerStatus *) obj)->obj_mutex))
 
 typedef struct _AgsServerStatus AgsServerStatus;
 typedef struct _AgsServerStatusClass AgsServerStatusClass;
@@ -50,6 +54,8 @@ struct _AgsServerStatus
 
   guint flags;
 
+  GRecMutex obj_mutex;
+
   gchar **authentication_module;
   
   guint maximum_connections;
@@ -64,5 +70,7 @@ struct _AgsServerStatusClass
 GType ags_server_status_get_type();
 
 AgsServerStatus* ags_server_status_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_STATUS_H__*/

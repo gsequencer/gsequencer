@@ -23,10 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 GParameter* ags_parameter_grow(GType object_type,
 			       GParameter *params, guint *n_params, ...);
 
 GValue* ags_parameter_find(GParameter *params, guint n_params,
 			   gchar *name);
+
+G_END_DECLS
 
 #endif /*__AGS_PARAMETER_H__*/

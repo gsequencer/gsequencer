@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/server/controller/ags_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FRONT_CONTROLLER                (ags_front_controller_get_type())
 #define AGS_FRONT_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FRONT_CONTROLLER, AgsFrontController))
@@ -74,5 +76,7 @@ gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
 					 guint n_params, gchar **parameter_name, GValue *value);
 
 AgsFrontController* ags_front_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FRONT_CONTROLLER_H__*/
