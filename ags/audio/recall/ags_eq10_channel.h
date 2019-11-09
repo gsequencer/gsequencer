@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_EQ10_CHANNEL                (ags_eq10_channel_get_type())
 #define AGS_EQ10_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EQ10_CHANNEL, AgsEq10Channel))
@@ -65,5 +67,7 @@ struct _AgsEq10ChannelClass
 GType ags_eq10_channel_get_type();
 
 AgsEq10Channel* ags_eq10_channel_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_EQ10_CHANNEL_H__*/

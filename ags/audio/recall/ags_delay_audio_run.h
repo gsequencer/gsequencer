@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_DELAY_AUDIO_RUN                (ags_delay_audio_run_get_type())
 #define AGS_DELAY_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DELAY_AUDIO_RUN, AgsDelayAudioRun))
 #define AGS_DELAY_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DELAY_AUDIO_RUN, AgsDelayAudioRun))
@@ -117,5 +119,7 @@ void ags_delay_audio_run_midi_count(AgsDelayAudioRun *delay_audio_run, guint nth
 				    gdouble delay, guint attack);
 
 AgsDelayAudioRun* ags_delay_audio_run_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_DELAY_AUDIO_RUN_H__*/

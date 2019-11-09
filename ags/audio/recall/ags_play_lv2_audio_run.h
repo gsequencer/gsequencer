@@ -34,6 +34,8 @@
 
 #include <lv2.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PLAY_LV2_AUDIO_RUN                (ags_play_lv2_audio_run_get_type())
 #define AGS_PLAY_LV2_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_LV2_AUDIO_RUN, AgsPlayLv2AudioRun))
 #define AGS_PLAY_LV2_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_LV2_AUDIO_RUN, AgsPlayLv2AudioRun))
@@ -93,5 +95,7 @@ void ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run);
 AgsPlayLv2AudioRun* ags_play_lv2_audio_run_new(AgsAudio *audio,
 					       AgsDelayAudioRun *delay_audio_run,
 					       AgsCountBeatsAudioRun *count_beats_audio_run);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAY_LV2_AUDIO_RUN_H__*/

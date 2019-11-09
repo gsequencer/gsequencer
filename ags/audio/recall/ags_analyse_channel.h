@@ -32,6 +32,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ANALYSE_CHANNEL                (ags_analyse_channel_get_type())
 #define AGS_ANALYSE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ANALYSE_CHANNEL, AgsAnalyseChannel))
 #define AGS_ANALYSE_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ANALYSE_CHANNEL, AgsAnalyseChannel))
@@ -85,5 +87,7 @@ void ags_analyse_channel_buffer_add(AgsAnalyseChannel *analyse_channel,
 void ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_channel);
 
 AgsAnalyseChannel* ags_analyse_channel_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_ANALYSE_CHANNEL_H__*/

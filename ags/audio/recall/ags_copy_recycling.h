@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_COPY_RECYCLING                (ags_copy_recycling_get_type())
 #define AGS_COPY_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_RECYCLING, AgsCopyRecycling))
 #define AGS_COPY_RECYCLING_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_COPY_RECYCLING, AgsCopyRecyclingClass))
@@ -52,5 +54,7 @@ GType ags_copy_recycling_get_type();
 
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
 					 AgsRecycling *source);
+
+G_END_DECLS
 
 #endif /*__AGS_COPY_RECYCLING_H__*/

@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LFO_AUDIO_SIGNAL                (ags_lfo_audio_signal_get_type())
 #define AGS_LFO_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LFO_AUDIO_SIGNAL, AgsLfoAudioSignal))
 #define AGS_LFO_AUDIO_SIGNAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LFO_AUDIO_SIGNAL, AgsLfoAudioSignalClass))
@@ -53,5 +55,7 @@ struct _AgsLfoAudioSignalClass
 GType ags_lfo_audio_signal_get_type();
 
 AgsLfoAudioSignal* ags_lfo_audio_signal_new(AgsAudioSignal *source);
+
+G_END_DECLS
 
 #endif /*__AGS_LFO_AUDIO_SIGNAL_H__*/
