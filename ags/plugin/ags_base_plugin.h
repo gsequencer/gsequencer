@@ -27,6 +27,8 @@
 
 #include <alsa/seq_event.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_BASE_PLUGIN                (ags_base_plugin_get_type())
 #define AGS_BASE_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BASE_PLUGIN, AgsBasePlugin))
 #define AGS_BASE_PLUGIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_BASE_PLUGIN, AgsBasePluginClass))
@@ -34,7 +36,7 @@
 #define AGS_IS_BASE_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_BASE_PLUGIN))
 #define AGS_BASE_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_BASE_PLUGIN, AgsBasePluginClass))
 
-#define AGS_BASE_PLUGIN_GET_OBJ_MUTEX(obj) (((AgsBasePlugin *) obj)->obj_mutex)
+#define AGS_BASE_PLUGIN_GET_OBJ_MUTEX(obj) (&(((AgsBasePlugin *) obj)->obj_mutex))
 
 typedef struct _AgsBasePlugin AgsBasePlugin;
 typedef struct _AgsBasePluginClass AgsBasePluginClass;
@@ -56,8 +58,7 @@ struct _AgsBasePlugin
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -111,8 +112,6 @@ struct _AgsBasePluginClass
 
 GType ags_base_plugin_get_type(void);
 
-pthread_mutex_t* ags_base_plugin_get_class_mutex();
-
 gboolean ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags);
 void ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags);
 void ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags);
@@ -146,5 +145,7 @@ void ags_base_plugin_run(AgsBasePlugin *base_plugin,
 void ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 AgsBasePlugin* ags_base_plugin_new(gchar *filename, gchar *effect, guint effect_index);
+
+G_END_DECLS
 
 #endif /*__AGS_BASE_PLUGIN_H__*/

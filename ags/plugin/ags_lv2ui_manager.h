@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2ui_plugin.h>
 
@@ -33,6 +33,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LV2UI_MANAGER                (ags_lv2ui_manager_get_type())
 #define AGS_LV2UI_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2UI_MANAGER, AgsLv2uiManager))
 #define AGS_LV2UI_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2UI_MANAGER, AgsLv2uiManagerClass))
@@ -40,7 +42,7 @@
 #define AGS_IS_LV2UI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2UI_MANAGER))
 #define AGS_LV2UI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2UI_MANAGER, AgsLv2uiManagerClass))
 
-#define AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2uiManager *) obj)->obj_mutex)
+#define AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2uiManager *) obj)->obj_mutex))
 
 typedef struct _AgsLv2uiManager AgsLv2uiManager;
 typedef struct _AgsLv2uiManagerClass AgsLv2uiManagerClass;
@@ -49,8 +51,7 @@ struct _AgsLv2uiManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *lv2ui_plugin_blacklist;
   GList *lv2ui_plugin;
@@ -62,8 +63,6 @@ struct _AgsLv2uiManagerClass
 };
 
 GType ags_lv2ui_manager_get_type(void);
-
-pthread_mutex_t* ags_lv2ui_manager_get_class_mutex();
 
 gchar** ags_lv2ui_manager_get_default_path();
 void ags_lv2ui_manager_set_default_path(gchar** default_path);
@@ -90,5 +89,7 @@ void ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager);
 AgsLv2uiManager* ags_lv2ui_manager_get_instance();
 
 AgsLv2uiManager* ags_lv2ui_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2UI_MANAGER_H__*/

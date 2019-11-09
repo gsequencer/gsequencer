@@ -25,9 +25,9 @@
 
 #include <stdarg.h>
 
-#include <ags/plugin/ags_base_plugin.h>
+#include <ags/libags.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/plugin/ags_base_plugin.h>
 
 #include <alsa/seq_midi_event.h>
 
@@ -44,6 +44,8 @@
 #include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_PLUGIN                (ags_lv2_plugin_get_type())
 #define AGS_LV2_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2Plugin))
@@ -163,5 +165,7 @@ void ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
 				   guint program_index);
 
 AgsLv2Plugin* ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_PLUGIN_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_URI_MAP_MANAGER                (ags_lv2_uri_map_manager_get_type())
 #define AGS_LV2_URI_MAP_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_URI_MAP_MANAGER, AgsLv2UriMapManager))
@@ -35,7 +37,7 @@
 #define AGS_IS_LV2_URI_MAP_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_URI_MAP_MANAGER))
 #define AGS_LV2_URI_MAP_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_URI_MAP_MANAGER, AgsLv2UriMapManagerClass))
 
-#define AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2UriMapManager *) obj)->obj_mutex)
+#define AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2UriMapManager *) obj)->obj_mutex))
 
 typedef struct _AgsLv2UriMapManager AgsLv2UriMapManager;
 typedef struct _AgsLv2UriMapManagerClass AgsLv2UriMapManagerClass;
@@ -44,8 +46,7 @@ struct _AgsLv2UriMapManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   uint32_t id_counter;
   
@@ -58,8 +59,6 @@ struct _AgsLv2UriMapManagerClass
 };
 
 GType ags_lv2_uri_map_manager_get_type(void);
-
-pthread_mutex_t* ags_lv2_uri_map_manager_get_class_mutex();
 
 gboolean ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
 					gchar *uri, GValue *id);
@@ -77,5 +76,7 @@ uint32_t ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_da
 
 AgsLv2UriMapManager* ags_lv2_uri_map_manager_get_instance();
 AgsLv2UriMapManager* ags_lv2_uri_map_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_URI_MAP_MANAGER_H__*/

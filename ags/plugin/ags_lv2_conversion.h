@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_conversion.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_CONVERSION                (ags_lv2_conversion_get_type())
 #define AGS_LV2_CONVERSION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONVERSION, AgsLv2Conversion))
@@ -73,5 +75,7 @@ void ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 void ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags);
 
 AgsLv2Conversion* ags_lv2_conversion_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_CONVERSION_H__*/

@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_PRESET_MANAGER                (ags_lv2_preset_manager_get_type())
 #define AGS_LV2_PRESET_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PRESET_MANAGER, AgsLv2PresetManager))
@@ -41,8 +43,7 @@ struct _AgsLv2PresetManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *lv2_preset;
 };
@@ -54,11 +55,11 @@ struct _AgsLv2PresetManagerClass
 
 GType ags_lv2_preset_manager_get_type(void);
 
-pthread_mutex_t* ags_lv2_preset_manager_get_class_mutex();
-
 /*  */
 AgsLv2PresetManager* ags_lv2_preset_manager_get_instance();
 
 AgsLv2PresetManager* ags_lv2_preset_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_PRESET_MANAGER_H__*/

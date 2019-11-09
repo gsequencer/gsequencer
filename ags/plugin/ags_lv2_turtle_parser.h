@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LV2_TURTLE_PARSER                (ags_lv2_turtle_parser_get_type())
 #define AGS_LV2_TURTLE_PARSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParser))
 #define AGS_LV2_TURTLE_PARSER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParserClass))
@@ -43,8 +45,7 @@ struct _AgsLv2TurtleParser
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *turtle;
 
@@ -69,5 +70,7 @@ void ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				 AgsTurtle **turtle, guint n_turtle);
 
 AgsLv2TurtleParser* ags_lv2_turtle_parser_new(AgsTurtle *manifest);
+
+G_BEGIN_DECLS
 
 #endif /*__AGS_LV2_TURTLE_PARSER_H__*/
