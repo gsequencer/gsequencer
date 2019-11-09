@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OPEN_WAVE                (ags_open_wave_get_type())
 #define AGS_OPEN_WAVE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_WAVE, AgsOpenWave))
@@ -63,5 +65,7 @@ AgsOpenWave* ags_open_wave_new(AgsAudio *audio,
 			       AgsAudioFile *audio_file,
 			       gchar *filename,
 			       guint start_pad);
+
+G_END_DECLS
 
 #endif /*__AGS_OPEN_WAVE_H__*/

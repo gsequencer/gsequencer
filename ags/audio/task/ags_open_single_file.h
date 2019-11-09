@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OPEN_SINGLE_FILE                (ags_open_single_file_get_type())
 #define AGS_OPEN_SINGLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SINGLE_FILE, AgsOpenSingleFile))
@@ -58,5 +60,7 @@ GType ags_open_single_file_get_type();
 AgsOpenSingleFile* ags_open_single_file_new(AgsChannel *channel,
 					    gchar *filename,
 					    guint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_OPEN_SINGLE_FILE_H__*/

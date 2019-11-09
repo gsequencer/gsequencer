@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SET_DEVICE                (ags_set_device_get_type())
 #define AGS_SET_DEVICE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_DEVICE, AgsSetDevice))
@@ -53,5 +55,7 @@ GType ags_set_device_get_type();
 
 AgsSetDevice* ags_set_device_new(GObject *scope,
 				 gchar *device);
+
+G_END_DECLS
 
 #endif /*__AGS_SET_DEVICE_H__*/

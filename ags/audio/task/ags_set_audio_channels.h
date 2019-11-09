@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SET_AUDIO_CHANNELS                (ags_set_audio_channels_get_type())
 #define AGS_SET_AUDIO_CHANNELS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_AUDIO_CHANNELS, AgsSetAudioChannels))
 #define AGS_SET_AUDIO_CHANNELS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_AUDIO_CHANNELS, AgsSetAudioChannelsClass))
@@ -40,6 +42,7 @@ struct _AgsSetAudioChannels
   AgsTask task;
 
   GObject *soundcard;
+
   guint audio_channels;
 };
 
@@ -50,6 +53,9 @@ struct _AgsSetAudioChannelsClass
 
 GType ags_set_audio_channels_get_type();
 
-AgsSetAudioChannels* ags_set_audio_channels_new(GObject *soundcard, guint audio_channels);
+AgsSetAudioChannels* ags_set_audio_channels_new(GObject *soundcard,
+						guint audio_channels);
+
+G_END_DECLS
 
 #endif /*__AGS_SET_AUDIO_CHANNELS_H__*/

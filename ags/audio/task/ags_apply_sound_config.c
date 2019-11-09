@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,7 +102,6 @@ void ags_apply_sound_config_launch(AgsTask *task);
 enum{
   PROP_0,
   PROP_CONFIG_DATA,
-  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_apply_sound_config_parent_class = NULL;
@@ -173,22 +172,6 @@ ags_apply_sound_config_class_init(AgsApplySoundConfigClass *apply_sound_config)
 				  PROP_CONFIG_DATA,
 				  param_spec);
 
-  /**
-   * AgsStartSoundcard:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.1.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of start soundcard"),
-				   i18n_pspec("The application context of start soundcard task"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_sound_config;
 
@@ -227,27 +210,6 @@ ags_apply_sound_config_set_property(GObject *gobject,
       apply_sound_config->config_data = g_strdup(config_data);
     }
     break;
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (GObject *) g_value_get_object(value);
-
-      if(apply_sound_config->application_context == application_context){
-	return;
-      }
-
-      if(apply_sound_config->application_context != NULL){
-	g_object_unref(apply_sound_config->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      apply_sound_config->application_context = application_context;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -271,11 +233,6 @@ ags_apply_sound_config_get_property(GObject *gobject,
 			 apply_sound_config->config_data);
     }
     break;
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, apply_sound_config->application_context);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -288,12 +245,6 @@ ags_apply_sound_config_dispose(GObject *gobject)
   AgsApplySoundConfig *apply_sound_config;
 
   apply_sound_config = AGS_APPLY_SOUND_CONFIG(gobject);
-
-  if(apply_sound_config->application_context != NULL){
-    g_object_unref(apply_sound_config->application_context);
-
-    apply_sound_config->application_context = NULL;
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_apply_sound_config_parent_class)->dispose(gobject);
@@ -305,10 +256,6 @@ ags_apply_sound_config_finalize(GObject *gobject)
   AgsApplySoundConfig *apply_sound_config;
 
   apply_sound_config = AGS_APPLY_SOUND_CONFIG(gobject);
-
-  if(apply_sound_config->application_context != NULL){
-    g_object_unref(apply_sound_config->application_context);
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_apply_sound_config_parent_class)->finalize(gobject);
@@ -349,7 +296,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   AgsThread *sequencer_thread;
   AgsThread *audio_thread;
   AgsThread *channel_thread;
-
+  AgsTaskLauncher *task_launcher;
+  
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
@@ -381,9 +329,11 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   apply_sound_config = AGS_APPLY_SOUND_CONFIG(task);
 
-  application_context = apply_sound_config->application_context;
+  application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   
   start_orig_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   start_orig_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
@@ -775,8 +725,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       notify_soundcard = (AgsNotifySoundcard *) AGS_CORE_AUDIO_DEVIN(orig_soundcard->data)->notify_soundcard;
     }
 
-    ags_task_thread_remove_cyclic_task((AgsTaskThread *) application_context->task_thread,
-				       (AgsTask *) notify_soundcard);
+    ags_task_launcher_remove_cyclic_task(task_launcher,
+					 (AgsTask *) notify_soundcard);
         
     orig_soundcard = orig_soundcard->next;
   }
@@ -886,7 +836,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 				    "wasapi",
 				    7)){
 	if(is_output){
-	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_wasapi_devout_new();
 
 	  str = ags_config_get_value(config,
 				     soundcard_group,
@@ -917,7 +867,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 	    g_free(str);
 	  }
 	}else{
-	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_wasapi_devin_new();
 
 	  str = ags_config_get_value(config,
 				     soundcard_group,
@@ -954,12 +904,12 @@ ags_apply_sound_config_launch(AgsTask *task)
 	gchar *str;
 	
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_devout_new();
 	  
 	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_devin_new();
 	  
 	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
 	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
@@ -968,12 +918,12 @@ ags_apply_sound_config_launch(AgsTask *task)
 				    "oss",
 				    4)){
 	if(is_output){
-	  soundcard = (GObject *) ags_devout_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_devout_new();
 
 	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
 	}else{
-	  soundcard = (GObject *) ags_devin_new((GObject *) application_context);
+	  soundcard = (GObject *) ags_devin_new();
 
 	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_ALSA);
 	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_OSS;	  
@@ -1223,13 +1173,13 @@ ags_apply_sound_config_launch(AgsTask *task)
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
+	sequencer = (GObject *) ags_midiin_new();
 	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_OSS);
 	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_ALSA;
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
+	sequencer = (GObject *) ags_midiin_new();
 	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_ALSA);
 	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_OSS;
       }else{
@@ -1300,7 +1250,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
 
     g_object_set(notify_soundcard,
-		 "task-thread", application_context->task_thread,
+		 "task-launcher", task_launcher,
 		 NULL);
     
     if(AGS_IS_DEVOUT(list->data)){
@@ -1325,8 +1275,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }
 
-    ags_task_thread_append_cyclic_task((AgsTaskThread *) application_context->task_thread,
-				       (AgsTask *) notify_soundcard);
+    ags_task_launcher_add_cyclic_task(task_launcher,
+				      (AgsTask *) notify_soundcard);
 
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
@@ -1439,7 +1389,6 @@ ags_apply_sound_config_launch(AgsTask *task)
 
 /**
  * ags_apply_sound_config_new:
- * @application_context: the #AgsApplicationContext
  * @config_data: the config file as string data
  *
  * Creates a new instance of #AgsApplySoundConfig.
@@ -1449,13 +1398,11 @@ ags_apply_sound_config_launch(AgsTask *task)
  * Since: 2.1.0
  */
 AgsApplySoundConfig*
-ags_apply_sound_config_new(AgsApplicationContext *application_context,
-			   gchar *config_data)
+ags_apply_sound_config_new(gchar *config_data)
 {
   AgsApplySoundConfig *apply_sound_config;
 
   apply_sound_config = (AgsApplySoundConfig *) g_object_new(AGS_TYPE_APPLY_SOUND_CONFIG,
-							    "application-context", application_context,
 							    "config-data", config_data,
 							    NULL);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LINK_CHANNEL                (ags_link_channel_get_type())
 #define AGS_LINK_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINK_CHANNEL, AgsLinkChannel))
@@ -55,5 +57,7 @@ struct _AgsLinkChannelClass
 GType ags_link_channel_get_type();
 
 AgsLinkChannel* ags_link_channel_new(AgsChannel *channel, AgsChannel *link);
+
+G_END_DECLS
 
 #endif /*__AGS_LINK_CHANNEL_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_STOP_SEQUENCER                (ags_stop_sequencer_get_type())
 #define AGS_STOP_SEQUENCER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STOP_SEQUENCER, AgsStopSequencer))
 #define AGS_STOP_SEQUENCER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_STOP_SEQUENCER, AgsStopSequencerClass))
@@ -38,8 +40,6 @@ typedef struct _AgsStopSequencerClass AgsStopSequencerClass;
 struct _AgsStopSequencer
 {
   AgsTask task;
-
-  AgsApplicationContext *application_context;
 };
 
 struct _AgsStopSequencerClass
@@ -49,6 +49,8 @@ struct _AgsStopSequencerClass
 
 GType ags_stop_sequencer_get_type();
 
-AgsStopSequencer* ags_stop_sequencer_new(AgsApplicationContext *application_context);
+AgsStopSequencer* ags_stop_sequencer_new();
+
+G_END_DECLS
 
 #endif /*__AGS_STOP_SEQUENCER_H__*/

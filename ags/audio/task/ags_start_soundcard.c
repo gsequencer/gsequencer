@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,7 +54,6 @@ static gpointer ags_start_soundcard_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -108,21 +107,6 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
   gobject->finalize = ags_start_soundcard_finalize;
 
   /* properties */
-  /**
-   * AgsStartSoundcard:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of start soundcard"),
-				   i18n_pspec("The application context of start soundcard task"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) start_soundcard;
@@ -133,7 +117,7 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
 void
 ags_start_soundcard_init(AgsStartSoundcard *start_soundcard)
 {
-  start_soundcard->application_context = NULL;
+  //empty
 }
 
 void
@@ -147,27 +131,6 @@ ags_start_soundcard_set_property(GObject *gobject,
   start_soundcard = AGS_START_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(start_soundcard->application_context == application_context){
-	return;
-      }
-
-      if(start_soundcard->application_context != NULL){
-	g_object_unref(start_soundcard->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      start_soundcard->application_context = application_context;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -185,11 +148,6 @@ ags_start_soundcard_get_property(GObject *gobject,
   start_soundcard = AGS_START_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, start_soundcard->application_context);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -203,12 +161,6 @@ ags_start_soundcard_dispose(GObject *gobject)
 
   start_soundcard = AGS_START_SOUNDCARD(gobject);
 
-  if(start_soundcard->application_context != NULL){
-    g_object_unref(start_soundcard->application_context);
-
-    start_soundcard->application_context = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_start_soundcard_parent_class)->dispose(gobject);
 }
@@ -216,36 +168,9 @@ ags_start_soundcard_dispose(GObject *gobject)
 void
 ags_start_soundcard_finalize(GObject *gobject)
 {
-  AgsAudioLoop *audio_loop;
+  AgsStartSoundcard *start_soundcard;
 
-  AgsThread *soundcard_thread;
-
-  AgsApplicationContext *application_context;
-  AgsSoundcard *soundcard;
-
-  application_context = AGS_START_SOUNDCARD(gobject)->application_context;
-
-  if(application_context != NULL){
-    //FIXME:JK: wrong location of code
-    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-
-    soundcard_thread = ags_thread_find_type((AgsThread *) audio_loop,
-					    AGS_TYPE_SOUNDCARD_THREAD);
-
-    while(soundcard_thread != NULL){
-      if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
-	if(AGS_SOUNDCARD_THREAD(soundcard_thread)->error != NULL){
-	  g_error_free(AGS_SOUNDCARD_THREAD(soundcard_thread)->error);
-	  
-	  AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
-	}
-      }
-      
-      soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
-    }
-    
-    g_object_unref(application_context);
-  }
+  start_soundcard = AGS_START_SOUNDCARD(gobject);
 
   /* call parent */
   G_OBJECT_CLASS(ags_start_soundcard_parent_class)->finalize(gobject);
@@ -264,7 +189,7 @@ ags_start_soundcard_launch(AgsTask *task)
 
   start_soundcard = AGS_START_SOUNDCARD(task);
 
-  application_context = start_soundcard->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* get main loop */
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -331,7 +256,6 @@ ags_start_soundcard_launch(AgsTask *task)
 
 /**
  * ags_start_soundcard_new:
- * @application_context: the #AgsApplicationContext
  *
  * Create a new instance of #AgsStartSoundcard.
  *
@@ -340,12 +264,11 @@ ags_start_soundcard_launch(AgsTask *task)
  * Since: 2.0.0
  */
 AgsStartSoundcard*
-ags_start_soundcard_new(AgsApplicationContext *application_context)
+ags_start_soundcard_new()
 {
   AgsStartSoundcard *start_soundcard;
 
   start_soundcard = (AgsStartSoundcard *) g_object_new(AGS_TYPE_START_SOUNDCARD,
-						       "application-context", application_context,
 						       NULL);
 
   return(start_soundcard);

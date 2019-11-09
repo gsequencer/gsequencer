@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TIC_DEVICE                (ags_tic_device_get_type())
 #define AGS_TIC_DEVICE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIC_DEVICE, AgsTicDevice))
@@ -50,5 +52,7 @@ struct _AgsTicDeviceClass
 GType ags_tic_device_get_type();
 
 AgsTicDevice* ags_tic_device_new(GObject *device);
+
+G_END_DECLS
 
 #endif /*__AGS_TIC_DEVICE_H__*/

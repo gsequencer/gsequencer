@@ -27,6 +27,8 @@
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_NOTIFY_SOUNDCARD                (ags_notify_soundcard_get_type())
 #define AGS_NOTIFY_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTIFY_SOUNDCARD, AgsNotifySoundcard))
 #define AGS_NOTIFY_SOUNDCARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTIFY_SOUNDCARD, AgsNotifySoundcardClass))
@@ -72,5 +74,6 @@ GType ags_notify_soundcard_get_type();
 
 AgsNotifySoundcard* ags_notify_soundcard_new(AgsSoundcardThread *soundcard_thread);
 
-#endif /*__AGS_NOTIFYo_SOUNDCARD_H__*/
+G_END_DECLS
 
+#endif /*__AGS_NOTIFYo_SOUNDCARD_H__*/

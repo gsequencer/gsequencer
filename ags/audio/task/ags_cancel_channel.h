@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CANCEL_CHANNEL                (ags_cancel_channel_get_type())
 #define AGS_CANCEL_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CANCEL_CHANNEL, AgsCancelChannel))
@@ -55,5 +57,7 @@ GType ags_cancel_channel_get_type();
 
 AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel,
 					 gint sound_scope);
+
+G_END_DECLS
 
 #endif /*__AGS_CANCEL_CHANNEL_H__*/

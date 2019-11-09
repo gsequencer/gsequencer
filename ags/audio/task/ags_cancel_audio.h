@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CANCEL_AUDIO                (ags_cancel_audio_get_type())
 #define AGS_CANCEL_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CANCEL_AUDIO, AgsCancelAudio))
 #define AGS_CANCEL_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CANCEL_AUDIO, AgsCancelAudioClass))
@@ -55,5 +57,7 @@ GType ags_cancel_audio_get_type();
 
 AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio,
 				     gint sound_scope);
+
+G_BEGIN_DECLS
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLY_SEQUENCER_LENGTH                (ags_apply_sequencer_length_get_type())
 #define AGS_APPLY_SEQUENCER_LENGTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplySequencerLength))
@@ -53,5 +55,7 @@ GType ags_apply_sequencer_length_get_type();
 
 AgsApplySequencerLength* ags_apply_sequencer_length_new(GObject *scope,
 							gdouble length);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLY_SEQUENCER_LENGTH_H__*/

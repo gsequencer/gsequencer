@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_synth_generator.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_APPLY_SYNTH                (ags_apply_synth_get_type())
 #define AGS_APPLY_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SYNTH, AgsApplySynth))
 #define AGS_APPLY_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPLY_SYNTH, AgsApplySynthClass))
@@ -60,5 +62,7 @@ GType ags_apply_synth_get_type();
 AgsApplySynth* ags_apply_synth_new(AgsSynthGenerator *synth_generator,
 				   AgsChannel *start_channel,
 				   gdouble base_note, guint count);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLY_SYNTH_H__*/

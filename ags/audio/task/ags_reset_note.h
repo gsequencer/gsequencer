@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_note.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RESET_NOTE                (ags_reset_note_get_type())
 #define AGS_RESET_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RESET_NOTE, AgsResetNote))
 #define AGS_RESET_NOTE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RESET_NOTE, AgsResetNoteClass))
@@ -61,5 +63,7 @@ void ags_reset_note_remove(AgsResetNote *reset_note,
 AgsResetNote* ags_reset_note_get_instance();
 
 AgsResetNote* ags_reset_note_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RESET_NOTE_H__*/

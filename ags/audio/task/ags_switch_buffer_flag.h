@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SWITCH_BUFFER_FLAG                (ags_switch_buffer_flag_get_type())
 #define AGS_SWITCH_BUFFER_FLAG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SWITCH_BUFFER_FLAG, AgsSwitchBufferFlag))
@@ -50,6 +52,8 @@ struct _AgsSwitchBufferFlagClass
 GType ags_switch_buffer_flag_get_type();
 
 AgsSwitchBufferFlag* ags_switch_buffer_flag_new(GObject *device);
+
+G_END_DECLS
 
 #endif /*__AGS_SWITCH_BUFFER_FLAG_H__*/
 

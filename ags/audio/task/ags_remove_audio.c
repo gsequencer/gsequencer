@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,7 +54,6 @@ static gpointer ags_remove_audio_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_AUDIO,
 };
 
@@ -110,22 +109,6 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
   
   /* properties */
   /**
-   * AgsRemoveAudio:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of remove audio"),
-				   i18n_pspec("The application context of remove audio task"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsRemoveAudio:audio:
    *
    * The assigned #AgsAudio
@@ -150,7 +133,6 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
 void
 ags_remove_audio_init(AgsRemoveAudio *remove_audio)
 {
-  remove_audio->application_context = NULL;
   remove_audio->audio = NULL;
 }
 
@@ -165,27 +147,6 @@ ags_remove_audio_set_property(GObject *gobject,
   remove_audio = AGS_REMOVE_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(remove_audio->application_context == application_context){
-	return;
-      }
-
-      if(remove_audio->application_context != NULL){
-	g_object_unref(remove_audio->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      remove_audio->application_context = application_context;
-    }
-    break;
   case PROP_AUDIO:
     {
       AgsAudio *audio;
@@ -224,11 +185,6 @@ ags_remove_audio_get_property(GObject *gobject,
   remove_audio = AGS_REMOVE_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, remove_audio->application_context);
-    }
-    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, remove_audio->audio);
@@ -247,12 +203,6 @@ ags_remove_audio_dispose(GObject *gobject)
 
   remove_audio = AGS_REMOVE_AUDIO(gobject);
 
-  if(remove_audio->application_context != NULL){
-    g_object_unref(remove_audio->application_context);
-
-    remove_audio->application_context = NULL;
-  }
-
   if(remove_audio->audio != NULL){
     g_object_unref(remove_audio->audio);
 
@@ -270,10 +220,6 @@ ags_remove_audio_finalize(GObject *gobject)
 
   remove_audio = AGS_REMOVE_AUDIO(gobject);
 
-  if(remove_audio->application_context != NULL){
-    g_object_unref(remove_audio->application_context);
-  }
-
   if(remove_audio->audio != NULL){
     g_object_unref(remove_audio->audio);
   }
@@ -286,39 +232,44 @@ void
 ags_remove_audio_launch(AgsTask *task)
 {
   AgsRemoveAudio *remove_audio;
+
+  AgsApplicationContext *application_context;
   
   GList *start_list, *list;
   
   remove_audio = AGS_REMOVE_AUDIO(task);
 
-  /* remove audio */
-  if(remove_audio->application_context != NULL &&
-     remove_audio->audio != NULL){
-    list =
-      start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(remove_audio->application_context));
-
-    if(g_list_find(list,
-		   remove_audio->audio) != NULL){
-      /* remove to sound provider */
-      list = g_list_remove(list,
-			   remove_audio->audio);
-      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(remove_audio->application_context),
-				   list);
-
-      /* AgsAudio */
-      ags_connectable_disconnect(AGS_CONNECTABLE(remove_audio->audio));
-
-      g_object_unref(remove_audio->audio);
-    }
-
-    g_list_free_full(start_list,
-		     g_object_unref);
+  application_context = ags_application_context_get_instance();
+  
+  if(!AGS_IS_SOUND_PROVIDER(application_context) ||
+     !AGS_IS_AUDIO(remove_audio->audio)){
+    return;
   }
+
+  /* remove audio */
+  list =
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(remove_audio->application_context));
+
+  if(g_list_find(list,
+		 remove_audio->audio) != NULL){
+    /* remove to sound provider */
+    list = g_list_remove(list,
+			 remove_audio->audio);
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(remove_audio->application_context),
+				 list);
+
+    /* AgsAudio */
+    ags_connectable_disconnect(AGS_CONNECTABLE(remove_audio->audio));
+
+    g_object_unref(remove_audio->audio);
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 /**
  * ags_remove_audio_new:
- * @application_context: the #AgsApplicationContext
  * @audio: the #AgsAudio to remove
  *
  * Create a new instance of #AgsRemoveAudio.
@@ -328,13 +279,11 @@ ags_remove_audio_launch(AgsTask *task)
  * Since: 2.0.0
  */
 AgsRemoveAudio*
-ags_remove_audio_new(AgsApplicationContext *application_context,
-		     AgsAudio *audio)
+ags_remove_audio_new(AgsAudio *audio)
 {
   AgsRemoveAudio *remove_audio;
 
   remove_audio = (AgsRemoveAudio *) g_object_new(AGS_TYPE_REMOVE_AUDIO,
-						 "application-context", application_context,
 						 "audio", audio,
 						 NULL);
 
