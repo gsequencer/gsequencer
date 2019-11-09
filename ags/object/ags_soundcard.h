@@ -217,10 +217,6 @@ struct _AgsSoundcardInterface
 
 GType ags_soundcard_get_type();
 
-void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
-					   AgsApplicationContext *application_context);
-AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
-
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *device_id);
 gchar* ags_soundcard_get_device(AgsSoundcard *soundcard);

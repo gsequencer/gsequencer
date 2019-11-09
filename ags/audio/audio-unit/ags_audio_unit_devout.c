@@ -19,8 +19,6 @@
 
 #include <ags/audio/audio-unit/ags_audio_unit_devout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -177,7 +175,6 @@ void ags_audio_unit_devout_unlock_sub_block(AgsSoundcard *soundcard,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -194,8 +191,6 @@ enum{
 };
 
 static gpointer ags_audio_unit_devout_parent_class = NULL;
-
-static pthread_mutex_t ags_audio_unit_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_audio_unit_devout_get_type (void)
@@ -266,22 +261,6 @@ ags_audio_unit_devout_class_init(AgsAudioUnitDevoutClass *audio_unit_devout)
   gobject->finalize = ags_audio_unit_devout_finalize;
 
   /* properties */
-  /**
-   * AgsAudioUnitDevout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.3.14
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsAudioUnitDevout:device:
    *
@@ -602,25 +581,13 @@ ags_audio_unit_devout_init(AgsAudioUnitDevout *audio_unit_devout)
   guint denumerator, numerator;
   guint i;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   /* flags */
   audio_unit_devout->flags = 0;
   g_atomic_int_set(&(audio_unit_devout->sync_flags),
 		   AGS_AUDIO_UNIT_DEVOUT_PASS_THROUGH);
 
   /* devout mutex */
-  audio_unit_devout->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  audio_unit_devout->obj_mutex =
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(audio_unit_devout->obj_mutex));
 
   /* parent */
   audio_unit_devout->application_context = NULL;
@@ -761,33 +728,6 @@ ags_audio_unit_devout_set_property(GObject *gobject,
   audio_unit_devout_mutex = AGS_AUDIO_UNIT_DEVOUT_GET_OBJ_MUTEX(audio_unit_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(audio_unit_devout_mutex);
-
-      if(audio_unit_devout->application_context == application_context){
-	pthread_mutex_unlock(audio_unit_devout_mutex);
-
-	return;
-      }
-
-      if(audio_unit_devout->application_context != NULL){
-	g_object_unref(G_OBJECT(audio_unit_devout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      audio_unit_devout->application_context = application_context;
-
-      pthread_mutex_unlock(audio_unit_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -1033,15 +973,6 @@ ags_audio_unit_devout_get_property(GObject *gobject,
   audio_unit_devout_mutex = AGS_AUDIO_UNIT_DEVOUT_GET_OBJ_MUTEX(audio_unit_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(audio_unit_devout_mutex);
-
-      g_value_set_object(value, audio_unit_devout->application_context);
-
-      pthread_mutex_unlock(audio_unit_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(audio_unit_devout_mutex);
@@ -1198,13 +1129,6 @@ ags_audio_unit_devout_dispose(GObject *gobject)
     g_object_unref(task_thread);
   }
 
-  /* application context */
-  if(audio_unit_devout->application_context != NULL){
-    g_object_unref(audio_unit_devout->application_context);
-
-    audio_unit_devout->application_context = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_audio_unit_devout_parent_class)->dispose(gobject);
 }
@@ -1261,11 +1185,6 @@ ags_audio_unit_devout_finalize(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(audio_unit_devout->application_context != NULL){
-    g_object_unref(audio_unit_devout->application_context);
-  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_unit_devout_parent_class)->finalize(gobject);
@@ -1547,51 +1466,6 @@ ags_audio_unit_devout_unset_flags(AgsAudioUnitDevout *audio_unit_devout, guint f
   audio_unit_devout->flags &= (~flags);
   
   pthread_mutex_unlock(audio_unit_devout_mutex);
-}
-
-void
-ags_audio_unit_devout_set_application_context(AgsSoundcard *soundcard,
-				   AgsApplicationContext *application_context)
-{
-  AgsAudioUnitDevout *audio_unit_devout;
-
-  pthread_mutex_t *audio_unit_devout_mutex;
-
-  audio_unit_devout = AGS_AUDIO_UNIT_DEVOUT(soundcard);
-
-  /* get audio_unit devout mutex */
-  audio_unit_devout_mutex = AGS_AUDIO_UNIT_DEVOUT_GET_OBJ_MUTEX(audio_unit_devout);
-
-  /* set application context */
-  pthread_mutex_lock(audio_unit_devout_mutex);
-  
-  audio_unit_devout->application_context = application_context;
-  
-  pthread_mutex_unlock(audio_unit_devout_mutex);
-}
-
-AgsApplicationContext*
-ags_audio_unit_devout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsAudioUnitDevout *audio_unit_devout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *audio_unit_devout_mutex;
-
-  audio_unit_devout = AGS_AUDIO_UNIT_DEVOUT(soundcard);
-
-  /* get audio_unit devout mutex */
-  audio_unit_devout_mutex = AGS_AUDIO_UNIT_DEVOUT_GET_OBJ_MUTEX(audio_unit_devout);
-
-  /* get application context */
-  pthread_mutex_lock(audio_unit_devout_mutex);
-
-  application_context = audio_unit_devout->application_context;
-
-  pthread_mutex_unlock(audio_unit_devout_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -2091,6 +1965,7 @@ ags_audio_unit_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_t *callback_finish_mutex;
   
   audio_unit_devout = AGS_AUDIO_UNIT_DEVOUT(soundcard);
+  
   application_context = ags_soundcard_get_application_context(soundcard);
   
   /* get audio-unit devout mutex */
@@ -3507,7 +3382,6 @@ ags_audio_unit_devout_realloc_buffer(AgsAudioUnitDevout *audio_unit_devout)
 
 /**
  * ags_audio_unit_devout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsAudioUnitDevout.
  *
@@ -3516,12 +3390,11 @@ ags_audio_unit_devout_realloc_buffer(AgsAudioUnitDevout *audio_unit_devout)
  * Since: 2.3.14
  */
 AgsAudioUnitDevout*
-ags_audio_unit_devout_new(AgsApplicationContext *application_context)
+ags_audio_unit_devout_new()
 {
   AgsAudioUnitDevout *audio_unit_devout;
 
   audio_unit_devout = (AgsAudioUnitDevout *) g_object_new(AGS_TYPE_AUDIO_UNIT_DEVOUT,
-							  "application-context", application_context,
 							  NULL);
   
   return(audio_unit_devout);

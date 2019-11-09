@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SFZ_GROUP                (ags_sfz_group_get_type())
 #define AGS_SFZ_GROUP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SFZ_GROUP, AgsSFZGroup))
 #define AGS_SFZ_GROUP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SFZ_GROUP, AgsSFZGroupClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_SFZ_GROUP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SFZ_GROUP))
 #define AGS_SFZ_GROUP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SFZ_GROUP, AgsSFZGroupClass))
 
-#define AGS_SFZ_GROUP_GET_OBJ_MUTEX(obj) (((AgsSFZGroup *) obj)->obj_mutex)
+#define AGS_SFZ_GROUP_GET_OBJ_MUTEX(obj) (&(((AgsSFZGroup *) obj)->obj_mutex))
 
 typedef struct _AgsSFZGroup AgsSFZGroup;
 typedef struct _AgsSFZGroupClass AgsSFZGroupClass;
@@ -56,8 +58,7 @@ struct _AgsSFZGroup
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -76,8 +77,6 @@ struct _AgsSFZGroupClass
 
 GType ags_sfz_group_get_type();
 
-pthread_mutex_t* ags_sfz_group_get_class_mutex();
-
 gboolean ags_sfz_group_test_flags(AgsSFZGroup *sfz_group, guint flags);
 void ags_sfz_group_set_flags(AgsSFZGroup *sfz_group, guint flags);
 void ags_sfz_group_unset_flags(AgsSFZGroup *sfz_group, guint flags);
@@ -90,5 +89,7 @@ gchar* ags_sfz_group_lookup_control(AgsSFZGroup *sfz_group,
 
 /* instantiate */
 AgsSFZGroup* ags_sfz_group_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SFZ_GROUP_H__*/

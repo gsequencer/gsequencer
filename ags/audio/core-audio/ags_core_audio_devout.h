@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CORE_AUDIO_DEVOUT                (ags_core_audio_devout_get_type())
 #define AGS_CORE_AUDIO_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevout))
@@ -34,7 +34,7 @@
 #define AGS_IS_CORE_AUDIO_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_DEVOUT))
 #define AGS_CORE_AUDIO_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevoutClass))
 
-#define AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsCoreAudioDevout *) obj)->obj_mutex)
+#define AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioDevout *) obj)->obj_mutex))
 
 typedef struct _AgsCoreAudioDevout AgsCoreAudioDevout;
 typedef struct _AgsCoreAudioDevoutClass AgsCoreAudioDevoutClass;
@@ -117,10 +117,7 @@ struct _AgsCoreAudioDevout
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -130,10 +127,10 @@ struct _AgsCoreAudioDevout
   guint buffer_size;
   guint samplerate;
 
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
 
   guint sub_block_count;
-  pthread_mutex_t **sub_block_mutex;
+  GRecMutex **sub_block_mutex;
 
   void** buffer;
 
@@ -163,11 +160,11 @@ struct _AgsCoreAudioDevout
   gchar **port_name;
   GList *core_audio_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -181,8 +178,6 @@ GType ags_core_audio_devout_get_type();
 
 GQuark ags_core_audio_devout_error_quark();
 
-pthread_mutex_t* ags_core_audio_devout_get_class_mutex();
-
 gboolean ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
 void ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
 void ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
@@ -193,5 +188,7 @@ void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audi
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
 AgsCoreAudioDevout* ags_core_audio_devout_new(AgsApplicationContext *application_context);
+
+G_END_DECLS
 
 #endif /*__AGS_CORE_AUDIO_DEVOUT_H__*/

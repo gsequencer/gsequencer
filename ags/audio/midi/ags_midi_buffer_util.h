@@ -25,6 +25,8 @@
 
 #include <alsa/seq_event.h>
 
+G_BEGIN_DECLS
+
 typedef enum{
   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB   = 0x0,
   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB   = 0x10,
@@ -280,5 +282,7 @@ unsigned char* ags_midi_buffer_util_seek_message(unsigned char *buffer,
 /* decode */
 guint ags_midi_buffer_util_decode(unsigned char *buffer,
 				  snd_seq_event_t *event);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_BUFFER_UTIL_H__*/

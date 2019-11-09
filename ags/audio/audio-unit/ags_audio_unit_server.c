@@ -21,8 +21,6 @@
 #include <ags/audio/audio-unit/ags_audio_unit_client.h>
 #include <ags/audio/audio-unit/ags_audio_unit_port.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/audio-unit/ags_audio_unit_devout.h>
 #include <ags/audio/audio-unit/ags_audio_unit_devin.h>
 
@@ -100,7 +98,6 @@ void* ags_audio_unit_server_do_poll_loop(void *ptr);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_AUDIO_UNIT_CLIENT,
@@ -109,8 +106,6 @@ enum{
 };
 
 static gpointer ags_audio_unit_server_parent_class = NULL;
-
-static pthread_mutex_t ags_audio_unit_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_audio_unit_server_get_type()
@@ -183,27 +178,11 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
 
   /* properties */
   /**
-   * AgsAudioUnitServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.2.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsAudioUnitServer:url:
    *
    * The assigned URL.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -219,7 +198,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
    *
    * The default soundcard.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -235,7 +214,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
    *
    * The default audio unit client.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-audio-unit-client",
 				   i18n_pspec("default audio unit client"),
@@ -251,7 +230,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
    *
    * The input audio unit client.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("input-audio-unit-client",
 				   i18n_pspec("input audio unit client"),
@@ -267,7 +246,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
    *
    * The audio unit client list.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("audio-unit-client",
 				    i18n_pspec("audio unit client list"),
@@ -320,30 +299,15 @@ ags_audio_unit_server_sound_server_interface_init(AgsSoundServerInterface *sound
 void
 ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   /* flags */
   audio_unit_server->flags = 0;
 
   /* server mutex */
-  audio_unit_server->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  audio_unit_server->obj_mutex =
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(audio_unit_server->obj_mutex);
   
   g_atomic_int_set(&(audio_unit_server->running),
 		   TRUE);
   audio_unit_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
-
-  /* parent */  
-  audio_unit_server->application_context = NULL;
 
   /* uuid */
   audio_unit_server->uuid = ags_uuid_alloc();
@@ -373,7 +337,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(gobject);
 
@@ -381,43 +345,16 @@ ags_audio_unit_server_set_property(GObject *gobject,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(audio_unit_server_mutex);
-
-      if(audio_unit_server->application_context == application_context){
-	pthread_mutex_unlock(audio_unit_server_mutex);
-
-	return;
-      }
-
-      if(audio_unit_server->application_context != NULL){
-	g_object_unref(G_OBJECT(audio_unit_server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      audio_unit_server->application_context = application_context;
-
-      pthread_mutex_unlock(audio_unit_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       gchar *url;
 
       url = g_value_get_string(value);
 
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       if(audio_unit_server->url == url){
-	pthread_mutex_unlock(audio_unit_server_mutex);
+	g_rec_mutex_unlock(audio_unit_server_mutex);
 
 	return;
       }
@@ -428,7 +365,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       audio_unit_server->url = g_strdup(url);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_DEFAULT_SOUNDCARD:
@@ -437,10 +374,10 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       default_soundcard = (GObject *) g_value_get_object(value);
 
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       if(audio_unit_server->default_soundcard == (GObject *) default_soundcard){
-	pthread_mutex_unlock(audio_unit_server_mutex);
+	g_rec_mutex_unlock(audio_unit_server_mutex);
 
 	return;
       }
@@ -455,7 +392,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       audio_unit_server->default_soundcard = (GObject *) default_soundcard;
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_DEFAULT_AUDIO_UNIT_CLIENT:
@@ -464,10 +401,10 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       default_client = (AgsAudioUnitClient *) g_value_get_object(value);
 
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       if(audio_unit_server->default_client == (GObject *) default_client){
-	pthread_mutex_unlock(audio_unit_server_mutex);
+	g_rec_mutex_unlock(audio_unit_server_mutex);
 
 	return;
       }
@@ -482,7 +419,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       audio_unit_server->default_client = (GObject *) default_client;
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_INPUT_AUDIO_UNIT_CLIENT:
@@ -491,10 +428,10 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       input_client = (AgsAudioUnitClient *) g_value_get_object(value);
 
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       if(audio_unit_server->input_client == (GObject *) input_client){
-	pthread_mutex_unlock(audio_unit_server_mutex);
+	g_rec_mutex_unlock(audio_unit_server_mutex);
 
 	return;
       }
@@ -509,7 +446,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       audio_unit_server->input_client = (GObject *) input_client;
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_AUDIO_UNIT_CLIENT:
@@ -518,11 +455,11 @@ ags_audio_unit_server_set_property(GObject *gobject,
 
       client = (GObject *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       if(!AGS_IS_AUDIO_UNIT_CLIENT(client) ||
 	 g_list_find(audio_unit_server->client, client) != NULL){
-	pthread_mutex_unlock(audio_unit_server_mutex);
+	g_rec_mutex_unlock(audio_unit_server_mutex);
 
 	return;
       }
@@ -531,7 +468,7 @@ ags_audio_unit_server_set_property(GObject *gobject,
       audio_unit_server->client = g_list_prepend(audio_unit_server->client,
 						 client);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   default:
@@ -548,7 +485,7 @@ ags_audio_unit_server_get_property(GObject *gobject,
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(gobject);
 
@@ -556,59 +493,52 @@ ags_audio_unit_server_get_property(GObject *gobject,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(audio_unit_server_mutex);
-
-      g_value_set_object(value, audio_unit_server->application_context);
-
-      pthread_mutex_unlock(audio_unit_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       g_value_set_string(value, audio_unit_server->url);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_DEFAULT_SOUNDCARD:
     {
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       g_value_set_object(value, audio_unit_server->default_soundcard);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_DEFAULT_AUDIO_UNIT_CLIENT:
     {
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       g_value_set_object(value, audio_unit_server->default_client);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_INPUT_AUDIO_UNIT_CLIENT:
     {
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       g_value_set_object(value, audio_unit_server->input_client);
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   case PROP_AUDIO_UNIT_CLIENT:
     {
-      pthread_mutex_lock(audio_unit_server_mutex);
+      g_rec_mutex_lock(audio_unit_server_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio_unit_server->client));
+			  g_list_copy_deep(audio_unit_server->client,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     }
     break;
   default:
@@ -625,13 +555,6 @@ ags_audio_unit_server_dispose(GObject *gobject)
   GList *list;
   
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(gobject);
-
-  /* application context */
-  if(audio_unit_server->application_context != NULL){
-    g_object_unref(G_OBJECT(audio_unit_server->application_context));
-    
-    audio_unit_server->application_context = NULL;
-  }
 
   /* default soundcard */
   if(audio_unit_server->default_soundcard != NULL){
@@ -681,17 +604,6 @@ ags_audio_unit_server_finalize(GObject *gobject)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(gobject);
 
-  pthread_mutex_destroy(audio_unit_server->obj_mutex);
-  free(audio_unit_server->obj_mutex);
-
-  pthread_mutexattr_destroy(audio_unit_server->obj_mutexattr);
-  free(audio_unit_server->obj_mutexattr);
-  
-  /* application context */
-  if(audio_unit_server->application_context != NULL){
-    g_object_unref(G_OBJECT(audio_unit_server->application_context));
-  }
-
   /* url */
   g_free(audio_unit_server->url);
 
@@ -727,7 +639,7 @@ ags_audio_unit_server_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
@@ -735,11 +647,11 @@ ags_audio_unit_server_get_uuid(AgsConnectable *connectable)
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* get UUID */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   ptr = audio_unit_server->uuid;
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   return(ptr);
 }
@@ -757,19 +669,13 @@ ags_audio_unit_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *audio_unit_server_mutex;
-
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
   /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* check is added */
-  pthread_mutex_lock(audio_unit_server_mutex);
-
-  is_ready = (((AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY & (audio_unit_server->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  is_ready = ags_audio_unit_server_test_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -840,19 +746,10 @@ ags_audio_unit_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *audio_unit_server_mutex;
-
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
   /* check is connected */
-  pthread_mutex_lock(audio_unit_server_mutex);
-
-  is_connected = (((AGS_AUDIO_UNIT_SERVER_CONNECTED & (audio_unit_server->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  is_connected = ags_audio_unit_server_test_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
   
   return(is_connected);
 }
@@ -862,10 +759,8 @@ ags_audio_unit_server_connect(AgsConnectable *connectable)
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  GList *list_start, *list;  
+  GList *start_list, *list;  
 
-  pthread_mutex_t *audio_unit_server_mutex;
-  
   if(ags_connectable_is_connected(connectable)){
     return;
   }
@@ -874,11 +769,12 @@ ags_audio_unit_server_connect(AgsConnectable *connectable)
 
   ags_audio_unit_server_set_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
 
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+  /* connect client */
+  g_object_get(audio_unit_server,
+	       "audio-unit-client", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy(audio_unit_server->client);
+  list = start_list;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -886,7 +782,8 @@ ags_audio_unit_server_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -894,9 +791,7 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  GList *list_start, *list;
-
-  pthread_mutex_t *audio_unit_server_mutex;
+  GList *start_list, *list;  
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -906,12 +801,12 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
   
   ags_audio_unit_server_unset_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_CONNECTED);
 
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
+  /* connect client */
+  g_object_get(audio_unit_server,
+	       "audio-unit-client", &start_list,
+	       NULL);
 
-  /* client */
-  list =
-    list_start = g_list_copy(audio_unit_server->client);
+  list = start_list;
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -919,22 +814,8 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
-}
-
-/**
- * ags_audio_unit_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.2.0
- */
-pthread_mutex_t*
-ags_audio_unit_server_get_class_mutex()
-{
-  return(&ags_audio_unit_server_class_mutex);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
@@ -946,14 +827,14 @@ ags_audio_unit_server_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gboolean
 ags_audio_unit_server_test_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return(FALSE);
@@ -963,11 +844,11 @@ ags_audio_unit_server_test_flags(AgsAudioUnitServer *audio_unit_server, guint fl
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* test */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   retval = (flags & (audio_unit_server->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 
   return(retval);
 }
@@ -979,12 +860,12 @@ ags_audio_unit_server_test_flags(AgsAudioUnitServer *audio_unit_server, guint fl
  *
  * Enable a feature of @audio_unit_server.
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_audio_unit_server_set_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
 {
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return;
@@ -996,11 +877,11 @@ ags_audio_unit_server_set_flags(AgsAudioUnitServer *audio_unit_server, guint fla
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   audio_unit_server->flags |= flags;
   
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
     
 /**
@@ -1010,12 +891,12 @@ ags_audio_unit_server_set_flags(AgsAudioUnitServer *audio_unit_server, guint fla
  *
  * Disable a feature of @audio_unit_server.
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_audio_unit_server_unset_flags(AgsAudioUnitServer *audio_unit_server, guint flags)
 {  
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return;
@@ -1027,11 +908,11 @@ ags_audio_unit_server_unset_flags(AgsAudioUnitServer *audio_unit_server, guint f
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   audio_unit_server->flags &= (~flags);
   
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 void
@@ -1040,7 +921,7 @@ ags_audio_unit_server_set_url(AgsSoundServer *sound_server,
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
 
@@ -1048,11 +929,11 @@ ags_audio_unit_server_set_url(AgsSoundServer *sound_server,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* set URL */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   audio_unit_server->url = g_strdup(url);
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 gchar*
@@ -1062,7 +943,7 @@ ags_audio_unit_server_get_url(AgsSoundServer *sound_server)
 
   gchar *url;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
 
@@ -1070,11 +951,11 @@ ags_audio_unit_server_get_url(AgsSoundServer *sound_server)
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* set URL */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
-  url = audio_unit_server->url;
+  url = g_strdup(audio_unit_server->url);
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   return(url);
 }
@@ -1086,7 +967,7 @@ ags_audio_unit_server_set_ports(AgsSoundServer *sound_server,
 {
   AgsAudioUnitServer *audio_unit_server;
 
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
 
@@ -1094,12 +975,12 @@ ags_audio_unit_server_set_ports(AgsSoundServer *sound_server,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* set ports */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   audio_unit_server->port = port;
   audio_unit_server->port_count = port_count;
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 guint*
@@ -1110,7 +991,7 @@ ags_audio_unit_server_get_ports(AgsSoundServer *sound_server,
 
   guint *port;
   
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
 
@@ -1118,7 +999,7 @@ ags_audio_unit_server_get_ports(AgsSoundServer *sound_server,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* get ports */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   if(port_count != NULL){
     *port_count = AGS_AUDIO_UNIT_SERVER(sound_server)->port_count;
@@ -1126,7 +1007,7 @@ ags_audio_unit_server_get_ports(AgsSoundServer *sound_server,
 
   port = audio_unit_server->port;
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   return(port);
 }
@@ -1292,10 +1173,12 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
   gboolean initial_set;
   guint i;
 
-  pthread_mutex_t *audio_unit_server_mutex;
-  pthread_mutex_t *audio_unit_client_mutex;
+  GRecMutex *audio_unit_server_mutex;
+  GRecMutex *audio_unit_client_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
+
+  application_context = ags_application_context_get_instance();
 
   /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
@@ -1304,9 +1187,7 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
   initial_set = FALSE;
   
   /* get some fields */
-  pthread_mutex_lock(audio_unit_server_mutex);
-
-  application_context= audio_unit_server->application_context;
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   audio_unit_client = 
     default_client = (AgsAudioUnitClient *) audio_unit_server->default_client;
@@ -1314,7 +1195,7 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 
   n_soundcards = audio_unit_server->n_soundcards;
   
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 
   if(!is_output &&
      input_client != NULL){
@@ -1343,7 +1224,7 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    audio_unit_devout = ags_audio_unit_devout_new(audio_unit_server->application_context);
+    audio_unit_devout = ags_audio_unit_devout_new(application_context);
     soundcard = (GObject *) audio_unit_devout;
 
     str = g_strdup_printf("ags-audio-unit-devout-%d",
@@ -1387,13 +1268,13 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 		 NULL);
 
     /* increment n-soundcards */
-    pthread_mutex_lock(audio_unit_server_mutex);
+    g_rec_mutex_lock(audio_unit_server_mutex);
 
     audio_unit_server->n_soundcards += 1;
 
-    pthread_mutex_unlock(audio_unit_server_mutex);
+    g_rec_mutex_unlock(audio_unit_server_mutex);
   }else{
-    audio_unit_devin = ags_audio_unit_devin_new(audio_unit_server->application_context);
+    audio_unit_devin = ags_audio_unit_devin_new(application_context);
     soundcard = (GObject *) audio_unit_devin;
 
     str = g_strdup_printf("ags-audio-unit-devin-%d",
@@ -1437,11 +1318,11 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 		 NULL);
 
     /* increment n-soundcards */
-    pthread_mutex_lock(audio_unit_server_mutex);
+    g_rec_mutex_lock(audio_unit_server_mutex);
 
     audio_unit_server->n_soundcards += 1;
 
-    pthread_mutex_unlock(audio_unit_server_mutex);
+    g_rec_mutex_unlock(audio_unit_server_mutex);
   }
   
   return(soundcard);
@@ -1459,7 +1340,7 @@ ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
   GList *list_start, *list;
   GList *port;
   
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(sound_server);
 
@@ -1500,7 +1381,8 @@ ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else if(AGS_IS_AUDIO_UNIT_DEVIN(soundcard)){
     g_object_get(soundcard,
 		 "audio-unit-port", &list_start,
@@ -1516,7 +1398,8 @@ ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   ags_audio_unit_client_remove_device(audio_unit_client,
@@ -1528,14 +1411,15 @@ ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
 
   if(port == NULL){
     /* reset n-soundcards */
-    pthread_mutex_lock(audio_unit_server_mutex);
+    g_rec_mutex_lock(audio_unit_server_mutex);
 
     audio_unit_server->n_soundcards = 0;
 
-    pthread_mutex_unlock(audio_unit_server_mutex);
+    g_rec_mutex_unlock(audio_unit_server_mutex);
   }
 
-  g_list_free(port);
+  g_list_free_full(port,
+		   g_object_unref);
 }
 
 GObject*
@@ -1562,7 +1446,7 @@ ags_audio_unit_server_unregister_sequencer(AgsSoundServer *sound_server,
  * 
  * Returns: the instantiated #AgsAudioUnitDevout
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GObject*
 ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_server)
@@ -1578,26 +1462,26 @@ ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_
   guint n_soundcards;
   guint i;
   
-  pthread_mutex_t *audio_unit_server_mutex;
-  pthread_mutex_t *audio_unit_client_mutex;
+  GRecMutex *audio_unit_server_mutex;
+  GRecMutex *audio_unit_client_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return(NULL);
   }
 
+  application_context = ags_application_context_get_instance();
+
   /* get audio unit server mutex */
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* get some fields */
-  pthread_mutex_lock(audio_unit_server_mutex);
-
-  application_context = audio_unit_server->application_context;
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   default_client = (AgsAudioUnitClient *) audio_unit_server->default_client;
 
   n_soundcards = audio_unit_server->n_soundcards;
   
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
   
   /* the default client */
   g_object_get(audio_unit_server,
@@ -1622,7 +1506,7 @@ ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* the soundcard */
-  audio_unit_devout = ags_audio_unit_devout_new(audio_unit_server->application_context);
+  audio_unit_devout = ags_audio_unit_devout_new(application_context);
   g_object_set(AGS_AUDIO_UNIT_DEVOUT(audio_unit_devout),
 	       "audio-unit-client", default_client,
 	       "device", "ags-default-devout",
@@ -1673,7 +1557,7 @@ ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_
  *
  * Returns: the next matching #GList-struct containing a #AgsAudioUnitServer matching @url or %NULL
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_audio_unit_server_find_url(GList *audio_unit_server,
@@ -1681,7 +1565,7 @@ ags_audio_unit_server_find_url(GList *audio_unit_server,
 {
   GList *retval;
   
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   retval = NULL;
   
@@ -1690,18 +1574,18 @@ ags_audio_unit_server_find_url(GList *audio_unit_server,
     audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server->data);
 
     /* check URL */
-    pthread_mutex_lock(audio_unit_server_mutex);
+    g_rec_mutex_lock(audio_unit_server_mutex);
     
     if(!g_ascii_strcasecmp(AGS_AUDIO_UNIT_SERVER(audio_unit_server->data)->url,
 			   url)){
       retval = audio_unit_server;
 
-      pthread_mutex_unlock(audio_unit_server_mutex);
+      g_rec_mutex_unlock(audio_unit_server_mutex);
     
       break;
     }
 
-    pthread_mutex_unlock(audio_unit_server_mutex);
+    g_rec_mutex_unlock(audio_unit_server_mutex);
     
     audio_unit_server = audio_unit_server->next;
   }
@@ -1718,7 +1602,7 @@ ags_audio_unit_server_find_url(GList *audio_unit_server,
  *
  * Returns: the #AgsAudioUnitClient found or %NULL
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GObject*
 ags_audio_unit_server_find_client(AgsAudioUnitServer *audio_unit_server,
@@ -1726,26 +1610,21 @@ ags_audio_unit_server_find_client(AgsAudioUnitServer *audio_unit_server,
 {
   AgsAudioUnitClient *retval;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
-  pthread_mutex_t *audio_unit_server_mutex;
-  pthread_mutex_t *audio_unit_client_mutex;
+  GRecMutex *audio_unit_client_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return(NULL);
   }
 
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
   /* get some fields */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_object_get(audio_unit_server,
+	       "audio-unit-client", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy(audio_unit_server->client);
-
-  pthread_mutex_unlock(audio_unit_server_mutex);
-
+  list = start_list;
+  
   retval = NULL;
   
   while(list != NULL){
@@ -1753,23 +1632,24 @@ ags_audio_unit_server_find_client(AgsAudioUnitServer *audio_unit_server,
     audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(list->data);
 
     /* check client UUID */
-    pthread_mutex_lock(audio_unit_client_mutex);
+    g_rec_mutex_lock(audio_unit_client_mutex);
     
     if(!g_ascii_strcasecmp(AGS_AUDIO_UNIT_CLIENT(list->data)->client_uuid,
 			   client_uuid)){
       retval = list->data;
 
-      pthread_mutex_unlock(audio_unit_client_mutex);
+      g_rec_mutex_unlock(audio_unit_client_mutex);
 
       break;
     }
 
-    pthread_mutex_unlock(audio_unit_client_mutex);
+    g_rec_mutex_unlock(audio_unit_client_mutex);
     
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   return((GObject *) retval);
 }
@@ -1783,7 +1663,7 @@ ags_audio_unit_server_find_client(AgsAudioUnitServer *audio_unit_server,
  *
  * Returns: the #AgsAudioUnitPort found or %NULL
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GObject*
 ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
@@ -1794,7 +1674,7 @@ ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
 
   gboolean success;
   
-  pthread_mutex_t *audio_unit_port_mutex;
+  GRecMutex *audio_unit_port_mutex;
 
   g_object_get(audio_unit_server,
 	       "audio-unit-client", &client_start,
@@ -1814,12 +1694,12 @@ ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
       audio_unit_port_mutex = AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(port->data);
       
       /* check port UUID */
-      pthread_mutex_lock(audio_unit_port_mutex);
+      g_rec_mutex_lock(audio_unit_port_mutex);
       
       success = (!g_ascii_strcasecmp(AGS_AUDIO_UNIT_PORT(port->data)->port_uuid,
 				     port_uuid)) ? TRUE: FALSE;
 
-      pthread_mutex_unlock(audio_unit_port_mutex);
+      g_rec_mutex_unlock(audio_unit_port_mutex);
       
       if(success){
 	g_list_free(client_start);
@@ -1850,13 +1730,13 @@ ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
  *
  * Add @audio_unit_client to @audio_unit_server
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_audio_unit_server_add_client(AgsAudioUnitServer *audio_unit_server,
 				 GObject *audio_unit_client)
 {
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server) ||
      !AGS_IS_AUDIO_UNIT_CLIENT(audio_unit_client)){
@@ -1867,7 +1747,7 @@ ags_audio_unit_server_add_client(AgsAudioUnitServer *audio_unit_server,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* get some fields */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   if(g_list_find(audio_unit_server->client, audio_unit_client) == NULL){
     g_object_ref(audio_unit_client);
@@ -1875,7 +1755,7 @@ ags_audio_unit_server_add_client(AgsAudioUnitServer *audio_unit_server,
 					 audio_unit_client);
   }
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 /**
@@ -1885,13 +1765,13 @@ ags_audio_unit_server_add_client(AgsAudioUnitServer *audio_unit_server,
  *
  * Remove @audio_unit_client to @audio_unit_server
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_audio_unit_server_remove_client(AgsAudioUnitServer *audio_unit_server,
 				    GObject *audio_unit_client)
 {
-  pthread_mutex_t *audio_unit_server_mutex;
+  GRecMutex *audio_unit_server_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server) ||
      !AGS_IS_AUDIO_UNIT_CLIENT(audio_unit_client)){
@@ -1902,7 +1782,7 @@ ags_audio_unit_server_remove_client(AgsAudioUnitServer *audio_unit_server,
   audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
 
   /* get some fields */
-  pthread_mutex_lock(audio_unit_server_mutex);
+  g_rec_mutex_lock(audio_unit_server_mutex);
 
   if(g_list_find(audio_unit_server->client, audio_unit_client) != NULL){
     audio_unit_server->client = g_list_remove(audio_unit_server->client,
@@ -1910,7 +1790,7 @@ ags_audio_unit_server_remove_client(AgsAudioUnitServer *audio_unit_server,
     g_object_unref(audio_unit_client);
   }
 
-  pthread_mutex_unlock(audio_unit_server_mutex);
+  g_rec_mutex_unlock(audio_unit_server_mutex);
 }
 
 /**
@@ -1919,7 +1799,7 @@ ags_audio_unit_server_remove_client(AgsAudioUnitServer *audio_unit_server,
  *
  * Connect all clients.
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_audio_unit_server_connect_client(AgsAudioUnitServer *audio_unit_server)
@@ -1928,7 +1808,7 @@ ags_audio_unit_server_connect_client(AgsAudioUnitServer *audio_unit_server)
 
   gchar *client_name;
 
-  pthread_mutex_t *audio_unit_client_mutex;
+  GRecMutex *audio_unit_client_mutex;
   
   if(!AGS_IS_AUDIO_UNIT_SERVER(audio_unit_server)){
     return;
@@ -1945,15 +1825,15 @@ ags_audio_unit_server_connect_client(AgsAudioUnitServer *audio_unit_server)
     audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(client->data);
 
     /* client name */
-    pthread_mutex_lock(audio_unit_client_mutex);
+    g_rec_mutex_lock(audio_unit_client_mutex);
 
     client_name = g_strdup(AGS_AUDIO_UNIT_CLIENT(client->data)->client_name);
     
-    pthread_mutex_unlock(audio_unit_client_mutex);
+    g_rec_mutex_unlock(audio_unit_client_mutex);
 
     /* open */
     ags_audio_unit_client_open((AgsAudioUnitClient *) client->data,
-			 client_name);
+			       client_name);
     ags_audio_unit_client_activate(client->data);
 
     g_free(client_name);
@@ -1967,23 +1847,20 @@ ags_audio_unit_server_connect_client(AgsAudioUnitServer *audio_unit_server)
 
 /**
  * ags_audio_unit_server_new:
- * @application_context: the #AgsApplicationContext
  * @url: the URL as string
  *
  * Create a new instance of #AgsAudioUnitServer.
  *
  * Returns: the new #AgsAudioUnitServer
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsAudioUnitServer*
-ags_audio_unit_server_new(AgsApplicationContext *application_context,
-			  gchar *url)
+ags_audio_unit_server_new(gchar *url)
 {
   AgsAudioUnitServer *audio_unit_server;
 
   audio_unit_server = (AgsAudioUnitServer *) g_object_new(AGS_TYPE_AUDIO_UNIT_SERVER,
-							  "application-context", application_context,
 							  "url", url,
 							  NULL);
 

@@ -25,11 +25,11 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_PARSER                (ags_midi_parser_get_type ())
 #define AGS_MIDI_PARSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_PARSER, AgsMidiParser))
@@ -38,7 +38,7 @@
 #define AGS_IS_MIDI_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_PARSER))
 #define AGS_MIDI_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_PARSER, AgsMidiParserClass))
 
-#define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (((AgsMidiParser *) obj)->obj_mutex)
+#define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (&((AgsMidiParser *) obj)->obj_mutex))
 
 #define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 
@@ -67,8 +67,7 @@ struct _AgsMidiParser
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   FILE *file;
   guint nth_chunk;
@@ -176,5 +175,7 @@ xmlNode* ags_midi_parser_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type);
 
 AgsMidiParser* ags_midi_parser_new(FILE *file);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_PARSER_H__*/

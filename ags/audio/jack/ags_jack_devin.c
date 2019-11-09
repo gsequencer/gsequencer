@@ -19,8 +19,6 @@
 
 #include <ags/audio/jack/ags_jack_devin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -69,10 +67,6 @@ void ags_jack_devin_xml_parse(AgsConnectable *connectable,
 gboolean ags_jack_devin_is_connected(AgsConnectable *connectable);
 void ags_jack_devin_connect(AgsConnectable *connectable);
 void ags_jack_devin_disconnect(AgsConnectable *connectable);
-
-void ags_jack_devin_set_application_context(AgsSoundcard *soundcard,
-					    AgsApplicationContext *application_context);
-AgsApplicationContext* ags_jack_devin_get_application_context(AgsSoundcard *soundcard);
 
 void ags_jack_devin_set_device(AgsSoundcard *soundcard,
 			       gchar *device);
@@ -169,7 +163,6 @@ guint ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard);
  */
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -186,8 +179,6 @@ enum{
 };
 
 static gpointer ags_jack_devin_parent_class = NULL;
-
-static pthread_mutex_t ags_jack_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_devin_get_type (void)
@@ -259,22 +250,6 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
   gobject->finalize = ags_jack_devin_finalize;
 
   /* properties */
-  /**
-   * AgsJackDevin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsJackDevin:device:
    *
@@ -511,9 +486,6 @@ ags_jack_devin_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_jack_devin_set_application_context;
-  soundcard->get_application_context = ags_jack_devin_get_application_context;
-
   soundcard->set_device = ags_jack_devin_set_device;
   soundcard->get_device = ags_jack_devin_get_device;
   
@@ -609,9 +581,6 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  jack_devin->application_context = NULL;
 
   /* uuid */
   jack_devin->uuid = ags_uuid_alloc();
@@ -735,33 +704,6 @@ ags_jack_devin_set_property(GObject *gobject,
   jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(jack_devin_mutex);
-
-      if(jack_devin->application_context == application_context){
-	pthread_mutex_unlock(jack_devin_mutex);
-
-	return;
-      }
-
-      if(jack_devin->application_context != NULL){
-	g_object_unref(G_OBJECT(jack_devin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      jack_devin->application_context = application_context;
-
-      pthread_mutex_unlock(jack_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -986,15 +928,6 @@ ags_jack_devin_get_property(GObject *gobject,
   jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(jack_devin_mutex);
-
-      g_value_set_object(value, jack_devin->application_context);
-
-      pthread_mutex_unlock(jack_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(jack_devin_mutex);
@@ -1119,13 +1052,6 @@ ags_jack_devin_dispose(GObject *gobject)
 
   jack_devin = AGS_JACK_DEVIN(gobject);
 
-  /* application context */
-  if(jack_devin->application_context != NULL){
-    g_object_unref(jack_devin->application_context);
-
-    jack_devin->application_context = NULL;
-  }
-
   /* jack client */
   if(jack_devin->jack_client != NULL){
     g_object_unref(jack_devin->jack_client);
@@ -1208,11 +1134,6 @@ ags_jack_devin_finalize(GObject *gobject)
   /* jack port */
   g_list_free_full(jack_devin->jack_port,
 		   g_object_unref);
-
-  /* application context */
-  if(jack_devin->application_context != NULL){
-    g_object_unref(jack_devin->application_context);
-  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devin_parent_class)->finalize(gobject);
@@ -1385,21 +1306,6 @@ ags_jack_devin_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_jack_devin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_jack_devin_get_class_mutex()
-{
-  return(&ags_jack_devin_class_mutex);
-}
-
-/**
  * ags_jack_devin_test_flags:
  * @jack_devin: the #AgsJackDevin
  * @flags: the flags
@@ -1494,51 +1400,6 @@ ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags)
   jack_devin->flags &= (~flags);
   
   pthread_mutex_unlock(jack_devin_mutex);
-}
-
-void
-ags_jack_devin_set_application_context(AgsSoundcard *soundcard,
-				       AgsApplicationContext *application_context)
-{
-  AgsJackDevin *jack_devin;
-
-  pthread_mutex_t *jack_devin_mutex;
-
-  jack_devin = AGS_JACK_DEVIN(soundcard);
-
-  /* get jack devin mutex */
-  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
-
-  /* set application context */
-  pthread_mutex_lock(jack_devin_mutex);
-  
-  jack_devin->application_context = (GObject *) application_context;
-  
-  pthread_mutex_unlock(jack_devin_mutex);
-}
-
-AgsApplicationContext*
-ags_jack_devin_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsJackDevin *jack_devin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *jack_devin_mutex;
-
-  jack_devin = AGS_JACK_DEVIN(soundcard);
-
-  /* get jack devin mutex */
-  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
-
-  /* get application context */
-  pthread_mutex_lock(jack_devin_mutex);
-
-  application_context = (AgsApplicationContext *) jack_devin->application_context;
-
-  pthread_mutex_unlock(jack_devin_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -3326,7 +3187,6 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
 
 /**
  * ags_jack_devin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsJackDevin.
  *
@@ -3335,12 +3195,11 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
  * Since: 2.0.0
  */
 AgsJackDevin*
-ags_jack_devin_new(AgsApplicationContext *application_context)
+ags_jack_devin_new()
 {
   AgsJackDevin *jack_devin;
 
   jack_devin = (AgsJackDevin *) g_object_new(AGS_TYPE_JACK_DEVIN,
-					     "application-context", application_context,
 					     NULL);
   
   return(jack_devin);

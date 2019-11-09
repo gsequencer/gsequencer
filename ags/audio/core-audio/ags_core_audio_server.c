@@ -101,7 +101,6 @@ void* ags_core_audio_server_do_poll_loop(void *ptr);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_CORE_AUDIO_CLIENT,
@@ -109,8 +108,6 @@ enum{
 };
 
 static gpointer ags_core_audio_server_parent_class = NULL;
-
-static pthread_mutex_t ags_core_audio_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_core_audio_server_get_type()
@@ -182,22 +179,6 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
   gobject->finalize = ags_core_audio_server_finalize;
 
   /* properties */
-  /**
-   * AgsCoreAudioServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsCoreAudioServer:url:
    *
@@ -326,9 +307,6 @@ ags_core_audio_server_init(AgsCoreAudioServer *core_audio_server)
 		   TRUE);
   core_audio_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
-  /* parent */  
-  core_audio_server->application_context = NULL;
-
   /* uuid */
   core_audio_server->uuid = ags_uuid_alloc();
   ags_uuid_generate(core_audio_server->uuid);
@@ -363,33 +341,6 @@ ags_core_audio_server_set_property(GObject *gobject,
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(core_audio_server_mutex);
-
-      if(core_audio_server->application_context == application_context){
-	pthread_mutex_unlock(core_audio_server_mutex);
-
-	return;
-      }
-
-      if(core_audio_server->application_context != NULL){
-	g_object_unref(G_OBJECT(core_audio_server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      core_audio_server->application_context = application_context;
-
-      pthread_mutex_unlock(core_audio_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       gchar *url;
@@ -511,15 +462,6 @@ ags_core_audio_server_get_property(GObject *gobject,
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(core_audio_server_mutex);
-
-      g_value_set_object(value, core_audio_server->application_context);
-
-      pthread_mutex_unlock(core_audio_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       pthread_mutex_lock(core_audio_server_mutex);
@@ -574,13 +516,6 @@ ags_core_audio_server_dispose(GObject *gobject)
   
   core_audio_server = AGS_CORE_AUDIO_SERVER(gobject);
 
-  /* application context */
-  if(core_audio_server->application_context != NULL){
-    g_object_unref(G_OBJECT(core_audio_server->application_context));
-    
-    core_audio_server->application_context = NULL;
-  }
-
   /* default soundcard */
   if(core_audio_server->default_soundcard != NULL){
     g_object_unref(G_OBJECT(core_audio_server->default_soundcard));
@@ -621,17 +556,6 @@ ags_core_audio_server_finalize(GObject *gobject)
   AgsCoreAudioServer *core_audio_server;
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(gobject);
-
-  pthread_mutex_destroy(core_audio_server->obj_mutex);
-  free(core_audio_server->obj_mutex);
-
-  pthread_mutexattr_destroy(core_audio_server->obj_mutexattr);
-  free(core_audio_server->obj_mutexattr);
-  
-  /* application context */
-  if(core_audio_server->application_context != NULL){
-    g_object_unref(G_OBJECT(core_audio_server->application_context));
-  }
 
   /* url */
   g_free(core_audio_server->url);
@@ -856,21 +780,6 @@ ags_core_audio_server_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-/**
- * ags_core_audio_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_core_audio_server_get_class_mutex()
-{
-  return(&ags_core_audio_server_class_mutex);
 }
 
 /**
@@ -1243,6 +1152,8 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server);
 
+  application_context = ags_application_context_get_instance();
+
   /* get core audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
@@ -1251,8 +1162,6 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
   
   /* get some fields */
   pthread_mutex_lock(core_audio_server_mutex);
-
-  application_context= core_audio_server->application_context;
 
   default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
 
@@ -1293,7 +1202,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    core_audio_devout = ags_core_audio_devout_new(core_audio_server->application_context);
+    core_audio_devout = ags_core_audio_devout_new();
     soundcard = (GObject *) core_audio_devout;
 
     str = g_strdup_printf("ags-core-audio-devout-%d",
@@ -1343,7 +1252,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(core_audio_server_mutex);
   }else{
-    core_audio_devin = ags_core_audio_devin_new(core_audio_server->application_context);
+    core_audio_devin = ags_core_audio_devin_new();
     soundcard = (GObject *) core_audio_devin;
 
     str = g_strdup_printf("ags-core-audio-devin-%d",
@@ -1520,13 +1429,13 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
   
   core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server);
 
+  application_context = ags_application_context_get_instance();
+
   /* get core-audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
   /* get some fields */
   pthread_mutex_lock(core_audio_server_mutex);
-
-  application_context= core_audio_server->application_context;
 
   default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
 
@@ -1566,7 +1475,7 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
     g_warning("ags_core_audio_server.c - can't open core audio client");
   }
 
-  core_audio_midiin = ags_core_audio_midiin_new(core_audio_server->application_context);
+  core_audio_midiin = ags_core_audio_midiin_new();
 
   str = g_strdup_printf("ags-core-audio-midiin-%d",
 			n_sequencers);
@@ -1769,7 +1678,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   }
 
   /* the soundcard */
-  core_audio_devout = ags_core_audio_devout_new(core_audio_server->application_context);
+  core_audio_devout = ags_core_audio_devout_new();
   g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),
 	       "core-audio-client", default_client,
 	       "device", "ags-default-devout",
@@ -2114,7 +2023,6 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
 /**
  * ags_core_audio_server_new:
- * @application_context: the #AgsApplicationContext
  * @url: the URL as string
  *
  * Create a new instance of #AgsCoreAudioServer.
@@ -2124,13 +2032,11 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
  * Since: 2.0.0
  */
 AgsCoreAudioServer*
-ags_core_audio_server_new(AgsApplicationContext *application_context,
-			  gchar *url)
+ags_core_audio_server_new(gchar *url)
 {
   AgsCoreAudioServer *core_audio_server;
 
   core_audio_server = (AgsCoreAudioServer *) g_object_new(AGS_TYPE_CORE_AUDIO_SERVER,
-							  "application-context", application_context,
 							  "url", url,
 							  NULL);
 

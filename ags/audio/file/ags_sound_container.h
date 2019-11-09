@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOUND_CONTAINER                    (ags_sound_container_get_type())
 #define AGS_SOUND_CONTAINER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_CONTAINER, AgsSoundContainer))
 #define AGS_SOUND_CONTAINER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUND_CONTAINER, AgsSoundContainerInterface))
@@ -95,5 +99,7 @@ GList* ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_contai
 GList* ags_sound_container_get_resource_current(AgsSoundContainer *sound_container);
 
 void ags_sound_container_close(AgsSoundContainer *sound_container);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_CONTAINER_H__*/

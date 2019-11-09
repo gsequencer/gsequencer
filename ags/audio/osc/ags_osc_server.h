@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #ifndef AGS_W32API
 #include <netinet/in.h>
 #endif
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_SERVER                (ags_osc_server_get_type ())
 #define AGS_OSC_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_SERVER, AgsOscServer))
@@ -36,7 +36,7 @@
 #define AGS_IS_OSC_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_SERVER))
 #define AGS_OSC_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_SERVER, AgsOscServerClass))
 
-#define AGS_OSC_SERVER_GET_OBJ_MUTEX(obj) (((AgsOscServer *) obj)->obj_mutex)
+#define AGS_OSC_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsOscServer *) obj)->obj_mutex))
 
 #define AGS_OSC_SERVER_DEFAULT_MAX_ADDRESS_LENGTH (2048)
 
@@ -83,8 +83,7 @@ struct _AgsOscServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gchar *ip4;
   gchar *ip6;
@@ -130,8 +129,6 @@ struct _AgsOscServerClass
 
 GType ags_osc_server_get_type(void);
 
-pthread_mutex_t* ags_osc_server_get_class_mutex();
-
 gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags);
@@ -160,5 +157,7 @@ void ags_osc_server_dispatch(AgsOscServer *osc_server);
 
 /* instance */
 AgsOscServer* ags_osc_server_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_SERVER_H__*/

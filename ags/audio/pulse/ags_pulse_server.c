@@ -100,7 +100,6 @@ void* ags_pulse_server_do_poll_loop(void *ptr);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_PULSE_CLIENT,
@@ -108,8 +107,6 @@ enum{
 };
 
 static gpointer ags_pulse_server_parent_class = NULL;
-
-static pthread_mutex_t ags_pulse_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_server_get_type()
@@ -181,22 +178,6 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
   gobject->finalize = ags_pulse_server_finalize;
 
   /* properties */
-  /**
-   * AgsPulseServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsPulseServer:url:
    *
@@ -325,9 +306,6 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
 		   TRUE);
   pulse_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
-  /* parent */
-  pulse_server->application_context = NULL;
-
   /* uuid */
   pulse_server->uuid = ags_uuid_alloc();
   ags_uuid_generate(pulse_server->uuid);
@@ -370,33 +348,6 @@ ags_pulse_server_set_property(GObject *gobject,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(pulse_server_mutex);
-
-      if(pulse_server->application_context == application_context){
-	pthread_mutex_unlock(pulse_server_mutex);
-
-	return;
-      }
-
-      if(pulse_server->application_context != NULL){
-	g_object_unref(G_OBJECT(pulse_server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      pulse_server->application_context = application_context;
-
-      pthread_mutex_unlock(pulse_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       gchar *url;
@@ -518,15 +469,6 @@ ags_pulse_server_get_property(GObject *gobject,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(pulse_server_mutex);
-
-      g_value_set_object(value, pulse_server->application_context);
-
-      pthread_mutex_unlock(pulse_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       pthread_mutex_lock(pulse_server_mutex);
@@ -581,13 +523,6 @@ ags_pulse_server_dispose(GObject *gobject)
   
   pulse_server = AGS_PULSE_SERVER(gobject);
 
-  /* application context */
-  if(pulse_server->application_context != NULL){
-    g_object_unref(G_OBJECT(pulse_server->application_context));
-    
-    pulse_server->application_context = NULL;
-  }
-
   /* default soundcard */
   if(pulse_server->default_soundcard != NULL){
     g_object_unref(G_OBJECT(pulse_server->default_soundcard));
@@ -628,17 +563,6 @@ ags_pulse_server_finalize(GObject *gobject)
   AgsPulseServer *pulse_server;
 
   pulse_server = AGS_PULSE_SERVER(gobject);
-
-  pthread_mutex_destroy(pulse_server->obj_mutex);
-  free(pulse_server->obj_mutex);
-
-  pthread_mutexattr_destroy(pulse_server->obj_mutexattr);
-  free(pulse_server->obj_mutexattr);
-  
-  /* application context */
-  if(pulse_server->application_context != NULL){
-    g_object_unref(G_OBJECT(pulse_server->application_context));
-  }
 
   /* url */
   g_free(pulse_server->url);
@@ -863,21 +787,6 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-/**
- * ags_pulse_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_pulse_server_get_class_mutex()
-{
-  return(&ags_pulse_server_class_mutex);
 }
 
 /**
@@ -1251,6 +1160,8 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
+  application_context= ags_application_context_get_instance();
+
   /* get pulse server mutex */
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
@@ -1270,8 +1181,6 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 #endif
   }
   
-  application_context= pulse_server->application_context;
-
   default_client = (AgsPulseClient *) pulse_server->default_client;
 
   n_soundcards = pulse_server->n_soundcards;
@@ -1312,7 +1221,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    pulse_devout = ags_pulse_devout_new(application_context);
+    pulse_devout = ags_pulse_devout_new();
     soundcard = (GObject *) pulse_devout;
     
     str = g_strdup_printf("ags-pulse-devout-%d",
@@ -1362,7 +1271,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(pulse_server_mutex);
   }else{
-    pulse_devin = ags_pulse_devin_new(application_context);
+    pulse_devin = ags_pulse_devin_new();
     soundcard = (GObject *) pulse_devin;
 
     str = g_strdup_printf("ags-pulse-devin-%d",
@@ -1598,7 +1507,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   }
 
   /* the soundcard */
-  pulse_devout = ags_pulse_devout_new(application_context);
+  pulse_devout = ags_pulse_devout_new();
   
   g_object_set(AGS_PULSE_DEVOUT(pulse_devout),
 	       "pulse-client", default_client,
@@ -2017,7 +1926,6 @@ ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
 
 /**
  * ags_pulse_server_new:
- * @application_context: the #AgsApplicationContext
  * @url: the URL as string
  *
  * Create a new instance of #AgsPulseServer.
@@ -2027,13 +1935,11 @@ ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
  * Since: 2.0.0
  */
 AgsPulseServer*
-ags_pulse_server_new(AgsApplicationContext *application_context,
-		     gchar *url)
+ags_pulse_server_new(gchar *url)
 {
   AgsPulseServer *pulse_server;
 
   pulse_server = (AgsPulseServer *) g_object_new(AGS_TYPE_PULSE_SERVER,
-						 "application-context", application_context,
 						 "url", url,
 						 NULL);
 

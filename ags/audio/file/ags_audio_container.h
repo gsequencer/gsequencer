@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIO_CONTAINER                (ags_audio_container_get_type())
 #define AGS_AUDIO_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainer))
 #define AGS_AUDIO_CONTAINER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainerClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_AUDIO_CONTAINER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO_CONTAINER))
 #define AGS_AUDIO_CONTAINER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainerClass))
 
-#define AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(obj) (((AgsAudioContainer *) obj)->obj_mutex)
+#define AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(obj) (&(((AgsAudioContainer *) obj)->obj_mutex))
 
 typedef struct _AgsAudioContainer AgsAudioContainer;
 typedef struct _AgsAudioContainerClass AgsAudioContainerClass;
@@ -56,8 +58,7 @@ struct _AgsAudioContainer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
@@ -90,8 +91,6 @@ struct _AgsAudioContainerClass
 };
 
 GType ags_audio_container_get_type();
-
-pthread_mutex_t* ags_audio_container_get_class_mutex();
 
 gboolean ags_audio_container_test_flags(AgsAudioContainer *audio_container, guint flags);
 void ags_audio_container_set_flags(AgsAudioContainer *audio_container, guint flags);
@@ -139,5 +138,7 @@ AgsAudioContainer* ags_audio_container_new(gchar *filename,
 					   gchar *sample,
 					   GObject *soundcard,
 					   gint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_CONTAINER_H__*/

@@ -19,8 +19,6 @@
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -69,10 +67,6 @@ void ags_jack_devout_xml_parse(AgsConnectable *connectable,
 gboolean ags_jack_devout_is_connected(AgsConnectable *connectable);
 void ags_jack_devout_connect(AgsConnectable *connectable);
 void ags_jack_devout_disconnect(AgsConnectable *connectable);
-
-void ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
-					     AgsApplicationContext *application_context);
-AgsApplicationContext* ags_jack_devout_get_application_context(AgsSoundcard *soundcard);
 
 void ags_jack_devout_set_device(AgsSoundcard *soundcard,
 				gchar *device);
@@ -177,7 +171,6 @@ void ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -193,8 +186,6 @@ enum{
 };
 
 static gpointer ags_jack_devout_parent_class = NULL;
-
-static pthread_mutex_t ags_jack_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_devout_get_type (void)
@@ -266,22 +257,6 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
   gobject->finalize = ags_jack_devout_finalize;
 
   /* properties */
-  /**
-   * AgsJackDevout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsJackDevout:device:
    *
@@ -518,9 +493,6 @@ ags_jack_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_jack_devout_set_application_context;
-  soundcard->get_application_context = ags_jack_devout_get_application_context;
-
   soundcard->set_device = ags_jack_devout_set_device;
   soundcard->get_device = ags_jack_devout_get_device;
   
@@ -621,9 +593,6 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  jack_devout->application_context = NULL;
 
   /* uuid */
   jack_devout->uuid = ags_uuid_alloc();
@@ -757,33 +726,6 @@ ags_jack_devout_set_property(GObject *gobject,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(jack_devout_mutex);
-
-      if(jack_devout->application_context == application_context){
-	pthread_mutex_unlock(jack_devout_mutex);
-
-	return;
-      }
-
-      if(jack_devout->application_context != NULL){
-	g_object_unref(G_OBJECT(jack_devout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      jack_devout->application_context = application_context;
-
-      pthread_mutex_unlock(jack_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -1029,15 +971,6 @@ ags_jack_devout_get_property(GObject *gobject,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(jack_devout_mutex);
-
-      g_value_set_object(value, jack_devout->application_context);
-
-      pthread_mutex_unlock(jack_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(jack_devout_mutex);
@@ -1189,13 +1122,6 @@ ags_jack_devout_dispose(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(jack_devout->application_context != NULL){
-    g_object_unref(jack_devout->application_context);
-
-    jack_devout->application_context = NULL;
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->dispose(gobject);
@@ -1249,11 +1175,6 @@ ags_jack_devout_finalize(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(jack_devout->application_context != NULL){
-    g_object_unref(jack_devout->application_context);
-  }  
   
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
@@ -1426,21 +1347,6 @@ ags_jack_devout_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_jack_devout_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_jack_devout_get_class_mutex()
-{
-  return(&ags_jack_devout_class_mutex);
-}
-
-/**
  * ags_jack_devout_test_flags:
  * @jack_devout: the #AgsJackDevout
  * @flags: the flags
@@ -1535,51 +1441,6 @@ ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags)
   jack_devout->flags &= (~flags);
   
   pthread_mutex_unlock(jack_devout_mutex);
-}
-
-void
-ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
-					AgsApplicationContext *application_context)
-{
-  AgsJackDevout *jack_devout;
-
-  pthread_mutex_t *jack_devout_mutex;
-
-  jack_devout = AGS_JACK_DEVOUT(soundcard);
-
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
-  /* set application context */
-  pthread_mutex_lock(jack_devout_mutex);
-  
-  jack_devout->application_context = application_context;
-  
-  pthread_mutex_unlock(jack_devout_mutex);
-}
-
-AgsApplicationContext*
-ags_jack_devout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsJackDevout *jack_devout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *jack_devout_mutex;
-
-  jack_devout = AGS_JACK_DEVOUT(soundcard);
-
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
-  /* get application context */
-  pthread_mutex_lock(jack_devout_mutex);
-
-  application_context = jack_devout->application_context;
-
-  pthread_mutex_unlock(jack_devout_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -3477,7 +3338,6 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 
 /**
  * ags_jack_devout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsJackDevout.
  *
@@ -3486,12 +3346,11 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
  * Since: 2.0.0
  */
 AgsJackDevout*
-ags_jack_devout_new(AgsApplicationContext *application_context)
+ags_jack_devout_new()
 {
   AgsJackDevout *jack_devout;
 
   jack_devout = (AgsJackDevout *) g_object_new(AGS_TYPE_JACK_DEVOUT,
-					       "application-context", application_context,
 					       NULL);
   
   return(jack_devout);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,10 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 void ags_osc_buffer_util_put_int32(unsigned char *buffer,
 				   gint32 val);
@@ -90,5 +94,7 @@ void ags_osc_buffer_util_put_bundle(unsigned char *buffer,
 				    gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
 void ags_osc_buffer_util_get_bundle(unsigned char *buffer,
 				    gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately);
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_BUFFER_UTIL_H__*/

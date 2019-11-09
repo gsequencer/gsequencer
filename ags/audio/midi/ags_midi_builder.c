@@ -19,8 +19,6 @@
 
 #include <ags/audio/midi/ags_midi_builder.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
 #include <fcntl.h>
@@ -176,8 +174,6 @@ enum{
 
 static gpointer ags_midi_builder_parent_class = NULL;
 static guint midi_builder_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_midi_builder_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_midi_builder_get_type(void)
@@ -911,21 +907,6 @@ ags_midi_builder_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_midi_builder_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_midi_builder_get_class_mutex()
-{
-  return(&ags_midi_builder_class_mutex);
 }
 
 /**

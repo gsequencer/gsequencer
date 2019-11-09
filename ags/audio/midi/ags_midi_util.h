@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_complex.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 /* real-time channel message utility */
 gboolean ags_midi_util_is_key_on(unsigned char *buffer);
@@ -94,5 +96,7 @@ glong ags_midi_util_offset_to_delta_time(glong division,
 					 glong tempo,
 					 glong bpm,
 					 guint x);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_UTIL_H__*/

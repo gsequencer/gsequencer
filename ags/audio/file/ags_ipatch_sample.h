@@ -23,13 +23,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/config.h>
-
 #include <ags/libags.h>
+
+#include <ags/config.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_IPATCH_SAMPLE                (ags_ipatch_sample_get_type())
 #define AGS_IPATCH_SAMPLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH_SAMPLE, AgsIpatchSample))
@@ -38,7 +40,7 @@
 #define AGS_IS_IPATCH_SAMPLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_IPATCH_SAMPLE))
 #define AGS_IPATCH_SAMPLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_IPATCH_SAMPLE, AgsIpatchSampleClass))
 
-#define AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(obj) (((AgsIpatchSample *) obj)->obj_mutex)
+#define AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(obj) (&(((AgsIpatchSample *) obj)->obj_mutex))
 
 typedef struct _AgsIpatchSample AgsIpatchSample;
 typedef struct _AgsIpatchSampleClass AgsIpatchSampleClass;
@@ -62,8 +64,7 @@ struct _AgsIpatchSample
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -105,5 +106,7 @@ void ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags);
 
 /* instantiate */
 AgsIpatchSample* ags_ipatch_sample_new();
+
+G_END_DECLS
 
 #endif /*__AGS_IPATCH_SAMPLE_H__*/

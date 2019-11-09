@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_RESPONSE                (ags_osc_response_get_type ())
 #define AGS_OSC_RESPONSE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponse))
@@ -32,7 +34,7 @@
 #define AGS_IS_OSC_RESPONSE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_RESPONSE))
 #define AGS_OSC_RESPONSE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))
 
-#define AGS_OSC_RESPONSE_GET_OBJ_MUTEX(obj) (((AgsOscResponse *) obj)->obj_mutex)
+#define AGS_OSC_RESPONSE_GET_OBJ_MUTEX(obj) (&(((AgsOscResponse *) obj)->obj_mutex))
 
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE "server failure"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST "malformed request"
@@ -58,8 +60,7 @@ struct _AgsOscResponse
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   guchar *packet;
   guint packet_size;
@@ -74,12 +75,12 @@ struct _AgsOscResponseClass
 
 GType ags_osc_response_get_type(void);
 
-pthread_mutex_t* ags_osc_response_get_class_mutex();
-
 gboolean ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags);
 
 AgsOscResponse* ags_osc_response_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_RESPONSE_H__*/

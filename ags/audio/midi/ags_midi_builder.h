@@ -25,11 +25,11 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_BUILDER                (ags_midi_builder_get_type ())
 #define AGS_MIDI_BUILDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilder))
@@ -38,7 +38,7 @@
 #define AGS_IS_MIDI_BUILDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_BUILDER))
 #define AGS_MIDI_BUILDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilderClass))
 
-#define AGS_MIDI_BUILDER_GET_OBJ_MUTEX(obj) (((AgsMidiBuilder *) obj)->obj_mutex)
+#define AGS_MIDI_BUILDER_GET_OBJ_MUTEX(obj) (&(((AgsMidiBuilder *) obj)->obj_mutex))
 
 #define AGS_MIDI_BUILDER_HEADER(ptr) ((AgsMidiBuilderHeader *)(ptr))
 #define AGS_MIDI_BUILDER_TRACK(ptr) ((AgsMidiBuilderTrack *)(ptr))
@@ -59,8 +59,7 @@ struct _AgsMidiBuilder
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   unsigned char *data;
   guint length;
@@ -316,5 +315,7 @@ void ags_midi_builder_build(AgsMidiBuilder *midi_builder);
 
 /*  */
 AgsMidiBuilder* ags_midi_builder_new(FILE *file);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_BUILDER_H__*/

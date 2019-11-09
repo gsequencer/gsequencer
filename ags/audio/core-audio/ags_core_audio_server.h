@@ -32,9 +32,9 @@
 #include <AudioUnit/AudioComponent.h>
 #endif
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CORE_AUDIO_SERVER                (ags_core_audio_server_get_type())
 #define AGS_CORE_AUDIO_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_SERVER, AgsCoreAudioServer))
@@ -43,7 +43,7 @@
 #define AGS_IS_CORE_AUDIO_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_SERVER))
 #define AGS_CORE_AUDIO_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_SERVER, AgsCoreAudioServerClass))
 
-#define AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(obj) (((AgsCoreAudioServer *) obj)->obj_mutex)
+#define AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioServer *) obj)->obj_mutex))
 
 typedef struct _AgsCoreAudioServer AgsCoreAudioServer;
 typedef struct _AgsCoreAudioServerClass AgsCoreAudioServerClass;
@@ -67,8 +67,7 @@ struct _AgsCoreAudioServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   volatile gboolean running;
   pthread_t *thread;
@@ -98,8 +97,6 @@ struct _AgsCoreAudioServerClass
 
 GType ags_core_audio_server_get_type();
 
-pthread_mutex_t* ags_core_audio_server_get_class_mutex();
-
 gboolean ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint flags);
 void ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint flags);
 void ags_core_audio_server_unset_flags(AgsCoreAudioServer *core_audio_server, guint flags);
@@ -122,7 +119,8 @@ void ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
 void ags_core_audio_server_start_poll(AgsCoreAudioServer *core_audio_server);
 
-AgsCoreAudioServer* ags_core_audio_server_new(AgsApplicationContext *application_context,
-					      gchar *url);
+AgsCoreAudioServer* ags_core_audio_server_new(gchar *url);
+
+G_END_DECLS
 
 #endif /*__AGS_CORE_AUDIO_SERVER_H__*/

@@ -19,8 +19,6 @@
 
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>
@@ -128,7 +126,6 @@ guint ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_BUFFER,
   PROP_BPM,
@@ -139,8 +136,6 @@ enum{
 };
 
 static gpointer ags_core_audio_midiin_parent_class = NULL;
-
-static pthread_mutex_t ags_core_audio_midiin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_core_audio_midiin_get_type (void)
@@ -212,22 +207,6 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
   gobject->finalize = ags_core_audio_midiin_finalize;
 
   /* properties */
-  /**
-   * AgsCoreAudioMidiin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsCoreAudioMidiin:device:
    *
@@ -377,9 +356,6 @@ ags_core_audio_midiin_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
-  sequencer->set_application_context = ags_core_audio_midiin_set_application_context;
-  sequencer->get_application_context = ags_core_audio_midiin_get_application_context;
-
   sequencer->set_device = ags_core_audio_midiin_set_device;
   sequencer->get_device = ags_core_audio_midiin_get_device;
 
@@ -453,9 +429,6 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  core_audio_midiin->application_context = NULL;
 
   /* uuid */
   core_audio_midiin->uuid = ags_uuid_alloc();
@@ -556,33 +529,6 @@ ags_core_audio_midiin_set_property(GObject *gobject,
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(core_audio_midiin_mutex);
-
-      if(core_audio_midiin->application_context == application_context){
-	pthread_mutex_unlock(core_audio_midiin_mutex);
-
-	return;
-      }
-
-      if(core_audio_midiin->application_context != NULL){
-	g_object_unref(G_OBJECT(core_audio_midiin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      core_audio_midiin->application_context = application_context;
-
-      pthread_mutex_unlock(core_audio_midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -699,15 +645,6 @@ ags_core_audio_midiin_get_property(GObject *gobject,
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(core_audio_midiin_mutex);
-
-      g_value_set_object(value, core_audio_midiin->application_context);
-
-      pthread_mutex_unlock(core_audio_midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1012,21 +949,6 @@ ags_core_audio_midiin_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_core_audio_midiin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_core_audio_midiin_get_class_mutex()
-{
-  return(&ags_core_audio_midiin_class_mutex);
-}
-
-/**
  * ags_core_audio_midiin_test_flags:
  * @core_audio_midiin: the #AgsCoreAudioMidiin
  * @flags: the flags
@@ -1121,51 +1043,6 @@ ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint f
   core_audio_midiin->flags &= (~flags);
   
   pthread_mutex_unlock(core_audio_midiin_mutex);
-}
-
-void
-ags_core_audio_midiin_set_application_context(AgsSequencer *sequencer,
-					      AgsApplicationContext *application_context)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  pthread_mutex_t *core_audio_midiin_mutex;
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio_midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set application context */
-  pthread_mutex_lock(core_audio_midiin_mutex);
-  
-  core_audio_midiin->application_context = (GObject *) application_context;
-  
-  pthread_mutex_unlock(core_audio_midiin_mutex);
-}
-
-AgsApplicationContext*
-ags_core_audio_midiin_get_application_context(AgsSequencer *sequencer)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *core_audio_midiin_mutex;
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio_midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* get application context */
-  pthread_mutex_lock(core_audio_midiin_mutex);
-
-  application_context = (AgsApplicationContext *) core_audio_midiin->application_context;
-
-  pthread_mutex_unlock(core_audio_midiin_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -1283,11 +1160,7 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
-  application_context = (AgsApplicationContext *) core_audio_midiin->application_context;
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
     
   if(card_id != NULL){
     *card_id = NULL;
@@ -2139,7 +2012,6 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
 
 /**
  * ags_core_audio_midiin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsCoreAudioMidiin.
  *
@@ -2148,12 +2020,11 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
  * Since: 2.0.0
  */
 AgsCoreAudioMidiin*
-ags_core_audio_midiin_new(AgsApplicationContext *application_context)
+ags_core_audio_midiin_new()
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
   core_audio_midiin = (AgsCoreAudioMidiin *) g_object_new(AGS_TYPE_CORE_AUDIO_MIDIIN,
-							  "application-context", application_context,
 							  NULL);
   
   return(core_audio_midiin);

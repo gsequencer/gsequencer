@@ -19,8 +19,6 @@
 
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -70,10 +68,6 @@ void ags_pulse_devin_xml_parse(AgsConnectable *connectable,
 gboolean ags_pulse_devin_is_connected(AgsConnectable *connectable);
 void ags_pulse_devin_connect(AgsConnectable *connectable);
 void ags_pulse_devin_disconnect(AgsConnectable *connectable);
-
-void ags_pulse_devin_set_application_context(AgsSoundcard *soundcard,
-					     AgsApplicationContext *application_context);
-AgsApplicationContext* ags_pulse_devin_get_application_context(AgsSoundcard *soundcard);
 
 void ags_pulse_devin_set_device(AgsSoundcard *soundcard,
 				gchar *device);
@@ -166,7 +160,6 @@ guint ags_pulse_devin_get_loop_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -182,8 +175,6 @@ enum{
 };
 
 static gpointer ags_pulse_devin_parent_class = NULL;
-
-static pthread_mutex_t ags_pulse_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_devin_get_type(void)
@@ -254,22 +245,6 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
   gobject->finalize = ags_pulse_devin_finalize;
 
   /* properties */
-  /**
-   * AgsPulseDevin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsPulseDevin:device:
    *
@@ -506,9 +481,6 @@ ags_pulse_devin_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pulse_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_pulse_devin_set_application_context;
-  soundcard->get_application_context = ags_pulse_devin_get_application_context;
-
   soundcard->set_device = ags_pulse_devin_set_device;
   soundcard->get_device = ags_pulse_devin_get_device;
   
@@ -600,9 +572,6 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  pulse_devin->application_context = NULL;
 
   /* uuid */
   pulse_devin->uuid = ags_uuid_alloc();
@@ -721,33 +690,6 @@ ags_pulse_devin_set_property(GObject *gobject,
   pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(pulse_devin_mutex);
-
-      if(pulse_devin->application_context == application_context){
-	pthread_mutex_unlock(pulse_devin_mutex);
-
-	return;
-      }
-
-      if(pulse_devin->application_context != NULL){
-	g_object_unref(G_OBJECT(pulse_devin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      pulse_devin->application_context = application_context;
-
-      pthread_mutex_unlock(pulse_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -972,15 +914,6 @@ ags_pulse_devin_get_property(GObject *gobject,
   pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(pulse_devin_mutex);
-
-      g_value_set_object(value, pulse_devin->application_context);
-
-      pthread_mutex_unlock(pulse_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(pulse_devin_mutex);
@@ -1135,13 +1068,6 @@ ags_pulse_devin_dispose(GObject *gobject)
     g_object_unref(task_thread);
   }
 
-  /* application context */
-  if(pulse_devin->application_context != NULL){
-    g_object_unref(pulse_devin->application_context);
-
-    pulse_devin->application_context = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_devin_parent_class)->dispose(gobject);
 }
@@ -1198,11 +1124,6 @@ ags_pulse_devin_finalize(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(pulse_devin->application_context != NULL){
-    g_object_unref(pulse_devin->application_context);
-  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_devin_parent_class)->finalize(gobject);
@@ -1375,21 +1296,6 @@ ags_pulse_devin_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_pulse_devin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_pulse_devin_get_class_mutex()
-{
-  return(&ags_pulse_devin_class_mutex);
-}
-
-/**
  * ags_pulse_devin_test_flags:
  * @pulse_devin: the #AgsPulseDevin
  * @flags: the flags
@@ -1484,51 +1390,6 @@ ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags)
   pulse_devin->flags &= (~flags);
   
   pthread_mutex_unlock(pulse_devin_mutex);
-}
-
-void
-ags_pulse_devin_set_application_context(AgsSoundcard *soundcard,
-					AgsApplicationContext *application_context)
-{
-  AgsPulseDevin *pulse_devin;
-
-  pthread_mutex_t *pulse_devin_mutex;
-
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-
-  /* get pulse devin mutex */
-  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
-
-  /* set application context */
-  pthread_mutex_lock(pulse_devin_mutex);
-  
-  pulse_devin->application_context = application_context;
-  
-  pthread_mutex_unlock(pulse_devin_mutex);
-}
-
-AgsApplicationContext*
-ags_pulse_devin_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsPulseDevin *pulse_devin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *pulse_devin_mutex;
-
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-
-  /* get pulse devin mutex */
-  pulse_devin_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(pulse_devin);
-
-  /* get application context */
-  pthread_mutex_lock(pulse_devin_mutex);
-
-  application_context = pulse_devin->application_context;
-
-  pthread_mutex_unlock(pulse_devin_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -3204,7 +3065,6 @@ ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
 
 /**
  * ags_pulse_devin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsPulseDevin.
  *
@@ -3213,12 +3073,11 @@ ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
  * Since: 2.0.0
  */
 AgsPulseDevin*
-ags_pulse_devin_new(AgsApplicationContext *application_context)
+ags_pulse_devin_new()
 {
   AgsPulseDevin *pulse_devin;
 
   pulse_devin = (AgsPulseDevin *) g_object_new(AGS_TYPE_PULSE_DEVIN,
-					       "application-context", application_context,
 					       NULL);
   
   return(pulse_devin);

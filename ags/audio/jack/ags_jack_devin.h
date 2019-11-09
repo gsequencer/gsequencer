@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_JACK_DEVIN                (ags_jack_devin_get_type())
 #define AGS_JACK_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_DEVIN, AgsJackDevin))
@@ -34,7 +34,7 @@
 #define AGS_IS_JACK_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_DEVIN))
 #define AGS_JACK_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_DEVIN, AgsJackDevinClass))
 
-#define AGS_JACK_DEVIN_GET_OBJ_MUTEX(obj) (((AgsJackDevin *) obj)->obj_mutex)
+#define AGS_JACK_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsJackDevin *) obj)->obj_mutex))
 
 typedef struct _AgsJackDevin AgsJackDevin;
 typedef struct _AgsJackDevinClass AgsJackDevinClass;
@@ -109,10 +109,7 @@ struct _AgsJackDevin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -122,7 +119,7 @@ struct _AgsJackDevin
   guint buffer_size;
   guint samplerate;
   
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   void** buffer;
 
   double bpm; // beats per minute
@@ -151,11 +148,11 @@ struct _AgsJackDevin
   gchar **port_name;
   GList *jack_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -169,8 +166,6 @@ GType ags_jack_devin_get_type();
 
 GQuark ags_jack_devin_error_quark();
 
-pthread_mutex_t* ags_jack_devin_get_class_mutex();
-
 gboolean ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags);
 void ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags);
 void ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags);
@@ -180,6 +175,8 @@ void ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin);
 void ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin);
 void ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin);
 
-AgsJackDevin* ags_jack_devin_new(AgsApplicationContext *application_context);
+AgsJackDevin* ags_jack_devin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_JACK_DEVIN_H__*/

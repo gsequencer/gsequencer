@@ -70,10 +70,6 @@ gboolean ags_core_audio_devin_is_connected(AgsConnectable *connectable);
 void ags_core_audio_devin_connect(AgsConnectable *connectable);
 void ags_core_audio_devin_disconnect(AgsConnectable *connectable);
 
-void ags_core_audio_devin_set_application_context(AgsSoundcard *soundcard,
-						  AgsApplicationContext *application_context);
-AgsApplicationContext* ags_core_audio_devin_get_application_context(AgsSoundcard *soundcard);
-
 void ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
 				     gchar *device);
 gchar* ags_core_audio_devin_get_device(AgsSoundcard *soundcard);
@@ -170,7 +166,6 @@ guint ags_core_audio_devin_get_loop_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -187,8 +182,6 @@ enum{
 };
 
 static gpointer ags_core_audio_devin_parent_class = NULL;
-
-static pthread_mutex_t ags_core_audio_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_core_audio_devin_get_type (void)
@@ -259,22 +252,6 @@ ags_core_audio_devin_class_init(AgsCoreAudioDevinClass *core_audio_devin)
   gobject->finalize = ags_core_audio_devin_finalize;
 
   /* properties */
-  /**
-   * AgsCoreAudioDevin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsCoreAudioDevin:device:
    *
@@ -495,9 +472,6 @@ ags_core_audio_devin_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_core_audio_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_core_audio_devin_set_application_context;
-  soundcard->get_application_context = ags_core_audio_devin_get_application_context;
-
   soundcard->set_device = ags_core_audio_devin_set_device;
   soundcard->get_device = ags_core_audio_devin_get_device;
   
@@ -593,9 +567,6 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  core_audio_devin->application_context = NULL;
 
   /* uuid */
   core_audio_devin->uuid = ags_uuid_alloc();
@@ -723,33 +694,6 @@ ags_core_audio_devin_set_property(GObject *gobject,
   core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(core_audio_devin_mutex);
-
-      if(core_audio_devin->application_context == application_context){
-	pthread_mutex_unlock(core_audio_devin_mutex);
-
-	return;
-      }
-
-      if(core_audio_devin->application_context != NULL){
-	g_object_unref(G_OBJECT(core_audio_devin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      core_audio_devin->application_context = application_context;
-
-      pthread_mutex_unlock(core_audio_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -974,15 +918,6 @@ ags_core_audio_devin_get_property(GObject *gobject,
   core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(core_audio_devin_mutex);
-
-      g_value_set_object(value, core_audio_devin->application_context);
-
-      pthread_mutex_unlock(core_audio_devin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(core_audio_devin_mutex);
@@ -1244,51 +1179,6 @@ ags_core_audio_devin_unset_flags(AgsCoreAudioDevin *core_audio_devin, guint flag
   core_audio_devin->flags &= (~flags);
   
   pthread_mutex_unlock(core_audio_devin_mutex);
-}
-
-void
-ags_core_audio_devin_set_application_context(AgsSoundcard *soundcard,
-					     AgsApplicationContext *application_context)
-{
-  AgsCoreAudioDevin *core_audio_devin;
-
-  pthread_mutex_t *core_audio_devin_mutex;
-
-  core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
-
-  /* get core_audio devin mutex */
-  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
-
-  /* set application context */
-  pthread_mutex_lock(core_audio_devin_mutex);
-  
-  core_audio_devin->application_context = application_context;
-  
-  pthread_mutex_unlock(core_audio_devin_mutex);
-}
-
-AgsApplicationContext*
-ags_core_audio_devin_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsCoreAudioDevin *core_audio_devin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *core_audio_devin_mutex;
-
-  core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
-
-  /* get core_audio devin mutex */
-  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
-
-  /* get application context */
-  pthread_mutex_lock(core_audio_devin_mutex);
-
-  application_context = core_audio_devin->application_context;
-
-  pthread_mutex_unlock(core_audio_devin_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -3056,7 +2946,6 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
 
 /**
  * ags_core_audio_devin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsCoreAudioDevin.
  *
@@ -3065,12 +2954,11 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
  * Since: 2.0.0
  */
 AgsCoreAudioDevin*
-ags_core_audio_devin_new(AgsApplicationContext *application_context)
+ags_core_audio_devin_new()
 {
   AgsCoreAudioDevin *core_audio_devin;
 
   core_audio_devin = (AgsCoreAudioDevin *) g_object_new(AGS_TYPE_CORE_AUDIO_DEVIN,
-							"application-context", application_context,
 							NULL);
   
   return(core_audio_devin);

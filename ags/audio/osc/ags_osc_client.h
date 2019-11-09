@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #ifndef AGS_W32API
 #include <netinet/in.h>
 #endif
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_CLIENT                (ags_osc_client_get_type ())
 #define AGS_OSC_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CLIENT, AgsOscClient))
@@ -36,7 +36,7 @@
 #define AGS_IS_OSC_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CLIENT))
 #define AGS_OSC_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CLIENT, AgsOscClientClass))
 
-#define AGS_OSC_CLIENT_GET_OBJ_MUTEX(obj) (((AgsOscClient *) obj)->obj_mutex)
+#define AGS_OSC_CLIENT_GET_OBJ_MUTEX(obj) (&(((AgsOscClient *) obj)->obj_mutex))
 
 #define AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH (2048)
 
@@ -67,8 +67,7 @@ struct _AgsOscClient
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   gchar *ip4;
   gchar *ip6;
@@ -120,8 +119,6 @@ struct _AgsOscClientClass
 
 GType ags_osc_client_get_type(void);
 
-pthread_mutex_t* ags_osc_client_get_class_mutex();
-
 gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
@@ -139,5 +136,7 @@ gboolean ags_osc_client_write_bytes(AgsOscClient *osc_client,
 				    guchar *data, guint data_length);
 
 AgsOscClient* ags_osc_client_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_CLIENT_H__*/

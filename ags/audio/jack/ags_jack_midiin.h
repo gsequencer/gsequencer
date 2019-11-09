@@ -25,9 +25,9 @@
 
 #include <sys/types.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_JACK_MIDIIN                (ags_jack_midiin_get_type())
 #define AGS_JACK_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_MIDIIN, AgsJackMidiin))
@@ -36,7 +36,7 @@
 #define AGS_IS_JACK_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_MIDIIN))
 #define AGS_JACK_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_MIDIIN, AgsJackMidiinClass))
 
-#define AGS_JACK_MIDIIN_GET_OBJ_MUTEX(obj) (((AgsJackMidiin *) obj)->obj_mutex)
+#define AGS_JACK_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsJackMidiin *) obj)->obj_mutex))
 
 #define AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
@@ -115,11 +115,8 @@ struct _AgsJackMidiin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
-  GObject *application_context;
-  
   AgsUUID *uuid;
 
   pthread_mutex_t **buffer_mutex;
@@ -146,11 +143,11 @@ struct _AgsJackMidiin
   gchar **port_name;
   GList *jack_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;    
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;    
 };
 
 struct _AgsJackMidiinClass
@@ -162,8 +159,6 @@ GType ags_jack_midiin_get_type();
 
 GQuark ags_jack_midiin_error_quark();
 
-pthread_mutex_t* ags_jack_midiin_get_class_mutex();
-
 gboolean ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags);
 void ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags);
 void ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags);
@@ -172,6 +167,8 @@ void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 
 void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 
-AgsJackMidiin* ags_jack_midiin_new(AgsApplicationContext *application_context);
+AgsJackMidiin* ags_jack_midiin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_JACK_MIDIIN_H__*/

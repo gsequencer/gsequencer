@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_INT32 'i'
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT 'f'
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_STRING 's'
@@ -68,5 +72,7 @@ unsigned char* ags_osc_util_slip_decode(unsigned char *slip_buffer,
 					guint *returned_buffer_length);
 
 void ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction);
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_UTIL_H__*/

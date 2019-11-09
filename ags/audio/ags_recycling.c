@@ -28,8 +28,6 @@
 #include <string.h>
 #include <math.h>
 
-#include <pthread.h>
-
 #include <ags/i18n.h>
 
 void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
@@ -102,8 +100,6 @@ enum{
 static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_recycling_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_recycling_get_type(void)
 {
@@ -167,7 +163,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   "assigned channel",
@@ -183,7 +179,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned output soundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("output-soundcard",
 				   "assigned output soundcard",
@@ -199,7 +195,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The output soundcard channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("output-soundcard-channel",
 				 i18n_pspec("output soundcard channel"),
@@ -217,7 +213,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned input soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("input-soundcard",
 				   "assigned input soundcard",
@@ -233,7 +229,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The input soundcard channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("input-soundcard-channel",
 				 i18n_pspec("input soundcard channel"),
@@ -251,7 +247,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The samplerate.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("samplerate",
 				  i18n_pspec("samplerate"),
@@ -269,7 +265,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The buffer size.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("buffer-size",
 				  i18n_pspec("buffer size"),
@@ -287,7 +283,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The format.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("format",
 				  i18n_pspec("format"),
@@ -305,7 +301,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned parent #AgsRecycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   "assigned parent",
@@ -321,7 +317,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned prev #AgsRecycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("prev",
 				   "assigned prev",
@@ -337,7 +333,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned next #AgsRecycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("next",
 				   "assigned next",
@@ -353,7 +349,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The containing  #AgsAudioSignal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("audio-signal",
 				    "containing audio signal",
@@ -374,7 +370,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The ::add-audio-signal signal is emited as adding #AgsAudioSignal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recycling_signals[ADD_AUDIO_SIGNAL] =
     g_signal_new("add-audio-signal",
@@ -393,7 +389,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The ::remove-audio-signal signal is emited as removing #AgsAudioSignal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
     g_signal_new("remove-audio-signal",
@@ -412,7 +408,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The ::data-request signal is emited as requesting data for @audio_signal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recycling_signals[DATA_REQUEST] =
     g_signal_new("data-request",
@@ -457,28 +453,11 @@ ags_recycling_init(AgsRecycling *recycling)
   gchar *str;
   gchar *str0, *str1;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   recycling->flags = 0;
 
   /* add recycling mutex */
-  recycling->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  recycling->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
-
+  g_rec_mutex_init(&(recycling->obj_mutex));
+  
   /* uuid */
   recycling->uuid = ags_uuid_alloc();
   ags_uuid_generate(recycling->uuid);
@@ -524,7 +503,7 @@ ags_recycling_set_property(GObject *gobject,
 {
   AgsRecycling *recycling;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   recycling = AGS_RECYCLING(gobject);
 
@@ -538,10 +517,10 @@ ags_recycling_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       if(recycling->channel == (GObject *) channel){
-	pthread_mutex_unlock(recycling_mutex);
+	g_rec_mutex_unlock(recycling_mutex);
 	
 	return;
       }
@@ -556,7 +535,7 @@ ags_recycling_set_property(GObject *gobject,
 
       recycling->channel = (GObject *) channel;
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD:
@@ -570,11 +549,11 @@ ags_recycling_set_property(GObject *gobject,
     break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       recycling->output_soundcard_channel = g_value_get_int(value);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_INPUT_SOUNDCARD:
@@ -588,11 +567,11 @@ ags_recycling_set_property(GObject *gobject,
     break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       recycling->input_soundcard_channel = g_value_get_int(value);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -631,10 +610,10 @@ ags_recycling_set_property(GObject *gobject,
 
       parent = (AgsRecycling *) g_value_get_object(value);
 
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       if(recycling->parent == parent){
-	pthread_mutex_unlock(recycling_mutex);
+	g_rec_mutex_unlock(recycling_mutex);
 	
 	return;
       }
@@ -649,7 +628,7 @@ ags_recycling_set_property(GObject *gobject,
 
       recycling->parent = parent;
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_NEXT:
@@ -658,10 +637,10 @@ ags_recycling_set_property(GObject *gobject,
 
       next = (AgsRecycling *) g_value_get_object(value);
 
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       if(recycling->next == next){
-	pthread_mutex_unlock(recycling_mutex);
+	g_rec_mutex_unlock(recycling_mutex);
 	
 	return;
       }
@@ -676,7 +655,7 @@ ags_recycling_set_property(GObject *gobject,
 
       recycling->next = next;
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_PREV:
@@ -685,10 +664,10 @@ ags_recycling_set_property(GObject *gobject,
 
       prev = (AgsRecycling *) g_value_get_object(value);
 
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       if(recycling->prev == prev){
-	pthread_mutex_unlock(recycling_mutex);
+	g_rec_mutex_unlock(recycling_mutex);
 	
 	return;
       }
@@ -703,7 +682,7 @@ ags_recycling_set_property(GObject *gobject,
 
       recycling->prev = prev;
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_AUDIO_SIGNAL:
@@ -711,17 +690,6 @@ ags_recycling_set_property(GObject *gobject,
       AgsAudioSignal *audio_signal;
 
       audio_signal = g_value_get_pointer(value);
-
-      pthread_mutex_lock(recycling_mutex);
-
-      if(audio_signal == NULL ||
-	 g_list_find(recycling->audio_signal, audio_signal) != NULL){
-	pthread_mutex_unlock(recycling_mutex);
-	
-	return;
-      }
-
-      pthread_mutex_unlock(recycling_mutex);
 
       ags_recycling_add_audio_signal(recycling,
 				     audio_signal);
@@ -741,7 +709,7 @@ ags_recycling_get_property(GObject *gobject,
 {
   AgsRecycling *recycling;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   recycling = AGS_RECYCLING(gobject);
 
@@ -751,112 +719,112 @@ ags_recycling_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_CHANNEL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->channel);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->output_soundcard);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_int(value, recycling->output_soundcard_channel);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_INPUT_SOUNDCARD:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->input_soundcard);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_int(value, recycling->input_soundcard_channel);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_uint(value, recycling->samplerate);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_uint(value, recycling->buffer_size);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_uint(value, recycling->format);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_PARENT:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->parent);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_NEXT:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->next);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_PREV:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_object(value, recycling->prev);
 
-      pthread_mutex_unlock(recycling_mutex);
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   case PROP_AUDIO_SIGNAL:
     {
-      pthread_mutex_lock(recycling_mutex);
+      g_rec_mutex_lock(recycling_mutex);
 
       g_value_set_pointer(value, g_list_copy_deep(recycling->audio_signal,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
-
-      pthread_mutex_unlock(recycling_mutex);
+ 
+      g_rec_mutex_unlock(recycling_mutex);
     }
     break;
   default:
@@ -870,10 +838,17 @@ ags_recycling_dispose(GObject *gobject)
 {
   AgsRecycling *recycling;  
 
-  GList *list;
+  GList *start_list, *list;
+
+  GRecMutex *recycling_mutex;
 
   recycling = AGS_RECYCLING(gobject);
 
+  /* get recycling mutex */
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
+
+  g_rec_mutex_lock(recycling_mutex);
+  
   /* channel */
   if(recycling->channel != NULL){
     g_object_unref(recycling->channel);
@@ -915,8 +890,17 @@ ags_recycling_dispose(GObject *gobject)
     recycling->prev = NULL;
   }
 
+  g_rec_mutex_unlock(recycling_mutex);
+
   /* AgsAudioSignal */
-  list = recycling->audio_signal;
+  g_rec_mutex_lock(recycling_mutex);
+  
+  list =
+    start_list = recycling->audio_signal;
+
+  recycling->audio_signal = NULL;
+
+  g_rec_mutex_unlock(recycling_mutex);
 
   while(list != NULL){
     g_object_run_dispose(list->data);
@@ -927,8 +911,6 @@ ags_recycling_dispose(GObject *gobject)
   g_list_free_full(recycling->audio_signal,
 		   g_object_unref);
 
-  recycling->audio_signal = NULL;
-
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_parent_class)->dispose(gobject);
 }
@@ -938,15 +920,9 @@ ags_recycling_finalize(GObject *gobject)
 {
   AgsRecycling *recycling;  
   
-  GList *list;
+  GList *start_list, *list;
   
   recycling = AGS_RECYCLING(gobject);
-
-  pthread_mutex_destroy(recycling->obj_mutex);
-  free(recycling->obj_mutex);
-
-  pthread_mutexattr_destroy(recycling->obj_mutexattr);
-  free(recycling->obj_mutexattr);
 
   ags_uuid_free(recycling->uuid);
 
@@ -980,7 +956,8 @@ ags_recycling_finalize(GObject *gobject)
   }
 
   /* AgsAudioSignal */
-  list = recycling->audio_signal;
+  list =
+    start_list recycling->audio_signal;
 
   while(list != NULL){
     g_object_run_dispose(list->data);
@@ -988,7 +965,7 @@ ags_recycling_finalize(GObject *gobject)
     list = list->next;
   }
   
-  g_list_free_full(recycling->audio_signal,
+  g_list_free_full(start_list,
 		   g_object_unref);
 
   /* call parent */
@@ -1002,7 +979,7 @@ ags_recycling_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   recycling = AGS_RECYCLING(connectable);
 
@@ -1010,11 +987,11 @@ ags_recycling_get_uuid(AgsConnectable *connectable)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get UUID */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   ptr = recycling->uuid;
 
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
   
   return(ptr);
 }
@@ -1032,19 +1009,9 @@ ags_recycling_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *recycling_mutex;
-
   recycling = AGS_RECYCLING(connectable);
 
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-
-  /* check is added */
-  pthread_mutex_lock(recycling_mutex);
-
-  is_ready = (((AGS_RECYCLING_ADDED_TO_REGISTRY & (recycling->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(recycling_mutex);
+  is_ready = ags_recycling_test_flags(recycling, AGS_RECYCLING_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -1059,9 +1026,7 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
 
   AgsApplicationContext *application_context;
 
-  GList *list_start, *list;
-
-  pthread_mutex_t *recycling_mutex;
+  GList *start_list, *list;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -1069,9 +1034,9 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
   
   recycling = AGS_RECYCLING(connectable);
 
-  ags_recycling_set_flags(recycling, AGS_RECYCLING_ADDED_TO_REGISTRY);
-
   application_context = ags_application_context_get_instance();
+
+  ags_recycling_set_flags(recycling, AGS_RECYCLING_ADDED_TO_REGISTRY);
 
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -1087,20 +1052,20 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* add audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy(recycling->audio_signal);
-
-  pthread_mutex_unlock(recycling_mutex);
-
+  list = start_list;
+  
   while(list != NULL){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -1151,19 +1116,9 @@ ags_recycling_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *recycling_mutex;
-
   recycling = AGS_RECYCLING(connectable);
 
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-
-  /* check is connected */
-  pthread_mutex_lock(recycling_mutex);
-
-  is_connected = (((AGS_RECYCLING_CONNECTED & (recycling->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(recycling_mutex);
+  is_connected = ags_recycling_test_flags(recycling, AGS_RECYCLING_CONNECTED);
   
   return(is_connected);
 }
@@ -1173,9 +1128,7 @@ ags_recycling_connect(AgsConnectable *connectable)
 {
   AgsRecycling *recycling;
 
-  GList *list_start, *list;
-
-  pthread_mutex_t *recycling_mutex;
+  GList *start_list, *list;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1189,16 +1142,12 @@ ags_recycling_connect(AgsConnectable *connectable)
   g_message("connecting recycling");
 #endif
 
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-
   /* audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy(recycling->audio_signal);
-
-  pthread_mutex_unlock(recycling_mutex);
+  list = start_list;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -1206,7 +1155,8 @@ ags_recycling_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -1214,9 +1164,7 @@ ags_recycling_disconnect(AgsConnectable *connectable)
 {
   AgsRecycling *recycling;
 
-  GList *list_start, *list;
-
-  pthread_mutex_t *recycling_mutex;
+  GList *start_list, *list;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -1230,39 +1178,21 @@ ags_recycling_disconnect(AgsConnectable *connectable)
   g_message("disconnecting recycling");
 #endif
 
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-
   /* audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy(recycling->audio_signal);
-
-  pthread_mutex_unlock(recycling_mutex);
-
+  list = start_list;
+  
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
     
     list = list->next;
   }
 
-  g_list_free(list_start);
-}
-
-/**
- * ags_recycling_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_recycling_get_class_mutex()
-{
-  return(&ags_recycling_class_mutex);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 /**
@@ -1274,14 +1204,14 @@ ags_recycling_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return(FALSE);
@@ -1291,11 +1221,11 @@ ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* test */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   retval = (flags & (recycling->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   return(retval);
 }
@@ -1307,12 +1237,12 @@ ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
  *
  * Enable a feature of @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_flags(AgsRecycling *recycling, guint flags)
 {
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1324,11 +1254,11 @@ ags_recycling_set_flags(AgsRecycling *recycling, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   recycling->flags |= flags;
   
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 }
     
 /**
@@ -1338,12 +1268,12 @@ ags_recycling_set_flags(AgsRecycling *recycling, guint flags)
  *
  * Disable a feature of @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
 {  
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1355,11 +1285,11 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   recycling->flags &= (~flags);
   
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 }
 
 /**
@@ -1370,14 +1300,14 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
  * 
  * Returns: the next of #AgsRecycling if available, otherwise %NULL
  * 
- * Since: 2.1.61
+ * Since: 3.0.0
  */
 AgsRecycling*
 ags_recycling_next(AgsRecycling *recycling)
 {
   AgsRecycling *next;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return(NULL);
@@ -1387,7 +1317,7 @@ ags_recycling_next(AgsRecycling *recycling)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* next */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   next = recycling->next;
 
@@ -1395,7 +1325,7 @@ ags_recycling_next(AgsRecycling *recycling)
     g_object_ref(next);
   }
   
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   return(next);
 }
@@ -1408,14 +1338,14 @@ ags_recycling_next(AgsRecycling *recycling)
  * 
  * Returns: the prev of #AgsRecycling if available, otherwise %NULL
  * 
- * Since: 2.1.61
+ * Since: 3.0.0
  */
 AgsRecycling*
 ags_recycling_prev(AgsRecycling *recycling)
 {
   AgsRecycling *prev;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return(NULL);
@@ -1425,7 +1355,7 @@ ags_recycling_prev(AgsRecycling *recycling)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* prev */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   prev = recycling->prev;
 
@@ -1433,7 +1363,7 @@ ags_recycling_prev(AgsRecycling *recycling)
     g_object_ref(prev);
   }
   
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   return(prev);
 }
@@ -1445,14 +1375,14 @@ ags_recycling_prev(AgsRecycling *recycling)
  *
  * Set @output_soundcard of @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
 {
-  GList *list_start, *list;
+  GList *start_list, *list;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1462,10 +1392,10 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* recycling */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   if(recycling->output_soundcard == output_soundcard){
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
     
     return;
   }
@@ -1480,18 +1410,15 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
   
   recycling->output_soundcard = (GObject *) output_soundcard;
 
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   /* audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy_deep(recycling->audio_signal,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
+  list = start_list;
   
-  pthread_mutex_unlock(recycling_mutex);
-
   while(list != NULL){
     g_object_set(list->data,
 		 "output-soundcard", output_soundcard,
@@ -1500,7 +1427,7 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
     list = list->next;
   }
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
 }
 
@@ -1511,14 +1438,14 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
  *
  * Set @input_soundcard of @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
 {
-  GList *list_start, *list;
+  GList *start_list, *list;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1528,10 +1455,10 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* recycling */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   if(recycling->input_soundcard == input_soundcard){
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
     
     return;
   }
@@ -1546,17 +1473,14 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
   
   recycling->input_soundcard = (GObject *) input_soundcard;
 
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   /* audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
-  list =
-    list_start = g_list_copy_deep(recycling->audio_signal,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
-  
-  pthread_mutex_unlock(recycling_mutex);
+  list = start_list;
 
   while(list != NULL){
     g_object_set(list->data,
@@ -1566,7 +1490,7 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
     list = list->next;
   }
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
 }
 
@@ -1577,7 +1501,7 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
  *
  * Sets samplerate.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
@@ -1587,7 +1511,7 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
   GList *audio_signal;
   GList *start_rt_template, *rt_template;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1597,13 +1521,9 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
-  pthread_mutex_lock(recycling_mutex);
-
-  audio_signal = g_list_copy_deep(recycling->audio_signal,
-				(GCopyFunc) g_object_ref,
-				NULL);
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &audio_signal,
+	       NULL);
 
   /* get template */
   template = ags_audio_signal_get_template(audio_signal);
@@ -1643,7 +1563,7 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
  *
  * Set buffer size.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
@@ -1653,7 +1573,7 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
   GList *audio_signal;
   GList *start_rt_template, *rt_template;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1663,13 +1583,9 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
-  pthread_mutex_lock(recycling_mutex);
-
-  audio_signal = g_list_copy_deep(recycling->audio_signal,
-				(GCopyFunc) g_object_ref,
-				NULL);
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &audio_signal,
+	       NULL);
 
   /* get template */
   template = ags_audio_signal_get_template(audio_signal);
@@ -1709,7 +1625,7 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
  *
  * Set format.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_set_format(AgsRecycling *recycling, guint format)
@@ -1719,7 +1635,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   GList *audio_signal;
   GList *start_rt_template, *rt_template;
   
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
     return;
@@ -1729,13 +1645,9 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
-  pthread_mutex_lock(recycling_mutex);
-
-  audio_signal = g_list_copy_deep(recycling->audio_signal,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &audio_signal,
+	       NULL);
 
   /* get template */
   template = ags_audio_signal_get_template(audio_signal);
@@ -1777,46 +1689,35 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   GObject *output_soundcard;
   
   GHashTable *hash_table;
-  GList *list_start, *list;
+  GList *start_list, *list;
 
-  guint audio_signal_flags;
-  
-  pthread_mutex_t *recycling_mutex;
-  pthread_mutex_t *audio_signal_mutex;
+  GRecMutex *recycling_mutex;
 
   /* get recycling mutex */  
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   if(g_list_find(recycling->audio_signal,
 		 audio_signal) != NULL){
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
 
     return;
   }
   
   output_soundcard = recycling->output_soundcard;
-  
-  list =
-    list_start = ags_list_util_copy_and_ref(recycling->audio_signal);
-  
-  pthread_mutex_unlock(recycling_mutex);
-
-  /* get audio signal mutex */  
-  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_signal_mutex);
-
-  audio_signal_flags = audio_signal->flags;
-
-  pthread_mutex_unlock(audio_signal_mutex);
     
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){    
+  g_rec_mutex_unlock(recycling_mutex);
+
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
+  
+  /* get some fields */
+  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE)){
     /* old template */
-    old_template = ags_audio_signal_get_template(list_start);
+    old_template = ags_audio_signal_get_template(start_list);
     
     /* remove old template */
     ags_recycling_remove_audio_signal(recycling,
@@ -1825,15 +1726,16 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     g_object_unref(old_template);
     
     /* add new template */
-    pthread_mutex_lock(recycling_mutex);
+    g_rec_mutex_lock(recycling_mutex);
     
     recycling->audio_signal = g_list_prepend(recycling->audio_signal,
 					     audio_signal);    
     g_object_ref(audio_signal);
 
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
 
     /* add/remove */
+    list = start_list;
     hash_table = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 				       NULL,
 				       NULL);
@@ -1843,30 +1745,17 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       AgsAudioSignal *rt_template, *old_rt_template;
       AgsRecallID *current_recall_id;
       
-      guint current_audio_signal_flags;
-
-      pthread_mutex_t *current_audio_signal_mutex;
-
       current_audio_signal = list->data;
       
-      /* get audio signal mutex */  
-      current_audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(current_audio_signal);
-
       /* get some fields */
-      pthread_mutex_lock(current_audio_signal_mutex);
-
-      current_audio_signal_flags = current_audio_signal->flags;
-
-      pthread_mutex_unlock(current_audio_signal_mutex);
-
-      if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (current_audio_signal_flags)) != 0){
+      if(ags_audio_signal_test_flags(current_audio_signal, AGS_AUDIO_SIGNAL_RT_TEMPLATE)){
 	current_recall_id = (AgsRecallID *) current_audio_signal->recall_id;
 
 	/* create rt-template */
 	rt_template = ags_audio_signal_new(output_soundcard,
 					   (GObject *) recycling,
 					   (GObject *) current_recall_id);
-	rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;	  
+	ags_audio_signal_set_flags(rt_template, AGS_AUDIO_SIGNAL_RT_TEMPLATE);
 
 	g_hash_table_insert(hash_table,
 			    current_audio_signal, rt_template);
@@ -1884,31 +1773,26 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     }
 
     /* update */
-    list = list_start;
+    list = start_list;
       
     while(list != NULL){
       AgsAudioSignal *current_audio_signal;
       AgsAudioSignal *rt_template;
 
-      pthread_mutex_t *current_audio_signal_mutex;
-
       current_audio_signal = list->data;
-      
-      /* get audio signal mutex */  
-      current_audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(current_audio_signal);
 
       /* get some fields */
-      pthread_mutex_lock(current_audio_signal_mutex);
-
-      rt_template = (AgsAudioSignal *) current_audio_signal->rt_template;
-
-      pthread_mutex_unlock(current_audio_signal_mutex);
+      g_object_get(current_audio_signal,
+		   "rt-template", &rt_template,
+		   NULL);
 
       if(rt_template != NULL){
 	g_object_set(list->data,
 		     "rt-template", g_hash_table_lookup(hash_table,
 							rt_template),
 		     NULL);
+
+	g_object_unref(rt_template);
       }
 	
       list = list->next;
@@ -1917,16 +1801,16 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     g_hash_table_destroy(hash_table);
   }else{
     /* add new audio signal */
-    pthread_mutex_lock(recycling_mutex);
+    g_rec_mutex_lock(recycling_mutex);
     
     recycling->audio_signal = g_list_prepend(recycling->audio_signal,
 					     audio_signal);    
     g_object_ref(audio_signal);
 
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
   }
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_lilist,
 		   g_object_unref);
 
   g_object_set(audio_signal,
@@ -1941,13 +1825,14 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
  *
  * Add @audio_signal to @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_add_audio_signal(AgsRecycling *recycling,
 			       AgsAudioSignal *audio_signal)
 {
-  g_return_if_fail(AGS_IS_RECYCLING(recycling) && AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_return_if_fail(AGS_IS_RECYCLING(recycling) &&
+		   AGS_IS_AUDIO_SIGNAL(audio_signal));
   
   /* emit signal */
   g_object_ref(G_OBJECT(recycling));
@@ -1963,17 +1848,17 @@ void
 ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 				       AgsAudioSignal *audio_signal)
 {
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   /* get recycling mutex */  
   recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* check audio signal */
-  pthread_mutex_lock(recycling_mutex);
+  g_rec_mutex_lock(recycling_mutex);
 
   if(g_list_find(recycling->audio_signal,
 		 audio_signal) == NULL){
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
     
     return;
   }
@@ -1981,7 +1866,7 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
   recycling->audio_signal = g_list_remove(recycling->audio_signal,
 					  audio_signal);
 
-  pthread_mutex_unlock(recycling_mutex);
+  g_rec_mutex_unlock(recycling_mutex);
 
   g_object_set(audio_signal,
 	       "recycling", NULL,
@@ -1997,7 +1882,7 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
  *
  * Remove @audio_signal of @recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_remove_audio_signal(AgsRecycling *recycling,
@@ -2022,7 +1907,7 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
  *
  * Request data of @audio_signal.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_data_request(AgsRecycling *recycling,
@@ -2047,7 +1932,7 @@ ags_recycling_data_request(AgsRecycling *recycling,
  *
  * Create audio signal with defaults.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
@@ -2058,7 +1943,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
   GObject *output_soundcard;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   guint samplerate;
   guint buffer_size;
@@ -2068,9 +1953,9 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   guint length;
   guint frame_count;
   
-  pthread_mutex_t *recycling_mutex;
-  pthread_mutex_t *audio_signal_mutex;
-  pthread_mutex_t *template_mutex;
+  GRecMutex *recycling_mutex;
+  GRecMutex *audio_signal_mutex;
+  GRecMutex *template_mutex;
 
   if(!AGS_IS_RECYCLING(recycling) ||
      !AGS_IS_AUDIO_SIGNAL(audio_signal)){
@@ -2084,27 +1969,21 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
   /* get audio signal list */
-  pthread_mutex_lock(recycling_mutex);
-
-  list_start = g_list_copy_deep(recycling->audio_signal,
-				(GCopyFunc) g_object_ref,
-				NULL);
-  
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);
 
   /* get template */
-  template = ags_audio_signal_get_template(list_start);
+  template = ags_audio_signal_get_template(start_list);
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);  
 
   /* set delay and attack */
-  pthread_mutex_lock(audio_signal_mutex);
-
-  audio_signal->delay = delay;
-  audio_signal->attack = attack;
-
-  pthread_mutex_unlock(audio_signal_mutex);
+  g_object_set(audio_signal,
+	       "delay", delay,
+	       "attack", attack,
+	       NULL);
 
   if(template == NULL){
     ags_audio_signal_stream_resize(audio_signal,
@@ -2117,7 +1996,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
 
   /* get some fields */
-  pthread_mutex_lock(template_mutex);
+  g_rec_mutex_lock(template_mutex);
 
   output_soundcard = template->output_soundcard;
   
@@ -2132,7 +2011,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   loop_start = template->loop_start;
   loop_end = template->loop_end;
 
-  pthread_mutex_unlock(template_mutex);
+  g_rec_mutex_unlock(template_mutex);
 
   /* apply delay and attack */
   last_frame = (((guint)(delay *
@@ -2183,7 +2062,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
  *
  * Create audio signal with frame count.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
@@ -2195,7 +2074,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   GObject *output_soundcard;
   
-  GList *list_start, *list;
+  GList *start_list, *list;
   GList *stream, *template_stream;
 
   guint samplerate;
@@ -2214,10 +2093,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint i, j;
   guint copy_mode;
 
-  pthread_mutex_t *recycling_mutex;
-  pthread_mutex_t *audio_signal_mutex;
-  pthread_mutex_t *template_mutex;
-  pthread_mutex_t *template_stream_mutex;
+  GRecMutex *recycling_mutex;
+  GRecMutex *audio_signal_mutex;
+  GRecMutex *template_mutex;
+  GRecMutex *template_stream_mutex;
 
   if(!AGS_IS_RECYCLING(recycling) ||
      !AGS_IS_AUDIO_SIGNAL(audio_signal)){
@@ -2231,34 +2110,28 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
   /* get audio signal list */
-  pthread_mutex_lock(recycling_mutex);
-
-  list_start = g_list_copy_deep(recycling->audio_signal,
-				(GCopyFunc) g_object_ref,
-				NULL);
-  
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(recycling,
+	       "audio-signal", &start_list,
+	       NULL);  
 
   /* get template */
-  template = ags_audio_signal_get_template(list_start);
+  template = ags_audio_signal_get_template(start_list);
   
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);  
 
   /* set delay and attack */
-  pthread_mutex_lock(audio_signal_mutex);
-
-  audio_signal->delay = delay;
-  audio_signal->attack = attack;
-
-  pthread_mutex_unlock(audio_signal_mutex);
+  g_object_set(audio_signal,
+	       "delay", delay,
+	       "attack", attack,
+	       NULL);
 
   if(template == NULL){
-    pthread_mutex_lock(audio_signal_mutex);
+    g_rec_mutex_lock(audio_signal_mutex);
 
     buffer_size = audio_signal->buffer_size;
     
-    pthread_mutex_unlock(audio_signal_mutex);
+    g_rec_mutex_unlock(audio_signal_mutex);
 
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil((attack + frame_count) / buffer_size) + 1);
@@ -2270,7 +2143,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
 
   /* get some fields */
-  pthread_mutex_lock(template_mutex);
+  g_rec_mutex_lock(template_mutex);
 
   output_soundcard = template->output_soundcard;
   
@@ -2284,7 +2157,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   template_length = template->length;
   
-  pthread_mutex_unlock(template_mutex);
+  g_rec_mutex_unlock(template_mutex);
 
   /* apply delay and attack */
   new_last_frame = (((guint)(delay *
@@ -2355,7 +2228,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   stream = g_list_nth(audio_signal->stream,
 		      (guint) ((delay * buffer_size) + attack) / buffer_size);
   
-  pthread_mutex_lock(template_stream_mutex);
+  g_rec_mutex_lock(template_stream_mutex);
   
   template_stream = template->stream;
 
@@ -2414,7 +2287,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     }
   }
 
-  pthread_mutex_unlock(template_stream_mutex);
+  g_rec_mutex_unlock(template_stream_mutex);
 
   g_object_unref(template);
 }
@@ -2429,7 +2302,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  *
  * Returns: Matching recycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -2493,17 +2366,15 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
  *
  * Returns: position within boundary.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 		       AgsRecycling *recycling)
 {
-  AgsRecycling *current;
+  AgsRecycling *current, *next;
 
   gint position;
-
-  pthread_mutex_t *current_mutex;
 
   if(!AGS_IS_RECYCLING(start_region)){
     return(-1);
@@ -2511,33 +2382,31 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 
   /* determine position */
   current = start_region;
-  position = -1;
+  g_object_ref(current);
 
+  position = -1;
+    
   while(current != NULL && current != end_region){
     position++;
 
     /* check if new match */
     if(current == recycling){
-      return(position);
+      break;
     }
 
-    /* get recycling mutex */  
-    current_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(current);
-
     /* iterate */
-    pthread_mutex_lock(current_mutex);
+    next = ags_recycling_next(current);
 
-    current = current->next;
+    g_object_unref(next);
 
-    pthread_mutex_unlock(current_mutex);
+    current = next;
   }
 
-  if(end_region == NULL &&
-     current == NULL){
-    return(position);
-  }else{
-    return(-1);
+  if(current != NULL){
+    g_object_unref(current);
   }
+  
+  return(position);
 }
 
 /**
@@ -2550,60 +2419,65 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
  * 
  * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
 			GObject *recall_id)
 {
-  AgsRecycling *current;
+  AgsRecycling *current, *next;
   AgsRecyclingContext *recycling_context;
 
-  GList *list_start, *list;
+  GList *start_list, *list;
 
   gboolean is_active;
+  gboolean success;
   
-  pthread_mutex_t *current_mutex;
-  pthread_mutex_t *recall_id_mutex;
-  
-  if(!AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECYCLING(start_region) ||
+     !AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
-
+  
   current = start_region;
+  g_object_ref(current);
 
+  success = FALSE;
+    
   while(current != end_region){
     /* get recycling mutex */  
     current_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(current);
 
     /* get audio signal */
-    pthread_mutex_lock(current_mutex);
-
-    list_start = g_list_copy_deep(current->audio_signal,
-				  (GCopyFunc) g_object_ref,
-				  NULL);
-    
-    pthread_mutex_unlock(current_mutex);
+    g_object_get(current,
+		 "audio-signal", &start_list,
+		 NULL);
 
     /* is active */
-    is_active = (ags_audio_signal_is_active(list_start,
+    is_active = (ags_audio_signal_is_active(start_list,
 					    recall_id)) ? TRUE: FALSE;
-    g_list_free_full(list_start,
+
+    g_list_free_full(start_list,
 		     g_object_unref);
     
     if(is_active){      
-      return(TRUE);
+      success = TRUE;
+
+      break;
     }
 
     /* iterate */
-    pthread_mutex_lock(current_mutex);
-    
-    current = current->next;
+    next = ags_recycling_next(current);
 
-    pthread_mutex_unlock(current_mutex);
+    g_object_unref(next);
+
+    current = next;
   }
 
-  return(FALSE);
+  if(current != NULL){
+    g_object_unref(current);
+  }
+  
+  return(success);
 }
 
 /**
@@ -2614,7 +2488,7 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
  *
  * Returns: a new #AgsRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecycling*
 ags_recycling_new(GObject *output_soundcard)

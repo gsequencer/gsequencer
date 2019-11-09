@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CORE_AUDIO_DEVIN                (ags_core_audio_devin_get_type())
 #define AGS_CORE_AUDIO_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_DEVIN, AgsCoreAudioDevin))
@@ -34,7 +34,7 @@
 #define AGS_IS_CORE_AUDIO_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_DEVIN))
 #define AGS_CORE_AUDIO_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_DEVIN, AgsCoreAudioDevinClass))
 
-#define AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(obj) (((AgsCoreAudioDevin *) obj)->obj_mutex)
+#define AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioDevin *) obj)->obj_mutex))
 
 typedef struct _AgsCoreAudioDevin AgsCoreAudioDevin;
 typedef struct _AgsCoreAudioDevinClass AgsCoreAudioDevinClass;
@@ -117,10 +117,7 @@ struct _AgsCoreAudioDevin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -159,11 +156,11 @@ struct _AgsCoreAudioDevin
   gchar **port_name;
   GList *core_audio_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -177,8 +174,6 @@ GType ags_core_audio_devin_get_type();
 
 GQuark ags_core_audio_devin_error_quark();
 
-pthread_mutex_t* ags_core_audio_devin_get_class_mutex();
-
 gboolean ags_core_audio_devin_test_flags(AgsCoreAudioDevin *core_audio_devin, guint flags);
 void ags_core_audio_devin_set_flags(AgsCoreAudioDevin *core_audio_devin, guint flags);
 void ags_core_audio_devin_unset_flags(AgsCoreAudioDevin *core_audio_devin, guint flags);
@@ -188,6 +183,8 @@ void ags_core_audio_devin_switch_buffer_flag(AgsCoreAudioDevin *core_audio_devin
 void ags_core_audio_devin_adjust_delay_and_attack(AgsCoreAudioDevin *core_audio_devin);
 void ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin);
 
-AgsCoreAudioDevin* ags_core_audio_devin_new(AgsApplicationContext *application_context);
+AgsCoreAudioDevin* ags_core_audio_devin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CORE_AUDIO_DEVIN_H__*/

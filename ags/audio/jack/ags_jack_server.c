@@ -99,7 +99,6 @@ void ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_JACK_CLIENT,
@@ -108,8 +107,6 @@ enum{
 };
 
 static gpointer ags_jack_server_parent_class = NULL;
-
-static pthread_mutex_t ags_jack_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_server_get_type()
@@ -180,22 +177,6 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
   gobject->finalize = ags_jack_server_finalize;
 
   /* properties */
-  /**
-   * AgsJackServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsJackServer:url:
    *
@@ -336,9 +317,6 @@ ags_jack_server_init(AgsJackServer *jack_server)
   pthread_mutex_init(mutex,
 		     attr);
 
-  /* parent */
-  jack_server->application_context = NULL;
-
   /* uuid */
   jack_server->uuid = ags_uuid_alloc();
   ags_uuid_generate(jack_server->uuid);
@@ -381,33 +359,6 @@ ags_jack_server_set_property(GObject *gobject,
   jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(jack_server_mutex);
-
-      if(jack_server->application_context == application_context){
-	pthread_mutex_unlock(jack_server_mutex);
-
-	return;
-      }
-
-      if(jack_server->application_context != NULL){
-	g_object_unref(G_OBJECT(jack_server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      jack_server->application_context = application_context;
-
-      pthread_mutex_unlock(jack_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       gchar *url;
@@ -556,15 +507,6 @@ ags_jack_server_get_property(GObject *gobject,
   jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(jack_server_mutex);
-
-      g_value_set_object(value, jack_server->application_context);
-
-      pthread_mutex_unlock(jack_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       pthread_mutex_lock(jack_server_mutex);
@@ -628,13 +570,6 @@ ags_jack_server_dispose(GObject *gobject)
   
   jack_server = AGS_JACK_SERVER(gobject);
 
-  /* application context */
-  if(jack_server->application_context != NULL){
-    g_object_unref(G_OBJECT(jack_server->application_context));
-    
-    jack_server->application_context = NULL;
-  }
-
   /* default soundcard */
   if(jack_server->default_soundcard != NULL){
     g_object_unref(G_OBJECT(jack_server->default_soundcard));
@@ -682,17 +617,6 @@ ags_jack_server_finalize(GObject *gobject)
   AgsJackServer *jack_server;
 
   jack_server = AGS_JACK_SERVER(gobject);
-
-  pthread_mutex_destroy(jack_server->obj_mutex);
-  free(jack_server->obj_mutex);
-
-  pthread_mutexattr_destroy(jack_server->obj_mutexattr);
-  free(jack_server->obj_mutexattr);
-
-  /* application context */
-  if(jack_server->application_context != NULL){
-    g_object_unref(G_OBJECT(jack_server->application_context));
-  }
 
   /* url */
   g_free(jack_server->url);
@@ -922,21 +846,6 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-/**
- * ags_jack_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_jack_server_get_class_mutex()
-{
-  return(&ags_jack_server_class_mutex);
 }
 
 /**
@@ -1364,7 +1273,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
   soundcard = NULL;
   
   if(is_output){
-    jack_devout = ags_jack_devout_new(application_context);
+    jack_devout = ags_jack_devout_new();
     soundcard = (GObject *) jack_devout;
 
     str = g_strdup_printf("ags-jack-devout-%d",
@@ -1440,7 +1349,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(jack_server_mutex);
   }else{
-    jack_devin = ags_jack_devin_new(application_context);
+    jack_devin = ags_jack_devin_new();
     soundcard = (GObject *) jack_devin;
 
     str = g_strdup_printf("ags-jack-devin-%d",
@@ -1919,7 +1828,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   }
 
   /* the soundcard */
-  jack_devout = ags_jack_devout_new(application_context);
+  jack_devout = ags_jack_devout_new();
   g_object_set(AGS_JACK_DEVOUT(jack_devout),
 	       "jack-client", default_client,
 	       "device", "ags-default-devout",
@@ -2319,7 +2228,6 @@ ags_jack_server_disconnect_client(AgsJackServer *jack_server)
 
 /**
  * ags_jack_server_new:
- * @application_context: the #AgsApplicationContext
  * @url: the URL as string
  *
  * Create a new instance of #AgsJackServer.
@@ -2329,13 +2237,11 @@ ags_jack_server_disconnect_client(AgsJackServer *jack_server)
  * Since: 2.0.0
  */
 AgsJackServer*
-ags_jack_server_new(AgsApplicationContext *application_context,
-		    gchar *url)
+ags_jack_server_new(gchar *url)
 {
   AgsJackServer *jack_server;
 
   jack_server = (AgsJackServer *) g_object_new(AGS_TYPE_JACK_SERVER,
-					       "application-context", application_context,
 					       "url", url,
 					       NULL);
 

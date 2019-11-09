@@ -19,8 +19,6 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -69,10 +67,6 @@ void ags_pulse_devout_xml_parse(AgsConnectable *connectable,
 gboolean ags_pulse_devout_is_connected(AgsConnectable *connectable);
 void ags_pulse_devout_connect(AgsConnectable *connectable);
 void ags_pulse_devout_disconnect(AgsConnectable *connectable);
-
-void ags_pulse_devout_set_application_context(AgsSoundcard *soundcard,
-					      AgsApplicationContext *application_context);
-AgsApplicationContext* ags_pulse_devout_get_application_context(AgsSoundcard *soundcard);
 
 void ags_pulse_devout_set_device(AgsSoundcard *soundcard,
 				 gchar *device);
@@ -177,7 +171,6 @@ void ags_pulse_devout_unlock_sub_block(AgsSoundcard *soundcard,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -193,8 +186,6 @@ enum{
 };
 
 static gpointer ags_pulse_devout_parent_class = NULL;
-
-static pthread_mutex_t ags_pulse_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_devout_get_type (void)
@@ -266,22 +257,6 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
   gobject->finalize = ags_pulse_devout_finalize;
 
   /* properties */
-  /**
-   * AgsPulseDevout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsPulseDevout:device:
    *
@@ -518,9 +493,6 @@ ags_pulse_devout_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_pulse_devout_set_application_context;
-  soundcard->get_application_context = ags_pulse_devout_get_application_context;
-
   soundcard->set_device = ags_pulse_devout_set_device;
   soundcard->get_device = ags_pulse_devout_get_device;
   
@@ -621,9 +593,6 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  pulse_devout->application_context = NULL;
 
   /* uuid */
   pulse_devout->uuid = ags_uuid_alloc();
@@ -761,33 +730,6 @@ ags_pulse_devout_set_property(GObject *gobject,
   pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(pulse_devout_mutex);
-
-      if(pulse_devout->application_context == application_context){
-	pthread_mutex_unlock(pulse_devout_mutex);
-
-	return;
-      }
-
-      if(pulse_devout->application_context != NULL){
-	g_object_unref(G_OBJECT(pulse_devout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      pulse_devout->application_context = application_context;
-
-      pthread_mutex_unlock(pulse_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -1039,15 +981,6 @@ ags_pulse_devout_get_property(GObject *gobject,
   pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(pulse_devout_mutex);
-
-      g_value_set_object(value, pulse_devout->application_context);
-
-      pthread_mutex_unlock(pulse_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(pulse_devout_mutex);
@@ -1202,13 +1135,6 @@ ags_pulse_devout_dispose(GObject *gobject)
     g_object_unref(task_thread);
   }
 
-  /* application context */
-  if(pulse_devout->application_context != NULL){
-    g_object_unref(pulse_devout->application_context);
-
-    pulse_devout->application_context = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_devout_parent_class)->dispose(gobject);
 }
@@ -1265,11 +1191,6 @@ ags_pulse_devout_finalize(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(pulse_devout->application_context != NULL){
-    g_object_unref(pulse_devout->application_context);
-  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_devout_parent_class)->finalize(gobject);
@@ -1551,51 +1472,6 @@ ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, guint flags)
   pulse_devout->flags &= (~flags);
   
   pthread_mutex_unlock(pulse_devout_mutex);
-}
-
-void
-ags_pulse_devout_set_application_context(AgsSoundcard *soundcard,
-				   AgsApplicationContext *application_context)
-{
-  AgsPulseDevout *pulse_devout;
-
-  pthread_mutex_t *pulse_devout_mutex;
-
-  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
-
-  /* get pulse devout mutex */
-  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
-
-  /* set application context */
-  pthread_mutex_lock(pulse_devout_mutex);
-  
-  pulse_devout->application_context = application_context;
-  
-  pthread_mutex_unlock(pulse_devout_mutex);
-}
-
-AgsApplicationContext*
-ags_pulse_devout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsPulseDevout *pulse_devout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *pulse_devout_mutex;
-
-  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
-
-  /* get pulse devout mutex */
-  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
-
-  /* get application context */
-  pthread_mutex_lock(pulse_devout_mutex);
-
-  application_context = pulse_devout->application_context;
-
-  pthread_mutex_unlock(pulse_devout_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -3718,7 +3594,6 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
 
 /**
  * ags_pulse_devout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsPulseDevout.
  *
@@ -3727,12 +3602,11 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
  * Since: 2.0.0
  */
 AgsPulseDevout*
-ags_pulse_devout_new(AgsApplicationContext *application_context)
+ags_pulse_devout_new()
 {
   AgsPulseDevout *pulse_devout;
 
   pulse_devout = (AgsPulseDevout *) g_object_new(AGS_TYPE_PULSE_DEVOUT,
-						 "application-context", application_context,
 						 NULL);
   
   return(pulse_devout);

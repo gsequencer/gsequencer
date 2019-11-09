@@ -24,11 +24,14 @@
 #include <glib-object.h>
 
 #include <time.h>
-#include <pthread.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_port.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_METER_CONTROLLER                (ags_osc_meter_controller_get_type())
 #define AGS_OSC_METER_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_METER_CONTROLLER, AgsOscMeterController))
@@ -59,7 +62,7 @@ struct _AgsOscMeterController
 
   struct timespec *monitor_timeout;
   
-  pthread_t *monitor_thread;
+  GThread *monitor_thread;
   
   GList *monitor;
 };
@@ -120,5 +123,7 @@ gpointer ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter
 						unsigned char *message, guint message_size);
 
 AgsOscMeterController* ags_osc_meter_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_METER_CONTROLLER_H__*/

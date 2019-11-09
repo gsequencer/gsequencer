@@ -19,8 +19,6 @@
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
@@ -65,10 +63,6 @@ void ags_jack_midiin_xml_parse(AgsConnectable *connectable,
 gboolean ags_jack_midiin_is_connected(AgsConnectable *connectable);
 void ags_jack_midiin_connect(AgsConnectable *connectable);
 void ags_jack_midiin_disconnect(AgsConnectable *connectable);
-
-void ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
-					     AgsApplicationContext *application_context);
-AgsApplicationContext* ags_jack_midiin_get_application_context(AgsSequencer *sequencer);
 
 void ags_jack_midiin_set_device(AgsSequencer *sequencer,
 				gchar *device);
@@ -128,7 +122,6 @@ guint ags_jack_midiin_get_note_offset(AgsSequencer *sequencer);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_BUFFER,
   PROP_BPM,
@@ -139,8 +132,6 @@ enum{
 };
 
 static gpointer ags_jack_midiin_parent_class = NULL;
-
-static pthread_mutex_t ags_jack_midiin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_midiin_get_type (void)
@@ -212,22 +203,6 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
   gobject->finalize = ags_jack_midiin_finalize;
 
   /* properties */
-  /**
-   * AgsJackMidiin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsJackMidiin:device:
    *
@@ -377,9 +352,6 @@ ags_jack_midiin_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
-  sequencer->set_application_context = ags_jack_midiin_set_application_context;
-  sequencer->get_application_context = ags_jack_midiin_get_application_context;
-
   sequencer->set_device = ags_jack_midiin_set_device;
   sequencer->get_device = ags_jack_midiin_get_device;
 
@@ -454,9 +426,6 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  jack_midiin->application_context = NULL;
 
   /* uuid */
   jack_midiin->uuid = ags_uuid_alloc();
@@ -557,33 +526,6 @@ ags_jack_midiin_set_property(GObject *gobject,
   jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(jack_midiin_mutex);
-
-      if(jack_midiin->application_context == (GObject *) application_context){
-	pthread_mutex_unlock(jack_midiin_mutex);
-
-	return;
-      }
-
-      if(jack_midiin->application_context != NULL){
-	g_object_unref(G_OBJECT(jack_midiin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      jack_midiin->application_context = (GObject *) application_context;
-
-      pthread_mutex_unlock(jack_midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -700,15 +642,6 @@ ags_jack_midiin_get_property(GObject *gobject,
   jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(jack_midiin_mutex);
-
-      g_value_set_object(value, jack_midiin->application_context);
-
-      pthread_mutex_unlock(jack_midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(jack_midiin_mutex);
@@ -1122,51 +1055,6 @@ ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags)
   jack_midiin->flags &= (~flags);
   
   pthread_mutex_unlock(jack_midiin_mutex);
-}
-
-void
-ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
-					AgsApplicationContext *application_context)
-{
-  AgsJackMidiin *jack_midiin;
-
-  pthread_mutex_t *jack_midiin_mutex;
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set application context */
-  pthread_mutex_lock(jack_midiin_mutex);
-  
-  jack_midiin->application_context = (GObject *) application_context;
-  
-  pthread_mutex_unlock(jack_midiin_mutex);
-}
-
-AgsApplicationContext*
-ags_jack_midiin_get_application_context(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *jack_midiin_mutex;
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* get application context */
-  pthread_mutex_lock(jack_midiin_mutex);
-
-  application_context = (AgsApplicationContext *) jack_midiin->application_context;
-
-  pthread_mutex_unlock(jack_midiin_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -2126,7 +2014,6 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
 
 /**
  * ags_jack_midiin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsJackMidiin.
  *
@@ -2135,12 +2022,11 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
  * Since: 2.0.0
  */
 AgsJackMidiin*
-ags_jack_midiin_new(AgsApplicationContext *application_context)
+ags_jack_midiin_new()
 {
   AgsJackMidiin *jack_midiin;
 
   jack_midiin = (AgsJackMidiin *) g_object_new(AGS_TYPE_JACK_MIDIIN,
-					       "application-context", application_context,
 					       NULL);
   
   return(jack_midiin);
