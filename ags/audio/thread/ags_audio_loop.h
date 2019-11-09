@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIO_LOOP                (ags_audio_loop_get_type())
 #define AGS_AUDIO_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_LOOP, AgsAudioLoop))
 #define AGS_AUDIO_LOOP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUDIO_LOOP, AgsAudioLoopClass))
@@ -90,14 +92,7 @@ struct _AgsAudioLoop
     
   GObject *async_queue;
     
-  pthread_mutexattr_t *tree_lock_mutexattr;
-  pthread_mutex_t *tree_lock;
-  pthread_mutex_t *recall_mutex;
-
-  pthread_mutex_t *timing_mutex;
-  pthread_cond_t *timing_cond;
-  
-  pthread_t *timing_thread;
+  GRecMutex tree_lock;
 
   guint play_channel_ref;
   GList *play_channel; // play AgsChannel
@@ -126,5 +121,7 @@ void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
 AgsAudioLoop* ags_audio_loop_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

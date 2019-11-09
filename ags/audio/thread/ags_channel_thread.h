@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CHANNEL_THREAD                (ags_channel_thread_get_type())
 #define AGS_CHANNEL_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL_THREAD, AgsChannelThread))
 #define AGS_CHANNEL_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CHANNEL_THREAD, AgsChannelThreadClass))
@@ -62,15 +64,14 @@ struct _AgsChannelThread
 
   GObject *default_output_soundcard;
     
-  pthread_mutexattr_t wakeup_attr;
-  pthread_mutex_t *wakeup_mutex;
-  pthread_cond_t *wakeup_cond;
+  GMutex wakeup_mutex;
+  GCond wakeup_cond;
 
-  pthread_mutexattr_t done_attr;
-  pthread_mutex_t *done_mutex;
-  pthread_cond_t *done_cond;
+  GMutex done_mutex;
+  GCond done_cond;
 
   GObject *channel;
+  
   gint sound_scope;
 };
 
@@ -86,5 +87,7 @@ void ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 
 AgsChannelThread* ags_channel_thread_new(GObject *default_output_soundcard,
 					 GObject *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_CHANNEL_THREAD_H__*/

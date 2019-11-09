@@ -73,10 +73,6 @@ gboolean ags_wasapi_devout_is_connected(AgsConnectable *connectable);
 void ags_wasapi_devout_connect(AgsConnectable *connectable);
 void ags_wasapi_devout_disconnect(AgsConnectable *connectable);
 
-void ags_wasapi_devout_set_application_context(AgsSoundcard *soundcard,
-					       AgsApplicationContext *application_context);
-AgsApplicationContext* ags_wasapi_devout_get_application_context(AgsSoundcard *soundcard);
-
 void ags_wasapi_devout_set_device(AgsSoundcard *soundcard,
 				  gchar *device);
 gchar* ags_wasapi_devout_get_device(AgsSoundcard *soundcard);
@@ -107,9 +103,9 @@ gboolean ags_wasapi_devout_is_playing(AgsSoundcard *soundcard);
 gchar* ags_wasapi_devout_get_uptime(AgsSoundcard *soundcard);
 
 void ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
-				 GError **error);
+				   GError **error);
 void ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
-				 GError **error);
+				   GError **error);
 void ags_wasapi_devout_client_free(AgsSoundcard *soundcard);
 
 void ags_wasapi_devout_tic(AgsSoundcard *soundcard);
@@ -179,19 +175,18 @@ void ags_wasapi_devout_unlock_sub_block(AgsSoundcard *soundcard,
  */
 
 enum{
-     PROP_0,
-     PROP_APPLICATION_CONTEXT,
-     PROP_DEVICE,
-     PROP_DSP_CHANNELS,
-     PROP_PCM_CHANNELS,
-     PROP_FORMAT,
-     PROP_BUFFER_SIZE,
-     PROP_SAMPLERATE,
-     PROP_BUFFER,
-     PROP_BPM,
-     PROP_DELAY_FACTOR,
-     PROP_ATTACK,
-     PROP_CHANNEL,
+  PROP_0,
+  PROP_DEVICE,
+  PROP_DSP_CHANNELS,
+  PROP_PCM_CHANNELS,
+  PROP_FORMAT,
+  PROP_BUFFER_SIZE,
+  PROP_SAMPLERATE,
+  PROP_BUFFER,
+  PROP_BPM,
+  PROP_DELAY_FACTOR,
+  PROP_ATTACK,
+  PROP_CHANNEL,
 };
 
 static gpointer ags_wasapi_devout_parent_class = NULL;
@@ -224,27 +219,27 @@ ags_wasapi_devout_get_type (void)
     GType ags_type_wasapi_devout = 0;
  
     static const GTypeInfo ags_wasapi_devout_info = {
-						     sizeof(AgsWasapiDevoutClass),
-						     NULL, /* base_init */
-						     NULL, /* base_finalize */
-						     (GClassInitFunc) ags_wasapi_devout_class_init,
-						     NULL, /* class_finalize */
-						     NULL, /* class_data */
-						     sizeof(AgsWasapiDevout),
-						     0,    /* n_preallocs */
-						     (GInstanceInitFunc) ags_wasapi_devout_init,
+      sizeof(AgsWasapiDevoutClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_wasapi_devout_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof(AgsWasapiDevout),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_wasapi_devout_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-								  (GInterfaceInitFunc) ags_wasapi_devout_connectable_interface_init,
-								  NULL, /* interface_finalize */
-								  NULL, /* interface_data */
+      (GInterfaceInitFunc) ags_wasapi_devout_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_soundcard_interface_info = {
-								(GInterfaceInitFunc) ags_wasapi_devout_soundcard_interface_init,
-								NULL, /* interface_finalize */
-								NULL, /* interface_data */
+      (GInterfaceInitFunc) ags_wasapi_devout_soundcard_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
     ags_type_wasapi_devout = g_type_register_static(G_TYPE_OBJECT,
@@ -284,22 +279,6 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
   gobject->finalize = ags_wasapi_devout_finalize;
 
   /* properties */
-  /**
-   * AgsWasapiDevout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.3.4
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsWasapiDevout:device:
    *
@@ -504,9 +483,6 @@ ags_wasapi_devout_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_wasapi_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_wasapi_devout_set_application_context;
-  soundcard->get_application_context = ags_wasapi_devout_get_application_context;
-
   soundcard->set_device = ags_wasapi_devout_set_device;
   soundcard->get_device = ags_wasapi_devout_get_device;
   
@@ -605,9 +581,6 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  wasapi_devout->application_context = NULL;
 
   /* uuid */
   wasapi_devout->uuid = ags_uuid_alloc();
@@ -780,207 +753,180 @@ ags_wasapi_devout_set_property(GObject *gobject,
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(wasapi_devout_mutex);
-
-      if(wasapi_devout->application_context == application_context){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      if(wasapi_devout->application_context != NULL){
-	g_object_unref(G_OBJECT(wasapi_devout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      wasapi_devout->application_context = application_context;
-
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
-    {
-      char *device;
+  {
+    char *device;
 
-      device = (char *) g_value_get_string(value);
+    device = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      wasapi_devout->device = g_strdup(device);
+    wasapi_devout->device = g_strdup(device);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_DSP_CHANNELS:
-    {
-      guint dsp_channels;
+  {
+    guint dsp_channels;
 
-      dsp_channels = g_value_get_uint(value);
+    dsp_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      if(dsp_channels == wasapi_devout->dsp_channels){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      wasapi_devout->dsp_channels = dsp_channels;
-
+    if(dsp_channels == wasapi_devout->dsp_channels){
       pthread_mutex_unlock(wasapi_devout_mutex);
+
+      return;
     }
-    break;
+
+    wasapi_devout->dsp_channels = dsp_channels;
+
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_PCM_CHANNELS:
-    {
-      guint pcm_channels, old_pcm_channels;
-      guint i;
+  {
+    guint pcm_channels, old_pcm_channels;
+    guint i;
 
-      pcm_channels = g_value_get_uint(value);
+    pcm_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      if(pcm_channels == wasapi_devout->pcm_channels){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      old_pcm_channels = wasapi_devout->pcm_channels;
-
-      /* destroy if less pcm-channels */
-      for(i = 8 * wasapi_devout->sub_block_count * pcm_channels; i < 8 * wasapi_devout->sub_block_count * old_pcm_channels; i++){
-	pthread_mutex_destroy(wasapi_devout->sub_block_mutex[i]);
-
-	free(wasapi_devout->sub_block_mutex[i]);
-      }
-
-      wasapi_devout->sub_block_mutex = (pthread_mutex_t **) realloc(wasapi_devout->sub_block_mutex,
-								    8 * wasapi_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
-
-      /* create if more pcm-channels */
-      for(i = 8 * wasapi_devout->sub_block_count * old_pcm_channels; i < 8 * wasapi_devout->sub_block_count * pcm_channels; i++){
-	wasapi_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-
-	pthread_mutex_init(wasapi_devout->sub_block_mutex[i],
-			   NULL);
-      }
-
-      wasapi_devout->pcm_channels = pcm_channels;
-
+    if(pcm_channels == wasapi_devout->pcm_channels){
       pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_realloc_buffer(wasapi_devout);
+      return;
     }
-    break;
+
+    old_pcm_channels = wasapi_devout->pcm_channels;
+
+    /* destroy if less pcm-channels */
+    for(i = 8 * wasapi_devout->sub_block_count * pcm_channels; i < 8 * wasapi_devout->sub_block_count * old_pcm_channels; i++){
+      pthread_mutex_destroy(wasapi_devout->sub_block_mutex[i]);
+
+      free(wasapi_devout->sub_block_mutex[i]);
+    }
+
+    wasapi_devout->sub_block_mutex = (pthread_mutex_t **) realloc(wasapi_devout->sub_block_mutex,
+								  8 * wasapi_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+
+    /* create if more pcm-channels */
+    for(i = 8 * wasapi_devout->sub_block_count * old_pcm_channels; i < 8 * wasapi_devout->sub_block_count * pcm_channels; i++){
+      wasapi_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+      pthread_mutex_init(wasapi_devout->sub_block_mutex[i],
+			 NULL);
+    }
+
+    wasapi_devout->pcm_channels = pcm_channels;
+
+    pthread_mutex_unlock(wasapi_devout_mutex);
+
+    ags_wasapi_devout_realloc_buffer(wasapi_devout);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      guint format;
+  {
+    guint format;
 
-      format = g_value_get_uint(value);
+    format = g_value_get_uint(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      if(format == wasapi_devout->format){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      wasapi_devout->format = format;
-
+    if(format == wasapi_devout->format){
       pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_realloc_buffer(wasapi_devout);
+      return;
     }
-    break;
+
+    wasapi_devout->format = format;
+
+    pthread_mutex_unlock(wasapi_devout_mutex);
+
+    ags_wasapi_devout_realloc_buffer(wasapi_devout);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      guint buffer_size;
+  {
+    guint buffer_size;
 
-      buffer_size = g_value_get_uint(value);
+    buffer_size = g_value_get_uint(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      if(buffer_size == wasapi_devout->buffer_size){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      wasapi_devout->buffer_size = buffer_size;
-
+    if(buffer_size == wasapi_devout->buffer_size){
       pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_realloc_buffer(wasapi_devout);
-      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+      return;
     }
-    break;
+
+    wasapi_devout->buffer_size = buffer_size;
+
+    pthread_mutex_unlock(wasapi_devout_mutex);
+
+    ags_wasapi_devout_realloc_buffer(wasapi_devout);
+    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      guint samplerate;
+  {
+    guint samplerate;
 
-      samplerate = g_value_get_uint(value);
+    samplerate = g_value_get_uint(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
       
-      if(samplerate == wasapi_devout->samplerate){
-	pthread_mutex_unlock(wasapi_devout_mutex);
-
-	return;
-      }
-
-      wasapi_devout->samplerate = samplerate;
-
+    if(samplerate == wasapi_devout->samplerate){
       pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_realloc_buffer(wasapi_devout);
-      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+      return;
     }
-    break;
+
+    wasapi_devout->samplerate = samplerate;
+
+    pthread_mutex_unlock(wasapi_devout_mutex);
+
+    ags_wasapi_devout_realloc_buffer(wasapi_devout);
+    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+  }
+  break;
   case PROP_BUFFER:
-    {
-      //TODO:JK: implement me
-    }
-    break;
+  {
+    //TODO:JK: implement me
+  }
+  break;
   case PROP_BPM:
-    {
-      gdouble bpm;
+  {
+    gdouble bpm;
       
-      bpm = g_value_get_double(value);
+    bpm = g_value_get_double(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      wasapi_devout->bpm = bpm;
+    wasapi_devout->bpm = bpm;
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
+    pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-    }
-    break;
+    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+  }
+  break;
   case PROP_DELAY_FACTOR:
-    {
-      gdouble delay_factor;
+  {
+    gdouble delay_factor;
       
-      delay_factor = g_value_get_double(value);
+    delay_factor = g_value_get_double(value);
 
-      pthread_mutex_lock(wasapi_devout_mutex);
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      wasapi_devout->delay_factor = delay_factor;
+    wasapi_devout->delay_factor = delay_factor;
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
+    pthread_mutex_unlock(wasapi_devout_mutex);
 
-      ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
-    }
-    break;
+    ags_wasapi_devout_adjust_delay_and_attack(wasapi_devout);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1003,105 +949,96 @@ ags_wasapi_devout_get_property(GObject *gobject,
   wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
-
-      g_value_set_object(value, wasapi_devout->application_context);
-
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_string(value, wasapi_devout->device);
+    g_value_set_string(value, wasapi_devout->device);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_DSP_CHANNELS:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_uint(value, wasapi_devout->dsp_channels);
+    g_value_set_uint(value, wasapi_devout->dsp_channels);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_PCM_CHANNELS:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_uint(value, wasapi_devout->pcm_channels);
+    g_value_set_uint(value, wasapi_devout->pcm_channels);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_uint(value, wasapi_devout->format);
+    g_value_set_uint(value, wasapi_devout->format);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_uint(value, wasapi_devout->buffer_size);
+    g_value_set_uint(value, wasapi_devout->buffer_size);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_uint(value, wasapi_devout->samplerate);
+    g_value_set_uint(value, wasapi_devout->samplerate);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_BUFFER:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_pointer(value, wasapi_devout->buffer);
+    g_value_set_pointer(value, wasapi_devout->buffer);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_BPM:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_double(value, wasapi_devout->bpm);
+    g_value_set_double(value, wasapi_devout->bpm);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_DELAY_FACTOR:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_double(value, wasapi_devout->delay_factor);
+    g_value_set_double(value, wasapi_devout->delay_factor);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   case PROP_ATTACK:
-    {
-      pthread_mutex_lock(wasapi_devout_mutex);
+  {
+    pthread_mutex_lock(wasapi_devout_mutex);
 
-      g_value_set_pointer(value, wasapi_devout->attack);
+    g_value_set_pointer(value, wasapi_devout->attack);
 
-      pthread_mutex_unlock(wasapi_devout_mutex);
-    }
-    break;
+    pthread_mutex_unlock(wasapi_devout_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1132,13 +1069,6 @@ ags_wasapi_devout_dispose(GObject *gobject)
 
     /* unref */
     g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(wasapi_devout->application_context != NULL){
-    g_object_unref(wasapi_devout->application_context);
-
-    wasapi_devout->application_context = NULL;
   }
 
   /* call parent */
@@ -1188,11 +1118,6 @@ ags_wasapi_devout_finalize(GObject *gobject)
     /* unref */
     g_object_unref(task_thread);
   }
-
-  /* application context */
-  if(wasapi_devout->application_context != NULL){
-    g_object_unref(wasapi_devout->application_context);
-  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_wasapi_devout_parent_class)->finalize(gobject);
@@ -1474,51 +1399,6 @@ ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, guint flags)
   wasapi_devout->flags &= (~flags);
   
   pthread_mutex_unlock(wasapi_devout_mutex);
-}
-
-void
-ags_wasapi_devout_set_application_context(AgsSoundcard *soundcard,
-					  AgsApplicationContext *application_context)
-{
-  AgsWasapiDevout *wasapi_devout;
-
-  pthread_mutex_t *wasapi_devout_mutex;
-
-  wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
-
-  /* get wasapi devout mutex */
-  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
-
-  /* set application context */
-  pthread_mutex_lock(wasapi_devout_mutex);
-  
-  wasapi_devout->application_context = application_context;
-  
-  pthread_mutex_unlock(wasapi_devout_mutex);
-}
-
-AgsApplicationContext*
-ags_wasapi_devout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsWasapiDevout *wasapi_devout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *wasapi_devout_mutex;
-
-  wasapi_devout = AGS_WASAPI_DEVOUT(soundcard);
-
-  /* get wasapi devout mutex */
-  wasapi_devout_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(wasapi_devout);
-
-  /* get application context */
-  pthread_mutex_lock(wasapi_devout_mutex);
-
-  application_context = wasapi_devout->application_context;
-
-  pthread_mutex_unlock(wasapi_devout_mutex);
-  
-  return(application_context);
 }
 
 void
@@ -1983,20 +1863,20 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
   /* retrieve word size */
   switch(wasapi_devout->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      word_size = sizeof(gint16);
-    }
-    break;
+  {
+    word_size = sizeof(gint16);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      word_size = sizeof(gint32);
-    }
-    break;
+  {
+    word_size = sizeof(gint32);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      word_size = sizeof(gint32);
-    }
-    break;
+  {
+    word_size = sizeof(gint32);
+  }
+  break;
   default:
     pthread_mutex_unlock(wasapi_devout_mutex);
     
@@ -2321,35 +2201,35 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
 
       switch(res){
       case E_POINTER:
-	{
-	  g_message("pointer");
-	}
-	break;
+      {
+	g_message("pointer");
+      }
+      break;
       case E_NOINTERFACE:
-	{
-	  g_message("no interface");
-	}
-	break;
+      {
+	g_message("no interface");
+      }
+      break;
       case AUDCLNT_E_NOT_INITIALIZED:
-	{
-	  g_message("not initialized");
-	}
-	break;
+      {
+	g_message("not initialized");
+      }
+      break;
       case AUDCLNT_E_WRONG_ENDPOINT_TYPE:
-	{
-	  g_message("wrong endpoint");
-	}
-	break;
+      {
+	g_message("wrong endpoint");
+      }
+      break;
       case AUDCLNT_E_DEVICE_INVALIDATED:
-	{
-	  g_message("device invalidated");
-	}
-	break;
+      {
+	g_message("device invalidated");
+      }
+      break;
       case AUDCLNT_E_SERVICE_NOT_RUNNING:
-	{
-	  g_message("no service");
-	}
-	break;
+      {
+	g_message("no service");
+      }
+      break;
       }
     }
 
@@ -2435,29 +2315,29 @@ ags_wasapi_devout_client_play(AgsSoundcard *soundcard,
       
       switch(wasapi_devout->format){
       case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint16));
-	  ags_audio_buffer_util_copy_s16_to_s16((gint16 *) data, 1,
-						(gint16 *) wasapi_devout->buffer[nth_buffer], 1,
-						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-	}
-	break;
+      {
+	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint16));
+	ags_audio_buffer_util_copy_s16_to_s16((gint16 *) data, 1,
+					      (gint16 *) wasapi_devout->buffer[nth_buffer], 1,
+					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+      }
+      break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
-	  ags_audio_buffer_util_copy_s24_to_s24((gint32 *) data, 1,
-						(gint32 *) wasapi_devout->buffer[nth_buffer], 1,
-						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-	}
-	break;
+      {
+	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
+	ags_audio_buffer_util_copy_s24_to_s24((gint32 *) data, 1,
+					      (gint32 *) wasapi_devout->buffer[nth_buffer], 1,
+					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+      }
+      break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
-	  ags_audio_buffer_util_copy_s32_to_s32((gint32 *) data, 1,
-						(gint32 *) wasapi_devout->buffer[nth_buffer], 1,
-						wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
-	}
-	break;
+      {
+	memset(data, 0, wasapi_devout->pcm_channels * wasapi_devout->buffer_size * sizeof(gint32));
+	ags_audio_buffer_util_copy_s32_to_s32((gint32 *) data, 1,
+					      (gint32 *) wasapi_devout->buffer[nth_buffer], 1,
+					      wasapi_devout->pcm_channels * wasapi_devout->buffer_size);
+      }
+      break;
       }
       
       ags_soundcard_unlock_buffer(soundcard,
@@ -3659,20 +3539,20 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
 
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      word_size = sizeof(gint16);
-    }
-    break;
+  {
+    word_size = sizeof(gint16);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      word_size = sizeof(gint32);
-    }
-    break;
+  {
+    word_size = sizeof(gint32);
+  }
+  break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      word_size = sizeof(gint32);
-    }
-    break;
+  {
+    word_size = sizeof(gint32);
+  }
+  break;
   default:
     g_warning("ags_wasapi_devout_realloc_buffer(): unsupported word size");
     return;
@@ -3737,7 +3617,6 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
 
 /**
  * ags_wasapi_devout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsWasapiDevout.
  *
@@ -3746,12 +3625,11 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
  * Since: 2.3.4
  */
 AgsWasapiDevout*
-ags_wasapi_devout_new(AgsApplicationContext *application_context)
+ags_wasapi_devout_new()
 {
   AgsWasapiDevout *wasapi_devout;
 
   wasapi_devout = (AgsWasapiDevout *) g_object_new(AGS_TYPE_WASAPI_DEVOUT,
-						   "application-context", application_context,
 						   NULL);
   
   return(wasapi_devout);
