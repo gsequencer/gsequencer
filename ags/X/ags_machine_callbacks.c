@@ -168,8 +168,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   gtk_widget_destroy((GtkWidget *) machine);
 
   /* get task thread */
-  remove_audio = ags_remove_audio_new(application_context,
-				      audio);
+  remove_audio = ags_remove_audio_new(audio);
   
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) remove_audio);
@@ -242,20 +241,12 @@ ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *
   AgsAudio *audio;
 
   gchar *audio_name;
-  
-  pthread_mutex_t *audio_mutex;
-  
+    
   if(machine->rename_audio != NULL){
     return;
   }
 
   audio = machine->audio;
-
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   machine->rename_audio =
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename audio"),
@@ -267,11 +258,9 @@ ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *
 						       GTK_RESPONSE_REJECT,
 						       NULL);
 
-  pthread_mutex_lock(audio_mutex);
-
-  audio_name = g_strdup(audio->audio_name);
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "audio-name", &audio_name,
+	       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(entry, audio_name);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/X/editor/ags_wave_edit.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_WAVE_EDITOR                (ags_wave_editor_get_type())
 #define AGS_WAVE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_EDITOR, AgsWaveEditor))
 #define AGS_WAVE_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_WAVE_EDITOR, AgsWaveEditorClass))
@@ -70,8 +72,6 @@ struct _AgsWaveEditor
 
   guint tact_counter;
   gdouble current_tact;
-
-  GObject *soundcard;
 
   GtkHPaned *paned;
 
@@ -124,5 +124,7 @@ void ags_wave_editor_cut(AgsWaveEditor *wave_editor);
 void ags_wave_editor_invert(AgsWaveEditor *wave_editor);
 
 AgsWaveEditor* ags_wave_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_EDITOR_H__*/

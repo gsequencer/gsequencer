@@ -58,6 +58,6 @@ GType ags_cancel_audio_get_type();
 AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio,
 				     gint sound_scope);
 
-G_BEGIN_DECLS
+G_END_DECLS
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/

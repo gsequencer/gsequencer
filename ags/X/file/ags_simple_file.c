@@ -19,10 +19,6 @@
 
 #include <ags/X/file/ags_simple_file.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -1035,15 +1031,15 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
 
   node = simple_file->root_node;
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
+	     AGS_SIMPLE_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     AGS_FILE_VERSION_PROP,
+	     AGS_SIMPLE_FILE_VERSION_PROP,
 	     AGS_APPLICATION_CONTEXT(application_context)->version);
 
   xmlNewProp(node,
-	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_SIMPLE_FILE_BUILD_ID_PROP,
 	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
 
   /* add to parent */
@@ -1286,10 +1282,10 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 
   config = *ags_config;
   config->version = xmlGetProp(node,
-				AGS_FILE_VERSION_PROP);
+				AGS_SIMPLE_FILE_VERSION_PROP);
 
   config->build_id = xmlGetProp(node,
-				 AGS_FILE_BUILD_ID_PROP);
+				 AGS_SIMPLE_FILE_BUILD_ID_PROP);
 
   application_context = ags_application_context_get_instance();
   
@@ -1957,7 +1953,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     gobject = *machine;
   }else{
     type_name = xmlGetProp(node,
-			   AGS_FILE_TYPE_PROP);
+			   AGS_SIMPLE_FILE_TYPE_PROP);
 
     if(type_name != NULL){
       gobject = g_object_new(g_type_from_name(type_name),
@@ -7160,15 +7156,15 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsCon
 
   /* properties */
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
+	     AGS_SIMPLE_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     AGS_FILE_VERSION_PROP,
+	     AGS_SIMPLE_FILE_VERSION_PROP,
 	     AGS_CONFIG(ags_config)->version);
 
   xmlNewProp(node,
-	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_SIMPLE_FILE_BUILD_ID_PROP,
 	     AGS_CONFIG(ags_config)->build_id);
 
   xmlAddChild(parent,
@@ -7418,7 +7414,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 
   xmlNewProp(node,
 	     "loop",
-	     ((gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+	     ((gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)) ? AGS_SIMPLE_FILE_TRUE: AGS_SIMPLE_FILE_FALSE));
 
   str = g_strdup_printf("%f",
 			window->navigation->loop_left_tact->adjustment->value);
@@ -7659,7 +7655,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       
       xmlNewProp(control_node,
 		 "value",
-		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_FILE_TRUE:  AGS_FILE_FALSE));
+		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
     }else if(AGS_IS_DIAL(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control");
@@ -7824,15 +7820,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		    "ags-sf-machine");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_TYPE_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_TYPE_PROP,
 	     (xmlChar *) G_OBJECT_TYPE_NAME(machine));
 
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_NAME_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_NAME_PROP,
 	     (xmlChar *) machine->machine_name);
 
   ags_simple_file_add_id_ref(simple_file,
@@ -8914,7 +8910,7 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
 		    "ags-sf-pad");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   str = g_strdup_printf("%d",
@@ -9129,7 +9125,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 		    "ags-sf-line");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   found_content = FALSE;
@@ -9418,7 +9414,7 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 		    "ags-sf-effect-pad");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
 
@@ -9575,7 +9571,7 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 		    "ags-sf-effect-line");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   /* effect list */

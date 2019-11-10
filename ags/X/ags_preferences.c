@@ -306,8 +306,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   ags_config_save(config);
 
-  apply_sound_config = ags_apply_sound_config_new(application_context,
-						  NULL);
+  apply_sound_config = ags_apply_sound_config_new(NULL);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) apply_sound_config);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/X/ags_link_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -82,21 +79,10 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 	  if(file_link != NULL){
 	    gchar *filename;
 
-	    pthread_mutex_t *file_link_mutex;
-
-	    /* get file link mutex */
-	    pthread_mutex_lock(ags_file_link_get_class_mutex());
-	
-	    file_link_mutex = file_link->obj_mutex;
-
-	    pthread_mutex_unlock(ags_file_link_get_class_mutex());
-
 	    /* get some fields */
-	    pthread_mutex_lock(file_link_mutex);
-	
-	    filename = g_strdup(file_link->filename);
-	
-	    pthread_mutex_unlock(file_link_mutex);
+	    g_object_get(file_link,
+			 "filename", &filename,
+			 NULL);
 
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			       0, g_strdup_printf("file://%s", filename),

@@ -27,6 +27,6 @@ G_BEGIN_DECLS
 
 gchar* ags_id_generator_create_uuid();
 
-G_BEGIN_DECLS
+G_END_DECLS
 
 #endif /*__AGS_ID_GENERATOR_H__*/

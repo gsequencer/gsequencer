@@ -419,8 +419,7 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
   /* create panel */
   panel = ags_panel_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(panel)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(panel)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -464,8 +463,7 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
   /* create mixer */
   mixer = ags_mixer_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(mixer)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(mixer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -509,8 +507,7 @@ ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
   /* create spectrometer */
   spectrometer = ags_spectrometer_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(spectrometer)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(spectrometer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -554,8 +551,7 @@ ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
   /* create equalizer10 */
   equalizer10 = ags_equalizer10_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(equalizer10)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(equalizer10)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -599,8 +595,7 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
   /* create drum */
   drum = ags_drum_new(G_OBJECT(default_soundcard));
   
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(drum)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(drum)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -648,8 +643,7 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   /* create matrix */
   matrix = ags_matrix_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(matrix)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(matrix)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
   
@@ -697,8 +691,7 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
   /* create synth */
   synth = ags_synth_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(synth)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -742,8 +735,7 @@ ags_menu_action_add_fm_synth_callback(GtkWidget *menu_item, gpointer data)
   /* create fm_synth */
   fm_synth = ags_fm_synth_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(fm_synth)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(fm_synth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -787,8 +779,7 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   /* create syncsynth */
   syncsynth = ags_syncsynth_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(syncsynth)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -832,8 +823,7 @@ ags_menu_action_add_fm_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   /* create fm_syncsynth */
   fm_syncsynth = ags_fm_syncsynth_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(fm_syncsynth)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(fm_syncsynth)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -878,8 +868,7 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   /* create ffplayer */
   ffplayer = ags_ffplayer_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(ffplayer)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(ffplayer)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -924,8 +913,7 @@ ags_menu_action_add_pitch_sampler_callback(GtkWidget *menu_item, gpointer data)
   /* create pitch_sampler */
   pitch_sampler = ags_pitch_sampler_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(pitch_sampler)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(pitch_sampler)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -969,8 +957,7 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
   /* create audiorec */
   audiorec = ags_audiorec_new(G_OBJECT(default_soundcard));
 
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(audiorec)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(audiorec)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -1025,8 +1012,7 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 					filename,
 					effect);
   
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(ladspa_bridge)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(ladspa_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -1085,8 +1071,7 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 				    filename,
 				    effect);
   
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(dssi_bridge)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -1210,8 +1195,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
   
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(lv2_bridge)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -1279,8 +1263,7 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 					      filename,
 					      effect);
   
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(live_dssi_bridge)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(live_dssi_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 
@@ -1376,8 +1359,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 					    filename,
 					    effect);
     
-  add_audio = ags_add_audio_new(application_context,
-				AGS_MACHINE(live_lv2_bridge)->audio);
+  add_audio = ags_add_audio_new(AGS_MACHINE(live_lv2_bridge)->audio);
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
 

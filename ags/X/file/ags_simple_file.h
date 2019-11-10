@@ -31,6 +31,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SIMPLE_FILE                (ags_simple_file_get_type())
 #define AGS_SIMPLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SIMPLE_FILE, AgsSimpleFile))
 #define AGS_SIMPLE_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SIMPLE_FILE, AgsSimpleFileClass))
@@ -45,6 +47,14 @@
 
 #define AGS_SIMPLE_FILE_DEFAULT_AUDIO_FORMAT "raw"
 #define AGS_SIMPLE_FILE_DEFAULT_AUDIO_ENCODING "base64"
+
+#define AGS_SIMPLE_FILE_ID_PROP "id"
+#define AGS_SIMPLE_FILE_NAME_PROP "name"
+#define AGS_SIMPLE_FILE_TYPE_PROP "type"
+#define AGS_SIMPLE_FILE_VERSION_PROP "version"
+#define AGS_SIMPLE_FILE_BUILD_ID_PROP "version"
+#define AGS_SIMPLE_FILE_TRUE "true"
+#define AGS_SIMPLE_FILE_FALSE "false"
 
 typedef struct _AgsSimpleFile AgsSimpleFile;
 typedef struct _AgsSimpleFileClass AgsSimpleFileClass;
@@ -147,5 +157,7 @@ void ags_simple_file_read_start(AgsSimpleFile *simple_file);
 
 /* */
 AgsSimpleFile* ags_simple_file_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SIMPLE_FILE_H__*/

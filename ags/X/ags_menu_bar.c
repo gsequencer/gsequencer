@@ -20,9 +20,6 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -743,52 +740,40 @@ ags_ladspa_bridge_menu_new()
 
   AgsLadspaManager *ladspa_manager;
 
-  GList *list, *start;
+  GList *list, *start_list;
 
-  pthread_mutex_t *ladspa_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;  
-  
+  GRecMutex *ladspa_manager_mutex;
+
   menu = (GtkMenu *) gtk_menu_new();
 
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* get plugin */
-  pthread_mutex_lock(ladspa_manager_mutex);
+  g_rec_mutex_lock(ladspa_manager_mutex);
   
-  start =
-    list = g_list_copy(ladspa_manager->ladspa_plugin);
+  list =
+    start_list = g_list_copy_deep(ladspa_manager->ladspa_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
-  pthread_mutex_unlock(ladspa_manager_mutex);
+  g_rec_mutex_unlock(ladspa_manager_mutex);
   
-  start = ags_base_plugin_sort(start);
+  start_list = ags_base_plugin_sort(start_list);
   g_list_free(list);
  
-  list = start;
+  list = start_list;
 
   while(list != NULL){
     gchar *filename, *effect;
-      
-    /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-    base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
+    
     /* get filename and effect */
-    pthread_mutex_lock(base_plugin_mutex);
-      
-    filename = g_strdup(AGS_BASE_PLUGIN(list->data)->filename);
-    effect = g_strdup(AGS_BASE_PLUGIN(list->data)->effect);
-
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
       
     /* create item */
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
@@ -804,7 +789,8 @@ ags_ladspa_bridge_menu_new()
     list = list->next;
   }
 
-  g_list_free(start);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   return(menu);
 }
@@ -817,52 +803,40 @@ ags_dssi_bridge_menu_new()
 
   AgsDssiManager *dssi_manager;
 
-  GList *list, *start;
+  GList *list, *start_list;
 
-  pthread_mutex_t *dssi_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;  
-  
+  GRecMutex *dssi_manager_mutex;
+
   menu = (GtkMenu *) gtk_menu_new();
 
   dssi_manager = ags_dssi_manager_get_instance();
 
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* get plugin */
-  pthread_mutex_lock(dssi_manager_mutex);
+  g_rec_mutex_lock(dssi_manager_mutex);
   
-  start =
-    list = g_list_copy(dssi_manager->dssi_plugin);
+  list =
+    start_list = g_list_copy_deep(dssi_manager->dssi_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
-  pthread_mutex_unlock(dssi_manager_mutex);
+  g_rec_mutex_unlock(dssi_manager_mutex);
   
-  start = ags_base_plugin_sort(start);
+  start_list = ags_base_plugin_sort(start_list);
   g_list_free(list);
  
-  list = start;
+  list = start_list;
 
   while(list != NULL){
     gchar *filename, *effect;
-      
-    /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-    base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
+    
     /* get filename and effect */
-    pthread_mutex_lock(base_plugin_mutex);
-      
-    filename = g_strdup(AGS_BASE_PLUGIN(list->data)->filename);
-    effect = g_strdup(AGS_BASE_PLUGIN(list->data)->effect);
-
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
       
     /* create item */
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
@@ -878,7 +852,8 @@ ags_dssi_bridge_menu_new()
     list = list->next;
   }
 
-  g_list_free(start);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   return(menu);
 }
@@ -891,56 +866,44 @@ ags_lv2_bridge_menu_new()
 
   AgsLv2Manager *lv2_manager;
 
-  GList *list, *start;
+  GList *list, *start_list;
   
-  pthread_mutex_t *lv2_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;  
+  GRecMutex *lv2_manager_mutex;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   lv2_manager = ags_lv2_manager_get_instance();
 
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
-
-  lv2_manager_mutex = lv2_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* get plugin */
-  pthread_mutex_lock(lv2_manager_mutex);
+  g_rec_mutex_lock(lv2_manager_mutex);
   
-  start =
-    list = g_list_copy(lv2_manager->lv2_plugin);
+  list =
+    start_list = g_list_copy_deep(lv2_manager->lv2_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
-  pthread_mutex_unlock(lv2_manager_mutex);
+  g_rec_mutex_unlock(lv2_manager_mutex);
 
-  start =  ags_base_plugin_sort(start);
+  start_list =  ags_base_plugin_sort(start_list);
   g_list_free(list);
 
-  list = start;
+  list = start_list;
   
   while(list != NULL){
     gchar *filename, *effect;
-      
-    /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-    base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
+    
     /* get filename and effect */
-    pthread_mutex_lock(base_plugin_mutex);
-      
-    filename = g_strdup(AGS_BASE_PLUGIN(list->data)->filename);
-    effect = g_strdup(AGS_BASE_PLUGIN(list->data)->effect);
-
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
       
     /* create item */
     if(filename != NULL &&
-      effect != NULL){
+       effect != NULL){
       item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
     
       g_object_set_data((GObject *) item,
@@ -955,7 +918,7 @@ ags_lv2_bridge_menu_new()
     list = list->next;
   }
 
-  g_list_free(start);
+  g_list_free(start_list);
   
   return(menu);
 }
@@ -968,52 +931,40 @@ ags_live_dssi_bridge_menu_new()
 
   AgsDssiManager *dssi_manager;
 
-  GList *list, *start;
+  GList *list, *start_list;
 
-  pthread_mutex_t *dssi_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;  
+  GRecMutex *dssi_manager_mutex;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   dssi_manager = ags_dssi_manager_get_instance();
 
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* get plugin */
-  pthread_mutex_lock(dssi_manager_mutex);
+  g_rec_mutex_lock(dssi_manager_mutex);
   
-  start =
-    list = g_list_copy(dssi_manager->dssi_plugin);
-
-  pthread_mutex_unlock(dssi_manager_mutex);
+  list =
+    start_list = g_list_copy_deep(dssi_manager->dssi_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
   
-  start = ags_base_plugin_sort(start);
+  g_rec_mutex_unlock(dssi_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
   g_list_free(list);
  
-  list = start;
+  list = start_list;
 
   while(list != NULL){
     gchar *filename, *effect;
-      
-    /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-    base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
     /* get filename and effect */
-    pthread_mutex_lock(base_plugin_mutex);
-      
-    filename = g_strdup(AGS_BASE_PLUGIN(list->data)->filename);
-    effect = g_strdup(AGS_BASE_PLUGIN(list->data)->effect);
-
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
       
     /* create item */
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
@@ -1029,7 +980,8 @@ ags_live_dssi_bridge_menu_new()
     list = list->next;
   }
 
-  g_list_free(start);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   return(menu);
 }
@@ -1042,53 +994,41 @@ ags_live_lv2_bridge_menu_new()
 
   AgsLv2Manager *lv2_manager;
 
-  GList *list, *start;
+  GList *list, *start_list;
 
-  pthread_mutex_t *lv2_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *lv2_manager_mutex;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   lv2_manager = ags_lv2_manager_get_instance();
 
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
-
-  lv2_manager_mutex = lv2_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* get plugin */
-  pthread_mutex_lock(lv2_manager_mutex);
+  g_rec_mutex_lock(lv2_manager_mutex);
   
-  start =
-    list = g_list_copy(lv2_manager->lv2_plugin);
+  list =
+    start_list = g_list_copy_deep(lv2_manager->lv2_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
-  pthread_mutex_unlock(lv2_manager_mutex);
+  g_rec_mutex_unlock(lv2_manager_mutex);
   
-  start = ags_base_plugin_sort(start);
+  start_list = ags_base_plugin_sort(start_list);
   g_list_free(list);
  
-  list = start;
+  list = start_list;
   
   while(list != NULL){
     if(ags_lv2_plugin_test_flags(list->data, AGS_LV2_PLUGIN_IS_SYNTHESIZER)){
       gchar *filename, *effect;
       
-      /* get base plugin mutex */
-      pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-      base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
       /* get filename and effect */
-      pthread_mutex_lock(base_plugin_mutex);
-      
-      filename = g_strdup(AGS_BASE_PLUGIN(list->data)->filename);
-      effect = g_strdup(AGS_BASE_PLUGIN(list->data)->effect);
-
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_object_get(list->data,
+		   "filename", &filename,
+		   "effect", &effect,
+		   NULL);
       
       /* create item */
       item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);

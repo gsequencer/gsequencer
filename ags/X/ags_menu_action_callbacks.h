@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 void ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data);
@@ -69,5 +71,7 @@ void ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer d
 void ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data);
 
 void ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_MENU_ACTION_CALLBACKS_H__*/

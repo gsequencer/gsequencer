@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LINE                (ags_line_get_type())
 #define AGS_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE, AgsLine))
@@ -145,5 +147,7 @@ gboolean ags_line_message_monitor_timeout(AgsLine *line);
 gboolean ags_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_H__*/

@@ -450,8 +450,7 @@ am__objects_5 = $(am__objects_1) ags/file/libags_la-ags_file.lo \
 	ags/file/libags_la-ags_file_id_ref.lo \
 	ags/file/libags_la-ags_file_launch.lo \
 	ags/file/libags_la-ags_file_link.lo \
-	ags/file/libags_la-ags_file_lookup.lo \
-	ags/file/libags_la-ags_file_util.lo
+	ags/file/libags_la-ags_file_lookup.lo
 am_libags_la_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5)
 libags_la_OBJECTS = $(am_libags_la_OBJECTS)
@@ -4686,7 +4685,6 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/file/$(DEPDIR)/libags_la-ags_file_launch.Plo \
 	ags/file/$(DEPDIR)/libags_la-ags_file_link.Plo \
 	ags/file/$(DEPDIR)/libags_la-ags_file_lookup.Plo \
-	ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_buffer_util.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_complex.Plo \
 	ags/lib/$(DEPDIR)/libags_la-ags_conversion.Plo \
@@ -5417,7 +5415,6 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/object/ags_tactable.h ags/file/ags_file.h \
 	ags/file/ags_file_id_ref.h ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h ags/file/ags_file_lookup.h \
-	ags/file/ags_file_stock.h ags/file/ags_file_util.h \
 	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_condition_manager.h \
@@ -7880,9 +7877,7 @@ libags_file_h_sources = \
 	ags/file/ags_file_id_ref.h \
 	ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h \
-	ags/file/ags_file_lookup.h \
-	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h
+	ags/file/ags_file_lookup.h
 
 deprecated_libags_file_c_sources = 
 libags_file_c_sources = \
@@ -7891,8 +7886,7 @@ libags_file_c_sources = \
 	ags/file/ags_file_id_ref.c \
 	ags/file/ags_file_launch.c \
 	ags/file/ags_file_link.c \
-	ags/file/ags_file_lookup.c \
-	ags/file/ags_file_util.c
+	ags/file/ags_file_lookup.c
 
 
 # libags-thread all files
@@ -9790,8 +9784,6 @@ ags/file/libags_la-ags_file_launch.lo: ags/file/$(am__dirstamp) \
 ags/file/libags_la-ags_file_link.lo: ags/file/$(am__dirstamp) \
 	ags/file/$(DEPDIR)/$(am__dirstamp)
 ags/file/libags_la-ags_file_lookup.lo: ags/file/$(am__dirstamp) \
-	ags/file/$(DEPDIR)/$(am__dirstamp)
-ags/file/libags_la-ags_file_util.lo: ags/file/$(am__dirstamp) \
 	ags/file/$(DEPDIR)/$(am__dirstamp)
 
 libags.la: $(libags_la_OBJECTS) $(libags_la_DEPENDENCIES) $(EXTRA_libags_la_DEPENDENCIES) 
@@ -13828,7 +13820,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_launch.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_link.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_lookup.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_buffer_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_complex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_conversion.Plo@am__quote@ # am--include-marker
@@ -14481,13 +14472,6 @@ ags/file/libags_la-ags_file_lookup.lo: ags/file/ags_file_lookup.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/file/ags_file_lookup.c' object='ags/file/libags_la-ags_file_lookup.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/file/libags_la-ags_file_lookup.lo `test -f 'ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`ags/file/ags_file_lookup.c
-
-ags/file/libags_la-ags_file_util.lo: ags/file/ags_file_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/file/libags_la-ags_file_util.lo -MD -MP -MF ags/file/$(DEPDIR)/libags_la-ags_file_util.Tpo -c -o ags/file/libags_la-ags_file_util.lo `test -f 'ags/file/ags_file_util.c' || echo '$(srcdir)/'`ags/file/ags_file_util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/file/$(DEPDIR)/libags_la-ags_file_util.Tpo ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/file/ags_file_util.c' object='ags/file/libags_la-ags_file_util.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/file/libags_la-ags_file_util.lo `test -f 'ags/file/ags_file_util.c' || echo '$(srcdir)/'`ags/file/ags_file_util.c
 
 ags/audio/libags_audio_la-ags_acceleration.lo: ags/audio/ags_acceleration.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_acceleration.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_acceleration.Tpo -c -o ags/audio/libags_audio_la-ags_acceleration.lo `test -f 'ags/audio/ags_acceleration.c' || echo '$(srcdir)/'`ags/audio/ags_acceleration.c
@@ -24331,7 +24315,6 @@ distclean: distclean-recursive
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_launch.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_link.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_lookup.Plo
-	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_buffer_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_complex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_conversion.Plo
@@ -25261,7 +25244,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_launch.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_link.Plo
 	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_lookup.Plo
-	-rm -f ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_buffer_util.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_complex.Plo
 	-rm -f ags/lib/$(DEPDIR)/libags_la-ags_conversion.Plo

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 /* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
@@ -70,5 +72,7 @@ void ags_machine_stop_callback(AgsMachine *machine,
 /* library callbacks */
 void ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 							       AgsPlayback *playback);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

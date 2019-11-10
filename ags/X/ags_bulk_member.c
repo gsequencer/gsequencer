@@ -1203,7 +1203,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   void ags_bulk_member_real_change_port_iter(GList *list){
     AgsPort *port;
 
-    pthread_mutex_t *port_mutex;
+    GRecMutex *port_mutex;
     
     while(list != NULL){
       GValue value = {0,};
@@ -1211,14 +1211,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
       port = AGS_BULK_PORT(list->data)->port;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* change */
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       if(!port->port_value_is_pointer){
 	if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -1348,7 +1344,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	}
       }
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
       
       //      g_message("change %f", g_value_get_float(&value));
       ags_port_safe_write(port,

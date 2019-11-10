@@ -71,6 +71,6 @@ void ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 AgsLv2TurtleParser* ags_lv2_turtle_parser_new(AgsTurtle *manifest);
 
-G_BEGIN_DECLS
+G_END_DECLS
 
 #endif /*__AGS_LV2_TURTLE_PARSER_H__*/

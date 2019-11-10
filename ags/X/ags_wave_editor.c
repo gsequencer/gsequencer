@@ -20,10 +20,6 @@
 #include <ags/X/ags_wave_editor.h>
 #include <ags/X/ags_wave_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
@@ -53,6 +49,23 @@ void ags_wave_editor_connect(AgsConnectable *connectable);
 void ags_wave_editor_disconnect(AgsConnectable *connectable);
 void ags_wave_editor_finalize(GObject *gobject);
 
+gint ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
+				    AgsMachine *machine,
+				    AgsNotebook *notebook,
+				    xmlNode *wave_node,
+				    AgsTimestamp *timestamp,
+				    gboolean match_line,
+				    gboolean paste_from_position,
+				    guint64 position_x,
+				    gint64 *last_x);
+gint ags_wave_editor_paste_wave(AgsWaveEditor *wave_editor,
+				AgsMachine *machine,
+				AgsNotebook *notebook,
+				xmlNode *audio_node,
+				gboolean paste_from_position,
+				guint64 position_x,
+				guint64 relative_offset);
+
 void ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *machine);
 
 enum{
@@ -62,7 +75,6 @@ enum{
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
 };
 
 static gpointer ags_wave_editor_parent_class = NULL;
@@ -145,21 +157,6 @@ ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
   gobject->finalize = ags_wave_editor_finalize;
   
   /* properties */
-  /**
-   * AgsWaveEditor:soundcard:
-   *
-   * The assigned #AgsSoundcard acting as default sink.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
 
   /* AgsEditorClass */
   wave_editor->machine_changed = ags_wave_editor_real_machine_changed;
@@ -226,8 +223,6 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->current_tact = 0.0;
 
   /* soundcard */
-  wave_editor->soundcard = NULL;
-
   wave_editor->wave_toolbar = ags_wave_toolbar_new();
   gtk_box_pack_start((GtkBox *) wave_editor,
 		     (GtkWidget *) wave_editor->wave_toolbar,
@@ -399,27 +394,6 @@ ags_wave_editor_set_property(GObject *gobject,
   wave_editor = AGS_WAVE_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-
-      soundcard = g_value_get_object(value);
-
-      if(wave_editor->soundcard == soundcard){
-	return;
-      }
-
-      if(wave_editor->soundcard != NULL){
-	g_object_unref(wave_editor->soundcard);
-      }
-      
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
-      }
-      
-      wave_editor->soundcard = soundcard;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -437,11 +411,6 @@ ags_wave_editor_get_property(GObject *gobject,
   wave_editor = AGS_WAVE_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      g_value_set_object(value, wave_editor->soundcard);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -982,6 +951,263 @@ ags_wave_editor_select_all(AgsWaveEditor *wave_editor)
   }
 }
 
+gint
+ags_wave_editor_paste_wave_all(AgsWaveEditor *wave_editor,
+			       AgsMachine *machine,
+			       AgsNotebook *notebook,
+			       xmlNode *wave_node,
+			       AgsTimestamp *timestamp,
+			       gboolean match_line,
+			       gboolean paste_from_position,
+			       guint64 position_x,
+			       gint64 *last_x)
+{    
+  AgsWave *wave;
+		
+  GList *start_list_wave, *list_wave;
+    
+  guint64 first_x;
+  guint64 current_x;
+  gint i;
+
+  GRecMutex *audio_mutex;
+    
+  first_x = -1;
+
+  /*  */
+  i = 0;
+		
+  while((i = ags_notebook_next_active_tab(notebook,
+					  i)) != -1){		  
+    g_object_get(machine->audio,
+		 "wave", &start_list_wave,
+		 NULL);
+      
+    list_wave = ags_wave_find_near_timestamp(start_list_wave, i,
+					     timestamp);
+
+    if(list_wave == NULL){
+      wave = ags_wave_new((GObject *) machine->audio,
+			  i);
+      wave->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	
+      /* add to audio */
+      ags_audio_add_wave(machine->audio,
+			 (GObject *) wave);
+    }else{
+      wave = AGS_WAVE(list_wave->data);
+    }
+
+    if(paste_from_position){
+      xmlNode *child;
+
+      guint64 x_boundary;
+	  
+      ags_wave_insert_from_clipboard_extended(wave,
+					      wave_node,
+					      TRUE, position_x,
+					      0.0, 0,
+					      match_line, FALSE);
+
+      /* get boundaries */
+      child = wave_node->children;
+      current_x = 0;
+	  
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!xmlStrncmp(child->name,
+			 "buffer",
+			 5)){
+	    guint64 tmp;
+
+	    tmp = g_ascii_strtoull(xmlGetProp(child,
+					      "x"),
+				   NULL,
+				   10);
+
+	    if(tmp > current_x){
+	      current_x = tmp;
+	    }
+	  }
+	}
+
+	child = child->next;
+      }
+
+      x_boundary = g_ascii_strtoull(xmlGetProp(wave_node,
+					       "x-boundary"),
+				    NULL,
+				    10);
+
+
+      if(first_x == -1 || x_boundary < first_x){
+	first_x = x_boundary;
+      }
+	  
+      if(position_x > x_boundary){
+	current_x += (position_x - x_boundary);
+      }else{
+	current_x -= (x_boundary - position_x);
+      }
+	  
+      if(current_x > last_x[0]){
+	last_x[0] = current_x;
+      }	
+    }else{
+      xmlNode *child;
+
+      ags_wave_insert_from_clipboard_extended(wave,
+					      wave_node,
+					      FALSE, 0,
+					      0.0, 0,
+					      match_line, FALSE);
+
+      /* get boundaries */
+      child = wave_node->children;
+      current_x = 0;
+	  
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!xmlStrncmp(child->name,
+			 "buffer",
+			 5)){
+	    guint64 tmp;
+
+	    tmp = g_ascii_strtoull(xmlGetProp(child,
+					      "x"),
+				   NULL,
+				   10);
+
+	    if(tmp > current_x){
+	      current_x = tmp;
+	    }
+	  }
+	}
+
+	child = child->next;
+      }
+
+      if(current_x > last_x[0]){
+	last_x[0] = current_x;
+      }
+    }
+
+    g_list_free_full(start_list_wave,
+		     g_object_unref);
+      
+    i++;
+  }
+
+  return(first_x);
+}
+  
+gint
+ags_wave_editor_paste_wave(AgsWaveEditor *wave_editor,
+			   AgsMachine *machine,
+			   AgsNotebook *notebook,
+			   xmlNode *audio_node,
+			   gboolean paste_from_position,
+			   guint64 position_x,
+			   guint64 relative_offset)
+{
+  AgsTimestamp *timestamp;
+
+  xmlNode *wave_list_node, *wave_node;
+  xmlNode *timestamp_node;
+
+  gint64 first_x, last_x;
+  gboolean match_line;
+
+  first_x = -1;
+
+  match_line = ((AGS_WAVE_EDITOR_PASTE_MATCH_LINE & (wave_editor->flags)) != 0) ? TRUE: FALSE;
+    
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = 0;
+    
+  /* paste wave */
+  wave_list_node = audio_node->children;
+
+  while(wave_list_node != NULL){
+    if(wave_list_node->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(wave_list_node->name,
+		     "wave-list",
+		     14)){
+	wave_node = wave_list_node->children;
+	  
+	while(wave_node != NULL){
+	  if(wave_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(wave_node->name,
+			   "wave",
+			   9)){
+	      guint64 offset;
+		
+	      timestamp_node = wave_node->children;
+	      offset = 0;
+	  
+	      while(timestamp_node != NULL){
+		if(timestamp_node->type == XML_ELEMENT_NODE){
+		  if(!xmlStrncmp(timestamp_node->name,
+				 "timestamp",
+				 10)){
+		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
+							 "offset"),
+					      NULL,
+					      10);
+		      
+		    break;
+		  }
+		}
+
+		timestamp_node = timestamp_node->next;
+	      }     
+		
+	      /* 1st attempt */
+	      timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((double) position_x / (double) relative_offset);
+		
+	      first_x = ags_wave_editor_paste_wave_all(wave_editor,
+						       machine,
+						       notebook,
+						       wave_node,
+						       timestamp,
+						       match_line,
+						       paste_from_position,
+						       position_x,
+						       &last_x);
+
+	      /* 2nd attempt */
+	      timestamp->timer.ags_offset.offset += relative_offset;
+
+	      ags_wave_editor_paste_wave_all(wave_editor,
+					     machine,
+					     notebook,
+					     wave_node,
+					     timestamp,
+					     match_line,
+					     paste_from_position,
+					     position_x,
+					     &last_x);
+		
+	    }
+	  }
+
+	  wave_node = wave_node->next;
+	}	  
+      }
+    }
+
+    wave_list_node = wave_list_node->next;
+  }    
+
+  g_object_unref(timestamp);
+
+  return(first_x);
+}
+
 void
 ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 {
@@ -998,8 +1224,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 
   xmlDoc *clipboard;
   xmlNode *audio_node;
-  xmlNode *wave_list_node, *wave_node;
-  xmlNode *timestamp_node;
+  xmlNode *wave_node;
   
   gchar *buffer;
 
@@ -1011,254 +1236,6 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
   double zoom, zoom_factor;
   gdouble delay_factor;
   gboolean paste_from_position;
-
-  auto gint ags_wave_editor_paste_wave_all(xmlNode *wave_node,
-					   AgsTimestamp *timestamp,
-					   gboolean match_line);
-  auto gint ags_wave_editor_paste_wave(xmlNode *audio_node);
-
-  gint ags_wave_editor_paste_wave_all(xmlNode *wave_node,
-				      AgsTimestamp *timestamp,
-				      gboolean match_line)
-  {    
-    AgsChannel *output, *input;
-    AgsWave *wave;
-		
-    GList *start_list_wave, *list_wave;
-    
-    guint64 first_x;
-    guint64 current_x;
-    gint i;
-
-    pthread_mutex_t *audio_mutex;
-    
-    first_x = -1;
-
-    /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-
-    output = machine->audio->output;
-    input = machine->audio->input;
-    
-    pthread_mutex_unlock(audio_mutex);
-    
-    /*  */
-    i = 0;
-		
-    while((i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){		  
-      g_object_get(machine->audio,
-		   "wave", &start_list_wave,
-		   NULL);
-      
-      list_wave = ags_wave_find_near_timestamp(start_list_wave, i,
-					       timestamp);
-
-      if(list_wave == NULL){
-	wave = ags_wave_new((GObject *) machine->audio,
-			    i);
-	wave->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	
-	/* add to audio */
-	ags_audio_add_wave(machine->audio,
-			   (GObject *) wave);
-      }else{
-	wave = AGS_WAVE(list_wave->data);
-      }
-
-      if(paste_from_position){
-	xmlNode *child;
-
-	guint64 x_boundary;
-	  
-	ags_wave_insert_from_clipboard_extended(wave,
-						wave_node,
-						TRUE, position_x,
-						0.0, 0,
-						match_line, FALSE);
-
-	/* get boundaries */
-	child = wave_node->children;
-	current_x = 0;
-	  
-	while(child != NULL){
-	  if(child->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(child->name,
-			   "buffer",
-			   5)){
-	      guint64 tmp;
-
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
-				     NULL,
-				     10);
-
-	      if(tmp > current_x){
-		current_x = tmp;
-	      }
-	    }
-	  }
-
-	  child = child->next;
-	}
-
-	x_boundary = g_ascii_strtoull(xmlGetProp(wave_node,
-						 "x-boundary"),
-				      NULL,
-				      10);
-
-
-	if(first_x == -1 || x_boundary < first_x){
-	  first_x = x_boundary;
-	}
-	  
-	if(position_x > x_boundary){
-	  current_x += (position_x - x_boundary);
-	}else{
-	  current_x -= (x_boundary - position_x);
-	}
-	  
-	if(current_x > last_x){
-	  last_x = current_x;
-	}	
-      }else{
-	xmlNode *child;
-
-	ags_wave_insert_from_clipboard_extended(wave,
-						wave_node,
-						FALSE, 0,
-						0.0, 0,
-						match_line, FALSE);
-
-	/* get boundaries */
-	child = wave_node->children;
-	current_x = 0;
-	  
-	while(child != NULL){
-	  if(child->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(child->name,
-			   "buffer",
-			   5)){
-	      guint64 tmp;
-
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
-				     NULL,
-				     10);
-
-	      if(tmp > current_x){
-		current_x = tmp;
-	      }
-	    }
-	  }
-
-	  child = child->next;
-	}
-
-	if(current_x > last_x){
-	  last_x = current_x;
-	}
-      }
-
-      g_list_free_full(start_list_wave,
-		       g_object_unref);
-      
-      i++;
-    }
-
-    return(first_x);
-  }
-  
-  gint ags_wave_editor_paste_wave(xmlNode *audio_node){
-    AgsTimestamp *timestamp;
-
-    guint first_x;
-    gboolean match_line;
-
-    first_x = -1;
-
-    match_line = ((AGS_WAVE_EDITOR_PASTE_MATCH_LINE & (wave_editor->flags)) != 0) ? TRUE: FALSE;
-    
-    timestamp = ags_timestamp_new();
-
-    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
-    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-    
-    timestamp->timer.ags_offset.offset = 0;
-    
-    /* paste wave */
-    wave_list_node = audio_node->children;
-
-    while(wave_list_node != NULL){
-      if(wave_list_node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(wave_list_node->name,
-		       "wave-list",
-		       14)){
-	  wave_node = wave_list_node->children;
-	  
-	  while(wave_node != NULL){
-	    if(wave_node->type == XML_ELEMENT_NODE){
-	      if(!xmlStrncmp(wave_node->name,
-			     "wave",
-			     9)){
-		guint64 offset;
-		
-		timestamp_node = wave_node->children;
-		offset = 0;
-	  
-		while(timestamp_node != NULL){
-		  if(timestamp_node->type == XML_ELEMENT_NODE){
-		    if(!xmlStrncmp(timestamp_node->name,
-				   "timestamp",
-				   10)){
-		      offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							   "offset"),
-						NULL,
-						10);
-		      
-		      break;
-		    }
-		  }
-
-		  timestamp_node = timestamp_node->next;
-		}     
-		
-		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((double) position_x / (double) relative_offset);
-		
-		first_x = ags_wave_editor_paste_wave_all(wave_node,
-							 timestamp,
-							 match_line);
-
-		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset += relative_offset;
-
-		ags_wave_editor_paste_wave_all(wave_node,
-					       timestamp,
-					       match_line);
-		
-	      }
-	    }
-
-	    wave_node = wave_node->next;
-	  }	  
-	}
-      }
-
-      wave_list_node = wave_list_node->next;
-    }    
-
-    g_object_unref(timestamp);
-
-    return(first_x);
-  }
 
   if(!AGS_IS_WAVE_EDITOR(wave_editor) ||
      wave_editor->focused_wave_edit == NULL){
@@ -1288,10 +1265,6 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 		 "output-soundcard", &soundcard,
 		 "samplerate", &samplerate,
 		 NULL);
-
-    if(soundcard != NULL){
-      g_object_unref(soundcard);
-    }
     
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
@@ -1301,10 +1274,16 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
     if(buffer == NULL){
+      if(soundcard != NULL){
+	g_object_unref(soundcard);
+      }
+      
       return;
     }
 
     /* get position */
+    position_x = 0;
+    
     if(wave_toolbar->selected_edit_mode == wave_toolbar->position){
       last_x = 0;
       paste_from_position = TRUE;
@@ -1333,7 +1312,13 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	  wave_node = audio_node->children;
 	
 	  //	  g_message("paste");
-	  first_x = ags_wave_editor_paste_wave(audio_node);
+	  first_x = ags_wave_editor_paste_wave(wave_editor,
+					       machine,
+					       notebook,
+					       audio_node,
+					       paste_from_position,
+					       position_x,
+					       relative_offset);
 	
 	  break;
 	}
@@ -1352,6 +1337,10 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
       gint big_step, small_step;
 
       //TODO:JK: implement me
+    }
+
+    if(soundcard != NULL){
+      g_object_unref(soundcard);
     }
 
     gtk_widget_queue_draw(GTK_WIDGET(wave_edit));

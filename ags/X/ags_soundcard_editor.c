@@ -1337,7 +1337,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     guint cache_buffer_size;
     gboolean use_cache;
     
-    pthread_mutex_t *pulse_port_mutex;
+    GRecMutex *pulse_port_mutex;
     
     g_object_get(soundcard,
 		 "pulse-port", &start_port,
@@ -1346,19 +1346,15 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     port = start_port;
 
     if(port != NULL){
-      pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-      
-      pulse_port_mutex = AGS_PULSE_PORT(port->data)->obj_mutex;
-      
-      pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+      pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(port->data);
 
       /* read use cache and cache buffer size */
-      pthread_mutex_lock(pulse_port_mutex);
+      g_rec_mutex_lock(pulse_port_mutex);
 
       use_cache = AGS_PULSE_PORT(port->data)->use_cache;
       cache_buffer_size = AGS_PULSE_PORT(port->data)->cache_buffer_size;
       
-      pthread_mutex_unlock(pulse_port_mutex);
+      g_rec_mutex_unlock(pulse_port_mutex);
 
       /* reset */
       gtk_toggle_button_set_active(soundcard_editor->use_cache,
@@ -1376,7 +1372,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     guint cache_buffer_size;
     gboolean use_cache;
     
-    pthread_mutex_t *core_audio_port_mutex;
+    GRecMutex *core_audio_port_mutex;
     
     g_object_get(soundcard,
 		 "core-audio-port", &start_port,
@@ -1385,19 +1381,15 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     port = start_port;
 
     if(port != NULL){
-      pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
-      
-      core_audio_port_mutex = AGS_CORE_AUDIO_PORT(port->data)->obj_mutex;
-      
-      pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+      core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(port->data);
 
       /* read use cache and cache buffer size */
-      pthread_mutex_lock(core_audio_port_mutex);
+      g_rec_mutex_lock(core_audio_port_mutex);
 
       use_cache = AGS_CORE_AUDIO_PORT(port->data)->use_cache;
       cache_buffer_size = AGS_CORE_AUDIO_PORT(port->data)->cache_buffer_size;
       
-      pthread_mutex_unlock(core_audio_port_mutex);
+      g_rec_mutex_unlock(core_audio_port_mutex);
 
       /* reset */
       gtk_toggle_button_set_active(soundcard_editor->use_cache,
@@ -1416,15 +1408,15 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 
 #if defined AGS_WITH_WASAPI
   if(AGS_IS_WASAPI_DEVOUT(soundcard)){
-    pthread_mutex_t *mutex;
+    GRecMutex *mutex;
 
     mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(AGS_WASAPI_DEVOUT(soundcard));
 
-    pthread_mutex_lock(mutex);
+    g_rec_mutex_lock(mutex);
     
     wasapi_buffer_size = AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size;
     
-    pthread_mutex_unlock(mutex);
+    g_rec_mutex_unlock(mutex);
 
     gtk_spin_button_set_value(soundcard_editor->wasapi_buffer_size,
 			      (gdouble) wasapi_buffer_size);
@@ -1438,15 +1430,15 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       1);
     }
   }else if(AGS_IS_WASAPI_DEVIN(soundcard)){
-    pthread_mutex_t *mutex;
+    GRecMutex *mutex;
 
     mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(AGS_WASAPI_DEVIN(soundcard));
 
-    pthread_mutex_lock(mutex);
+    g_rec_mutex_lock(mutex);
     
     wasapi_buffer_size = AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size;
     
-    pthread_mutex_unlock(mutex);
+    g_rec_mutex_unlock(mutex);
 
     gtk_spin_button_set_value(soundcard_editor->wasapi_buffer_size,
 			      (gdouble) wasapi_buffer_size);

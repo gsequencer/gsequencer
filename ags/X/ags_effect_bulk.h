@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EFFECT_BULK                (ags_effect_bulk_get_type())
 #define AGS_EFFECT_BULK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BULK, AgsEffectBulk))
 #define AGS_EFFECT_BULK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EFFECT_BULK, AgsEffectBulkClass))
@@ -140,5 +142,7 @@ gboolean ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectBulk* ags_effect_bulk_new(AgsAudio *audio,
 				   GType channel_type);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_BULK_H__*/

@@ -36,6 +36,8 @@
 #include <ags/X/ags_osc_server_preferences.h>
 #include <ags/X/ags_server_preferences.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PREFERENCES                (ags_preferences_get_type())
 #define AGS_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PREFERENCES, AgsPreferences))
 #define AGS_PREFERENCES_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PREFERENCES, AgsPreferencesClass))
@@ -78,5 +80,7 @@ struct _AgsPreferencesClass
 GType ags_preferences_get_type(void);
 
 AgsPreferences* ags_preferences_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PREFERENCES_H__*/

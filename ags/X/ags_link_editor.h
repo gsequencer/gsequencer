@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LINK_EDITOR                (ags_link_editor_get_type())
 #define AGS_LINK_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LINK_EDITOR, AgsLinkEditor))
 #define AGS_LINK_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_LINK_EDITOR, AgsLinkEditorClass))
@@ -69,5 +71,7 @@ struct _AgsLinkEditorClass
 GType ags_link_editor_get_type(void);
 
 AgsLinkEditor* ags_link_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LINK_EDITOR_H__*/

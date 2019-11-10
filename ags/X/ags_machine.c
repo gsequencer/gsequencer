@@ -2790,7 +2790,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
     while(current != NULL){
       guint length;
       
-      pthread_mutex_t *pattern_mutex;
+      GRecMutex *pattern_mutex;
       
       g_object_get(current,
 		   "pattern", &start_list,
@@ -2801,18 +2801,14 @@ ags_machine_copy_pattern(AgsMachine *machine)
 		       g_object_unref);
 
       /* get pattern mutex */
-      pthread_mutex_lock(ags_pattern_get_class_mutex());
-
-      pattern_mutex = pattern->obj_mutex;
-      
-      pthread_mutex_unlock(ags_pattern_get_class_mutex());
+      pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
       /* get length */
-      pthread_mutex_lock(pattern_mutex);
+      g_rec_mutex_lock(pattern_mutex);
 
       length = pattern->dim[2];
       
-      pthread_mutex_unlock(pattern_mutex);
+      g_rec_mutex_unlock(pattern_mutex);
       
       for(k = 0; k < length; k++){
 	guint current_pad;

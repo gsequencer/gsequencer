@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_automation_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 gboolean
 ags_automation_editor_audio_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
 {
@@ -387,24 +383,20 @@ ags_automation_editor_resize_audio_channels_callback(AgsMachine *machine,
   guint output_pads, input_pads;
   guint i;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   audio = machine->audio;
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_pads = audio->output_pads;
   input_pads = audio->input_pads;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   if(audio_channels > audio_channels_old){
     GList *tab;
@@ -453,23 +445,19 @@ ags_automation_editor_resize_pads_callback(AgsMachine *machine, GType channel_ty
   guint audio_channels;
   guint i;
   
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   audio = machine->audio;
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   audio_channels = audio->audio_channels;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   if(pads > pads_old){
     GList *tab;

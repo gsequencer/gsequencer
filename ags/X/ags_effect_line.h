@@ -27,6 +27,9 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_EFFECT_LINE                (ags_effect_line_get_type())
 #define AGS_EFFECT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLine))
@@ -135,5 +138,7 @@ gboolean ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line);
 gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_LINE_H__*/

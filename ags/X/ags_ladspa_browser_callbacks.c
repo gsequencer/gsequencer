@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/X/ags_ladspa_browser_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,8 +42,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   gchar *str;
   
-  pthread_mutex_t *ladspa_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *ladspa_manager_mutex;
 
   filename = (GtkComboBoxText *) ladspa_browser->filename;
   effect = (GtkComboBoxText *) ladspa_browser->effect;
@@ -56,19 +52,17 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-  
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* get ladspa plugin */
-  pthread_mutex_lock(ladspa_manager_mutex);
+  g_rec_mutex_lock(ladspa_manager_mutex);
 
   list =
-    start_list = g_list_copy(ladspa_manager->ladspa_plugin);
+    start_list = g_list_copy_deep(ladspa_manager->ladspa_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
-  pthread_mutex_unlock(ladspa_manager_mutex);
+  g_rec_mutex_unlock(ladspa_manager_mutex);
 
   str = gtk_combo_box_text_get_active_text(filename);
   
@@ -77,19 +71,10 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
     ladspa_plugin = list->data;
 
-    /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
     /* set effect */
-    pthread_mutex_lock(base_plugin_mutex);
-
-    str = g_strdup(AGS_BASE_PLUGIN(ladspa_plugin)->effect);
-
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_object_get(ladspa_plugin,
+		 "effect", &str,
+		 NULL);
     
     if(str != NULL){
       gtk_combo_box_text_append_text(effect,
@@ -105,7 +90,8 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   gtk_combo_box_set_active((GtkComboBox *) effect,
   			   0);
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -130,7 +116,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* retrieve filename and effect */
   filename = (GtkComboBoxText *) ladspa_browser->filename;
@@ -148,14 +134,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   /* update description */
   if(plugin_so){
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
     /* plugin and port descriptor */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     plugin_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(ladspa_plugin)->plugin_descriptor);
 
@@ -233,7 +215,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
       y++;
     }
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     gtk_widget_show_all((GtkWidget *) table);
   }else{

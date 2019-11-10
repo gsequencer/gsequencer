@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MACHINE                (ags_machine_get_type())
 #define AGS_MACHINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE, AgsMachine))
 #define AGS_MACHINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MACHINE, AgsMachineClass))
@@ -240,5 +242,7 @@ gboolean ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
 gboolean ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_H__*/

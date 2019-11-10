@@ -203,6 +203,8 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
 
   gdouble x0, y0;
   guint i, i_stop;
+
+  GRecMutex *log_mutex;
   
   if(!AGS_IS_ANIMATION_WINDOW(animation_window)){
     return;
@@ -210,6 +212,8 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
 
   log = ags_log_get_instance();
 
+  log_mutex = AGS_LOG_GET_OBJ_MUTEX(log);
+  
   list = 
     start_list = ags_log_get_messages(log);
   
@@ -274,13 +278,13 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   for(i = 0; i < i_stop; i++){
     gchar *str;
     
-    pthread_mutex_lock(log->mutex);
+    g_rec_mutex_lock(log_mutex);
 
     str = g_strdup(list->data);
     
     list = list->next;
 
-    pthread_mutex_unlock(log->mutex);
+    g_rec_mutex_unlock(log_mutex);
 
     /* text */
     layout = pango_cairo_create_layout(cr);
