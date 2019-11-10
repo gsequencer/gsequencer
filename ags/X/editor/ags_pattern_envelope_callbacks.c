@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -848,7 +845,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   guint nth;
   gboolean do_edit;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
@@ -885,11 +882,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   }
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get prev and current preset name */
   gtk_tree_model_get(model, &iter,
@@ -918,7 +911,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   /* reorder list */
   current = preset->data;
   
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   audio->preset = g_list_delete_link(audio->preset,
 				     preset);
@@ -927,7 +920,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 				       prev,
 				       current);
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   g_list_free_full(start_preset,
 		   g_object_unref);
@@ -958,7 +951,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   guint nth;
   gboolean do_edit;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
@@ -994,11 +987,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   }
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get next and current preset name */
   gtk_tree_model_get(model, &iter,
@@ -1027,7 +1016,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   /* reorder list */
   current = next->data;
   
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   audio->preset = g_list_delete_link(audio->preset,
 				     next);
@@ -1036,7 +1025,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 				       preset,
 				       current);
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   g_list_free_full(start_preset,
 		   g_object_unref);

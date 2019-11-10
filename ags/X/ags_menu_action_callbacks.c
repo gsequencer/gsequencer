@@ -994,8 +994,6 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
   
   gchar *filename, *effect;
   
-  pthread_mutex_t *application_mutex;
-
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
   effect = g_object_get_data((GObject *) menu_item,

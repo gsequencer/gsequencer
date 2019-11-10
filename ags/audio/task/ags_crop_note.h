@@ -66,7 +66,8 @@ struct _AgsCropNoteClass
 
 GType ags_crop_note_get_type();
 
-AgsCropNote* ags_crop_note_new(AgsNotation *notation,
+AgsCropNote* ags_crop_note_new(AgsAudio *audio,
+			       AgsNotation *notation,
 			       GList *selection,
 			       guint x_padding, gint x_crop,
 			       gboolean absolute, gboolean in_place, gboolean do_resize);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -320,19 +320,18 @@ ags_crop_note_set_property(GObject *gobject,
     break;
   case PROP_SELECTION:
     {
-      GList *selection;
+      AgsNote *note;
 
-      selection = (GList *) g_value_get_pointer(value);
+      note = (AgsNote *) g_value_get_pointer(value);
 
-      if(crop_note->selection == selection){
+      if(note == NULL ||
+	 g_list_find(crop_note->selection, note) != NULL){
 	return;
       }
 
-      if(crop_note->selection != NULL){
-	g_list_free(crop_note->selection);
-      }
-      
-      crop_note->selection = g_list_copy(selection);
+      g_object_ref(note);
+      crop_note->selection = g_list_prepend(crop_note->selection,
+					    note);
     }
     break;
   case PROP_X_PADDING:
@@ -446,7 +445,8 @@ ags_crop_note_dispose(GObject *gobject)
   }
 
   if(crop_note->selection != NULL){
-    g_list_free(crop_note->selection);
+    g_list_free_full(crop_note->selection,
+		     g_object_unref);
 
     crop_note->selection = NULL;
   }
@@ -471,7 +471,8 @@ ags_crop_note_finalize(GObject *gobject)
   }
 
   if(crop_note->selection != NULL){
-    g_list_free(crop_note->selection);
+    g_list_free_full(crop_note->selection,
+		     g_object_unref);
   }
 
   /* call parent */
@@ -622,6 +623,7 @@ ags_crop_note_launch(AgsTask *task)
 
 /**
  * ags_crop_note_new:
+ * @audio: the #AgsAudio
  * @notation: the #AgsNotation
  * @selection: the selection as #GList-struct
  * @x_padding: the x padding to use
@@ -639,22 +641,27 @@ ags_crop_note_launch(AgsTask *task)
  * Since: 2.0.0
  */
 AgsCropNote*
-ags_crop_note_new(AgsNotation *notation,
+ags_crop_note_new(AgsAudio *audio,
+		  AgsNotation *notation,
 		  GList *selection,
 		  guint x_padding, gint x_crop,
 		  gboolean absolute, gboolean in_place, gboolean do_resize)
 {
   AgsCropNote *crop_note;
-
+  
   crop_note = (AgsCropNote *) g_object_new(AGS_TYPE_CROP_NOTE,
+					   "audio", audio,
 					   "notation", notation,
-					   "selection", selection,
 					   "x-padding", x_padding,
 					   "x-crop", x_crop,
 					   "absolute", absolute,
 					   "in-place", in_place,
 					   "do-resize", do_resize,
 					   NULL);
-
+  
+  crop_note->selection = g_list_copy_deep(selection,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+  
   return(crop_note);
 }

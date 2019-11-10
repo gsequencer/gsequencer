@@ -2883,12 +2883,12 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	port_mutex = AGS_PORT_GET_OBJ_MUTEX(current);
 
 	/* match specifier */
-	pthread_mutex_lock(port_mutex);
+	g_rec_mutex_lock(port_mutex);
 
 	success = (!g_ascii_strcasecmp(current->specifier,
 				       line_member->specifier)) ? TRUE: FALSE;
 	
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 
 	if(!success){
 	  list = list->next;

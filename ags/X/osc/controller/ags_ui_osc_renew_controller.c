@@ -19,9 +19,6 @@
 
 #include <ags/X/osc/controller/ags_ui_osc_renew_controller.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -260,7 +257,7 @@ ags_ui_osc_renew_controller_set_property(GObject *gobject,
 {
   AgsUiOscRenewController *ui_osc_renew_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   ui_osc_renew_controller = AGS_UI_OSC_RENEW_CONTROLLER(gobject);
 
@@ -282,7 +279,7 @@ ags_ui_osc_renew_controller_get_property(GObject *gobject,
 {
   AgsUiOscRenewController *ui_osc_renew_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   ui_osc_renew_controller = AGS_UI_OSC_RENEW_CONTROLLER(gobject);
 

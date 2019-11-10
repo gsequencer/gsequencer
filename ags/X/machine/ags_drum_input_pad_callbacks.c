@@ -117,8 +117,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   
   char *name0, *name1;
 
-  pthread_mutex_t *application_mutex;
-
   application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,

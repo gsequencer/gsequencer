@@ -330,7 +330,6 @@ ags_xorg_application_context_signal_handler(int signr)
     sigemptyset(&(ags_sigact.sa_mask));
     
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-    // pthread_yield();
     //    }
   }
 }
@@ -2613,7 +2612,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   ags_thread_start(audio_loop);
   
   /* wait for audio loop */
-  pthread_mutex_lock(audio_loop->start_mutex);
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
     g_atomic_int_set(&(audio_loop->start_done),
@@ -2621,12 +2620,12 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
       
     while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
 	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
     
-  pthread_mutex_unlock(audio_loop->start_mutex);
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   /* start gui */
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
@@ -3769,7 +3768,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   if(filename != NULL){
     window->filename = filename;
   }
-  //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 
   /* unref */
   g_object_unref(main_loop);

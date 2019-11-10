@@ -412,7 +412,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
   
   GList *start_notation, *notation;
-  GList *selection;
   GList *task;
   
   guint x_padding;
@@ -456,32 +455,33 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   task = NULL;
 
   while(notation != NULL){
-    pthread_mutex_t *notation_mutex;
+    GList *start_selection;
+    
+    GRecMutex *notation_mutex;
 
-    pthread_mutex_lock(ags_notation_get_class_mutex());
-
-    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
-
-    pthread_mutex_unlock(ags_notation_get_class_mutex());
+    notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
 
     /* selection */
-    pthread_mutex_lock(notation_mutex);
+    g_rec_mutex_lock(notation_mutex);
 
-    selection = AGS_NOTATION(notation->data)->selection;
+    start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
+				       (GCopyFunc) g_object_ref,
+				       NULL);
 
-    pthread_mutex_unlock(notation_mutex);
+    g_rec_mutex_unlock(notation_mutex);
 
-    if(selection != NULL){
-      crop_note = ags_crop_note_new(notation->data,
-				    selection,
+    if(start_selection != NULL){
+      crop_note = ags_crop_note_new(audio,
+				    notation->data,
+				    start_selection,
 				    x_padding, x_crop,
 				    absolute,
 				    in_place, do_resize);
-      g_object_set(crop_note,
-		   "audio", audio,
-		   NULL);
       task = g_list_prepend(task,
 			    crop_note);
+
+      g_list_free_full(start_selection,
+		       g_object_unref);
     }
     
     notation = notation->next;

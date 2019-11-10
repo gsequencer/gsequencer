@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_WAVE_EDIT                (ags_wave_edit_get_type())
 #define AGS_WAVE_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_EDIT, AgsWaveEdit))
 #define AGS_WAVE_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_WAVE_EDIT, AgsWaveEditClass))
@@ -159,5 +161,7 @@ void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
 void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
 
 AgsWaveEdit* ags_wave_edit_new(guint line);
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_EDIT_H__*/

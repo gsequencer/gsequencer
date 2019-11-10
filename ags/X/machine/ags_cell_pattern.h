@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CELL_PATTERN                (ags_cell_pattern_get_type())
 #define AGS_CELL_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CELL_PATTERN, AgsCellPattern))
 #define AGS_CELL_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CELL_PATTERN, AgsCellPatternClass))
@@ -114,5 +116,7 @@ void* ags_cell_pattern_blink_worker(void *data);
 gboolean ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern);
 
 AgsCellPattern* ags_cell_pattern_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CELL_PATTERN_H__*/

@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CROP_NOTE_DIALOG                (ags_crop_note_dialog_get_type())
 #define AGS_CROP_NOTE_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CROP_NOTE_DIALOG, AgsCropNoteDialog))
 #define AGS_CROP_NOTE_DIALOG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CROP_NOTE_DIALOG, AgsCropNoteDialogClass))
@@ -70,5 +72,7 @@ struct _AgsCropNoteDialogClass
 GType ags_crop_note_dialog_get_type(void);
 
 AgsCropNoteDialog* ags_crop_note_dialog_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_CROP_NOTE_DIALOG_H__*/

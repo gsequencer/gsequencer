@@ -73,8 +73,6 @@ enum{
 
 static gpointer ags_notation_parent_class = NULL;
 
-static pthread_mutex_t ags_notation_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_notation_get_type()
 {
@@ -481,21 +479,6 @@ ags_notation_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_notation_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_notation_get_class_mutex()
-{
-  return(&ags_notation_class_mutex);
 }
 
 /**

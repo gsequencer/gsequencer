@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_notation_edit.h>
+
+G_BEGIN_DECLS
 
 gboolean ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNotationEdit *notation_edit);
 gboolean ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit);
@@ -38,5 +44,7 @@ gboolean ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, Gdk
 
 void ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);
 void ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit);
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_EDIT_CALLBACKS_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,11 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_cartesian.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_ENVELOPE_INFO                (ags_envelope_info_get_type())
 #define AGS_ENVELOPE_INFO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfo))
@@ -34,8 +38,8 @@
 #define AGS_IS_ENVELOPE_INFO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_INFO))
 #define AGS_ENVELOPE_INFO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfoClass))
 
-#define AGS_ENVELOPE_INFO_DEFAULT_VERSION "0.8.2\0"
-#define AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID "CEST 24-05-2017 10:19\0"
+#define AGS_ENVELOPE_INFO_DEFAULT_VERSION "0.8.2"
+#define AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID "CEST 24-05-2017 10:19"
 
 typedef struct _AgsEnvelopeInfo AgsEnvelopeInfo;
 typedef struct _AgsEnvelopeInfoClass AgsEnvelopeInfoClass;
@@ -79,5 +83,7 @@ GType ags_envelope_info_get_type(void);
 void ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info);
 
 AgsEnvelopeInfo* ags_envelope_info_new();
+
+G_END_DECLS
 
 #endif /*__AGS_ENVELOPE_INFO_H__*/

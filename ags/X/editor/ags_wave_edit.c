@@ -20,10 +20,6 @@
 #include <ags/X/editor/ags_wave_edit.h>
 #include <ags/X/editor/ags_wave_edit_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_wave_window.h>
@@ -1590,7 +1586,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   static const gdouble white_gc = 65535.0;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
 
   if(!AGS_IS_WAVE_EDIT(wave_edit) ||
      !AGS_IS_BUFFER(buffer) ||
@@ -1605,11 +1601,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     return;
   }
 
-  pthread_mutex_lock(ags_buffer_get_class_mutex());
-  
-  buffer_mutex = buffer->obj_mutex;
-
-  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+  buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
   
   wave_toolbar = wave_editor->wave_toolbar;
   
@@ -1696,7 +1688,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     y0 = 0.0;
     y1 = 0.0;
 
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
 
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -1736,7 +1728,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
       break;
     }
 
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     y0 = 0.5 * height;
     y1 = (((y1 + 1.0) * height) / 2.0);

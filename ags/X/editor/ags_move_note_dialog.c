@@ -412,7 +412,6 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
 
   GList *start_notation, *notation;
-  GList *start_selection, *selection;
   GList *task;
 
   guint first_x;
@@ -461,21 +460,20 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
     first_y = G_MAXUINT;
   
     while(notation != NULL){
-      pthread_mutex_t *notation_mutex;
+      GList *start_selection, *selection;
+      
+      GRecMutex *notation_mutex;
 
-      pthread_mutex_lock(ags_notation_get_class_mutex());
-
-      notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
-
-      pthread_mutex_unlock(ags_notation_get_class_mutex());
+      notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
 
       /* selection */
-      pthread_mutex_lock(notation_mutex);
+      g_rec_mutex_lock(notation_mutex);
 
       selection =
-	start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+	start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
+					   g_object_ref);
 
-      pthread_mutex_unlock(notation_mutex);
+      g_rec_mutex_unlock(notation_mutex);
 
       while(selection != NULL){
 	guint x0, y;
@@ -484,6 +482,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
 		     "x0", &x0,
 		     "y", &y,
 		     NULL);
+	
 	if(x0 < first_x){
 	  first_x = AGS_NOTE(selection->data)->x[0];
 	}
@@ -495,7 +494,8 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
 	selection = selection->next;
       }
 
-      g_list_free(start_selection);
+      g_list_free_full(start_selection,
+		       g_object_unref);
 
       notation = notation->next;
     }
@@ -507,32 +507,34 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   task = NULL;
   
   while(notation != NULL){
-    pthread_mutex_t *notation_mutex;
+    GList *start_selection;
+    
+    GRecMutex *notation_mutex;
 
-    pthread_mutex_lock(ags_notation_get_class_mutex());
-
-    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
-
-    pthread_mutex_unlock(ags_notation_get_class_mutex());
+    notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
 
     /* selection */
-    pthread_mutex_lock(notation_mutex);
+    g_rec_mutex_lock(notation_mutex);
 
-    selection = AGS_NOTATION(notation->data)->selection;
+    start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
+				       (GCopyFunc) g_object_ref,
+				       NULL);
 
-    pthread_mutex_unlock(notation_mutex);
+    g_rec_mutex_unlock(notation_mutex);
 
-    if(selection != NULL){
-      move_note = ags_move_note_new(notation->data,
-				    selection,
+    if(start_selection != NULL){
+      move_note = ags_move_note_new(audio,
+				    notation->data,
+				    start_selection,
 				    first_x, first_y,
 				    move_x, move_y,
 				    relative, absolute);
-      g_object_set(move_note,
-		   "audio", audio,
-		   NULL);
+
       task = g_list_prepend(task,
 			    move_note);
+
+      g_list_free_full(start_selection,
+		       g_object_unref);
     }
     
     notation = notation->next;

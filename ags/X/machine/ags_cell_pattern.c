@@ -663,7 +663,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
   
-  AgsChannel *start_channel;
+  AgsChannel *start_channel, *nth_channel;
   AgsChannel *channel, *prev_pad;
 
   guint input_pads;
@@ -671,30 +671,14 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *audio_mutex;
-
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = machine->audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
   /* retrieve some audio fields */
-  pthread_mutex_lock(audio_mutex);
-  
-  input_pads = machine->audio->input_pads;
-
-  start_channel = machine->audio->input;
-
-  if(start_channel != NULL){
-    g_object_ref(start_channel);
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(machine->audio,
+	       "input-pads", &input_pads,
+	       "input", &start_channel,
+	       NULL);
 
   if(input_pads == 0){
     if(start_channel != NULL){
@@ -720,17 +704,17 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 		     cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * cell_pattern->cell_height);
 
   if(input_pads - ((guint) current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(start_channel,
-			      input_pads - (current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY));
+    nth_channel = ags_channel_nth(start_channel,
+				  input_pads - (current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY));
   }else if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(start_channel,
-			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
+    nth_channel = ags_channel_nth(start_channel,
+				  AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
   }else{
-    channel = ags_channel_nth(start_channel,
-			      input_pads - 1);
+    nth_channel = ags_channel_nth(start_channel,
+				  input_pads - 1);
   }
   
-  if(channel == NULL){
+  if(nth_channel == NULL){
     if(start_channel != NULL){
       g_object_unref(start_channel);
     }
@@ -738,6 +722,9 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
     return;
   }
 
+  channel = nth_channel;
+  g_object_ref(channel);
+  
   prev_pad = NULL;
   
   for (i = 0; channel != NULL && i < gutter; i++){
@@ -759,13 +746,12 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
     channel = prev_pad;
   }
 
+  /* unref */
+  g_object_unref(start_channel);
+  g_object_unref(nth_channel);
+
   if(prev_pad != NULL){
     g_object_unref(prev_pad);
-  }
-
-  /* unref */
-  if(start_channel != NULL){
-    g_object_unref(start_channel);
   }
 }
 
@@ -774,7 +760,7 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
 
-  AgsChannel *start_channel;
+  AgsChannel *start_channel, *nth_channel;
   AgsChannel *channel, *prev_pad;
 
   guint input_pads;
@@ -782,30 +768,14 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *audio_mutex;
-
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = machine->audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
   /* get some audio fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input_pads = machine->audio->input_pads;
-
-  start_channel = machine->audio->input;
-
-  if(start_channel != NULL){
-    g_object_ref(start_channel);
-  }
-    
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(machine->audio,
+	       "input-pads", &input_pads,
+	       "input", &start_channel,
+	       NULL);
 
   if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
@@ -815,10 +785,10 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 
   current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
 
-  channel = ags_channel_nth(start_channel,
-			    input_pads - current_gutter - 1);
+  nth_channel = ags_channel_nth(start_channel,
+				input_pads - current_gutter - 1);
 
-  if(channel == NULL){
+  if(nth_channel == NULL){
     if(start_channel != NULL){
       g_object_unref(start_channel);
     }
@@ -826,6 +796,9 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     return;
   }
 
+  channel = nth_channel;
+  g_object_ref(channel);
+  
   prev_pad = NULL;
 
   for (i = 0; channel != NULL && i < gutter; i++){
@@ -841,13 +814,12 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     channel = prev_pad;
   }
 
+  /* unref */
+  g_object_unref(start_channel);
+  g_object_unref(nth_channel);
+
   if(prev_pad != NULL){
     g_object_unref(prev_pad);
-  }
-
-  /* unref */
-  if(start_channel != NULL){
-    g_object_unref(start_channel);
   }
 }
 
@@ -874,11 +846,9 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
 {
   AgsMachine *machine;
 
-  AgsPattern *pattern;
+  GList *start_pattern;
   
   gboolean do_highlight;
-  
-  pthread_mutex_t *channel_mutex;
 
   if(channel == NULL ||
      channel->pattern == NULL){
@@ -888,21 +858,13 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = channel->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  /* get channel fields */
+  g_object_get(channel,
+	       "pattern", &start_pattern,
+	       NULL);
 
   /* redraw */
-  pthread_mutex_lock(channel_mutex);
-
-  pattern = channel->pattern->data;
-  
-  pthread_mutex_unlock(channel_mutex);
-
-  do_highlight = ags_pattern_get_bit(pattern,
+  do_highlight = ags_pattern_get_bit(start_pattern->data,
 				     machine->bank_0,
 				     machine->bank_1,
 				     j);
@@ -912,6 +874,9 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   }else{
     ags_cell_pattern_unpaint_gutter_point(cell_pattern, j, i);
   }
+
+  g_list_free_full(start_pattern,
+		   g_object_unref);
 }
 
 void

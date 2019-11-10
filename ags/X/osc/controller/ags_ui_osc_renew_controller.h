@@ -23,8 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_UI_OSC_RENEW_CONTROLLER                (ags_ui_osc_renew_controller_get_type())
 #define AGS_UI_OSC_RENEW_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_OSC_RENEW_CONTROLLER, AgsUiOscRenewController))

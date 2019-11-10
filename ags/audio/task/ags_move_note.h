@@ -46,6 +46,7 @@ struct _AgsMoveNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   GList *selection;
@@ -66,7 +67,8 @@ struct _AgsMoveNoteClass
 
 GType ags_move_note_get_type();
 
-AgsMoveNote* ags_move_note_new(AgsNotation *notation,
+AgsMoveNote* ags_move_note_new(AgsAudio *audio,
+			       AgsNotation *notation,
 			       GList *selection,
 			       guint first_x, guint first_y,
 			       gint move_x, gint move_y,

@@ -20,9 +20,6 @@
 #include <ags/X/editor/ags_envelope_editor.h>
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -681,39 +678,33 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 
   /* set attack, decay, sustain and release */
   while(notation != NULL){
-    pthread_mutex_t *notation_mutex;
+    GRecMutex *notation_mutex;
 
     /* get notation mutex */
-    pthread_mutex_lock(ags_notation_get_class_mutex());
-  
-    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_notation_get_class_mutex());
+    notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
 
     /**/
-    pthread_mutex_lock(notation_mutex);
+    g_rec_mutex_lock(notation_mutex);
 
     selection =
-      start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+      start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
+					 (GCopyFunc) g_object_ref,
+					 NULL);
 
-    pthread_mutex_unlock(notation_mutex);
+    g_rec_mutex_unlock(notation_mutex);
 
     while(selection != NULL){
       AgsNote *current_note;
 
-      pthread_mutex_t *note_mutex;
+      GRecMutex *note_mutex;
       
       current_note = AGS_NOTE(selection->data);
 
       /* get note mutex */
-      pthread_mutex_lock(ags_note_get_class_mutex());
-  
-      note_mutex = current_note->obj_mutex;
-  
-      pthread_mutex_unlock(ags_note_get_class_mutex());
+      note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current_note);
 
       /* apply */
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       current_note->flags |= AGS_NOTE_ENVELOPE;
       
@@ -737,13 +728,14 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
       ags_complex_set(&(current_note->ratio),
 		      z);
       
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
 
       /* iterate */
       selection = selection->next;
     }
 
-    g_list_free(start_selection);
+    g_list_free_full(start_selection,
+		     g_object_unref);
     
     notation = notation->next;
   }
