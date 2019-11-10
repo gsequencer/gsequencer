@@ -31,6 +31,8 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+G_BEGIN_DECLS
+
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
 void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
 
@@ -48,5 +50,7 @@ void ags_drum_index1_callback(GtkWidget *toggle_button, AgsDrum *drum);
 void ags_drum_stop_callback(AgsDrum *drum,
 			    GList *recall_id, gint sound_scope,
 			    gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_CALLBACKS_H__*/

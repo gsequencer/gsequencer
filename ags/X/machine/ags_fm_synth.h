@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FM_SYNTH                (ags_fm_synth_get_type())
 #define AGS_FM_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_SYNTH, AgsFMSynth))
 #define AGS_FM_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FM_SYNTH, AgsFMSynthClass))
@@ -86,5 +88,7 @@ GType ags_fm_synth_get_type(void);
 void ags_fm_synth_update(AgsFMSynth *fm_synth);
 
 AgsFMSynth* ags_fm_synth_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNTH_H__*/

@@ -31,6 +31,8 @@
 
 #include <ags/X/machine/ags_pattern_box.h>
 
+G_BEGIN_DECLS
+
 /* controls */
 gboolean ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box);
 gboolean ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box);
@@ -40,5 +42,7 @@ gboolean ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event
 
 void ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box);
 void ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box);
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_BOX_CALLBACKS_H__*/

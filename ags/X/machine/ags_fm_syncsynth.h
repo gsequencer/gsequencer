@@ -33,6 +33,8 @@
 
 #include <ags/X/machine/ags_fm_oscillator.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FM_SYNCSYNTH                (ags_fm_syncsynth_get_type())
 #define AGS_FM_SYNCSYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_SYNCSYNTH, AgsFMSyncsynth))
 #define AGS_FM_SYNCSYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FM_SYNCSYNTH, AgsFMSyncsynthClass))
@@ -98,5 +100,7 @@ void ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth);
 
 AgsFMSyncsynth* ags_fm_syncsynth_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNCSYNTH_H__*/

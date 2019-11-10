@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_oscillator.h>
+
+G_BEGIN_DECLS
 
 void ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator);
 void ags_oscillator_attack_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
@@ -34,5 +40,7 @@ void ags_oscillator_frequency_callback(GtkSpinButton *spin_button, AgsOscillator
 void ags_oscillator_phase_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
 void ags_oscillator_volume_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
 void ags_oscillator_sync_point_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
+
+G_END_DECLS
 
 #endif /*__AGS_OSCILLATOR_CALLBACKS_H__ */

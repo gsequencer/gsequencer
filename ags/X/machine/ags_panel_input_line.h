@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_line.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PANEL_INPUT_LINE                (ags_panel_input_line_get_type())
 #define AGS_PANEL_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PANEL_INPUT_LINE, AgsPanelInputLine))
 #define AGS_PANEL_INPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PANEL_INPUT_LINE, AgsPanelInputLineClass))
@@ -59,5 +61,7 @@ struct _AgsPanelInputLineClass
 GType ags_panel_input_line_get_type();
 
 AgsPanelInputLine* ags_panel_input_line_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_PANEL_INPUT_LINE_H__*/

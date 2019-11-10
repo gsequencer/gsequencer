@@ -90,7 +90,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 
     if(nth_channel != NULL){
       /* toggle pattern */
-      g_object_get(channel,
+      g_object_get(nth_channel,
 		   "pattern", &start_pattern,
 		   NULL);
 
@@ -423,7 +423,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 			       j);
 
 	/* play pattern */
-	if(ags_pattern_get_bit(pattern,
+	if(ags_pattern_get_bit(start_pattern->data,
 			       0, index1, j)){
 	  AgsPlayback *playback;
 	    

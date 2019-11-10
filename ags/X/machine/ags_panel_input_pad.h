@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_pad.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PANEL_INPUT_PAD                (ags_panel_input_pad_get_type())
 #define AGS_PANEL_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PANEL_INPUT_PAD, AgsPanelInputPad))
 #define AGS_PANEL_INPUT_PAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PANEL_INPUT_PAD, AgsPanelInputPadClass))
@@ -57,5 +59,7 @@ struct _AgsPanelInputPadClass
 GType ags_panel_input_pad_get_type();
 
 AgsPanelInputPad* ags_panel_input_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_PANEL_INPUT_PAD_H__*/

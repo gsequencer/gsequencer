@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIOREC                (ags_audiorec_get_type())
 #define AGS_AUDIOREC(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIOREC, AgsAudiorec))
 #define AGS_AUDIOREC_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIOREC, AgsAudiorecClass))
@@ -82,5 +84,7 @@ gboolean ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec);
 gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 
 AgsAudiorec* ags_audiorec_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIOREC_H__*/

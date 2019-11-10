@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DESK_INPUT_PAD                (ags_desk_input_pad_get_type())
 #define AGS_DESK_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DESK_INPUT_PAD, AgsDeskInputPad))
@@ -73,5 +75,7 @@ struct _AgsDeskInputPadClass
 GType ags_desk_input_pad_get_type(void);
 
 AgsDeskInputPad* ags_desk_input_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_DESK_INPUT_PAD_H__*/

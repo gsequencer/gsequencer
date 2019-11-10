@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_effect_bridge.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MATRIX_BRIDGE                (ags_matrix_bridge_get_type())
 #define AGS_MATRIX_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX_BRIDGE, AgsMatrixBridge))
 #define AGS_MATRIX_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MATRIX_BRIDGE, AgsMatrixBridgeClass))
@@ -54,5 +56,7 @@ struct _AgsMatrixBridgeClass
 GType ags_matrix_bridge_get_type(void);
 
 AgsMatrixBridge* ags_matrix_bridge_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_MATRIX_BRIDGE_H__*/

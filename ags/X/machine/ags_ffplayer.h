@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FFPLAYER                (ags_ffplayer_get_type())
 #define AGS_FFPLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER, AgsFFPlayer))
 #define AGS_FFPLAYER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FFPLAYER, AgsFFPlayerClass))
@@ -102,5 +104,7 @@ void ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer);
 gboolean ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer);
 
 AgsFFPlayer* ags_ffplayer_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_FFPLAYER_H__*/

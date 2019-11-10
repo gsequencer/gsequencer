@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/machine/ags_desk_input_pad.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DESK                (ags_desk_get_type())
 #define AGS_DESK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DESK, AgsDesk))
@@ -69,5 +75,7 @@ struct _AgsDeskClass
 GType ags_desk_get_type(void);
 
 AgsDesk* ags_desk_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_DESK_H__*/

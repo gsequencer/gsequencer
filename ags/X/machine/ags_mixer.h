@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MIXER                (ags_mixer_get_type())
 #define AGS_MIXER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_MIXER, AgsMixer))
 #define AGS_MIXER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MIXER, AgsMixerClass))
@@ -59,5 +61,7 @@ struct _AgsMixerClass
 GType ags_mixer_get_type(void);
 
 AgsMixer* ags_mixer_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_MIXER_H__*/

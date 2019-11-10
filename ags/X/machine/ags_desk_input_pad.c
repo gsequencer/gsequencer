@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_desk_input_pad.h>
 #include <ags/X/machine/ags_desk_input_pad_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_desk.h>
@@ -34,19 +30,11 @@
 
 void ags_desk_input_pad_class_init(AgsDeskInputPadClass *desk_input_pad);
 void ags_desk_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_desk_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_desk_input_pad_init(AgsDeskInputPad *desk_input_pad);
 static void ags_desk_input_pad_finalize(GObject *gobject);
 
 void ags_desk_input_pad_connect(AgsConnectable *connectable);
 void ags_desk_input_pad_disconnect(AgsConnectable *connectable);
-
-gchar* ags_desk_input_pad_get_name(AgsPlugin *plugin);
-void ags_desk_input_pad_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_desk_input_pad_get_xml_type(AgsPlugin *plugin);
-void ags_desk_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_desk_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_desk_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_desk_input_pad
@@ -87,12 +75,6 @@ ags_desk_input_pad_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_desk_input_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_desk_input_pad = g_type_register_static(GTK_TYPE_VBOX,
 						     "AgsDeskInputPad", &ags_desk_input_pad_info,
 						     0);
@@ -100,10 +82,6 @@ ags_desk_input_pad_get_type()
     g_type_add_interface_static(ags_type_desk_input_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_desk_input_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_desk_input_pad);
   }
@@ -129,17 +107,6 @@ ags_desk_input_pad_connectable_interface_init(AgsConnectableInterface *connectab
 {
   connectable->connect = ags_desk_input_pad_connect;
   connectable->disconnect = ags_desk_input_pad_disconnect;
-}
-
-void
-ags_desk_input_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_desk_input_pad_get_name;
-  plugin->set_name = ags_desk_input_pad_set_name;
-  plugin->get_xml_type = ags_desk_input_pad_get_xml_type;
-  plugin->set_xml_type = ags_desk_input_pad_set_xml_type;
-  plugin->read = ags_desk_input_pad_read;
-  plugin->write = ags_desk_input_pad_write;
 }
 
 void
@@ -246,60 +213,6 @@ void
 ags_desk_input_pad_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
-}
-
-gchar*
-ags_desk_input_pad_get_name(AgsPlugin *plugin)
-{
-  return(AGS_DESK_INPUT_PAD(plugin)->name);
-}
-
-void
-ags_desk_input_pad_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_DESK_INPUT_PAD(plugin)->name = name;
-}
-
-gchar*
-ags_desk_input_pad_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DESK_INPUT_PAD(plugin)->xml_type);
-}
-
-void
-ags_desk_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DESK_INPUT_PAD(plugin)->xml_type = xml_type;
-}
-
-void
-ags_desk_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsDeskInputPad *gobject;
-
-  gobject = AGS_DESK_INPUT_PAD(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-}
-
-xmlNode*
-ags_desk_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsDeskInputPad *desk_input_pad;
-  xmlNode *node;
-  gchar *id;
-
-  desk_input_pad = AGS_DESK_INPUT_PAD(plugin);
-  node = NULL;
-
-  return(node);
 }
 
 /**

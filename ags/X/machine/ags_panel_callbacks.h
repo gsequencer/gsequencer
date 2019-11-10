@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_panel.h>
 
+G_BEGIN_DECLS
+
 void ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel *panel);
+
+G_END_DECLS
 
 #endif /*__AGS_PANEL_CALLBACKS_H__*/

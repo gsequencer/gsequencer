@@ -31,6 +31,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_OSCILLATOR                (ags_oscillator_get_type())
 #define AGS_OSCILLATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_OSCILLATOR, AgsOscillator))
 #define AGS_OSCILLATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_OSCILLATOR, AgsOscillatorClass))
@@ -86,5 +88,7 @@ xmlNode* ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator
 void ags_oscillator_control_changed(AgsOscillator *oscillator);
 
 AgsOscillator* ags_oscillator_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSCILLATOR_H__*/

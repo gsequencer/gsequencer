@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_line.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DRUM_INPUT_LINE                (ags_drum_input_line_get_type())
 #define AGS_DRUM_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM_INPUT_LINE, AgsDrumInputLine))
@@ -53,5 +59,7 @@ struct _AgsDrumInputLineClass
 GType ags_drum_input_line_get_type();
 
 AgsDrumInputLine* ags_drum_input_line_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_INPUT_LINE_H__*/

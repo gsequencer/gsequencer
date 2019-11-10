@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_spectrometer.h>
+
+G_BEGIN_DECLS
 
 void ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSpectrometer *spectrometer);
 
@@ -36,5 +42,7 @@ void ags_spectrometer_resize_pads_callback(AgsSpectrometer *spectrometer,
 					   GType channel_type,
 					   guint pads, guint pads_old,
 					   gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_SPECTROMETER_CALLBACKS_H__*/

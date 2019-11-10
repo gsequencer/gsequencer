@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PATTERN_BOX                (ags_pattern_box_get_type())
 #define AGS_PATTERN_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PATTERN_BOX, AgsPatternBox))
 #define AGS_PATTERN_BOX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PATTERN_BOX, AgsPatternBoxClass))
@@ -101,5 +103,7 @@ gboolean ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box);
 void ags_pattern_box_set_pattern(AgsPatternBox *pattern_box);
 
 AgsPatternBox* ags_pattern_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_BOX_H__*/

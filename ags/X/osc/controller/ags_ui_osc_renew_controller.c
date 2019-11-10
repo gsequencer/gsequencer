@@ -143,7 +143,7 @@ static guint ui_osc_renew_controller_signals[LAST_SIGNAL];
 
 GHashTable *ags_ui_osc_renew_controller_message_monitor = NULL;
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_ui_osc_renew_controller_get_type()
@@ -1127,7 +1127,7 @@ ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_
 	    path_offset = 14;
 
 	    /* compile regex */
-	    pthread_mutex_lock(&regex_mutex);
+	    g_mutex_lock(&regex_mutex);
   
 	    if(!regex_compiled){
 	      regex_compiled = TRUE;
@@ -1139,7 +1139,7 @@ ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_
 	      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
 	    }
 
-	    pthread_mutex_unlock(&regex_mutex);
+	    g_mutex_unlock(&regex_mutex);
 
 	    machine_type = G_TYPE_NONE;
     

@@ -34,6 +34,8 @@
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_pattern_box.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_DRUM                (ags_drum_get_type())
 #define AGS_DRUM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM, AgsDrum))
 #define AGS_DRUM_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DRUM, AgsDrumClass))
@@ -88,5 +90,7 @@ struct _AgsDrumClass
 GType ags_drum_get_type(void);
 
 AgsDrum* ags_drum_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_H__*/

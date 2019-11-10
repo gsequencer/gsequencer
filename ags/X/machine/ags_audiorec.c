@@ -27,19 +27,11 @@
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audiorec_init(AgsAudiorec *audiorec);
 void ags_audiorec_finalize(GObject *gobject);
 
 void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
-
-gchar* ags_audiorec_get_name(AgsPlugin *plugin);
-void ags_audiorec_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_audiorec_get_xml_type(AgsPlugin *plugin);
-void ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_audiorec_show(GtkWidget *widget);
 void ags_audiorec_show_all(GtkWidget *widget);
@@ -98,12 +90,6 @@ ags_audiorec_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_audiorec_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_audiorec = g_type_register_static(AGS_TYPE_MACHINE,
 					       "AgsAudiorec", &ags_audiorec_info,
 					       0);
@@ -111,10 +97,6 @@ ags_audiorec_get_type(void)
     g_type_add_interface_static(ags_type_audiorec,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_audiorec,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_audiorec);
   }
@@ -156,17 +138,6 @@ ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_audiorec_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_audiorec_connect;
-}
-
-void
-ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_audiorec_get_name;
-  plugin->set_name = ags_audiorec_set_name;
-  plugin->get_xml_type = ags_audiorec_get_xml_type;
-  plugin->set_xml_type = ags_audiorec_set_xml_type;
-  plugin->read = ags_audiorec_read;
-  plugin->write = ags_audiorec_write;
 }
 
 void
@@ -425,31 +396,6 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_audiorec_mix_data_callback),
 		      audiorec,
 		      NULL);
-}
-
-
-gchar*
-ags_audiorec_get_name(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->name);
-}
-
-void
-ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_AUDIOREC(plugin)->name = name;
-}
-
-gchar*
-ags_audiorec_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->xml_type);
-}
-
-void
-ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_AUDIOREC(plugin)->xml_type = xml_type;
 }
 
 void
@@ -1107,61 +1053,6 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
       audiorec->mapped_output_pad = pads;
     }
   }
-}
-
-void
-ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsAudiorec *gobject;
-  
-  gobject = AGS_AUDIOREC(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsAudiorec *audiorec;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  audiorec = AGS_AUDIOREC(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-audiorec");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", audiorec,
-				   NULL));
-
-  //TODO:JK: implement me
-  
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void

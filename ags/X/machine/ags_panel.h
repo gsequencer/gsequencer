@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PANEL                (ags_panel_get_type())
 #define AGS_PANEL(obj)                ((AgsPanel*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PANEL, AgsPanel))
 #define AGS_PANEL_CLASS(class)        ((AgsPanelClass*) G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PANEL, AgsPanelClass))
@@ -59,5 +61,7 @@ struct _AgsPanelClass
 GType ags_panel_get_type(void);
 
 AgsPanel* ags_panel_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_PANEL_H__*/

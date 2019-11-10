@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_effect_bulk.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MATRIX_BULK_INPUT                (ags_matrix_bulk_input_get_type())
 #define AGS_MATRIX_BULK_INPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX_BULK_INPUT, AgsMatrixBulkInput))
 #define AGS_MATRIX_BULK_INPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MATRIX_BULK_INPUT, AgsMatrixBulkInputClass))
@@ -55,5 +57,7 @@ GType ags_matrix_bulk_input_get_type(void);
 
 AgsMatrixBulkInput* ags_matrix_bulk_input_new(AgsAudio *audio,
 					      GType channel_type);
+
+G_END_DECLS
 
 #endif /*__AGS_MATRIX_BULK_INPUT_H__*/

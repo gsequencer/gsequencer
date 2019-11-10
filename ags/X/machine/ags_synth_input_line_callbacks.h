@@ -25,8 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_oscillator.h>
+
+G_BEGIN_DECLS
 
 void ags_synth_input_line_samplerate_changed_callback(AgsLine *line,
 						      guint samplerate, guint old_samplerate,
@@ -35,4 +41,5 @@ void ags_synth_input_line_samplerate_changed_callback(AgsLine *line,
 void ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *oscillator,
 							      AgsSynthInputLine *synth_input_line);
 
+G_END_DECLS
 #endif /*__AGS_SYNTH_INPUT_LINE_CALLBACKS_H__ */
