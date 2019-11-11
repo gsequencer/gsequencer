@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_UI_OSC_RENEW_CONTROLLER                (ags_ui_osc_renew_controller_get_type())
 #define AGS_UI_OSC_RENEW_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_OSC_RENEW_CONTROLLER, AgsUiOscRenewController))
 #define AGS_UI_OSC_RENEW_CONTROLLER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_UI_OSC_RENEW_CONTROLLER, AgsUiOscRenewControllerClass))
@@ -67,5 +69,7 @@ void ags_ui_osc_renew_controller_remove_monitor(AgsUiOscRenewController *ui_osc_
 gboolean ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_osc_renew_controller);
 
 AgsUiOscRenewController* ags_ui_osc_renew_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_UI_OSC_RENEW_CONTROLLER_H__*/

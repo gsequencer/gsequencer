@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,11 +21,20 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/editor/ags_file_selection.h>
 
+G_BEGIN_DECLS
+
 void ags_file_selection_remove_callback(GtkButton *button, GtkTable *hbox);
+
+G_END_DECLS
 
 #endif /*__AGS_FILE_SELECTION_CALLBACKS_H__*/
 

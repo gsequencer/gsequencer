@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,9 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_EXPORT_WIZARD                (ags_midi_export_wizard_get_type())
 #define AGS_MIDI_EXPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizard))
@@ -77,5 +80,7 @@ struct _AgsMidiExportWizardClass
 GType ags_midi_export_wizard_get_type(void);
 
 AgsMidiExportWizard* ags_midi_export_wizard_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_EXPORT_WIZARD_H__*/

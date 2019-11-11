@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,19 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
+G_BEGIN_DECLS
+
 void ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__*/

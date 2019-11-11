@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_NOTATION_EDIT                (ags_notation_edit_get_type ())
 #define AGS_NOTATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_EDIT, AgsNotationEdit))
 #define AGS_NOTATION_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION_EDIT, AgsNotationEditClass))
@@ -143,5 +145,7 @@ void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw(AgsNotationEdit *notation_edit);
 
 AgsNotationEdit* ags_notation_edit_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_EDIT_H__*/

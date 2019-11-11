@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,12 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_WAVE_TOOLBAR                (ags_wave_toolbar_get_type())
 #define AGS_WAVE_TOOLBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_TOOLBAR, AgsWaveToolbar))
@@ -75,5 +81,7 @@ GType ags_wave_toolbar_get_type(void);
 GtkMenu* ags_wave_toolbar_tool_popup_new(AgsWaveToolbar *wave_toolbar);
 
 AgsWaveToolbar* ags_wave_toolbar_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_TOOLBAR_H__*/

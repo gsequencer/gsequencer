@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,9 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SF2_CHOOSER                (ags_sf2_chooser_get_type ())
 #define AGS_SF2_CHOOSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SF2_CHOOSER, AgsSF2Chooser))
@@ -63,5 +66,7 @@ gboolean ags_sf2_chooser_completed(AgsSF2Chooser *sf2_chooser);
 void ags_sf2_chooser_remove_all_from_combo(GtkComboBoxText *combo);
 
 AgsSF2Chooser* ags_sf2_chooser_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SF2_CHOOSER_H__*/

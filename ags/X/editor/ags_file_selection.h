@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,11 +22,14 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/audio/file/ags_audio_file.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_SELECTION                (ags_file_selection_get_type())
 #define AGS_FILE_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_SELECTION, AgsFileSelection))
@@ -98,5 +101,7 @@ gboolean ags_file_selection_contains_file(AgsFileSelection *file_selection, gcha
 void ags_file_selection_completed(AgsFileSelection *file_selection);
 
 AgsFileSelection* ags_file_selection_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FILE_SELECTION_H__*/

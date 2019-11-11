@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_sheet_edit.h>
+
+G_BEGIN_DECLS
 
 gboolean ags_sheet_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsSheetEdit *sheet_edit);
 gboolean ags_sheet_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsSheetEdit *sheet_edit);
@@ -35,5 +41,7 @@ gboolean ags_sheet_edit_drawing_area_button_release_event(GtkWidget *widget, Gdk
 gboolean ags_sheet_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsSheetEdit *sheet_edit);
 gboolean ags_sheet_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsSheetEdit *sheet_edit);
 gboolean ags_sheet_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsSheetEdit *sheet_edit);
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_EDIT_CALLBACKS_H__*/

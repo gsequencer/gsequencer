@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,11 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/widget/ags_cartesian.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PATTERN_ENVELOPE                (ags_pattern_envelope_get_type())
 #define AGS_PATTERN_ENVELOPE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PATTERN_ENVELOPE, AgsPatternEnvelope))
@@ -36,8 +38,8 @@
 #define AGS_IS_PATTERN_ENVELOPE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PATTERN_ENVELOPE))
 #define AGS_PATTERN_ENVELOPE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PATTERN_ENVELOPE, AgsPatternEnvelopeClass))
 
-#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "0.8.5\0"
-#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "CEST 16-06-2017 11:29\0"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_VERSION "0.8.5"
+#define AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID "CEST 16-06-2017 11:29"
 
 typedef struct _AgsPatternEnvelope AgsPatternEnvelope;
 typedef struct _AgsPatternEnvelopeClass AgsPatternEnvelopeClass;
@@ -131,5 +133,7 @@ void ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope);
 void ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope);
 
 AgsPatternEnvelope* ags_pattern_envelope_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_ENVELOPE_H__*/

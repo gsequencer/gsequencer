@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUTOMATION_EDIT                (ags_automation_edit_get_type())
 #define AGS_AUTOMATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEdit))
@@ -175,5 +177,7 @@ void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_draw(AgsAutomationEdit *automation_edit);
 
 AgsAutomationEdit* ags_automation_edit_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_EDIT_H__*/

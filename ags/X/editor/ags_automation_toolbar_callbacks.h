@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,10 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_automation_toolbar.h>
+
+G_BEGIN_DECLS
 
 void ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
 						     AgsMachine *machine,
@@ -58,5 +64,7 @@ void ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
 					  AgsAutomationToolbar *automation_toolbar);
 
 void ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomationToolbar *automation_toolbar);
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/

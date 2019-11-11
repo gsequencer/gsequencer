@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,14 +25,18 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SELECT_BUFFER_DIALOG                (ags_select_buffer_dialog_get_type())
 #define AGS_SELECT_BUFFER_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SELECT_BUFFER_DIALOG, AgsSelectBufferDialog))
 #define AGS_SELECT_BUFFER_DIALOG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SELECT_BUFFER_DIALOG, AgsSelectBufferDialogClass))
 #define AGS_IS_SELECT_BUFFER_DIALOG(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SELECT_BUFFER_DIALOG))
 #define AGS_IS_SELECT_BUFFER_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SELECT_BUFFER_DIALOG))
 #define AGS_SELECT_BUFFER_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SELECT_BUFFER_DIALOG, AgsSelectBufferDialogClass))
-
-#define AGS_SELECT_BUFFER(ptr) ((AgsSelectBuffer *)(ptr))
 
 #define AGS_SELECT_BUFFER_MAX_BEATS (16 * 1200)
 #define AGS_SELECT_BUFFER_DEFAULT_WIDTH (64)
@@ -69,5 +73,7 @@ struct _AgsSelectBufferDialogClass
 GType ags_select_buffer_dialog_get_type(void);
 
 AgsSelectBufferDialog* ags_select_buffer_dialog_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_SELECT_BUFFER_DIALOG_H__*/
