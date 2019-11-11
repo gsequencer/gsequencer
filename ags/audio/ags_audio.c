@@ -117,13 +117,13 @@ void ags_audio_set_audio_channels_shrink_zero(AgsAudio *audio);
 void ags_audio_set_audio_channels_shrink(AgsAudio *audio,
 					 guint audio_channels, guint audio_channels_old);
 void ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
-						  guint audio_channels);
+						  guint audio_channels, guint audio_channels_old);
 void ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
-						    guint audio_channels);
+						    guint audio_channels, guint audio_channels_old);
 void ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
-					      guint audio_channels);
+					      guint audio_channels, guint audio_channels_old);
 void ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
-					      guint audio_channels);  
+					      guint audio_channels, guint audio_channels_old);
       
 void ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old);
@@ -4102,7 +4102,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	/* add recycling */
 	if(recycling == NULL){
 	  first_recycling =
-	    last_recycling = ags_recycling_new(soundcard);
+	    last_recycling = ags_recycling_new(output_soundcard);
 	  g_object_ref(first_recycling);
 	  g_object_set(first_recycling,
 		       "channel", channel,
@@ -4408,7 +4408,7 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 	       NULL);
 
   /* get super-threaded flags */
-  super_threaded_audio = ags_playback_domain_test_flags(playback_domainm, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
+  super_threaded_audio = ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
   
   /* notation ability */  
   if(super_threaded_audio){
@@ -5068,7 +5068,9 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
   AgsChannel *channel, *current, *pad_next, *nth_channel;
   AgsRecycling *first_recycling, *last_recycling;
   AgsPlaybackDomain *playback_domain;
-    
+  
+  GObject *output_soundcard, *input_soundcard;
+
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -5091,6 +5093,8 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       "playback-domain", &playback_domain,
+	       "output-soundcard", &output_soundcard,
+	       "input-soundcard", &input_soundcard,
 	       NULL);
   
   if(channel_type == AGS_TYPE_OUTPUT){
@@ -5101,7 +5105,7 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
   }else{
     g_object_get(audio,
 		 "input", &start,
-		 "input-pads", &pads
+		 "input-pads", &pads,
 		 NULL);
   }
 
@@ -5293,6 +5297,14 @@ ags_audio_set_audio_channels_grow(AgsAudio *audio,
   }
 
   /* unref */
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
+  if(input_soundcard != NULL){
+    g_object_unref(input_soundcard);
+  }
+
   if(start != NULL){
     g_object_unref(start);
   }
@@ -5476,7 +5488,7 @@ ags_audio_set_audio_channel_shrink0:
 
 void
 ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
-					     guint audio_channels)
+					     guint audio_channels, guint audio_channels_old)
 {
   GList *list_start, *list;
 
@@ -5513,7 +5525,7 @@ ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
 
 void
 ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
-					       guint audio_channels)
+					       guint audio_channels, guint audio_channels_old)
 {
   GList *list_start, *list;
 
@@ -5554,7 +5566,7 @@ ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
   
 void
 ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
-					 guint audio_channels)
+					 guint audio_channels, guint audio_channels_old)
 {
   GList *list_start, *list;
 
@@ -5591,7 +5603,7 @@ ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
 
 void
 ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
-					 guint audio_channels)
+					 guint audio_channels, guint audio_channels_old)
 {
   GList *list_start, *list;
 
@@ -5637,11 +5649,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
-  GObject *output_soundcard, *input_soundcard;
-
   guint bank_dim[3];
 
   guint audio_flags;
+  guint ability_flags;
   guint output_pads, input_pads;
   gboolean add_recycling;
   gboolean add_pattern;
@@ -5672,8 +5683,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   /* get some fields */
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
-	       "ouput-soundcard", &output_soundcard,
-	       "input-soundcard", &input_soundcard,
 	       NULL);
   
   if(audio_channels > audio_channels_old){
@@ -5694,6 +5703,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	add_recycling = TRUE;
       }
+
+      bank_dim[0] = 0;
+      bank_dim[1] = 0;
+      bank_dim[2] = 0;
       
       if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) != 0){
 	add_pattern = TRUE;
@@ -5877,24 +5890,29 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     GRecMutex *playback_domain_mutex;
 
     /* shrink audio channels */
-    ags_audio_set_audio_channels_shrink_automation(audio);
+    ags_audio_set_audio_channels_shrink_automation(audio,
+						   audio_channels, audio_channels_old);
     
     if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0){
-      ags_audio_set_audio_channels_shrink_notation();
+      ags_audio_set_audio_channels_shrink_notation(audio,
+						   audio_channels, audio_channels_old);
     }
 
     if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0){
-      ags_audio_set_audio_channels_shrink_wave();
+      ags_audio_set_audio_channels_shrink_wave(audio,
+					       audio_channels, audio_channels_old);
     }
 
     if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) != 0){
-      ags_audio_set_audio_channels_shrink_midi();
+      ags_audio_set_audio_channels_shrink_midi(audio,
+					       audio_channels, audio_channels_old);
     }
 
     if(audio_channels == 0){
-      ags_audio_set_audio_channels_shrink_zero();
+      ags_audio_set_audio_channels_shrink_zero(audio);
     }else{
-      ags_audio_set_audio_channels_shrink();
+      ags_audio_set_audio_channels_shrink(audio,
+					  audio_channels, audio_channels_old);
     }
 
     /* apply new sizes */
@@ -5965,14 +5983,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   }
 
   /* unref */
-  if(output_soundcard != NULL){
-    g_object_unref(output_soundcard);
-  }
-  
-  if(input_soundcard != NULL){
-    g_object_unref(input_soundcard);
-  }
-
   g_object_unref(playback_domain);
   
   /* emit message */
@@ -6086,6 +6096,9 @@ ags_audio_set_pads_grow(AgsAudio *audio,
   AgsRecycling *first_recycling, *last_recycling;
   AgsPlaybackDomain *playback_domain;
 
+  GObject *output_soundcard;
+  GObject *input_soundcard;
+
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -6107,7 +6120,9 @@ ags_audio_set_pads_grow(AgsAudio *audio,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
-	       "audio-channels", &audio_channels
+	       "audio-channels", &audio_channels,
+	       "ouput-soundcard", &output_soundcard,
+	       "input-soundcard", &input_soundcard,
 	       "playback-domain", &playback_domain,
 	       NULL);
   
@@ -6293,6 +6308,15 @@ ags_audio_set_pads_grow(AgsAudio *audio,
   }
 
   /* unref */
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
+  if(input_soundcard != NULL){
+    g_object_unref(input_soundcard);
+  }
+
+
   if(start != NULL){
     g_object_unref(start);
   }
@@ -6389,12 +6413,18 @@ ags_audio_set_pads_shrink(AgsAudio *audio,
 {
   AgsChannel *channel, *current;
 
+  guint audio_channels;
+  
   guint i;
 
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
   if(channel_type == AGS_TYPE_OUTPUT){
     channel = ags_channel_pad_nth(audio->output,
 				  pads);
@@ -6403,7 +6433,7 @@ ags_audio_set_pads_shrink(AgsAudio *audio,
 				  pads);
   }
   
-  g_object_unref(channel)
+  g_object_unref(channel);
   current = channel;
     
   if(channel != NULL &&
@@ -6413,7 +6443,9 @@ ags_audio_set_pads_shrink(AgsAudio *audio,
     channel = NULL;
   }
     
-  ags_audio_set_pads_shrink_zero(current);
+  ags_audio_set_pads_shrink_zero(audio,
+				 channel_type,
+				 pads);
 
   /* remove pads */
   if(channel != NULL){
@@ -6443,9 +6475,14 @@ ags_audio_set_pads_remove_notes(AgsAudio *audio,
   GList *notation;
   GList *note_start, *note;
 
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   g_rec_mutex_lock(audio_mutex);
 
@@ -6483,9 +6520,14 @@ ags_audio_set_pads_shrink_automation(AgsAudio *audio,
 
   guint audio_channels;
   
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   g_rec_mutex_lock(audio_mutex);
 
@@ -6519,9 +6561,14 @@ ags_audio_set_pads_shrink_wave(AgsAudio *audio,
 {
   GList *list_start, *list;
   
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   g_rec_mutex_lock(audio_mutex);
 
@@ -6553,9 +6600,14 @@ ags_audio_set_pads_shrink_midi(AgsAudio *audio,
 {
   GList *list_start, *list;
   
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   g_rec_mutex_lock(audio_mutex);
     
@@ -6594,9 +6646,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
   
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
-
-  GObject *output_soundcard;
-  GObject *input_soundcard;
   
   guint bank_dim[3];
 
@@ -6646,8 +6695,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
   /* get some fields */
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
-	       "ouput-soundcard", &output_soundcard,
-	       "input-soundcard", &input_soundcard,
 	       NULL);
 
   add_recycling = FALSE;
@@ -6792,7 +6839,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  list = list->next;
 	}
 
-	g_list_free_full(list_start,
+	g_list_free_full(start_list,
 			 g_object_unref);
       }else if(pads < output_pads){
 	GList *start_list, *list;
@@ -6844,8 +6891,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  list = list->next;
 	}
 
-	g_list_free(start_list,
-		    g_object_unref);
+	g_list_free_full(start_list,
+			 g_object_unref);
 
 	ags_audio_set_pads_unlink(audio,
 				  AGS_TYPE_OUTPUT,
@@ -6948,7 +6995,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	g_object_unref(start_channel);
       }else if(pads == 0){
-	GList *list, *list_start;
+	GList *start_list, *list;
 	
 	ags_audio_set_pads_shrink_automation(audio,
 					     AGS_TYPE_INPUT,
@@ -7013,7 +7060,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  list = list->next;
 	}
 
-	g_list_free_full(list_start,
+	g_list_free_full(start_list,
 			 g_object_unref);
       }else if(pads < pads_old){
 	GList *start_list, *list;
@@ -7062,8 +7109,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  list = list->next;
 	}
 
-	g_list_free(list_start,
-		    g_object_unref);
+	g_list_free_full(start_list,
+			 g_object_unref);
 
 	ags_audio_set_pads_unlink(audio,
 				  AGS_TYPE_INPUT,
@@ -7084,14 +7131,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
   }
 
   /* unref */
-  if(output_soundcard != NULL){
-    g_object_unref(output_soundcard);
-  }
-  
-  if(input_soundcard != NULL){
-    g_object_unref(input_soundcard);
-  }
-
   g_object_unref(playback_domain);
 
   /* emit message */

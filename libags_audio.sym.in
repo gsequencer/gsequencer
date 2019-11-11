@@ -47,7 +47,6 @@ ags_lv2_worker_manager_pull_worker
 ags_lv2_worker_manager_get_instance
 ags_lv2_worker_manager_new
 ags_plugin_port_get_type
-ags_plugin_port_get_class_mutex
 ags_plugin_port_test_flags
 ags_plugin_port_set_flags
 ags_plugin_port_unset_flags
@@ -58,7 +57,6 @@ ags_lv2_state_manager_get_type
 ags_lv2_state_manager_get_instance
 ags_lv2_state_manager_new
 ags_dssi_manager_get_type
-ags_dssi_manager_get_class_mutex
 ags_dssi_manager_get_default_path
 ags_dssi_manager_set_default_path
 ags_dssi_manager_get_filenames
@@ -69,11 +67,9 @@ ags_dssi_manager_load_default_directory
 ags_dssi_manager_get_instance
 ags_dssi_manager_new
 ags_lv2_preset_manager_get_type
-ags_lv2_preset_manager_get_class_mutex
 ags_lv2_preset_manager_get_instance
 ags_lv2_preset_manager_new
 ags_lv2_worker_get_type
-ags_lv2_worker_get_class_mutex
 ags_lv2_worker_test_flags
 ags_lv2_worker_set_flags
 ags_lv2_worker_unset_flags
@@ -86,7 +82,6 @@ ags_lv2_worker_safe_run
 ags_lv2_worker_interrupted_callback
 ags_lv2_worker_new
 ags_lv2_preset_get_type
-ags_lv2_preset_get_class_mutex
 ags_lv2_port_preset_alloc
 ags_lv2_port_preset_free
 ags_lv2_preset_parse_turtle
@@ -94,7 +89,6 @@ ags_lv2_preset_find_preset_uri
 ags_lv2_preset_find_preset_label
 ags_lv2_preset_new
 ags_lv2_uri_map_manager_get_type
-ags_lv2_uri_map_manager_get_class_mutex
 ags_lv2_uri_map_manager_insert
 ags_lv2_uri_map_manager_remove
 ags_lv2_uri_map_manager_lookup
@@ -108,7 +102,6 @@ ags_ladspa_conversion_set_flags
 ags_ladspa_conversion_unset_flags
 ags_ladspa_conversion_new
 ags_lv2_manager_get_type
-ags_lv2_manager_get_class_mutex
 ags_lv2_manager_global_get_parse_names
 ags_lv2_manager_global_get_preserve_turtle
 ags_lv2_manager_get_default_path
@@ -122,7 +115,6 @@ ags_lv2_manager_load_default_directory
 ags_lv2_manager_get_instance
 ags_lv2_manager_new
 ags_base_plugin_get_type
-ags_base_plugin_get_class_mutex
 ags_base_plugin_test_flags
 ags_base_plugin_set_flags
 ags_base_plugin_unset_flags
@@ -154,7 +146,6 @@ ags_dssi_plugin_get_type
 ags_dssi_plugin_change_program
 ags_dssi_plugin_new
 ags_lv2ui_manager_get_type
-ags_lv2ui_manager_get_class_mutex
 ags_lv2ui_manager_get_default_path
 ags_lv2ui_manager_set_default_path
 ags_lv2ui_manager_get_filenames
@@ -171,7 +162,6 @@ ags_lv2_event_manager_lv2_event_unref
 ags_lv2_event_manager_get_instance
 ags_lv2_event_manager_new
 ags_ladspa_manager_get_type
-ags_ladspa_manager_get_class_mutex
 ags_ladspa_manager_get_default_path
 ags_ladspa_manager_set_default_path
 ags_ladspa_manager_get_filenames
@@ -187,7 +177,6 @@ ags_lv2_conversion_set_flags
 ags_lv2_conversion_unset_flags
 ags_lv2_conversion_new
 ags_lv2_urid_manager_get_type
-ags_lv2_urid_manager_get_class_mutex
 ags_lv2_urid_manager_insert
 ags_lv2_urid_manager_remove
 ags_lv2_urid_manager_lookup
@@ -199,7 +188,6 @@ ags_lv2_urid_manager_new
 ags_ladspa_plugin_get_type
 ags_ladspa_plugin_new
 ags_lv2_option_manager_get_type
-ags_lv2_option_manager_get_class_mutex
 ags_lv2_option_ressource_alloc
 ags_lv2_option_manager_ressource_insert
 ags_lv2_option_manager_ressource_remove
@@ -213,7 +201,6 @@ ags_lv2_option_manager_get_instance
 ags_lv2_option_manager_new
 ags_wasapi_devout_get_type
 ags_wasapi_devout_error_quark
-ags_wasapi_devout_get_class_mutex
 ags_wasapi_devout_test_flags
 ags_wasapi_devout_set_flags
 ags_wasapi_devout_unset_flags
@@ -223,7 +210,6 @@ ags_wasapi_devout_realloc_buffer
 ags_wasapi_devout_new
 ags_wasapi_devin_get_type
 ags_wasapi_devin_error_quark
-ags_wasapi_devin_get_class_mutex
 ags_wasapi_devin_test_flags
 ags_wasapi_devin_set_flags
 ags_wasapi_devin_unset_flags
@@ -235,7 +221,6 @@ ags_recall_recycling_get_type
 ags_recall_recycling_new
 ags_devin_get_type
 ags_devin_error_quark
-ags_devin_get_class_mutex
 ags_devin_test_flags
 ags_devin_set_flags
 ags_devin_unset_flags
@@ -245,7 +230,6 @@ ags_devin_realloc_buffer
 ags_devin_new
 ags_fifoout_get_type
 ags_fifoout_error_quark
-ags_fifoout_get_class_mutex
 ags_fifoout_test_flags
 ags_fifoout_set_flags
 ags_fifoout_unset_flags
@@ -308,7 +292,6 @@ ags_synth_util_triangle
 ags_synth_util_square
 ags_synth_util_impulse
 ags_notation_get_type
-ags_notation_get_class_mutex
 ags_notation_test_flags
 ags_notation_set_flags
 ags_notation_unset_flags
@@ -391,7 +374,6 @@ ags_filter_util_pitch_complex
 ags_recall_ladspa_run_get_type
 ags_recall_ladspa_run_new
 ags_recycling_get_type
-ags_recycling_get_class_mutex
 ags_recycling_test_flags
 ags_recycling_set_flags
 ags_recycling_unset_flags
@@ -433,7 +415,6 @@ ags_recall_audio_run_get_type
 ags_recall_audio_run_new
 ags_devout_get_type
 ags_devout_error_quark
-ags_devout_get_class_mutex
 ags_devout_test_flags
 ags_devout_set_flags
 ags_devout_unset_flags
@@ -442,7 +423,6 @@ ags_devout_adjust_delay_and_attack
 ags_devout_realloc_buffer
 ags_devout_new
 ags_pulse_port_get_type
-ags_pulse_port_get_class_mutex
 ags_pulse_port_test_flags
 ags_pulse_port_set_flags
 ags_pulse_port_unset_flags
@@ -458,7 +438,6 @@ ags_pulse_port_set_cache_buffer_size
 ags_pulse_port_get_latency
 ags_pulse_port_new
 ags_pulse_server_get_type
-ags_pulse_server_get_class_mutex
 ags_pulse_server_test_flags
 ags_pulse_server_set_flags
 ags_pulse_server_unset_flags
@@ -472,7 +451,6 @@ ags_pulse_server_disconnect_client
 ags_pulse_server_start_poll
 ags_pulse_server_new
 ags_pulse_client_get_type
-ags_pulse_client_get_class_mutex
 ags_pulse_client_test_flags
 ags_pulse_client_set_flags
 ags_pulse_client_unset_flags
@@ -489,7 +467,6 @@ ags_pulse_client_deactivate
 ags_pulse_client_new
 ags_pulse_devin_get_type
 ags_pulse_devin_error_quark
-ags_pulse_devin_get_class_mutex
 ags_pulse_devin_test_flags
 ags_pulse_devin_set_flags
 ags_pulse_devin_unset_flags
@@ -499,7 +476,6 @@ ags_pulse_devin_realloc_buffer
 ags_pulse_devin_new
 ags_pulse_devout_get_type
 ags_pulse_devout_error_quark
-ags_pulse_devout_get_class_mutex
 ags_pulse_devout_test_flags
 ags_pulse_devout_set_flags
 ags_pulse_devout_unset_flags
@@ -508,7 +484,6 @@ ags_pulse_devout_adjust_delay_and_attack
 ags_pulse_devout_realloc_buffer
 ags_pulse_devout_new
 ags_audio_get_type
-ags_audio_get_class_mutex
 ags_audio_test_flags
 ags_audio_set_flags
 ags_audio_unset_flags
@@ -702,7 +677,6 @@ ags_audio_buffer_util_copy_complex_to_double
 ags_audio_buffer_util_copy_complex_to_float32
 ags_audio_buffer_util_copy_buffer_to_buffer
 ags_recycling_context_get_type
-ags_recycling_context_get_class_mutex
 ags_recycling_context_find_scope
 ags_recycling_context_replace
 ags_recycling_context_add
@@ -910,8 +884,8 @@ ags_loop_channel_run_new
 ags_route_dssi_audio_get_type
 ags_route_dssi_audio_new
 ags_delay_audio_get_type
-ags_delay_audio_notation_duration_changed
 ags_delay_audio_sequencer_duration_changed
+ags_delay_audio_notation_duration_changed
 ags_delay_audio_wave_duration_changed
 ags_delay_audio_midi_duration_changed
 ags_delay_audio_new
@@ -959,7 +933,6 @@ ags_recall_dssi_load_conversion
 ags_recall_dssi_find
 ags_recall_dssi_new
 ags_frequency_map_manager_get_type
-ags_frequency_map_manager_get_class_mutex
 ags_frequency_map_manager_test_flags
 ags_frequency_map_manager_set_flags
 ags_frequency_map_manager_unset_flags
@@ -971,13 +944,11 @@ ags_frequency_map_manager_load_default
 ags_frequency_map_manager_get_instance
 ags_frequency_map_manager_new
 ags_recall_dependency_get_type
-ags_recall_dependency_get_class_mutex
 ags_recall_dependency_find_dependency
 ags_recall_dependency_find_dependency_by_provider
 ags_recall_dependency_resolve
 ags_recall_dependency_new
 ags_automation_get_type
-ags_automation_get_class_mutex
 ags_automation_test_flags
 ags_automation_set_flags
 ags_automation_unset_flags
@@ -1010,7 +981,6 @@ ags_automation_find_specifier_with_type_and_line
 ags_automation_get_value
 ags_automation_new
 ags_jack_client_get_type
-ags_jack_client_get_class_mutex
 ags_jack_client_test_flags
 ags_jack_client_set_flags
 ags_jack_client_unset_flags
@@ -1027,7 +997,6 @@ ags_jack_client_deactivate
 ags_jack_client_new
 ags_jack_devin_get_type
 ags_jack_devin_error_quark
-ags_jack_devin_get_class_mutex
 ags_jack_devin_test_flags
 ags_jack_devin_set_flags
 ags_jack_devin_unset_flags
@@ -1037,7 +1006,6 @@ ags_jack_devin_realloc_buffer
 ags_jack_devin_new
 ags_jack_devout_get_type
 ags_jack_devout_error_quark
-ags_jack_devout_get_class_mutex
 ags_jack_devout_test_flags
 ags_jack_devout_set_flags
 ags_jack_devout_unset_flags
@@ -1046,7 +1014,6 @@ ags_jack_devout_adjust_delay_and_attack
 ags_jack_devout_realloc_buffer
 ags_jack_devout_new
 ags_jack_port_get_type
-ags_jack_port_get_class_mutex
 ags_jack_port_test_flags
 ags_jack_port_set_flags
 ags_jack_port_unset_flags
@@ -1055,7 +1022,6 @@ ags_jack_port_register
 ags_jack_port_unregister
 ags_jack_port_new
 ags_jack_server_get_type
-ags_jack_server_get_class_mutex
 ags_jack_server_test_flags
 ags_jack_server_set_flags
 ags_jack_server_unset_flags
@@ -1069,7 +1035,6 @@ ags_jack_server_disconnect_client
 ags_jack_server_new
 ags_jack_midiin_get_type
 ags_jack_midiin_error_quark
-ags_jack_midiin_get_class_mutex
 ags_jack_midiin_test_flags
 ags_jack_midiin_set_flags
 ags_jack_midiin_unset_flags
@@ -1077,7 +1042,6 @@ ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_new
 ags_audio_signal_get_type
-ags_audio_signal_get_class_mutex
 ags_audio_signal_test_flags
 ags_audio_signal_set_flags
 ags_audio_signal_unset_flags
@@ -1105,7 +1069,6 @@ ags_audio_signal_is_active
 ags_audio_signal_new
 ags_audio_signal_new_with_length
 ags_buffer_get_type
-ags_buffer_get_class_mutex
 ags_buffer_test_flags
 ags_buffer_set_flags
 ags_buffer_unset_flags
@@ -1370,7 +1333,6 @@ ags_midi_buffer_util_seek_message
 ags_midi_buffer_util_decode
 ags_midi_file_get_type
 ags_midi_file_error_quark
-ags_midi_file_get_class_mutex
 ags_midi_file_open
 ags_midi_file_open_from_data
 ags_midi_file_rw_open
@@ -1420,7 +1382,6 @@ ags_midi_util_delta_time_to_offset
 ags_midi_util_offset_to_delta_time
 ags_channel_get_type
 ags_channel_error_quark
-ags_channel_get_class_mutex
 ags_channel_test_flags
 ags_channel_set_flags
 ags_channel_unset_flags
@@ -1483,7 +1444,6 @@ ags_channel_recursive_set_property
 ags_channel_recursive_run_stage
 ags_channel_new
 ags_sf2_loader_get_type
-ags_sf2_loader_get_class_mutex
 ags_sf2_loader_test_flags
 ags_sf2_loader_set_flags
 ags_sf2_loader_unset_flags
@@ -1500,7 +1460,6 @@ ags_soundcard_thread_get_type
 ags_soundcard_thread_find_soundcard
 ags_soundcard_thread_new
 ags_wave_loader_get_type
-ags_wave_loader_get_class_mutex
 ags_wave_loader_test_flags
 ags_wave_loader_set_flags
 ags_wave_loader_unset_flags
@@ -1510,7 +1469,6 @@ ags_audio_thread_get_type
 ags_audio_thread_set_sound_scope
 ags_audio_thread_new
 ags_sfz_loader_get_type
-ags_sfz_loader_get_class_mutex
 ags_sfz_loader_test_flags
 ags_sfz_loader_set_flags
 ags_sfz_loader_unset_flags
@@ -1529,7 +1487,6 @@ ags_export_thread_get_type
 ags_export_thread_find_soundcard
 ags_export_thread_new
 ags_audio_unit_client_get_type
-ags_audio_unit_client_get_class_mutex
 ags_audio_unit_client_test_flags
 ags_audio_unit_client_set_flags
 ags_audio_unit_client_unset_flags
@@ -1545,7 +1502,6 @@ ags_audio_unit_client_deactivate
 ags_audio_unit_client_new
 ags_audio_unit_devin_get_type
 ags_audio_unit_devin_error_quark
-ags_audio_unit_devin_get_class_mutex
 ags_audio_unit_devin_test_flags
 ags_audio_unit_devin_set_flags
 ags_audio_unit_devin_unset_flags
@@ -1554,7 +1510,6 @@ ags_audio_unit_devin_adjust_delay_and_attack
 ags_audio_unit_devin_realloc_buffer
 ags_audio_unit_devin_new
 ags_audio_unit_server_get_type
-ags_audio_unit_server_get_class_mutex
 ags_audio_unit_server_test_flags
 ags_audio_unit_server_set_flags
 ags_audio_unit_server_unset_flags
@@ -1567,7 +1522,6 @@ ags_audio_unit_server_connect_client
 ags_audio_unit_server_start_poll
 ags_audio_unit_server_new
 ags_audio_unit_port_get_type
-ags_audio_unit_port_get_class_mutex
 ags_audio_unit_port_test_flags
 ags_audio_unit_port_set_flags
 ags_audio_unit_port_unset_flags
@@ -1581,7 +1535,6 @@ ags_audio_unit_port_set_buffer_size
 ags_audio_unit_port_new
 ags_audio_unit_devout_get_type
 ags_audio_unit_devout_error_quark
-ags_audio_unit_devout_get_class_mutex
 ags_audio_unit_devout_test_flags
 ags_audio_unit_devout_set_flags
 ags_audio_unit_devout_unset_flags
@@ -1599,7 +1552,6 @@ ags_recall_lv2_load_conversion
 ags_recall_lv2_find
 ags_recall_lv2_new
 ags_acceleration_get_type
-ags_acceleration_get_class_mutex
 ags_acceleration_test_flags
 ags_acceleration_set_flags
 ags_acceleration_unset_flags
@@ -1608,7 +1560,6 @@ ags_acceleration_duplicate
 ags_acceleration_new
 ags_midiin_get_type
 ags_midiin_error_quark
-ags_midiin_get_class_mutex
 ags_midiin_test_flags
 ags_midiin_set_flags
 ags_midiin_unset_flags
@@ -1678,7 +1629,6 @@ ags_preset_remove_parameter
 ags_preset_get_parameter
 ags_preset_new
 ags_recall_container_get_type
-ags_recall_container_get_class_mutex
 ags_recall_container_test_flags
 ags_recall_container_set_flags
 ags_recall_container_unset_flags
@@ -1721,7 +1671,6 @@ ags_fourier_transform_util_inverse_stft_double
 ags_audio_application_context_get_type
 ags_audio_application_context_new
 ags_track_get_type
-ags_track_get_class_mutex
 ags_track_test_flags
 ags_track_set_flags
 ags_track_unset_flags
@@ -1729,7 +1678,6 @@ ags_track_sort_func
 ags_track_duplicate
 ags_track_new
 ags_wave_get_type
-ags_wave_get_class_mutex
 ags_wave_test_flags
 ags_wave_set_flags
 ags_wave_unset_flags
@@ -1756,7 +1704,6 @@ ags_wave_new
 ags_diatonic_scale_note_to_midi_key
 ags_diatonic_scale_midi_key_to_note
 ags_playback_get_type
-ags_playback_get_class_mutex
 ags_playback_test_flags
 ags_playback_set_flags
 ags_playback_unset_flags
@@ -1767,7 +1714,6 @@ ags_playback_get_recall_id
 ags_playback_find_channel
 ags_playback_new
 ags_port_get_type
-ags_port_get_class_mutex
 ags_port_test_flags
 ags_port_set_flags
 ags_port_unset_flags
@@ -1782,7 +1728,6 @@ ags_port_add_automation
 ags_port_remove_automation
 ags_port_new
 ags_midi_get_type
-ags_midi_get_class_mutex
 ags_midi_test_flags
 ags_midi_set_flags
 ags_midi_unset_flags
@@ -1792,7 +1737,6 @@ ags_midi_add_track
 ags_midi_remove_track
 ags_midi_new
 ags_pattern_get_type
-ags_pattern_get_class_mutex
 ags_pattern_test_flags
 ags_pattern_set_flags
 ags_pattern_unset_flags
@@ -1809,7 +1753,6 @@ ags_recall_factory_new
 ags_recall_lv2_run_get_type
 ags_recall_lv2_run_new
 ags_recall_get_type
-ags_recall_get_class_mutex
 ags_recall_global_get_children_lock_free
 ags_recall_global_get_omit_event
 ags_recall_global_get_performance_mode
@@ -1885,7 +1828,6 @@ ags_recall_lock_port
 ags_recall_unlock_port
 ags_recall_new
 ags_recall_id_get_type
-ags_recall_id_get_class_mutex
 ags_recall_id_set_sound_scope
 ags_recall_id_check_sound_scope
 ags_recall_id_test_staging_flags
@@ -1917,7 +1859,6 @@ ags_char_buffer_util_copy_buffer_to_buffer
 ags_sequencer_util_get_obj_mutex
 ags_core_audio_devin_get_type
 ags_core_audio_devin_error_quark
-ags_core_audio_devin_get_class_mutex
 ags_core_audio_devin_test_flags
 ags_core_audio_devin_set_flags
 ags_core_audio_devin_unset_flags
@@ -1927,14 +1868,12 @@ ags_core_audio_devin_realloc_buffer
 ags_core_audio_devin_new
 ags_core_audio_midiin_get_type
 ags_core_audio_midiin_error_quark
-ags_core_audio_midiin_get_class_mutex
 ags_core_audio_midiin_test_flags
 ags_core_audio_midiin_set_flags
 ags_core_audio_midiin_unset_flags
 ags_core_audio_midiin_switch_buffer_flag
 ags_core_audio_midiin_new
 ags_core_audio_server_get_type
-ags_core_audio_server_get_class_mutex
 ags_core_audio_server_test_flags
 ags_core_audio_server_set_flags
 ags_core_audio_server_unset_flags
@@ -1947,7 +1886,6 @@ ags_core_audio_server_connect_client
 ags_core_audio_server_start_poll
 ags_core_audio_server_new
 ags_core_audio_client_get_type
-ags_core_audio_client_get_class_mutex
 ags_core_audio_client_test_flags
 ags_core_audio_client_set_flags
 ags_core_audio_client_unset_flags
@@ -1963,7 +1901,6 @@ ags_core_audio_client_deactivate
 ags_core_audio_client_new
 ags_core_audio_devout_get_type
 ags_core_audio_devout_error_quark
-ags_core_audio_devout_get_class_mutex
 ags_core_audio_devout_test_flags
 ags_core_audio_devout_set_flags
 ags_core_audio_devout_unset_flags
@@ -1972,7 +1909,6 @@ ags_core_audio_devout_adjust_delay_and_attack
 ags_core_audio_devout_realloc_buffer
 ags_core_audio_devout_new
 ags_core_audio_port_get_type
-ags_core_audio_port_get_class_mutex
 ags_core_audio_port_test_flags
 ags_core_audio_port_set_flags
 ags_core_audio_port_unset_flags
@@ -2006,7 +1942,6 @@ ags_osc_front_controller_stop_delegate
 ags_osc_front_controller_do_request
 ags_osc_front_controller_new
 ags_osc_controller_get_type
-ags_osc_controller_get_class_mutex
 ags_osc_controller_new
 ags_osc_export_controller_get_type
 ags_osc_export_controller_do_export
@@ -2043,7 +1978,6 @@ ags_osc_meter_controller_stop_monitor
 ags_osc_meter_controller_monitor_meter
 ags_osc_meter_controller_new
 ags_osc_client_get_type
-ags_osc_client_get_class_mutex
 ags_osc_client_test_flags
 ags_osc_client_set_flags
 ags_osc_client_unset_flags
@@ -2060,7 +1994,6 @@ ags_osc_util_slip_encode
 ags_osc_util_slip_decode
 ags_osc_util_timetag_now
 ags_osc_builder_get_type
-ags_osc_builder_get_class_mutex
 ags_osc_builder_packet_alloc
 ags_osc_builder_packet_free
 ags_osc_builder_bundle_alloc
@@ -2076,7 +2009,6 @@ ags_osc_builder_append_value
 ags_osc_builder_build
 ags_osc_builder_new
 ags_osc_response_get_type
-ags_osc_response_get_class_mutex
 ags_osc_response_test_flags
 ags_osc_response_set_flags
 ags_osc_response_unset_flags
@@ -2109,7 +2041,6 @@ ags_osc_buffer_util_get_message
 ags_osc_buffer_util_put_bundle
 ags_osc_buffer_util_get_bundle
 ags_osc_server_get_type
-ags_osc_server_get_class_mutex
 ags_osc_server_test_flags
 ags_osc_server_set_flags
 ags_osc_server_unset_flags
@@ -2124,7 +2055,6 @@ ags_osc_server_listen
 ags_osc_server_dispatch
 ags_osc_server_new
 ags_osc_parser_get_type
-ags_osc_parser_get_class_mutex
 ags_osc_parser_read_gint32
 ags_osc_parser_read_gint64
 ags_osc_parser_read_gfloat
@@ -2140,7 +2070,6 @@ ags_osc_parser_message
 ags_osc_parser_value
 ags_osc_parser_new
 ags_osc_connection_get_type
-ags_osc_connection_get_class_mutex
 ags_osc_connection_test_flags
 ags_osc_connection_set_flags
 ags_osc_connection_unset_flags
@@ -2153,7 +2082,6 @@ ags_recall_channel_get_type
 ags_recall_channel_find_channel
 ags_recall_channel_new
 ags_frequency_map_get_type
-ags_frequency_map_get_class_mutex
 ags_frequency_map_sort_func
 ags_frequency_map_test_flags
 ags_frequency_map_set_flags
@@ -2163,7 +2091,6 @@ ags_frequency_map_factorize
 ags_frequency_map_compute_max_likelihood
 ags_frequency_map_new
 ags_note_get_type
-ags_note_get_class_mutex
 ags_note_test_flags
 ags_note_set_flags
 ags_note_unset_flags
@@ -2184,7 +2111,6 @@ ags_note_duplicate
 ags_note_new
 ags_note_new_with_offset
 ags_playback_domain_get_type
-ags_playback_domain_get_class_mutex
 ags_playback_domain_test_flags
 ags_playback_domain_set_flags
 ags_playback_domain_unset_flags
@@ -2194,7 +2120,6 @@ ags_playback_domain_add_playback
 ags_playback_domain_remove_playback
 ags_playback_domain_new
 ags_ipatch_gig_reader_get_type
-ags_ipatch_gig_reader_get_class_mutex
 ags_ipatch_gig_reader_test_flags
 ags_ipatch_gig_reader_set_flags
 ags_ipatch_gig_reader_unset_flags
@@ -2206,7 +2131,6 @@ ags_ipatch_gig_reader_get_sample_all
 ags_ipatch_gig_reader_get_sample_by_instrument_index
 ags_ipatch_gig_reader_new
 ags_audio_container_get_type
-ags_audio_container_get_class_mutex
 ags_audio_container_test_flags
 ags_audio_container_set_flags
 ags_audio_container_unset_flags
@@ -2236,7 +2160,6 @@ ags_ipatch_sample_set_flags
 ags_ipatch_sample_unset_flags
 ags_ipatch_sample_new
 ags_sfz_file_get_type
-ags_sfz_file_get_class_mutex
 ags_sfz_file_test_flags
 ags_sfz_file_set_flags
 ags_sfz_file_unset_flags
@@ -2246,13 +2169,11 @@ ags_sfz_file_check_suffix
 ags_sfz_file_parse
 ags_sfz_file_new
 ags_sfz_sample_get_type
-ags_sfz_sample_get_class_mutex
 ags_sfz_sample_test_flags
 ags_sfz_sample_set_flags
 ags_sfz_sample_unset_flags
 ags_sfz_sample_new
 ags_sndfile_get_type
-ags_sndfile_get_class_mutex
 ags_sndfile_test_flags
 ags_sndfile_set_flags
 ags_sndfile_unset_flags
@@ -2272,14 +2193,12 @@ ags_sound_resource_read_audio_signal
 ags_sound_resource_read_wave
 ags_sound_resource_close
 ags_ipatch_get_type
-ags_ipatch_get_class_mutex
 ags_ipatch_test_flags
 ags_ipatch_set_flags
 ags_ipatch_unset_flags
 ags_ipatch_check_suffix
 ags_ipatch_new
 ags_ipatch_sf2_reader_get_type
-ags_ipatch_sf2_reader_get_class_mutex
 ags_ipatch_sf2_reader_test_flags
 ags_ipatch_sf2_reader_set_flags
 ags_ipatch_sf2_reader_unset_flags
@@ -2295,7 +2214,6 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index
 ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index
 ags_ipatch_sf2_reader_new
 ags_sfz_region_get_type
-ags_sfz_region_get_class_mutex
 ags_sfz_region_test_flags
 ags_sfz_region_set_flags
 ags_sfz_region_unset_flags
@@ -2303,7 +2221,6 @@ ags_sfz_region_insert_control
 ags_sfz_region_lookup_control
 ags_sfz_region_new
 ags_audio_file_get_type
-ags_audio_file_get_class_mutex
 ags_audio_file_test_flags
 ags_audio_file_set_flags
 ags_audio_file_unset_flags
@@ -2324,7 +2241,6 @@ ags_audio_file_write
 ags_audio_file_flush
 ags_audio_file_new
 ags_sfz_group_get_type
-ags_sfz_group_get_class_mutex
 ags_sfz_group_test_flags
 ags_sfz_group_set_flags
 ags_sfz_group_unset_flags
@@ -2347,7 +2263,6 @@ ags_sound_container_get_resource_by_index
 ags_sound_container_get_resource_current
 ags_sound_container_close
 ags_ipatch_dls2_reader_get_type
-ags_ipatch_dls2_reader_get_class_mutex
 ags_ipatch_dls2_reader_test_flags
 ags_ipatch_dls2_reader_set_flags
 ags_ipatch_dls2_reader_unset_flags

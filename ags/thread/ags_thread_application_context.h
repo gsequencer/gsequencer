@@ -25,11 +25,7 @@
 
 #include <ags/object/ags_application_context.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_thread.h>
 
 #include <ags/thread/ags_thread_pool.h>
 

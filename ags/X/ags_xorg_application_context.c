@@ -2614,12 +2614,11 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* wait for audio loop */
   g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-    g_atomic_int_set(&(audio_loop->start_done),
-		     FALSE);
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-    while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
       g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
 		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
@@ -2737,8 +2736,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGTTIN, SIG_IGN);
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
   
   ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
@@ -3518,8 +3515,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }
 
-      ags_task_launcher_append_cyclic_task((AgsTaskThread *) task_launcher,
-					 (AgsTask *) notify_soundcard);
+      ags_task_launcher_append_cyclic_task(task_launcher,
+					   (AgsTask *) notify_soundcard);
 
       /* export thread */
       if(AGS_IS_DEVOUT(list->data) ||

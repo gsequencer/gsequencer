@@ -23,11 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_GENERIC_MAIN_LOOP                (ags_generic_main_loop_get_type())
 #define AGS_GENERIC_MAIN_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_MAIN_LOOP, AgsGenericMainLoop))

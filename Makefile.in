@@ -1107,11 +1107,8 @@ am__objects_25 = $(am__objects_1) \
 	ags/server/controller/libags_server_la-ags_local_registry_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_serialization_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_task_controller.lo
-am__objects_26 = $(am__objects_1) \
-	ags/server/thread/libags_server_la-ags_remote_task.lo \
-	ags/server/thread/libags_server_la-ags_remote_task_thread.lo
 am_libags_server_la_OBJECTS = $(am__objects_23) $(am__objects_24) \
-	$(am__objects_25) $(am__objects_26)
+	$(am__objects_25)
 libags_server_la_OBJECTS = $(am_libags_server_la_OBJECTS)
 libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -1119,7 +1116,7 @@ libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libags_server_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_thread_la_DEPENDENCIES = libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am__objects_27 = $(am__objects_1) \
+am__objects_26 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_autosave_thread.lo \
 	ags/thread/libags_thread_la-ags_concurrency_provider.lo \
 	ags/thread/libags_thread_la-ags_condition_manager.lo \
@@ -1140,9 +1137,9 @@ am__objects_27 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_thread.lo \
 	ags/thread/libags_thread_la-ags_timestamp.lo \
 	ags/thread/libags_thread_la-ags_worker_thread.lo
-am__objects_28 = $(am__objects_1) \
+am__objects_27 = $(am__objects_1) \
 	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo
-am_libags_thread_la_OBJECTS = $(am__objects_27) $(am__objects_28)
+am_libags_thread_la_OBJECTS = $(am__objects_26) $(am__objects_27)
 libags_thread_la_OBJECTS = $(am_libags_thread_la_OBJECTS)
 libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -1171,7 +1168,7 @@ am__libags_vst_la_SOURCES_DIST =  \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
-am__objects_29 = $(am__objects_1) \
+am__objects_28 = $(am__objects_1) \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_icloneable.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_geo_constants.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ierror_context.lo \
@@ -1192,7 +1189,7 @@ am__objects_29 = $(am__objects_1) \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo
-@WITH_VST3_TRUE@am_libags_vst_la_OBJECTS = $(am__objects_29)
+@WITH_VST3_TRUE@am_libags_vst_la_OBJECTS = $(am__objects_28)
 libags_vst_la_OBJECTS = $(am_libags_vst_la_OBJECTS)
 libags_vst_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -1670,12 +1667,12 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/editor/ags_wave_edit_callbacks.c \
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c
-am__objects_30 = $(am__objects_1)
-am__objects_31 = $(am__objects_1) $(am__objects_1)
-am__objects_32 = $(am__objects_30) $(am__objects_30) $(am__objects_30) \
-	$(am__objects_30) $(am__objects_30) $(am__objects_30) \
-	$(am__objects_31) $(am__objects_30)
-am__objects_33 = $(am__objects_1) \
+am__objects_29 = $(am__objects_1)
+am__objects_30 = $(am__objects_1) $(am__objects_1)
+am__objects_31 = $(am__objects_29) $(am__objects_29) $(am__objects_29) \
+	$(am__objects_29) $(am__objects_29) $(am__objects_29) \
+	$(am__objects_30) $(am__objects_29)
+am__objects_32 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_animation_window.lo \
 	ags/X/libgsequencer_la-ags_automation_editor.lo \
 	ags/X/libgsequencer_la-ags_automation_editor_callbacks.lo \
@@ -1791,28 +1788,28 @@ am__objects_33 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_soundcard_editor.lo \
 	ags/X/libgsequencer_la-ags_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_xorg_application_context.lo
-am__objects_34 = $(am__objects_1) \
+am__objects_33 = $(am__objects_1) \
 	ags/X/osc/controller/libgsequencer_la-ags_ui_osc_renew_controller.lo
-am__objects_35 = $(am__objects_1) \
+am__objects_34 = $(am__objects_1) \
 	ags/X/file/libgsequencer_la-ags_simple_file.lo
-am__objects_36 = $(am__objects_1) \
+am__objects_35 = $(am__objects_1) \
 	ags/X/task/libgsequencer_la-ags_simple_file_read.lo \
 	ags/X/task/libgsequencer_la-ags_simple_file_write.lo
-am__objects_37 = $(am__objects_1) \
+am__objects_36 = $(am__objects_1) \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard_callbacks.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_callbacks.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo
-am__objects_38 = $(am__objects_1) \
+am__objects_37 = $(am__objects_1) \
 	ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo \
 	ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo
-@WITH_LIBINSTPATCH_TRUE@am__objects_39 = ags/X/machine/libgsequencer_la-ags_ffplayer.lo \
+@WITH_LIBINSTPATCH_TRUE@am__objects_38 = ags/X/machine/libgsequencer_la-ags_ffplayer.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_callbacks.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_bridge.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_bridge_callbacks.lo \
@@ -1822,7 +1819,7 @@ am__objects_38 = $(am__objects_1) \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_line_callbacks.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_pad.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo
-am__objects_40 = $(am__objects_1) \
+am__objects_39 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_audiorec.lo \
 	ags/X/machine/libgsequencer_la-ags_audiorec_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_cell_pattern.lo \
@@ -1894,8 +1891,8 @@ am__objects_40 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo \
 	ags/X/machine/libgsequencer_la-ags_spectrometer.lo \
 	ags/X/machine/libgsequencer_la-ags_spectrometer_callbacks.lo \
-	$(am__objects_39)
-am__objects_41 = $(am__objects_1) \
+	$(am__objects_38)
+am__objects_40 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_automation_edit.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_edit_box.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_edit_callbacks.lo \
@@ -1955,10 +1952,10 @@ am__objects_41 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_wave_edit_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_wave_toolbar.lo \
 	ags/X/editor/libgsequencer_la-ags_wave_toolbar_callbacks.lo
-am_libgsequencer_la_OBJECTS = $(am__objects_32) $(am__objects_33) \
-	$(am__objects_34) $(am__objects_35) $(am__objects_36) \
-	$(am__objects_37) $(am__objects_38) $(am__objects_40) \
-	$(am__objects_41)
+am_libgsequencer_la_OBJECTS = $(am__objects_31) $(am__objects_32) \
+	$(am__objects_33) $(am__objects_34) $(am__objects_35) \
+	$(am__objects_36) $(am__objects_37) $(am__objects_39) \
+	$(am__objects_40)
 libgsequencer_la_OBJECTS = $(am_libgsequencer_la_OBJECTS)
 libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -4097,8 +4094,8 @@ ags_xorg_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) \
 	$(ags_xorg_application_context_test_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_42 = ags/gsequencer-gsequencer_main.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_42) $(am__objects_1)
+am__objects_41 = ags/gsequencer-gsequencer_main.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_41) $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 	libags_server.la libags_gui.la libags_thread.la libags.la \
@@ -4761,8 +4758,6 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo \
-	ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo \
-	ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo \
 	ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po \
 	ags/test/X/$(DEPDIR)/functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po \
 	ags/test/X/$(DEPDIR)/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po \
@@ -5451,10 +5446,9 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/server/controller/ags_local_registry_controller.h \
 	ags/server/controller/ags_local_serialization_controller.h \
 	ags/server/controller/ags_local_task_controller.h \
-	ags/server/thread/ags_remote_task.h \
-	ags/server/thread/ags_remote_task_thread.h ags/libags-audio.h \
-	ags/audio/ags_sound_enums.h ags/audio/ags_synth_enums.h \
-	ags/audio/ags_acceleration.h ags/audio/ags_audio.h \
+	ags/libags-audio.h ags/audio/ags_sound_enums.h \
+	ags/audio/ags_synth_enums.h ags/audio/ags_acceleration.h \
+	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h ags/audio/ags_buffer.h \
@@ -6526,8 +6520,8 @@ libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object
 libags_la_HEADERS_0 = ags/libags.h $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
 libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
-libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources) $(libags_server_thread_c_sources)
-libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources) $(libags_server_thread_h_sources)
+libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources)
+libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_audio_unit_c_sources) $(libags_audio_wasapi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
 libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_audio_unit_h_sources) $(libags_audio_wasapi_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
@@ -8033,20 +8027,6 @@ libags_server_file_h_sources = \
 deprecated_libags_server_file_c_sources = 
 libags_server_file_c_sources = \
 	$(deprecated_libags_server_file_c_sources)
-
-
-# libags-server - thread
-deprecated_libags_server_thread_h_sources = 
-libags_server_thread_h_sources = \
-	$(deprecated_libags_server_thread_h_sources) \
-	ags/server/thread/ags_remote_task.h \
-	ags/server/thread/ags_remote_task_thread.h
-
-deprecated_libags_server_thread_c_sources = 
-libags_server_thread_c_sources = \
-	$(deprecated_libags_server_thread_c_sources) \
-	ags/server/thread/ags_remote_task.c \
-	ags/server/thread/ags_remote_task_thread.c
 
 
 # libags-audio all files
@@ -10855,18 +10835,6 @@ ags/server/controller/libags_server_la-ags_local_serialization_controller.lo:  \
 ags/server/controller/libags_server_la-ags_local_task_controller.lo:  \
 	ags/server/controller/$(am__dirstamp) \
 	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
-ags/server/thread/$(am__dirstamp):
-	@$(MKDIR_P) ags/server/thread
-	@: > ags/server/thread/$(am__dirstamp)
-ags/server/thread/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/server/thread/$(DEPDIR)
-	@: > ags/server/thread/$(DEPDIR)/$(am__dirstamp)
-ags/server/thread/libags_server_la-ags_remote_task.lo:  \
-	ags/server/thread/$(am__dirstamp) \
-	ags/server/thread/$(DEPDIR)/$(am__dirstamp)
-ags/server/thread/libags_server_la-ags_remote_task_thread.lo:  \
-	ags/server/thread/$(am__dirstamp) \
-	ags/server/thread/$(DEPDIR)/$(am__dirstamp)
 
 libags_server.la: $(libags_server_la_OBJECTS) $(libags_server_la_DEPENDENCIES) $(EXTRA_libags_server_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libags_server_la_LINK) -rpath $(libdir) $(libags_server_la_OBJECTS) $(libags_server_la_LIBADD) $(LIBS)
@@ -13234,8 +13202,6 @@ mostlyclean-compile:
 	-rm -f ags/server/controller/*.lo
 	-rm -f ags/server/security/*.$(OBJEXT)
 	-rm -f ags/server/security/*.lo
-	-rm -f ags/server/thread/*.$(OBJEXT)
-	-rm -f ags/server/thread/*.lo
 	-rm -f ags/test/X/*.$(OBJEXT)
 	-rm -f ags/test/X/*.lo
 	-rm -f ags/test/X/machine/*.$(OBJEXT)
@@ -13896,8 +13862,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@ # am--include-marker
@@ -16866,20 +16830,6 @@ ags/server/controller/libags_server_la-ags_local_task_controller.lo: ags/server/
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_local_task_controller.c' object='ags/server/controller/libags_server_la-ags_local_task_controller.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_local_task_controller.lo `test -f 'ags/server/controller/ags_local_task_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_task_controller.c
-
-ags/server/thread/libags_server_la-ags_remote_task.lo: ags/server/thread/ags_remote_task.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/thread/libags_server_la-ags_remote_task.lo -MD -MP -MF ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Tpo -c -o ags/server/thread/libags_server_la-ags_remote_task.lo `test -f 'ags/server/thread/ags_remote_task.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Tpo ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/thread/ags_remote_task.c' object='ags/server/thread/libags_server_la-ags_remote_task.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/thread/libags_server_la-ags_remote_task.lo `test -f 'ags/server/thread/ags_remote_task.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task.c
-
-ags/server/thread/libags_server_la-ags_remote_task_thread.lo: ags/server/thread/ags_remote_task_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/thread/libags_server_la-ags_remote_task_thread.lo -MD -MP -MF ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Tpo -c -o ags/server/thread/libags_server_la-ags_remote_task_thread.lo `test -f 'ags/server/thread/ags_remote_task_thread.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Tpo ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/thread/ags_remote_task_thread.c' object='ags/server/thread/libags_server_la-ags_remote_task_thread.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/thread/libags_server_la-ags_remote_task_thread.lo `test -f 'ags/server/thread/ags_remote_task_thread.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task_thread.c
 
 ags/thread/libags_thread_la-ags_autosave_thread.lo: ags/thread/ags_autosave_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_autosave_thread.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Tpo -c -o ags/thread/libags_thread_la-ags_autosave_thread.lo `test -f 'ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`ags/thread/ags_autosave_thread.c
@@ -21726,7 +21676,6 @@ clean-libtool:
 	-rm -rf ags/server/.libs ags/server/_libs
 	-rm -rf ags/server/controller/.libs ags/server/controller/_libs
 	-rm -rf ags/server/security/.libs ags/server/security/_libs
-	-rm -rf ags/server/thread/.libs ags/server/thread/_libs
 	-rm -rf ags/test/X/.libs ags/test/X/_libs
 	-rm -rf ags/thread/.libs ags/thread/_libs
 	-rm -rf ags/thread/file/.libs ags/thread/file/_libs
@@ -23703,8 +23652,6 @@ distclean-generic:
 	-rm -f ags/server/controller/$(am__dirstamp)
 	-rm -f ags/server/security/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/server/security/$(am__dirstamp)
-	-rm -f ags/server/thread/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ags/server/thread/$(am__dirstamp)
 	-rm -f ags/test/X/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/X/$(am__dirstamp)
 	-rm -f ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -24391,8 +24338,6 @@ distclean: distclean-recursive
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo
-	-rm -f ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo
-	-rm -f ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo
 	-rm -f ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
@@ -25320,8 +25265,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo
-	-rm -f ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo
-	-rm -f ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo
 	-rm -f ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po

@@ -1264,19 +1264,24 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
 							gdouble max_precision)
   {
-    AgsThread *current;
+    AgsThread *child, *next_child;
   
     g_object_set(thread,
 		 "max-precision", max_precision,
 		 NULL);
 
-    current = g_atomic_pointer_get(&(thread->children));
+    child = ags_thread_children(thread);
 
-    while(current != NULL){
-      ags_simple_file_read_config_change_max_precision(current,
+    while(child != NULL){
+      ags_simple_file_read_config_change_max_precision(child,
 						       max_precision);
-    
-      current = g_atomic_pointer_get(&(thread->next));
+
+      /* iterate */
+      next_child = ags_thread_next(child);
+
+      g_object_unref(child);
+
+      child = next_child;
     }
   }
 

@@ -43,7 +43,6 @@
 /* object */
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_async_queue.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_countable.h>
@@ -80,13 +79,12 @@
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
-#include <ags/thread/ags_single_thread.h>
 #include <ags/thread/ags_task_completion.h>
 #include <ags/thread/ags_task.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_task_launcher.h>
 #include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_thread_pool.h>
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_timestamp.h>
 #include <ags/thread/ags_worker_thread.h>
 
@@ -111,9 +109,6 @@
 #include <ags/server/security/ags_xml_authentication.h>
 #include <ags/server/security/ags_authentication.h>
 #include <ags/server/security/ags_xml_password_store.h>
-
-#include <ags/server/thread/ags_remote_task.h>
-#include <ags/server/thread/ags_remote_task_thread.h>
 
 #include <ags/server/controller/ags_local_factory_controller.h>
 #include <ags/server/controller/ags_front_controller.h>

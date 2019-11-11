@@ -22,6 +22,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
@@ -287,7 +288,6 @@ ags_audio_application_context_get_type()
   return g_define_type_id__volatile;
 }
 
-#ifndef AGS_USE_TIMER
 void
 ags_audio_application_context_signal_handler(int signr)
 {
@@ -296,11 +296,7 @@ ags_audio_application_context_signal_handler(int signr)
     
     exit(-1);
   }else{
-    sigemptyset(&(ags_sigact.sa_mask));
-    
-    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-    // pthread_yield();
-    //    }
+    sigemptyset(&(ags_sigact.sa_mask));    
   }
 }
 
@@ -309,25 +305,6 @@ ags_audio_application_context_signal_cleanup()
 {
   sigemptyset(&(ags_sigact.sa_mask));
 }
-#endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_audio_application_context_signal_handler_timer(int sig, siginfo_t *si, void *uc)
-{
-  pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-
-  g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
-		   TRUE);
-  
-  if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
-    pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
-  }
-    
-  pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-  //  signal(sig, SIG_IGN);
-}
-#endif
 
 void
 ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context)
@@ -1045,7 +1022,7 @@ ags_audio_application_context_is_operating(AgsServiceProvider *service_provider)
   
   GRecMutex *application_context_mutex;
 
-  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(ui_provider);
+  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(service_provider);
   
   /* get mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
@@ -1069,7 +1046,7 @@ ags_audio_application_context_server_status(AgsServiceProvider *service_provider
   
   GRecMutex *application_context_mutex;
 
-  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider);
+  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(service_provider);
   
   /* get mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
@@ -1745,20 +1722,19 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   ags_thread_start(audio_loop);
   
   /* wait for audio loop */
-  pthread_mutex_lock(audio_loop->start_mutex);
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-    g_atomic_int_set(&(audio_loop->start_done),
-		     FALSE);
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-    while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
-    
-  pthread_mutex_unlock(audio_loop->start_mutex);
+
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
   
   /* main loop run */
   g_main_loop_run(g_main_loop_new(audio_main_context,
@@ -1846,8 +1822,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGTTIN, SIG_IGN);
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
 
   ags_sigact.sa_handler = ags_audio_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
@@ -2502,7 +2476,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
       AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }
 
-    ags_task_launcher_append_cyclic_task((AgsTaskThread *) task_launcher,
+    ags_task_launcher_append_cyclic_task(task_launcher,
 					 (AgsTask *) notify_soundcard);
 
     /* export thread */
