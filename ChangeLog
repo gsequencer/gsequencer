@@ -21,8 +21,11 @@ ags (3.0.0)
 	* TODO:JK: removed ags_thread_file_xml.[ch], ags_audio_file_xml.[ch] and ags_gui_file_xml.[ch]
 	* TODO:JK: removed AgsPlugin?
 	* removed AgsTaskThread
+	* removed AgsPollingThread
+	* removed AgsPollFD
 	* removed AgsAsyncQueue
 	* removed AgsSingleThread
+	* removed AgsNotifySoundcard
 	* TODO:JK: strip AgsPlugin from machines
 	* TODO:JK: removed AgsMenuBar
 	* removed barriers of AgsThread

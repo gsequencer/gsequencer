@@ -106,6 +106,11 @@ struct _AgsFifoout
   guint buffer_size;
   guint samplerate; // sample_rate
 
+  GRecMutex **buffer_mutex;
+
+  guint sub_block_count;
+  GRecMutex **sub_block_mutex;
+
   void** buffer;
 
   volatile gboolean available;
@@ -136,8 +141,6 @@ struct _AgsFifoout
 
   gchar *device;
   int fifo_fd;
-  
-  GObject *notify_soundcard;
 };
 
 struct _AgsFifooutClass
@@ -158,7 +161,7 @@ void ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout);
 void ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout);
 void ags_fifoout_realloc_buffer(AgsFifoout *fifoout);
 
-AgsFifoout* ags_fifoout_new(GObject *application_context);
+AgsFifoout* ags_fifoout_new();
 
 G_END_DECLS
 

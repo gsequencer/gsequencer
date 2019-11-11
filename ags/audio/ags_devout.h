@@ -123,7 +123,7 @@ struct _AgsDevout
   GRecMutex **buffer_mutex;
 
   guint sub_block_count;
-  pthread_mutex_t **sub_block_mutex;
+  GRecMutex **sub_block_mutex;
 
   void **buffer;
 
@@ -177,8 +177,6 @@ struct _AgsDevout
     }alsa;
 #endif
   }out;
-
-  GObject *notify_soundcard;
 };
 
 struct _AgsDevoutClass

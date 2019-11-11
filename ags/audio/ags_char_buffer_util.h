@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_endian.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 typedef enum{
   AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER,
@@ -93,5 +95,7 @@ void ags_char_buffer_util_copy_buffer_to_buffer(void *destination, guint dchanne
 						void *source, guint schannels, guint soffset,
 						guint frame_count, guint byte_order,
 						guint word_size, guint mode);
+
+G_END_DECLS
 
 #endif /*__AGS_CHAR_BUFFER_UTIL_H__*/

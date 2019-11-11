@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #include <samplerate.h>
@@ -38,7 +36,7 @@
  *
  * Returns: the converted format
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
@@ -78,7 +76,7 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
  *
  * Returns: the desired copy mode
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_audio_buffer_util_get_copy_mode(guint destination_format,
@@ -453,7 +451,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
@@ -501,7 +499,7 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
@@ -549,7 +547,7 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
@@ -596,7 +594,7 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
@@ -660,7 +658,7 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
  *
  * Clears the audio data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
@@ -735,7 +733,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
@@ -829,7 +827,7 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
@@ -923,7 +921,7 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
@@ -1017,7 +1015,7 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
@@ -1111,7 +1109,7 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
@@ -1205,7 +1203,7 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
@@ -1303,7 +1301,7 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
@@ -1397,7 +1395,7 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
@@ -1442,7 +1440,7 @@ ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope(void *buffer, guint channels,
@@ -1536,7 +1534,7 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
@@ -1622,7 +1620,7 @@ ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
@@ -1708,7 +1706,7 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
@@ -1794,7 +1792,7 @@ ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
@@ -1880,7 +1878,7 @@ ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
@@ -1966,7 +1964,7 @@ ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
@@ -2052,7 +2050,7 @@ ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
@@ -2138,7 +2136,7 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
@@ -2174,7 +2172,7 @@ ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume(void *buffer, guint channels,
@@ -2257,7 +2255,7 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
@@ -2446,7 +2444,7 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
@@ -2635,7 +2633,7 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
@@ -2824,7 +2822,7 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
@@ -3013,7 +3011,7 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
@@ -3202,7 +3200,7 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
@@ -3391,7 +3389,7 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
@@ -3580,7 +3578,7 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
@@ -3635,7 +3633,7 @@ ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak(void *buffer, guint channels,
@@ -3741,7 +3739,7 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint8*
 ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
@@ -3791,7 +3789,7 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint16*
 ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
@@ -3841,7 +3839,7 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
@@ -3891,7 +3889,7 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
@@ -3941,7 +3939,7 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint64*
 ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
@@ -3991,7 +3989,7 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 float*
 ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
@@ -4028,7 +4026,7 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 double*
 ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
@@ -4081,7 +4079,7 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
@@ -4156,7 +4154,7 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void*
 ags_audio_buffer_util_resample(void *buffer, guint channels,
@@ -4250,7 +4248,7 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
@@ -4359,7 +4357,7 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
@@ -4471,7 +4469,7 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
@@ -4583,7 +4581,7 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
@@ -4695,7 +4693,7 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
@@ -4807,7 +4805,7 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
@@ -4920,7 +4918,7 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
@@ -5033,7 +5031,7 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
@@ -5145,7 +5143,7 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
@@ -5253,7 +5251,7 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
@@ -5365,7 +5363,7 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
@@ -5477,7 +5475,7 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
@@ -5589,7 +5587,7 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
@@ -5702,7 +5700,7 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
@@ -5815,7 +5813,7 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
@@ -5927,7 +5925,7 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
@@ -6039,7 +6037,7 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
@@ -6148,7 +6146,7 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
@@ -6260,7 +6258,7 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
@@ -6372,7 +6370,7 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
@@ -6485,7 +6483,7 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
@@ -6598,7 +6596,7 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
@@ -6710,7 +6708,7 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
@@ -6822,7 +6820,7 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
@@ -6934,7 +6932,7 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
@@ -7040,7 +7038,7 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
@@ -7152,7 +7150,7 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
@@ -7265,7 +7263,7 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
@@ -7378,7 +7376,7 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
@@ -7490,7 +7488,7 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
@@ -7602,7 +7600,7 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
@@ -7714,7 +7712,7 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
@@ -7826,7 +7824,7 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
@@ -7935,7 +7933,7 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
@@ -8048,7 +8046,7 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
@@ -8161,7 +8159,7 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
@@ -8273,7 +8271,7 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
@@ -8385,7 +8383,7 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
@@ -8497,7 +8495,7 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
@@ -8609,7 +8607,7 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
@@ -8721,7 +8719,7 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
@@ -8827,7 +8825,7 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels,
@@ -8933,7 +8931,7 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
@@ -9045,7 +9043,7 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
@@ -9157,7 +9155,7 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
@@ -9269,7 +9267,7 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
@@ -9381,7 +9379,7 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
@@ -9493,7 +9491,7 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
@@ -9602,7 +9600,7 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannels,
@@ -9712,7 +9710,7 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
@@ -9825,7 +9823,7 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
@@ -9938,7 +9936,7 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
@@ -10051,7 +10049,7 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
@@ -10164,7 +10162,7 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
@@ -10277,7 +10275,7 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannels,
@@ -10383,7 +10381,7 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchannels,
@@ -10489,7 +10487,7 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchannels,
@@ -10595,7 +10593,7 @@ ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchann
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
@@ -10707,7 +10705,7 @@ ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
@@ -10819,7 +10817,7 @@ ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
@@ -10931,7 +10929,7 @@ ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
@@ -11043,7 +11041,7 @@ ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
@@ -11155,7 +11153,7 @@ ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels,
@@ -11261,7 +11259,7 @@ ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchannels,
@@ -11368,7 +11366,7 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannels,
@@ -11416,7 +11414,7 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchannels,
@@ -11464,7 +11462,7 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchannels,
@@ -11512,7 +11510,7 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchannels,
@@ -11560,7 +11558,7 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchannels,
@@ -11608,7 +11606,7 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
@@ -11656,7 +11654,7 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,
@@ -11705,7 +11703,7 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dchannels,
@@ -11761,7 +11759,7 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dchannels,
@@ -11798,7 +11796,7 @@ ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dch
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
@@ -11840,7 +11838,7 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
@@ -11882,7 +11880,7 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
@@ -11924,7 +11922,7 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
@@ -11966,7 +11964,7 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
@@ -12008,7 +12006,7 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels,
@@ -12050,7 +12048,7 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchannels,
@@ -12093,7 +12091,7 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchannels,
@@ -12139,7 +12137,7 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
  * 
  * Wrapper function to copy functions. Doing type conversion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,

@@ -3471,8 +3471,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   list = xorg_application_context->soundcard;
     
   while(list != NULL){
-    AgsNotifySoundcard *notify_soundcard;
-
     guint soundcard_capability;
 
     soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
@@ -3483,71 +3481,39 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
-    /* notify soundcard and export thread */
+    /* export thread */
     export_thread = NULL;
     
-    //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
-      notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
+    /* export thread */
+    if(AGS_IS_DEVOUT(list->data) ||
+       AGS_IS_WASAPI_DEVOUT(list->data) ||
+       AGS_IS_JACK_DEVOUT(list->data) ||
+       AGS_IS_PULSE_DEVOUT(list->data) ||
+       AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+      export_thread = (AgsThread *) ags_export_thread_new(list->data,
+							  NULL);
+      ags_thread_add_child_extended(main_loop,
+				    (AgsThread *) export_thread,
+				    TRUE, TRUE);
+    }    
 
-      g_object_set(notify_soundcard,
-		   "task-launcher", task_launcher,
-		   NULL);
-    
-      if(AGS_IS_DEVOUT(list->data)){
-	AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
-	AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_JACK_DEVOUT(list->data)){
-	AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-	AGS_PULSE_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_DEVIN(list->data)){
-	AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_WASAPI_DEVIN(list->data)){
-	AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_JACK_DEVIN(list->data)){
-	AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_PULSE_DEVIN(list->data)){
-	AGS_PULSE_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-      }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
-	AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+    /* default soundcard thread */
+    if(xorg_application_context->default_soundcard_thread == NULL){
+      ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(xorg_application_context),
+						      (GObject *) soundcard_thread);
+    }
+
+    /* default export thread */
+    if(export_thread != NULL){
+      if(xorg_application_context->default_export_thread == NULL){
+	xorg_application_context->default_export_thread = export_thread;
+      }else{
+	g_object_unref(export_thread);
       }
+    }
 
-      ags_task_launcher_append_cyclic_task(task_launcher,
-					   (AgsTask *) notify_soundcard);
-
-      /* export thread */
-      if(AGS_IS_DEVOUT(list->data) ||
-	 AGS_IS_WASAPI_DEVOUT(list->data) ||
-	 AGS_IS_JACK_DEVOUT(list->data) ||
-	 AGS_IS_PULSE_DEVOUT(list->data) ||
-	 AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-	export_thread = (AgsThread *) ags_export_thread_new(list->data,
-							    NULL);
-	ags_thread_add_child_extended(main_loop,
-				      (AgsThread *) export_thread,
-				      TRUE, TRUE);
-      }    
-
-      /* default soundcard thread */
-      if(xorg_application_context->default_soundcard_thread == NULL){
-	ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(xorg_application_context),
-							(GObject *) soundcard_thread);
-      }
-
-      /* default export thread */
-      if(export_thread != NULL){
-	if(xorg_application_context->default_export_thread == NULL){
-	  xorg_application_context->default_export_thread = export_thread;
-	}else{
-	  g_object_unref(export_thread);
-	}
-      }
-
-      /* iterate */
-      list = list->next;      
+    /* iterate */
+    list = list->next;      
   }
   
   /* AgsSequencerThread */

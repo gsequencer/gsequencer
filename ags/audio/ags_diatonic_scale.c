@@ -19,9 +19,17 @@
 
 #include <ags/audio/ags_diatonic_scale.h>
 
-#include <ags/libags.h>
-
 #include <string.h>
+
+/**
+ * SECTION:ags_diatonic_scale
+ * @short_description: diatonic scale util
+ * @title: AgsDiatonicScale
+ * @section_id:
+ * @include: ags/audio/ags_diatonic_scale.h
+ *
+ * Utility functions to handle diatonic scale.
+ */
 
 /**
  * ags_diatonic_scale_note_to_midi_key:

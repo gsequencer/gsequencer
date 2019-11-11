@@ -672,8 +672,6 @@ libags_thread_h_sources = \
 	ags/thread/ags_message_delivery.h \
 	ags/thread/ags_message_queue.h \
 	ags/thread/ags_mutex_manager.h \
-	ags/thread/ags_poll_fd.h \
-	ags/thread/ags_polling_thread.h \
 	ags/thread/ags_returnable_thread.h \
 	ags/thread/ags_task_completion.h \
 	ags/thread/ags_task.h \
@@ -697,8 +695,6 @@ libags_thread_c_sources = \
 	ags/thread/ags_message_delivery.c \
 	ags/thread/ags_message_queue.c \
 	ags/thread/ags_mutex_manager.c \
-	ags/thread/ags_poll_fd.c \
-	ags/thread/ags_polling_thread.c \
 	ags/thread/ags_returnable_thread.c \
 	ags/thread/ags_task_completion.c \
 	ags/thread/ags_task.c \
@@ -1471,7 +1467,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_free_selection.h \
 	ags/audio/task/ags_link_channel.h \
 	ags/audio/task/ags_move_note.h \
-	ags/audio/task/ags_notify_soundcard.h \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_single_file.h \
 	ags/audio/task/ags_open_wave.h \
@@ -1530,7 +1525,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_free_selection.c \
 	ags/audio/task/ags_link_channel.c \
 	ags/audio/task/ags_move_note.c \
-	ags/audio/task/ags_notify_soundcard.c \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_single_file.c \
 	ags/audio/task/ags_open_wave.c \

@@ -316,28 +316,6 @@ ags_soundcard_get_capability(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_get_poll_fd:
- * @soundcard: the #AgsSoundcard
- *
- * Get poll file descriptors.
- *
- * Returns: a #GList-struct containing poll file descriptors
- *
- * Since: 3.0.0
- */
-GList*
-ags_soundcard_get_poll_fd(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_poll_fd, NULL);
-
-  return(soundcard_interface->get_poll_fd(soundcard));
-}
-
-/**
  * ags_soundcard_is_available:
  * @soundcard: the #AgsSoundcard
  *

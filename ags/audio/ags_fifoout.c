@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2018 Joël Krähemann
+  * Copyright (C) 2005-2019 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -19,15 +19,12 @@
 
 #include <ags/audio/ags_fifoout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
-#include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -79,10 +76,6 @@ void ags_fifoout_xml_parse(AgsConnectable *connectable,
 gboolean ags_fifoout_is_connected(AgsConnectable *connectable);
 void ags_fifoout_connect(AgsConnectable *connectable);
 void ags_fifoout_disconnect(AgsConnectable *connectable);
-
-void ags_fifoout_set_application_context(AgsSoundcard *soundcard,
-					 AgsApplicationContext *application_context);
-AgsApplicationContext* ags_fifoout_get_application_context(AgsSoundcard *soundcard);
 
 void ags_fifoout_set_device(AgsSoundcard *soundcard,
 			    gchar *device);
@@ -172,7 +165,6 @@ guint ags_fifoout_get_loop_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -186,8 +178,6 @@ enum{
 };
 
 static gpointer ags_fifoout_parent_class = NULL;
-
-static pthread_mutex_t ags_fifoout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_fifoout_get_type (void)
@@ -259,22 +249,6 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
   gobject->finalize = ags_fifoout_finalize;
 
   /* properties */
-  /**
-   * AgsFifoout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsFifoout:device:
    *
@@ -481,9 +455,6 @@ ags_fifoout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_fifoout_set_application_context;
-  soundcard->get_application_context = ags_fifoout_get_application_context;
-
   soundcard->set_device = ags_fifoout_set_device;
   soundcard->get_device = ags_fifoout_get_device;
   
@@ -572,9 +543,6 @@ ags_fifoout_init(AgsFifoout *fifoout)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  /* parent */
-  fifoout->application_context = NULL;
 
   /* uuid */
   fifoout->uuid = ags_uuid_alloc();
@@ -683,33 +651,6 @@ ags_fifoout_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_fifoout_get_class_mutex());
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(fifoout_mutex);
-
-      if(fifoout->application_context == application_context){
-	pthread_mutex_unlock(fifoout_mutex);
-
-	return;
-      }
-
-      if(fifoout->application_context != NULL){
-	g_object_unref(G_OBJECT(fifoout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      fifoout->application_context = application_context;
-
-      pthread_mutex_unlock(fifoout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -900,15 +841,6 @@ ags_fifoout_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_fifoout_get_class_mutex());
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(fifoout_mutex);
-
-      g_value_set_object(value, fifoout->application_context);
-
-      pthread_mutex_unlock(fifoout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       pthread_mutex_lock(fifoout_mutex);
@@ -1011,31 +943,6 @@ ags_fifoout_dispose(GObject *gobject)
   AgsFifoout *fifoout;
 
   fifoout = AGS_FIFOOUT(gobject);
-  
-  /* notify soundcard */
-  if(fifoout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-    
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) fifoout->notify_soundcard);
-
-
-    g_object_unref(fifoout->notify_soundcard);
-
-    fifoout->notify_soundcard = NULL;
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(fifoout->application_context != NULL){
-    g_object_unref(fifoout->application_context);
-
-    fifoout->application_context = NULL;
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->dispose(gobject);
@@ -1048,13 +955,6 @@ ags_fifoout_finalize(GObject *gobject)
 
   fifoout = AGS_FIFOOUT(gobject);
 
-  /* mutex */
-  pthread_mutex_destroy(fifoout->obj_mutex);
-  free(fifoout->obj_mutex);
-
-  pthread_mutexattr_destroy(fifoout->obj_mutexattr);
-  free(fifoout->obj_mutexattr);
-
   /* free output buffer */
   free(fifoout->buffer[0]);
   free(fifoout->buffer[1]);
@@ -1066,26 +966,6 @@ ags_fifoout_finalize(GObject *gobject)
 
   /* free AgsAttack */
   free(fifoout->attack);
-
-  /* notify soundcard */
-  if(fifoout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-      
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) fifoout->notify_soundcard);
-
-    g_object_unref(fifoout->notify_soundcard);
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(fifoout->application_context != NULL){
-    g_object_unref(fifoout->application_context);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->finalize(gobject);
@@ -1393,58 +1273,6 @@ ags_fifoout_unset_flags(AgsFifoout *fifoout, guint flags)
   pthread_mutex_unlock(fifoout_mutex);
 }
 
-void
-ags_fifoout_set_application_context(AgsSoundcard *soundcard,
-				    AgsApplicationContext *application_context)
-{
-  AgsFifoout *fifoout;
-
-  pthread_mutex_t *fifoout_mutex;
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
-  /* set application context */
-  pthread_mutex_lock(fifoout_mutex);
-  
-  fifoout->application_context = (GObject *) application_context;
-  
-  pthread_mutex_unlock(fifoout_mutex);
-}
-
-AgsApplicationContext*
-ags_fifoout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *fifoout_mutex;
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
-  /* get application context */
-  pthread_mutex_lock(fifoout_mutex);
-
-  application_context = (AgsApplicationContext *) fifoout->application_context;
-
-  pthread_mutex_unlock(fifoout_mutex);
-  
-  return(application_context);
-}
 
 void
 ags_fifoout_set_device(AgsSoundcard *soundcard,
@@ -2560,7 +2388,6 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
 
 /**
  * ags_fifoout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsFifoout.
  *
@@ -2569,12 +2396,11 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
  * Since: 2.0.0
  */
 AgsFifoout*
-ags_fifoout_new(GObject *application_context)
+ags_fifoout_new()
 {
   AgsFifoout *fifoout;
 
   fifoout = (AgsFifoout *) g_object_new(AGS_TYPE_FIFOOUT,
-					"application-context", application_context,
 					NULL);
   
   return(fifoout);

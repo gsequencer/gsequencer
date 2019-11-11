@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 G_BEGIN_DECLS
 
 guint ags_diatonic_scale_note_to_midi_key(gchar *note,

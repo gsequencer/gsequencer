@@ -89,8 +89,6 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
-
 #include <ags/audio/file/ags_audio_file_xml.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -2432,8 +2430,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   list = audio_application_context->soundcard;
     
   while(list != NULL){
-    AgsNotifySoundcard *notify_soundcard;
-
     guint soundcard_capability;
 
     soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
@@ -2444,41 +2440,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
-    /* notify soundcard and export thread */
+    /* export thread */
     export_thread = NULL;
     
-    //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
-    notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-
-    g_object_set(notify_soundcard,
-		 "task-launcher", task_launcher,
-		 NULL);
-    
-    if(AGS_IS_DEVOUT(list->data)){
-      AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
-      AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_DEVIN(list->data)){
-      AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_WASAPI_DEVIN(list->data)){
-      AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_JACK_DEVIN(list->data)){
-      AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_PULSE_DEVIN(list->data)){
-      AGS_PULSE_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
-      AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
-    }
-
-    ags_task_launcher_append_cyclic_task(task_launcher,
-					 (AgsTask *) notify_soundcard);
-
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
        AGS_IS_WASAPI_DEVOUT(list->data) ||

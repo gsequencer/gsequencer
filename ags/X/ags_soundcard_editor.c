@@ -1468,12 +1468,9 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
 
-  AgsNotifySoundcard *notify_soundcard;
-  
   AgsThread *main_loop;
   AgsThread *soundcard_thread, *default_soundcard_thread;
   AgsThread *export_thread;
-  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -1643,25 +1640,6 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   ags_thread_add_child_extended(main_loop,
 				soundcard_thread,
 				TRUE, TRUE);
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  /* notify soundcard */
-  notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-  g_object_set(notify_soundcard,
-	       "task-launcher", task_launcher,
-	       NULL);
-
-  if(use_core_audio){
-    core_audio_devout->notify_soundcard = (GObject *) notify_soundcard;
-  }else if(use_pulse){
-    pulse_devout->notify_soundcard = (GObject *) notify_soundcard;
-  }else if(use_jack){
-    jack_devout->notify_soundcard = (GObject *) notify_soundcard;
-  }
-  
-  ags_task_launcher_add_cyclic_task(task_launcher,
-				    (AgsTask *) notify_soundcard);
 
   if((default_soundcard_thread = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
@@ -1905,12 +1883,9 @@ void
 ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 				   GObject *soundcard)
 {
-  AgsNotifySoundcard *notify_soundcard;
-  
   AgsThread *main_loop;
   AgsThread *soundcard_thread, *default_soundcard_thread;
   AgsThread *export_thread;
-  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -2024,21 +1999,6 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   ags_thread_add_child_extended(main_loop,
 				soundcard_thread,
 				TRUE, TRUE);
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  /* notify soundcard */
-  notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-  g_object_set(notify_soundcard,
-	       "task-launcher", task_launcher,
-	       NULL);
-  
-  if(AGS_IS_DEVOUT(soundcard)){
-    AGS_DEVOUT(soundcard)->notify_soundcard = (GObject *) notify_soundcard;
-  }
-  
-  ags_task_launcher_add_cyclic_task(task_launcher,
-				    (AgsTask *) notify_soundcard);
 
   if((default_soundcard_thread = ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),

@@ -173,10 +173,6 @@ struct _AgsDevin
     }alsa;
 #endif
   }out;
-
-  GObject *notify_soundcard;
-  
-  GList *audio;
 };
 
 struct _AgsDevinClass

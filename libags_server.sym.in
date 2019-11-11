@@ -127,12 +127,6 @@ ags_registry_entry_free
 ags_registry_add_entry
 ags_registry_find_entry
 ags_registry_new
-ags_remote_task_thread_get_type
-ags_remote_task_thread_new
-ags_remote_task_get_type
-ags_remote_task_launch
-ags_remote_task_launch_timed
-ags_remote_task_new
 ags_server_status_get_type
 ags_server_status_new
 ags_server_application_context_get_type

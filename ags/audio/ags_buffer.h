@@ -25,6 +25,8 @@
 
 #include <alsa/asoundlib.h>
 
+#include <ags/libags.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_BUFFER                (ags_buffer_get_type())

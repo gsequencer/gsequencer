@@ -1179,8 +1179,6 @@ ags_reset_amplitude_get_instance
 ags_reset_amplitude_new
 ags_crop_note_get_type
 ags_crop_note_new
-ags_notify_soundcard_get_type
-ags_notify_soundcard_new
 ags_set_device_get_type
 ags_set_device_new
 ags_apply_synth_get_type
