@@ -298,18 +298,6 @@ ags_playback_domain_set_property(GObject *gobject,
 
       output_playback = (AgsPlayback *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(playback_domain_mutex);
-
-      if(output_playback == NULL ||
-	 g_list_find(playback_domain->output_playback,
-		     output_playback) != NULL){
-	pthread_mutex_unlock(playback_domain_mutex);
-	
-	return;
-      }
-      
-      pthread_mutex_unlock(playback_domain_mutex);
-
       ags_playback_domain_add_playback(playback_domain,
 				       (GObject *) output_playback, AGS_TYPE_OUTPUT);
     }
@@ -319,18 +307,6 @@ ags_playback_domain_set_property(GObject *gobject,
       AgsPlayback *input_playback;
 
       input_playback = (AgsPlayback *) g_value_get_pointer(value);
-
-      pthread_mutex_lock(playback_domain_mutex);
-
-      if(input_playback == NULL ||
-	 g_list_find(playback_domain->input_playback,
-		     input_playback) != NULL){
-	pthread_mutex_unlock(playback_domain_mutex);
-	
-	return;
-      }
-      
-      pthread_mutex_unlock(playback_domain_mutex);
 
       ags_playback_domain_add_playback(playback_domain,
 				       (GObject *) input_playback, AGS_TYPE_INPUT);
@@ -714,15 +690,21 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
   
   //TODO:JK: rather use prepend but needs refactoring
   if(g_type_is_a(channel_type,
-		 AGS_TYPE_OUTPUT)){
-    g_object_ref(playback);
-    playback_domain->output_playback = g_list_append(playback_domain->output_playback,
-						     playback);
+		 AGS_TYPE_OUTPUT)){    
+    if(g_list_find(playback_domain->output_playback,
+		   playback) == NULL){
+      g_object_ref(playback);
+      playback_domain->output_playback = g_list_append(playback_domain->output_playback,
+						       playback);
+    }      
   }else if(g_type_is_a(channel_type,
 		       AGS_TYPE_INPUT)){
-    g_object_ref(playback);
-    playback_domain->input_playback = g_list_append(playback_domain->input_playback,
-						    playback);
+    if(g_list_find(playback_domain->input_playback,
+		   playback) == NULL){
+      g_object_ref(playback);
+      playback_domain->input_playback = g_list_append(playback_domain->input_playback,
+						      playback);
+    }
   }
 
   pthread_mutex_unlock(playback_domain_mutex);

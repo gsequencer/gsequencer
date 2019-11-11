@@ -186,11 +186,11 @@ struct _AgsAudio
 
   GList *recall_container;
 
-  GRecMutex *play_mutex;
+  GRecMutex play_mutex;
 
   GList *play;
 
-  GRecMutex *recall_mutex;
+  GRecMutex recall_mutex;
 
   GList *recall;
   
