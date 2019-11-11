@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_synth_input_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
@@ -32,21 +28,11 @@
 #include <ags/X/machine/ags_oscillator.h>
 
 void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
-void ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
 
 void ags_synth_input_line_connect(AgsConnectable *connectable);
 void ags_synth_input_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_synth_input_line_get_name(AgsPlugin *plugin);
-void ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_synth_input_line_get_xml_type(AgsPlugin *plugin);
-void ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
-				       AgsSynthInputLine *synth_input_line);
-xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_input_line_show(GtkWidget *line);
 void ags_synth_input_line_show_all(GtkWidget *line);
@@ -94,12 +80,6 @@ ags_synth_input_line_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_synth_input_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_synth_input_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsSynthInputLine", &ags_synth_input_line_info,
 						       0);
@@ -107,10 +87,6 @@ ags_synth_input_line_get_type()
     g_type_add_interface_static(ags_type_synth_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_synth_input_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_synth_input_line);
   }
@@ -146,17 +122,6 @@ ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect = ags_synth_input_line_connect;
   connectable->disconnect = ags_synth_input_line_disconnect;
-}
-
-void
-ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_synth_input_line_get_name;
-  plugin->set_name = ags_synth_input_line_set_name;
-  plugin->get_xml_type = ags_synth_input_line_get_xml_type;
-  plugin->set_xml_type = ags_synth_input_line_set_xml_type;
-  plugin->read = ags_synth_input_line_read;
-  plugin->write = ags_synth_input_line_write;
 }
 
 void
@@ -244,30 +209,6 @@ ags_synth_input_line_map_recall(AgsLine *line,
 								output_pad_start);
 }
 
-gchar*
-ags_synth_input_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_SYNTH_INPUT_LINE(plugin)->name);
-}
-
-void
-ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_SYNTH_INPUT_LINE(plugin)->name = name;
-}
-
-gchar*
-ags_synth_input_line_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_SYNTH_INPUT_LINE(plugin)->xml_type);
-}
-
-void
-ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_SYNTH_INPUT_LINE(plugin)->xml_type = xml_type;
-}
-
 void
 ags_synth_input_line_show(GtkWidget *line)
 {
@@ -282,95 +223,6 @@ ags_synth_input_line_show_all(GtkWidget *line)
   GTK_WIDGET_CLASS(ags_synth_input_line_parent_class)->show_all(line);
 
   gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
-}
-
-void
-ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsSynthInputLine *gobject;
-  AgsFileLookup *file_lookup;
-  xmlNode *child;
-
-  gobject = AGS_SYNTH_INPUT_LINE(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  gobject->oscillator = ags_oscillator_new();
-
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file", file,
-					       "node", node,
-					       "reference", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		   G_CALLBACK(ags_synth_input_line_resolve_line), gobject);
-
-  /* child elements */
-  child = node->children;
-
-  while(child != NULL){
-    if(XML_ELEMENT_NODE == child->type){
-      if(!xmlStrncmp(child->name,
-		     "ags-oscillator",
-		     15)){
-	ags_file_read_oscillator(file, child, &(gobject->oscillator));
-      }
-    }
-
-    child = child->next;
-  }
-}
-
-void
-ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
-				  AgsSynthInputLine *synth_input_line)
-{
-  ags_expander_add(AGS_LINE(synth_input_line)->expander,
-		   GTK_WIDGET(synth_input_line->oscillator),
-		   0, 0,
-		   1, 1);
-}
-
-xmlNode*
-ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsSynthInputLine *synth_input_line;
-  xmlNode *node;
-  gchar *id;
-
-  synth_input_line = AGS_SYNTH_INPUT_LINE(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-synth-input-line");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", synth_input_line,
-				   NULL));
-
-  ags_file_write_oscillator(file, node, synth_input_line->oscillator);
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 /**

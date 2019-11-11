@@ -32,7 +32,6 @@
 
 void ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge);
 void ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_set_property(GObject *gobject,
 				      guint prop_id,
@@ -46,16 +45,6 @@ void ags_live_lv2_bridge_finalize(GObject *gobject);
 
 void ags_live_lv2_bridge_connect(AgsConnectable *connectable);
 void ags_live_lv2_bridge_disconnect(AgsConnectable *connectable);
-
-gchar* ags_live_lv2_bridge_get_version(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge);
-xmlNode* ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					       guint audio_channels, guint audio_channels_old,
@@ -91,7 +80,6 @@ enum{
 
 static gpointer ags_live_lv2_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_live_lv2_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_live_lv2_bridge_parent_plugin_interface;
 
 extern GHashTable *ags_machine_generic_output_message_monitor;
 extern GHashTable *ags_machine_generic_input_message_monitor;
@@ -127,12 +115,6 @@ ags_live_lv2_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_live_lv2_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_live_lv2_bridge = g_type_register_static(AGS_TYPE_MACHINE,
 						      "AgsLiveLv2Bridge", &ags_live_lv2_bridge_info,
 						      0);
@@ -140,10 +122,6 @@ ags_live_lv2_bridge_get_type(void)
     g_type_add_interface_static(ags_type_live_lv2_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_live_lv2_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_live_lv2_bridge);
   }
@@ -316,23 +294,6 @@ ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connecta
   connectable->is_connected = NULL;
   connectable->connect = ags_live_lv2_bridge_connect;
   connectable->disconnect = ags_live_lv2_bridge_disconnect;
-}
-
-void
-ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_live_lv2_bridge_get_version;
-  plugin->set_version = ags_live_lv2_bridge_set_version;
-  plugin->get_build_id = ags_live_lv2_bridge_get_build_id;
-  plugin->set_build_id = ags_live_lv2_bridge_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -841,199 +802,6 @@ void
 ags_live_lv2_bridge_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
-}
-
-gchar*
-ags_live_lv2_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->version);
-}
-
-void
-ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  live_lv2_bridge->version = version;
-}
-
-gchar*
-ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  live_lv2_bridge->build_id = build_id;
-}
-
-
-gchar*
-ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->xml_type);
-}
-
-void
-ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_LIVE_LV2_BRIDGE(plugin)->xml_type = xml_type;
-}
-
-void
-ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsLiveLv2Bridge *gobject;
-  AgsFileLaunch *file_launch;
-
-  gobject = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  g_object_set(gobject,
-	       "filename", xmlGetProp(node,
-					"filename"),
-	       "effect", xmlGetProp(node,
-				      "effect"),
-	       NULL);
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_live_lv2_bridge_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge)
-{
-  GtkTreeModel *model;
-
-  GtkTreeIter iter;
-
-  GList *list, *list_start;
-  GList *recall;
-  
-  ags_live_lv2_bridge_load(live_lv2_bridge);
-
-  /* block update bulk port */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
-    }
-
-    list = list->next;
-  }
-
-  /* update value and unblock update bulk port */
-  recall = NULL;
-  
-  if(AGS_MACHINE(live_lv2_bridge)->audio->input != NULL){
-    recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
-    
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
-		    live_lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
-		    live_lv2_bridge->effect)){
-	break;
-      }
-
-      recall = recall->next;
-    }
-  }
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      GtkWidget *child_widget;
-      
-      GList *port;
-
-      child_widget = gtk_bin_get_child(list->data);
-      
-      if(recall != NULL){
-	port = AGS_RECALL(recall->data)->port;
-
-	while(port != port->next){
-	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-			AGS_PORT(port->data)->specifier)){
-	    if(AGS_IS_DIAL(child_widget)){
-	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw((AgsDial *) child_widget);
-	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
-	    }
-
-	    break;
-	  }
-
-	  port = port->next;
-	}
-      }
-     
-      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-xmlNode*
-ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  xmlNode *node;
-
-  gchar *id;
-  
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  id = ags_id_generator_create_uuid();
-    
-  node = xmlNewNode(NULL,
-		    "ags-live-lv2-bridge");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     "filename",
-	     live_lv2_bridge->filename);
-
-  xmlNewProp(node,
-	     "effect",
-	     live_lv2_bridge->effect);
-  
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", live_lv2_bridge,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void

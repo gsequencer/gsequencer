@@ -20,15 +20,10 @@
 #include <ags/X/machine/ags_spectrometer.h>
 #include <ags/X/machine/ags_spectrometer_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 
 void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
 void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_spectrometer_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_spectrometer_init(AgsSpectrometer *spectrometer);
 void ags_spectrometer_finalize(GObject *gobject);
 
@@ -36,13 +31,6 @@ void ags_spectrometer_map_recall(AgsMachine *machine);
 
 void ags_spectrometer_connect(AgsConnectable *connectable);
 void ags_spectrometer_disconnect(AgsConnectable *connectable);
-
-gchar* ags_spectrometer_get_name(AgsPlugin *plugin);
-void ags_spectrometer_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_spectrometer_get_xml_type(AgsPlugin *plugin);
-void ags_spectrometer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_spectrometer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_spectrometer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 gdouble ags_spectrometer_x_small_scale_func(gdouble value,
 					    gpointer data);
@@ -99,12 +87,6 @@ ags_spectrometer_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_spectrometer_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_spectrometer = g_type_register_static(AGS_TYPE_MACHINE,
 						   "AgsSpectrometer", &ags_spectrometer_info,
 						   0);
@@ -112,10 +94,6 @@ ags_spectrometer_get_type(void)
     g_type_add_interface_static(ags_type_spectrometer,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_spectrometer,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_spectrometer);
   }
@@ -149,17 +127,6 @@ ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable
 
   connectable->connect = ags_spectrometer_connect;
   connectable->disconnect = ags_spectrometer_disconnect;
-}
-
-void
-ags_spectrometer_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_spectrometer_get_name;
-  plugin->set_name = ags_spectrometer_set_name;
-  plugin->get_xml_type = ags_spectrometer_get_xml_type;
-  plugin->set_xml_type = ags_spectrometer_set_xml_type;
-  plugin->read = ags_spectrometer_read;
-  plugin->write = ags_spectrometer_write;
 }
 
 void
@@ -526,78 +493,6 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_spectrometer_parent_class)->map_recall(machine);
-}
-
-gchar*
-ags_spectrometer_get_name(AgsPlugin *plugin)
-{
-  return(AGS_SPECTROMETER(plugin)->name);
-}
-
-void
-ags_spectrometer_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_SPECTROMETER(plugin)->name = name;
-}
-
-gchar*
-ags_spectrometer_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_SPECTROMETER(plugin)->xml_type);
-}
-
-void
-ags_spectrometer_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_SPECTROMETER(plugin)->xml_type = xml_type;
-}
-
-void
-ags_spectrometer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsSpectrometer *gobject;
-
-  gobject = AGS_SPECTROMETER(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-}
-
-xmlNode*
-ags_spectrometer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsSpectrometer *spectrometer;
-  xmlNode *node;
-  GList *list;
-  gchar *id;
-  guint i;
-
-  spectrometer = AGS_SPECTROMETER(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-spectrometer");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", spectrometer,
-				   NULL));
-
-  return(node);
 }
 
 gdouble

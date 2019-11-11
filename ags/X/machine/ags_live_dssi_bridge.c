@@ -45,7 +45,6 @@
 
 void ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge);
 void ags_live_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_live_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge);
 void ags_live_dssi_bridge_set_property(GObject *gobject,
 				       guint prop_id,
@@ -59,16 +58,6 @@ void ags_live_dssi_bridge_finalize(GObject *gobject);
 
 void ags_live_dssi_bridge_connect(AgsConnectable *connectable);
 void ags_live_dssi_bridge_disconnect(AgsConnectable *connectable);
-
-gchar* ags_live_dssi_bridge_get_version(AgsPlugin *plugin);
-void ags_live_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_live_dssi_bridge_get_build_id(AgsPlugin *plugin);
-void ags_live_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_live_dssi_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_live_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_live_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *live_dssi_bridge);
-xmlNode* ags_live_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 						guint audio_channels, guint audio_channels_old,
@@ -99,7 +88,6 @@ enum{
 
 static gpointer ags_live_dssi_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_live_dssi_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_live_dssi_bridge_parent_plugin_interface;
 
 extern GHashTable *ags_machine_generic_output_message_monitor;
 extern GHashTable *ags_machine_generic_input_message_monitor;
@@ -132,12 +120,6 @@ ags_live_dssi_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_live_dssi_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_live_dssi_bridge = g_type_register_static(AGS_TYPE_MACHINE,
 						       "AgsLiveDssiBridge", &ags_live_dssi_bridge_info,
 						       0);
@@ -145,10 +127,6 @@ ags_live_dssi_bridge_get_type(void)
     g_type_add_interface_static(ags_type_live_dssi_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_live_dssi_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_live_dssi_bridge);
   }
@@ -239,23 +217,6 @@ ags_live_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connect
   connectable->is_connected = NULL;
   connectable->connect = ags_live_dssi_bridge_connect;
   connectable->disconnect = ags_live_dssi_bridge_disconnect;
-}
-
-void
-ags_live_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_live_dssi_bridge_get_version;
-  plugin->set_version = ags_live_dssi_bridge_set_version;
-  plugin->get_build_id = ags_live_dssi_bridge_get_build_id;
-  plugin->set_build_id = ags_live_dssi_bridge_set_build_id;
-  plugin->get_xml_type = ags_live_dssi_bridge_get_xml_type;
-  plugin->set_xml_type = ags_live_dssi_bridge_set_xml_type;
-  plugin->read = ags_live_dssi_bridge_read;
-  plugin->write = ags_live_dssi_bridge_write;
-  plugin->get_ports = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -569,233 +530,6 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_live_dssi_bridge_program_changed_callback),
 		      live_dssi_bridge,
 		      NULL);
-}
-
-gchar*
-ags_live_dssi_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_DSSI_BRIDGE(plugin)->version);
-}
-
-void
-ags_live_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsLiveDssiBridge *live_dssi_bridge;
-
-  live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(plugin);
-
-  live_dssi_bridge->version = version;
-}
-
-gchar*
-ags_live_dssi_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_DSSI_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_live_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsLiveDssiBridge *live_dssi_bridge;
-
-  live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(plugin);
-
-  live_dssi_bridge->build_id = build_id;
-}
-
-gchar*
-ags_live_dssi_bridge_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_DSSI_BRIDGE(plugin)->xml_type);
-}
-
-void
-ags_live_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_LIVE_DSSI_BRIDGE(plugin)->xml_type = xml_type;
-}
-
-void
-ags_live_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsLiveDssiBridge *gobject;
-  AgsFileLaunch *file_launch;
-
-  gobject = AGS_LIVE_DSSI_BRIDGE(plugin);
-
-  g_object_set(gobject,
-	       "filename", xmlGetProp(node,
-					"filename"),
-	       "effect", xmlGetProp(node,
-				      "effect"),
-	       NULL);
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_live_dssi_bridge_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *live_dssi_bridge)
-{
-  GtkTreeModel *model;
-
-  GtkTreeIter iter;
-
-  GList *list, *list_start;
-  GList *recall;
-
-  gchar *str;
-  
-  ags_live_dssi_bridge_load(live_dssi_bridge);
-
-  /* block update bulk port */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_output)->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
-    }
-
-    list = list->next;
-  }
-  
-  /* update program */
-  str = xmlGetProp(file_launch->node,
-		   "program");
-
-  model = gtk_combo_box_get_model((GtkComboBox *) live_dssi_bridge->program);
-
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    gchar *value;
-    
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-
-      if(!g_strcmp0(str,
-		    value)){
-	break;
-      }
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
-
-    gtk_combo_box_set_active_iter((GtkComboBox *) live_dssi_bridge->program,
-				  &iter);
-  }
-
-  /* update value and unblock update bulk port */
-  recall = NULL;
-  
-  if(AGS_MACHINE(live_dssi_bridge)->audio->play != NULL){
-    recall = AGS_MACHINE(live_dssi_bridge)->audio->play;
-    
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_DSSI_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
-		    live_dssi_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
-		    live_dssi_bridge->effect)){
-	break;
-      }
-
-      recall = recall->next;
-    }
-  }
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      GtkWidget *child_widget;
-      
-      GList *port;
-
-      child_widget = gtk_bin_get_child((GtkBin *) list->data);
-      
-      if(recall != NULL){
-	port = AGS_RECALL(recall->data)->port;
-
-	while(port != port->next){
-	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-			AGS_PORT(port->data)->specifier)){
-	    if(AGS_IS_DIAL(child_widget)){
-	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw((AgsDial *) child_widget);
-	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
-	    }
-
-	    break;
-	  }
-
-	  port = port->next;
-	}
-      }
-     
-      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-xmlNode*
-ags_live_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsLiveDssiBridge *live_dssi_bridge;
-
-  GtkTreeIter iter;
-  xmlNode *node;
-  
-  gchar *id;
-  gchar *program;
-  
-  live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(plugin);
-
-  id = ags_id_generator_create_uuid();
-    
-  node = xmlNewNode(NULL,
-		    "ags-live_dssi-bridge");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(live_dssi_bridge->filename));
-
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(live_dssi_bridge->effect));
-
-  if((program = gtk_combo_box_text_get_active_text(live_dssi_bridge->program)) != NULL){
-    xmlNewProp(node,
-	       "program",
-	       g_strdup(program));
-  }
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", live_dssi_bridge,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void

@@ -471,7 +471,8 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
 
       selection =
 	start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
-					   g_object_ref);
+					   (GCopyFunc) g_object_ref,
+					   NULL);
 
       g_rec_mutex_unlock(notation_mutex);
 

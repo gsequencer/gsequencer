@@ -82,9 +82,6 @@ struct _AgsOscillatorClass
 
 GType ags_oscillator_get_type(void);
 
-void ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillator);
-xmlNode* ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator);
-
 void ags_oscillator_control_changed(AgsOscillator *oscillator);
 
 AgsOscillator* ags_oscillator_new();

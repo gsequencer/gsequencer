@@ -516,7 +516,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   gboolean retval;
   gboolean do_feedback;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
 								  AGS_TYPE_NOTATION_EDITOR);
@@ -540,11 +540,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
   if(machine != NULL){
     /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());  
-    
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
+    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
 
     /* do feedback - initial set */
     do_feedback = FALSE;
@@ -600,7 +596,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 						  i)) != -1){
 	    GList *list_notation;
 	    
-	    pthread_mutex_lock(audio_mutex);
+	    g_rec_mutex_lock(audio_mutex);
 	  
 	    list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
 							     timestamp);
@@ -618,7 +614,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	      }
 	    }
 
-	    pthread_mutex_unlock(audio_mutex);
+	    g_rec_mutex_unlock(audio_mutex);
 	  
 	    i++;
 	  }
@@ -673,7 +669,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 						  i)) != -1){
 	    GList *list_notation;
 	    
-	    pthread_mutex_lock(audio_mutex);
+	    g_rec_mutex_lock(audio_mutex);
 	  
 	    list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
 							     timestamp);
@@ -690,7 +686,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	      }
 	    }
 
-	    pthread_mutex_unlock(audio_mutex);
+	    g_rec_mutex_unlock(audio_mutex);
 	  
 	    i++;
 	  }

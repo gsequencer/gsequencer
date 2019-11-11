@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_history_browser.h>
 #include <ags/X/ags_history_browser_callbacks.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
 
@@ -56,7 +53,6 @@ gboolean ags_history_browser_delete_event(GtkWidget *widget, GdkEventAny *event)
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_history_browser_parent_class = NULL;
@@ -119,23 +115,7 @@ ags_history_browser_class_init(AgsHistoryBrowserClass *history_browser)
   gobject->finalize = ags_history_browser_finalize;
 
   /* properties */
-  /**
-   * AgsHistoryBrowser:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-
+  
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) history_browser;
 
@@ -169,26 +149,6 @@ ags_history_browser_set_property(GObject *gobject,
   history_browser = AGS_HISTORY_BROWSER(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) history_browser->application_context == application_context)
-	return;
-
-      if(history_browser->application_context != NULL){
-	g_object_unref(history_browser->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      history_browser->application_context = (GObject *) application_context;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -206,9 +166,6 @@ ags_history_browser_get_property(GObject *gobject,
   history_browser = AGS_HISTORY_BROWSER(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    g_value_set_object(value, history_browser->application_context);
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
