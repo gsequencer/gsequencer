@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PAD_EDITOR                (ags_pad_editor_get_type())
 #define AGS_PAD_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PAD_EDITOR, AgsPadEditor))
 #define AGS_PAD_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PAD_EDITOR, AgsPadEditorClass))
@@ -74,5 +76,7 @@ GType ags_pad_editor_get_type(void);
 void ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel);
 
 AgsPadEditor* ags_pad_editor_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_PAD_EDITOR_H__*/

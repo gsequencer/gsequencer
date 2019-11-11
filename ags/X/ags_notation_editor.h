@@ -35,6 +35,8 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notation_edit.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_NOTATION_EDITOR                (ags_notation_editor_get_type ())
 #define AGS_NOTATION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_EDITOR, AgsNotationEditor))
 #define AGS_NOTATION_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION_EDITOR, AgsNotationEditorClass))
@@ -127,5 +129,7 @@ void ags_notation_editor_cut(AgsNotationEditor *notation_editor);
 void ags_notation_editor_invert(AgsNotationEditor *notation_editor);
 
 AgsNotationEditor* ags_notation_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_EDITOR_H__*/

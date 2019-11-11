@@ -25,6 +25,12 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_GENERIC_PREFERENCES                (ags_generic_preferences_get_type())
 #define AGS_GENERIC_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_PREFERENCES, AgsGenericPreferences))
 #define AGS_GENERIC_PREFERENCES_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_GENERIC_PREFERENCES, AgsGenericPreferencesClass))
@@ -65,5 +71,7 @@ struct _AgsGenericPreferencesClass
 GType ags_generic_preferences_get_type(void);
 
 AgsGenericPreferences* ags_generic_preferences_new();
+
+G_END_DECLS
 
 #endif /*__AGS_GENERIC_PREFERENCES_H__*/

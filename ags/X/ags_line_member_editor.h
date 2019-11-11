@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_plugin_browser.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LINE_MEMBER_EDITOR                (ags_line_member_editor_get_type())
 #define AGS_LINE_MEMBER_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER_EDITOR, AgsLineMemberEditor))
 #define AGS_LINE_MEMBER_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LINE_MEMBER_EDITOR, AgsLineMemberEditorClass))
@@ -69,5 +71,7 @@ struct _AgsLineMemberEditorClass
 GType ags_line_member_editor_get_type(void);
 
 AgsLineMemberEditor* ags_line_member_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_MEMBER_EDITOR_H__*/

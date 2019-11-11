@@ -31,9 +31,13 @@
 
 #include <ags/X/ags_dssi_browser.h>
 
+G_BEGIN_DECLS
+
 void ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					       AgsDssiBrowser *dssi_browser);
 void ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					     AgsDssiBrowser *dssi_browser);
+
+G_END_DECLS
 
 #endif /*__AGS_DSSI_BROWSER_CALLBACKS_H__*/

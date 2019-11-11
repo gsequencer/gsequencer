@@ -31,10 +31,14 @@
 
 #include <ags/X/ags_midi_preferences.h>
 
+G_BEGIN_DECLS
+
 int ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMidiPreferences *midi_preferences);
 
 void ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences);
 void ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *sequencer_editor,
 							   AgsMidiPreferences *midi_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_PREFERENCES_CALLBACKS_H__*/

@@ -35,6 +35,8 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_sheet_edit.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SHEET_EDITOR                (ags_sheet_editor_get_type ())
 #define AGS_SHEET_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SHEET_EDITOR, AgsSheetEditor))
 #define AGS_SHEET_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SHEET_EDITOR, AgsSheetEditorClass))
@@ -116,5 +118,7 @@ void ags_sheet_editor_copy(AgsSheetEditor *sheet_editor);
 void ags_sheet_editor_cut(AgsSheetEditor *sheet_editor);
 
 AgsSheetEditor* ags_sheet_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_EDITOR_H__*/

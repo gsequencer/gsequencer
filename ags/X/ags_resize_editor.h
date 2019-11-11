@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_property_editor.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RESIZE_EDITOR                (ags_resize_editor_get_type())
 #define AGS_RESIZE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RESIZE_EDITOR, AgsResizeEditor))
 #define AGS_RESIZE_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RESIZE_EDITOR, AgsResizeEditorClass))
@@ -57,5 +59,7 @@ struct _AgsResizeEditorClass
 };
 
 AgsResizeEditor* ags_resize_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RESIZE_EDITOR_H__*/

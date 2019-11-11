@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_link_collection_editor.h>
+
+G_BEGIN_DECLS
 
 int ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 						   AgsLinkCollectionEditor *link_collection_editor);
@@ -42,5 +48,7 @@ void ags_link_collection_editor_first_link_callback(GtkSpinButton *spin_button,
 
 void ags_link_collection_editor_count_callback(GtkSpinButton *spin_button,
 					       AgsLinkCollectionEditor *link_collection_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_LINK_COLLECTION_EDITOR_CALLBACKS_H__*/

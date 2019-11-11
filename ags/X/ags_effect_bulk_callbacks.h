@@ -25,8 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bulk.h>
+
+G_BEGIN_DECLS
 
 void ags_effect_bulk_add_callback(GtkWidget *button,
 				  AgsEffectBulk *effect_bulk);
@@ -46,5 +52,7 @@ void ags_effect_bulk_resize_pads_callback(AgsMachine *machine,
 					  guint pads,
 					  guint pads_old,
 					  AgsEffectBulk *effect_bulk);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_BULK_CALLBACKS_H__*/

@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LINK_COLLECTION_EDITOR                (ags_link_collection_editor_get_type())
 #define AGS_LINK_COLLECTION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINK_COLLECTION_EDITOR, AgsLinkCollectionEditor))
 #define AGS_LINK_COLLECTION_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LINK_COLLECTION_EDITOR, AgsLinkCollectionEditorClass))
@@ -70,5 +72,7 @@ void ags_link_collection_editor_check_first_link(AgsLinkCollectionEditor *link_c
 void ags_link_collection_editor_check_count(AgsLinkCollectionEditor *link_collection_editor);
 
 AgsLinkCollectionEditor* ags_link_collection_editor_new(GType channel_type);
+
+G_END_DECLS
 
 #endif /*__AGS_LINK_COLLECTION_EDITOR_H__*/

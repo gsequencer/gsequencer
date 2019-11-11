@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_MACHINE_CALLBACKS_H__
 #define __AGS_MACHINE_CALLBACKS_H__
 

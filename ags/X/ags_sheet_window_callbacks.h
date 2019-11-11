@@ -20,9 +20,14 @@
 #ifndef __AGS_SHEET_WINDOW_CALLBACKS_H__
 #define __AGS_SHEET_WINDOW_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_sheet_window.h>
 

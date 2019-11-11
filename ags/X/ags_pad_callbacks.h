@@ -31,8 +31,12 @@
 
 #include <ags/X/ags_pad.h>
 
+G_BEGIN_DECLS
+
 void ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
 void ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);
 void ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad);
+
+G_END_DECLS
 
 #endif /*__AGS_PAD_CALLBACKS_H__*/

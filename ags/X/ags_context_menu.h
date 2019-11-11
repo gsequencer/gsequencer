@@ -25,6 +25,12 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CONTEXT_MENU                (ags_context_menu_get_type ())
 #define AGS_CONTEXT_MENU(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONTEXT_MENU, AgsContextMenu))
 #define AGS_CONTEXT_MENU_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CONTEXT_MENU, AgsContextMenuClass))
@@ -67,5 +73,7 @@ struct _AgsContextMenuClass
 GType ags_context_menu_get_type(void);
 
 AgsContextMenu* ags_context_menu_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CONTEXT_MENU_H__*/

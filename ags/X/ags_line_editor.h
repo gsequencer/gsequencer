@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,11 +27,14 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_output_editor.h>
 #include <ags/X/ags_input_editor.h>
 #include <ags/X/ags_line_member_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LINE_EDITOR                (ags_line_editor_get_type())
 #define AGS_LINE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_EDITOR, AgsLineEditor))
@@ -81,5 +84,7 @@ void ags_line_editor_set_channel(AgsLineEditor *line_editor,
 				 AgsChannel *channel);
 
 AgsLineEditor* ags_line_editor_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_EDITOR_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_navigation.h>
+
+G_BEGIN_DECLS
 
 void ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 					gpointer data);
@@ -73,5 +75,7 @@ void ags_navigation_raster_callback(GtkWidget *widget,
 
 void ags_navigation_soundcard_stop_callback(GObject *soundcard,
 					    AgsNavigation *navigation);
+
+G_END_DECLS
 
 #endif /*__AGS_NAVIGATION_CALLBACKS_H__*/

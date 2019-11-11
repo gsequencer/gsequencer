@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_sequencer_editor.h>
 
+G_BEGIN_DECLS
+
 void ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 						   AgsSequencerEditor *sequencer_editor);
 
@@ -40,5 +42,7 @@ void ags_sequencer_editor_add_jack_callback(GtkWidget *button,
 					    AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
 					       AgsSequencerEditor *sequencer_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_SEQUENCER_EDITOR_CALLBACKS_H__*/

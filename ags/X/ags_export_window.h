@@ -25,6 +25,12 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
 #define AGS_EXPORT_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_WINDOW, AgsExportWindow))
 #define AGS_EXPORT_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_WINDOW, AgsExportWindowClass))
@@ -71,5 +77,7 @@ GType ags_export_window_get_type(void);
 void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
 
 AgsExportWindow* ags_export_window_new();
+
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_WINDOW_H__*/

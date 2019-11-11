@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_BULK_MEMBER                (ags_bulk_member_get_type())
 #define AGS_BULK_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BULK_MEMBER, AgsBulkMember))
 #define AGS_BULK_MEMBER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_BULK_MEMBER, AgsBulkMemberClass))
@@ -137,5 +139,7 @@ GList* ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
 						 gchar *specifier);
 
 AgsBulkMember* ags_bulk_member_new();
+
+G_END_DECLS
 
 #endif /*__AGS_BULK_MEMBER_H__*/

@@ -42,4 +42,5 @@ void ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *osc
 							      AgsSynthInputLine *synth_input_line);
 
 G_END_DECLS
+
 #endif /*__AGS_SYNTH_INPUT_LINE_CALLBACKS_H__ */

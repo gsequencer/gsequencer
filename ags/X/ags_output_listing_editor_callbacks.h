@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,14 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_output_listing_editor.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_output_listing_editor.h>
+
+G_BEGIN_DECLS
 
 int ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
 						  GtkObject *old_parent,
@@ -36,5 +41,7 @@ int ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
 void ags_output_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 						    guint pads, guint pads_old,
 						    AgsOutputListingEditor *output_listing_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_OUTPUT_LISTING_EDITOR_CALLBACKS_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,12 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER_PREFERENCES                (ags_server_preferences_get_type())
 #define AGS_SERVER_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER_PREFERENCES, AgsServerPreferences))
@@ -56,5 +62,7 @@ struct _AgsServerPreferencesClass
 GType ags_server_preferences_get_type(void);
 
 AgsServerPreferences* ags_server_preferences_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_PREFERENCES_H__*/

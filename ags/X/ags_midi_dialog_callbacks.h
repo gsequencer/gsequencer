@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_midi_dialog.h>
+
+G_BEGIN_DECLS
 
 int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
@@ -33,5 +39,7 @@ int ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
 
 gboolean ags_midi_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
 				      AgsMidiDialog *midi_dialog);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_DIALOG_CALLBACKS_H__*/

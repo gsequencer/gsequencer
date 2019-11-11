@@ -25,10 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_resize_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_EDITOR                (ags_machine_editor_get_type())
 #define AGS_MACHINE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_EDITOR, AgsMachineEditor))
@@ -105,5 +111,7 @@ void ags_machine_editor_remove_input(AgsMachineEditor *machine_editor);
 void ags_machine_editor_remove_output(AgsMachineEditor *machine_editor);
 
 AgsMachineEditor* ags_machine_editor_new(AgsMachine *machine);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_EDITOR_H__*/

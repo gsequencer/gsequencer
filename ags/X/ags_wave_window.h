@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_wave_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_WAVE_WINDOW                (ags_wave_window_get_type())
 #define AGS_WAVE_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_WINDOW, AgsWaveWindow))
@@ -60,5 +66,7 @@ struct _AgsWaveWindowClass
 GType ags_wave_window_get_type(void);
 
 AgsWaveWindow* ags_wave_window_new(GtkWidget *parent_window);
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_WINDOW_H__*/

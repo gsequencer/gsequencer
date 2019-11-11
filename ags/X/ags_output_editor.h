@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_OUTPUT_EDITOR                (ags_output_editor_get_type())
 #define AGS_OUTPUT_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OUTPUT_EDITOR, AgsOutputEditor))
 #define AGS_OUTPUT_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OUTPUT_EDITOR, AgsOutputEditorClass))
@@ -69,5 +71,7 @@ GType ags_output_editor_get_type(void);
 void ags_output_editor_check(AgsOutputEditor *output_editor);
 
 AgsOutputEditor* ags_output_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OUTPUT_EDITOR_H__*/

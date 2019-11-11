@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_soundcard_editor.h>
 
+G_BEGIN_DECLS
+
 void ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 						   AgsSoundcardEditor *soundcard_editor);
 
@@ -49,5 +51,7 @@ void ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_butto
 						       AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 						  AgsSoundcardEditor *soundcard_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_EDITOR_CALLBACKS_H__*/

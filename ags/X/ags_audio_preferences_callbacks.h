@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_audio_preferences.h>
 
+G_BEGIN_DECLS
+
 int ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences);
 
 void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
@@ -43,5 +45,7 @@ void ags_audio_preferences_start_jack_callback(GtkButton *button,
 					       AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_stop_jack_callback(GtkButton *button,
 					      AgsAudioPreferences *audio_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_PREFERENCES_CALLBACKS_H__*/

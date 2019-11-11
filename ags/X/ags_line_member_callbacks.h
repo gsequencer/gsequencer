@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_line_member.h>
+
+G_BEGIN_DECLS
 
 int ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member);
 
@@ -36,5 +42,7 @@ void ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLin
 void ags_line_member_check_button_clicked_callback(GtkWidget *check_button, AgsLineMember *line_member);
 void ags_line_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLineMember *line_member);
 void ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_member);
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_MEMBER_CALLBACKS_H__*/

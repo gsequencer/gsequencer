@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EFFECT_BRIDGE                (ags_effect_bridge_get_type())
 #define AGS_EFFECT_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridge))
 #define AGS_EFFECT_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridgeClass))
@@ -126,5 +128,7 @@ void ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge);
 GList* ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge);
 
 AgsEffectBridge* ags_effect_bridge_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_BRIDGE_H__*/

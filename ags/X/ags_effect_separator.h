@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,12 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_EFFECT_SEPARATOR                (ags_effect_separator_get_type())
 #define AGS_EFFECT_SEPARATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_SEPARATOR, AgsEffectSeparator))
@@ -53,5 +59,7 @@ struct _AgsEffectSeparatorClass
 GType ags_effect_separator_get_type(void);
 
 AgsEffectSeparator* ags_effect_separator_new();
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_SEPARATOR_H__*/

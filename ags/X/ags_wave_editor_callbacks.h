@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,10 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_wave_editor.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_machine_selector.h>
+
+G_BEGIN_DECLS
 
 gboolean ags_wave_editor_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEditor *wave_editor);
 gboolean ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor);
@@ -47,5 +53,7 @@ void ags_wave_editor_resize_audio_channels_callback(AgsMachine *machine,
 void ags_wave_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 					  guint pads, guint pads_old,
 					  AgsWaveEditor *wave_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_EDITOR_CALLBACKS_H__*/

@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_XORG_APPLICATION_CONTEXT                (ags_xorg_application_context_get_type())
 #define AGS_XORG_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContext))
 #define AGS_XORG_APPLICATION_CONTEXT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContextClass))
@@ -122,5 +124,7 @@ gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplication
 gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/

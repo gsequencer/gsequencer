@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_export_window.h>
 
+G_BEGIN_DECLS
+
 void ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						     AgsExportWindow *export_window);
 void ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
@@ -41,5 +43,7 @@ void ags_export_window_tact_callback(GtkWidget *spin_button,
 
 void ags_export_window_export_callback(GtkWidget *toggle_button,
 				       AgsExportWindow *export_window);
+
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_WINDOW_CALLBACKS_H__*/

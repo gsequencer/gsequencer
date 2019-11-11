@@ -34,6 +34,8 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
+G_BEGIN_DECLS
+
 gboolean ags_automation_editor_audio_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor);
 gboolean ags_automation_editor_audio_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor);
 
@@ -65,5 +67,7 @@ void ags_automation_editor_resize_audio_channels_callback(AgsMachine *machine,
 void ags_automation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 						guint pads, guint pads_old,
 						AgsAutomationEditor *automation_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_EDITOR_CALLBACKS_H__*/
