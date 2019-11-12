@@ -20,8 +20,6 @@
 #include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_dssi_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_dssi_manager.h>
 
 #include <ags/audio/ags_input.h>
@@ -46,7 +44,6 @@
 
 void ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run_class);
 void ags_recall_dssi_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run);
 void ags_recall_dssi_run_set_property(GObject *gobject,
 				      guint prop_id,
@@ -79,7 +76,6 @@ enum{
 
 static gpointer ags_recall_dssi_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_dssi_run_parent_connectable_interface;
-static AgsPluginInterface* ags_recall_dssi_run_parent_plugin_interface;
 
 GType
 ags_recall_dssi_run_get_type (void)
@@ -107,12 +103,6 @@ ags_recall_dssi_run_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_recall_dssi_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_dssi_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 						      "AgsRecallDssiRun",
 						      &ags_recall_dssi_run_info,
@@ -121,10 +111,6 @@ ags_recall_dssi_run_get_type (void)
     g_type_add_interface_static(ags_type_recall_dssi_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_dssi_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_dssi_run);
   }
@@ -156,7 +142,7 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
    * 
    * The route dssi audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("route-dssi-audio-run",
 				   i18n_pspec("assigned AgsRouteDssiAudioRun"),
@@ -172,7 +158,7 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
    *
    * The assigned #AgsNote.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("note",
 				    i18n_pspec("assigned note"),
@@ -195,11 +181,6 @@ ags_recall_dssi_run_connectable_interface_init(AgsConnectableInterface *connecta
   ags_recall_dssi_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
-void
-ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_recall_dssi_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-}
 
 void
 ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
@@ -239,7 +220,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 {
   AgsRecallDssiRun *recall_dssi_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
@@ -253,10 +234,10 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 
       route_dssi_audio_run = g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if((GObject *) route_dssi_audio_run == recall_dssi_run->route_dssi_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -271,7 +252,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 
       recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTE:
@@ -280,11 +261,11 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 
       note = g_value_get_pointer(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(!AGS_IS_NOTE(note) ||
 	 g_list_find(recall_dssi_run->note, note) != NULL){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -293,7 +274,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 					     note);
       g_object_ref(note);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -310,7 +291,7 @@ ags_recall_dssi_run_get_property(GObject *gobject,
 {
   AgsRecallDssiRun *recall_dssi_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
@@ -320,23 +301,23 @@ ags_recall_dssi_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_ROUTE_DSSI_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_dssi_run->route_dssi_audio_run);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
 			  g_list_copy_deep(recall_dssi_run->note,
 					   (GCopyFunc) g_object_ref,
 					   NULL));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -411,7 +392,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
                                unsigned long SampleRate);
   void (*activate)(LADSPA_Handle Instance);
 
-  pthread_mutex_t *recall_dssi_mutex;
+  GRecMutex *recall_dssi_mutex;
   
   /* get recall mutex */
   AGS_RECALL_LOCK_CLASS();
@@ -451,7 +432,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   recall_dssi_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
 
   output_lines = recall_dssi->output_lines;
   input_lines = recall_dssi->input_lines;
@@ -461,7 +442,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   instantiate = recall_dssi->plugin_descriptor->LADSPA_Plugin->instantiate;
   activate = recall_dssi->plugin_descriptor->LADSPA_Plugin->activate;
   
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
   
   /* set up buffer */
   output = NULL;
@@ -496,7 +477,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   recall_dssi_run->audio_channels = i_stop;
   
   /* instantiate dssi */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
 
   for(i = 0; i < i_stop; i++){
     ladspa_handle[i] = instantiate(recall_dssi->plugin_descriptor->LADSPA_Plugin,
@@ -509,7 +490,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 #endif
   }
 
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
 
   port_data = NULL;
   
@@ -595,8 +576,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   void (*deactivate)(LADSPA_Handle Instance);
   void (*cleanup)(LADSPA_Handle Instance);
   
-  pthread_mutex_t *recall_dssi_mutex;
-  pthread_mutex_t *port_mutex;
+  GRecMutex *recall_dssi_mutex;
+  GRecMutex *port_mutex;
 
   /* get parent class */
   AGS_RECALL_LOCK_CLASS();
@@ -692,12 +673,12 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get some fields */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
 
   output_lines = recall_dssi->output_lines;
   input_lines = recall_dssi->input_lines;
 
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
 
   if(input_lines < output_lines){
     i_stop = output_lines;
@@ -755,12 +736,12 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
        x0 > notation_counter){
       //    g_message("done");
 
-      pthread_mutex_lock(recall_dssi_mutex);
+      g_rec_mutex_lock(recall_dssi_mutex);
 
       deactivate = recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate;
       cleanup = recall_dssi->plugin_descriptor->LADSPA_Plugin->cleanup;
       
-      pthread_mutex_unlock(recall_dssi_mutex);
+      g_rec_mutex_unlock(recall_dssi_mutex);
       
       for(i = 0; i < i_stop; i++){
 	/* deactivate */
@@ -806,13 +787,13 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }
 
   /* select program */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
 
   port_count = recall_dssi->plugin_descriptor->LADSPA_Plugin->PortCount;
 
   select_program = recall_dssi->plugin_descriptor->select_program;
   
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
 
   /* cache port data */
   g_object_get(recall_dssi,
@@ -820,11 +801,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 	       NULL);
   
   for(i = 0; i < port_count; i++){
-    pthread_mutex_lock(recall_dssi_mutex);
+    g_rec_mutex_lock(recall_dssi_mutex);
 
     specifier = g_strdup(recall_dssi->plugin_descriptor->LADSPA_Plugin->PortNames[i]);
 
-    pthread_mutex_unlock(recall_dssi_mutex);
+    g_rec_mutex_unlock(recall_dssi_mutex);
 
     list = list_start;
     
@@ -837,11 +818,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
       /* check specifier */
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       current_specifier = g_strdup(current_port->specifier);
       
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
       
       success = (!g_strcmp0(specifier,
 			    current_specifier)) ? TRUE: FALSE;
@@ -885,11 +866,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
   /* reset port data */    
   for(i = 0; i < port_count; i++){
-    pthread_mutex_lock(recall_dssi_mutex);
+    g_rec_mutex_lock(recall_dssi_mutex);
 
     specifier = g_strdup(recall_dssi->plugin_descriptor->LADSPA_Plugin->PortNames[i]);
 
-    pthread_mutex_unlock(recall_dssi_mutex);
+    g_rec_mutex_unlock(recall_dssi_mutex);
 
     list = list_start;
     current_port = NULL;
@@ -903,11 +884,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
       /* check specifier */
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       current_specifier = g_strdup(current_port->specifier);
       
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
       
       success = (!g_strcmp0(specifier,
 			    current_specifier)) ? TRUE: FALSE;
@@ -942,12 +923,12 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 		   g_object_unref);
   
   /* process data */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
 
   run_synth = recall_dssi->plugin_descriptor->run_synth;
   run = recall_dssi->plugin_descriptor->LADSPA_Plugin->run;
   
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
 
   g_object_get(recall_dssi_run,
 	       "note", &note_start,
@@ -1017,7 +998,7 @@ ags_recall_dssi_run_run_pre_END:
  *
  * Set up DSSI ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
@@ -1045,9 +1026,9 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 		       unsigned long Port,
 		       LADSPA_Data * DataLocation);
 
-  pthread_mutex_t *recall_dssi_mutex;
-  pthread_mutex_t *base_plugin_mutex;
-  pthread_mutex_t *port_mutex;
+  GRecMutex *recall_dssi_mutex;
+  GRecMutex *base_plugin_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_RECALL_DSSI_RUN(recall_dssi_run)){
     return;
@@ -1069,7 +1050,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   recall_dssi_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
-  pthread_mutex_lock(recall_dssi_mutex);
+  g_rec_mutex_lock(recall_dssi_mutex);
   
   output_lines = recall_dssi->output_lines;
   input_lines = recall_dssi->input_lines;
@@ -1080,20 +1061,20 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   
   plugin_descriptor = recall_dssi->plugin_descriptor;
   
-  pthread_mutex_unlock(recall_dssi_mutex);
+  g_rec_mutex_unlock(recall_dssi_mutex);
 
   /* base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
   
   port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
   connect_port = plugin_descriptor->LADSPA_Plugin->connect_port;
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* match port */
   if(input_lines < output_lines){
@@ -1103,22 +1084,22 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   }
 
   for(i = 0; i < port_count; i++){
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     current_port_descriptor = port_descriptor[i];
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(LADSPA_IS_PORT_CONTROL(current_port_descriptor)){
       if(LADSPA_IS_PORT_INPUT(current_port_descriptor) ||
 	 LADSPA_IS_PORT_OUTPUT(current_port_descriptor)){
 	LADSPA_Data *port_pointer;
 	
-	pthread_mutex_lock(base_plugin_mutex);
+	g_rec_mutex_lock(base_plugin_mutex);
 
 	specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
 
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	list = ags_port_find_specifier(list_start, specifier);
 	g_free(specifier);
@@ -1130,11 +1111,11 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
 	  /* get port pointer */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 	    
 	  port_pointer = (LADSPA_Data *) &(current_port->port_value.ags_port_ladspa);
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
@@ -1179,7 +1160,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
  *
  * Returns: the new #AgsRecallDssiRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallDssiRun*
 ags_recall_dssi_run_new(AgsAudioSignal *source)

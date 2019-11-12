@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall_dependency.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -61,8 +59,6 @@ enum{
 };
 
 static gpointer ags_recall_dependency_parent_class = NULL;
-
-static pthread_mutex_t ags_recall_dependency_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_recall_dependency_get_type(void)
@@ -117,7 +113,7 @@ ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
    *
    * The dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("dependency",
 				   i18n_pspec("dependency of recall"),
@@ -132,27 +128,10 @@ ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
 void
 ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   recall_dependency->flags = 0;
   
-  /* add recall dependency mutex */
-  recall_dependency->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  recall_dependency->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  /* recall dependency mutex */
+  g_rec_mutex_init(&(recall_dependency->obj_mutex)); 
 
   /* dependency */
   recall_dependency->dependency = NULL;
@@ -166,7 +145,7 @@ ags_recall_dependency_set_property(GObject *gobject,
 {
   AgsRecallDependency *recall_dependency;
 
-  pthread_mutex_t *recall_dependency_mutex;
+  GRecMutex *recall_dependency_mutex;
 
   recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
 
@@ -180,10 +159,10 @@ ags_recall_dependency_set_property(GObject *gobject,
       
       dependency = (AgsRecall *) g_value_get_object(value);
       
-      pthread_mutex_lock(recall_dependency_mutex);
+      g_rec_mutex_lock(recall_dependency_mutex);
 
       if(recall_dependency->dependency == (GObject *) dependency){
-	pthread_mutex_unlock(recall_dependency_mutex);
+	g_rec_mutex_unlock(recall_dependency_mutex);
 	
 	return;
       }
@@ -198,7 +177,7 @@ ags_recall_dependency_set_property(GObject *gobject,
 
       recall_dependency->dependency = (GObject *) dependency;
 
-      pthread_mutex_unlock(recall_dependency_mutex);
+      g_rec_mutex_unlock(recall_dependency_mutex);
     }
     break;
   default:
@@ -215,7 +194,7 @@ ags_recall_dependency_get_property(GObject *gobject,
 {
   AgsRecallDependency *recall_dependency;
 
-  pthread_mutex_t *recall_dependency_mutex;
+  GRecMutex *recall_dependency_mutex;
 
   recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
 
@@ -225,11 +204,11 @@ ags_recall_dependency_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DEPENDENCY:
     {
-      pthread_mutex_lock(recall_dependency_mutex);
+      g_rec_mutex_lock(recall_dependency_mutex);
 
       g_value_set_object(value, recall_dependency->dependency);
 
-      pthread_mutex_unlock(recall_dependency_mutex);
+      g_rec_mutex_unlock(recall_dependency_mutex);
     }
     break;
   default:
@@ -262,12 +241,6 @@ ags_recall_dependency_finalize(GObject *gobject)
   AgsRecallDependency *recall_dependency;
 
   recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
-
-  pthread_mutex_destroy(recall_dependency->obj_mutex);
-  free(recall_dependency->obj_mutex);
-
-  pthread_mutexattr_destroy(recall_dependency->obj_mutexattr);
-  free(recall_dependency->obj_mutexattr);
   
   /* dependency */
   if(recall_dependency->dependency != NULL){
@@ -279,21 +252,6 @@ ags_recall_dependency_finalize(GObject *gobject)
 }
 
 /**
- * ags_recall_dependency_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_recall_dependency_get_class_mutex()
-{
-  return(&ags_recall_dependency_class_mutex);
-}
-
-/**
  * ags_recall_dependency_find_dependency:
  * @recall_dependency: a #GList-struct containing  #AgsRecallDependency
  * @dependency: the #AgsRecall depending on
@@ -302,7 +260,7 @@ ags_recall_dependency_get_class_mutex()
  *
  * Returns: next matching #GList-struct or %NULL.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *dependency)
@@ -339,7 +297,7 @@ ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *depende
  *
  * Returns: next matching #GList-struct or %NULL.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
@@ -409,7 +367,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
  *
  * Returns: the #AgsRecall dependency.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
@@ -565,7 +523,7 @@ ags_recall_dependency_resolve_END:
  *
  * Returns: the new #AgsRecallDependency
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)

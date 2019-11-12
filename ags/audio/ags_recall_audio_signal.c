@@ -19,11 +19,7 @@
 
 #include <ags/audio/ags_recall_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
-
-#include <pthread.h>
 
 #include <ags/i18n.h>
 
@@ -125,7 +121,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The destination audio signal
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("destination of output"),
@@ -141,7 +137,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The source audio signal
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("source of input"),
@@ -174,7 +170,7 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
@@ -188,10 +184,10 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
       destination = (AgsAudioSignal *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_audio_signal->destination == destination){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -206,7 +202,7 @@ ags_recall_audio_signal_set_property(GObject *gobject,
       
       recall_audio_signal->destination = destination;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
@@ -215,10 +211,10 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
       source = (AgsAudioSignal *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_audio_signal->source == source){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -233,7 +229,7 @@ ags_recall_audio_signal_set_property(GObject *gobject,
       
       recall_audio_signal->source = source;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -250,7 +246,7 @@ ags_recall_audio_signal_get_property(GObject *gobject,
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
@@ -260,20 +256,20 @@ ags_recall_audio_signal_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DESTINATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_audio_signal->destination);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_audio_signal->source);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -339,7 +335,7 @@ ags_recall_audio_signal_finalize(GObject *gobject)
  *
  * Returns: a new #AgsRecallAudioSignal.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallAudioSignal*
 ags_recall_audio_signal_new()

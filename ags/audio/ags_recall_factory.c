@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall_factory.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -382,7 +380,7 @@ ags_recall_factory_create_play(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -392,7 +390,7 @@ ags_recall_factory_create_play(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
@@ -410,7 +408,7 @@ ags_recall_factory_create_play(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -665,7 +663,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -675,7 +673,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -693,7 +691,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -1065,8 +1063,8 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *current_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *current_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -1076,7 +1074,7 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -1094,7 +1092,7 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -1165,11 +1163,11 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 	  
 	  if(found_prepare){
 	    /* iterate - current */
-	    pthread_mutex_lock(current_mutex);
+	    g_rec_mutex_lock(current_mutex);
 
 	    current = current->next_pad;
 
-	    pthread_mutex_unlock(current_mutex);
+	    g_rec_mutex_unlock(current_mutex);
 	    
 	    continue;
 	  }
@@ -1330,11 +1328,11 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 	
 	  if(found_prepare){
 	    /* iterate */
-	    pthread_mutex_lock(current_mutex);
+	    g_rec_mutex_lock(current_mutex);
 	  
 	    current = current->next_pad;
 
-	    pthread_mutex_unlock(current_mutex);
+	    g_rec_mutex_unlock(current_mutex);
 
 	    continue;
 	  }
@@ -1480,8 +1478,8 @@ ags_recall_factory_create_copy(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *current_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *current_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -1491,7 +1489,7 @@ ags_recall_factory_create_copy(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -1509,7 +1507,7 @@ ags_recall_factory_create_copy(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -1579,11 +1577,11 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 
 	  if(found_copy){
 	    /* iterate - current */
-	    pthread_mutex_lock(current_mutex);
+	    g_rec_mutex_lock(current_mutex);
 
 	    current = current->next_pad;
 
-	    pthread_mutex_unlock(current_mutex);
+	    g_rec_mutex_unlock(current_mutex);
 	    
 	    continue;
 	  }
@@ -1743,11 +1741,11 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 	
 	  if(found_copy){
 	    /* iterate */
-	    pthread_mutex_lock(current_mutex);
+	    g_rec_mutex_lock(current_mutex);
 	  
 	    current = current->next_pad;
 
-	    pthread_mutex_unlock(current_mutex);
+	    g_rec_mutex_unlock(current_mutex);
 	    
 	    continue;
 	  }
@@ -1893,7 +1891,7 @@ ags_recall_factory_create_feed(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -1903,7 +1901,7 @@ ags_recall_factory_create_feed(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -1921,7 +1919,7 @@ ags_recall_factory_create_feed(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -2176,7 +2174,7 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -2186,7 +2184,7 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -2204,7 +2202,7 @@ ags_recall_factory_create_stream(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -2472,7 +2470,7 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -2482,7 +2480,7 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -2500,7 +2498,7 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -2769,7 +2767,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   guint output_pads, input_pads;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -2779,7 +2777,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -2800,7 +2798,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
     g_object_ref(start_input);
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -3145,7 +3143,7 @@ ags_recall_factory_create_delay(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -3155,11 +3153,11 @@ ags_recall_factory_create_delay(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -3312,7 +3310,7 @@ ags_recall_factory_create_count_beats(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -3322,11 +3320,11 @@ ags_recall_factory_create_count_beats(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -3482,7 +3480,7 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -3492,7 +3490,7 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -3510,7 +3508,7 @@ ags_recall_factory_create_loop(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -3793,7 +3791,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -3803,7 +3801,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -3821,7 +3819,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -4288,7 +4286,7 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -4298,7 +4296,7 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -4316,7 +4314,7 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -4784,7 +4782,7 @@ ags_recall_factory_create_capture_wave(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -4794,7 +4792,7 @@ ags_recall_factory_create_capture_wave(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -4812,7 +4810,7 @@ ags_recall_factory_create_capture_wave(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -5275,7 +5273,7 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -5285,11 +5283,11 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -5440,7 +5438,7 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -5450,11 +5448,11 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -5605,7 +5603,7 @@ ags_recall_factory_create_play_notation(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -5615,11 +5613,11 @@ ags_recall_factory_create_play_notation(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -5763,7 +5761,7 @@ ags_recall_factory_create_peak(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -5773,7 +5771,7 @@ ags_recall_factory_create_peak(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -5791,7 +5789,7 @@ ags_recall_factory_create_peak(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -6059,7 +6057,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -6069,7 +6067,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -6087,7 +6085,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -6357,7 +6355,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -6367,7 +6365,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -6385,7 +6383,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -6824,7 +6822,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -6834,7 +6832,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -6852,7 +6850,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -7120,7 +7118,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -7130,7 +7128,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -7148,7 +7146,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -7416,7 +7414,7 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -7426,7 +7424,7 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -7444,7 +7442,7 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -7712,7 +7710,7 @@ ags_recall_factory_create_lfo(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -7722,7 +7720,7 @@ ags_recall_factory_create_lfo(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -7740,7 +7738,7 @@ ags_recall_factory_create_lfo(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -8008,7 +8006,7 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -8018,7 +8016,7 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -8036,7 +8034,7 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -8307,7 +8305,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -8317,7 +8315,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -8335,7 +8333,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -8606,7 +8604,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -8616,7 +8614,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
 
@@ -8634,7 +8632,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
     g_object_ref(start_input);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
@@ -8902,7 +8900,7 @@ ags_recall_factory_create_record_midi(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -8912,11 +8910,11 @@ ags_recall_factory_create_record_midi(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -9053,7 +9051,7 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -9063,11 +9061,11 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;
@@ -9204,7 +9202,7 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
 
   guint i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -9214,11 +9212,11 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   output_soundcard = audio->output_soundcard;
   
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* list */
   recall = NULL;

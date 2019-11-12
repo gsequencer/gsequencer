@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/libags.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -55,8 +53,6 @@ enum{
 };
 
 static gpointer ags_recall_id_parent_class = NULL;
-
-static pthread_mutex_t ags_recall_id_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_recall_id_get_type(void)
@@ -113,7 +109,7 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    *
    * The dynamic run context belonging to.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recycling-context",
 				   i18n_pspec("assigned recycling context"),
@@ -128,30 +124,13 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 void
 ags_recall_id_init(AgsRecallID *recall_id)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   recall_id->flags = 0;
   recall_id->sound_scope = -1;
   recall_id->staging_flags = 0;
   recall_id->state_flags = 0;
   
-  /* add recall id mutex */
-  recall_id->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  recall_id->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  /* recall id mutex */
+  g_rec_mutex_init(&(recall_id->obj_mutex)); 
 
   /* recycling context */
   recall_id->recycling_context = NULL;
@@ -165,7 +144,7 @@ ags_recall_id_set_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   recall_id = AGS_RECALL_ID(gobject);
 
@@ -179,10 +158,10 @@ ags_recall_id_set_property(GObject *gobject,
 
       recycling_context = g_value_get_object(value);
 
-      pthread_mutex_lock(recall_id_mutex);
+      g_rec_mutex_lock(recall_id_mutex);
       
       if(recall_id->recycling_context == recycling_context){
-	pthread_mutex_unlock(recall_id_mutex);
+	g_rec_mutex_unlock(recall_id_mutex);
 
 	return;
       }
@@ -197,7 +176,7 @@ ags_recall_id_set_property(GObject *gobject,
 
       recall_id->recycling_context = recycling_context;
 
-      pthread_mutex_unlock(recall_id_mutex);
+      g_rec_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -214,7 +193,7 @@ ags_recall_id_get_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   recall_id = AGS_RECALL_ID(gobject);
 
@@ -224,11 +203,11 @@ ags_recall_id_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
     {
-      pthread_mutex_lock(recall_id_mutex);
+      g_rec_mutex_lock(recall_id_mutex);
 
       g_value_set_object(value, recall_id->recycling_context);
 
-      pthread_mutex_unlock(recall_id_mutex);
+      g_rec_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -260,12 +239,6 @@ ags_recall_id_finalize(GObject *gobject)
   AgsRecallID *recall_id;
 
   recall_id = AGS_RECALL_ID(gobject);
-
-  pthread_mutex_destroy(recall_id->obj_mutex);
-  free(recall_id->obj_mutex);
-
-  pthread_mutexattr_destroy(recall_id->obj_mutexattr);
-  free(recall_id->obj_mutexattr);
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -282,9 +255,9 @@ ags_recall_id_finalize(GObject *gobject)
  *
  * Returns: the class mutex
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-pthread_mutex_t*
+GRecMutex*
 ags_recall_id_get_class_mutex()
 {
   return(&ags_recall_id_class_mutex);
@@ -297,12 +270,12 @@ ags_recall_id_get_class_mutex()
  * 
  * Set @sound_scope for @recall_id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id) ||
      ags_recall_id_check_sound_scope(recall_id,
@@ -314,11 +287,11 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set sound scope */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id->sound_scope = sound_scope;
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -330,14 +303,14 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
  * 
  * Returns: %TRUE if sound scope matches, otherwise  %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
   gint recall_id_sound_scope;
   
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -347,11 +320,11 @@ ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get sound scope */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id_sound_scope = recall_id->sound_scope;
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
   
   if(sound_scope < 0){
     switch(recall_id_sound_scope){
@@ -383,7 +356,7 @@ ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
@@ -391,7 +364,7 @@ ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
 {
   gboolean retval;  
   
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -401,11 +374,11 @@ ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* test */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   retval = (staging_flags & (recall_id->staging_flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 
   return(retval);
 }
@@ -417,12 +390,12 @@ ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
  * 
  * Set staging flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
@@ -432,11 +405,11 @@ ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set staging flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id->staging_flags |= staging_flags;
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -446,12 +419,12 @@ ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
  * 
  * Unset staging flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
@@ -461,11 +434,11 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* unset staging flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id->staging_flags &= (~staging_flags);
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -477,14 +450,14 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
  * 
  * Returns: %TRUE if all flags matched, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
   guint recall_id_staging_flags;
   
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -494,11 +467,11 @@ ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get staging flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id_staging_flags = recall_id->staging_flags;
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 
   /* check staging flags */
   if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
@@ -588,7 +561,7 @@ ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_id_test_state_flags(AgsRecallID *recall_id,
@@ -596,7 +569,7 @@ ags_recall_id_test_state_flags(AgsRecallID *recall_id,
 {
   gboolean retval;  
   
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -606,11 +579,11 @@ ags_recall_id_test_state_flags(AgsRecallID *recall_id,
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* test */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   retval = (state_flags & (recall_id->state_flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 
   return(retval);
 }
@@ -622,12 +595,12 @@ ags_recall_id_test_state_flags(AgsRecallID *recall_id,
  * 
  * Set state flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
@@ -637,11 +610,11 @@ ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set state flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id->state_flags |= state_flags;
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -651,12 +624,12 @@ ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
  * 
  * Unset state flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
@@ -666,11 +639,11 @@ ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* unset state flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id->state_flags &= (~state_flags);
 
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -682,14 +655,14 @@ ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
  * 
  * Returns: %TRUE if all flags matched, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
   guint recall_id_state_flags;
   
-  pthread_mutex_t *recall_id_mutex;
+  GRecMutex *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -699,11 +672,11 @@ ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get state flags */
-  pthread_mutex_lock(recall_id_mutex);
+  g_rec_mutex_lock(recall_id_mutex);
 
   recall_id_state_flags = recall_id->state_flags;
   
-  pthread_mutex_unlock(recall_id_mutex);
+  g_rec_mutex_unlock(recall_id_mutex);
 
   /* check state flags */
   if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
@@ -738,7 +711,7 @@ ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
  *
  * Returns: Matching recall id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id,
@@ -776,7 +749,7 @@ ags_recall_id_find_recycling_context(GList *recall_id,
  *
  * Returns: Matching recall id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id,
@@ -828,7 +801,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
  *
  * Returns: a new #AgsRecallID
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallID*
 ags_recall_id_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface)
  * 
  * Set default soundcard.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
@@ -88,7 +88,7 @@ ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
  *
  * Returns: the #GObject implementing #AgsSoundcard
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider)
@@ -109,7 +109,7 @@ ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider)
  * 
  * Set default soundcard thread.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -133,7 +133,7 @@ ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider
  *
  * Returns: the #AgsThread
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
@@ -154,7 +154,7 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
  * 
  * Set soundcards.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
@@ -178,7 +178,7 @@ ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSoundcard
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
@@ -199,7 +199,7 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
  * 
  * Set sequencers.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
@@ -223,7 +223,7 @@ ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSequencer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
@@ -244,7 +244,7 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
  * 
  * Set audio objects.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
@@ -268,7 +268,7 @@ ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsAudio
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
@@ -289,7 +289,7 @@ ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
  *
  * Get sound server.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
@@ -313,7 +313,7 @@ ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
  * 
  * Returns: a #GList-struct containing #AgsSoundServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
@@ -334,7 +334,7 @@ ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
  *
  * Set OSC server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
@@ -358,7 +358,7 @@ ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
  * 
  * Returns: a #GList-struct containing #AgsOscServer
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider)
