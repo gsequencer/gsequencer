@@ -771,6 +771,7 @@ ags_input_open_file(AgsInput *input,
 		    gchar *sample,
 		    guint audio_channel)
 {
+  AgsRecycling *recycling;
   AgsFileLink *file_link;
   
   GList *audio_signal;
@@ -842,8 +843,13 @@ ags_input_open_file(AgsInput *input,
       AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
     
       /* add as template */
-      ags_recycling_add_audio_signal(AGS_CHANNEL(input)->first_recycling,
+      g_object_get(input,
+		   "first-recycling", &recycling,
+		   NULL);
+      ags_recycling_add_audio_signal(recycling,
 				     AGS_AUDIO_SIGNAL(audio_signal->data));
+
+      g_object_unref(recycling);
     }else{
       success = FALSE;
     }

@@ -69,8 +69,6 @@ enum{
 
 static gpointer ags_note_parent_class = NULL;
 
-static pthread_mutex_t ags_note_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_note_get_type()
 {
@@ -123,7 +121,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x0.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("x0",
 				 i18n_pspec("offset x0"),
@@ -141,7 +139,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x1.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("x1",
 				 i18n_pspec("offset x1"),
@@ -159,7 +157,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset y.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
@@ -177,7 +175,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note realtime offset.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("rt-offset",
 				   i18n_pspec("realtime offset"),
@@ -195,7 +193,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note realtime attack.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("rt-attack",
 				 i18n_pspec("realtime attack"),
@@ -213,7 +211,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's delay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("stream-delay",
 				   i18n_pspec("delay of stream"),
@@ -231,7 +229,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's attack.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("stream-attack",
 				   i18n_pspec("stream attack offset"),
@@ -249,7 +247,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's frame count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("stream-frame-count",
 				   i18n_pspec("stream frame count"),
@@ -267,7 +265,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope attack.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boxed("attack",
 				  i18n_pspec("envelope's attack"),
@@ -283,7 +281,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope decay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boxed("decay",
 				  i18n_pspec("envelope's decay"),
@@ -299,7 +297,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope sustain.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boxed("sustain",
 				  i18n_pspec("envelope's sustain"),
@@ -315,7 +313,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope release.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boxed("release",
 				  i18n_pspec("envelope's release"),
@@ -331,7 +329,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope ratio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boxed("ratio",
 				  i18n_pspec("envelope's ratio"),
@@ -347,7 +345,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The note's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("note-name",
 				   i18n_pspec("note name"),
@@ -363,7 +361,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The note's frequency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("frequency"),
@@ -382,27 +380,10 @@ ags_note_init(AgsNote *note)
 {
   complex z;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   note->flags = 0;
 
-  /* add note mutex */
-  note->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  note->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  /* note mutex */
+  g_rec_mutex_init(&(note->obj_mutex));
 
   /* fields */
   note->x[0] = 0;
@@ -447,7 +428,7 @@ ags_note_set_property(GObject *gobject,
 {
   AgsNote *note;
 
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   note = AGS_NOTE(gobject);
 
@@ -457,74 +438,74 @@ ags_note_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_X0:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->x[0] = g_value_get_uint(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_X1:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->x[1] = g_value_get_uint(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_Y:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->y = g_value_get_uint(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RT_OFFSET:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->rt_offset = g_value_get_uint64(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RT_ATTACK:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->rt_attack = g_value_get_uint(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_DELAY:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->stream_delay = g_value_get_double(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_ATTACK:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->stream_attack = g_value_get_double(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_FRAME_COUNT:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->stream_frame_count = g_value_get_uint64(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_ATTACK:
@@ -533,12 +514,12 @@ ags_note_set_property(GObject *gobject,
 
       attack = (AgsComplex *) g_value_get_boxed(value);
 
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       ags_complex_set(&(note->attack),
 		      ags_complex_get(attack));
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_SUSTAIN:
@@ -547,12 +528,12 @@ ags_note_set_property(GObject *gobject,
 
       sustain = (AgsComplex *) g_value_get_boxed(value);
 
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       ags_complex_set(&(note->sustain),
 		      ags_complex_get(sustain));
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_DECAY:
@@ -561,12 +542,12 @@ ags_note_set_property(GObject *gobject,
 
       decay = (AgsComplex *) g_value_get_boxed(value);
 
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       ags_complex_set(&(note->decay),
 		      ags_complex_get(decay));
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RELEASE:
@@ -575,12 +556,12 @@ ags_note_set_property(GObject *gobject,
 
       release = (AgsComplex *) g_value_get_boxed(value);
 
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       ags_complex_set(&(note->release),
 		      ags_complex_get(release));
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RATIO:
@@ -589,12 +570,12 @@ ags_note_set_property(GObject *gobject,
 
       ratio = (AgsComplex *) g_value_get_boxed(value);
 
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       ags_complex_set(&(note->ratio),
 		      ags_complex_get(ratio));
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_NOTE_NAME:
@@ -603,10 +584,10 @@ ags_note_set_property(GObject *gobject,
       
       note_name = g_value_get_string(value);
       
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       if(note_name == note->note_name){
-	pthread_mutex_unlock(note_mutex);
+	g_rec_mutex_unlock(note_mutex);
 
 	return;
       }
@@ -617,16 +598,16 @@ ags_note_set_property(GObject *gobject,
 
       note->note_name = g_strdup(note_name);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_FREQUENCY:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       note->frequency = g_value_get_double(value);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   default:
@@ -643,7 +624,7 @@ ags_note_get_property(GObject *gobject,
 {
   AgsNote *note;
 
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   note = AGS_NOTE(gobject);
 
@@ -653,137 +634,137 @@ ags_note_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X0:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint(value, note->x[0]);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_X1:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint(value, note->x[1]);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_Y:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint(value, note->y);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RT_OFFSET:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint64(value, note->rt_offset);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RT_ATTACK:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint(value, note->rt_attack);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_DELAY:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_double(value, note->stream_delay);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_ATTACK:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_double(value, note->stream_attack);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_FRAME_COUNT:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_uint64(value, note->stream_frame_count);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_ATTACK:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_boxed(value, note->attack);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_SUSTAIN:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_boxed(value, note->sustain);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_DECAY:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_boxed(value, note->decay);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RELEASE:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_boxed(value, note->release);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RATIO:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_boxed(value, note->ratio);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_NOTE_NAME:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_string(value, note->note_name);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   case PROP_FREQUENCY:
     {
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       g_value_set_double(value, note->frequency);
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
     }
     break;
   default:
@@ -799,12 +780,6 @@ ags_note_finalize(GObject *gobject)
 
   note = AGS_NOTE(gobject);
   
-  pthread_mutex_destroy(note->obj_mutex);
-  free(note->obj_mutex);
-
-  pthread_mutexattr_destroy(note->obj_mutexattr);
-  free(note->obj_mutexattr);
-
   /* note name */
   if(note->note_name != NULL){
     free(note->note_name);
@@ -812,21 +787,6 @@ ags_note_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_note_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_note_get_class_mutex()
-{
-  return(&ags_note_class_mutex);
 }
 
 /**
@@ -838,14 +798,14 @@ ags_note_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_note_test_flags(AgsNote *note, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   if(!AGS_IS_NOTE(note)){
     return(FALSE);
@@ -855,11 +815,11 @@ ags_note_test_flags(AgsNote *note, guint flags)
   note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* test */
-  pthread_mutex_lock(note_mutex);
+  g_rec_mutex_lock(note_mutex);
 
   retval = (flags & (note->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(note_mutex);
+  g_rec_mutex_unlock(note_mutex);
 
   return(retval);
 }
@@ -871,12 +831,12 @@ ags_note_test_flags(AgsNote *note, guint flags)
  * 
  * Set @flags on @note.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_note_set_flags(AgsNote *note, guint flags)
 {
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   if(!AGS_IS_NOTE(note)){
     return;
@@ -886,11 +846,11 @@ ags_note_set_flags(AgsNote *note, guint flags)
   note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* set */
-  pthread_mutex_lock(note_mutex);
+  g_rec_mutex_lock(note_mutex);
 
   note->flags |= flags;
   
-  pthread_mutex_unlock(note_mutex);
+  g_rec_mutex_unlock(note_mutex);
 }
 
 /**
@@ -900,12 +860,12 @@ ags_note_set_flags(AgsNote *note, guint flags)
  * 
  * Unset @flags on @note.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_note_unset_flags(AgsNote *note, guint flags)
 {
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   if(!AGS_IS_NOTE(note)){
     return;
@@ -915,11 +875,11 @@ ags_note_unset_flags(AgsNote *note, guint flags)
   note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* unset */
-  pthread_mutex_lock(note_mutex);
+  g_rec_mutex_lock(note_mutex);
 
   note->flags &= (~flags);
   
-  pthread_mutex_unlock(note_mutex);
+  g_rec_mutex_unlock(note_mutex);
 }
 
 /**
@@ -931,7 +891,7 @@ ags_note_unset_flags(AgsNote *note, guint flags)
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_note_sort_func(gconstpointer a,
@@ -983,7 +943,7 @@ ags_note_sort_func(gconstpointer a,
  *
  * Returns: the matching entry as #GList-struct if first entry's x offset bigger than @x0, else %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_find_prev(GList *note,
@@ -1044,7 +1004,7 @@ ags_note_find_prev(GList *note,
  *
  * Returns: the matching entry as #GList-struct if last entry's x offset smaller than @x0, else %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_find_next(GList *note,
@@ -1110,7 +1070,7 @@ ags_note_find_next(GList *note,
  * 
  * Returns: the delta-time
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 glong
 ags_note_length_to_smf_delta_time(guint note_length,
@@ -1138,7 +1098,7 @@ ags_note_length_to_smf_delta_time(guint note_length,
  * 
  * Returns: the note length
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_note_smf_delta_time_to_length(glong delta_time,
@@ -1163,7 +1123,7 @@ ags_note_smf_delta_time_to_length(glong delta_time,
  *
  * Returns: The sequencer raw midi as array.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_note_to_raw_midi(AgsNote *note,
@@ -1329,7 +1289,7 @@ ags_note_to_raw_midi(AgsNote *note,
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_note_to_raw_midi_extended(AgsNote *note,
@@ -1355,7 +1315,7 @@ ags_note_to_raw_midi_extended(AgsNote *note,
  *
  * Returns: The sequencer events as array.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event(AgsNote *note,
@@ -1387,7 +1347,7 @@ ags_note_to_seq_event(AgsNote *note,
  * 
  * Returns: an array of snd_seq_event_t structs
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event_extended(AgsNote *note,
@@ -1416,7 +1376,7 @@ ags_note_to_seq_event_extended(AgsNote *note,
  *
  * Returns: a #GList-struct containing the notes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_from_raw_midi(unsigned char *raw_midi,
@@ -1448,7 +1408,7 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
  *
  * Returns: a #GList-struct containing the notes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_from_raw_midi_extended(unsigned char *raw_midi,
@@ -1477,7 +1437,7 @@ ags_note_from_raw_midi_extended(unsigned char *raw_midi,
  *
  * Returns: a #GList-struct containing the notes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_from_seq_event(snd_seq_event_t *event,
@@ -1509,7 +1469,7 @@ ags_note_from_seq_event(snd_seq_event_t *event,
  *
  * Returns: a #GList-struct containing the notes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_note_from_seq_event_extended(snd_seq_event_t *event,
@@ -1535,14 +1495,14 @@ ags_note_from_seq_event_extended(snd_seq_event_t *event,
  *
  * Returns: the duplicated #AgsNote.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNote*
 ags_note_duplicate(AgsNote *note)
 {
   AgsNote *note_copy;
 
-  pthread_mutex_t *note_mutex;
+  GRecMutex *note_mutex;
 
   if(!AGS_IS_NOTE(note)){
     return(NULL);
@@ -1556,7 +1516,7 @@ ags_note_duplicate(AgsNote *note)
 
   note_copy->flags = 0;
 
-  pthread_mutex_lock(note_mutex);
+  g_rec_mutex_lock(note_mutex);
 
   note_copy->note_name = g_strdup(note->note_name);
   
@@ -1588,7 +1548,7 @@ ags_note_duplicate(AgsNote *note)
   note_copy->ratio[0] = note->ratio[0];
   note_copy->ratio[1] = note->ratio[1];
 
-  pthread_mutex_unlock(note_mutex);
+  g_rec_mutex_unlock(note_mutex);
 
   return(note_copy);
 }
@@ -1600,7 +1560,7 @@ ags_note_duplicate(AgsNote *note)
  *
  * Returns: the new #AgsNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNote*
 ags_note_new()
@@ -1625,7 +1585,7 @@ ags_note_new()
  *
  * Returns: the new #AgsNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNote*
 ags_note_new_with_offset(guint x0, guint x1,

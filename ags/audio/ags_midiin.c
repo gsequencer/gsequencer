@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_midiin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/task/ags_tic_device.h>
@@ -90,10 +88,6 @@ gboolean ags_midiin_is_connected(AgsConnectable *connectable);
 void ags_midiin_connect(AgsConnectable *connectable);
 void ags_midiin_disconnect(AgsConnectable *connectable);
 
-void ags_midiin_set_application_context(AgsSequencer *sequencer,
-					AgsApplicationContext *application_context);
-AgsApplicationContext* ags_midiin_get_application_context(AgsSequencer *sequencer);
-
 void ags_midiin_set_device(AgsSequencer *sequencer,
 			   gchar *device);
 gchar* ags_midiin_get_device(AgsSequencer *sequencer);
@@ -154,7 +148,6 @@ guint ags_midiin_get_note_offset(AgsSequencer *sequencer);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_BUFFER,
   PROP_BPM,
@@ -163,8 +156,6 @@ enum{
 };
 
 static gpointer ags_midiin_parent_class = NULL;
-
-static pthread_mutex_t ags_midiin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_midiin_get_type (void)
@@ -235,22 +226,6 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
   gobject->finalize = ags_midiin_finalize;
 
   /* properties */
-  /**
-   * AgsMidiin:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsMidiin:device:
    *
@@ -367,9 +342,6 @@ ags_midiin_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
-  sequencer->set_application_context = ags_midiin_set_application_context;
-  sequencer->get_application_context = ags_midiin_get_application_context;
-
   sequencer->set_device = ags_midiin_set_device;
   sequencer->get_device = ags_midiin_get_device;
 
@@ -426,30 +398,10 @@ ags_midiin_init(AgsMidiin *midiin)
   guint denumerator, numerator;
   gboolean use_alsa;  
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   midiin->flags = 0;
   
   /* insert midiin mutex */
-  midiin->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  midiin->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
-
-  /* parent */
-  midiin->application_context = NULL;
+  g_rec_mutex_init(&(midiin->obj_mutex));
 
   /* uuid */
   midiin->uuid = ags_uuid_alloc();
@@ -511,13 +463,12 @@ ags_midiin_init(AgsMidiin *midiin)
   midiin->ring_buffer_size[1] = 0;
   
   /* buffer */
-  midiin->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+  midiin->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
 
   for(i = 0; i < 4; i++){
-    midiin->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    midiin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    pthread_mutex_init(midiin->buffer_mutex[i],
-		       NULL);
+    g_rec_mutex_init(midiin->buffer_mutex[i]);
   }
 
   midiin->buffer = (char **) malloc(4 * sizeof(char *));
@@ -564,25 +515,6 @@ ags_midiin_init(AgsMidiin *midiin)
   midiin->tact_counter = 0.0;
   midiin->delay_counter = 0;
   midiin->tic_counter = 0;
-
-  /* poll thread */
-  midiin->poll_thread = (pthread_t *) malloc(sizeof(pthread_t));
-  
-  /* poll mutex */
-  midiin->poll_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(midiin->poll_mutex,
-		     NULL);
-
-  midiin->poll_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(midiin->poll_cond, NULL);
-
-  /* poll finish mutex */
-  midiin->poll_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(midiin->poll_finish_mutex,
-		     NULL);
-
-  midiin->poll_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(midiin->poll_finish_cond, NULL);
 }
 
 void
@@ -593,7 +525,7 @@ ags_midiin_set_property(GObject *gobject,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(gobject);
 
@@ -601,40 +533,13 @@ ags_midiin_set_property(GObject *gobject,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(midiin_mutex);
-
-      if(midiin->application_context == application_context){
-	pthread_mutex_unlock(midiin_mutex);
-
-	return;
-      }
-
-      if(midiin->application_context != NULL){
-	g_object_unref(G_OBJECT(midiin->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      midiin->application_context = application_context;
-
-      pthread_mutex_unlock(midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
 
       device = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
 	midiin->in.oss.device = g_strdup(device);
@@ -642,7 +547,7 @@ ags_midiin_set_property(GObject *gobject,
 	midiin->in.alsa.device = g_strdup(device);
       }
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   case PROP_BUFFER:
@@ -656,17 +561,17 @@ ags_midiin_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       if(bpm == midiin->bpm){
-	pthread_mutex_unlock(midiin_mutex);
+	g_rec_mutex_unlock(midiin_mutex);
 
 	return;
       }
 
       midiin->bpm = bpm;
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
@@ -675,17 +580,17 @@ ags_midiin_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       if(delay_factor == midiin->delay_factor){
-	pthread_mutex_unlock(midiin_mutex);
+	g_rec_mutex_unlock(midiin_mutex);
 
 	return;
       }
 
       midiin->delay_factor = delay_factor;
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   default:
@@ -702,7 +607,7 @@ ags_midiin_get_property(GObject *gobject,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(gobject);
 
@@ -710,18 +615,9 @@ ags_midiin_get_property(GObject *gobject,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(midiin_mutex);
-
-      g_value_set_object(value, midiin->application_context);
-
-      pthread_mutex_unlock(midiin_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
 	g_value_set_string(value, midiin->in.oss.device);
@@ -729,34 +625,34 @@ ags_midiin_get_property(GObject *gobject,
 	g_value_set_string(value, midiin->in.alsa.device);
       }
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   case PROP_BUFFER:
     {
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       g_value_set_pointer(value, midiin->buffer);
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   case PROP_BPM:
     {
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       g_value_set_double(value, midiin->bpm);
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
-      pthread_mutex_lock(midiin_mutex);
+      g_rec_mutex_lock(midiin_mutex);
 
       g_value_set_double(value, midiin->delay_factor);
 
-      pthread_mutex_unlock(midiin_mutex);
+      g_rec_mutex_unlock(midiin_mutex);
     }
     break;
   default:
@@ -772,13 +668,6 @@ ags_midiin_dispose(GObject *gobject)
 
   midiin = AGS_MIDIIN(gobject);
 
-  /* application context */
-  if(midiin->application_context != NULL){
-    g_object_unref(midiin->application_context);
-
-    midiin->application_context = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_midiin_parent_class)->dispose(gobject);
 }
@@ -789,12 +678,6 @@ ags_midiin_finalize(GObject *gobject)
   AgsMidiin *midiin;
 
   midiin = AGS_MIDIIN(gobject);
-
-  pthread_mutex_destroy(midiin->obj_mutex);
-  free(midiin->obj_mutex);
-
-  pthread_mutexattr_destroy(midiin->obj_mutexattr);
-  free(midiin->obj_mutexattr);
 
   ags_uuid_free(midiin->uuid);
   
@@ -817,11 +700,6 @@ ags_midiin_finalize(GObject *gobject)
   
   /* free buffer array */
   free(midiin->buffer);
-
-  /* application context */
-  if(midiin->application_context != NULL){
-    g_object_unref(midiin->application_context);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_midiin_parent_class)->finalize(gobject);
@@ -834,7 +712,7 @@ ags_midiin_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(connectable);
 
@@ -842,11 +720,11 @@ ags_midiin_get_uuid(AgsConnectable *connectable)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get UUID */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   ptr = midiin->uuid;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
   
   return(ptr);
 }
@@ -864,19 +742,10 @@ ags_midiin_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *midiin_mutex;
-
   midiin = AGS_MIDIIN(connectable);
 
-  /* get midiin mutex */
-  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
-
   /* check is added */
-  pthread_mutex_lock(midiin_mutex);
-
-  is_ready = (((AGS_MIDIIN_ADDED_TO_REGISTRY & (midiin->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(midiin_mutex);
+  is_ready = ags_midiin_test_flags(midiin, AGS_MIDIIN_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -947,19 +816,10 @@ ags_midiin_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *midiin_mutex;
-
   midiin = AGS_MIDIIN(connectable);
 
-  /* get midiin mutex */
-  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
-
   /* check is connected */
-  pthread_mutex_lock(midiin_mutex);
-
-  is_connected = (((AGS_MIDIIN_CONNECTED & (midiin->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(midiin_mutex);
+  is_connected = ags_midiin_test_flags(midiin, AGS_MIDIIN_CONNECTED);
   
   return(is_connected);
 }
@@ -994,21 +854,6 @@ ags_midiin_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_midiin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_midiin_get_class_mutex()
-{
-  return(&ags_midiin_class_mutex);
-}
-
-/**
  * ags_midiin_test_flags:
  * @midiin: the #AgsMidiin
  * @flags: the flags
@@ -1024,7 +869,7 @@ ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   if(!AGS_IS_MIDIIN(midiin)){
     return(FALSE);
@@ -1034,11 +879,11 @@ ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* test */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   retval = (flags & (midiin->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(retval);
 }
@@ -1055,7 +900,7 @@ ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
 void
 ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
 {
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   if(!AGS_IS_MIDIIN(midiin)){
     return;
@@ -1067,11 +912,11 @@ ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->flags |= flags;
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
     
 /**
@@ -1086,7 +931,7 @@ ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
 void
 ags_midiin_unset_flags(AgsMidiin *midiin, guint flags)
 {  
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   if(!AGS_IS_MIDIIN(midiin)){
     return;
@@ -1098,56 +943,11 @@ ags_midiin_unset_flags(AgsMidiin *midiin, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->flags &= (~flags);
   
-  pthread_mutex_unlock(midiin_mutex);
-}
-
-void
-ags_midiin_set_application_context(AgsSequencer *sequencer,
-				   AgsApplicationContext *application_context)
-{
-  AgsMidiin *midiin;
-
-  pthread_mutex_t *midiin_mutex;
-
-  midiin = AGS_MIDIIN(sequencer);
-
-  /* get midiin mutex */
-  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
-
-  /* set application context */
-  pthread_mutex_lock(midiin_mutex);
-  
-  midiin->application_context = application_context;
-  
-  pthread_mutex_unlock(midiin_mutex);
-}
-
-AgsApplicationContext*
-ags_midiin_get_application_context(AgsSequencer *sequencer)
-{
-  AgsMidiin *midiin;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *midiin_mutex;
-
-  midiin = AGS_MIDIIN(sequencer);
-
-  /* get midiin mutex */
-  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
-
-  /* get application context */
-  pthread_mutex_lock(midiin_mutex);
-
-  application_context = midiin->application_context;
-
-  pthread_mutex_unlock(midiin_mutex);
-  
-  return(application_context);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 void
@@ -1156,7 +956,7 @@ ags_midiin_set_device(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1164,7 +964,7 @@ ags_midiin_set_device(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set device */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
     midiin->in.alsa.device = g_strdup(device);
@@ -1172,7 +972,7 @@ ags_midiin_set_device(AgsSequencer *sequencer,
     midiin->in.oss.device = g_strdup(device);
   }
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 gchar*
@@ -1182,7 +982,7 @@ ags_midiin_get_device(AgsSequencer *sequencer)
 
   gchar *device;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
   
@@ -1191,7 +991,7 @@ ags_midiin_get_device(AgsSequencer *sequencer)
 
   device = NULL;
   
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
     device = g_strdup(midiin->in.alsa.device);
@@ -1199,7 +999,7 @@ ags_midiin_get_device(AgsSequencer *sequencer)
     device = g_strdup(midiin->in.oss.device);
   }
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(device);
 }
@@ -1210,7 +1010,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1225,7 +1025,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     *card_name = NULL;
   }
 
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
 #ifdef AGS_WITH_ALSA
@@ -1390,7 +1190,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
 #endif
   }
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   if(card_id != NULL){
     *card_id = g_list_reverse(*card_id);
@@ -1408,7 +1208,7 @@ ags_midiin_is_starting(AgsSequencer *sequencer)
 
   gboolean is_starting;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1416,11 +1216,11 @@ ags_midiin_is_starting(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is starting */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   is_starting = ((AGS_MIDIIN_START_RECORD & (midiin->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
   
   return(is_starting);
 }
@@ -1432,7 +1232,7 @@ ags_midiin_is_recording(AgsSequencer *sequencer)
 
   gboolean is_recording;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(sequencer);
   
@@ -1440,11 +1240,11 @@ ags_midiin_is_recording(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is starting */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   is_recording = ((AGS_MIDIIN_RECORD & (midiin->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(is_recording);
 }
@@ -1509,7 +1309,7 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   int format;
   int tmp;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   if(ags_sequencer_is_recording(sequencer)){
     return;
@@ -1521,7 +1321,7 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* prepare for playback */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
     
   midiin->flags |= (AGS_MIDIIN_BUFFER3 |
 		    AGS_MIDIIN_START_RECORD |
@@ -1534,7 +1334,7 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   midiin->in.oss.device_fd = open(str, O_WRONLY, 0);
 
   if(midiin->in.oss.device_fd == -1){
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
 
     g_warning("couldn't open device %s", midiin->in.oss.device);
 
@@ -1563,7 +1363,7 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
 		      AGS_MIDIIN_BUFFER2 |
 		      AGS_MIDIIN_BUFFER3));
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 void
@@ -1575,7 +1375,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   AgsTicDevice *tic_device;
   //  AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
 
@@ -1591,7 +1391,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   int device_fd;
   int num_read;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1601,12 +1401,12 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* poll MIDI device */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->flags &= (~AGS_MIDIIN_START_RECORD);
 
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
     
     return;
   }
@@ -1641,7 +1441,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   ring_buffer = midiin->ring_buffer;
   ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   num_read = 1;
   
@@ -1674,7 +1474,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   }
       
   /* switch buffer */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   /* update byte array and buffer size */
   if(midiin->buffer[nth_buffer] != NULL){
@@ -1694,9 +1494,9 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
     memcpy(midiin->buffer[nth_buffer], ring_buffer[nth_ring_buffer], ring_buffer_size * sizeof(char));
   }
       
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   ags_midiin_switch_buffer_flag(midiin);
     
@@ -1724,11 +1524,10 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   midiin->ring_buffer[nth_ring_buffer] = NULL;
   midiin->ring_buffer_size[nth_ring_buffer] = 0;
       
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   /* update sequencer */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
   task = NULL;
 
   /* tic sequencer */
@@ -1741,9 +1540,11 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   //  task = g_list_append(task,
   //		       switch_buffer_flag);
 
-  /* append tasks */
-  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-			       task);
+  /* add tasks all */
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
+
+  g_object_unref(task_launcher);
 }
 
 void
@@ -1755,17 +1556,17 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
 
   GList *poll_fd;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
-  pthread_mutex_lock(midiin_mutex);  
+  g_rec_mutex_lock(midiin_mutex);  
 
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
-    pthread_mutex_unlock(midiin_mutex);  
+    g_rec_mutex_unlock(midiin_mutex);  
 
     return;
   }
@@ -1773,10 +1574,10 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   midiin->flags &= (~(AGS_MIDIIN_RECORD |
 		      AGS_MIDIIN_INITIALIZED));
   
-  pthread_mutex_unlock(midiin_mutex);  
+  g_rec_mutex_unlock(midiin_mutex);  
 
   /*  */
-  pthread_mutex_lock(midiin_mutex);  
+  g_rec_mutex_lock(midiin_mutex);  
 
   close(midiin->in.oss.device_fd);
   midiin->in.oss.device_fd = -1;
@@ -1792,7 +1593,7 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   midiin->note_offset = midiin->start_note_offset;
   midiin->note_offset_absolute = midiin->start_note_offset;
   
-  pthread_mutex_unlock(midiin_mutex);  
+  g_rec_mutex_unlock(midiin_mutex);  
 }  
 
 void
@@ -1808,7 +1609,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 
   int err;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   if(ags_sequencer_is_recording(sequencer)){
     return;
@@ -1820,7 +1621,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /*  */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   /* prepare for record */
   midiin->flags |= (AGS_MIDIIN_BUFFER3 |
@@ -1832,7 +1633,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   mode = SND_RAWMIDI_NONBLOCK;
   
   if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa.device, mode)) < 0) {
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
 
     printf("Record midi open error: %s\n", snd_strerror(err));
     g_set_error(error,
@@ -1856,7 +1657,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   midiin->flags |= AGS_MIDIIN_INITIALIZED;
 #endif
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 void
@@ -1868,7 +1669,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   AgsTicDevice *tic_device;
   //  AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
 
@@ -1889,7 +1690,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   int status;
   unsigned char c;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1899,12 +1700,12 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* prepare poll */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->flags &= (~AGS_MIDIIN_START_RECORD);
 
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
      
    return;
   }
@@ -1939,7 +1740,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   ring_buffer = midiin->ring_buffer;
   ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   /* poll MIDI device */
   status = 0;
@@ -1971,7 +1772,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   }
 
   /* switch buffer */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   /* update byte array and buffer size */
   if(midiin->buffer[nth_buffer] != NULL){
@@ -1991,10 +1792,10 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
     memcpy(midiin->buffer[nth_buffer], ring_buffer[nth_ring_buffer], ring_buffer_size * sizeof(char));
   }
       
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   /*  */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   ags_midiin_switch_buffer_flag(midiin);
 
@@ -2022,11 +1823,11 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   midiin->ring_buffer[nth_ring_buffer] = NULL;
   midiin->ring_buffer_size[nth_ring_buffer] = 0;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
   
   /* update sequencer */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
 
   /* tic sequencer */
@@ -2039,9 +1840,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   //  task = g_list_append(task,
   //		       switch_buffer_flag);
 
-  /* append tasks */
-  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-			       task);
+  /* add tasks all */
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 }
 
 void
@@ -2049,7 +1850,7 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2057,10 +1858,10 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /*  */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
     
     return;
   }
@@ -2068,10 +1869,10 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   midiin->flags &= (~(AGS_MIDIIN_RECORD |
 		      AGS_MIDIIN_INITIALIZED));
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   /*  */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
 #ifdef AGS_WITH_ALSA
   snd_rawmidi_close(midiin->in.alsa.handle);
@@ -2109,7 +1910,7 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   midiin->note_offset = midiin->start_note_offset;
   midiin->note_offset_absolute = midiin->start_note_offset;
   
-  pthread_mutex_unlock(midiin_mutex);  
+  g_rec_mutex_unlock(midiin_mutex);  
 }
 
 void
@@ -2121,7 +1922,7 @@ ags_midiin_tic(AgsSequencer *sequencer)
   gdouble delay_counter;    
   guint note_offset;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
 
   midiin = AGS_MIDIIN(sequencer);
   
@@ -2129,14 +1930,14 @@ ags_midiin_tic(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   /* determine if attack should be switched */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   delay = midiin->delay;
   delay_counter = midiin->delay_counter;
 
   note_offset = midiin->note_offset;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
@@ -2147,18 +1948,18 @@ ags_midiin_tic(AgsSequencer *sequencer)
 				 note_offset);
     
     /* reset - delay counter */
-    pthread_mutex_lock(midiin_mutex);
+    g_rec_mutex_lock(midiin_mutex);
 
     midiin->delay_counter = delay_counter + 1.0 - delay;
     midiin->tact_counter += 1.0;
 
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
   }else{
-    pthread_mutex_lock(midiin_mutex);
+    g_rec_mutex_lock(midiin_mutex);
 
     midiin->delay_counter += 1.0;
 
-    pthread_mutex_unlock(midiin_mutex);
+    g_rec_mutex_unlock(midiin_mutex);
   }
 }
 
@@ -2168,7 +1969,7 @@ ags_midiin_offset_changed(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2176,7 +1977,7 @@ ags_midiin_offset_changed(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* offset changed */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->tic_counter += 1;
 
@@ -2185,7 +1986,7 @@ ags_midiin_offset_changed(AgsSequencer *sequencer,
     midiin->tic_counter = 0;
   }
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 void
@@ -2194,7 +1995,7 @@ ags_midiin_set_bpm(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2202,11 +2003,11 @@ ags_midiin_set_bpm(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set bpm */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->bpm = bpm;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 gdouble
@@ -2216,7 +2017,7 @@ ags_midiin_get_bpm(AgsSequencer *sequencer)
 
   gdouble bpm;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2224,11 +2025,11 @@ ags_midiin_get_bpm(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get bpm */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   bpm = midiin->bpm;
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(bpm);
 }
@@ -2239,7 +2040,7 @@ ags_midiin_set_delay_factor(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2247,11 +2048,11 @@ ags_midiin_set_delay_factor(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set delay factor */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->delay_factor = delay_factor;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 gdouble
@@ -2261,7 +2062,7 @@ ags_midiin_get_delay_factor(AgsSequencer *sequencer)
 
   gdouble delay_factor;
   
-  pthread_mutex_t *midiin_mutex;
+  GRecMutex *midiin_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2269,11 +2070,11 @@ ags_midiin_get_delay_factor(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get delay factor */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   delay_factor = midiin->delay_factor;
   
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(delay_factor);
 }
@@ -2364,7 +2165,7 @@ ags_midiin_lock_buffer(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2383,7 +2184,7 @@ ags_midiin_lock_buffer(AgsSequencer *sequencer,
   }
   
   if(buffer_mutex != NULL){
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
   }
 }
 
@@ -2393,7 +2194,7 @@ ags_midiin_unlock_buffer(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2412,7 +2213,7 @@ ags_midiin_unlock_buffer(AgsSequencer *sequencer,
   }
 
   if(buffer_mutex != NULL){
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
   }
 }
 
@@ -2422,7 +2223,7 @@ ags_midiin_set_start_note_offset(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;  
+  GRecMutex *midiin_mutex;  
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2430,11 +2231,11 @@ ags_midiin_set_start_note_offset(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->start_note_offset = start_note_offset;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 guint
@@ -2444,7 +2245,7 @@ ags_midiin_get_start_note_offset(AgsSequencer *sequencer)
 
   guint start_note_offset;
   
-  pthread_mutex_t *midiin_mutex;  
+  GRecMutex *midiin_mutex;  
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2452,11 +2253,11 @@ ags_midiin_get_start_note_offset(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   start_note_offset = midiin->start_note_offset;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(start_note_offset);
 }
@@ -2467,7 +2268,7 @@ ags_midiin_set_note_offset(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
-  pthread_mutex_t *midiin_mutex;  
+  GRecMutex *midiin_mutex;  
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2475,11 +2276,11 @@ ags_midiin_set_note_offset(AgsSequencer *sequencer,
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   midiin->note_offset = note_offset;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 guint
@@ -2489,7 +2290,7 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
 
   guint note_offset;
   
-  pthread_mutex_t *midiin_mutex;  
+  GRecMutex *midiin_mutex;  
 
   midiin = AGS_MIDIIN(sequencer);
 
@@ -2497,11 +2298,11 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   note_offset = midiin->note_offset;
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 
   return(note_offset);
 }
@@ -2517,7 +2318,7 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
 void
 ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
 {
-  pthread_mutex_t *midiin_mutex;  
+  GRecMutex *midiin_mutex;  
 
   if(!AGS_IS_MIDIIN(midiin)){
     return;
@@ -2527,7 +2328,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
   midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* switch buffer flag */
-  pthread_mutex_lock(midiin_mutex);
+  g_rec_mutex_lock(midiin_mutex);
 
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER0);
@@ -2575,12 +2376,11 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     midiin->buffer_size[2] = 0;
   }
 
-  pthread_mutex_unlock(midiin_mutex);
+  g_rec_mutex_unlock(midiin_mutex);
 }
 
 /**
  * ags_midiin_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsMidiin.
  *
@@ -2589,12 +2389,11 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
  * Since: 2.0.0
  */
 AgsMidiin*
-ags_midiin_new(GObject *application_context)
+ags_midiin_new()
 {
   AgsMidiin *midiin;
 
   midiin = (AgsMidiin *) g_object_new(AGS_TYPE_MIDIIN,
-				      "application-context", application_context,
 				      NULL);
   
   return(midiin);

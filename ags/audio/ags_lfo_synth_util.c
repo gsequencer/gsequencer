@@ -19,13 +19,21 @@
 
 #include <ags/audio/ags_lfo_synth_util.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #include <math.h>
 #include <complex.h>
+
+/**
+ * SECTION:ags_lfo_synth_util
+ * @short_description: low frequency oscillator synth util
+ * @title: AgsLFOSynthUtil
+ * @section_id:
+ * @include: ags/audio/ags_lfo_synth_util.h
+ *
+ * Utility functions to compute LFO synths.
+ */
 
 /**
  * ags_lfo_synth_util_sin_s8:
@@ -40,7 +48,7 @@
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_s8(gint8 *buffer,
@@ -70,7 +78,7 @@ ags_lfo_synth_util_sin_s8(gint8 *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_s16(gint16 *buffer,
@@ -100,7 +108,7 @@ ags_lfo_synth_util_sin_s16(gint16 *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_s24(gint32 *buffer,
@@ -130,7 +138,7 @@ ags_lfo_synth_util_sin_s24(gint32 *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_s32(gint32 *buffer,
@@ -160,7 +168,7 @@ ags_lfo_synth_util_sin_s32(gint32 *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_s64(gint64 *buffer,
@@ -190,7 +198,7 @@ ags_lfo_synth_util_sin_s64(gint64 *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_float(float *buffer,
@@ -220,7 +228,7 @@ ags_lfo_synth_util_sin_float(float *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_double(double *buffer,
@@ -250,7 +258,7 @@ ags_lfo_synth_util_sin_double(double *buffer,
  *
  * LFO using sinus wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin_complex(AgsComplex *buffer,
@@ -306,7 +314,7 @@ ags_lfo_synth_util_sin_complex(AgsComplex *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_s8(gint8 *buffer,
@@ -339,7 +347,7 @@ ags_lfo_synth_util_sawtooth_s8(gint8 *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_s16(gint16 *buffer,
@@ -372,7 +380,7 @@ ags_lfo_synth_util_sawtooth_s16(gint16 *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_s24(gint32 *buffer,
@@ -405,7 +413,7 @@ ags_lfo_synth_util_sawtooth_s24(gint32 *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_s32(gint32 *buffer,
@@ -438,7 +446,7 @@ ags_lfo_synth_util_sawtooth_s32(gint32 *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_s64(gint64 *buffer,
@@ -471,7 +479,7 @@ ags_lfo_synth_util_sawtooth_s64(gint64 *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_float(float *buffer,
@@ -504,7 +512,7 @@ ags_lfo_synth_util_sawtooth_float(float *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_double(double *buffer,
@@ -537,7 +545,7 @@ ags_lfo_synth_util_sawtooth_double(double *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth_complex(AgsComplex *buffer,
@@ -596,7 +604,7 @@ ags_lfo_synth_util_sawtooth_complex(AgsComplex *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_s8(gint8 *buffer,
@@ -629,7 +637,7 @@ ags_lfo_synth_util_triangle_s8(gint8 *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_s16(gint16 *buffer,
@@ -662,7 +670,7 @@ ags_lfo_synth_util_triangle_s16(gint16 *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_s24(gint32 *buffer,
@@ -695,7 +703,7 @@ ags_lfo_synth_util_triangle_s24(gint32 *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_s32(gint32 *buffer,
@@ -728,7 +736,7 @@ ags_lfo_synth_util_triangle_s32(gint32 *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_s64(gint64 *buffer,
@@ -761,7 +769,7 @@ ags_lfo_synth_util_triangle_s64(gint64 *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_float(float *buffer,
@@ -794,7 +802,7 @@ ags_lfo_synth_util_triangle_float(float *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_double(double *buffer,
@@ -827,7 +835,7 @@ ags_lfo_synth_util_triangle_double(double *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle_complex(AgsComplex *buffer,
@@ -886,7 +894,7 @@ ags_lfo_synth_util_triangle_complex(AgsComplex *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_s8(gint8 *buffer,
@@ -920,7 +928,7 @@ ags_lfo_synth_util_square_s8(gint8 *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_s16(gint16 *buffer,
@@ -954,7 +962,7 @@ ags_lfo_synth_util_square_s16(gint16 *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_s24(gint32 *buffer,
@@ -988,7 +996,7 @@ ags_lfo_synth_util_square_s24(gint32 *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_s32(gint32 *buffer,
@@ -1022,7 +1030,7 @@ ags_lfo_synth_util_square_s32(gint32 *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_s64(gint64 *buffer,
@@ -1056,7 +1064,7 @@ ags_lfo_synth_util_square_s64(gint64 *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_float(float *buffer,
@@ -1090,7 +1098,7 @@ ags_lfo_synth_util_square_float(float *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_double(double *buffer,
@@ -1124,7 +1132,7 @@ ags_lfo_synth_util_square_double(double *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square_complex(AgsComplex *buffer,
@@ -1184,7 +1192,7 @@ ags_lfo_synth_util_square_complex(AgsComplex *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_s8(gint8 *buffer,
@@ -1218,7 +1226,7 @@ ags_lfo_synth_util_impulse_s8(gint8 *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_s16(gint16 *buffer,
@@ -1252,7 +1260,7 @@ ags_lfo_synth_util_impulse_s16(gint16 *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_s24(gint32 *buffer,
@@ -1286,7 +1294,7 @@ ags_lfo_synth_util_impulse_s24(gint32 *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_s32(gint32 *buffer,
@@ -1320,7 +1328,7 @@ ags_lfo_synth_util_impulse_s32(gint32 *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_s64(gint64 *buffer,
@@ -1354,7 +1362,7 @@ ags_lfo_synth_util_impulse_s64(gint64 *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_float(float *buffer,
@@ -1388,7 +1396,7 @@ ags_lfo_synth_util_impulse_float(float *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_double(double *buffer,
@@ -1422,7 +1430,7 @@ ags_lfo_synth_util_impulse_double(double *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse_complex(AgsComplex *buffer,
@@ -1483,7 +1491,7 @@ ags_lfo_synth_util_impulse_complex(AgsComplex *buffer,
  *
  * LFO using sin wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sin(void *buffer,
@@ -1595,7 +1603,7 @@ ags_lfo_synth_util_sin(void *buffer,
  *
  * LFO using sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_sawtooth(void *buffer,
@@ -1707,7 +1715,7 @@ ags_lfo_synth_util_sawtooth(void *buffer,
  *
  * LFO using triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_triangle(void *buffer,
@@ -1819,7 +1827,7 @@ ags_lfo_synth_util_triangle(void *buffer,
  *
  * LFO using square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_square(void *buffer,
@@ -1931,7 +1939,7 @@ ags_lfo_synth_util_square(void *buffer,
  *
  * LFO using impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_lfo_synth_util_impulse(void *buffer,

@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_port.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_automation.h>
@@ -98,8 +96,6 @@ enum{
 static gpointer ags_port_parent_class = NULL;
 static guint port_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_port_get_type(void)
 {
@@ -164,7 +160,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin-name of port"),
@@ -180,7 +176,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin identifier.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("specifier of port"),
@@ -196,7 +192,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin control port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control-port of port"),
@@ -212,7 +208,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * Specify port data as pointer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boolean("port-value-is-pointer",
 				    i18n_pspec("port-value-is-pointer indicates if value is a pointer"),
@@ -228,7 +224,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("port-value-type",
 				  i18n_pspec("port-value-type tells you the type of the values"),
@@ -244,7 +240,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type size.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("port-value-size",
 				 i18n_pspec("port-value-size is the size of a single entry"),
@@ -262,7 +258,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data array length.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("port-value-length",
 				 i18n_pspec("port-value-length is the array size"),
@@ -280,7 +276,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The plugin-port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("plugin-port",
 				   i18n_pspec("plugin port"),
@@ -296,7 +292,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's conversion object.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion converts values"),
@@ -312,7 +308,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's automation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("automation",
 				    i18n_pspec("automation"),
@@ -336,7 +332,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The ::safe-read signal is emited while doing safe read operation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   port_signals[SAFE_READ] =
     g_signal_new("safe-read",
@@ -354,7 +350,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The ::safe-write signal is emited while doing safe write operation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   port_signals[SAFE_WRITE] =
     g_signal_new("safe-write",
@@ -372,7 +368,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The ::safe-get-property signal is emited while safe get property.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   port_signals[SAFE_GET_PROPERTY] =
     g_signal_new("safe-get-property",
@@ -390,7 +386,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The ::safe-set-property signal is emited while safe set property.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   port_signals[SAFE_SET_PROPERTY] =
     g_signal_new("safe-set-property",
@@ -428,27 +424,10 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_port_init(AgsPort *port)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   port->flags = 0; // AGS_PORT_CONVERT_ALWAYS;
 
-  /* add port mutex */
-  port->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  port->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  /* port mutex */
+  g_rec_mutex_init(&(port->obj_mutex));
 
   /* common fields */
   port->plugin_name = NULL;
@@ -480,7 +459,7 @@ ags_port_set_property(GObject *gobject,
 {
   AgsPort *port;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   port = AGS_PORT(gobject);
 
@@ -494,10 +473,10 @@ ags_port_set_property(GObject *gobject,
 
       plugin_name = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
       
       if(port->plugin_name == plugin_name){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -508,7 +487,7 @@ ags_port_set_property(GObject *gobject,
 
       port->plugin_name = g_strdup(plugin_name);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_SPECIFIER:
@@ -517,10 +496,10 @@ ags_port_set_property(GObject *gobject,
 
       specifier = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       if(port->specifier == specifier){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -531,7 +510,7 @@ ags_port_set_property(GObject *gobject,
 
       port->specifier = g_strdup(specifier);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONTROL_PORT:
@@ -540,10 +519,10 @@ ags_port_set_property(GObject *gobject,
 
       control_port = (gchar *) g_value_get_string(value);
       
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       if(port->control_port == control_port){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -554,43 +533,43 @@ ags_port_set_property(GObject *gobject,
 
       port->control_port = g_strdup(control_port);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_IS_POINTER:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       port->port_value_is_pointer = g_value_get_boolean(value);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_TYPE:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       port->port_value_type = g_value_get_gtype(value);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_SIZE:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       port->port_value_size = g_value_get_uint(value);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_LENGTH:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       port->port_value_length = g_value_get_uint(value);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PLUGIN_PORT:
@@ -599,10 +578,10 @@ ags_port_set_property(GObject *gobject,
       
       plugin_port = g_value_get_object(value);
 
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       if(plugin_port == (AgsPluginPort *) port->plugin_port){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -617,7 +596,7 @@ ags_port_set_property(GObject *gobject,
 
       port->plugin_port = (GObject *) plugin_port;
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONVERSION:
@@ -626,10 +605,10 @@ ags_port_set_property(GObject *gobject,
       
       conversion = g_value_get_object(value);
 
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       if(conversion == port->conversion){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -644,7 +623,7 @@ ags_port_set_property(GObject *gobject,
 
       port->conversion = conversion;
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_AUTOMATION:
@@ -654,7 +633,7 @@ ags_port_set_property(GObject *gobject,
       automation = g_value_get_pointer(value);
 
       if(g_list_find(port->automation, automation) != NULL){
-	pthread_mutex_unlock(port_mutex);
+	g_rec_mutex_unlock(port_mutex);
 	
 	return;
       }
@@ -666,7 +645,7 @@ ags_port_set_property(GObject *gobject,
       port->automation = ags_automation_add(port->automation,
 					    automation);
       
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   default:
@@ -683,7 +662,7 @@ ags_port_get_property(GObject *gobject,
 {
   AgsPort *port;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   port = AGS_PORT(gobject);
 
@@ -693,94 +672,94 @@ ags_port_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PLUGIN_NAME:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_string(value, port->plugin_name);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_SPECIFIER:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_string(value, port->specifier);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONTROL_PORT:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_string(value, port->control_port);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_IS_POINTER:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_boolean(value, port->port_value_is_pointer);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_TYPE:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_gtype(value, port->port_value_type);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_SIZE:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_uint(value, port->port_value_size);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_LENGTH:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_uint(value, port->port_value_length);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PLUGIN_PORT:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_object(value, port->plugin_port);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONVERSION:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_object(value, port->conversion);
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   case PROP_AUTOMATION:
     {
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       g_value_set_pointer(value, g_list_copy_deep(port->automation,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
     }
     break;
   default:
@@ -826,12 +805,6 @@ ags_port_finalize(GObject *gobject)
 
   port = AGS_PORT(gobject);
 
-  pthread_mutex_destroy(port->obj_mutex);
-  free(port->obj_mutex);
-
-  pthread_mutexattr_destroy(port->obj_mutexattr);
-  free(port->obj_mutexattr);
-
   g_free(port->plugin_name);
   g_free(port->specifier);
 
@@ -861,7 +834,7 @@ ags_port_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   port = AGS_PORT(connectable);
 
@@ -869,11 +842,11 @@ ags_port_get_uuid(AgsConnectable *connectable)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* get UUID */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   ptr = port->uuid;
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
   
   return(ptr);
 }
@@ -891,19 +864,10 @@ ags_port_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *port_mutex;
-
   port = AGS_PORT(connectable);
 
-  /* get port mutex */
-  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
-
   /* check is added */
-  pthread_mutex_lock(port_mutex);
-
-  is_ready = (((AGS_PORT_ADDED_TO_REGISTRY & (port->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(port_mutex);
+  is_ready = ags_port_test_flags(port, AGS_PORT_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -991,19 +955,10 @@ ags_port_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *port_mutex;
-
   port = AGS_PORT(connectable);
 
-  /* get port mutex */
-  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
-
   /* check is connected */
-  pthread_mutex_lock(port_mutex);
-
-  is_connected = (((AGS_PORT_CONNECTED & (port->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(port_mutex);
+  is_connected = ags_port_test_flags(port, AGS_PORT_CONNECTED);
   
   return(is_connected);
 }
@@ -1015,7 +970,7 @@ ags_port_connect(AgsConnectable *connectable)
 
   GList *list_start, *list;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -1033,7 +988,7 @@ ags_port_disconnect(AgsConnectable *connectable)
 
   GList *list_start, *list;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -1045,21 +1000,6 @@ ags_port_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_port_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_port_get_class_mutex()
-{
-  return(&ags_port_class_mutex);
-}
-
-/**
  * ags_port_test_flags:
  * @port: the #AgsPort
  * @flags: the flags
@@ -1068,14 +1008,14 @@ ags_port_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_port_test_flags(AgsPort *port, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port)){
     return(FALSE);
@@ -1085,11 +1025,11 @@ ags_port_test_flags(AgsPort *port, guint flags)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* test */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   retval = (flags & (port->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 
   return(retval);
 }
@@ -1101,12 +1041,12 @@ ags_port_test_flags(AgsPort *port, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_set_flags(AgsPort *port, guint flags)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port)){
     return;
@@ -1116,11 +1056,11 @@ ags_port_set_flags(AgsPort *port, guint flags)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set flags */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   port->flags |= flags;
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1130,12 +1070,12 @@ ags_port_set_flags(AgsPort *port, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_unset_flags(AgsPort *port, guint flags)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port)){
     return;
@@ -1145,11 +1085,11 @@ ags_port_unset_flags(AgsPort *port, guint flags)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set flags */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   port->flags &= (~flags);
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 void
@@ -1158,13 +1098,13 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   /* get port mutex */
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* safe read */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -1248,7 +1188,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     g_value_set_pointer(value, data);
   }
   
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1258,7 +1198,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
  *
  * Perform safe read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_safe_read(AgsPort *port, GValue *value)
@@ -1278,7 +1218,7 @@ ags_port_safe_read(AgsPort *port, GValue *value)
  *
  * Perform safe read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_safe_read_raw(AgsPort *port, GValue *value)
@@ -1286,13 +1226,13 @@ ags_port_safe_read_raw(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   /* get port mutex */
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* safe read */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -1360,7 +1300,7 @@ ags_port_safe_read_raw(AgsPort *port, GValue *value)
     g_value_set_pointer(value, data);
   }
   
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 void
@@ -1369,13 +1309,13 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   /* get port mutex */
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* write */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -1448,7 +1388,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }
   }
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1458,7 +1398,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
  *
  * Perform safe write.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_safe_write(AgsPort *port, GValue *value)
@@ -1477,7 +1417,7 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port)){
     return;
@@ -1487,7 +1427,7 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* write raw */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -1537,25 +1477,25 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
     }
   }
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 void
 ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   /* get port mutex */
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* get property */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   g_object_get_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1566,7 +1506,7 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe get property.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -1582,19 +1522,19 @@ ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 void
 ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   /* get port mutex */
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set property */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   g_object_set_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1605,7 +1545,7 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe set property.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -1627,7 +1567,7 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
  *
  * Returns: Next matching #GList-struct or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
@@ -1636,7 +1576,7 @@ ags_port_find_specifier(GList *port, gchar *specifier)
   
   gboolean success;
 
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
   
   while(port != NULL){
     current_port = port->data;
@@ -1645,12 +1585,12 @@ ags_port_find_specifier(GList *port, gchar *specifier)
     port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
     /* check specifier */
-    pthread_mutex_lock(port_mutex);
+    g_rec_mutex_lock(port_mutex);
 
     success = (!g_strcmp0(current_port->specifier,
 			  specifier)) ? TRUE: FALSE;
 
-    pthread_mutex_unlock(port_mutex);
+    g_rec_mutex_unlock(port_mutex);
 
     if(success){
       return(port);
@@ -1669,12 +1609,12 @@ ags_port_find_specifier(GList *port, gchar *specifier)
  *
  * Adds an automation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_add_automation(AgsPort *port, GObject *automation)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port) ||
      !AGS_IS_AUTOMATION(automation)){
@@ -1685,7 +1625,7 @@ ags_port_add_automation(AgsPort *port, GObject *automation)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* add recall id */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   if(g_list_find(port->automation,
 		 automation) == NULL){
@@ -1698,7 +1638,7 @@ ags_port_add_automation(AgsPort *port, GObject *automation)
 		 NULL);
   }
   
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1708,12 +1648,12 @@ ags_port_add_automation(AgsPort *port, GObject *automation)
  *
  * Removes an automation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_port_remove_automation(AgsPort *port, GObject *automation)
 {
-  pthread_mutex_t *port_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_PORT(port) ||
      !AGS_IS_AUTOMATION(automation)){
@@ -1724,7 +1664,7 @@ ags_port_remove_automation(AgsPort *port, GObject *automation)
   port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* remove automation */
-  pthread_mutex_lock(port_mutex);
+  g_rec_mutex_lock(port_mutex);
 
   if(g_list_find(port->automation,
 		 automation) != NULL){
@@ -1738,7 +1678,7 @@ ags_port_remove_automation(AgsPort *port, GObject *automation)
     g_object_unref(automation);
   }
   
-  pthread_mutex_unlock(port_mutex);
+  g_rec_mutex_unlock(port_mutex);
 }
 
 /**
@@ -1748,7 +1688,7 @@ ags_port_remove_automation(AgsPort *port, GObject *automation)
  *
  * Returns: a new #AgsPort.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPort*
 ags_port_new()

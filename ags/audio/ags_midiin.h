@@ -130,7 +130,7 @@ struct _AgsMidiin
   char **ring_buffer;
   guint ring_buffer_size[2];
   
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   char **buffer;
   guint buffer_size[4];
 
@@ -163,14 +163,6 @@ struct _AgsMidiin
 #endif
     }alsa;
   }in;
-
-  pthread_t *poll_thread;
-  
-  pthread_mutex_t *poll_mutex;
-  pthread_cond_t *poll_cond;
-
-  pthread_mutex_t *poll_finish_mutex;
-  pthread_cond_t *poll_finish_cond;
 };
 
 struct _AgsMidiinClass
