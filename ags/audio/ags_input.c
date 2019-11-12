@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_input.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synth_generator.h>
@@ -130,7 +128,7 @@ ags_input_class_init(AgsInputClass *input)
    *
    * The file containing audio data.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file-link",
 				   i18n_pspec("file link assigned to"),
@@ -146,7 +144,7 @@ ags_input_class_init(AgsInputClass *input)
    *
    * The synth generators assigned with this input.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("synth-generator",
 				    i18n_pspec("the synth generator"),
@@ -180,7 +178,7 @@ ags_input_set_property(GObject *gobject,
 {
   AgsInput *input;
   
-  pthread_mutex_t *channel_mutex;
+  GRecMutex *channel_mutex;
 
   input = AGS_INPUT(gobject);
 
@@ -194,10 +192,10 @@ ags_input_set_property(GObject *gobject,
 
       file_link = (AgsFileLink *) g_value_get_object(value);
 
-      pthread_mutex_lock(channel_mutex);
+      g_rec_mutex_lock(channel_mutex);
 
       if(input->file_link == (GObject *) file_link){
-	pthread_mutex_unlock(channel_mutex);
+	g_rec_mutex_unlock(channel_mutex);
 
 	return;
       }
@@ -212,7 +210,7 @@ ags_input_set_property(GObject *gobject,
 
       input->file_link = (GObject *) file_link;
 
-      pthread_mutex_unlock(channel_mutex);
+      g_rec_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SYNTH_GENERATOR:
@@ -221,15 +219,15 @@ ags_input_set_property(GObject *gobject,
 
       synth_generator = (AgsSynthGenerator *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(channel_mutex);
+      g_rec_mutex_lock(channel_mutex);
 
       if(g_list_find(input->synth_generator, synth_generator) != NULL){
-	pthread_mutex_unlock(channel_mutex);
+	g_rec_mutex_unlock(channel_mutex);
 	
 	return;
       }
 
-      pthread_mutex_unlock(channel_mutex);
+      g_rec_mutex_unlock(channel_mutex);
       
       ags_input_add_synth_generator(input, (GObject *) synth_generator);
     }
@@ -248,7 +246,7 @@ ags_input_get_property(GObject *gobject,
 {
   AgsInput *input;
 
-  pthread_mutex_t *channel_mutex;
+  GRecMutex *channel_mutex;
 
   input = AGS_INPUT(gobject);
 
@@ -258,22 +256,22 @@ ags_input_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE_LINK:
     {
-      pthread_mutex_lock(channel_mutex);
+      g_rec_mutex_lock(channel_mutex);
 
       g_value_set_object(value, input->file_link);
 
-      pthread_mutex_unlock(channel_mutex);
+      g_rec_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SYNTH_GENERATOR:
     {
-      pthread_mutex_lock(channel_mutex);
+      g_rec_mutex_lock(channel_mutex);
 
       g_value_set_pointer(value, g_list_copy_deep(input->synth_generator,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(channel_mutex);
+      g_rec_mutex_unlock(channel_mutex);
     }
     break;
   default:
@@ -447,7 +445,7 @@ ags_input_notify_format_callback(GObject *gobject,
  * 
  * Returns: %TRUE if has a need to be processed, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_input_is_active(AgsInput *input,
@@ -455,15 +453,13 @@ ags_input_is_active(AgsInput *input,
 {
   AgsChannel *channel;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *end_region;
+  AgsRecycling *recycling, *next_recycling, *end_recycling;
   AgsAudioSignal *audio_signal;
   AgsRecyclingContext *active_context;
   
-  GList *list_start, *list;
-  
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-  pthread_mutex_t *audio_signal_mutex;
+  GList *start_list, *list;
+
+  gboolean success;
   
   if(!AGS_IS_INPUT(input) ||
      !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
@@ -471,17 +467,12 @@ ags_input_is_active(AgsInput *input,
   }
   
   channel = (AgsChannel *) input;
-
-  /* get channel mutex */
-  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
     
   /* get recycling */
-  pthread_mutex_lock(channel_mutex);
-  
-  first_recycling = channel->first_recycling;
-  last_recycling = channel->last_recycling;
-
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       "last-recycling", &last_recycling,
+	       NULL);
   
   if(first_recycling == NULL){
     return(FALSE);
@@ -489,51 +480,34 @@ ags_input_is_active(AgsInput *input,
 
   /* get active recycling context */
   active_context = (AgsRecyclingContext *) recycling_context;
-  
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(last_recycling);
 
-  /* get end region */  
-  pthread_mutex_lock(recycling_mutex);
-
-  end_region = last_recycling->next;
-
-  pthread_mutex_lock(recycling_mutex);
+  /* get end recycling */
+  end_recycling = ags_recycling_next(last_recycling);
 
   /* check if active */
   recycling = first_recycling;
+  g_object_ref(recycling);
 
-  while(recycling != end_region){
-    /* get recycling mutex */
-    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-    
+  success = FALSE;
+  
+  while(recycling != end_recycling){
     /* get audio signal */
-    pthread_mutex_lock(recycling_mutex);
+    g_object_get(recycling,
+		 "audio-signal", &start_list,
+		 NULL);
 
-    list = 
-      list_start = g_list_copy_deep(recycling->audio_signal,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-
-    pthread_mutex_unlock(recycling_mutex);  
-
+    list = start_list;
+    
     while(list != NULL){
       AgsRecallID *current_recall_id;
       AgsRecyclingContext *current_recycling_context;
 
-      pthread_mutex_t *current_recall_id_mutex;
-
       audio_signal = list->data;
 
-      /* get audio signal mutex */
-      audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
       /* get recall id */
-      pthread_mutex_lock(audio_signal_mutex);
-      
-      current_recall_id = (AgsRecallID *) audio_signal->recall_id;
-
-      pthread_mutex_unlock(audio_signal_mutex);
+      g_object_get(audio_signal,
+		   "recall-id", &current_recall_id,
+		   NULL);
       
       if(current_recall_id == NULL){
 	list = list->next;
@@ -541,37 +515,47 @@ ags_input_is_active(AgsInput *input,
 	continue; 
       }
 
-      /* get recall id mutex */
-      current_recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(current_recall_id);
-
       /* get recycling context */
-      pthread_mutex_lock(current_recall_id_mutex);
-      
-      current_recycling_context = current_recall_id->recycling_context;
+      g_object_get(current_recall_id,
+		   "recycling-context", &current_recycling_context,
+		   NULL);
 
-      pthread_mutex_unlock(current_recall_id_mutex);      
+      success = (current_recycling_context == active_context) ? TRUE: FALSE;
+
+      if(current_recycling_context != NULL){
+	g_object_unref(current_recycling_context);
+      }
       
-      if(current_recycling_context == active_context) {
-	g_list_free(list_start);
+      if(success){
+	g_list_free_full(start_list,
+			 g_object_unref);
 	
-	return(TRUE);
+	goto ags_input_is_active_END;
       }
 
       list = list->next;
     }
 
-    g_list_free_full(list_start,
+    g_list_free_full(start_list,
 		     g_object_unref);
     
     /* iterate */
-    pthread_mutex_lock(recycling_mutex);
+    next_recycling = ags_recycling_next(recycling);
 
-    recycling = recycling->next;
-    
-    pthread_mutex_unlock(recycling_mutex);  
+    g_object_unref(recycling);
+
+    recycling = next_recycling;
+  }
+
+ags_input_is_active_END:
+  g_object_unref(first_recycling);
+  g_object_unref(last_recycling);
+
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
   }
   
-  return(FALSE);
+  return(success);
 }
 
 /**
@@ -583,103 +567,80 @@ ags_input_is_active(AgsInput *input,
  * 
  * Returns: next active #AgsInput, else %NULL if non available
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsInput*
 ags_input_next_active(AgsInput *input,
 		      GObject *recycling_context)
 {
-  AgsChannel *channel;
+  AgsChannel *channel, *next_pad_channel;
+  AgsInput *retval;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *end_region;
+  AgsRecycling *recycling, *next_recycling, *end_recycling;
   AgsAudioSignal *audio_signal;  
   AgsRecyclingContext *active_context;
 
-  GList *list_start, *list;
-  
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-  pthread_mutex_t *audio_signal_mutex;
+  GList *start_list, *list;  
 
+  gboolean success;
+  
   if(!AGS_IS_INPUT(input) ||
      !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return(NULL);
   }
 
   channel = (AgsChannel *) input;
-
+  g_object_ref(channel);
+  
+  retval = NULL;
+  
   /* check if active */
   while(channel != NULL){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-    
     /* get recycling */
-    pthread_mutex_lock(channel_mutex);
-  
-    first_recycling = channel->first_recycling;
-    last_recycling = channel->last_recycling;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "first-recycling", &first_recycling,
+		 "last-recycling", &last_recycling,
+		 NULL);
   
     if(first_recycling == NULL){
       /* iterate */
-      pthread_mutex_lock(channel_mutex);
+      next_pad_channel = ags_channel_next_pad(channel);
 
-      channel = channel->next_pad;
-    
-      pthread_mutex_unlock(channel_mutex);
+      g_object_unref(channel);
+
+      channel = next_pad_channel;
       
       continue;
     }
 
     /* get active recycling context */
     active_context = (AgsRecyclingContext *) recycling_context;
-  
-    /* get recycling mutex */
-    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(last_recycling);
 
-    /* get end region */  
-    pthread_mutex_lock(recycling_mutex);
-
-    end_region = last_recycling->next;
-
-    pthread_mutex_lock(recycling_mutex);
+    /* get end recycling */
+    end_recycling = ags_recycling_next(last_recycling);
     
     /* check recycling */
     recycling = first_recycling;
     
-    while(recycling != end_region){
-      /* get recycling mutex */
-      recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-    
+    while(recycling != end_recycling){
       /* get audio signal */
-      pthread_mutex_lock(recycling_mutex);
-
-      list = 
-	list_start = g_list_copy_deep(recycling->audio_signal,
-				      (GCopyFunc) g_object_ref,
-				      NULL);
-
-      pthread_mutex_unlock(recycling_mutex);  
+      g_object_get(recycling,
+		   "audio-signal", &start_list,
+		   NULL);
 
       /* check audio signal */
+      list = start_list;
+      
       while(list != NULL){
 	AgsRecallID *current_recall_id;
 	AgsRecyclingContext *current_recycling_context;
 
-	pthread_mutex_t *current_recall_id_mutex;
-      
 	audio_signal = list->data;
 
-	/* get audio signal mutex */
-	audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
-
 	/* get recall id */
-	pthread_mutex_lock(audio_signal_mutex);
-      
-	current_recall_id = (AgsRecallID *) audio_signal->recall_id;
-
-	pthread_mutex_unlock(audio_signal_mutex);
+	g_object_get(audio_signal,
+		     "recall-id", &current_recall_id,
+		     NULL);
       
 	if(current_recall_id == NULL){
 	  list = list->next;
@@ -687,45 +648,57 @@ ags_input_next_active(AgsInput *input,
 	  continue; 
 	}
 
-	/* get recall id mutex */
-	current_recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(current_recall_id);
-
 	/* get recycling context */
-	pthread_mutex_lock(current_recall_id_mutex);
-      
-	current_recycling_context = current_recall_id->recycling_context;
+	g_object_get(current_recall_id,
+		     "recycling-context", &current_recycling_context,
+		     NULL);
 
-	pthread_mutex_unlock(current_recall_id_mutex);      
-      
-	if(current_recycling_context == active_context) {
-	  g_list_free(list_start);
+	success = (current_recycling_context == active_context) ? TRUE: FALSE;
 	
-	  return((AgsInput *) channel);
+	if(success){
+	  g_list_free_full(start_list,
+			   g_object_unref);
+
+	  retval = channel;
+
+	  goto ags_input_next_active_END;
 	}
 
 	list = list->next;
       }
 
-      g_list_free_full(list_start,
+      g_list_free_full(start_list,
 		       g_object_unref);
 
       /* iterate */
-      pthread_mutex_lock(recycling_mutex);
+      next_recycling = ags_recycling_next(recycling);
 
-      recycling = recycling->next;
-    
-      pthread_mutex_unlock(recycling_mutex);  
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
     }
 
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
+  ags_input_next_active_END:
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
 
-    channel = channel->next_pad;
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+
+    if(retval != NULL){
+      break;
+    }
     
-    pthread_mutex_unlock(channel_mutex);
+    /* iterate */
+    next_pad_channel = ags_channel_next_pad(channel);
+
+    g_object_unref(channel);
+
+    channel = next_pad_channel;
   }
   
-  return(NULL);
+  return(retval);
 }
 
 /**
@@ -735,7 +708,7 @@ ags_input_next_active(AgsInput *input,
  * 
  * Add @synth_generator to @input.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_input_add_synth_generator(AgsInput *input,
@@ -758,7 +731,7 @@ ags_input_add_synth_generator(AgsInput *input,
  * 
  * Remove @synth_generator from @input.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_input_remove_synth_generator(AgsInput *input,
@@ -788,7 +761,7 @@ ags_input_remove_synth_generator(AgsInput *input,
  * 
  * Returns: %TRUE if open was successful, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_input_open_file(AgsInput *input,
@@ -887,7 +860,7 @@ ags_input_open_file(AgsInput *input,
  *
  * Returns: a new #AgsInput
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsInput*
 ags_input_new(GObject *audio)

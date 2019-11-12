@@ -2444,9 +2444,6 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
   success = FALSE;
     
   while(current != end_region){
-    /* get recycling mutex */  
-    current_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(current);
-
     /* get audio signal */
     g_object_get(current,
 		 "audio-signal", &start_list,

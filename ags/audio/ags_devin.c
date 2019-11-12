@@ -42,7 +42,6 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
-#include <poll.h>
 
 #include <string.h>
 #include <math.h>
@@ -107,7 +106,6 @@ void ags_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			GError **error);
 guint ags_devin_get_capability(AgsSoundcard *soundcard);
 
-GList* ags_devin_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_devin_is_available(AgsSoundcard *soundcard);
 
 gboolean ags_devin_is_starting(AgsSoundcard *soundcard);
@@ -494,7 +492,6 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_devin_pcm_info;
   soundcard->get_capability = ags_devin_get_capability;
 
-  soundcard->get_poll_fd = ags_devin_get_poll_fd;
   soundcard->is_available = ags_devin_is_available;
 
   soundcard->is_starting =  ags_devin_is_starting;
@@ -564,7 +561,7 @@ ags_devin_init(AgsDevin *devin)
   devin->flags = 0;
 
   /* insert devin mutex */
-  g_rec_mutex_init(devin->obj_mutex);
+  g_rec_mutex_init(&(devin->obj_mutex));
 
   /* uuid */
   devin->uuid = ags_uuid_alloc();
@@ -691,10 +688,7 @@ ags_devin_init(AgsDevin *devin)
 
   devin->do_loop = FALSE;
 
-  devin->loop_offset = 0;
-  
-  /* poll fd */
-  devin->poll_fd = NULL;
+  devin->loop_offset = 0;  
 }
 
 void
@@ -1816,94 +1810,10 @@ ags_devin_get_capability(AgsSoundcard *soundcard)
   return(AGS_SOUNDCARD_CAPABILITY_CAPTURE);
 }
 
-GList*
-ags_devin_get_poll_fd(AgsSoundcard *soundcard)
-{
-  AgsDevin *devin;
-  AgsPollFd *poll_fd;
-
-  GList *list;
-
-  struct pollfd *fds;
-  
-  gint count;
-  guint i;
-
-  GRecMutex *devin_mutex;
-
-  devin = AGS_DEVIN(soundcard);
-
-  /* get devin mutex */
-  devin_mutex = AGS_DEVIN_GET_OBJ_MUTEX(devin);
-
-  /* get poll fd */
-  g_rec_mutex_lock(devin_mutex);  
-
-  if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
-    if(devin->out.alsa.handle == NULL){
-      g_rec_mutex_unlock(devin_mutex);
-      
-      return(NULL);
-    }
-  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
-    if(devin->out.oss.device_fd == -1){
-      g_rec_mutex_unlock(devin_mutex);
-      
-      return(NULL);
-    }
-  }
-
-  fds = NULL;
-  
-  if(devin->poll_fd == NULL){
-    count = 0;
-    
-    if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
-#ifdef AGS_WITH_ALSA
-      /* get poll fds of ALSA */
-      count = snd_pcm_poll_descriptors_count(devin->out.alsa.handle);
-
-      if(count > 0){
-	fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
-	snd_pcm_poll_descriptors(devin->out.alsa.handle, fds, count);
-      }
-#endif
-    }else{
-      if(devin->out.oss.device_fd != -1){
-	count = 1;
-	fds = (struct pollfd *) malloc(sizeof(struct pollfd));
-	fds->fd = devin->out.oss.device_fd;
-      }
-    }
-    
-    /* map fds */
-    list = NULL;
-
-    for(i = 0; i < count; i++){
-      poll_fd = ags_poll_fd_new();
-      poll_fd->fd = fds[i].fd;
-      poll_fd->poll_fd = &(fds[i]);
-      
-      list = g_list_prepend(list,
-			    poll_fd);
-    }
-
-    devin->poll_fd = list;
-  }else{
-    list = devin->poll_fd;
-  }
-
-  g_rec_mutex_unlock(devin_mutex);
-  
-  return(list);
-}
-
 gboolean
 ags_devin_is_available(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
-
-  GList *list;
 
   gboolean retval;
   
@@ -1915,54 +1825,9 @@ ags_devin_is_available(AgsSoundcard *soundcard)
   devin_mutex = AGS_DEVIN_GET_OBJ_MUTEX(devin);
 
   /* check available */
-  g_rec_mutex_lock(devin_mutex);
-
-  list = devin->poll_fd;
-
   retval = FALSE;
 
-  while(list !=	NULL){
-    signed short revents;
-    
-    revents = 0;
-      
-    if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
-#ifdef AGS_WITH_ALSA
-      snd_pcm_poll_descriptors_revents(devin->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
-#endif
-      
-      if((POLLOUT & revents) != 0){
-	g_atomic_int_set(&(devin->available),
-			 TRUE);
-	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
-
-  	retval = TRUE;
-
-	break;
-      }
-    }else{
-#ifdef AGS_WITH_OSS
-      fd_set writefds;
-
-      FD_ZERO(&writefds);
-      FD_SET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds);
-      
-      if(FD_ISSET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds)){
-	g_atomic_int_set(&(devin->available),
-			 TRUE);
-	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
-
-  	retval = TRUE;
-
-	break;
-      }
-#endif
-    }
-    
-    list = list->next;
-  }
-  
-  g_rec_mutex_unlock(devin_mutex);
+  //TODO:JK: implement me
 
   return(retval);
 }
@@ -2337,9 +2202,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   devin->tic_counter = 0;
 
   devin->nth_ring_buffer = 0;
-  
-  ags_soundcard_get_poll_fd(soundcard);
-  
+    
 #ifdef AGS_WITH_OSS
   devin->flags |= AGS_DEVIN_INITIALIZED;
 #endif
@@ -2362,7 +2225,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsTaskLauncher *task_launcher;
-  AgsPollFd *poll_fd;
 
   AgsApplicationContext *application_context;
 
@@ -2378,11 +2240,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   GRecMutex *devin_mutex;
 
-  static const struct timespec poll_interval = {
-    0,
-    250,
-  };
-  
   auto void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
   void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
@@ -2533,24 +2390,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   }
 
 #ifdef AGS_WITH_OSS
-  /* wait until available */
-  list = ags_soundcard_get_poll_fd(soundcard);
-
-  if(!ags_soundcard_is_available(soundcard) &&
-     !g_atomic_int_get(&(devin->available)) &&
-     list != NULL){
-    poll_fd = list->data;
-    poll_fd->poll_fd->events = POLLOUT;
-    
-    while(!ags_soundcard_is_available(soundcard) &&
-	  !g_atomic_int_get(&(devin->available))){
-      ppoll(poll_fd->poll_fd,
-	    1,
-	    &poll_interval,
-	    NULL);
-    }
-  }
-  
   /* write ring buffer */
   n_write = read(devin->out.oss.device_fd,
 		 devin->ring_buffer[devin->nth_ring_buffer],
@@ -2624,8 +2463,6 @@ ags_devin_oss_free(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
 
-  GList *poll_fd;
-
   guint i;
   
   GRecMutex *devin_mutex;
@@ -2637,23 +2474,6 @@ ags_devin_oss_free(AgsSoundcard *soundcard)
 
   /*  */
   g_rec_mutex_lock(devin_mutex);
-
-#ifdef AGS_WITH_OSS
-  /* remove poll fd */
-  poll_fd = devin->poll_fd;
-  
-  while(poll_fd != NULL){
-    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
-				      poll_fd->data);
-    g_object_unref(poll_fd->data);
-    
-    poll_fd = poll_fd->next;
-  }
-
-  g_list_free(poll_fd);
-
-  devin->poll_fd = NULL;
-#endif
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
     g_rec_mutex_unlock(devin_mutex);
@@ -3137,8 +2957,6 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 
   devin->nth_ring_buffer = 0;
   
-  ags_soundcard_get_poll_fd(soundcard);
-  
 #ifdef AGS_WITH_ALSA
   devin->flags |= AGS_DEVIN_INITIALIZED;
 #endif
@@ -3161,7 +2979,6 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsTaskLauncher *task_launcher;
-  AgsPollFd *poll_fd;
 
   AgsApplicationContext *application_context;
 
@@ -3175,11 +2992,6 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   
   GRecMutex *devin_mutex;
 
-  static const struct timespec poll_interval = {
-    0,
-    250,
-  };
-  
 #ifdef AGS_WITH_ALSA
   auto void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
@@ -3357,27 +3169,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
     nth_buffer = 3;
   }
 
-#ifdef AGS_WITH_ALSA
-  /* wait until available */
-  list = ags_soundcard_get_poll_fd(soundcard);
-
-#if 0
-  if(!ags_soundcard_is_available(soundcard) &&
-     !g_atomic_int_get(&(devin->available)) &&
-     list != NULL){
-    poll_fd = list->data;
-    poll_fd->poll_fd->events = POLLOUT;
-    
-    while(!ags_soundcard_is_available(soundcard) &&
-	  !g_atomic_int_get(&(devin->available))){
-      ppoll(poll_fd->poll_fd,
-	    1,
-	    &poll_interval,
-	    NULL);
-    }
-  }
-#endif
-  
+#ifdef AGS_WITH_ALSA  
   /* write ring buffer */
   devin->out.alsa.rc = snd_pcm_readi(devin->out.alsa.handle,
 				     devin->ring_buffer[devin->nth_ring_buffer],
@@ -3484,8 +3276,6 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   AgsApplicationContext *application_context;
 
-  GList *poll_fd;
-
   guint i;
   
   GRecMutex *devin_mutex;
@@ -3497,23 +3287,6 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   /* lock */
   g_rec_mutex_lock(devin_mutex);
-
-#ifdef AGS_WITH_ALSA
-  /* remove poll fd */
-  poll_fd = devin->poll_fd;
-  
-  while(poll_fd != NULL){
-    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
-				      poll_fd->data);
-    g_object_unref(poll_fd->data);
-    
-    poll_fd = poll_fd->next;
-  }
-
-  g_list_free(poll_fd);
-
-  devin->poll_fd = NULL;
-#endif
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0 ||
      devin->out.alsa.handle == NULL){

@@ -37,6 +37,16 @@
 #include <complex.h>
 
 /**
+ * SECTION:ags_fourier_transform_util
+ * @short_description: fourier transform util
+ * @title: AgsFourierTransformUtil
+ * @section_id:
+ * @include: ags/audio/ags_fourier_transform_util.h
+ *
+ * Utility functions to compute fourier transform.
+ */
+
+/**
  * ags_fourier_transform_util_compute_stft_s8:
  * @buffer: the audio buffer
  * @channels: number of audio channels
@@ -45,7 +55,7 @@
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
@@ -91,7 +101,7 @@ ags_fourier_transform_util_compute_stft_s8(gint8 *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
@@ -137,7 +147,7 @@ ags_fourier_transform_util_compute_stft_s16(gint16 *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
@@ -183,7 +193,7 @@ ags_fourier_transform_util_compute_stft_s24(gint32 *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
@@ -229,7 +239,7 @@ ags_fourier_transform_util_compute_stft_s32(gint32 *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
@@ -275,7 +285,7 @@ ags_fourier_transform_util_compute_stft_s64(gint64 *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
@@ -319,7 +329,7 @@ ags_fourier_transform_util_compute_stft_float(gfloat *buffer, guint channels,
  * 
  * Compute fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
@@ -363,7 +373,7 @@ ags_fourier_transform_util_compute_stft_double(gdouble *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
@@ -407,7 +417,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
@@ -451,7 +461,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
@@ -495,7 +505,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
@@ -539,7 +549,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
@@ -583,7 +593,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels,
@@ -625,7 +635,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
  * 
  * Compute inverse fourier transform of @buffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channels,

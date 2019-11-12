@@ -19,14 +19,22 @@
 
 #include <ags/audio/ags_fm_synth_util.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #include <math.h>
 #include <complex.h>
+
+/**
+ * SECTION:ags_fm_synth_util
+ * @short_description: frequency modulation synth util
+ * @title: AgsFMSynthUtil
+ * @section_id:
+ * @include: ags/audio/ags_fm_synth_util.h
+ *
+ * Utility functions to compute FM synths.
+ */
 
 /**
  * ags_fm_synth_util_sin_s8:
@@ -44,7 +52,7 @@
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_s8(gint8 *buffer,
@@ -113,7 +121,7 @@ ags_fm_synth_util_sin_s8(gint8 *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_s16(gint16 *buffer,
@@ -182,7 +190,7 @@ ags_fm_synth_util_sin_s16(gint16 *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_s24(gint32 *buffer,
@@ -251,7 +259,7 @@ ags_fm_synth_util_sin_s24(gint32 *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_s32(gint32 *buffer,
@@ -320,7 +328,7 @@ ags_fm_synth_util_sin_s32(gint32 *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_s64(gint64 *buffer,
@@ -389,7 +397,7 @@ ags_fm_synth_util_sin_s64(gint64 *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_float(float *buffer,
@@ -457,7 +465,7 @@ ags_fm_synth_util_sin_float(float *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_double(double *buffer,
@@ -525,7 +533,7 @@ ags_fm_synth_util_sin_double(double *buffer,
  * 
  * Generate frequency modulate sin wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin_complex(AgsComplex *buffer,
@@ -659,7 +667,7 @@ ags_fm_synth_util_sin_complex(AgsComplex *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
@@ -731,7 +739,7 @@ ags_fm_synth_util_sawtooth_s8(gint8 *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
@@ -803,7 +811,7 @@ ags_fm_synth_util_sawtooth_s16(gint16 *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
@@ -875,7 +883,7 @@ ags_fm_synth_util_sawtooth_s24(gint32 *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
@@ -947,7 +955,7 @@ ags_fm_synth_util_sawtooth_s32(gint32 *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
@@ -1019,7 +1027,7 @@ ags_fm_synth_util_sawtooth_s64(gint64 *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_float(float *buffer,
@@ -1090,7 +1098,7 @@ ags_fm_synth_util_sawtooth_float(float *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_double(double *buffer,
@@ -1161,7 +1169,7 @@ ags_fm_synth_util_sawtooth_double(double *buffer,
  * 
  * Generate frequency modulate sawtooth wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
@@ -1298,7 +1306,7 @@ ags_fm_synth_util_sawtooth_complex(AgsComplex *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_s8(gint8 *buffer,
@@ -1370,7 +1378,7 @@ ags_fm_synth_util_triangle_s8(gint8 *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_s16(gint16 *buffer,
@@ -1442,7 +1450,7 @@ ags_fm_synth_util_triangle_s16(gint16 *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_s24(gint32 *buffer,
@@ -1515,7 +1523,7 @@ ags_fm_synth_util_triangle_s24(gint32 *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_s32(gint32 *buffer,
@@ -1587,7 +1595,7 @@ ags_fm_synth_util_triangle_s32(gint32 *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_s64(gint64 *buffer,
@@ -1659,7 +1667,7 @@ ags_fm_synth_util_triangle_s64(gint64 *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_float(float *buffer,
@@ -1730,7 +1738,7 @@ ags_fm_synth_util_triangle_float(float *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_double(double *buffer,
@@ -1801,7 +1809,7 @@ ags_fm_synth_util_triangle_double(double *buffer,
  * 
  * Generate frequency modulate triangle wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
@@ -1938,7 +1946,7 @@ ags_fm_synth_util_triangle_complex(AgsComplex *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_s8(gint8 *buffer,
@@ -2027,7 +2035,7 @@ ags_fm_synth_util_square_s8(gint8 *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_s16(gint16 *buffer,
@@ -2116,7 +2124,7 @@ ags_fm_synth_util_square_s16(gint16 *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_s24(gint32 *buffer,
@@ -2205,7 +2213,7 @@ ags_fm_synth_util_square_s24(gint32 *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_s32(gint32 *buffer,
@@ -2294,7 +2302,7 @@ ags_fm_synth_util_square_s32(gint32 *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_s64(gint64 *buffer,
@@ -2383,7 +2391,7 @@ ags_fm_synth_util_square_s64(gint64 *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_float(float *buffer,
@@ -2471,7 +2479,7 @@ ags_fm_synth_util_square_float(float *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_double(double *buffer,
@@ -2559,7 +2567,7 @@ ags_fm_synth_util_square_double(double *buffer,
  * 
  * Generate frequency modulate square wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square_complex(AgsComplex *buffer,
@@ -2713,7 +2721,7 @@ ags_fm_synth_util_square_complex(AgsComplex *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_s8(gint8 *buffer,
@@ -2802,7 +2810,7 @@ ags_fm_synth_util_impulse_s8(gint8 *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_s16(gint16 *buffer,
@@ -2891,7 +2899,7 @@ ags_fm_synth_util_impulse_s16(gint16 *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_s24(gint32 *buffer,
@@ -2980,7 +2988,7 @@ ags_fm_synth_util_impulse_s24(gint32 *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_s32(gint32 *buffer,
@@ -3069,7 +3077,7 @@ ags_fm_synth_util_impulse_s32(gint32 *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_s64(gint64 *buffer,
@@ -3158,7 +3166,7 @@ ags_fm_synth_util_impulse_s64(gint64 *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_float(float *buffer,
@@ -3246,7 +3254,7 @@ ags_fm_synth_util_impulse_float(float *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_double(double *buffer,
@@ -3334,7 +3342,7 @@ ags_fm_synth_util_impulse_double(double *buffer,
  * 
  * Generate frequency modulate impulse wave.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
@@ -3489,7 +3497,7 @@ ags_fm_synth_util_impulse_complex(AgsComplex *buffer,
  *
  * Generate frequency modulate sin wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sin(void *buffer,
@@ -3613,7 +3621,7 @@ ags_fm_synth_util_sin(void *buffer,
  *
  * Generate frequency modulate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_sawtooth(void *buffer,
@@ -3737,7 +3745,7 @@ ags_fm_synth_util_sawtooth(void *buffer,
  *
  * Generate frequency modulate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_triangle(void *buffer,
@@ -3861,7 +3869,7 @@ ags_fm_synth_util_triangle(void *buffer,
  *
  * Generate frequency modulate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_square(void *buffer,
@@ -3985,7 +3993,7 @@ ags_fm_synth_util_square(void *buffer,
  *
  * Generate frequency modulate impulse wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fm_synth_util_impulse(void *buffer,
