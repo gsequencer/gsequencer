@@ -41,26 +41,26 @@ typedef struct _AgsAudioThreadClass AgsAudioThreadClass;
 
 /**
  * AgsAudioThreadFlags:
- * @AGS_AUDIO_THREAD_DONE: sync done parent thread, initial wait during #AgsThread::run()
- * @AGS_AUDIO_THREAD_WAIT: sync wait parent thread, initial wait during #AgsThread::run()
- * @AGS_AUDIO_THREAD_DONE_SYNC: sync done parent thread, signal completed during #AgsThread::run()
- * @AGS_AUDIO_THREAD_WAIT_SYNC: sync wait parent thread, signal completed during #AgsThread::run()
+ * @AGS_AUDIO_THREAD_STATUS_DONE: sync done parent thread, initial wait during #AgsThread::run()
+ * @AGS_AUDIO_THREAD_STATUS_WAIT: sync wait parent thread, initial wait during #AgsThread::run()
+ * @AGS_AUDIO_THREAD_STATUS_DONE_SYNC: sync done parent thread, signal completed during #AgsThread::run()
+ * @AGS_AUDIO_THREAD_STATUS_WAIT_SYNC: sync wait parent thread, signal completed during #AgsThread::run()
  *
  * Enum values to control the behavior or indicate internal state of #AgsAudioThread by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_THREAD_DONE            = 1,
-  AGS_AUDIO_THREAD_WAIT            = 1 <<  1,
-  AGS_AUDIO_THREAD_DONE_SYNC       = 1 <<  2,
-  AGS_AUDIO_THREAD_WAIT_SYNC       = 1 <<  3,
+  AGS_AUDIO_THREAD_STATUS_DONE            = 1,
+  AGS_AUDIO_THREAD_STATUS_WAIT            = 1 <<  1,
+  AGS_AUDIO_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
+  AGS_AUDIO_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
 }AgsAudioThreadFlags;
 
 struct _AgsAudioThread
 {
   AgsThread thread;
 
-  volatile guint flags;
+  volatile guint status_flags;
 
   GObject *default_output_soundcard;
   
@@ -82,6 +82,10 @@ struct _AgsAudioThreadClass
 };
 
 GType ags_audio_thread_get_type();
+
+gboolean ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags);
+void ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags);
+void ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags);
 
 void ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
 				      gint sound_scope);

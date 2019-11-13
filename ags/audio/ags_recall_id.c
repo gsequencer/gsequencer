@@ -249,21 +249,6 @@ ags_recall_id_finalize(GObject *gobject)
 }
 
 /**
- * ags_recall_id_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 3.0.0
- */
-GRecMutex*
-ags_recall_id_get_class_mutex()
-{
-  return(&ags_recall_id_class_mutex);
-}
-
-/**
  * ags_recall_id_set_scope:
  * @recall_id: the #AgsRecallID
  * @sound_scope: the sound scope

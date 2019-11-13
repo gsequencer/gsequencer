@@ -348,9 +348,6 @@ ags_recall_audio_automate(AgsRecall *recall)
       
       current_automation = automation->data;
 
-      /* get automation mutex */
-      automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
-
       /* get some fields */
       g_object_get(current_automation,
 		   "timestamp", &timestamp,

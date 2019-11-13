@@ -55,13 +55,13 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
   obj_mutex = NULL;
   
   if(AGS_IS_DEVOUT(soundcard)){
-    obj_mutex = AGS_DEVOUT(soundcard)->obj_mutex;
+    obj_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
-    obj_mutex = AGS_JACK_DEVOUT(soundcard)->obj_mutex;
+    obj_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-    obj_mutex = AGS_CORE_AUDIO_DEVOUT(soundcard)->obj_mutex;
+    obj_mutex = AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
-    obj_mutex = AGS_WASAPI_DEVOUT(soundcard)->obj_mutex;
+    obj_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else{
     g_warning("unknown soundcard implementation");
   }

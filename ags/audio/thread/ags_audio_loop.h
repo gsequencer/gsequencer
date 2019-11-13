@@ -62,30 +62,17 @@ typedef enum{
   AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 5,
 }AgsAudioLoopFlags;
 
-/**
- * AgsAudioLoopTimingFlags:
- * @AGS_AUDIO_LOOP_TIMING_WAITING: timing waiting
- * @AGS_AUDIO_LOOP_TIMING_WAKEUP: timing wakeup
- * 
- * Enum values to control timing.
- */
-typedef enum{
-  AGS_AUDIO_LOOP_TIMING_WAITING                 = 1,
-  AGS_AUDIO_LOOP_TIMING_WAKEUP                  = 1 <<  1,
-}AgsAudioLoopTimingFlags;
-
 struct _AgsAudioLoop
 {
   AgsThread thread;
 
   guint flags;
-  volatile guint timing_flags;
   
-  volatile guint tic;
-  volatile guint last_sync;
+  guint tic;
+  guint last_sync;
 
   guint time_cycle;
-  volatile guint time_spent;
+  guint time_spent;
 
   guint sync_tic;
   guint sync_counter[6];

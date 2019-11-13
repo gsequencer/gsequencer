@@ -932,7 +932,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
   /* check instantiable child */
   if(source == NULL ||
      child_type == G_TYPE_NONE ||
-     ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
+     ags_recall_test_flags(recall_channel_run, AGS_RECALL_TEMPLATE)){
     if(destination != NULL){
       g_object_unref(destination);
     }
@@ -1222,7 +1222,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   /* add new */
   if(new_start_changed_region != NULL){
     /* get some fields */
-    g_object_get(source_first_recycling,
+    g_object_get(new_start_changed_region,
 		 "recall-id", &recall_id,
 		 "output-soundcard", &output_soundcard,
 		 "input-soundcard", &input_soundcard,
@@ -1472,9 +1472,6 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	
       while(source_recycling != source_end_recycling){
 	AgsRecallRecycling *recall_recycling;
-	
-	/* get recycling mutex */
-	source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_recycling);
 	
 	recall_recycling = g_object_new(child_type,
 					"recall-id", recall_id,

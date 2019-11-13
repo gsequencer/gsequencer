@@ -53,11 +53,11 @@ ags_sequencer_util_get_obj_mutex(GObject *sequencer)
   obj_mutex = NULL;
   
   if(AGS_IS_MIDIIN(sequencer)){
-    obj_mutex = AGS_MIDIIN(sequencer)->obj_mutex;
+    obj_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else if(AGS_IS_JACK_MIDIIN(sequencer)){
-    obj_mutex = AGS_JACK_MIDIIN(sequencer)->obj_mutex;
+    obj_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
-    obj_mutex = AGS_CORE_AUDIO_MIDIIN(sequencer)->obj_mutex;
+    obj_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else{
     g_warning("unknown sequencer implementation");
   }

@@ -19,8 +19,6 @@
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -950,6 +948,71 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 }
 
 /**
+ * ags_audio_thread_test_status_flags:
+ * @audio_thread: the #AgsAudioThread
+ * @status_flags: status flags
+ * 
+ * Test @status_flags of @audio_thread.
+ * 
+ * Returns: %TRUE if status flags set, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_audio_thread_test_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+{
+  gboolean retval;
+  
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return(FALSE);
+  }
+
+  retval = ((status_flags & (g_atomic_int_get(&(audio_thread->status_flags)))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_audio_thread_set_status_flags:
+ * @audio_thread: the #AgsAudioThread
+ * @status_flags: status flags
+ * 
+ * Set status flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_audio_thread_set_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+{
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(audio_thread->status_flags),
+		  status_flags);
+}
+
+/**
+ * ags_audio_thread_test_status_flags:
+ * @audio_thread: the #AgsAudioThread
+ * @status_flags: status flags
+ * 
+ * Unset status flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_audio_thread_unset_status_flags(AgsAudioThread *audio_thread, guint status_flags)
+{
+  if(!AGS_IS_AUDIO_THREAD(audio_thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(audio_thread->status_flags),
+		   (~status_flags));
+}
+
+/**
  * ags_audio_thread_set_sound_scope:
  * @audio_thread: the #AgsAudioThread
  * @sound_scope: the sound scope
@@ -968,11 +1031,7 @@ ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
     return;
   }
 
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(audio_thread)->obj_mutex;
-
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_thread);
 
   /* set scope */
   pthread_mutex_lock(thread_mutex);

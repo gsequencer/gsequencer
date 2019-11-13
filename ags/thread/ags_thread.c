@@ -3176,16 +3176,19 @@ ags_thread_hangcheck(AgsThread *thread)
  * @thread: the #AgsThread
  * @gtype: the #GType-struct
  * 
- * Find @gtype as descendant of @thread.
+ * Find @gtype as descendant of @thread. If its a descendant thread,
+ * the ref-count is increased.
  * 
  * Since: 3.0.0
  */
 AgsThread*
 ags_thread_find_type(AgsThread *thread, GType gtype)
 {
-  AgsThread *current, *retval;
+  AgsThread *child, *next_child;
+  AgsThread *retval;
 
-  if(thread == NULL || gtype == G_TYPE_NONE){
+  if(!AGS_IS_THREAD(thread) ||
+     gtype == G_TYPE_NONE){
     return(NULL);
   }
 
@@ -3193,14 +3196,19 @@ ags_thread_find_type(AgsThread *thread, GType gtype)
     return(thread);
   }
   
-  current = g_atomic_pointer_get(&(thread->children));
+  child = ags_thread_children(thread);
 
-  while(current != NULL){
-    if((retval = ags_thread_find_type(current, gtype)) != NULL){
+  while(child != NULL){
+    if((retval = ags_thread_find_type(child, gtype)) != NULL){
       return(retval);
     }
-    
-    current = g_atomic_pointer_get(&(current->next));
+
+    /* iterate */
+    next_child = ags_thread_next(child);
+
+    g_object_unref(child);
+
+    child = next_child;
   }
   
   return(NULL);

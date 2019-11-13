@@ -19,8 +19,6 @@
 
 #include <ags/audio/thread/ags_channel_thread.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback.h>
 
@@ -594,6 +592,71 @@ ags_channel_thread_stop(AgsThread *thread)
 }
 
 /**
+ * ags_channel_thread_test_status_flags:
+ * @channel_thread: the #AgsChannelThread
+ * @status_flags: status flags
+ * 
+ * Test @status_flags of @channel_thread.
+ * 
+ * Returns: %TRUE if status flags set, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+{
+  gboolean retval;
+  
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return(FALSE);
+  }
+
+  retval = ((status_flags & (g_atomic_int_get(&(channel_thread->status_flags)))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_channel_thread_set_status_flags:
+ * @channel_thread: the #AgsChannelThread
+ * @status_flags: status flags
+ * 
+ * Set status flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+{
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(channel_thread->status_flags),
+		  status_flags);
+}
+
+/**
+ * ags_channel_thread_test_status_flags:
+ * @channel_thread: the #AgsChannelThread
+ * @status_flags: status flags
+ * 
+ * Unset status flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags)
+{
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(channel_thread->status_flags),
+		   (~status_flags));
+}
+
+/**
  * ags_channel_thread_set_sound_scope:
  * @channel_thread: the #AgsChannelThread
  * @sound_scope: the sound scope
@@ -612,11 +675,7 @@ ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
     return;
   }
 
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(channel_thread)->obj_mutex;
-
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
 
   /* set scope */
   pthread_mutex_lock(thread_mutex);

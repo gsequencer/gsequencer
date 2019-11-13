@@ -165,8 +165,6 @@ struct _AgsCoreAudioDevout
 
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
-
-  GObject *notify_soundcard;
 };
 
 struct _AgsCoreAudioDevoutClass
@@ -187,7 +185,7 @@ void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_dev
 void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
-AgsCoreAudioDevout* ags_core_audio_devout_new(AgsApplicationContext *application_context);
+AgsCoreAudioDevout* ags_core_audio_devout_new();
 
 G_END_DECLS
 

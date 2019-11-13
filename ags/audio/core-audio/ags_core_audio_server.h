@@ -72,8 +72,6 @@ struct _AgsCoreAudioServer
   volatile gboolean running;
   pthread_t *thread;
 
-  AgsApplicationContext *application_context;
-
   AgsUUID *uuid;
   
   gchar *url;

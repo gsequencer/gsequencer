@@ -955,7 +955,7 @@ ags_recycling_finalize(GObject *gobject)
 
   /* AgsAudioSignal */
   list =
-    start_list recycling->audio_signal;
+    start_list = recycling->audio_signal;
 
   while(list != NULL){
     g_object_run_dispose(list->data);
@@ -1046,9 +1046,6 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
 			   entry);
   }
   
-  /* get recycling mutex */
-  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
-
   /* add audio signal */
   g_object_get(recycling,
 	       "audio-signal", &start_list,
@@ -1808,7 +1805,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     g_rec_mutex_unlock(recycling_mutex);
   }
 
-  g_list_free_full(start_lilist,
+  g_list_free_full(start_list,
 		   g_object_unref);
 
   g_object_set(audio_signal,

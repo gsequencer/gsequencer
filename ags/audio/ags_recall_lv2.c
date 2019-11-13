@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall_lv2.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
@@ -46,7 +44,6 @@
 
 void ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2_class);
 void ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_lv2_init(AgsRecallLv2 *recall_lv2);
 void ags_recall_lv2_set_property(GObject *gobject,
 				 guint prop_id,
@@ -58,10 +55,6 @@ void ags_recall_lv2_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_recall_lv2_dispose(GObject *gobject);
 void ags_recall_lv2_finalize(GObject *gobject);
-
-void ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port);
-void ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_recall_lv2
@@ -86,7 +79,6 @@ enum{
 
 static gpointer ags_recall_lv2_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_lv2_parent_connectable_interface;
-static AgsPluginInterface* ags_recall_lv2_parent_plugin_interface;
 
 GType
 ags_recall_lv2_get_type (void)
@@ -114,12 +106,6 @@ ags_recall_lv2_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_recall_lv2_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_lv2 = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						 "AgsRecallLv2",
 						 &ags_recall_lv2_info,
@@ -128,10 +114,6 @@ ags_recall_lv2_get_type (void)
     g_type_add_interface_static(ags_type_recall_lv2,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_lv2,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_lv2);
   }
@@ -283,16 +265,6 @@ void
 ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_lv2_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_recall_lv2_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_recall_lv2_set_ports;
-  plugin->read = ags_recall_lv2_read;
-  plugin->write = ags_recall_lv2_write;
 }
 
 void
@@ -586,249 +558,6 @@ ags_recall_lv2_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_lv2_parent_class)->finalize(gobject);
-}
-
-void
-ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsRecallLv2 *recall_lv2;
-  AgsPort *current_port;
-  
-  AgsLv2Plugin *lv2_plugin;
-  
-  GList *list;  
-  GList *plugin_port_start, *plugin_port;
-  
-  gchar *filename, *effect;
-  
-  guint port_count;
-  guint i;
-
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
-  pthread_mutex_t *port_mutex;
-
-  recall_lv2 = AGS_RECALL_LV2(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-
-  filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
-  effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
-  
-  pthread_mutex_unlock(recall_mutex);
-  
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       filename, effect);
-
-  g_free(filename);
-  g_free(effect);
-
-  /* set port */
-  pthread_mutex_lock(recall_mutex);
-
-  recall_lv2->plugin = lv2_plugin;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  /* get base plugin mutex */
-  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
-
-  /* get plugin port */
-  pthread_mutex_lock(base_plugin_mutex);
-
-  plugin_port =
-    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
-
-  pthread_mutex_unlock(base_plugin_mutex);
-
-  /* match port */
-  if(plugin_port != NULL){
-    port_count = g_list_length(plugin_port_start);
-
-    for(i = 0; i < port_count; i++){
-      AgsPluginPort *current_plugin_port;
-      
-      pthread_mutex_t *plugin_port_mutex;
-      
-      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
-
-      /* get plugin port mutex */
-      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
-
-      if(ags_plugin_port_test_flags(current_plugin_port,
-				    AGS_PLUGIN_PORT_CONTROL)){
-	gchar *specifier;
-	
-	GValue *default_value;
-
-	default_value = g_new0(GValue,
-			       1);
-	g_value_init(default_value,
-		     G_TYPE_FLOAT);
-		
-	pthread_mutex_lock(plugin_port_mutex);
-
-	specifier = g_strdup(current_plugin_port->port_name);
-	g_value_copy(current_plugin_port->default_value,
-		     default_value);
-	
-	pthread_mutex_unlock(plugin_port_mutex);
-
-	list = ags_port_find_specifier(port, specifier);
-
-	if(list != NULL){
-	  current_port = list->data;
-	  g_object_set(current_port,
-		       "plugin-port", current_plugin_port,
-		       NULL);
-	  ags_recall_lv2_load_conversion(recall_lv2,
-					 (GObject *) current_port,
-					 current_plugin_port);
-
-	  //TODO:JK: check raw write	  
-	  ags_port_safe_write(current_port,
-			      default_value);
-
-#ifdef AGS_DEBUG
-	  g_message("connecting port: %lu/%lu", i, port_count);
-#endif
-	}
-
-	g_value_unset(default_value);
-	g_free(default_value);
-	g_free(specifier);
-      }else if(ags_plugin_port_test_flags(current_plugin_port,
-					  AGS_PLUGIN_PORT_AUDIO)){
-	guint port_index;
-
-	g_object_get(current_plugin_port,
-		     "port-index", &port_index,
-		     NULL);
-	
-	pthread_mutex_lock(recall_mutex);
-
-	if(ags_plugin_port_test_flags(current_plugin_port,
-				      AGS_PLUGIN_PORT_INPUT)){
-	  if(recall_lv2->input_port == NULL){
-	    recall_lv2->input_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->input_port[0] = port_index;
-	  }else{
-	    recall_lv2->input_port = (guint *) realloc(recall_lv2->input_port,
-						       (recall_lv2->input_lines + 1) * sizeof(guint));
-	    recall_lv2->input_port[recall_lv2->input_lines] = port_index;
-	  }
-
-	  recall_lv2->input_lines += 1;
-	}else if(ags_plugin_port_test_flags(current_plugin_port,
-					    AGS_PLUGIN_PORT_OUTPUT)){
-	  if(recall_lv2->output_port == NULL){
-	    recall_lv2->output_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->output_port[0] = port_index;
-	  }else{
-	    recall_lv2->output_port = (guint *) realloc(recall_lv2->output_port,
-							(recall_lv2->output_lines + 1) * sizeof(guint));
-	    recall_lv2->output_port[recall_lv2->output_lines] = port_index;
-	  }
-
-	  recall_lv2->output_lines += 1;
-	}
-
-	pthread_mutex_unlock(recall_mutex);
-      }
-
-      /* iterate plugin port */
-      plugin_port = plugin_port->next;
-    }
-
-    /* reverse port */
-    pthread_mutex_lock(recall_mutex);
-    
-    AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
-
-    pthread_mutex_unlock(recall_mutex);
-  }
-
-  g_list_free(plugin_port_start);
-}
-
-void
-ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsRecallLv2 *gobject;
-  AgsLv2Plugin *lv2_plugin;
-
-  gchar *uri;
-
-  gobject = AGS_RECALL_LV2(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-  uri = xmlGetProp(node,
-		   "uri");
-
-  g_object_set(gobject,
-	       "uri", uri,
-	       NULL);
-
-  ags_recall_lv2_load(gobject);
-}
-
-xmlNode*
-ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsRecallLv2 *recall_lv2;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  pthread_mutex_t *recall_mutex;
-
-  recall_lv2 = AGS_RECALL_LV2(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
-
-  /*  */
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-recall-lv2");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", recall_lv2,
-				   NULL));
-
-  pthread_mutex_lock(recall_mutex);
-
-  xmlNewProp(node,
-	     "uri",
-	     g_strdup(recall_lv2->uri));
-
-  pthread_mutex_unlock(recall_mutex);
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 /**

@@ -41,26 +41,26 @@ typedef struct _AgsChannelThreadClass AgsChannelThreadClass;
 
 /**
  * AgsChannelThreadFlags:
- * @AGS_CHANNEL_THREAD_DONE: sync done parent thread, initial wait during #AgsThread::run()
- * @AGS_CHANNEL_THREAD_WAIT: sync wait parent thread, initial wait during #AgsThread::run()
- * @AGS_CHANNEL_THREAD_DONE_SYNC: sync done parent thread, signal completed during #AgsThread::run()
- * @AGS_CHANNEL_THREAD_WAIT_SYNC: sync wait parent thread, signal completed during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_STATUS_DONE: sync done parent thread, initial wait during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_STATUS_WAIT: sync wait parent thread, initial wait during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_STATUS_DONE_SYNC: sync done parent thread, signal completed during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC: sync wait parent thread, signal completed during #AgsThread::run()
  *
  * Enum values to control the behavior or indicate internal state of #AgsChannelThread by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CHANNEL_THREAD_DONE            = 1,
-  AGS_CHANNEL_THREAD_WAIT            = 1 <<  1,
-  AGS_CHANNEL_THREAD_DONE_SYNC       = 1 <<  2,
-  AGS_CHANNEL_THREAD_WAIT_SYNC       = 1 <<  3,
+  AGS_CHANNEL_THREAD_STATUS_DONE            = 1,
+  AGS_CHANNEL_THREAD_STATUS_WAIT            = 1 <<  1,
+  AGS_CHANNEL_THREAD_STATUS_DONE_SYNC       = 1 <<  2,
+  AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC       = 1 <<  3,
 }AgsChannelThreadFlags;
 
 struct _AgsChannelThread
 {
   AgsThread thread;
 
-  volatile guint flags;
+  volatile guint status_flags;
 
   GObject *default_output_soundcard;
     
@@ -81,6 +81,10 @@ struct _AgsChannelThreadClass
 };
 
 GType ags_channel_thread_get_type();
+
+gboolean ags_channel_thread_test_status_flags(AgsChannelThread *channel_thread, guint status_flags);
+void ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint status_flags);
+void ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint status_flags);
 
 void ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 					gint sound_scope);

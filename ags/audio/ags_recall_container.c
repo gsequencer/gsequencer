@@ -961,22 +961,6 @@ ags_recall_container_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_recall_container_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 3.0.0
- */
-GRecMutex*
-ags_recall_container_get_class_mutex()
-{
-  return(&ags_recall_container_class_mutex);
-}
-
-
-/**
  * ags_recall_container_test_flags:
  * @recall_container: the #AgsRecallContainer
  * @flags: the flags
