@@ -19,8 +19,6 @@
 
 #include <ags/audio/thread/ags_export_thread.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_devout.h>
 
 #include <ags/audio/wasapi/ags_wasapi_devout.h>
@@ -140,7 +138,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    *
    * The assigned #AgsSoundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -156,7 +154,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    *
    * The assigned #AgsAudioFile.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-file",
 				   i18n_pspec("audio file to write"),
@@ -172,7 +170,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    *
    * The tic.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("tic",
 				  i18n_pspec("tic"),
@@ -213,11 +211,8 @@ ags_export_thread_init(AgsExportThread *export_thread)
   
   thread = (AgsThread *) export_thread;
 
-  g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_START_SYNCED_FREQ));
-
-  g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+  ags_thread_set_flags(thread, (AGS_THREAD_START_SYNCED_FREQ |
+				AGS_THREAD_INTERMEDIATE_POST_SYNC));
   
   config = ags_config_get_instance();
   
@@ -278,16 +273,12 @@ ags_export_thread_set_property(GObject *gobject,
 {
   AgsExportThread *export_thread;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(export_thread);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -296,10 +287,10 @@ ags_export_thread_set_property(GObject *gobject,
 
       soundcard = (GObject *) g_value_get_object(value);
 
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       if(export_thread->soundcard == soundcard){
-	pthread_mutex_unlock(thread_mutex);
+	g_rec_mutex_unlock(thread_mutex);
 
 	return;
       }
@@ -314,7 +305,7 @@ ags_export_thread_set_property(GObject *gobject,
       
       export_thread->soundcard = soundcard;
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_AUDIO_FILE:
@@ -323,10 +314,10 @@ ags_export_thread_set_property(GObject *gobject,
 
       audio_file = g_value_get_object(value);
 
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       if(export_thread->audio_file == audio_file){
-	pthread_mutex_unlock(thread_mutex);
+	g_rec_mutex_unlock(thread_mutex);
 
 	return;
       }
@@ -341,16 +332,16 @@ ags_export_thread_set_property(GObject *gobject,
 
       export_thread->audio_file = audio_file;
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_TIC:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       export_thread->tic = g_value_get_uint(value);
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -367,43 +358,39 @@ ags_export_thread_get_property(GObject *gobject,
 {
   AgsExportThread *export_thread;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(export_thread);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       g_value_set_object(value, G_OBJECT(export_thread->soundcard));
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_AUDIO_FILE:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       g_value_set_object(value, export_thread->audio_file);
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_TIC:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       g_value_set_uint(value, export_thread->tic);
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -498,9 +485,6 @@ ags_export_thread_run(AgsThread *thread)
   guint pcm_channels;
   guint buffer_size;
   guint format;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
   
   export_thread = AGS_EXPORT_THREAD(thread);
 
@@ -570,35 +554,35 @@ ags_export_thread_stop(AgsThread *thread)
  * Returns: the matching #AgsExportThread, if not
  * found %NULL.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportThread*
 ags_export_thread_find_soundcard(AgsExportThread *export_thread,
 				 GObject *soundcard)
 {
-  if(export_thread == NULL ||
-     !AGS_IS_EXPORT_THREAD(export_thread)){
+  AgsThread *thread, *next_thread;
+  
+  if(!AGS_IS_EXPORT_THREAD(export_thread)){
     return(NULL);
   }
-  
-  while(export_thread != NULL){
-    if(AGS_IS_EXPORT_THREAD(export_thread)){
-      GObject *current_soundcard;
-      
-      g_object_get(export_thread,
-		   "soundcard", &current_soundcard,
-		   NULL);
 
-      g_object_unref(current_soundcard);
-      
-      if(current_soundcard == soundcard){
-	return(export_thread);
-      }
-    }
-    
-    export_thread = g_atomic_pointer_get(&(((AgsThread *) export_thread)->next));
-  }
+  thread = export_thread;
+  g_object_ref(thread);
   
+  while(thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(thread) &&
+       AGS_EXPORT_THREAD(thread)->soundcard == soundcard){
+      return(thread);
+    }
+
+    /* iterate */
+    next_thread = ags_thread_next(thread);
+
+    g_object_unref(thread);
+    
+    thread = next_thread;
+  }
+
   return(NULL);
 }
 
@@ -611,7 +595,7 @@ ags_export_thread_find_soundcard(AgsExportThread *export_thread,
  *
  * Returns: the new #AgsExportThread
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportThread*
 ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file)

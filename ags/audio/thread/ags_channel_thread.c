@@ -183,8 +183,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   thread = (AgsThread *) channel_thread;
 
-  g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_START_SYNCED_FREQ));
+  ags_thread_set_flags(thread, AGS_THREAD_START_SYNCED_FREQ);
   
   config = ags_config_get_instance();
   
@@ -193,34 +192,20 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;  
 
-  g_atomic_int_set(&(channel_thread->flags),
+  g_atomic_int_set(&(channel_thread->status_flags),
 		   0);
 
   channel_thread->default_output_soundcard = NULL;
   
   /* start */
-  pthread_mutexattr_init(&(channel_thread->wakeup_attr));
-  pthread_mutexattr_settype(&(channel_thread->wakeup_attr),
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  channel_thread->wakeup_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(channel_thread->wakeup_mutex,
-		     &(channel_thread->wakeup_attr));
+  g_mutex_init(&(channel_thread->wakeup_mutex));
   
-  channel_thread->wakeup_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(channel_thread->wakeup_cond, NULL);
+  g_cond_init(&(channel_thread->wakeup_cond));
 
   /* sync */
-  pthread_mutexattr_init(&(channel_thread->done_attr));
-  pthread_mutexattr_settype(&(channel_thread->done_attr),
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  channel_thread->done_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(channel_thread->done_mutex,
-		     &(channel_thread->done_attr));
+  g_mutex_init(&(channel_thread->done_mutex));
   
-  channel_thread->done_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(channel_thread->done_cond, NULL);
+  g_cond_init(&(channel_thread->done_cond));
 
   /* channel and sound scope */
   channel_thread->channel = NULL;
@@ -235,16 +220,12 @@ ags_channel_thread_set_property(GObject *gobject,
 {
   AgsChannelThread *channel_thread;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
 
   switch(prop_id){
   case PROP_DEFAULT_OUTPUT_SOUNDCARD:
@@ -253,10 +234,10 @@ ags_channel_thread_set_property(GObject *gobject,
 
       default_output_soundcard = g_value_get_object(value);
 
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       if(channel_thread->default_output_soundcard == default_output_soundcard){
-	pthread_mutex_unlock(thread_mutex);
+	g_rec_mutex_unlock(thread_mutex);
 
 	return;
       }
@@ -271,7 +252,7 @@ ags_channel_thread_set_property(GObject *gobject,
 
       channel_thread->default_output_soundcard = default_output_soundcard;
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_CHANNEL:
@@ -280,10 +261,10 @@ ags_channel_thread_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       if(channel_thread->channel == (GObject *) channel){
-	pthread_mutex_unlock(thread_mutex);
+	g_rec_mutex_unlock(thread_mutex);
 	
 	return;
       }
@@ -298,7 +279,7 @@ ags_channel_thread_set_property(GObject *gobject,
 
       channel_thread->channel = (GObject *) channel;
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -315,34 +296,30 @@ ags_channel_thread_get_property(GObject *gobject,
 {
   AgsChannelThread *channel_thread;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
 
   switch(prop_id){
   case PROP_DEFAULT_OUTPUT_SOUNDCARD:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       g_value_set_object(value, channel_thread->default_output_soundcard);
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_CHANNEL:
     {
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       g_value_set_object(value, G_OBJECT(channel_thread->channel));
 
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -388,20 +365,6 @@ ags_channel_thread_finalize(GObject *gobject)
     g_object_unref(channel_thread->default_output_soundcard);
   }
 
-  /* wakeup mutex and cond */
-  pthread_mutex_destroy(channel_thread->wakeup_mutex);
-  free(channel_thread->wakeup_mutex);
-  
-  pthread_cond_destroy(channel_thread->wakeup_cond);
-  free(channel_thread->wakeup_cond);
-
-  /* sync mutex and cond */
-  pthread_mutex_destroy(channel_thread->done_mutex);
-  free(channel_thread->done_mutex);
-  
-  pthread_cond_destroy(channel_thread->done_cond);
-  free(channel_thread->done_cond);
-
   /* channel */
   if(channel_thread->channel != NULL){
     g_object_unref(channel_thread->channel);
@@ -417,15 +380,12 @@ ags_channel_thread_start(AgsThread *thread)
   g_message("channel thread start");
   
   /* reset status */
-  g_atomic_int_or(&(AGS_CHANNEL_THREAD(thread)->flags),
-		   (AGS_CHANNEL_THREAD_WAIT |
-		    AGS_CHANNEL_THREAD_DONE |
-		    AGS_CHANNEL_THREAD_WAIT_SYNC |
-		    AGS_CHANNEL_THREAD_DONE_SYNC));
-  
-  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
-  }
+  ags_channel_thread_set_status_flags(thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
+					       AGS_CHANNEL_THREAD_STATUS_DONE |
+					       AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC |
+					       AGS_CHANNEL_THREAD_STATUS_DONE_SYNC));
+
+  AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
 }
 
 void
@@ -440,8 +400,10 @@ ags_channel_thread_run(AgsThread *thread)
   
   gint sound_scope;
 
+  GRecMutex *thread_mutex;
+
 #ifdef AGS_WITH_RT
-  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+  if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP)){
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -451,13 +413,12 @@ ags_channel_thread_run(AgsThread *thread)
       perror("sched_setscheduler failed");
     }
 
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_RT_SETUP);
+    ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP);
   }
 #endif
 
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 ||
-     (AGS_THREAD_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN) ||
+     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;
   }
 
@@ -466,36 +427,29 @@ ags_channel_thread_run(AgsThread *thread)
   g_object_get(channel_thread,
 	       "channel", &channel,
 	       NULL);
-
-  g_object_unref(channel);
   
   g_object_get(channel,
 	       "playback", &playback,
 	        NULL);
-
-  g_object_unref(playback);
   
   /* start - wait until signaled */
-  pthread_mutex_lock(channel_thread->wakeup_mutex);
+  g_mutex_lock(&(channel_thread->wakeup_mutex));
 
-  if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-     (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
-
-    g_atomic_int_and(&(channel_thread->flags),
-		     (~AGS_CHANNEL_THREAD_DONE));
+  if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
+     ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
+    ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE);
     
-    while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-	  (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
-      pthread_cond_wait(channel_thread->wakeup_cond,
-			channel_thread->wakeup_mutex);
+    while(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE) &&
+	  ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT)){
+      g_cond_wait(&(channel_thread->wakeup_cond),
+		  &(channel_thread->wakeup_mutex));
     }
   }
   
-  g_atomic_int_or(&(channel_thread->flags),
-		  (AGS_CHANNEL_THREAD_DONE |
-		   AGS_CHANNEL_THREAD_WAIT));
+  ags_channel_thread_set_status_flags(channel_thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
+						       AGS_CHANNEL_THREAD_STATUS_DONE));
   
-  pthread_mutex_unlock(channel_thread->wakeup_mutex);
+  g_mutex_unlock(&(channel_thread->wakeup_mutex));
   
   /* 
    * do audio processing
@@ -549,16 +503,20 @@ ags_channel_thread_run(AgsThread *thread)
   }
 
   /* sync */
-  pthread_mutex_lock(channel_thread->done_mutex);
+  g_mutex_lock(&(channel_thread->done_mutex));
   
-  g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));  
+  ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
   
-  if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
-    pthread_cond_signal(channel_thread->done_cond);
+  if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
+    g_cond_signal(&(channel_thread->done_cond));
   }
   
-  pthread_mutex_unlock(channel_thread->done_mutex);
+  g_mutex_unlock(&(channel_thread->done_mutex));
+
+  /* unref */
+  g_object_unref(channel);
+
+  g_object_unref(playback);
 }
 
 void
@@ -566,7 +524,7 @@ ags_channel_thread_stop(AgsThread *thread)
 {
   AgsChannelThread *channel_thread;
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+  if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
     return;
   }
 
@@ -579,16 +537,15 @@ ags_channel_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->stop(thread);
 
   /* ensure synced */
-  pthread_mutex_lock(channel_thread->done_mutex);
-  
-  g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));
+  g_mutex_lock(&(channel_thread->done_mutex));
 
-  if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
-    pthread_cond_signal(channel_thread->done_cond);
+  ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC);
+
+  if(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC)){
+    g_cond_signal(&(channel_thread->done_cond));
   }
 
-  pthread_mutex_unlock(channel_thread->done_mutex);
+  g_mutex_unlock(&(channel_thread->done_mutex));
 }
 
 /**
@@ -669,7 +626,7 @@ void
 ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
 				   gint sound_scope)
 {
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
   
   if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
     return;
@@ -678,11 +635,11 @@ ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(channel_thread);
 
   /* set scope */
-  pthread_mutex_lock(thread_mutex);
+  g_rec_mutex_lock(thread_mutex);
 
   channel_thread->sound_scope = sound_scope;
   
-  pthread_mutex_unlock(thread_mutex);
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 /**
