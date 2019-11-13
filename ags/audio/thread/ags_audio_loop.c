@@ -173,7 +173,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsChannel to add for playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("play-channel",
 				    i18n_pspec("channel to run"),
@@ -188,7 +188,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsAudio to add for playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("play-audio",
 				    i18n_pspec("audio to run"),
@@ -941,7 +941,7 @@ ags_audio_loop_notify_frequency(GObject *gobject,
  *
  * Invokes ags_channel_recursive_run_stage() for all scopes containing #AgsRecallID.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
@@ -1163,7 +1163,7 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
  *
  * Invokes ags_audio_recursive_run_stage() for all scopes containing #AgsRecallID.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
@@ -1281,7 +1281,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
  *
  * Play audio super-threaded.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain)
@@ -1344,7 +1344,7 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
  *
  * Sync audio super-threaded.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain)
@@ -1413,7 +1413,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 gboolean
 ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags)
@@ -1446,7 +1446,7 @@ ags_audio_loop_test_flags(AgsAudioLoop *audio_loop, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags)
@@ -1475,7 +1475,7 @@ ags_audio_loop_set_flags(AgsAudioLoop *audio_loop, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags)
@@ -1504,7 +1504,7 @@ ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags)
  *
  * Add audio for playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1526,7 +1526,7 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Remove audio of playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1548,7 +1548,7 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Add channel for playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1570,7 +1570,7 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
  *
  * Remove channel of playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1592,7 +1592,7 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
  *
  * Returns: the new #AgsAudioLoop
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAudioLoop*
 ags_audio_loop_new()
