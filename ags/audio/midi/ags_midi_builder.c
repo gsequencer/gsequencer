@@ -805,19 +805,7 @@ ags_midi_builder_init(AgsMidiBuilder *midi_builder)
   midi_builder->flags = 0;
 
   /* midi builder mutex */
-  midi_builder->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(midi_builder->obj_mutexattr);
-  pthread_mutexattr_settype(midi_builder->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(midi_builder->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  midi_builder->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(midi_builder->obj_mutex,
-		     midi_builder->obj_mutexattr);
+  g_rec_mutex_init(&(midi_builder->obj_mutex));
 
   midi_builder->data = NULL;
   midi_builder->length = 0;
@@ -838,7 +826,7 @@ ags_midi_builder_set_property(GObject *gobject,
 {
   AgsMidiBuilder *midi_builder;
 
-  pthread_mutex_t *midi_builder_mutex;
+  GRecMutex *midi_builder_mutex;
 
   midi_builder = AGS_MIDI_BUILDER(gobject);
 
@@ -848,11 +836,11 @@ ags_midi_builder_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
-      pthread_mutex_lock(midi_builder_mutex);
+      g_rec_mutex_lock(midi_builder_mutex);
 
       midi_builder->file = g_value_get_pointer(value);
 
-      pthread_mutex_unlock(midi_builder_mutex);
+      g_rec_mutex_unlock(midi_builder_mutex);
     }
     break;
   default:
@@ -869,7 +857,7 @@ ags_midi_builder_get_property(GObject *gobject,
 {
   AgsMidiBuilder *midi_builder;
 
-  pthread_mutex_t *midi_builder_mutex;
+  GRecMutex *midi_builder_mutex;
 
   midi_builder = AGS_MIDI_BUILDER(gobject);
 
@@ -879,12 +867,12 @@ ags_midi_builder_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
-      pthread_mutex_lock(midi_builder_mutex);
+      g_rec_mutex_lock(midi_builder_mutex);
 
       g_value_set_pointer(value,
 			  midi_builder->file);
 
-      pthread_mutex_unlock(midi_builder_mutex);
+      g_rec_mutex_unlock(midi_builder_mutex);
     }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -898,12 +886,6 @@ ags_midi_builder_finalize(GObject *gobject)
   AgsMidiBuilder *midi_builder;
     
   midi_builder = (AgsMidiBuilder *) gobject;
-
-  pthread_mutex_destroy(midi_builder->obj_mutex);
-  free(midi_builder->obj_mutex);
-
-  pthread_mutexattr_destroy(midi_builder->obj_mutexattr);
-  free(midi_builder->obj_mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);

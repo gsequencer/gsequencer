@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/controller/ags_osc_meter_controller.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -148,7 +146,7 @@ enum{
 static gpointer ags_osc_meter_controller_parent_class = NULL;
 static guint osc_meter_controller_signals[LAST_SIGNAL];
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_osc_meter_controller_get_type()
@@ -324,7 +322,7 @@ ags_osc_meter_controller_set_property(GObject *gobject,
 {
   AgsOscMeterController *osc_meter_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
 
@@ -346,7 +344,7 @@ ags_osc_meter_controller_get_property(GObject *gobject,
 {
   AgsOscMeterController *osc_meter_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
 
@@ -405,7 +403,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 
   GList *start_monitor, *monitor;
   
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(ptr);
 
@@ -416,7 +414,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
   ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
   
   while(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
-    pthread_mutex_lock(osc_controller_mutex);
+    g_rec_mutex_lock(osc_controller_mutex);
 
     monitor = 
       start_monitor = g_list_copy(osc_meter_controller->monitor);
@@ -427,7 +425,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       monitor = monitor->next;
     }
     
-    pthread_mutex_unlock(osc_controller_mutex);
+    g_rec_mutex_unlock(osc_controller_mutex);
 
     /*  */
     monitor = start_monitor;
@@ -448,16 +446,16 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       guint real_packet_size;
       guint packet_size;
       
-      pthread_mutex_t *port_mutex;
+      GRecMutex *port_mutex;
       
-      pthread_mutex_lock(osc_controller_mutex);
+      g_rec_mutex_lock(osc_controller_mutex);
       
       osc_connection = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection;
 
       path = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->path;
       port = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port;
 
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
 
       /*  */
       osc_response = ags_osc_response_new();
@@ -553,12 +551,12 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    continue;
 	  }
 
-	  pthread_mutex_lock(osc_controller_mutex);
+	  g_rec_mutex_lock(osc_controller_mutex);
 	  
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 path, -1);
 
-	  pthread_mutex_unlock(osc_controller_mutex);
+	  g_rec_mutex_unlock(osc_controller_mutex);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
@@ -583,7 +581,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    continue;
 	  }
 	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    gdouble value;
@@ -594,7 +592,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 					   value);
 	  }
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  packet_size += (port_value_length * 8);
 	  
@@ -610,11 +608,11 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	  guint length;
 	  
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  value = port->port_value.ags_port_float;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 ",sf", -1);
@@ -644,12 +642,12 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    continue;
 	  }
 
-	  pthread_mutex_lock(osc_controller_mutex);
+	  g_rec_mutex_lock(osc_controller_mutex);
 	  
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 path, -1);
 
-	  pthread_mutex_unlock(osc_controller_mutex);
+	  g_rec_mutex_unlock(osc_controller_mutex);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
@@ -710,7 +708,7 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
 {
   gboolean retval;  
   
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
     return(FALSE);
@@ -720,11 +718,11 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* test */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   retval = (flags & (osc_meter_controller->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 
   return(retval);
 }
@@ -741,7 +739,7 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
 void
 ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
     return;
@@ -751,11 +749,11 @@ ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, 
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* set flags */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   osc_meter_controller->flags |= flags;
 
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -770,7 +768,7 @@ ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, 
 void
 ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
     return;
@@ -780,11 +778,11 @@ ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* set flags */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   osc_meter_controller->flags &= (~flags);
 
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -957,7 +955,7 @@ void
 ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller,
 				     AgsOscMeterControllerMonitor *monitor)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
     return;
@@ -967,7 +965,7 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* add monitor */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_meter_controller->monitor, monitor) == NULL){
     ags_osc_meter_controller_monitor_ref(monitor);
@@ -975,7 +973,7 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
     osc_meter_controller->monitor = g_list_prepend(osc_meter_controller->monitor, monitor);
   }
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -991,7 +989,7 @@ void
 ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_controller,
 					AgsOscMeterControllerMonitor *monitor)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
     return;
@@ -1001,7 +999,7 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* remove monitor */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_meter_controller->monitor, monitor) != NULL){
     osc_meter_controller->monitor = g_list_remove(osc_meter_controller->monitor, monitor);
@@ -1009,7 +1007,7 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
     ags_osc_meter_controller_monitor_unref(monitor);
   }
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -1031,7 +1029,7 @@ ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_contr
 {
   GList *monitor;
   
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller) ||
      !AGS_IS_OSC_CONNECTION(osc_connection) ||
@@ -1043,14 +1041,14 @@ ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_contr
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* check if contains OSC connection and port */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   monitor = osc_meter_controller->monitor;
 
   while(monitor != NULL){
     if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection &&
        AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port == port){
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
 
       return(TRUE);
     }
@@ -1058,7 +1056,7 @@ ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_contr
     monitor = monitor->next;
   }
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 
   return(FALSE);
 }
@@ -1066,23 +1064,23 @@ ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_contr
 void
 ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   /* get OSC meter controller mutex */
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* test if already started */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
     
   if(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED)){
-    pthread_mutex_unlock(osc_controller_mutex);
+    g_rec_mutex_unlock(osc_controller_mutex);
     
     return;
   }
 
   ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED);
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 
   /* create monitor thread */
   pthread_create(osc_meter_controller->monitor_thread, NULL,
@@ -1119,7 +1117,7 @@ ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_cont
   ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
 
   /* join thread */
-  pthread_join(osc_meter_controller->monitor_thread[0], NULL);
+  g_thread_join(osc_meter_controller->monitor_thread);
   
   ags_osc_meter_controller_unset_flags(osc_meter_controller, (AGS_OSC_METER_CONTROLLER_MONITOR_STARTED |
 							      AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING));
@@ -1222,7 +1220,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
     }
      
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -1234,7 +1232,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       gchar *endptr;
@@ -1502,7 +1500,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
     static const size_t index_max_matches = 2;
 
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -1516,7 +1514,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
       type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
@@ -1994,7 +1992,7 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
   start_response = NULL;
 
   /* compile regex */
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -2008,7 +2006,7 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
     ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
     type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
@@ -2520,7 +2518,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
     path_offset += 8;
 
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2532,7 +2530,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
     
     g_object_get(recall,
 		 "port", &start_port,
@@ -3033,17 +3031,17 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       guint port_value_length;
       gboolean port_value_is_pointer;
       
-      pthread_mutex_t *port_mutex;
+      GRecMutex *port_mutex;
 
       /* get port mutex */
       port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* create current path */
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       specifier = g_strdup(port->specifier);
       
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
       
       if(channel != NULL){
 	current_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]/%s[%d]/%s[%d]/AgsPort[%d]:value",
@@ -3165,7 +3163,7 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
   path_offset += 9;
       
   /* compile regex */
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -3177,7 +3175,7 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
     ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   audio = 
     start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -3469,7 +3467,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
     return;
   }
   
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -3489,7 +3487,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
     ags_regcomp(&generic_wildcard_access_regex, generic_wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   start_channel = NULL;
   
@@ -4050,7 +4048,7 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
     return;
   }
   
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -4064,7 +4062,7 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
     ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&recall_regex, path, max_matches, match_arr, 0) == 0){
     type_name_length = match_arr[2].rm_eo - match_arr[2].rm_so;
@@ -4415,7 +4413,7 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
     return;
   }
   
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -4427,7 +4425,7 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
     ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   prefix = NULL;
 
@@ -4668,7 +4666,7 @@ ags_osc_meter_controller_expand_path(gchar *path,
 
   application_context = ags_application_context_get_instance();
   
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -4680,7 +4678,7 @@ ags_osc_meter_controller_expand_path(gchar *path,
     ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   audio = 
     start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -4866,7 +4864,7 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
 
   guint i;
   
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   start_response = NULL;
   
@@ -4891,7 +4889,7 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
     for(; iter[0] != NULL; iter++){
       /* attempt 2 times play/recall */
       for(i = 0; i < 2; i++){
-	pthread_mutex_lock(osc_controller_mutex);
+	g_rec_mutex_lock(osc_controller_mutex);
 
 	monitor = osc_meter_controller->monitor;
 	current = NULL;
@@ -4907,7 +4905,7 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
 	  monitor = monitor->next;
 	}
 
-	pthread_mutex_unlock(osc_controller_mutex);
+	g_rec_mutex_unlock(osc_controller_mutex);
 
 	/* remove monitor */
 	if(current != NULL){

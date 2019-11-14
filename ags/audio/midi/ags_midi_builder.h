@@ -29,6 +29,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include <ags/libags.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_BUILDER                (ags_midi_builder_get_type ())

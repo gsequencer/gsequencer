@@ -54,14 +54,14 @@ struct _AgsOscFrontController
 
   guint flags;
   
-  struct timespec *delegate_timeout;
+  gint64 delegate_timeout;
   
   volatile gboolean do_reset;
 
-  pthread_mutex_t *delegate_mutex;
-  pthread_cond_t *delegate_cond;
+  GMutex delegate_mutex;
+  GCond delegate_cond;
   
-  pthread_t *delegate_thread;
+  GThread *delegate_thread;
 
   GList *message;
 };

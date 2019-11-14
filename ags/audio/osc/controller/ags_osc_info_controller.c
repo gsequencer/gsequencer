@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/osc/controller/ags_osc_info_controller.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
@@ -163,7 +161,7 @@ ags_osc_info_controller_set_property(GObject *gobject,
 {
   AgsOscInfoController *osc_info_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 
@@ -185,7 +183,7 @@ ags_osc_info_controller_get_property(GObject *gobject,
 {
   AgsOscInfoController *osc_info_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 

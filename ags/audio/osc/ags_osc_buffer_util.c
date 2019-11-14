@@ -21,8 +21,6 @@
 
 #include <glib/gtypes.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_util.h>
 
 #include <stdlib.h>
@@ -31,6 +29,16 @@
 #include <math.h>
 
 #include <stdarg.h>
+
+/**
+ * SECTION:ags_osc_buffer_util
+ * @short_description: OSC buffer util
+ * @title: AgsOscBufferUtil
+ * @section_id:
+ * @include: ags/audio/osc/ags_osc_buffer_util.h
+ *
+ * Utility functions for OSC buffer.
+ */
 
 /**
  * ags_osc_buffer_util_put_int32:

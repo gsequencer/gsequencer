@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
 #include <ags/audio/osc/ags_osc_response.h>
@@ -218,21 +216,16 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 
   osc_front_controller->delegate_timeout = (struct timespec *) malloc(sizeof(struct timespec));
 
-  osc_front_controller->delegate_timeout->tv_sec = 0;
-  osc_front_controller->delegate_timeout->tv_nsec = 0;
+  osc_front_controller->delegate_timeout = 0;
 
   g_atomic_int_set(&(osc_front_controller->do_reset),
 		   FALSE);
 
-  osc_front_controller->delegate_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_front_controller->delegate_mutex,
-		    NULL);
+  g_mutex_init(&(osc_front_controller->delegate_mutex));
 
-  osc_front_controller->delegate_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(osc_front_controller->delegate_cond,
-		    NULL);
+  g_cond_init(&(osc_front_controller->delegate_cond));
   
-  osc_front_controller->delegate_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  osc_front_controller->delegate_thread = NULL;
   
   osc_front_controller->message = NULL;
 }
@@ -245,7 +238,7 @@ ags_osc_front_controller_set_property(GObject *gobject,
 {
   AgsOscFrontController *osc_front_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
@@ -267,7 +260,7 @@ ags_osc_front_controller_get_property(GObject *gobject,
 {
   AgsOscFrontController *osc_front_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
@@ -307,15 +300,7 @@ ags_osc_front_controller_finalize(GObject *gobject)
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
   free(osc_front_controller->delegate_timeout);
-
-  pthread_mutex_destroy(osc_front_controller->delegate_mutex);
-  free(osc_front_controller->delegate_mutex);
-
-  pthread_cond_destroy(osc_front_controller->delegate_cond);
-  free(osc_front_controller->delegate_cond);
-  
-  free(osc_front_controller->delegate_thread);
-  
+    
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
 		     (GDestroyNotify) ags_osc_front_controller_message_free);
@@ -333,15 +318,10 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
   GList *start_controller, *controller;
   
-  struct timespec time_now, time_next;
-  struct timespec current_time;
+  gint64 time_now, time_next;
+  gint64 current_time;
   
-#ifdef __APPLE__
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-#endif
-  
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(ptr);
 
@@ -356,8 +336,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   /* get OSC front controller mutex */
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
-  time_next.tv_sec = 0;
-  time_next.tv_nsec = 0;
+  time_next = 0;
 
   ags_osc_front_controller_set_flags(osc_front_controller,
 				     AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING);
@@ -366,59 +345,28 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     GList *start_message, *message;
     GList *start_list, *list;
     
-    pthread_mutex_lock(osc_front_controller->delegate_mutex);
+    g_mutex_lock(&(osc_front_controller->delegate_mutex));
 
-#ifdef __APPLE__
-    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-    clock_get_time(cclock, &mts);
-    mach_port_deallocate(mach_task_self(), cclock);
-      
-    time_now.tv_sec = mts.tv_sec;
-    time_now.tv_nsec = mts.tv_nsec;
-#else
-    clock_gettime(CLOCK_MONOTONIC, &time_now);
-#endif
-
-    if(time_now.tv_nsec + NSEC_PER_SEC / 30 > NSEC_PER_SEC){
-      osc_front_controller->delegate_timeout->tv_sec = time_now.tv_sec + 1;
-      osc_front_controller->delegate_timeout->tv_nsec = (time_now.tv_nsec + NSEC_PER_SEC / 30) - NSEC_PER_SEC;
-    }else{
-      osc_front_controller->delegate_timeout->tv_sec = time_now.tv_sec;
-      osc_front_controller->delegate_timeout->tv_nsec = time_now.tv_nsec + NSEC_PER_SEC / 30;
-    }
+    time_now = g_get_monotonic_time();
+    osc_front_controller->delegate_timeout = time_now + (G_TIME_SPAN_SECOND / 30);
     
     while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
-	  ((time_now.tv_sec < time_next.tv_sec ||
-	    (time_now.tv_sec == time_next.tv_sec &&
-	     time_now.tv_nsec < time_next.tv_nsec)) &&
-	   (time_now.tv_sec < osc_front_controller->delegate_timeout->tv_sec ||
-	    (time_now.tv_sec == osc_front_controller->delegate_timeout->tv_sec &&
-	     time_now.tv_nsec < osc_front_controller->delegate_timeout->tv_nsec)))){
-      pthread_cond_timedwait(osc_front_controller->delegate_cond,
-			     osc_front_controller->delegate_mutex,
-			     osc_front_controller->delegate_timeout);
+	  ((time_now < time_next) &&
+	   (time_now < osc_front_controller->delegate_timeout))){
+      g_cond_wait_until(&(osc_front_controller->delegate_cond),
+			&(osc_front_controller->delegate_mutex),
+			osc_front_controller->delegate_timeout);
       
-#ifdef __APPLE__
-      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-      clock_get_time(cclock, &mts);
-      mach_port_deallocate(mach_task_self(), cclock);
-      
-      time_now.tv_sec = mts.tv_sec;
-      time_now.tv_nsec = mts.tv_nsec;
-#else
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
-#endif
+      time_now = g_get_monotonic_time();
     }
 
     g_atomic_int_set(&(osc_front_controller->do_reset),
 		     FALSE);
     
-    pthread_mutex_unlock(osc_front_controller->delegate_mutex);
+    g_mutex_unlock(&(osc_front_controller->delegate_mutex));
 
     /* check delegate */
-    pthread_mutex_lock(osc_controller_mutex);
+    g_rec_mutex_lock(osc_controller_mutex);
 
     start_message = NULL;
     list =
@@ -432,12 +380,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	ags_osc_front_controller_remove_message(osc_front_controller,
 						list->data);
       }else{
-	current_time.tv_sec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_sec;
-	current_time.tv_nsec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_fraction / 4.294967296;
+	current_time = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_sec + AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
       
-	if((current_time.tv_sec < time_now.tv_sec ||
-	   (current_time.tv_sec == time_now.tv_sec &&
-	    current_time.tv_nsec < time_now.tv_nsec))){
+	if(current_time < time_now){
 	  start_message = g_list_prepend(start_message,
 					 list->data);
 	  
@@ -451,7 +396,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       list = list->next;
     }
     
-    pthread_mutex_unlock(osc_controller_mutex);
+    g_rec_mutex_unlock(osc_controller_mutex);
 
     g_list_free(start_list);
     
@@ -474,18 +419,18 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       while(controller != NULL){
 	gboolean success;
 	
-	pthread_mutex_t *mutex;
+	GRecMutex *mutex;
 
 	/* get OSC front controller mutex */
 	mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
 
 	/* match path */
-	pthread_mutex_lock(mutex);
+	g_rec_mutex_lock(mutex);
 	
 	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->context_path,
 			     path);
 
-	pthread_mutex_unlock(mutex);
+	g_rec_mutex_unlock(mutex);
 	
 	if(success){
 	  current = AGS_OSC_FRONT_CONTROLLER_MESSAGE(message->data);
@@ -552,34 +497,17 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 		     (GDestroyNotify) ags_osc_front_controller_message_free);
 
     /* next */
-    pthread_mutex_lock(osc_front_controller->delegate_mutex);
+    g_mutex_lock(&(osc_front_controller->delegate_mutex));
 
     if(osc_front_controller->message != NULL){
-      time_next.tv_sec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_sec;
-      time_next.tv_nsec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296;
+      time_next = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_sec + AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296 * 1000.0;
     }else{
-#ifdef __APPLE__
-      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-      clock_get_time(cclock, &mts);
-      mach_port_deallocate(mach_task_self(), cclock);
-      
-      time_now.tv_sec = mts.tv_sec;
-      time_now.tv_nsec = mts.tv_nsec;
-#else
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
-#endif
+      time_now = g_get_monotonic_time();
 
-      if(time_now.tv_nsec + NSEC_PER_SEC / 30 > NSEC_PER_SEC){
-	time_next.tv_sec = time_now.tv_sec + 1;
-	time_next.tv_nsec = (time_now.tv_nsec + NSEC_PER_SEC / 30) - NSEC_PER_SEC;
-      }else{
-	time_next.tv_sec = time_now.tv_sec;
-	time_next.tv_nsec = time_now.tv_nsec + NSEC_PER_SEC / 30;
-      }
+      time_next = time_now + G_TIME_SPAN_SECOND / 30;
     }
     
-    pthread_mutex_unlock(osc_front_controller->delegate_mutex);
+    g_mutex_unlock(&(osc_front_controller->delegate_mutex));
   }
 
   g_object_unref(osc_server);
@@ -587,11 +515,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   g_list_free_full(start_controller,
 		   g_object_unref);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 /**
@@ -610,7 +536,7 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
 {
   gboolean retval;  
   
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
     return(FALSE);
@@ -620,11 +546,11 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* test */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   retval = (flags & (osc_front_controller->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 
   return(retval);
 }
@@ -641,7 +567,7 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
 void
 ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
     return;
@@ -651,11 +577,11 @@ ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, 
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   /* set flags */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   osc_front_controller->flags |= flags;
 
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -670,7 +596,7 @@ ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, 
 void
 ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
     return;
@@ -680,11 +606,11 @@ ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   /* set flags */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   osc_front_controller->flags &= (~flags);
 
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -806,7 +732,7 @@ void
 ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
 				     AgsOscFrontControllerMessage *message)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller) ||
      message == NULL){
@@ -817,7 +743,7 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   /* add */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_front_controller->message, message) == NULL){
     osc_front_controller->message = g_list_insert_sorted(osc_front_controller->message,
@@ -825,7 +751,7 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
 							 ags_osc_front_controller_message_sort_func);
   }
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 /**
@@ -841,7 +767,7 @@ void
 ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
 					AgsOscFrontControllerMessage *message)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller) ||
      message == NULL){
@@ -852,40 +778,41 @@ ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_control
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* remove */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_front_controller->message, message) != NULL){
     osc_front_controller->message = g_list_remove(osc_front_controller->message,
 						  message);
   }
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 }
 
 void
 ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller)
 {
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   /* get OSC front controller mutex */
   osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* test if already started */
-  pthread_mutex_lock(osc_controller_mutex);
+  g_rec_mutex_lock(osc_controller_mutex);
     
   if(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED)){
-    pthread_mutex_unlock(osc_controller_mutex);
+    g_rec_mutex_unlock(osc_controller_mutex);
     
     return;
   }
 
   ags_osc_front_controller_set_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED);
   
-  pthread_mutex_unlock(osc_controller_mutex);
+  g_rec_mutex_unlock(osc_controller_mutex);
 
   /* create delegate thread */
-  pthread_create(osc_front_controller->delegate_thread, NULL,
-		 ags_osc_front_controller_delegate_thread, osc_front_controller);
+  osc_front_controller->delegate_thread = g_thread_new("Advanced Gtk+ Sequencer OSC Server - delegate thread",
+						       ags_osc_front_controller_delegate_thread,
+						       osc_front_controller);
 }
 
 /**
@@ -918,7 +845,7 @@ ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_con
   ags_osc_front_controller_unset_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING);
 
   /* join thread */
-  pthread_join(osc_front_controller->delegate_thread[0], NULL);
+  g_thread_join(osc_front_controller->delegate_thread);
   
   ags_osc_front_controller_unset_flags(osc_front_controller, (AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING |
 							      AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED));

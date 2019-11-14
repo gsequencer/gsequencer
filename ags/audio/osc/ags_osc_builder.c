@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_builder.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
@@ -97,8 +95,6 @@ enum{
 static gpointer ags_osc_builder_parent_class = NULL;
 
 static guint osc_builder_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_osc_builder_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_builder_get_type(void)
@@ -289,19 +285,7 @@ ags_osc_builder_init(AgsOscBuilder *osc_builder)
   osc_builder->flags = 0;
 
   /* osc builder mutex */
-  osc_builder->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_builder->obj_mutexattr);
-  pthread_mutexattr_settype(osc_builder->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_builder->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_builder->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_builder->obj_mutex,
-		     osc_builder->obj_mutexattr);
+  g_rec_mutex_init(&(osc_builder->obj_mutex));
 
   osc_builder->data = NULL;
   osc_builder->length = 0;
@@ -322,7 +306,7 @@ ags_osc_builder_set_property(GObject *gobject,
 {
   AgsOscBuilder *osc_builder;
 
-  pthread_mutex_t *osc_builder_mutex;
+  GRecMutex *osc_builder_mutex;
 
   osc_builder = AGS_OSC_BUILDER(gobject);
 
@@ -344,7 +328,7 @@ ags_osc_builder_get_property(GObject *gobject,
 {
   AgsOscBuilder *osc_builder;
 
-  pthread_mutex_t *osc_builder_mutex;
+  GRecMutex *osc_builder_mutex;
 
   osc_builder = AGS_OSC_BUILDER(gobject);
 
@@ -364,12 +348,6 @@ ags_osc_builder_finalize(GObject *gobject)
   AgsOscBuilder *osc_builder;
     
   osc_builder = (AgsOscBuilder *) gobject;
-
-  pthread_mutex_destroy(osc_builder->obj_mutex);
-  free(osc_builder->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_builder->obj_mutexattr);
-  free(osc_builder->obj_mutexattr);
 
   if(osc_builder->data != NULL){
     free(osc_builder->data);
@@ -448,21 +426,6 @@ ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 
     message->data_allocated_length = new_data_allocated_length;
   }
-}
-
-/**
- * ags_osc_builder_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_builder_get_class_mutex()
-{
-  return(&ags_osc_builder_class_mutex);
 }
 
 /**

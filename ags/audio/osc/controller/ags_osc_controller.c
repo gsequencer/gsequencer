@@ -56,8 +56,6 @@ enum{
 
 static gpointer ags_osc_controller_parent_class = NULL;
 
-static pthread_mutex_t ags_osc_controller_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_osc_controller_get_type()
 {
@@ -144,19 +142,7 @@ void
 ags_osc_controller_init(AgsOscController *osc_controller)
 {
   /* osc controller mutex */
-  osc_controller->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_controller->obj_mutexattr);
-  pthread_mutexattr_settype(osc_controller->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_controller->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_controller->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_controller->obj_mutex,
-		     osc_controller->obj_mutexattr);
+  g_rec_mutex_init(&(osc_controller->obj_mutex));
 
   osc_controller->osc_server = NULL;
 
@@ -171,7 +157,7 @@ ags_osc_controller_set_property(GObject *gobject,
 {
   AgsOscController *osc_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_controller = AGS_OSC_CONTROLLER(gobject);
 
@@ -185,10 +171,10 @@ ags_osc_controller_set_property(GObject *gobject,
 
       osc_server = (AgsOscServer *) g_value_get_object(value);
 
-      pthread_mutex_lock(osc_controller_mutex);
+      g_rec_mutex_lock(osc_controller_mutex);
 
       if(osc_controller->osc_server == (GObject *) osc_server){
-	pthread_mutex_unlock(osc_controller_mutex);
+	g_rec_mutex_unlock(osc_controller_mutex);
 
 	return;
       }
@@ -203,7 +189,7 @@ ags_osc_controller_set_property(GObject *gobject,
       
       osc_controller->osc_server = (GObject *) osc_server;
 
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
@@ -212,11 +198,11 @@ ags_osc_controller_set_property(GObject *gobject,
 
       context_path = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(osc_controller_mutex);
+      g_rec_mutex_lock(osc_controller_mutex);
 
       osc_controller->context_path = g_strdup(context_path);
 
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
     }
     break;
   default:
@@ -233,7 +219,7 @@ ags_osc_controller_get_property(GObject *gobject,
 {
   AgsOscController *osc_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_controller = AGS_OSC_CONTROLLER(gobject);
 
@@ -243,20 +229,20 @@ ags_osc_controller_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_OSC_SERVER:
     {
-      pthread_mutex_lock(osc_controller_mutex);
+      g_rec_mutex_lock(osc_controller_mutex);
 
       g_value_set_object(value, osc_controller->osc_server);
 
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
     {
-      pthread_mutex_lock(osc_controller_mutex);
+      g_rec_mutex_lock(osc_controller_mutex);
       
       g_value_set_string(value, osc_controller->context_path);
 
-      pthread_mutex_unlock(osc_controller_mutex);
+      g_rec_mutex_unlock(osc_controller_mutex);
     }
     break;
   default:
@@ -289,33 +275,12 @@ ags_osc_controller_finalize(GObject *gobject)
 
   osc_controller = AGS_OSC_CONTROLLER(gobject);
 
-  pthread_mutex_destroy(osc_controller->obj_mutex);
-  free(osc_controller->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_controller->obj_mutexattr);
-  free(osc_controller->obj_mutexattr);
-
   if(osc_controller->osc_server != NULL){
     g_object_unref(osc_controller->osc_server);
   }
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_controller_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_osc_controller_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_controller_get_class_mutex()
-{
-  return(&ags_osc_controller_class_mutex);
 }
 
 /**

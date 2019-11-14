@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_parser.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_util.h>
 
 #include <stdlib.h>
@@ -86,8 +84,6 @@ enum{
 
 static gpointer ags_osc_parser_parent_class = NULL;
 static guint osc_parser_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_osc_parser_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_parser_get_type(void)
@@ -314,19 +310,7 @@ ags_osc_parser_init(AgsOscParser *osc_parser)
   osc_parser->flags = 0;
   
   /* osc parser mutex */
-  osc_parser->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_parser->obj_mutexattr);
-  pthread_mutexattr_settype(osc_parser->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_parser->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_parser->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_parser->obj_mutex,
-		     osc_parser->obj_mutexattr);
+  g_rec_mutex_init(&(osc_parser->obj_mutex));
 
   osc_parser->buffer = NULL;
 
@@ -347,7 +331,7 @@ ags_osc_parser_set_property(GObject *gobject,
 {
   AgsOscParser *osc_parser;
 
-  pthread_mutex_t *osc_parser_mutex;
+  GRecMutex *osc_parser_mutex;
 
   osc_parser = AGS_OSC_PARSER(gobject);
 
@@ -369,7 +353,7 @@ ags_osc_parser_get_property(GObject *gobject,
 {
   AgsOscParser *osc_parser;
 
-  pthread_mutex_t *osc_parser_mutex;
+  GRecMutex *osc_parser_mutex;
 
   osc_parser = AGS_OSC_PARSER(gobject);
 
@@ -390,29 +374,8 @@ ags_osc_parser_finalize(GObject *gobject)
     
   osc_parser = (AgsOscParser *) gobject;
 
-  pthread_mutex_destroy(osc_parser->obj_mutex);
-  free(osc_parser->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_parser->obj_mutexattr);
-  free(osc_parser->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_osc_parser_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_osc_parser_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_parser_get_class_mutex()
-{
-  return(&ags_osc_parser_class_mutex);
 }
 
 /**

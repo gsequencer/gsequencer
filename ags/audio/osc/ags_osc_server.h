@@ -105,8 +105,8 @@ struct _AgsOscServer
   struct timespec *accept_delay;
   struct timespec *dispatch_delay;
 
-  pthread_t *listen_thread;
-  pthread_t *dispatch_thread;
+  GThread *listen_thread;
+  GThread *dispatch_thread;
   
   GList *connection;
 

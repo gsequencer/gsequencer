@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_client.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_util.h>
 
 #include <stdlib.h>
@@ -93,8 +91,6 @@ enum{
 
 static gpointer ags_osc_client_parent_class = NULL;
 static guint osc_client_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_osc_client_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_client_get_type(void)
@@ -303,19 +299,7 @@ ags_osc_client_init(AgsOscClient *osc_client)
   osc_client->flags = AGS_OSC_CLIENT_INET4;
   
   /* osc client mutex */
-  osc_client->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_client->obj_mutexattr);
-  pthread_mutexattr_settype(osc_client->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_client->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_client->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_client->obj_mutex,
-		     osc_client->obj_mutexattr);
+  g_rec_mutex_init(&(osc_client->obj_mutex));
 
   osc_client->ip4 = g_strdup(AGS_OSC_CLIENT_DEFAULT_INET4_ADDRESS);
   osc_client->ip6 = g_strdup(AGS_OSC_CLIENT_DEFAULT_INET6_ADDRESS);
@@ -372,7 +356,7 @@ ags_osc_client_set_property(GObject *gobject,
 {
   AgsOscClient *osc_client;
 
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   osc_client = AGS_OSC_CLIENT(gobject);
 
@@ -386,10 +370,10 @@ ags_osc_client_set_property(GObject *gobject,
 
       domain = g_value_get_string(value);
 
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       if(osc_client->domain == domain){
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 	
 	return;
       }
@@ -398,7 +382,7 @@ ags_osc_client_set_property(GObject *gobject,
 
       osc_client->domain = g_strdup(domain);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   case PROP_SERVER_PORT:
@@ -407,11 +391,11 @@ ags_osc_client_set_property(GObject *gobject,
 
       server_port = g_value_get_uint(value);
 
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
 
       osc_client->server_port = server_port;
       
-      pthread_mutex_unlock(osc_client_mutex);      
+      g_rec_mutex_unlock(osc_client_mutex);      
     }
     break;
   case PROP_IP4:
@@ -420,10 +404,10 @@ ags_osc_client_set_property(GObject *gobject,
 
       ip4 = g_value_get_string(value);
 
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       if(osc_client->ip4 == ip4){
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 	
 	return;
       }
@@ -432,7 +416,7 @@ ags_osc_client_set_property(GObject *gobject,
 
       osc_client->ip4 = g_strdup(ip4);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   case PROP_IP6:
@@ -441,10 +425,10 @@ ags_osc_client_set_property(GObject *gobject,
 
       ip6 = g_value_get_string(value);
 
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       if(osc_client->ip6 == ip6){
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 	
 	return;
       }
@@ -453,7 +437,7 @@ ags_osc_client_set_property(GObject *gobject,
 
       osc_client->ip6 = g_strdup(ip6);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   default:
@@ -470,7 +454,7 @@ ags_osc_client_get_property(GObject *gobject,
 {
   AgsOscClient *osc_client;
 
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   osc_client = AGS_OSC_CLIENT(gobject);
 
@@ -480,42 +464,42 @@ ags_osc_client_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DOMAIN:
     {
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
 
       g_value_set_string(value,
 			 osc_client->domain);
       
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   case PROP_SERVER_PORT:
     {
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       g_value_set_uint(value,
 		       osc_client->server_port);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   case PROP_IP4:
     {
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       g_value_set_string(value,
 			 osc_client->ip4);
       
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;
   case PROP_IP6:
     {
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       g_value_set_string(value,
 			 osc_client->ip6);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }
     break;    
   default:
@@ -530,12 +514,6 @@ ags_osc_client_finalize(GObject *gobject)
   AgsOscClient *osc_client;
     
   osc_client = (AgsOscClient *) gobject;
-
-  pthread_mutex_destroy(osc_client->obj_mutex);
-  free(osc_client->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_client->obj_mutexattr);
-  free(osc_client->obj_mutexattr);
 
   g_free(osc_client->ip4);
   g_free(osc_client->ip6);
@@ -561,21 +539,6 @@ ags_osc_client_finalize(GObject *gobject)
 }
 
 /**
- * ags_osc_client_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_client_get_class_mutex()
-{
-  return(&ags_osc_client_class_mutex);
-}
-
-/**
  * ags_osc_client_test_flags:
  * @osc_client: the #AgsOscClient
  * @flags: the flags
@@ -591,7 +554,7 @@ ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   if(!AGS_IS_OSC_CLIENT(osc_client)){
     return(FALSE);
@@ -601,11 +564,11 @@ ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* test */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
 
   retval = (flags & (osc_client->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 
   return(retval);
 }
@@ -622,7 +585,7 @@ ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
 void
 ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
 {
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   if(!AGS_IS_OSC_CLIENT(osc_client)){
     return;
@@ -632,11 +595,11 @@ ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* set flags */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
 
   osc_client->flags |= flags;
 
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 }
 
 /**
@@ -651,7 +614,7 @@ ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
 void
 ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
 {
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   if(!AGS_IS_OSC_CLIENT(osc_client)){
     return;
@@ -661,11 +624,11 @@ ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* set flags */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
 
   osc_client->flags &= (~flags);
 
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 }
 
 /**
@@ -737,13 +700,13 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 
   int rc;
   
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   /* get osc client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
   
   /* lock */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
   
   /* IPv4 */
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -776,7 +739,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
   }
 
   /* unlock */
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 #endif
 }
 
@@ -810,7 +773,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
   gboolean ip4_connected, ip6_connected;
   guint i;
   
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   /* get osc client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
@@ -831,32 +794,32 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
       ip4_udp_success = TRUE;
       
       /* create socket */
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       osc_client->ip4_fd = socket(AF_INET, SOCK_DGRAM, 0);
       
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }else if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_TCP)){
       ip4_tcp_success = TRUE;
 
       /* create socket */
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       osc_client->ip4_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }else{
       g_critical("no flow control type");
     }
 
     /* get ip4 */
-    pthread_mutex_lock(osc_client_mutex);  
+    g_rec_mutex_lock(osc_client_mutex);  
 
     osc_client->ip4_address->sin_family = AF_INET;
     inet_pton(AF_INET, osc_client->ip4, &(osc_client->ip4_address->sin_addr.s_addr));
     osc_client->ip4_address->sin_port = htons(osc_client->server_port);
 
-    pthread_mutex_unlock(osc_client_mutex);
+    g_rec_mutex_unlock(osc_client_mutex);
   }
 
   if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
@@ -866,32 +829,32 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
       ip6_udp_success = TRUE;
 
       /* create socket */
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       osc_client->ip6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }else if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_TCP)){
       ip6_tcp_success = TRUE;
 
       /* create socket */
-      pthread_mutex_lock(osc_client_mutex);
+      g_rec_mutex_lock(osc_client_mutex);
       
       osc_client->ip6_fd = socket(AF_INET6, SOCK_STREAM, 0);
 
-      pthread_mutex_unlock(osc_client_mutex);
+      g_rec_mutex_unlock(osc_client_mutex);
     }else{
       g_critical("no flow control type");
     }
 
     /* get ip6 */
-    pthread_mutex_lock(osc_client_mutex);
+    g_rec_mutex_lock(osc_client_mutex);
 
     osc_client->ip6_address->sin6_family = AF_INET6;
     inet_pton(AF_INET6, osc_client->ip6, &(osc_client->ip6_address->sin6_addr.s6_addr));
     osc_client->ip6_address->sin6_port = htons(osc_client->server_port);
 
-    pthread_mutex_unlock(osc_client_mutex);
+    g_rec_mutex_unlock(osc_client_mutex);
   }
   
   if(!ip4_success && !ip6_success){
@@ -932,11 +895,11 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 	int rc;
 
 	/* connect */
-	pthread_mutex_lock(osc_client_mutex);
+	g_rec_mutex_lock(osc_client_mutex);
 	
 	rc = connect(osc_client->ip4_fd, (struct sockaddr *) osc_client->ip4_address, sizeof(struct sockaddr_in));
 
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 
 	if(rc == 0){
 	  ip4_connected = TRUE;
@@ -949,11 +912,11 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 	int rc;
 	
 	/* connect */
-	pthread_mutex_lock(osc_client_mutex);
+	g_rec_mutex_lock(osc_client_mutex);
 	
 	rc = connect(osc_client->ip6_fd, (struct sockaddr *) osc_client->ip6_address, sizeof(struct sockaddr_in6));
 
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 
 	if(rc == 0){
 	  ip6_connected = TRUE;
@@ -1018,13 +981,13 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
   mach_timespec_t mts;
 #endif
 
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   /* get osc_client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* get fd */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
 
 #ifdef __APPLE__
   host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -1047,7 +1010,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
   read_count = osc_client->read_count;
   has_valid_data = osc_client->has_valid_data;
   
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 
   if(ip4_fd != -1){
     fd = ip4_fd;
@@ -1108,7 +1071,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 #endif
 	   errno == ECONNRESET ||
 	   errno == ENETRESET){
-	  pthread_mutex_lock(osc_client_mutex);
+	  g_rec_mutex_lock(osc_client_mutex);
 
 	  if(ip4_fd == fd){
 	    osc_client->ip4_fd = -1;
@@ -1116,7 +1079,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	    osc_client->ip6_fd = -1;
 	  }
 	
-	  pthread_mutex_unlock(osc_client_mutex);
+	  g_rec_mutex_unlock(osc_client_mutex);
 	}
       
 	break;
@@ -1173,11 +1136,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	  }
 	}
 	
-	pthread_mutex_lock(osc_client_mutex);
+	g_rec_mutex_lock(osc_client_mutex);
 
 	memcpy(osc_client->buffer, data + start_data, (end_data - start_data + 1) * sizeof(unsigned char));
 	  
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 
 	if(data_length != NULL){
 	  data_length[0] = end_data - start_data + 1;
@@ -1200,11 +1163,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
       }else{
 	read_count += (available_data_length - start_data);
 	  
-	pthread_mutex_lock(osc_client_mutex);
+	g_rec_mutex_lock(osc_client_mutex);
 
 	memcpy(osc_client->buffer, data + start_data, (available_data_length - start_data) * sizeof(unsigned char));
 	  
-	pthread_mutex_unlock(osc_client_mutex);
+	g_rec_mutex_unlock(osc_client_mutex);
 
 	has_valid_data = TRUE;
 
@@ -1234,11 +1197,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	    return(NULL);
 	  }
 	  
-	  pthread_mutex_lock(osc_client_mutex);
+	  g_rec_mutex_lock(osc_client_mutex);
 
 	  memcpy(osc_client->buffer + read_count, data, (i + 1) * sizeof(unsigned char));
 	
-	  pthread_mutex_unlock(osc_client_mutex);
+	  g_rec_mutex_unlock(osc_client_mutex);
 
 	  read_count += i;
 	  
@@ -1271,11 +1234,11 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	    return(NULL);
 	  }
 	  
-	  pthread_mutex_lock(osc_client_mutex);
+	  g_rec_mutex_lock(osc_client_mutex);
 	
 	  memcpy(osc_client->buffer + read_count, data, (available_data_length) * sizeof(unsigned char));
 
-	  pthread_mutex_unlock(osc_client_mutex);
+	  g_rec_mutex_unlock(osc_client_mutex);
 
 	  read_count += available_data_length;
 
@@ -1332,18 +1295,18 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
   int num_write;
   gboolean success;
 
-  pthread_mutex_t *osc_client_mutex;
+  GRecMutex *osc_client_mutex;
 
   /* get osc client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* get fd */
-  pthread_mutex_lock(osc_client_mutex);
+  g_rec_mutex_lock(osc_client_mutex);
   
   ip4_fd = osc_client->ip4_fd;
   ip6_fd = osc_client->ip6_fd;
 
-  pthread_mutex_unlock(osc_client_mutex);
+  g_rec_mutex_unlock(osc_client_mutex);
 
   /* initialize success */
   success = TRUE;

@@ -1373,7 +1373,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   AgsAudioLoop *audio_loop;
 
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
   
@@ -1434,7 +1434,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
    */
   /*  */
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   device = device_start;
   
@@ -1442,7 +1442,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     g_atomic_int_dec_and_test(&(jack_client->queued));
 
     g_object_unref(audio_loop);
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
     
     return(0);
   }
@@ -1936,7 +1936,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
   /* unref */
   g_object_unref(audio_loop);
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 
   return(0);
 }

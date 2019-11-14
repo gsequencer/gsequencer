@@ -26,7 +26,6 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
@@ -503,7 +502,6 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_jack_devout_pcm_info;
   soundcard->get_capability = ags_jack_devout_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
@@ -1838,7 +1836,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -1969,7 +1967,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   }
 
   /* update soundcard */
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   task = NULL;
   
@@ -1989,11 +1987,11 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 		       switch_buffer_flag);
 
   /* append tasks */
-  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* unref */
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 }
 
 void

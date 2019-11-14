@@ -117,8 +117,6 @@ enum{
 static gpointer ags_midi_parser_parent_class = NULL;
 static guint midi_parser_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_midi_parser_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_midi_parser_get_type(void)
 {
@@ -736,19 +734,7 @@ ags_midi_parser_init(AgsMidiParser *midi_parser)
   midi_parser->flags = 0;
   
   /* midi parser mutex */
-  midi_parser->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(midi_parser->obj_mutexattr);
-  pthread_mutexattr_settype(midi_parser->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(midi_parser->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  midi_parser->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(midi_parser->obj_mutex,
-		     midi_parser->obj_mutexattr);
+  g_rec_mutex_init(&(midi_parser->obj_mutex));
 
   midi_parser->file = NULL;
   midi_parser->nth_chunk = 0;
@@ -770,7 +756,7 @@ ags_midi_parser_set_property(GObject *gobject,
 {
   AgsMidiParser *midi_parser;
 
-  pthread_mutex_t *midi_parser_mutex;
+  GRecMutex *midi_parser_mutex;
 
   midi_parser = AGS_MIDI_PARSER(gobject);
 
@@ -782,11 +768,11 @@ ags_midi_parser_set_property(GObject *gobject,
     {
       struct stat sb;
 
-      pthread_mutex_lock(midi_parser_mutex);
+      g_rec_mutex_lock(midi_parser_mutex);
       
       midi_parser->file = g_value_get_pointer(value);
 
-      pthread_mutex_unlock(midi_parser_mutex);
+      g_rec_mutex_unlock(midi_parser_mutex);
 
       /* read file */
       fstat(fileno(midi_parser->file), &sb);
@@ -812,7 +798,7 @@ ags_midi_parser_get_property(GObject *gobject,
 {
   AgsMidiParser *midi_parser;
 
-  pthread_mutex_t *midi_parser_mutex;
+  GRecMutex *midi_parser_mutex;
 
   midi_parser = AGS_MIDI_PARSER(gobject);
 
@@ -822,12 +808,12 @@ ags_midi_parser_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
-      pthread_mutex_lock(midi_parser_mutex);
+      g_rec_mutex_lock(midi_parser_mutex);
 
       g_value_set_pointer(value,
 			  midi_parser->file);
 
-      pthread_mutex_unlock(midi_parser_mutex);
+      g_rec_mutex_unlock(midi_parser_mutex);
     }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -842,29 +828,8 @@ ags_midi_parser_finalize(GObject *gobject)
     
   midi_parser = (AgsMidiParser *) gobject;
 
-  pthread_mutex_destroy(midi_parser->obj_mutex);
-  free(midi_parser->obj_mutex);
-
-  pthread_mutexattr_destroy(midi_parser->obj_mutexattr);
-  free(midi_parser->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_midi_parser_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_midi_parser_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_midi_parser_get_class_mutex()
-{
-  return(&ags_midi_parser_class_mutex);
 }
 
 /**

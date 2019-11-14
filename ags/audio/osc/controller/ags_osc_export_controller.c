@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/controller/ags_osc_export_controller.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 
@@ -62,7 +60,7 @@ enum{
 static gpointer ags_osc_export_controller_parent_class = NULL;
 static guint osc_export_controller_signals[LAST_SIGNAL];
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_osc_export_controller_get_type()
@@ -178,7 +176,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 {
   AgsOscResponse *osc_response;
 
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   AgsTask *task;
   
   AgsApplicationContext *application_context;
@@ -332,7 +330,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   /* get sound provider */
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   path_offset = 0;
 
@@ -368,7 +366,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
       path_offset += 13;
 
       /* compile regex */
-      pthread_mutex_lock(&regex_mutex);
+      g_mutex_lock(&regex_mutex);
   
       if(!regex_compiled){
 	regex_compiled = TRUE;
@@ -380,7 +378,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 	ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
       }
 
-      pthread_mutex_unlock(&regex_mutex);
+      g_mutex_unlock(&regex_mutex);
 
       main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
       
@@ -420,8 +418,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 					      tic,
 					      live_performance);
 	
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    (AgsTask *) export_output);
+	ags_task_launcher_add_task(task_launcher,
+				   (AgsTask *) export_output);
 
 	/* create response */
 	osc_response = ags_osc_response_new();  
@@ -464,7 +462,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						tic,
 						live_performance);
 
-	  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+	  ags_task_launcher_add_task(task_launcher,
 				      (AgsTask *) export_output);
 
 	  /* create response */
@@ -494,7 +492,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						tic,
 						live_performance);
 
-	  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+	  ags_task_launcher_add_task(task_launcher,
 				      (AgsTask *) export_output);
 
 	  /* create response */
@@ -554,7 +552,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						tic,
 						live_performance);
 
-	  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+	  ags_task_launcher_add_task(task_launcher,
 				      (AgsTask *) export_output);
 
 	  /* create response */
@@ -600,8 +598,8 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 						tic,
 						live_performance);
 
-	  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				      (AgsTask *) export_output);
+	  ags_task_launcher_add_task(task_launcher,
+				     (AgsTask *) export_output);
 
 	  /* create response */
 	  osc_response = ags_osc_response_new();  

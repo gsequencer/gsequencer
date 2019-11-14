@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_server.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
@@ -165,7 +163,7 @@ ags_osc_status_controller_set_property(GObject *gobject,
 {
   AgsOscStatusController *osc_status_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_status_controller = AGS_OSC_STATUS_CONTROLLER(gobject);
 
@@ -187,7 +185,7 @@ ags_osc_status_controller_get_property(GObject *gobject,
 {
   AgsOscStatusController *osc_status_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_status_controller = AGS_OSC_STATUS_CONTROLLER(gobject);
 

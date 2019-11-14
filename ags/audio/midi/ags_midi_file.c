@@ -56,8 +56,6 @@ enum{
 
 static gpointer ags_midi_file_parent_class = NULL;
 
-static pthread_mutex_t ags_midi_file_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_midi_file_get_type(void)
 {
@@ -134,19 +132,7 @@ ags_midi_file_init(AgsMidiFile *midi_file)
   midi_file->flags = 0;
 
   /* midi file mutex */
-  midi_file->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(midi_file->obj_mutexattr);
-  pthread_mutexattr_settype(midi_file->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(midi_file->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  midi_file->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(midi_file->obj_mutex,
-		     midi_file->obj_mutexattr);
+  g_mutex_init(&(midi_file->obj_mutex));
 
   midi_file->file = NULL;
   midi_file->filename = NULL;
@@ -178,7 +164,7 @@ ags_midi_file_set_property(GObject *gobject,
 {
   AgsMidiFile *midi_file;
 
-  pthread_mutex_t *midi_file_mutex;
+  GRecMutex *midi_file_mutex;
 
   midi_file = AGS_MIDI_FILE(gobject);
 
@@ -192,10 +178,10 @@ ags_midi_file_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
       
-      pthread_mutex_lock(midi_file_mutex);
+      g_rec_mutex_lock(midi_file_mutex);
 
       if(filename == midi_file->filename){
-	pthread_mutex_unlock(midi_file_mutex);
+	g_rec_mutex_unlock(midi_file_mutex);
 	
 	return;
       }
@@ -206,7 +192,7 @@ ags_midi_file_set_property(GObject *gobject,
 
       midi_file->filename = g_strdup(filename);
 
-      pthread_mutex_unlock(midi_file_mutex);
+      g_rec_mutex_unlock(midi_file_mutex);
     }
     break;
   default:
@@ -223,7 +209,7 @@ ags_midi_file_get_property(GObject *gobject,
 {
   AgsMidiFile *midi_file;
 
-  pthread_mutex_t *midi_file_mutex;
+  GRecMutex *midi_file_mutex;
 
   midi_file = AGS_MIDI_FILE(gobject);
 
@@ -233,12 +219,12 @@ ags_midi_file_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      pthread_mutex_lock(midi_file_mutex);
+      g_rec_mutex_lock(midi_file_mutex);
 
       g_value_set_string(value,
 			 midi_file->filename);
 
-      pthread_mutex_unlock(midi_file_mutex);
+      g_rec_mutex_unlock(midi_file_mutex);
     }
     break;
   default:
@@ -256,29 +242,8 @@ ags_midi_file_finalize(GObject *gobject)
   
   g_free(midi_file->filename);
 
-  pthread_mutex_destroy(midi_file->obj_mutex);
-  free(midi_file->obj_mutex);
-
-  pthread_mutexattr_destroy(midi_file->obj_mutexattr);
-  free(midi_file->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_midi_file_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_midi_file_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_midi_file_get_class_mutex()
-{
-  return(&ags_midi_file_class_mutex);
 }
 
 /**

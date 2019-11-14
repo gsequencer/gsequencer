@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_util.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
@@ -30,6 +28,16 @@
 #include <mach/clock.h>
 #include <mach/mach.h>
 #endif
+
+/**
+ * SECTION:ags_osc_util
+ * @short_description: OSC util
+ * @title: AgsOscUtil
+ * @section_id:
+ * @include: ags/audio/osc/ags_osc_util.h
+ *
+ * Utility functions for OSC.
+ */
 
 /**
  * ags_osc_util_type_tag_string_count_type:

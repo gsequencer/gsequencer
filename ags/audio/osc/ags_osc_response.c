@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_response.h>
 
-#include <ags/libags.h>
-
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -56,8 +54,6 @@ enum{
 };
 
 static gpointer ags_osc_response_parent_class = NULL;
-
-static pthread_mutex_t ags_osc_response_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_response_get_type(void)
@@ -164,19 +160,7 @@ ags_osc_response_init(AgsOscResponse *osc_response)
   osc_response->flags = 0;
   
   /* osc response mutex */
-  osc_response->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_response->obj_mutexattr);
-  pthread_mutexattr_settype(osc_response->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_response->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_response->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_response->obj_mutex,
-		     osc_response->obj_mutexattr);
+  g_rec_mutex_init(&(osc_response->obj_mutex));
 
   osc_response->packet = NULL;
   osc_response->packet_size = 0;
@@ -192,7 +176,7 @@ ags_osc_response_set_property(GObject *gobject,
 {
   AgsOscResponse *osc_response;
 
-  pthread_mutex_t *osc_response_mutex;
+  GRecMutex *osc_response_mutex;
 
   osc_response = AGS_OSC_RESPONSE(gobject);
 
@@ -206,17 +190,17 @@ ags_osc_response_set_property(GObject *gobject,
 
       packet = g_value_get_pointer(value);
 
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
 
       if(osc_response->packet == packet){
-	pthread_mutex_unlock(osc_response_mutex);
+	g_rec_mutex_unlock(osc_response_mutex);
 
 	return;
       }
       
       osc_response->packet = packet;
 
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   case PROP_PACKET_SIZE:
@@ -225,11 +209,11 @@ ags_osc_response_set_property(GObject *gobject,
 
       packet_size = g_value_get_uint(value);
 
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
 
       osc_response->packet_size = packet_size;
 
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   case PROP_ERROR_MESSAGE:
@@ -238,10 +222,10 @@ ags_osc_response_set_property(GObject *gobject,
 
       error_message = g_value_get_string(value);
 
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
 
       if(osc_response->error_message == error_message){
-	pthread_mutex_unlock(osc_response_mutex);
+	g_rec_mutex_unlock(osc_response_mutex);
 
 	return;
       }
@@ -250,7 +234,7 @@ ags_osc_response_set_property(GObject *gobject,
       
       osc_response->error_message = g_strdup(error_message);
 
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   default:
@@ -267,7 +251,7 @@ ags_osc_response_get_property(GObject *gobject,
 {
   AgsOscResponse *osc_response;
 
-  pthread_mutex_t *osc_response_mutex;
+  GRecMutex *osc_response_mutex;
 
   osc_response = AGS_OSC_RESPONSE(gobject);
 
@@ -277,30 +261,30 @@ ags_osc_response_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PACKET:
     {
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
 
       g_value_set_pointer(value, osc_response->packet);
 
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   case PROP_PACKET_SIZE:
     {
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
       
       g_value_set_uint(value,
 		       osc_response->packet_size);
       
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   case PROP_ERROR_MESSAGE:
     {
-      pthread_mutex_lock(osc_response_mutex);
+      g_rec_mutex_lock(osc_response_mutex);
 
       g_value_set_pointer(value, osc_response->error_message);
 
-      pthread_mutex_unlock(osc_response_mutex);
+      g_rec_mutex_unlock(osc_response_mutex);
     }
     break;
   default:
@@ -327,12 +311,6 @@ ags_osc_response_finalize(GObject *gobject)
     
   osc_response = (AgsOscResponse *) gobject;
 
-  pthread_mutex_destroy(osc_response->obj_mutex);
-  free(osc_response->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_response->obj_mutexattr);
-  free(osc_response->obj_mutexattr);
-
   if(osc_response->packet != NULL){
     free(osc_response->packet);
   }
@@ -341,21 +319,6 @@ ags_osc_response_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_osc_response_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_osc_response_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_response_get_class_mutex()
-{
-  return(&ags_osc_response_class_mutex);
 }
 
 /**
@@ -374,7 +337,7 @@ ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *osc_response_mutex;
+  GRecMutex *osc_response_mutex;
 
   if(!AGS_IS_OSC_RESPONSE(osc_response)){
     return(FALSE);
@@ -384,11 +347,11 @@ ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
   osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* test */
-  pthread_mutex_lock(osc_response_mutex);
+  g_rec_mutex_lock(osc_response_mutex);
 
   retval = (flags & (osc_response->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(osc_response_mutex);
+  g_rec_mutex_unlock(osc_response_mutex);
 
   return(retval);
 }
@@ -405,7 +368,7 @@ ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
 void
 ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
 {
-  pthread_mutex_t *osc_response_mutex;
+  GRecMutex *osc_response_mutex;
 
   if(!AGS_IS_OSC_RESPONSE(osc_response)){
     return;
@@ -415,11 +378,11 @@ ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
   osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* set flags */
-  pthread_mutex_lock(osc_response_mutex);
+  g_rec_mutex_lock(osc_response_mutex);
 
   osc_response->flags |= flags;
 
-  pthread_mutex_unlock(osc_response_mutex);
+  g_rec_mutex_unlock(osc_response_mutex);
 }
 
 /**
@@ -434,7 +397,7 @@ ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
 void
 ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags)
 {
-  pthread_mutex_t *osc_response_mutex;
+  GRecMutex *osc_response_mutex;
 
   if(!AGS_IS_OSC_RESPONSE(osc_response)){
     return;
@@ -444,11 +407,11 @@ ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags)
   osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* set flags */
-  pthread_mutex_lock(osc_response_mutex);
+  g_rec_mutex_lock(osc_response_mutex);
 
   osc_response->flags &= (~flags);
 
-  pthread_mutex_unlock(osc_response_mutex);
+  g_rec_mutex_unlock(osc_response_mutex);
 }
 
 /**

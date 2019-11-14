@@ -26,7 +26,6 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
@@ -496,7 +495,6 @@ ags_jack_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_jack_devin_pcm_info;
   soundcard->get_capability = ags_jack_devin_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devin_is_starting;
@@ -1043,23 +1041,6 @@ ags_jack_devin_dispose(GObject *gobject)
 
   jack_devin->jack_port = NULL;
 
-  /* notify soundcard */
-  if(jack_devin->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) jack_devin->notify_soundcard);
-    
-    g_object_unref(jack_devin->notify_soundcard);
-
-    jack_devin->notify_soundcard = NULL;
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devin_parent_class)->dispose(gobject);
 }
@@ -1082,21 +1063,6 @@ ags_jack_devin_finalize(GObject *gobject)
 
   /* free AgsAttack */
   free(jack_devin->attack);
-
-  /* unref notify soundcard */
-  if(jack_devin->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) jack_devin->notify_soundcard);
-    
-    g_object_unref(jack_devin->notify_soundcard);
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
 
   /* jack client */
   if(jack_devin->jack_client != NULL){
@@ -1835,12 +1801,11 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
   AgsJackClient *jack_client;
   AgsJackDevin *jack_devin;
 
-  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
         
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
 
@@ -1875,7 +1840,6 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
   g_rec_mutex_lock(jack_devin_mutex);
   
   jack_devin->flags &= (~AGS_JACK_DEVIN_START_RECORD);
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devin->notify_soundcard);
   
   if((AGS_JACK_DEVIN_INITIALIZED & (jack_devin->flags)) == 0){
     g_rec_mutex_unlock(jack_devin_mutex);
@@ -1972,7 +1936,7 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
   }
 
   /* update soundcard */
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   task = NULL;
     
@@ -1992,11 +1956,11 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
 		       switch_buffer_flag);
 
   /* append tasks */
-  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-			       task);
-
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
+  
   /* unref */
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 }
 
 void
@@ -2004,8 +1968,6 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
 {
   AgsJackDevin *jack_devin;
 
-  AgsNotifySoundcard *notify_soundcard;
-  
   AgsApplicationContext *application_context;
 
   guint word_size;
@@ -2022,16 +1984,12 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   /*  */
   g_rec_mutex_lock(jack_devin_mutex);
 
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devin->notify_soundcard);
-
   if((AGS_JACK_DEVIN_INITIALIZED & (jack_devin->flags)) == 0){
     g_rec_mutex_unlock(jack_devin_mutex);
 
     return;
   }
 
-  g_object_ref(notify_soundcard);
-  
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
 
