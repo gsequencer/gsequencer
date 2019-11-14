@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_stream_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>

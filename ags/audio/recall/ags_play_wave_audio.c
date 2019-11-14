@@ -19,12 +19,9 @@
 
 #include <ags/audio/recall/ags_play_wave_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio);
-void ags_play_wave_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio);
 void ags_play_wave_audio_set_property(GObject *gobject,
 				      guint prop_id,
@@ -36,8 +33,6 @@ void ags_play_wave_audio_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_play_wave_audio_dispose(GObject *gobject);
 void ags_play_wave_audio_finalize(GObject *gobject);
-
-void ags_play_wave_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_play_wave_audio
@@ -181,14 +176,6 @@ ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio)
 }
 
 void
-ags_play_wave_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_wave_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_play_wave_audio_set_ports;
-}
-
-void
 ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 {
   GList *port;
@@ -266,7 +253,7 @@ ags_play_wave_audio_set_property(GObject *gobject,
 {
   AgsPlayWaveAudio *play_wave_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   play_wave_audio = AGS_PLAY_WAVE_AUDIO(gobject);
 
@@ -280,10 +267,10 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_wave_audio->wave_loop){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -298,7 +285,7 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       play_wave_audio->wave_loop = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_LOOP_START:
@@ -307,10 +294,10 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_wave_audio->wave_loop_start){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -325,7 +312,7 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       play_wave_audio->wave_loop_start = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_LOOP_END:
@@ -334,10 +321,10 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_wave_audio->wave_loop_end){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -352,7 +339,7 @@ ags_play_wave_audio_set_property(GObject *gobject,
 
       play_wave_audio->wave_loop_end = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -369,7 +356,7 @@ ags_play_wave_audio_get_property(GObject *gobject,
 {
   AgsPlayWaveAudio *play_wave_audio;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_audio = AGS_PLAY_WAVE_AUDIO(gobject);
 
@@ -379,29 +366,29 @@ ags_play_wave_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_WAVE_LOOP:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_audio->wave_loop);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_LOOP_START:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_audio->wave_loop_start);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_LOOP_END:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_audio->wave_loop_end);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -462,34 +449,6 @@ ags_play_wave_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_wave_audio_parent_class)->finalize(gobject);
-}
-
-void
-ags_play_wave_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./wave-loop[0]",
-		19)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-loop-start[0]",
-		      24)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop-start", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-loop-end[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop-end", AGS_PORT(port->data),
-		   NULL);
-    }
-    
-    port = port->next;
-  }
 }
 
 /**

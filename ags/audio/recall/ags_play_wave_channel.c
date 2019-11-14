@@ -19,12 +19,9 @@
 
 #include <ags/audio/recall/ags_play_wave_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel);
-void ags_play_wave_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_wave_channel_init(AgsPlayWaveChannel *play_wave_channel);
 void ags_play_wave_channel_set_property(GObject *gobject,
 					guint prop_id,
@@ -37,8 +34,6 @@ void ags_play_wave_channel_get_property(GObject *gobject,
 void ags_play_wave_channel_dispose(GObject *gobject);
 void ags_play_wave_channel_finalize(GObject *gobject);
 
-void ags_play_wave_channel_set_ports(AgsPlugin *plugin, GList *port);
-
 /**
  * SECTION:ags_play_wave_channel
  * @short_description: play channel wave
@@ -50,7 +45,6 @@ void ags_play_wave_channel_set_ports(AgsPlugin *plugin, GList *port);
  */
 
 static gpointer ags_play_wave_channel_parent_class = NULL;
-static AgsPluginInterface *ags_play_wave_parent_plugin_interface;
 
 static const gchar *ags_play_wave_channel_plugin_name = "ags-play-wave";
 static const gchar *ags_play_wave_channel_specifier[] = {
@@ -89,20 +83,10 @@ ags_play_wave_channel_get_type()
       (GInstanceInitFunc) ags_play_wave_channel_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_wave_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_wave_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 							"AgsPlayWaveChannel",
 							&ags_play_wave_channel_info,
 							0);
-
-    g_type_add_interface_static(ags_type_play_wave_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_wave_channel);
   }
@@ -175,14 +159,6 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
   g_object_class_install_property(gobject,
 				  PROP_X_OFFSET,
 				  param_spec);
-}
-
-void
-ags_play_wave_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_wave_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_play_wave_channel_set_ports;
 }
 
 void
@@ -445,28 +421,6 @@ ags_play_wave_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_wave_channel_parent_class)->finalize(gobject);
-}
-
-void
-ags_play_wave_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./do-playback[0]",
-		16)){
-      g_object_set(G_OBJECT(plugin),
-		   "do-playback", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./x-offset[0]",
-		      13)){
-      g_object_set(G_OBJECT(plugin),
-		   "x-offset", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 /**

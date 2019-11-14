@@ -19,12 +19,9 @@
 
 #include <ags/audio/recall/ags_record_midi_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio);
-void ags_record_midi_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio);
 void ags_record_midi_audio_set_property(GObject *gobject,
 					guint prop_id,
@@ -36,8 +33,6 @@ void ags_record_midi_audio_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_record_midi_audio_dispose(GObject *gobject);
 void ags_record_midi_audio_finalize(GObject *gobject);
-
-void ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_record_midi_audio
@@ -60,7 +55,6 @@ enum{
 };
 
 static gpointer ags_record_midi_audio_parent_class = NULL;
-static AgsPluginInterface *ags_record_midi_parent_plugin_interface;
 
 static const gchar *ags_record_midi_audio_plugin_name = "ags-record-midi";
 static const gchar *ags_record_midi_audio_specifier[] = {
@@ -100,20 +94,10 @@ ags_record_midi_audio_get_type()
       (GInstanceInitFunc) ags_record_midi_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_record_midi_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_record_midi_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							"AgsRecordMidiAudio",
 							&ags_record_midi_audio_info,
 							0);
-
-    g_type_add_interface_static(ags_type_record_midi_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_record_midi_audio);
   }
@@ -235,14 +219,6 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
   g_object_class_install_property(gobject,
 				  PROP_BPM,
 				  param_spec);
-}
-
-void
-ags_record_midi_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_record_midi_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_record_midi_audio_set_ports;
 }
 
 void
@@ -709,52 +685,6 @@ ags_record_midi_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_record_midi_audio_parent_class)->finalize(gobject);
-}
-
-void
-ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./playback[0]",
-		11)){
-      g_object_set(G_OBJECT(plugin),
-		   "playback", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./record[0]",
-		      11)){
-      g_object_set(G_OBJECT(plugin),
-		   "record", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./filename[0]",
-		      11)){
-      g_object_set(G_OBJECT(plugin),
-		   "filename", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./division[0]",
-		      11)){
-      g_object_set(G_OBJECT(plugin),
-		   "division", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./tempo[0]",
-		      11)){
-      g_object_set(G_OBJECT(plugin),
-		   "tempo", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./bpm[0]",
-		      11)){
-      g_object_set(G_OBJECT(plugin),
-		   "bpm", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 /**

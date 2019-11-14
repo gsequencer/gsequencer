@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_route_lv2_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
 
 #include <ags/i18n.h>
 
 void ags_route_lv2_audio_class_init(AgsRouteLv2AudioClass *route_lv2_audio);
 void ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio);
-void ags_route_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_route_lv2_audio_set_property(GObject *gobject,
 				      guint prop_id,
 				      const GValue *value,
@@ -38,8 +35,6 @@ void ags_route_lv2_audio_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_route_lv2_audio_dispose(GObject *gobject);
 void ags_route_lv2_audio_finalize(GObject *gobject);
-
-void ags_route_lv2_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_route_lv2_audio
@@ -88,32 +83,16 @@ ags_route_lv2_audio_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_route_lv2_audio_init,
     };
-    
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_route_lv2_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
+        
     ags_type_route_lv2_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						      "AgsRouteLv2Audio",
 						      &ags_route_lv2_audio_info,
 						      0);
 
-    g_type_add_interface_static(ags_type_route_lv2_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave (&g_define_type_id__volatile, ags_type_route_lv2_audio);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_route_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_route_lv2_audio_set_ports;
 }
 
 void
@@ -380,29 +359,6 @@ ags_route_lv2_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_route_lv2_audio_parent_class)->finalize(gobject);
-}
-
-
-void
-ags_route_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./notation-input[0]",
-		18)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-input", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-input[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-input", AGS_PORT(port->data),
-		   NULL);
-    }
-    
-    port = port->next;
-  }
 }
 
 /**

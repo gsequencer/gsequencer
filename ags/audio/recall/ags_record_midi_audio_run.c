@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_record_midi_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_notation.h>
@@ -37,7 +35,6 @@
 #include <ags/i18n.h>
 
 void ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_audio_run);
-void ags_record_midi_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run);
 void ags_record_midi_audio_run_set_property(GObject *gobject,
 					    guint prop_id,
@@ -49,9 +46,6 @@ void ags_record_midi_audio_run_get_property(GObject *gobject,
 					    GParamSpec *param_spec);
 void ags_record_midi_audio_run_dispose(GObject *gobject);
 void ags_record_midi_audio_run_finalize(GObject *gobject);
-
-void ags_record_midi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_record_midi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_record_midi_audio_run_resolve_dependency(AgsRecall *recall);
 void ags_record_midi_audio_run_run_init_pre(AgsRecall *recall);
@@ -80,7 +74,6 @@ enum{
 };
 
 static gpointer ags_record_midi_audio_run_parent_class = NULL;
-static AgsPluginInterface *ags_record_midi_audio_run_parent_plugin_interface;
 
 GType
 ags_record_midi_audio_run_get_type()
@@ -102,20 +95,10 @@ ags_record_midi_audio_run_get_type()
       (GInstanceInitFunc) ags_record_midi_audio_run_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_record_midi_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_record_midi_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							    "AgsRecordMidiAudioRun",
 							    &ags_record_midi_audio_run_info,
 							    0);
-
-    g_type_add_interface_static(ags_type_record_midi_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_record_midi_audio_run);
   }
@@ -241,7 +224,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 {
   AgsRecordMidiAudioRun *record_midi_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
 
@@ -258,10 +241,10 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
       delay_audio_run = g_value_get_object(value);
       old_delay_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(delay_audio_run == record_midi_audio_run->delay_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -276,7 +259,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 	g_object_ref(delay_audio_run);
       }
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(delay_audio_run != NULL &&
@@ -307,11 +290,11 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
       }
 
       /* new - dependency/connection */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       record_midi_audio_run->delay_audio_run = delay_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(delay_audio_run != NULL){
 	if(is_template){
@@ -330,10 +313,10 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
       count_beats_audio_run = g_value_get_object(value);
       old_count_beats_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == record_midi_audio_run->count_beats_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -356,7 +339,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 
       record_midi_audio_run->count_beats_audio_run = count_beats_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(count_beats_audio_run != NULL &&
@@ -400,10 +383,10 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 
       timestamp = g_value_get_object(value);
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(timestamp == record_midi_audio_run->timestamp){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -418,7 +401,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 
       record_midi_audio_run->timestamp = timestamp;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -435,7 +418,7 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
 {
   AgsRecordMidiAudioRun *record_midi_audio_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
 
@@ -445,29 +428,29 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(record_midi_audio_run->delay_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(record_midi_audio_run->count_beats_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(record_midi_audio_run->timestamp));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -841,7 +824,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
@@ -1100,8 +1083,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  g_message("remove %d", current_note->y);
 #endif
 		}else{
-		  pthread_mutex_lock(audio_mutex);
-
 		  g_object_set(current_note,
 			       "x1", notation_counter + 1,
 			       NULL);

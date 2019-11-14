@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_wave_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -196,7 +194,7 @@ ags_play_wave_channel_run_set_property(GObject *gobject,
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
 
@@ -210,11 +208,11 @@ ags_play_wave_channel_run_set_property(GObject *gobject,
 
       x_offset = g_value_get_uint64(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_wave_channel_run->x_offset = x_offset;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -231,7 +229,7 @@ ags_play_wave_channel_run_get_property(GObject *gobject,
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
 
@@ -241,11 +239,11 @@ ags_play_wave_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X_OFFSET:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint64(value, play_wave_channel_run->x_offset);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -375,8 +373,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   GValue do_loop_value = {0,};
   GValue x_offset_value = {0,};
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *channel_mutex;
 
   auto void ags_play_wave_channel_run_run_inter_add_audio_signal();
 

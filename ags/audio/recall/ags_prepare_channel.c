@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_prepare_channel.h>
-
-#include <ags/libags.h>
 
 void ags_prepare_channel_class_init(AgsPrepareChannelClass *prepare_channel);
 void ags_prepare_channel_init(AgsPrepareChannel *prepare_channel);
