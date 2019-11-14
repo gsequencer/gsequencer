@@ -479,7 +479,6 @@ ags_audio_unit_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_audio_unit_devin_pcm_info;
   soundcard->get_capability = ags_audio_unit_devin_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_audio_unit_devin_is_starting;
@@ -1824,7 +1823,7 @@ ags_audio_unit_devin_port_free(AgsSoundcard *soundcard)
 		  AGS_AUDIO_UNIT_DEVIN_CALLBACK_FINISH_DONE);
     
   if((AGS_AUDIO_UNIT_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(audio_unit_devin->sync_flags)))) != 0){
-    g_cond_signal(audio_unit_devin->callback_finish_cond);
+    g_cond_signal(&(audio_unit_devin->callback_finish_cond));
   }
 
   g_mutex_unlock(callback_finish_mutex);

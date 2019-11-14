@@ -502,7 +502,6 @@ ags_core_audio_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_core_audio_devout_pcm_info;
   soundcard->get_capability = ags_core_audio_devout_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_core_audio_devout_is_starting;

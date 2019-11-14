@@ -23,8 +23,6 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>

@@ -177,8 +177,6 @@ struct _AgsWasapiDevout
 
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
-
-  GObject *notify_soundcard;
 };
 
 struct _AgsWasapiDevoutClass
@@ -199,7 +197,7 @@ void ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout);
 void ags_wasapi_devout_adjust_delay_and_attack(AgsWasapiDevout *wasapi_devout);
 void ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout);
 
-AgsWasapiDevout* ags_wasapi_devout_new(AgsApplicationContext *application_context);
+AgsWasapiDevout* ags_wasapi_devout_new();
 
 G_END_DECLS
 

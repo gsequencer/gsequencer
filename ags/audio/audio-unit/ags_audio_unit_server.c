@@ -303,7 +303,7 @@ ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server)
   audio_unit_server->flags = 0;
 
   /* server mutex */
-  g_rec_mutex_init(&(audio_unit_server->obj_mutex);
+  g_rec_mutex_init(&(audio_unit_server->obj_mutex));
   
   g_atomic_int_set(&(audio_unit_server->running),
 		   TRUE);
@@ -671,9 +671,6 @@ ags_audio_unit_server_is_ready(AgsConnectable *connectable)
 
   audio_unit_server = AGS_AUDIO_UNIT_SERVER(connectable);
 
-  /* get audio unit server mutex */
-  audio_unit_server_mutex = AGS_AUDIO_UNIT_SERVER_GET_OBJ_MUTEX(audio_unit_server);
-
   /* check is added */
   is_ready = ags_audio_unit_server_test_flags(audio_unit_server, AGS_AUDIO_UNIT_SERVER_ADDED_TO_REGISTRY);
   
@@ -814,7 +811,7 @@ ags_audio_unit_server_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_list_free_full(list_start,
+  g_list_free_full(start_list,
 		   g_object_unref);
 }
 

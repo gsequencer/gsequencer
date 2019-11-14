@@ -164,7 +164,7 @@ void ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, gu
 
 void ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin);
 
-AgsCoreAudioMidiin* ags_core_audio_midiin_new(AgsApplicationContext *application_context);
+AgsCoreAudioMidiin* ags_core_audio_midiin_new();
 
 G_END_DECLS
 

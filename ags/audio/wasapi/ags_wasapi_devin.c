@@ -19,17 +19,15 @@
 
 #include <ags/audio/wasapi/ags_wasapi_devin.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <string.h>
 #include <math.h>
@@ -469,7 +467,6 @@ ags_wasapi_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_wasapi_devin_pcm_info;
   soundcard->get_capability = ags_wasapi_devin_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_wasapi_devin_is_starting;
@@ -535,23 +532,11 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   guint denumerator, numerator;
   guint i;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   /* flags */
   wasapi_devin->flags = 0;
 
   /* devin mutex */
-  wasapi_devin->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  wasapi_devin->obj_mutex =
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(wasapi_devin->obj_mutex));
 
   /* uuid */
   wasapi_devin->uuid = ags_uuid_alloc();
@@ -598,13 +583,12 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   wasapi_devin->device = NULL;
 
   /* buffer */
-  wasapi_devin->buffer_mutex = (pthread_mutex_t **) malloc(8 * sizeof(pthread_mutex_t *));
+  wasapi_devin->buffer_mutex = (GRecMutex **) malloc(8 * sizeof(GRecMutex *));
 
   for(i = 0; i < 8; i++){
-    wasapi_devin->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    wasapi_devin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    pthread_mutex_init(wasapi_devin->buffer_mutex[i],
-		       NULL);
+    g_rec_mutex_init(wasapi_devin->buffer_mutex[i]);
   }
 
   wasapi_devin->buffer = (void **) malloc(8 * sizeof(void*));
@@ -667,23 +651,14 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
   wasapi_devin->loop_offset = 0;
 
   /* callback mutex */
-  wasapi_devin->callback_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(wasapi_devin->callback_mutex,
-		     NULL);
+  g_mutex_init(&(wasapi_devin->callback_mutex));
 
-  wasapi_devin->callback_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(wasapi_devin->callback_cond, NULL);
+  g_cond_init(&(wasapi_devin->callback_cond));
 
   /* callback finish mutex */
-  wasapi_devin->callback_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(wasapi_devin->callback_finish_mutex,
-		     NULL);
+  g_mutex_init(&(wasapi_devin->callback_finish_mutex));
 
-  wasapi_devin->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(wasapi_devin->callback_finish_cond, NULL);
-
-  /*  */
-  wasapi_devin->notify_soundcard = NULL;
+  g_cond_init(&(wasapi_devin->callback_finish_cond));
 }
 
 void
@@ -694,7 +669,7 @@ ags_wasapi_devin_set_property(GObject *gobject,
 {
   AgsWasapiDevin *wasapi_devin;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   wasapi_devin = AGS_WASAPI_DEVIN(gobject);
 
@@ -708,11 +683,11 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     device = (char *) g_value_get_string(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     wasapi_devin->device = g_strdup(device);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_DSP_CHANNELS:
@@ -721,17 +696,17 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     dsp_channels = g_value_get_uint(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     if(dsp_channels == wasapi_devin->dsp_channels){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
 
     wasapi_devin->dsp_channels = dsp_channels;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_PCM_CHANNELS:
@@ -740,17 +715,17 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     pcm_channels = g_value_get_uint(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     if(pcm_channels == wasapi_devin->pcm_channels){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
 
     wasapi_devin->pcm_channels = pcm_channels;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_realloc_buffer(wasapi_devin);
   }
@@ -761,17 +736,17 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     format = g_value_get_uint(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     if(format == wasapi_devin->format){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
 
     wasapi_devin->format = format;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_realloc_buffer(wasapi_devin);
   }
@@ -782,17 +757,17 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     buffer_size = g_value_get_uint(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     if(buffer_size == wasapi_devin->buffer_size){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
 
     wasapi_devin->buffer_size = buffer_size;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_realloc_buffer(wasapi_devin);
     ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
@@ -804,17 +779,17 @@ ags_wasapi_devin_set_property(GObject *gobject,
 
     samplerate = g_value_get_uint(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
       
     if(samplerate == wasapi_devin->samplerate){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
 
     wasapi_devin->samplerate = samplerate;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_realloc_buffer(wasapi_devin);
     ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
@@ -831,11 +806,11 @@ ags_wasapi_devin_set_property(GObject *gobject,
       
     bpm = g_value_get_double(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     wasapi_devin->bpm = bpm;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
   }
@@ -846,11 +821,11 @@ ags_wasapi_devin_set_property(GObject *gobject,
       
     delay_factor = g_value_get_double(value);
 
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     wasapi_devin->delay_factor = delay_factor;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
 
     ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
   }
@@ -869,7 +844,7 @@ ags_wasapi_devin_get_property(GObject *gobject,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   wasapi_devin = AGS_WASAPI_DEVIN(gobject);
 
@@ -879,92 +854,92 @@ ags_wasapi_devin_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DEVICE:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_string(value, wasapi_devin->device);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_DSP_CHANNELS:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_uint(value, wasapi_devin->dsp_channels);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_PCM_CHANNELS:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_uint(value, wasapi_devin->pcm_channels);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_FORMAT:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_uint(value, wasapi_devin->format);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_uint(value, wasapi_devin->buffer_size);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_SAMPLERATE:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_uint(value, wasapi_devin->samplerate);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_BUFFER:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_pointer(value, wasapi_devin->buffer);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_BPM:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_double(value, wasapi_devin->bpm);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_DELAY_FACTOR:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_double(value, wasapi_devin->delay_factor);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   case PROP_ATTACK:
   {
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
 
     g_value_set_pointer(value, wasapi_devin->attack);
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
   break;
   default:
@@ -995,31 +970,10 @@ ags_wasapi_devin_finalize(GObject *gobject)
 
   wasapi_devin = AGS_WASAPI_DEVIN(gobject);
 
-  pthread_mutex_destroy(wasapi_devin->obj_mutex);
-  free(wasapi_devin->obj_mutex);
-
-  pthread_mutexattr_destroy(wasapi_devin->obj_mutexattr);
-  free(wasapi_devin->obj_mutexattr);
-
   //TODO:JK: implement me
   
   /* call parent */
   G_OBJECT_CLASS(ags_wasapi_devin_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_wasapi_devin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.3.4
- */
-pthread_mutex_t*
-ags_wasapi_devin_get_class_mutex()
-{
-  return(&ags_wasapi_devin_class_mutex);
 }
 
 /**
@@ -1038,7 +992,7 @@ ags_wasapi_devin_test_flags(AgsWasapiDevin *wasapi_devin, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return(FALSE);
@@ -1048,11 +1002,11 @@ ags_wasapi_devin_test_flags(AgsWasapiDevin *wasapi_devin, guint flags)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* test */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   retval = (flags & (wasapi_devin->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(retval);
 }
@@ -1069,7 +1023,7 @@ ags_wasapi_devin_test_flags(AgsWasapiDevin *wasapi_devin, guint flags)
 void
 ags_wasapi_devin_set_flags(AgsWasapiDevin *wasapi_devin, guint flags)
 {
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return;
@@ -1081,11 +1035,11 @@ ags_wasapi_devin_set_flags(AgsWasapiDevin *wasapi_devin, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->flags |= flags;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
     
 /**
@@ -1100,7 +1054,7 @@ ags_wasapi_devin_set_flags(AgsWasapiDevin *wasapi_devin, guint flags)
 void
 ags_wasapi_devin_unset_flags(AgsWasapiDevin *wasapi_devin, guint flags)
 {  
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return;
@@ -1112,11 +1066,11 @@ ags_wasapi_devin_unset_flags(AgsWasapiDevin *wasapi_devin, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->flags &= (~flags);
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
@@ -1127,7 +1081,7 @@ ags_wasapi_devin_set_device(AgsSoundcard *soundcard,
 
   GList *card_id, *card_id_start, *card_name, *card_name_start;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -1145,7 +1099,7 @@ ags_wasapi_devin_set_device(AgsSoundcard *soundcard,
   card_name_start = card_name;
 
   /* check card */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   while(card_id != NULL){
     if(!g_ascii_strncasecmp(card_id->data,
@@ -1159,7 +1113,7 @@ ags_wasapi_devin_set_device(AgsSoundcard *soundcard,
     card_id = card_id->next;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   /* free card id and name */
   g_list_free_full(card_id_start,
@@ -1175,7 +1129,7 @@ ags_wasapi_devin_get_device(AgsSoundcard *soundcard)
   
   gchar *device;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -1185,11 +1139,11 @@ ags_wasapi_devin_get_device(AgsSoundcard *soundcard)
   device = NULL;
 
   /* get device */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   device = g_strdup(wasapi_devin->device);
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
   
   return(device);
 }
@@ -1222,7 +1176,7 @@ ags_wasapi_devin_get_presets(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -1230,7 +1184,7 @@ ags_wasapi_devin_get_presets(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get presets */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   if(channels != NULL){
     *channels = wasapi_devin->pcm_channels;
@@ -1248,7 +1202,7 @@ ags_wasapi_devin_get_presets(AgsSoundcard *soundcard,
     *format = wasapi_devin->format;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 /**
@@ -1404,7 +1358,7 @@ ags_wasapi_devin_is_starting(AgsSoundcard *soundcard)
 
   gboolean is_starting;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -1412,11 +1366,11 @@ ags_wasapi_devin_is_starting(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* check is starting */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   is_starting = ((AGS_WASAPI_DEVIN_START_RECORD & (wasapi_devin->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
   
   return(is_starting);
 }
@@ -1428,7 +1382,7 @@ ags_wasapi_devin_is_recording(AgsSoundcard *soundcard)
 
   gboolean is_playing;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -1436,11 +1390,11 @@ ags_wasapi_devin_is_recording(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* check is starting */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   is_playing = ((AGS_WASAPI_DEVIN_RECORD & (wasapi_devin->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(is_playing);
 }
@@ -1491,7 +1445,7 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex; 
+  GRecMutex *wasapi_devin_mutex; 
 
   if(ags_soundcard_is_recording(soundcard)){
     return;
@@ -1502,7 +1456,7 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
   /* get wasapi devin mutex */
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
 #ifdef AGS_WITH_WASAPI
 #endif
@@ -1510,8 +1464,6 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
   wasapi_devin->tact_counter = 0.0;
   wasapi_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devin)));
   wasapi_devin->tic_counter = 0;
-
-  ags_soundcard_get_poll_fd(soundcard);
   
 #ifdef AGS_WITH_WASAPI
   wasapi_devin->flags |= AGS_WASAPI_DEVIN_INITIALIZED;
@@ -1528,7 +1480,7 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 			    AGS_WASAPI_DEVIN_BUFFER6 |
 			    AGS_WASAPI_DEVIN_BUFFER7));
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
@@ -1537,13 +1489,11 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsThread *task_thread;
-  AgsPollFd *poll_fd;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
 
@@ -1566,7 +1516,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   guint word_size;
   guint nth_buffer;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -1576,22 +1526,8 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* lock */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
   
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(wasapi_devin->notify_soundcard);
-
-  /* notify cyclic task */
-  pthread_mutex_lock(notify_soundcard->return_mutex);
-
-  g_atomic_int_or(&(notify_soundcard->flags),
-		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
-  
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
-    pthread_cond_signal(notify_soundcard->return_cond);
-  }
-  
-  pthread_mutex_unlock(notify_soundcard->return_mutex);
-
   /* retrieve word size */
   switch(wasapi_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -1620,7 +1556,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   }
   break;
   default:
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
     
     g_warning("ags_wasapi_devin_client_record(): unsupported word size");
 
@@ -1657,7 +1593,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     
       CoUninitialize();
 
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       return;
     }
@@ -1677,7 +1613,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 	dev_enumerator->lpVtbl->Release(dev_enumerator);
 	CoUninitialize();
 
-	pthread_mutex_unlock(wasapi_devin_mutex);
+	g_rec_mutex_unlock(wasapi_devin_mutex);
 
 	return;
       }
@@ -1695,7 +1631,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
 	wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_START_RECORD);
 	
-	pthread_mutex_unlock(wasapi_devin_mutex);
+	g_rec_mutex_unlock(wasapi_devin_mutex);
 
 	g_message("WASAPI failed - get device");
     
@@ -1718,7 +1654,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
       dev_enumerator->lpVtbl->Release(dev_enumerator);
       CoUninitialize();
 
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       g_message("WASAPI failed - get audio client");
 
@@ -1786,7 +1722,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
 	wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_START_RECORD);
       
-	pthread_mutex_unlock(wasapi_devin_mutex);
+	g_rec_mutex_unlock(wasapi_devin_mutex);
 
 	g_message("WASAPI failed - broken configuration");
     
@@ -1854,7 +1790,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 
 	wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_START_RECORD);
       
-	pthread_mutex_unlock(wasapi_devin_mutex);
+	g_rec_mutex_unlock(wasapi_devin_mutex);
 
 	g_message("WASAPI failed - broken configuration");
     
@@ -1893,7 +1829,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_START_RECORD);
 
   if((AGS_WASAPI_DEVIN_INITIALIZED & (wasapi_devin->flags)) == 0){
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
     
     return;
   }
@@ -1972,7 +1908,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     }
 
     if(audio_capture_client == NULL){
-      pthread_mutex_unlock(wasapi_devin_mutex);
+      g_rec_mutex_unlock(wasapi_devin_mutex);
 
       g_message("audio_capture_client = NULL");
       
@@ -2133,11 +2069,11 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     ags_thread_stop(soundcard_thread);
   }
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   if((AGS_WASAPI_DEVIN_SHUTDOWN & (wasapi_devin->flags)) == 0){
     /* update soundcard */
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
     task = NULL;
   
@@ -2157,11 +2093,11 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 			 switch_buffer_flag);
 
     /* append tasks */
-    ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				 task);
+    ags_task_launcher_add_task_launcher(task_launcher,
+					task);
   
     /* unref */
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
   }
 }
 
@@ -2170,15 +2106,11 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
 {
   AgsWasapiDevin *wasapi_devin;
 
-  AgsNotifySoundcard *notify_soundcard;
-
   AgsApplicationContext *application_context;
-
-  GList *poll_fd;
 
   guint i;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2186,38 +2118,24 @@ ags_wasapi_devin_client_free(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* lock */
-  pthread_mutex_lock(wasapi_devin_mutex);
-
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(wasapi_devin->notify_soundcard);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   if((AGS_WASAPI_DEVIN_INITIALIZED & (wasapi_devin->flags)) == 0){
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
     
     return;
   }
 
   wasapi_devin->flags |= (AGS_WASAPI_DEVIN_SHUTDOWN);
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
-  /* notify cyclic task */
-  pthread_mutex_lock(notify_soundcard->return_mutex);
-
-  g_atomic_int_or(&(notify_soundcard->flags),
-		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
-  
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
-    pthread_cond_signal(notify_soundcard->return_cond);
-  }
-  
-  pthread_mutex_unlock(notify_soundcard->return_mutex);
-
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->note_offset = wasapi_devin->start_note_offset;
   wasapi_devin->note_offset_absolute = wasapi_devin->start_note_offset;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
@@ -2232,7 +2150,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   guint loop_left, loop_right;
   gboolean do_loop;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2240,7 +2158,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
   
   /* determine if attack should be switched */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   delay = wasapi_devin->delay[wasapi_devin->tic_counter];
   delay_counter = wasapi_devin->delay_counter;
@@ -2253,7 +2171,7 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
   
   do_loop = wasapi_devin->do_loop;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   if(delay_counter + 1.0 >= delay){
     if(do_loop &&
@@ -2273,18 +2191,18 @@ ags_wasapi_devin_tic(AgsSoundcard *soundcard)
 				 note_offset);
     
     /* reset - delay counter */
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
     
     wasapi_devin->delay_counter = delay_counter + 1.0 - delay;
     wasapi_devin->tact_counter += 1.0;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }else{
-    pthread_mutex_lock(wasapi_devin_mutex);
+    g_rec_mutex_lock(wasapi_devin_mutex);
     
     wasapi_devin->delay_counter += 1.0;
 
-    pthread_mutex_unlock(wasapi_devin_mutex);
+    g_rec_mutex_unlock(wasapi_devin_mutex);
   }
 }
 
@@ -2294,7 +2212,7 @@ ags_wasapi_devin_offset_changed(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2302,7 +2220,7 @@ ags_wasapi_devin_offset_changed(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* offset changed */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->tic_counter += 1;
 
@@ -2311,7 +2229,7 @@ ags_wasapi_devin_offset_changed(AgsSoundcard *soundcard,
     wasapi_devin->tic_counter = 0;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
@@ -2320,7 +2238,7 @@ ags_wasapi_devin_set_bpm(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2328,11 +2246,11 @@ ags_wasapi_devin_set_bpm(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set bpm */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->bpm = bpm;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
 }
@@ -2344,7 +2262,7 @@ ags_wasapi_devin_get_bpm(AgsSoundcard *soundcard)
 
   gdouble bpm;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2352,11 +2270,11 @@ ags_wasapi_devin_get_bpm(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get bpm */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   bpm = wasapi_devin->bpm;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(bpm);
 }
@@ -2367,7 +2285,7 @@ ags_wasapi_devin_set_delay_factor(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2375,11 +2293,11 @@ ags_wasapi_devin_set_delay_factor(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set delay factor */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->delay_factor = delay_factor;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   ags_wasapi_devin_adjust_delay_and_attack(wasapi_devin);
 }
@@ -2391,7 +2309,7 @@ ags_wasapi_devin_get_delay_factor(AgsSoundcard *soundcard)
 
   gdouble delay_factor;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2399,11 +2317,11 @@ ags_wasapi_devin_get_delay_factor(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get delay factor */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   delay_factor = wasapi_devin->delay_factor;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(delay_factor);
 }
@@ -2416,7 +2334,7 @@ ags_wasapi_devin_get_delay(AgsSoundcard *soundcard)
   guint delay_index;
   gdouble delay;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2424,13 +2342,13 @@ ags_wasapi_devin_get_delay(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get delay */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   delay_index = wasapi_devin->tic_counter;
 
   delay = wasapi_devin->delay[delay_index];
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
   
   return(delay);
 }
@@ -2442,7 +2360,7 @@ ags_wasapi_devin_get_absolute_delay(AgsSoundcard *soundcard)
 
   gdouble absolute_delay;
   
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -2450,11 +2368,11 @@ ags_wasapi_devin_get_absolute_delay(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get absolute delay */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   absolute_delay = (60.0 * (((gdouble) wasapi_devin->samplerate / (gdouble) wasapi_devin->buffer_size) / (gdouble) wasapi_devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) wasapi_devin->delay_factor)));
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(absolute_delay);
 }
@@ -2467,7 +2385,7 @@ ags_wasapi_devin_get_attack(AgsSoundcard *soundcard)
   guint attack_index;
   guint attack;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -2475,13 +2393,13 @@ ags_wasapi_devin_get_attack(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get attack */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   attack_index = wasapi_devin->tic_counter;
 
   attack = wasapi_devin->attack[attack_index];
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
   
   return(attack);
 }
@@ -2593,7 +2511,7 @@ ags_wasapi_devin_lock_buffer(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2620,7 +2538,7 @@ ags_wasapi_devin_lock_buffer(AgsSoundcard *soundcard,
   }
   
   if(buffer_mutex != NULL){
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
   }
 }
 
@@ -2630,7 +2548,7 @@ ags_wasapi_devin_unlock_buffer(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2657,7 +2575,7 @@ ags_wasapi_devin_unlock_buffer(AgsSoundcard *soundcard,
   }
 
   if(buffer_mutex != NULL){
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
   }
 }
 
@@ -2668,7 +2586,7 @@ ags_wasapi_devin_get_delay_counter(AgsSoundcard *soundcard)
 
   guint delay_counter;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
   
@@ -2676,11 +2594,11 @@ ags_wasapi_devin_get_delay_counter(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* delay counter */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   delay_counter = wasapi_devin->delay_counter;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(delay_counter);
 }
@@ -2691,7 +2609,7 @@ ags_wasapi_devin_set_note_offset(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2699,11 +2617,11 @@ ags_wasapi_devin_set_note_offset(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->note_offset = note_offset;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 guint
@@ -2713,7 +2631,7 @@ ags_wasapi_devin_get_start_note_offset(AgsSoundcard *soundcard)
 
   guint start_note_offset;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2721,11 +2639,11 @@ ags_wasapi_devin_get_start_note_offset(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   start_note_offset = wasapi_devin->start_note_offset;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(start_note_offset);
 }
@@ -2736,7 +2654,7 @@ ags_wasapi_devin_set_start_note_offset(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2744,11 +2662,11 @@ ags_wasapi_devin_set_start_note_offset(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->start_note_offset = start_note_offset;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 guint
@@ -2758,7 +2676,7 @@ ags_wasapi_devin_get_note_offset(AgsSoundcard *soundcard)
 
   guint note_offset;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2766,11 +2684,11 @@ ags_wasapi_devin_get_note_offset(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   note_offset = wasapi_devin->note_offset;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(note_offset);
 }
@@ -2781,7 +2699,7 @@ ags_wasapi_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2789,11 +2707,11 @@ ags_wasapi_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->note_offset_absolute = note_offset_absolute;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 guint
@@ -2803,7 +2721,7 @@ ags_wasapi_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
 
   guint note_offset_absolute;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2811,11 +2729,11 @@ ags_wasapi_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set note offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   note_offset_absolute = wasapi_devin->note_offset_absolute;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(note_offset_absolute);
 }
@@ -2827,7 +2745,7 @@ ags_wasapi_devin_set_loop(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2835,7 +2753,7 @@ ags_wasapi_devin_set_loop(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* set loop */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   wasapi_devin->loop_left = loop_left;
   wasapi_devin->loop_right = loop_right;
@@ -2845,7 +2763,7 @@ ags_wasapi_devin_set_loop(AgsSoundcard *soundcard,
     wasapi_devin->loop_offset = wasapi_devin->note_offset;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 void
@@ -2855,7 +2773,7 @@ ags_wasapi_devin_get_loop(AgsSoundcard *soundcard,
 {
   AgsWasapiDevin *wasapi_devin;
 
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2863,7 +2781,7 @@ ags_wasapi_devin_get_loop(AgsSoundcard *soundcard,
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get loop */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   if(loop_left != NULL){
     *loop_left = wasapi_devin->loop_left;
@@ -2877,7 +2795,7 @@ ags_wasapi_devin_get_loop(AgsSoundcard *soundcard,
     *do_loop = wasapi_devin->do_loop;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 guint
@@ -2887,7 +2805,7 @@ ags_wasapi_devin_get_loop_offset(AgsSoundcard *soundcard)
 
   guint loop_offset;
   
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   wasapi_devin = AGS_WASAPI_DEVIN(soundcard);
 
@@ -2895,11 +2813,11 @@ ags_wasapi_devin_get_loop_offset(AgsSoundcard *soundcard)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get loop offset */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   loop_offset = wasapi_devin->loop_offset;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   return(loop_offset);
 }
@@ -2916,7 +2834,7 @@ ags_wasapi_devin_get_loop_offset(AgsSoundcard *soundcard)
 void
 ags_wasapi_devin_switch_buffer_flag(AgsWasapiDevin *wasapi_devin)
 {
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
   
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return;
@@ -2926,7 +2844,7 @@ ags_wasapi_devin_switch_buffer_flag(AgsWasapiDevin *wasapi_devin)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* switch buffer flag */
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   if((AGS_WASAPI_DEVIN_BUFFER0 & (wasapi_devin->flags)) != 0){
     wasapi_devin->flags &= (~AGS_WASAPI_DEVIN_BUFFER0);
@@ -2954,7 +2872,7 @@ ags_wasapi_devin_switch_buffer_flag(AgsWasapiDevin *wasapi_devin)
     wasapi_devin->flags |= AGS_WASAPI_DEVIN_BUFFER0;
   }
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 /**
@@ -2975,7 +2893,7 @@ ags_wasapi_devin_adjust_delay_and_attack(AgsWasapiDevin *wasapi_devin)
   gint next_attack;
   guint i;
 
-  pthread_mutex_t *wasapi_devin_mutex;
+  GRecMutex *wasapi_devin_mutex;
 
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return;
@@ -2991,7 +2909,7 @@ ags_wasapi_devin_adjust_delay_and_attack(AgsWasapiDevin *wasapi_devin)
   g_message("delay : %f", delay);
 #endif
   
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   default_tact_frames = (guint) (delay * wasapi_devin->buffer_size);
   delay_tact_frames = (guint) (floor(delay) * wasapi_devin->buffer_size);
@@ -3081,7 +2999,7 @@ ags_wasapi_devin_adjust_delay_and_attack(AgsWasapiDevin *wasapi_devin)
 
   wasapi_devin->delay[i] = ((gdouble) (default_tact_frames + wasapi_devin->attack[i] - wasapi_devin->attack[0])) / (gdouble) wasapi_devin->buffer_size;
 
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 }
 
 /**
@@ -3100,7 +3018,7 @@ ags_wasapi_devin_realloc_buffer(AgsWasapiDevin *wasapi_devin)
   guint format;
   guint word_size;
 
-  pthread_mutex_t *wasapi_devin_mutex;  
+  GRecMutex *wasapi_devin_mutex;  
 
   if(!AGS_IS_WASAPI_DEVIN(wasapi_devin)){
     return;
@@ -3110,14 +3028,14 @@ ags_wasapi_devin_realloc_buffer(AgsWasapiDevin *wasapi_devin)
   wasapi_devin_mutex = AGS_WASAPI_DEVIN_GET_OBJ_MUTEX(wasapi_devin);
 
   /* get word size */  
-  pthread_mutex_lock(wasapi_devin_mutex);
+  g_rec_mutex_lock(wasapi_devin_mutex);
 
   pcm_channels = wasapi_devin->pcm_channels;
   buffer_size = wasapi_devin->buffer_size;
 
   format = wasapi_devin->format;
   
-  pthread_mutex_unlock(wasapi_devin_mutex);
+  g_rec_mutex_unlock(wasapi_devin_mutex);
 
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:

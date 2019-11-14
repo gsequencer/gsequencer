@@ -479,7 +479,6 @@ ags_core_audio_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_core_audio_devin_pcm_info;
   soundcard->get_capability = ags_core_audio_devin_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_core_audio_devin_is_starting;
