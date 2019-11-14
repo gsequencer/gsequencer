@@ -19,8 +19,6 @@
 
 #include <ags/audio/file/ags_sfz_sample.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -116,8 +114,6 @@ enum{
 
 static gpointer ags_sfz_sample_parent_class = NULL;
 
-static pthread_mutex_t ags_sfz_sample_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_sfz_sample_get_type()
 {
@@ -192,7 +188,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The audio channels to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("using audio channels"),
@@ -210,7 +206,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The filename to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				 i18n_pspec("using filename"),
@@ -226,7 +222,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -244,7 +240,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The format to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -262,7 +258,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The loop start to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("loop-start",
 				 i18n_pspec("using loop start"),
@@ -280,7 +276,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The loop end to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("loop-end",
 				 i18n_pspec("using loop end"),
@@ -298,7 +294,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The group assigned with.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("group",
 				   i18n_pspec("assigned group"),
@@ -314,7 +310,7 @@ ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample)
    *
    * The region assigned with.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("region",
 				   i18n_pspec("assigned region"),
@@ -377,27 +373,10 @@ ags_sfz_sample_init(AgsSFZSample *sfz_sample)
 {
   AgsConfig *config;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   sfz_sample->flags = 0;
 
   /* add audio file mutex */
-  sfz_sample->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  sfz_sample->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  g_rec_mutex_init(&(sfz_sample->obj_mutex));
 
   /* uuid */
   sfz_sample->uuid = ags_uuid_alloc();
@@ -444,7 +423,7 @@ ags_sfz_sample_set_property(GObject *gobject,
 {
   AgsSFZSample *sfz_sample;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(gobject);
 
@@ -459,10 +438,10 @@ ags_sfz_sample_set_property(GObject *gobject,
       
     audio_channels = g_value_get_uint(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(audio_channels == sfz_sample->audio_channels){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -485,7 +464,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * sfz_sample->buffer_size,
 					  sfz_sample->format);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_FILENAME:
@@ -494,10 +473,10 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     filename = g_value_get_string(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(filename == sfz_sample->filename){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -506,7 +485,7 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     sfz_sample->filename = g_strdup(filename);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
@@ -515,10 +494,10 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     buffer_size = g_value_get_uint(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(buffer_size == sfz_sample->buffer_size){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -529,7 +508,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     sfz_sample->buffer = ags_stream_alloc(sfz_sample->buffer_size,
 					  sfz_sample->format);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_FORMAT:
@@ -538,10 +517,10 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     format = g_value_get_uint(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(format == sfz_sample->format){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -552,7 +531,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     sfz_sample->buffer = ags_stream_alloc(sfz_sample->buffer_size,
 					  sfz_sample->format);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_LOOP_START:
@@ -561,17 +540,17 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     loop_start = g_value_get_uint(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(loop_start == sfz_sample->loop_start){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
     
     sfz_sample->loop_start = loop_start;
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_LOOP_END:
@@ -580,17 +559,17 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     loop_end = g_value_get_uint(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(loop_end == sfz_sample->loop_end){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
     
     sfz_sample->loop_end = loop_end;
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_GROUP:
@@ -599,10 +578,10 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     group = g_value_get_object(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(group == sfz_sample->group){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -617,7 +596,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     
     sfz_sample->group = group;
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_REGION:
@@ -626,10 +605,10 @@ ags_sfz_sample_set_property(GObject *gobject,
 
     region = g_value_get_object(value);
 
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     if(region == sfz_sample->region){
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
 
       return;	
     }
@@ -644,7 +623,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     
     sfz_sample->region = region;
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   default:
@@ -660,7 +639,7 @@ ags_sfz_sample_get_property(GObject *gobject,
 {
   AgsSFZSample *sfz_sample;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = (AgsSFZSample *) gobject;
 
@@ -670,74 +649,74 @@ ags_sfz_sample_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO_CHANNELS:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_uint(value, sfz_sample->audio_channels);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_FILENAME:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_string(value, sfz_sample->filename);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_uint(value, sfz_sample->buffer_size);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_FORMAT:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_uint(value, sfz_sample->format);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_LOOP_START:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_uint(value, sfz_sample->loop_start);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_LOOP_END:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_uint(value, sfz_sample->loop_end);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_GROUP:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_object(value, sfz_sample->group);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   case PROP_REGION:
   {
-    pthread_mutex_lock(sfz_sample_mutex);
+    g_rec_mutex_lock(sfz_sample_mutex);
 
     g_value_set_object(value, sfz_sample->region);
 
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
   }
   break;
   default:
@@ -775,12 +754,6 @@ ags_sfz_sample_finalize(GObject *gobject)
 
   sfz_sample = AGS_SFZ_SAMPLE(gobject);
 
-  pthread_mutex_destroy(sfz_sample->obj_mutex);
-  free(sfz_sample->obj_mutex);
-
-  pthread_mutexattr_destroy(sfz_sample->obj_mutexattr);
-  free(sfz_sample->obj_mutexattr);
-
   g_free(sfz_sample->filename);
   
   ags_stream_free(sfz_sample->buffer);
@@ -804,7 +777,7 @@ ags_sfz_sample_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(connectable);
 
@@ -812,11 +785,11 @@ ags_sfz_sample_get_uuid(AgsConnectable *connectable)
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   /* get UUID */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   ptr = sfz_sample->uuid;
 
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
   
   return(ptr);
 }
@@ -834,19 +807,10 @@ ags_sfz_sample_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *sfz_sample_mutex;
-
   sfz_sample = AGS_SFZ_SAMPLE(connectable);
 
-  /* get audio file mutex */
-  sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
-
   /* check is ready */
-  pthread_mutex_lock(sfz_sample_mutex);
-  
-  is_ready = (((AGS_SFZ_SAMPLE_ADDED_TO_REGISTRY & (sfz_sample->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(sfz_sample_mutex);
+  is_ready = ags_sfz_sample_test_flags(sfz_sample, AGS_SFZ_SAMPLE_ADDED_TO_REGISTRY);
 
   return(is_ready);
 }
@@ -930,19 +894,10 @@ ags_sfz_sample_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *sfz_sample_mutex;
-
   sfz_sample = AGS_SFZ_SAMPLE(connectable);
 
-  /* get audio file mutex */
-  sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
-
   /* check is connected */
-  pthread_mutex_lock(sfz_sample_mutex);
-
-  is_connected = (((AGS_SFZ_SAMPLE_CONNECTED & (sfz_sample->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(sfz_sample_mutex);
+  is_connected = ags_sfz_sample_test_flags(sfz_sample, AGS_SFZ_SAMPLE_CONNECTED);
 
   return(is_connected);
 }
@@ -983,7 +938,7 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
 
   guint format;
   
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -991,10 +946,10 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   /* info */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
     
     return(FALSE);
   }
@@ -1004,7 +959,7 @@ ags_sfz_sample_open(AgsSoundResource *sound_resource,
   sfz_sample->info->channels = 0;
   sfz_sample->info->samplerate = 0;
 
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
   
   if(filename != NULL){
     sfz_sample->file = (SNDFILE *) sf_open(filename, SFM_READ, sfz_sample->info);
@@ -1083,7 +1038,7 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   
   guint major_format;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -1091,10 +1046,10 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   /* info */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
     
     return(FALSE);
   }
@@ -1102,7 +1057,7 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   if(!create &&
      !g_file_test(filename,
 		  (G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))){
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
 
     return(FALSE);
   }  
@@ -1113,7 +1068,7 @@ ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
   sfz_sample->info->samplerate = (int) samplerate;
   sfz_sample->info->channels = (int) audio_channels;
 
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   if(g_str_has_suffix(filename, ".wav")){
     major_format = SF_FORMAT_WAV;
@@ -1195,7 +1150,7 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
   guint sample_frame_count;
   guint sample_loop_start, sample_loop_end;
   
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -1205,13 +1160,13 @@ ags_sfz_sample_info(AgsSoundResource *sound_resource,
   /* info */
   sample_frame_count = 0;
 
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
     sample_frame_count = sfz_sample->info->frames;
   }
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
   
   g_object_get(sfz_sample,
 	       "loop-start", &sample_loop_start,
@@ -1307,7 +1262,7 @@ ags_sfz_sample_get_presets(AgsSoundResource *sound_resource,
 {
   AgsSFZSample *sfz_sample;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
   
@@ -1334,7 +1289,7 @@ ags_sfz_sample_get_presets(AgsSoundResource *sound_resource,
     return;
   }
   
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(channels != NULL){
     *channels = sfz_sample->info->channels;
@@ -1388,7 +1343,7 @@ ags_sfz_sample_get_presets(AgsSoundResource *sound_resource,
     }
   }
 
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 guint
@@ -1406,7 +1361,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
   gboolean use_cache;
   guint i;
 
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
   
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -1417,10 +1372,10 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
   
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->offset >= total_frame_count){
-    pthread_mutex_unlock(sfz_sample_mutex);
+    g_rec_mutex_unlock(sfz_sample_mutex);
     
     return(0);
   }
@@ -1429,7 +1384,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
     if(total_frame_count > sfz_sample->offset){
       frame_count = total_frame_count - sfz_sample->offset;
     }else{
-      pthread_mutex_unlock(sfz_sample_mutex);
+      g_rec_mutex_unlock(sfz_sample_mutex);
     
       return(0);
     }
@@ -1451,7 +1406,7 @@ ags_sfz_sample_read(AgsSoundResource *sound_resource,
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(sfz_sample->format));
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
     
   for(i = 0; i < frame_count && sfz_sample->offset + i < total_frame_count; ){
     sf_count_t retval;
@@ -1538,14 +1493,14 @@ ags_sfz_sample_write(AgsSoundResource *sound_resource,
   guint i;
   gboolean do_write;
   
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
   /* get sfz_sample mutex */
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
   
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sfz_sample->format),
 						  ags_audio_buffer_util_format_from_soundcard(format));
@@ -1565,7 +1520,7 @@ ags_sfz_sample_write(AgsSoundResource *sound_resource,
     }
   }
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   if(do_write){
     multi_frames = frame_count * sfz_sample->info->channels;
@@ -1645,7 +1600,7 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
   guint total_frame_count;
   sf_count_t retval;
   
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -1656,7 +1611,7 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
 			  &total_frame_count,
 			  NULL, NULL);
 
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(whence == G_SEEK_CUR){
     if(frame_count >= 0){
@@ -1694,7 +1649,7 @@ ags_sfz_sample_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   retval = sf_seek(sfz_sample->file, sfz_sample->offset, SEEK_SET);
 
@@ -1708,7 +1663,7 @@ ags_sfz_sample_close(AgsSoundResource *sound_resource)
 {
   AgsSFZSample *sfz_sample;
    
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   sfz_sample = AGS_SFZ_SAMPLE(sound_resource);
 
@@ -1721,7 +1676,7 @@ ags_sfz_sample_close(AgsSoundResource *sound_resource)
 
   sf_close(sfz_sample->file);
 
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   if(sfz_sample->info != NULL){
     free(sfz_sample->info);
@@ -1730,22 +1685,7 @@ ags_sfz_sample_close(AgsSoundResource *sound_resource)
   sfz_sample->file = NULL;
   sfz_sample->info = NULL;
 
-  pthread_mutex_unlock(sfz_sample_mutex);
-}
-
-/**
- * ags_sfz_sample_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.3.0
- */
-pthread_mutex_t*
-ags_sfz_sample_get_class_mutex()
-{
-  return(&ags_sfz_sample_class_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 /**
@@ -1757,14 +1697,14 @@ ags_sfz_sample_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sfz_sample_test_flags(AgsSFZSample *sfz_sample, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
     return(FALSE);
@@ -1774,11 +1714,11 @@ ags_sfz_sample_test_flags(AgsSFZSample *sfz_sample, guint flags)
   sfz_sample_mutex = AGS_SFZ_SAMPLE_GET_OBJ_MUTEX(sfz_sample);
 
   /* test */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   retval = (flags & (sfz_sample->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 
   return(retval);
 }
@@ -1790,12 +1730,12 @@ ags_sfz_sample_test_flags(AgsSFZSample *sfz_sample, guint flags)
  *
  * Enable a feature of @sfz_sample.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_sample_set_flags(AgsSFZSample *sfz_sample, guint flags)
 {
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
     return;
@@ -1807,11 +1747,11 @@ ags_sfz_sample_set_flags(AgsSFZSample *sfz_sample, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   sfz_sample->flags |= flags;
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
     
 /**
@@ -1821,12 +1761,12 @@ ags_sfz_sample_set_flags(AgsSFZSample *sfz_sample, guint flags)
  *
  * Disable a feature of @sfz_sample.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags)
 {  
-  pthread_mutex_t *sfz_sample_mutex;
+  GRecMutex *sfz_sample_mutex;
 
   if(!AGS_IS_SFZ_SAMPLE(sfz_sample)){
     return;
@@ -1838,11 +1778,11 @@ ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(sfz_sample_mutex);
+  g_rec_mutex_lock(sfz_sample_mutex);
 
   sfz_sample->flags &= (~flags);
   
-  pthread_mutex_unlock(sfz_sample_mutex);
+  g_rec_mutex_unlock(sfz_sample_mutex);
 }
 
 /**
@@ -1852,7 +1792,7 @@ ags_sfz_sample_unset_flags(AgsSFZSample *sfz_sample, guint flags)
  *
  * Returns: the new #AgsSFZSample.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsSFZSample*
 ags_sfz_sample_new()

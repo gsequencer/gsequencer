@@ -19,8 +19,6 @@
 
 #include <ags/audio/file/ags_ipatch_sample.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -101,8 +99,6 @@ enum{
 };
 
 static gpointer ags_ipatch_sample_parent_class = NULL;
-
-static pthread_mutex_t ags_ipatch_sample_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_ipatch_sample_get_type()
@@ -277,27 +273,10 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
 {
   AgsConfig *config;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   ipatch_sample->flags = 0;
 
   /* add audio file mutex */
-  ipatch_sample->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  ipatch_sample->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  g_rec_mutex_init(&(ipatch_sample->obj_mutex));
 
   /* uuid */
   ipatch_sample->uuid = ags_uuid_alloc();
@@ -335,7 +314,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
 {
   AgsIpatchSample *ipatch_sample;
 
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
 
@@ -349,10 +328,10 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       if(buffer_size == ipatch_sample->buffer_size){
-	pthread_mutex_unlock(ipatch_sample_mutex);
+	g_rec_mutex_unlock(ipatch_sample_mutex);
 
 	return;	
       }
@@ -363,7 +342,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					       ipatch_sample->format);
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_FORMAT:
@@ -372,10 +351,10 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       if(format == ipatch_sample->format){
-	pthread_mutex_unlock(ipatch_sample_mutex);
+	g_rec_mutex_unlock(ipatch_sample_mutex);
 
 	return;	
       }
@@ -386,7 +365,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					       ipatch_sample->format);
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_SAMPLE:
@@ -396,10 +375,10 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       sample = g_value_get_object(value);
 
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       if(ipatch_sample->sample == sample){
-	pthread_mutex_unlock(ipatch_sample_mutex);
+	g_rec_mutex_unlock(ipatch_sample_mutex);
       
 	return;
       }
@@ -414,7 +393,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
       
       ipatch_sample->sample = sample;
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
 #endif
     }
     break;
@@ -431,7 +410,7 @@ ags_ipatch_sample_get_property(GObject *gobject,
 {
   AgsIpatchSample *ipatch_sample;
 
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   ipatch_sample = (AgsIpatchSample *) gobject;
 
@@ -441,29 +420,29 @@ ags_ipatch_sample_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       g_value_set_uint(value, ipatch_sample->buffer_size);
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       g_value_set_uint(value, ipatch_sample->format);
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_SAMPLE:
     {
-      pthread_mutex_lock(ipatch_sample_mutex);
+      g_rec_mutex_lock(ipatch_sample_mutex);
 
       g_value_set_object(value, ipatch_sample->sample);
 
-      pthread_mutex_unlock(ipatch_sample_mutex);
+      g_rec_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   default:
@@ -495,12 +474,6 @@ ags_ipatch_sample_finalize(GObject *gobject)
 
   ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
 
-  pthread_mutex_destroy(ipatch_sample->obj_mutex);
-  free(ipatch_sample->obj_mutex);
-
-  pthread_mutexattr_destroy(ipatch_sample->obj_mutexattr);
-  free(ipatch_sample->obj_mutexattr);
-
   ags_stream_free(ipatch_sample->buffer);
 
   if(ipatch_sample->sample != NULL){
@@ -518,7 +491,7 @@ ags_ipatch_sample_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
@@ -526,11 +499,11 @@ ags_ipatch_sample_get_uuid(AgsConnectable *connectable)
   ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* get UUID */
-  pthread_mutex_lock(ipatch_sample_mutex);
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   ptr = ipatch_sample->uuid;
 
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  g_rec_mutex_unlock(ipatch_sample_mutex);
   
   return(ptr);
 }
@@ -548,19 +521,10 @@ ags_ipatch_sample_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *ipatch_sample_mutex;
-
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  /* get audio file mutex */
-  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
-
   /* check is ready */
-  pthread_mutex_lock(ipatch_sample_mutex);
-  
-  is_ready = (((AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY & (ipatch_sample->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  is_ready = ags_ipatch_sample_test_flags(ipatch_sample, AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY);
 
   return(is_ready);
 }
@@ -644,19 +608,10 @@ ags_ipatch_sample_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *ipatch_sample_mutex;
-
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
-  /* get audio file mutex */
-  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
-
   /* check is connected */
-  pthread_mutex_lock(ipatch_sample_mutex);
-
-  is_connected = (((AGS_IPATCH_SAMPLE_CONNECTED & (ipatch_sample->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  is_connected = ags_ipatch_sample_test_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
 
   return(is_connected);
 }
@@ -1093,21 +1048,6 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
 }
 
 /**
- * ags_ipatch_sample_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.36
- */
-pthread_mutex_t*
-ags_ipatch_sample_get_class_mutex()
-{
-  return(&ags_ipatch_sample_class_mutex);
-}
-
-/**
  * ags_ipatch_sample_test_flags:
  * @ipatch_sample: the #AgsIpatchSample
  * @flags: the flags
@@ -1123,7 +1063,7 @@ ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return(FALSE);
@@ -1154,7 +1094,7 @@ ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
 void
 ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
 {
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;
@@ -1185,7 +1125,7 @@ ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
 void
 ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
 {  
-  pthread_mutex_t *ipatch_sample_mutex;
+  GRecMutex *ipatch_sample_mutex;
 
   if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
     return;

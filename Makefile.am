@@ -1028,7 +1028,6 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
-	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h \
@@ -1053,7 +1052,6 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
-	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c \

@@ -153,8 +153,6 @@ struct _AgsJackDevin
 
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
-
-  GObject *notify_soundcard;
 };
 
 struct _AgsJackDevinClass

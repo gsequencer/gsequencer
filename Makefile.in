@@ -517,7 +517,6 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
-	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c ags/audio/file/ags_sfz_file.c \
@@ -801,7 +800,6 @@ am__objects_9 = $(am__objects_1) \
 	ags/audio/file/libags_audio_la-ags_audio_container.lo \
 	ags/audio/file/libags_audio_la-ags_audio_file.lo \
 	ags/audio/file/libags_audio_la-ags_audio_file_link.lo \
-	ags/audio/file/libags_audio_la-ags_audio_file_xml.lo \
 	ags/audio/file/libags_audio_la-ags_sound_container.lo \
 	ags/audio/file/libags_audio_la-ags_sound_resource.lo \
 	ags/audio/file/libags_audio_la-ags_sndfile.lo \
@@ -4473,7 +4471,6 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_container.Plo \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file.Plo \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_link.Plo \
-	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo \
 	ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo \
@@ -5486,7 +5483,6 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
-	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h ags/audio/file/ags_sfz_file.h \
@@ -8232,7 +8228,6 @@ libags_audio_file_h_sources =  \
 	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
-	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h ags/audio/file/ags_sfz_file.h \
@@ -8244,7 +8239,6 @@ libags_audio_file_c_sources =  \
 	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
-	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c ags/audio/file/ags_sfz_file.c \
@@ -9917,9 +9911,6 @@ ags/audio/file/libags_audio_la-ags_audio_file.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_audio_file_link.lo:  \
-	ags/audio/file/$(am__dirstamp) \
-	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
-ags/audio/file/libags_audio_la-ags_audio_file_xml.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_sound_container.lo:  \
@@ -13554,7 +13545,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_container.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_link.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo@am__quote@ # am--include-marker
@@ -14895,13 +14885,6 @@ ags/audio/file/libags_audio_la-ags_audio_file_link.lo: ags/audio/file/ags_audio_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_audio_file_link.c' object='ags/audio/file/libags_audio_la-ags_audio_file_link.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_audio_file_link.lo `test -f 'ags/audio/file/ags_audio_file_link.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_file_link.c
-
-ags/audio/file/libags_audio_la-ags_audio_file_xml.lo: ags/audio/file/ags_audio_file_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_audio_file_xml.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Tpo -c -o ags/audio/file/libags_audio_la-ags_audio_file_xml.lo `test -f 'ags/audio/file/ags_audio_file_xml.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_file_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Tpo ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_audio_file_xml.c' object='ags/audio/file/libags_audio_la-ags_audio_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_audio_file_xml.lo `test -f 'ags/audio/file/ags_audio_file_xml.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_file_xml.c
 
 ags/audio/file/libags_audio_la-ags_sound_container.lo: ags/audio/file/ags_sound_container.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_sound_container.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_sound_container.Tpo -c -o ags/audio/file/libags_audio_la-ags_sound_container.lo `test -f 'ags/audio/file/ags_sound_container.c' || echo '$(srcdir)/'`ags/audio/file/ags_sound_container.c
@@ -24006,7 +23989,6 @@ distclean: distclean-recursive
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_container.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_link.Plo
-	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo
@@ -24930,7 +24912,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_container.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_link.Plo
-	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo
 	-rm -f ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo
