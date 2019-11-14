@@ -476,7 +476,7 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
   base_plugin->flags = 0;
 
   /* add base plugin mutex */
-  g_rec_mutex_init(&(base_plugin->obj_mutex))
+  g_rec_mutex_init(&(base_plugin->obj_mutex));
 
   /*  */
   base_plugin->uuid = NULL;

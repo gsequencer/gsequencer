@@ -173,12 +173,6 @@ ags_lv2_preset_manager_finalize(GObject *gobject)
 
   lv2_preset_manager = AGS_LV2_PRESET_MANAGER(gobject);
 
-  pthread_mutex_destroy(lv2_preset_manager->obj_mutex);
-  free(lv2_preset_manager->obj_mutex);
-
-  pthread_mutexattr_destroy(lv2_preset_manager->obj_mutexattr);
-  free(lv2_preset_manager->obj_mutexattr);
-
   lv2_preset = lv2_preset_manager->lv2_preset;
 
   g_list_free_full(lv2_preset,

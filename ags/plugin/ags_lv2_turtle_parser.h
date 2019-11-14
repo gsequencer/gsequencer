@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define AGS_IS_LV2_TURTLE_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_TURTLE_PARSER))
 #define AGS_LV2_TURTLE_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParserClass))
 
-#define AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(obj) (((AgsLv2TurtleParser *) obj)->obj_mutex)
+#define AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(obj) (&(((AgsLv2TurtleParser *) obj)->obj_mutex))
 
 typedef struct _AgsLv2TurtleParser AgsLv2TurtleParser;
 typedef struct _AgsLv2TurtleParserClass AgsLv2TurtleParserClass;

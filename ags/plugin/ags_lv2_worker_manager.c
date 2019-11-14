@@ -150,9 +150,9 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2_worker_manager == NULL){
     ags_lv2_worker_manager = ags_lv2_worker_manager_new();
@@ -160,7 +160,7 @@ ags_lv2_worker_manager_get_instance()
     //    ags_lv2_worker_manager_load_default(ags_lv2_worker_manager);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2_worker_manager);
 }

@@ -105,12 +105,6 @@ LV2_Worker_Status ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle
 
 void ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data);
 
-void ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data);
-void ags_lv2_worker_interrupted_callback(AgsThread *thread,
-					 int sig,
-					 guint time_cycle, guint *time_spent,
-					 AgsLv2Worker *lv2_worker);
-
 AgsLv2Worker* ags_lv2_worker_new();
 
 G_END_DECLS

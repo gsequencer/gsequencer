@@ -19,12 +19,6 @@
 
 #include <ags/plugin/ags_lv2ui_manager.h>
 
-#include <ags/lib/ags_string_util.h>
-#include <ags/lib/ags_log.h>
-#include <ags/lib/ags_turtle_manager.h>
-
-#include <ags/object/ags_marshal.h>
-
 #include <ags/plugin/ags_base_plugin.h>
 
 #if defined(AGS_W32API)
@@ -62,8 +56,6 @@ void ags_lv2ui_manager_finalize(GObject *gobject);
  */
 
 static gpointer ags_lv2ui_manager_parent_class = NULL;
-
-static pthread_mutex_t ags_lv2ui_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsLv2uiManager *ags_lv2ui_manager = NULL;
 gchar **ags_lv2ui_default_path = NULL;
@@ -117,19 +109,7 @@ void
 ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
 {
   /* lv2ui manager mutex */
-  lv2ui_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(lv2ui_manager->obj_mutexattr);
-  pthread_mutexattr_settype(lv2ui_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(lv2ui_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2ui_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(lv2ui_manager->obj_mutex,
-		     lv2ui_manager->obj_mutexattr);
+  g_rec_mutex_init(&(lv2ui_manager->obj_mutex));
 
   lv2ui_manager->lv2ui_plugin = NULL;
 
@@ -306,29 +286,8 @@ ags_lv2ui_manager_finalize(GObject *gobject)
     ags_lv2ui_manager = NULL;
   }
   
-  pthread_mutex_destroy(lv2ui_manager->obj_mutex);
-  free(lv2ui_manager->obj_mutex);
-
-  pthread_mutexattr_destroy(lv2ui_manager->obj_mutexattr);
-  free(lv2ui_manager->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_lv2ui_manager_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_lv2ui_manager_get_class_mutex:
- * 
- * Get class mutex.
- * 
- * Returns: the class mutex of #AgsLv2uiManager
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_lv2ui_manager_get_class_mutex()
-{
-  return(&ags_lv2ui_manager_class_mutex);
 }
 
 /**
@@ -380,8 +339,8 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
   guint i;
   gboolean contains_filename;
 
-  pthread_mutex_t *lv2ui_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *lv2ui_manager_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager)){
     return(NULL);
@@ -391,12 +350,12 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
   lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
-  pthread_mutex_lock(lv2ui_manager_mutex);
+  g_rec_mutex_lock(lv2ui_manager_mutex);
 
   lv2ui_plugin = 
     start_lv2ui_plugin = g_list_copy(lv2ui_manager->lv2ui_plugin);
 
-  pthread_mutex_unlock(lv2ui_manager_mutex);
+  g_rec_mutex_unlock(lv2ui_manager_mutex);
 
   filenames = NULL;
   
@@ -407,11 +366,11 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin->data);
 
     /* duplicate filename */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     ui_filename = g_strdup(AGS_BASE_PLUGIN(lv2ui_plugin->data)->ui_filename);
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(ui_filename == NULL){
       lv2ui_plugin = lv2ui_plugin->next;
@@ -476,8 +435,8 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 
   gboolean success;  
 
-  pthread_mutex_t *lv2ui_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *lv2ui_manager_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
      ui_filename == NULL ||
@@ -489,12 +448,12 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
   lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
-  pthread_mutex_lock(lv2ui_manager_mutex);
+  g_rec_mutex_lock(lv2ui_manager_mutex);
 
   list = 
     start_list = g_list_copy(lv2ui_manager->lv2ui_plugin);
 
-  pthread_mutex_unlock(lv2ui_manager_mutex);
+  g_rec_mutex_unlock(lv2ui_manager_mutex);
   
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
@@ -503,14 +462,14 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin);
 
     /* check filename and effect */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     success = (!g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
 			  ui_filename) &&
 	       !g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect,
 			  ui_effect)) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
     
     if(success){
       break;
@@ -551,8 +510,8 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
 
   gboolean success;  
 
-  pthread_mutex_t *lv2ui_manager_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *lv2ui_manager_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
      ui_filename == NULL){
@@ -563,12 +522,12 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
   lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
-  pthread_mutex_lock(lv2ui_manager_mutex);
+  g_rec_mutex_lock(lv2ui_manager_mutex);
 
   list = 
     start_list = g_list_copy(lv2ui_manager->lv2ui_plugin);
 
-  pthread_mutex_unlock(lv2ui_manager_mutex);
+  g_rec_mutex_unlock(lv2ui_manager_mutex);
 
   success = FALSE;
   
@@ -579,7 +538,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin);
 
     /* check filename and ui effect index */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
 			   ui_filename) &&
@@ -587,7 +546,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
       success = TRUE;
     }
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
     
     if(success){
       break;
@@ -618,7 +577,7 @@ void
 ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
 				 gchar *blacklist_filename)
 {
-  pthread_mutex_t *lv2ui_manager_mutex;
+  GRecMutex *lv2ui_manager_mutex;
 
   if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
      blacklist_filename == NULL){
@@ -629,7 +588,7 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
   lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* fill in */
-  pthread_mutex_lock(lv2ui_manager_mutex);
+  g_rec_mutex_lock(lv2ui_manager_mutex);
 
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
@@ -649,7 +608,7 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
 #endif
   }
 
-  pthread_mutex_unlock(lv2ui_manager_mutex);
+  g_rec_mutex_unlock(lv2ui_manager_mutex);
 } 
 
 /**
@@ -698,15 +657,15 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 AgsLv2uiManager*
 ags_lv2ui_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2ui_manager == NULL){
     ags_lv2ui_manager = ags_lv2ui_manager_new();
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2ui_manager);
 }
