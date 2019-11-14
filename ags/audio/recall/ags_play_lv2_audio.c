@@ -432,6 +432,8 @@ ags_play_lv2_audio_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_lv2_audio->turtle);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_URI:
@@ -439,6 +441,8 @@ ags_play_lv2_audio_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_string(value, play_lv2_audio->uri);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PLUGIN:
