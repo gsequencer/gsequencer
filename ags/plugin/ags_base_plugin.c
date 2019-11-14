@@ -80,8 +80,6 @@ enum{
 static gpointer ags_base_plugin_parent_class = NULL;
 static guint base_plugin_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_base_plugin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_base_plugin_get_type (void)
 {
@@ -475,27 +473,10 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 void
 ags_base_plugin_init(AgsBasePlugin *base_plugin)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   base_plugin->flags = 0;
 
   /* add base plugin mutex */
-  base_plugin->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  base_plugin->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(base_plugin->obj_mutex))
 
   /*  */
   base_plugin->uuid = NULL;
@@ -531,7 +512,7 @@ ags_base_plugin_set_property(GObject *gobject,
 {
   AgsBasePlugin *base_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
@@ -541,11 +522,11 @@ ags_base_plugin_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_UUID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       base_plugin->uuid = (AgsUUID *) g_value_get_pointer(value);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FILENAME:
@@ -554,10 +535,10 @@ ags_base_plugin_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(base_plugin->filename == filename){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 	
 	return;
       }
@@ -568,7 +549,7 @@ ags_base_plugin_set_property(GObject *gobject,
 
       base_plugin->filename = g_strdup(filename);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT:
@@ -577,10 +558,10 @@ ags_base_plugin_set_property(GObject *gobject,
 
       effect = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(base_plugin->effect == effect){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -591,7 +572,7 @@ ags_base_plugin_set_property(GObject *gobject,
 
       base_plugin->effect = g_strdup(effect);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PLUGIN_PORT:
@@ -600,11 +581,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       plugin_port = (AgsPluginPort *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(!AGS_IS_PLUGIN_PORT(plugin_port) ||
 	 g_list_find(base_plugin->plugin_port, plugin_port) != NULL){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 	
 	return;
       }
@@ -613,7 +594,7 @@ ags_base_plugin_set_property(GObject *gobject,
       base_plugin->plugin_port = g_list_prepend(base_plugin->plugin_port,
 						plugin_port);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT_INDEX:
@@ -622,20 +603,20 @@ ags_base_plugin_set_property(GObject *gobject,
 
       effect_index = g_value_get_uint(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       base_plugin->effect_index = effect_index;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PLUGIN_SO:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       base_plugin->plugin_so = g_value_get_pointer(value);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_FILENAME:
@@ -644,10 +625,10 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_filename = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(base_plugin->ui_filename == ui_filename){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -658,7 +639,7 @@ ags_base_plugin_set_property(GObject *gobject,
 
       base_plugin->ui_filename = g_strdup(ui_filename);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT:
@@ -667,10 +648,10 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_effect = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(base_plugin->ui_effect == ui_effect){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -681,7 +662,7 @@ ags_base_plugin_set_property(GObject *gobject,
 
       base_plugin->ui_effect = g_strdup(ui_effect);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT_INDEX:
@@ -690,20 +671,20 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_effect_index = g_value_get_uint(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       base_plugin->ui_effect_index = ui_effect_index;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN_SO:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       base_plugin->ui_plugin_so = g_value_get_pointer(value);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
@@ -712,10 +693,10 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_plugin = g_value_get_object(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(base_plugin->ui_plugin == ui_plugin){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -730,7 +711,7 @@ ags_base_plugin_set_property(GObject *gobject,
       
       base_plugin->ui_plugin = ui_plugin;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -747,7 +728,7 @@ ags_base_plugin_get_property(GObject *gobject,
 {
   AgsBasePlugin *base_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
@@ -757,103 +738,103 @@ ags_base_plugin_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_UUID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
       
       g_value_set_pointer(value, base_plugin->uuid);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FILENAME:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, base_plugin->filename);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, base_plugin->effect);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PLUGIN_PORT:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(base_plugin->plugin_port,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT_INDEX:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_uint(value, base_plugin->effect_index);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PLUGIN_SO:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
       
       g_value_set_pointer(value, base_plugin->plugin_so);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_FILENAME:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, base_plugin->ui_filename);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, base_plugin->ui_effect);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT_INDEX:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_uint(value, base_plugin->ui_effect_index);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN_SO:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
       
       g_value_set_pointer(value, base_plugin->ui_plugin_so);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_object(value, base_plugin->ui_plugin);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -894,13 +875,6 @@ ags_base_plugin_finalize(GObject *gobject)
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
-  /* destroy object mutex */
-  pthread_mutex_destroy(base_plugin->obj_mutex);
-  free(base_plugin->obj_mutex);
-
-  pthread_mutexattr_destroy(base_plugin->obj_mutexattr);
-  free(base_plugin->obj_mutexattr);
-
   /* uuid */
   if(base_plugin->uuid != NULL){
     ags_uuid_free(base_plugin->uuid);
@@ -928,21 +902,6 @@ ags_base_plugin_finalize(GObject *gobject)
 }
 
 /**
- * ags_base_plugin_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_base_plugin_get_class_mutex()
-{
-  return(&ags_base_plugin_class_mutex);
-}
-
-/**
  * ags_base_plugin_test_flags:
  * @base_plugin: the #AgsBasePlugin
  * @flags: the flags
@@ -958,7 +917,7 @@ ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
     return(FALSE);
@@ -968,11 +927,11 @@ ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* test flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   retval = ((flags & (base_plugin->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   return(retval);
 }
@@ -989,7 +948,7 @@ ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
 void
 ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
 {
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
     return;
@@ -999,11 +958,11 @@ ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* set flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   base_plugin->flags |= flags;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 }
 
 /**
@@ -1018,7 +977,7 @@ ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
 void
 ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
 {
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
     return;
@@ -1028,11 +987,11 @@ ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* unset flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   base_plugin->flags &= (~flags);
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 }
 
 /**
@@ -1053,7 +1012,7 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
   
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(filename == NULL){
     return(NULL);
@@ -1066,13 +1025,13 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(current_base_plugin);
 
     /* check filename */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     success = (current_base_plugin->filename != NULL &&
 	       !g_ascii_strcasecmp(current_base_plugin->filename,
 				   filename)) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(success){
       return(base_plugin);
@@ -1103,7 +1062,7 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
   
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   while(base_plugin != NULL){
     current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
@@ -1112,14 +1071,14 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(current_base_plugin);
 
     /* check filename and effect*/
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     success = (!g_ascii_strcasecmp(current_base_plugin->filename,
 				   filename) &&
 	       !g_ascii_strcasecmp(current_base_plugin->effect,
 				   effect)) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(success){
       return(base_plugin);
@@ -1150,7 +1109,7 @@ ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, gui
   
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   while(base_plugin != NULL){
     current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
@@ -1159,13 +1118,13 @@ ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, gui
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(current_base_plugin);
 
     /* check UI filename and effect index */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     success = (!g_ascii_strcasecmp(current_base_plugin->ui_filename,
 				   ui_filename) &&
 	       current_base_plugin->ui_effect_index == ui_effect_index) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(success){
       return(base_plugin);
@@ -1203,8 +1162,8 @@ ags_base_plugin_sort(GList *base_plugin)
 
     gint retval;
     
-    pthread_mutex_t *a_plugin_mutex;
-    pthread_mutex_t *b_plugin_mutex;
+    GRecMutex *a_plugin_mutex;
+    GRecMutex *b_plugin_mutex;
 
     /* a and b */
     a_plugin = AGS_BASE_PLUGIN(a);
@@ -1215,18 +1174,18 @@ ags_base_plugin_sort(GList *base_plugin)
     b_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(b_plugin);
 
     /* duplicate effect - a */
-    pthread_mutex_lock(a_plugin_mutex);
+    g_rec_mutex_lock(a_plugin_mutex);
 
     a_effect = g_strdup(a_plugin->effect);
     
-    pthread_mutex_unlock(a_plugin_mutex);
+    g_rec_mutex_unlock(a_plugin_mutex);
 
     /* duplicate effect - b */
-    pthread_mutex_lock(b_plugin_mutex);
+    g_rec_mutex_lock(b_plugin_mutex);
 
     b_effect = g_strdup(b_plugin->effect);
     
-    pthread_mutex_unlock(b_plugin_mutex);
+    g_rec_mutex_unlock(b_plugin_mutex);
 
     if(a_effect == NULL ||
        b_effect == 0){

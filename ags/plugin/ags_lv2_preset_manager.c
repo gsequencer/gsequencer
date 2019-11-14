@@ -19,10 +19,8 @@
 
 #include <ags/plugin/ags_lv2_preset_manager.h>
 
-#include <ags/libags.h>
-
 void ags_lv2_preset_manager_class_init(AgsLv2PresetManagerClass *lv2_preset_manager);
-void ags_lv2_preset_manager_init (AgsLv2PresetManager *lv2_preset_manager);
+void ags_lv2_preset_manager_init(AgsLv2PresetManager *lv2_preset_manager);
 void ags_lv2_preset_manager_set_property(GObject *gobject,
 					 guint prop_id,
 					 const GValue *value,
@@ -50,10 +48,7 @@ enum{
 
 static gpointer ags_lv2_preset_manager_parent_class = NULL;
 
-static pthread_mutex_t ags_lv2_preset_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 AgsLv2PresetManager *ags_lv2_preset_manager = NULL;
-
 
 GType
 ags_lv2_preset_manager_get_type (void)
@@ -110,19 +105,7 @@ void
 ags_lv2_preset_manager_init(AgsLv2PresetManager *lv2_preset_manager)
 {  
   /* lv2 manager mutex */
-  lv2_preset_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(lv2_preset_manager->obj_mutexattr);
-  pthread_mutexattr_settype(lv2_preset_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(lv2_preset_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2_preset_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(lv2_preset_manager->obj_mutex,
-		     lv2_preset_manager->obj_mutexattr);
+  g_rec_mutex_init(&(lv2_preset_manager->obj_mutex));
 
 
   /* initialize lv2 plugin GList */
@@ -210,21 +193,6 @@ ags_lv2_preset_manager_finalize(GObject *gobject)
 }
 
 /**
- * ags_lv2_preset_manager_get_class_mutex:
- * 
- * Get class mutex.
- * 
- * Returns: the class mutex of #AgsLv2PresetManager
- * 
- * Since: 2.2.0
- */
-pthread_mutex_t*
-ags_lv2_preset_manager_get_class_mutex()
-{
-  return(&ags_lv2_preset_manager_class_mutex);
-}
-
-/**
  * ags_lv2_preset_manager_get_instance:
  *
  * Get instance.
@@ -236,15 +204,15 @@ ags_lv2_preset_manager_get_class_mutex()
 AgsLv2PresetManager*
 ags_lv2_preset_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2_preset_manager == NULL){
     ags_lv2_preset_manager = ags_lv2_preset_manager_new();
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2_preset_manager);
 }

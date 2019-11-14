@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/plugin/ags_lv2_log_manager.h>
-
-#include <ags/object/ags_connectable.h>
 
 void ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager);
 void ags_lv2_log_manager_init(AgsLv2LogManager *lv2_log_manager);

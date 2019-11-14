@@ -19,8 +19,6 @@
 
 #include <ags/plugin/ags_lv2_preset.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_lv2_plugin.h>
 
 #include <stdlib.h>
@@ -62,8 +60,6 @@ enum{
 };
 
 static gpointer ags_lv2_preset_parent_class = NULL;
-
-static pthread_mutex_t ags_lv2_preset_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_lv2_preset_get_type()
@@ -247,19 +243,7 @@ ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
   lv2_preset->flags = 0;
 
   /* add lv2 preset mutex */
-  lv2_preset->obj_mutexattr =  (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(lv2_preset->obj_mutexattr);
-  pthread_mutexattr_settype(lv2_preset->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(lv2_preset->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2_preset->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(lv2_preset->obj_mutex,
-		     lv2_preset->obj_mutexattr);
+  g_rec_mutex_init(&(lv2_preset->obj_mutex));
   
   lv2_preset->lv2_plugin = NULL;
 
@@ -285,7 +269,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 {
   AgsLv2Preset *lv2_preset;
 
-  pthread_mutex_t *lv2_preset_mutex;
+  GRecMutex *lv2_preset_mutex;
 
   lv2_preset = AGS_LV2_PRESET(gobject);
 
@@ -299,10 +283,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_plugin = (AgsLv2Plugin *) g_value_get_object(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
       
       if(lv2_preset->lv2_plugin == (GObject *) lv2_plugin){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -317,7 +301,7 @@ ags_lv2_preset_set_property(GObject *gobject,
       
       lv2_preset->lv2_plugin = lv2_plugin;
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_URI:
@@ -326,10 +310,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       uri = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->uri == uri){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -340,7 +324,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_preset->uri = g_strdup(uri);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_APPLIES_TO:
@@ -349,10 +333,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       applies_to = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->applies_to == applies_to){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -363,7 +347,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_preset->applies_to = g_strdup(applies_to);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_BANK:
@@ -372,10 +356,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       bank = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->bank == bank){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -386,7 +370,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_preset->bank = g_strdup(bank);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_PRESET_LABEL:
@@ -395,10 +379,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       preset_label = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->preset_label == preset_label){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -409,7 +393,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_preset->preset_label = g_strdup(preset_label);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_MANIFEST:
@@ -418,10 +402,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       manifest = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->manifest == manifest){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -436,7 +420,7 @@ ags_lv2_preset_set_property(GObject *gobject,
       
       lv2_preset->manifest = manifest;
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_TURTLE:
@@ -445,10 +429,10 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       if(lv2_preset->turtle == turtle){
-	pthread_mutex_unlock(lv2_preset_mutex);
+	g_rec_mutex_unlock(lv2_preset_mutex);
 
 	return;
       }
@@ -463,7 +447,7 @@ ags_lv2_preset_set_property(GObject *gobject,
       
       lv2_preset->turtle = turtle;
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   default:
@@ -480,7 +464,7 @@ ags_lv2_preset_get_property(GObject *gobject,
 {
   AgsLv2Preset *lv2_preset;
 
-  pthread_mutex_t *lv2_preset_mutex;
+  GRecMutex *lv2_preset_mutex;
 
   lv2_preset = AGS_LV2_PRESET(gobject);
 
@@ -490,74 +474,74 @@ ags_lv2_preset_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_LV2_PLUGIN:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_object(value, lv2_preset->lv2_plugin);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_URI:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_string(value, lv2_preset->uri);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_APPLIES_TO:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_string(value, lv2_preset->applies_to);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_BANK:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_string(value, lv2_preset->bank);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_PRESET_LABEL:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_string(value, lv2_preset->preset_label);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_MANIFEST:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_object(value, lv2_preset->manifest);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_TURTLE:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
 
       g_value_set_object(value, lv2_preset->turtle);
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_PORT_PRESET:
     {
-      pthread_mutex_lock(lv2_preset_mutex);
+      g_rec_mutex_lock(lv2_preset_mutex);
       
       g_value_set_pointer(value, g_list_copy(lv2_preset->port_preset));
 
-      pthread_mutex_unlock(lv2_preset_mutex);
+      g_rec_mutex_unlock(lv2_preset_mutex);
     }
     break;
   default:
@@ -607,31 +591,9 @@ ags_lv2_preset_finalize(GObject *gobject)
     g_list_free_full(lv2_preset->port_preset,
 		     (GDestroyNotify) ags_lv2_port_preset_free);
   }
-
-  /* destroy object mutex */
-  pthread_mutex_destroy(lv2_preset->obj_mutex);
-  free(lv2_preset->obj_mutex);
-
-  pthread_mutexattr_destroy(lv2_preset->obj_mutexattr);
-  free(lv2_preset->obj_mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_preset_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_lv2_preset_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_lv2_preset_get_class_mutex()
-{
-  return(&ags_lv2_preset_class_mutex);
 }
 
 /**

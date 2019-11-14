@@ -19,8 +19,6 @@
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
-#include <ags/libags.h>
-
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -403,7 +401,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
@@ -417,10 +415,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       pname = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->pname == pname){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -431,7 +429,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->pname = g_strdup(pname);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
@@ -440,10 +438,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       uri = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->uri == uri){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -454,7 +452,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->uri = g_strdup(uri);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
@@ -463,10 +461,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       ui_uri = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->ui_uri == ui_uri){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -477,7 +475,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->ui_uri = g_strdup(ui_uri);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
@@ -486,10 +484,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       manifest = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->manifest == manifest){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -504,7 +502,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
       
       lv2_plugin->manifest = manifest;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
@@ -513,10 +511,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->turtle == turtle){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -531,7 +529,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
       
       lv2_plugin->turtle = turtle;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_DOAP_NAME:
@@ -540,10 +538,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       doap_name = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->doap_name == doap_name){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -554,7 +552,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->doap_name = g_strdup(doap_name);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_NAME:
@@ -563,10 +561,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       foaf_name = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->foaf_name == foaf_name){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -577,7 +575,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->foaf_name = g_strdup(foaf_name);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_HOMEPAGE:
@@ -586,10 +584,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       foaf_homepage = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->foaf_homepage == foaf_homepage){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -600,7 +598,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->foaf_homepage = g_strdup(foaf_homepage);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_MBOX:
@@ -609,10 +607,10 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       foaf_mbox = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_plugin->foaf_mbox == foaf_mbox){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -623,7 +621,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_plugin->foaf_mbox = g_strdup(foaf_mbox);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PRESET:
@@ -632,11 +630,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       lv2_preset = g_value_get_pointer(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(lv2_preset == NULL ||
 	 g_list_find(lv2_plugin->preset, lv2_preset) != NULL){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
       
 	return;
       }
@@ -645,7 +643,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
 					 lv2_preset);
       g_object_ref(lv2_preset);
       
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -662,7 +660,7 @@ ags_lv2_plugin_get_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
@@ -672,94 +670,94 @@ ags_lv2_plugin_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PNAME:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->pname);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->uri);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->ui_uri);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_object(value, lv2_plugin->manifest);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_object(value, lv2_plugin->turtle);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_DOAP_NAME:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->doap_name);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_NAME:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->foaf_name);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_HOMEPAGE:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->foaf_homepage);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_FOAF_MBOX:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, lv2_plugin->foaf_mbox);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PRESET:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_pointer(value, g_list_copy_deep(lv2_plugin->preset,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -888,7 +886,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 			    const char *bundle_path,
 			    const LV2_Feature *const *features);
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
   
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);
     
@@ -898,7 +896,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   //  xmlSaveFormatFileEnc("-", lv2_plugin->turtle->doc, "UTF-8", 1);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_so = base_plugin->plugin_so;
 
@@ -960,7 +958,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   effect_index = base_plugin->effect_index;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(plugin_so == NULL){
     g_free(path);
@@ -1081,11 +1079,11 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
       feature[nth] = NULL;
     }
   
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     lv2_plugin->feature = feature;
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
   }
 
   instantiate = NULL;
@@ -1108,14 +1106,14 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 #endif
 
     if(success && lv2_descriptor){
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
       
       base_plugin->plugin_descriptor = 
 	plugin_descriptor = lv2_descriptor(effect_index);
 
       instantiate = plugin_descriptor->instantiate;
       
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
   }
 
@@ -1243,17 +1241,17 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
 		       uint32_t port,
 		       void *data_location);
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   connect_port = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port;
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
   
   /* connect port */
   connect_port((LV2_Handle) plugin_handle,
@@ -1267,17 +1265,17 @@ ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
 {
   void (*activate)(LV2_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   activate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* activate */
   if(activate != NULL){
@@ -1291,17 +1289,17 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
 {
   void (*deactivate)(LV2_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* deactivate */
   if(deactivate != NULL){
@@ -1318,17 +1316,17 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
   void (*run)(LV2_Handle instance,
 	      uint32_t sample_count);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   run = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* run */
   run((LV2_Handle) plugin_handle,
@@ -1357,7 +1355,7 @@ ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
     return(FALSE);
@@ -1367,11 +1365,11 @@ ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* test flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   retval = ((flags & (lv2_plugin->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   return(retval);
 }
@@ -1388,7 +1386,7 @@ ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 void
 ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 {
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
     return;
@@ -1398,11 +1396,11 @@ ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* set flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   lv2_plugin->flags |= flags;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 }
 
 /**
@@ -1417,7 +1415,7 @@ ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 void
 ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 {
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
     return;
@@ -1427,11 +1425,11 @@ ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* unset flags */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   lv2_plugin->flags &= (~flags);
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 }
 
 /**
@@ -2042,7 +2040,7 @@ ags_lv2_plugin_find_uri(GList *lv2_plugin,
 {
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(uri == NULL){
     return(NULL);
@@ -2053,13 +2051,13 @@ ags_lv2_plugin_find_uri(GList *lv2_plugin,
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin->data);
 
     /* check uri */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
     
     success = (AGS_LV2_PLUGIN(lv2_plugin->data)->uri != NULL &&
 	       !g_ascii_strcasecmp(uri,
 				   AGS_LV2_PLUGIN(lv2_plugin->data)->uri)) ? TRUE: FALSE;
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
     
     if(success){
       return(lv2_plugin);
@@ -2088,7 +2086,7 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
 {
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(pname == NULL){
     return(NULL);
@@ -2099,13 +2097,13 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin->data);
 
     /* check pname */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
     
     success = (AGS_LV2_PLUGIN(lv2_plugin->data)->pname != NULL &&
 	       !g_ascii_strcasecmp(pname,
 				   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)) ? TRUE: FALSE;
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
     
     if(success){
       return(lv2_plugin);

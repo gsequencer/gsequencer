@@ -56,8 +56,6 @@ void ags_lv2_turtle_parser_finalize(GObject *gobject);
 
 static gpointer ags_lv2_turtle_parser_parent_class = NULL;
 
-static pthread_mutex_t ags_lv2_turtle_parser_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 enum{
   PROP_0,
   PROP_TURTLE,
@@ -180,27 +178,10 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 void
 ags_lv2_turtle_parser_init(AgsLv2TurtleParser *lv2_turtle_parser)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   lv2_turtle_parser->flags = 0;
 
   /* add base plugin mutex */
-  lv2_turtle_parser->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2_turtle_parser->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(lv2_turtle_parser->obj_mutex));
 
   /*  */
   lv2_turtle_parser->turtle = NULL;
@@ -218,7 +199,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
 {
   AgsLv2TurtleParser *lv2_turtle_parser;
 
-  pthread_mutex_t *lv2_turtle_parser_mutex;
+  GRecMutex *lv2_turtle_parser_mutex;
 
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
@@ -232,11 +213,11 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
 
       if(!AGS_IS_TURTLE(turtle) ||
 	 g_list_find(lv2_turtle_parser->turtle, turtle) != NULL){
-	pthread_mutex_unlock(lv2_turtle_parser_mutex);
+	g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 	
 	return;
       }
@@ -245,7 +226,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
       lv2_turtle_parser->turtle = g_list_prepend(lv2_turtle_parser->turtle,
 						 turtle);
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_PLUGIN:
@@ -254,11 +235,11 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
 
       lv2_plugin = (AgsLv2Plugin *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
 
       if(!AGS_IS_LV2_PLUGIN(lv2_plugin) ||
 	 g_list_find(lv2_turtle_parser->plugin, lv2_plugin) != NULL){
-	pthread_mutex_unlock(lv2_turtle_parser_mutex);
+	g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 	
 	return;
       }
@@ -267,7 +248,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
       lv2_turtle_parser->plugin = g_list_prepend(lv2_turtle_parser->plugin,
 						 lv2_plugin);
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
@@ -276,11 +257,11 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
 
       lv2ui_plugin = (AgsLv2uiPlugin *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
 
       if(!AGS_IS_LV2UI_PLUGIN(lv2ui_plugin) ||
 	 g_list_find(lv2_turtle_parser->ui_plugin, lv2ui_plugin) != NULL){
-	pthread_mutex_unlock(lv2_turtle_parser_mutex);
+	g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 	
 	return;
       }
@@ -289,7 +270,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
       lv2_turtle_parser->ui_plugin = g_list_prepend(lv2_turtle_parser->ui_plugin,
 						    lv2ui_plugin);
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_PRESET:
@@ -298,11 +279,11 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
 
       lv2_preset = (AgsLv2Preset *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
 
       if(!AGS_IS_LV2_PRESET(lv2_preset) ||
 	 g_list_find(lv2_turtle_parser->preset, lv2_preset) != NULL){
-	pthread_mutex_unlock(lv2_turtle_parser_mutex);
+	g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 	
 	return;
       }
@@ -311,7 +292,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
       lv2_turtle_parser->preset = g_list_prepend(lv2_turtle_parser->preset,
 						 lv2_preset);
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   default:
@@ -328,7 +309,7 @@ ags_lv2_turtle_parser_get_property(GObject *gobject,
 {
   AgsLv2TurtleParser *lv2_turtle_parser;
 
-  pthread_mutex_t *lv2_turtle_parser_mutex;
+  GRecMutex *lv2_turtle_parser_mutex;
 
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
@@ -338,46 +319,46 @@ ags_lv2_turtle_parser_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_TURTLE:
     {
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(lv2_turtle_parser->turtle,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(lv2_turtle_parser->plugin,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
     {
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(lv2_turtle_parser->ui_plugin,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   case PROP_PRESET:
     {
-      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      g_rec_mutex_lock(lv2_turtle_parser_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(lv2_turtle_parser->preset,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+      g_rec_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
   default:
@@ -433,12 +414,6 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
   /* destroy object mutex */
-  pthread_mutex_destroy(lv2_turtle_parser->obj_mutex);
-  free(lv2_turtle_parser->obj_mutex);
-
-  pthread_mutexattr_destroy(lv2_turtle_parser->obj_mutexattr);
-  free(lv2_turtle_parser->obj_mutexattr);
-
   if(lv2_turtle_parser->turtle != NULL){
     g_list_free_full(lv2_turtle_parser->turtle,
 		     g_object_unref);
@@ -464,21 +439,6 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
 }
 
 /**
- * ags_lv2_turtle_parser_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.2.0
- */
-pthread_mutex_t*
-ags_lv2_turtle_parser_get_class_mutex()
-{
-  return(&ags_lv2_turtle_parser_class_mutex);
-}
-
-/**
  * ags_lv2_turtle_parser_parse_names:
  * @lv2_turtle_parser: the #AgsLv2TurtleParser
  * @turtle: the %NULL terminated array of #AgsTurtle
@@ -501,7 +461,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
   GList *list;
   GList *start_plugin, *plugin;
 
-  pthread_mutex_t *lv2_turtle_parser_mutex;
+  GRecMutex *lv2_turtle_parser_mutex;
 
   auto void ags_lv2_turtle_parser_parse_names_statement(AgsTurtle *current_turtle,
 							xmlNode *node,
@@ -1252,7 +1212,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
   /* get manifest */
   manifest = NULL;
   
-  pthread_mutex_lock(lv2_turtle_parser_mutex);
+  g_rec_mutex_lock(lv2_turtle_parser_mutex);
     
   list = g_list_last(lv2_turtle_parser->turtle);
 
@@ -1260,7 +1220,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
     manifest = list->data;
   }
   
-  pthread_mutex_unlock(lv2_turtle_parser_mutex);
+  g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 
   if(turtle == NULL){
     if(manifest == NULL){
@@ -1357,7 +1317,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   GList *start_ui_plugin, *ui_plugin;
   GList *start_preset, *preset;
   
-  pthread_mutex_t *lv2_turtle_parser_mutex;
+  GRecMutex *lv2_turtle_parser_mutex;
 
   auto void ags_lv2_turtle_parser_parse_statement(AgsTurtle *current_turtle,
 						  xmlNode *node,
@@ -4494,7 +4454,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   /* get manifest */
   manifest = NULL;
   
-  pthread_mutex_lock(lv2_turtle_parser_mutex);
+  g_rec_mutex_lock(lv2_turtle_parser_mutex);
     
   list = g_list_last(lv2_turtle_parser->turtle);
 
@@ -4502,7 +4462,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     manifest = list->data;
   }
   
-  pthread_mutex_unlock(lv2_turtle_parser_mutex);
+  g_rec_mutex_unlock(lv2_turtle_parser_mutex);
 
   if(turtle == NULL){
     if(manifest == NULL){

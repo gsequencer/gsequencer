@@ -19,9 +19,6 @@
 
 #include <ags/plugin/ags_lv2_option_manager.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -61,8 +58,6 @@ enum{
 
 static gpointer ags_lv2_option_manager_parent_class = NULL;
 static guint lv2_option_manager_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_lv2_option_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsLv2OptionManager *ags_lv2_option_manager = NULL;
 
@@ -166,19 +161,7 @@ void
 ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager)
 {
   /* lv2 option manager mutex */
-  lv2_option_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(lv2_option_manager->obj_mutexattr);
-  pthread_mutexattr_settype(lv2_option_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(lv2_option_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2_option_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(lv2_option_manager->obj_mutex,
-		     lv2_option_manager->obj_mutexattr);
+  g_rec_mutex_init(&(lv2_option_manager->obj_mutex));
 
   lv2_option_manager->ressource = g_hash_table_new_full(g_direct_hash, (GEqualFunc) ags_lv2_option_ressource_equal,
 							NULL,
@@ -199,29 +182,8 @@ ags_lv2_option_manager_finalize(GObject *gobject)
     ags_lv2_option_manager = NULL;
   }
 
-  pthread_mutex_destroy(lv2_option_manager->obj_mutex);
-  free(lv2_option_manager->obj_mutex);
-
-  pthread_mutexattr_destroy(lv2_option_manager->obj_mutexattr);
-  free(lv2_option_manager->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_option_manager_parent_class)->finalize(gobject);  
-}
-
-/**
- * ags_lv2_option_manager_get_class_mutex:
- * 
- * Get class mutex.
- * 
- * Returns: the class mutex of #AgsLv2_OptionManager
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_lv2_option_manager_get_class_mutex()
-{
-  return(&ags_lv2_option_manager_class_mutex);
 }
 
 void
@@ -235,7 +197,7 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
 {
   AgsLv2OptionRessource *lv2_option_ressource, *requested_lv2_option_ressource;
 
-  pthread_mutex_t *lv2_option_manager_mutex;
+  GRecMutex *lv2_option_manager_mutex;
 
   if(a == NULL ||
      b == NULL){
@@ -322,7 +284,7 @@ gboolean
 ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
 					AgsLv2OptionRessource *lv2_option_ressource, gpointer data)
 {
-  pthread_mutex_t *lv2_option_manager_mutex;
+  GRecMutex *lv2_option_manager_mutex;
 
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL ||
@@ -334,12 +296,12 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
   lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_option_manager_mutex);
+  g_rec_mutex_lock(lv2_option_manager_mutex);
 
   g_hash_table_insert(lv2_option_manager->ressource,
 		      (gpointer) lv2_option_ressource, data);
 
-  pthread_mutex_unlock(lv2_option_manager_mutex);
+  g_rec_mutex_unlock(lv2_option_manager_mutex);
 
   return(TRUE);
 }
@@ -361,7 +323,7 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
 {
   gpointer data;
 
-  pthread_mutex_t *lv2_option_manager_mutex;
+  GRecMutex *lv2_option_manager_mutex;
 
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL){
@@ -372,12 +334,12 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
   lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_option_manager_mutex);
+  g_rec_mutex_lock(lv2_option_manager_mutex);
 
   g_hash_table_remove(lv2_option_manager->ressource,
 		      lv2_option_ressource);
   
-  pthread_mutex_unlock(lv2_option_manager_mutex);
+  g_rec_mutex_unlock(lv2_option_manager_mutex);
 
   return(TRUE);
 }
@@ -402,7 +364,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   
   gpointer data, tmp;
 
-  pthread_mutex_t *lv2_option_manager_mutex;
+  GRecMutex *lv2_option_manager_mutex;
 
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL){
@@ -413,7 +375,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_option_manager_mutex);
+  g_rec_mutex_lock(lv2_option_manager_mutex);
 
   key_start = 
     key = g_hash_table_get_keys(lv2_option_manager->ressource);
@@ -436,7 +398,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   
   g_list_free(key_start);
 
-  pthread_mutex_unlock(lv2_option_manager_mutex);
+  g_rec_mutex_unlock(lv2_option_manager_mutex);
   
   return(data);
 }
@@ -464,7 +426,7 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   
   gpointer data, tmp;
 
-  pthread_mutex_t *lv2_option_manager_mutex;
+  GRecMutex *lv2_option_manager_mutex;
 
   if(orig_key != NULL){
     *orig_key = NULL;
@@ -483,7 +445,7 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_option_manager_mutex);
+  g_rec_mutex_lock(lv2_option_manager_mutex);
 
   key_start = 
     key = g_hash_table_get_keys(lv2_option_manager->ressource);
@@ -516,7 +478,7 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   
   g_list_free(key_start);
 
-  pthread_mutex_unlock(lv2_option_manager_mutex);
+  g_rec_mutex_unlock(lv2_option_manager_mutex);
 
   return(((data != NULL) ? TRUE: FALSE));  
 }
@@ -802,9 +764,9 @@ ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
 AgsLv2OptionManager*
 ags_lv2_option_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2_option_manager == NULL){
     ags_lv2_option_manager = ags_lv2_option_manager_new();
@@ -812,7 +774,7 @@ ags_lv2_option_manager_get_instance()
     //    ags_lv2_option_manager_load_default(ags_lv2_option_manager);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2_option_manager);
 }

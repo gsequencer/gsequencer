@@ -19,8 +19,6 @@
 
 #include <ags/plugin/ags_lv2_conversion.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -196,7 +194,7 @@ ags_lv2_conversion_set_property(GObject *gobject,
 {
   AgsLv2Conversion *lv2_conversion;
 
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
 
   lv2_conversion = AGS_LV2_CONVERSION(gobject);
 
@@ -210,11 +208,11 @@ ags_lv2_conversion_set_property(GObject *gobject,
 
     lower = g_value_get_double(value);
 
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     lv2_conversion->lower = lower;
       
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   case PROP_UPPER:
@@ -223,11 +221,11 @@ ags_lv2_conversion_set_property(GObject *gobject,
 
     upper = g_value_get_double(value);
 
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     lv2_conversion->upper = upper;
       
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   case PROP_STEP_COUNT:
@@ -236,11 +234,11 @@ ags_lv2_conversion_set_property(GObject *gobject,
 
     step_count = g_value_get_double(value);
 
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     lv2_conversion->step_count = step_count;
       
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   default:
@@ -257,7 +255,7 @@ ags_lv2_conversion_get_property(GObject *gobject,
 {
   AgsLv2Conversion *lv2_conversion;
 
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
 
   lv2_conversion = AGS_LV2_CONVERSION(gobject);
 
@@ -267,29 +265,29 @@ ags_lv2_conversion_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_LOWER:
   {
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     g_value_set_double(value, lv2_conversion->lower);
 
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   case PROP_UPPER:
   {
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     g_value_set_double(value, lv2_conversion->upper);
 
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   case PROP_STEP_COUNT:
   {
-    pthread_mutex_lock(conversion_mutex);
+    g_rec_mutex_lock(conversion_mutex);
 
     g_value_set_double(value, lv2_conversion->step_count);
 
-    pthread_mutex_unlock(conversion_mutex);
+    g_rec_mutex_unlock(conversion_mutex);
   }
   break;
   default:
@@ -314,7 +312,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
 
   if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
     return(FALSE);
@@ -324,11 +322,11 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* test flags */
-  pthread_mutex_lock(conversion_mutex);
+  g_rec_mutex_lock(conversion_mutex);
 
   retval = ((flags & (lv2_conversion->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(conversion_mutex);
+  g_rec_mutex_unlock(conversion_mutex);
 
   return(retval);
 }
@@ -345,7 +343,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 void
 ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 {
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
 
   if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
     return;
@@ -355,11 +353,11 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* set flags */
-  pthread_mutex_lock(conversion_mutex);
+  g_rec_mutex_lock(conversion_mutex);
 
   lv2_conversion->flags |= flags;
   
-  pthread_mutex_unlock(conversion_mutex);
+  g_rec_mutex_unlock(conversion_mutex);
 }
 
 /**
@@ -374,7 +372,7 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 void
 ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 {
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
 
   if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
     return;
@@ -384,11 +382,11 @@ ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* unset flags */
-  pthread_mutex_lock(conversion_mutex);
+  g_rec_mutex_lock(conversion_mutex);
 
   lv2_conversion->flags &= (~flags);
   
-  pthread_mutex_unlock(conversion_mutex);
+  g_rec_mutex_unlock(conversion_mutex);
 }
 
 gdouble
