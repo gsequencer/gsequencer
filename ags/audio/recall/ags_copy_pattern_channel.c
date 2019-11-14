@@ -172,7 +172,7 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
@@ -186,10 +186,10 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
 
       pattern = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(copy_pattern_channel->pattern == pattern){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -204,7 +204,7 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
       
       copy_pattern_channel->pattern = pattern;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -221,7 +221,7 @@ ags_copy_pattern_channel_get_property(GObject *gobject,
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
@@ -231,11 +231,11 @@ ags_copy_pattern_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PATTERN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, copy_pattern_channel->pattern);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:

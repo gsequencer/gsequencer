@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_lfo_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_synth_enums.h>
@@ -28,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel);
-void ags_lfo_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_lfo_channel_init(AgsLfoChannel *lfo_channel);
 void ags_lfo_channel_set_property(GObject *gobject,
 				  guint prop_id,
@@ -40,8 +37,6 @@ void ags_lfo_channel_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_lfo_channel_dispose(GObject *gobject);
 void ags_lfo_channel_finalize(GObject *gobject);
-
-void ags_lfo_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_lfo_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_lfo_channel_get_lfo_wave_plugin_port();
@@ -110,31 +105,15 @@ ags_lfo_channel_get_type()
       (GInstanceInitFunc) ags_lfo_channel_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_lfo_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lfo_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						  "AgsLfoChannel",
 						  &ags_lfo_channel_info,
 						  0);
     
-    g_type_add_interface_static(ags_type_lfo_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_lfo_channel);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_lfo_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_lfo_channel_set_ports;
 }
 
 void
@@ -748,22 +727,6 @@ ags_lfo_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_lfo_channel_parent_class)->finalize(gobject);
-}
-
-void
-ags_lfo_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./lfo[0]",
-		12)){
-      g_object_set(G_OBJECT(plugin),
-		   "lfo", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 static AgsPluginPort*

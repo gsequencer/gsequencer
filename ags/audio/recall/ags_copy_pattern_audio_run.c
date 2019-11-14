@@ -59,7 +59,6 @@ enum{
 };
 
 static gpointer ags_copy_pattern_audio_run_parent_class = NULL;
-static AgsPluginInterface *ags_copy_pattern_audio_run_parent_plugin_interface;
 
 GType
 ags_copy_pattern_audio_run_get_type()
@@ -177,7 +176,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
 
@@ -194,10 +193,10 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
       delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
       old_delay_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(copy_pattern_audio_run->delay_audio_run == delay_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -214,7 +213,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       copy_pattern_audio_run->delay_audio_run = delay_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* dependency */
       if(ags_recall_test_flags((AgsRecall *) delay_audio_run, AGS_RECALL_TEMPLATE)){
@@ -258,10 +257,10 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
       old_count_beats_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(copy_pattern_audio_run->count_beats_audio_run == count_beats_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -278,7 +277,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       copy_pattern_audio_run->count_beats_audio_run = count_beats_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(count_beats_audio_run != NULL &&
@@ -330,7 +329,7 @@ ags_copy_pattern_audio_run_get_property(GObject *gobject,
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
 
@@ -340,20 +339,20 @@ ags_copy_pattern_audio_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, copy_pattern_audio_run->delay_audio_run);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, copy_pattern_audio_run->count_beats_audio_run);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -530,7 +529,7 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
@@ -538,7 +537,7 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(copy_pattern_audio_run);
   
   /* notify */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   switch(dependency){
   case AGS_RECALL_NOTIFY_RUN:
@@ -560,7 +559,7 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
     g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify");
   }
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**

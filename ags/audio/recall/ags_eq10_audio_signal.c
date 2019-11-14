@@ -31,8 +31,6 @@
 
 #include <ags/audio/recall/ags_eq10_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_channel_run.h>
@@ -154,19 +152,10 @@ ags_eq10_audio_signal_run_init_pre(AgsRecall *recall)
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);  
 
-  pthread_mutex_t *recall_mutex;
-
   eq10_audio_signal = (AgsEq10AudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -259,21 +248,12 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   GValue value = {0,};
 
   void (*parent_class_run_inter)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  
+    
   eq10_audio_signal = (AgsEq10AudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* call parent */
   parent_class_run_inter(recall);
 

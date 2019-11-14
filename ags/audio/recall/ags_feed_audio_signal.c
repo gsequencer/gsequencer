@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_feed_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_feed_channel.h>

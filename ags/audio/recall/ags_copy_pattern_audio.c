@@ -229,7 +229,7 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
@@ -243,10 +243,10 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == copy_pattern_audio->bank_index_0){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -261,7 +261,7 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       copy_pattern_audio->bank_index_0 = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK_INDEX_1:
@@ -270,10 +270,10 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == copy_pattern_audio->bank_index_1){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -288,7 +288,7 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       copy_pattern_audio->bank_index_1 = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -305,7 +305,7 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
     
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
@@ -315,20 +315,20 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_BANK_INDEX_0:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, copy_pattern_audio->bank_index_0);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK_INDEX_1:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, copy_pattern_audio->bank_index_1);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -388,9 +388,9 @@ ags_copy_pattern_audio_get_bank_index_0_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -418,7 +418,7 @@ ags_copy_pattern_audio_get_bank_index_0_plugin_port()
 		      AGS_COPY_PATTERN_AUDIO_MAX_BANK_INDEX_0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -428,9 +428,9 @@ ags_copy_pattern_audio_get_bank_index_1_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -458,7 +458,7 @@ ags_copy_pattern_audio_get_bank_index_1_plugin_port()
 		      AGS_COPY_PATTERN_AUDIO_MAX_BANK_INDEX_1);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }

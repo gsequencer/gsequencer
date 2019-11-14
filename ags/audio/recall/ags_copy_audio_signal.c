@@ -151,18 +151,11 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   guint length;
   
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *recycling_mutex;
-  
+    
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -277,16 +270,10 @@ ags_copy_audio_signal_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
+  /* get parent class */  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -352,16 +339,10 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);

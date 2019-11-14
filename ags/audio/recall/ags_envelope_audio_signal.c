@@ -178,8 +178,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
 							     guint x1, gdouble y1);
   auto gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
@@ -218,11 +216,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -346,7 +340,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       
       gdouble current_volume, current_ratio;
 
-      pthread_mutex_t *note_mutex;
+      GRecMutex *note_mutex;
       
       current = note->data;
             
@@ -359,7 +353,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current);
 
       /*  */
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       attack[0] = current->attack[0];
       attack[1] = current->attack[1];
@@ -376,7 +370,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       ratio[0] = current->ratio[0];
       ratio[1] = current->ratio[1];
 
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
 
       /* set frame count */
       frame_count = (key_x1 - key_x0) * (delay * buffer_size);

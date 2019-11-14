@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_loop_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -31,7 +29,6 @@
 
 void ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run);
 void ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run);
 void ags_loop_channel_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -50,9 +47,6 @@ void ags_loop_channel_run_connect_connection(AgsConnectable *connectable,
 					     GObject *connection);
 void ags_loop_channel_run_disconnect_connection(AgsConnectable *connectable,
 						GObject *connection);
-
-void ags_loop_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_loop_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_loop_channel_run_resolve_dependency(AgsRecall *recall);
 
@@ -88,7 +82,6 @@ enum{
 
 static gpointer ags_loop_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_run_parent_connectable_interface;
-static AgsPluginInterface *ags_loop_channel_run_parent_plugin_interface;
 
 GType
 ags_loop_channel_run_get_type()
@@ -116,12 +109,6 @@ ags_loop_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_loop_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_loop_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						       "AgsLoopChannelRun",
 						       &ags_loop_channel_run_info,
@@ -129,10 +116,6 @@ ags_loop_channel_run_get_type()
     g_type_add_interface_static(ags_type_loop_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_loop_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_loop_channel_run);
   }
@@ -191,15 +174,6 @@ ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect_connection = ags_loop_channel_run_connect_connection;
   connectable->disconnect_connection = ags_loop_channel_run_disconnect_connection;
-}
-
-void
-ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_loop_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_loop_channel_run_read;
-  plugin->write = ags_loop_channel_run_write;
 }
 
 void
@@ -474,105 +448,6 @@ ags_loop_channel_run_disconnect_connection(AgsConnectable *connectable,
   }
 
   g_object_unref(count_beats_audio_run);
-}
-
-void
-ags_loop_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_loop_channel_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", G_OBJECT(plugin),
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_loop_channel_run_read_resolve_dependency), G_OBJECT(plugin));
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_loop_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-  gchar *id;
-
-  /* write parent */
-  node = ags_loop_channel_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", G_OBJECT(plugin),
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_loop_channel_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
 }
 
 void

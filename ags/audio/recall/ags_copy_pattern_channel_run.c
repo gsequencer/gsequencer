@@ -353,7 +353,7 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -394,7 +394,7 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -514,8 +514,8 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *pattern_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *pattern_mutex;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
@@ -562,11 +562,11 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* i stop */  
-  pthread_mutex_lock(pattern_mutex);
+  g_rec_mutex_lock(pattern_mutex);
 
   i_stop = pattern->dim[2];
 
-  pthread_mutex_unlock(pattern_mutex);
+  g_rec_mutex_unlock(pattern_mutex);
   
   for(i = 0; i < i_stop; i++){
     note = ags_note_new();
@@ -598,7 +598,7 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
 
   void (*parent_class_done)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
@@ -626,14 +626,14 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
 
   /* free notes */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   g_list_free_full(copy_pattern_channel_run->note,
 		   g_object_unref);
 
   copy_pattern_channel_run->note = NULL;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* call parent */
   parent_class_done(recall);
@@ -667,7 +667,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue i_value = { 0, };
   GValue j_value = { 0, };
 
-  pthread_mutex_t *pattern_mutex;
+  GRecMutex *pattern_mutex;
 
   if(delay != 0.0){
     return;

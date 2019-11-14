@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_loop_channel.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);

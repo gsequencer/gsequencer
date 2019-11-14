@@ -459,7 +459,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -475,7 +475,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   /* run order */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->output_soundcard));
   
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   delay_audio_run->hide_ref_counter = 0;
 
@@ -484,7 +484,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   delay_audio_run->wave_counter = floor(absolute_delay);
   delay_audio_run->midi_counter = floor(absolute_delay);
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 void
@@ -503,7 +503,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -524,22 +524,22 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   
 
   /* check done */  
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   dependency_ref = delay_audio_run->dependency_ref;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   if(!ags_recall_test_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT) &&
      dependency_ref == 0){
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
   
     delay_audio_run->sequencer_counter = 0.0;
     delay_audio_run->notation_counter = 0.0;
     delay_audio_run->wave_counter = 0.0;
     delay_audio_run->midi_counter = 0.0;
 
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     ags_recall_done(recall);
 
@@ -584,7 +584,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_sequencer = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->sequencer_counter + 1.0 >= current_delay){
       alloc_sequencer = TRUE;
@@ -596,7 +596,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     sequencer_counter = delay_audio_run->sequencer_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* sequencer */
     if(alloc_sequencer){
@@ -660,7 +660,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_notation = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->notation_counter + 1.0 >= current_delay){
       alloc_notation = TRUE;
@@ -672,7 +672,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     notation_counter = delay_audio_run->notation_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* notation */
     if(alloc_notation){
@@ -736,7 +736,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_wave = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->wave_counter + 1.0 >= current_delay){
       alloc_wave = TRUE;
@@ -748,7 +748,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     wave_counter = delay_audio_run->wave_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* wave */
     if(alloc_wave){
@@ -812,7 +812,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_midi = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->midi_counter + 1.0 >= current_delay){
       alloc_midi = TRUE;
@@ -824,7 +824,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     midi_counter = delay_audio_run->midi_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* midi */
     if(alloc_midi){
@@ -877,7 +877,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
 				       AgsRecallID *recall_id,
 				       guint *n_params, gchar **parameter_name, GValue *value);
 	      
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   delay_audio_run = (AgsDelayAudioRun *) recall;
 
@@ -897,7 +897,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
 								     n_params, parameter_name, value);
   
   /* initial values copied */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   copy_delay_audio_run->dependency_ref = delay_audio_run->dependency_ref;
 
@@ -910,7 +910,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   copy_delay_audio_run->wave_counter = delay_audio_run->wave_counter;
   copy_delay_audio_run->midi_counter = delay_audio_run->midi_counter;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   return((AgsRecall *) copy_delay_audio_run);
 }
@@ -921,7 +921,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
 {
   AgsDelayAudioRun *delay_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -929,7 +929,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* notify */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   switch(dependency){
   case AGS_RECALL_NOTIFY_RUN:
@@ -959,7 +959,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
     g_message("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify");
   }
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**

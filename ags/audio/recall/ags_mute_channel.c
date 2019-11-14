@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_mute_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_mute_channel_class_init(AgsMuteChannelClass *mute_channel);
 void ags_mute_channel_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_mute_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mute_channel_init(AgsMuteChannel *mute_channel);
 void ags_mute_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -39,8 +36,6 @@ void ags_mute_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_mute_channel_dispose(GObject *gobject);
 void ags_mute_channel_finalize(GObject *gobject);
-
-void ags_mute_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
@@ -98,12 +93,6 @@ ags_mute_channel_get_type()
       NULL, /* interface_data */
     };
     
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_mute_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_mute_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsMuteChannel",
 						   &ags_mute_channel_info,
@@ -112,10 +101,6 @@ ags_mute_channel_get_type()
     g_type_add_interface_static(ags_type_mute_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
-
-    g_type_add_interface_static(ags_type_mute_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_mute_channel);
   }
@@ -127,12 +112,6 @@ void
 ags_mute_channel_mutable_interface_init(AgsMutableInterface *mutable)
 {
   mutable->set_muted = ags_mute_channel_set_muted;
-}
-
-void
-ags_mute_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_mute_channel_set_ports;
 }
 
 void
@@ -321,22 +300,6 @@ ags_mute_channel_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_mute_channel_parent_class)->finalize(gobject);
-}
-
-void
-ags_mute_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "muted", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 void

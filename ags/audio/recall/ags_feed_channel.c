@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_feed_channel.h>
-
-#include <ags/libags.h>
 
 void ags_feed_channel_class_init(AgsFeedChannelClass *feed_channel);
 void ags_feed_channel_init(AgsFeedChannel *feed_channel);

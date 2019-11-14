@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_lfo_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_channel_run.h>
