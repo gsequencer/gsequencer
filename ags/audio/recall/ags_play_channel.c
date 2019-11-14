@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_play_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_play_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
 void ags_play_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -39,8 +36,6 @@ void ags_play_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_play_channel_dispose(GObject *gobject);
 void ags_play_channel_finalize(GObject *gobject);
-
-void ags_play_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
@@ -63,7 +58,6 @@ enum{
  */
 
 static gpointer ags_play_channel_parent_class = NULL;
-static AgsPluginInterface *ags_play_channel_parent_plugin_interface;
 
 static const gchar *ags_play_channel_plugin_name = "ags-play";
 static const gchar *ags_play_channel_specifier[] = {
@@ -101,12 +95,6 @@ ags_play_channel_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsPlayChannel",
 						   &ags_play_channel_info,
@@ -115,10 +103,6 @@ ags_play_channel_get_type()
     g_type_add_interface_static(ags_type_play_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_channel);
   }
@@ -260,7 +244,7 @@ ags_play_channel_set_property(GObject *gobject,
 {
   AgsPlayChannel *play_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
@@ -274,10 +258,10 @@ ags_play_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_channel->audio_channel){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -292,7 +276,7 @@ ags_play_channel_set_property(GObject *gobject,
 
       play_channel->audio_channel = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_MUTED:
@@ -301,10 +285,10 @@ ags_play_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_channel->muted){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -319,7 +303,7 @@ ags_play_channel_set_property(GObject *gobject,
 
       play_channel->muted = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -336,7 +320,7 @@ ags_play_channel_get_property(GObject *gobject,
 {
   AgsPlayChannel *play_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
@@ -346,20 +330,20 @@ ags_play_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO_CHANNEL:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_channel->audio_channel);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_MUTED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_channel->muted);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -466,9 +450,9 @@ ags_play_channel_get_muted_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -496,7 +480,7 @@ ags_play_channel_get_muted_plugin_port()
 		      1.0);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(plugin_port);
 }

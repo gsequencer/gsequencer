@@ -22,8 +22,6 @@
 
 #include <ags/audio/recall/ags_play_dssi_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_plugin_port.h>
@@ -52,7 +50,6 @@
 #include <ags/i18n.h>
 
 void ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio);
-void ags_play_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_dssi_audio_init(AgsPlayDssiAudio *play_dssi_audio);
 void ags_play_dssi_audio_set_property(GObject *gobject,
 				      guint prop_id,
@@ -64,8 +61,6 @@ void ags_play_dssi_audio_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_play_dssi_audio_dispose(GObject *gobject);
 void ags_play_dssi_audio_finalize(GObject *gobject);
-
-void ags_play_dssi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_play_dssi_audio
@@ -87,7 +82,6 @@ enum{
 };
 
 static gpointer ags_play_dssi_audio_parent_class = NULL;
-static AgsPluginInterface *ags_play_dssi_parent_plugin_interface;
 
 static const gchar *ags_play_dssi_audio_plugin_name = "ags-play-dssi";
 static const gchar *ags_play_dssi_audio_specifier[] = {
@@ -115,20 +109,10 @@ ags_play_dssi_audio_get_type()
       (GInstanceInitFunc) ags_play_dssi_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_dssi_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_dssi_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						      "AgsPlayDssiAudio",
 						      &ags_play_dssi_audio_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_play_dssi_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave (&g_define_type_id__volatile, ags_type_play_dssi_audio);
   }
@@ -283,7 +267,7 @@ ags_play_dssi_audio_set_property(GObject *gobject,
 {
   AgsPlayDssiAudio *play_dssi_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(gobject);
 
@@ -293,20 +277,20 @@ ags_play_dssi_audio_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_dssi_audio->bank = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_dssi_audio->program = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PLUGIN:
@@ -315,10 +299,10 @@ ags_play_dssi_audio_set_property(GObject *gobject,
       
       dssi_plugin = g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_dssi_audio->plugin == dssi_plugin){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -333,7 +317,7 @@ ags_play_dssi_audio_set_property(GObject *gobject,
 
       play_dssi_audio->plugin = dssi_plugin;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_INPUT_LINES:
@@ -342,17 +326,17 @@ ags_play_dssi_audio_set_property(GObject *gobject,
       
       effect_input_lines = g_value_get_ulong(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(effect_input_lines == play_dssi_audio->input_lines){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
 
       play_dssi_audio->input_lines = effect_input_lines;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_OUTPUT_LINES:
@@ -361,17 +345,17 @@ ags_play_dssi_audio_set_property(GObject *gobject,
       
       effect_output_lines = g_value_get_ulong(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(effect_output_lines == play_dssi_audio->output_lines){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
 
       play_dssi_audio->output_lines = effect_output_lines;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -388,7 +372,7 @@ ags_play_dssi_audio_get_property(GObject *gobject,
 {
   AgsPlayDssiAudio *play_dssi_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(gobject);
 
@@ -398,47 +382,47 @@ ags_play_dssi_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, play_dssi_audio->bank);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, play_dssi_audio->program);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_dssi_audio->plugin);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_INPUT_LINES:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_ulong(value, play_dssi_audio->input_lines);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_OUTPUT_LINES:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_ulong(value, play_dssi_audio->output_lines);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -479,97 +463,6 @@ ags_play_dssi_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_play_dssi_audio_parent_class)->finalize(gobject);
 }
 
-void
-ags_play_dssi_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_play_dssi_audio_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsPlayDssiAudio *gobject;
-  AgsDssiPlugin *dssi_plugin;
-
-  gchar *filename, *effect;
-
-  unsigned long effect_index;
-
-  gobject = AGS_PLAY_DSSI_AUDIO(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  filename = xmlGetProp(node,
-			"filename");
-  effect = xmlGetProp(node,
-		      "effect");
-  effect_index = g_ascii_strtoull(xmlGetProp(node,
-					     "index"),
-				  NULL,
-				  10);
-  
-  g_object_set(gobject,
-	       "filename", filename,
-	       "effect", effect,
-	       "effect-index", effect_index,
-	       NULL);
-
-  ags_play_dssi_audio_load(gobject);
-}
-
-xmlNode*
-ags_play_dssi_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsPlayDssiAudio *play_dssi_audio;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  play_dssi_audio = AGS_PLAY_DSSI_AUDIO(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-recall-dssi");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", play_dssi_audio,
-				   NULL));
-
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(AGS_RECALL(play_dssi_audio)->filename));
-
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(AGS_RECALL(play_dssi_audio)->effect));
-
-  xmlNewProp(node,
-	     "index",
-	     g_strdup_printf("%u", AGS_RECALL(play_dssi_audio)->effect_index));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_play_dssi_audio_load:
  * @play_dssi_audio: the #AgsPlayDssiAudio
@@ -591,7 +484,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_DSSI_AUDIO(play_dssi_audio)){
     return;
@@ -601,12 +494,12 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   /* get filename and effect */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(play_dssi_audio)->filename);
   effect = g_strdup(AGS_RECALL(play_dssi_audio)->effect);
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find AgsDssiPlugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
@@ -642,12 +535,12 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 #endif
 
     if(success && dssi_descriptor){
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       play_dssi_audio->plugin_descriptor = 
 	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
   }
 
@@ -682,8 +575,8 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   unsigned long port_count;
   unsigned long i;
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_PLAY_DSSI_AUDIO(play_dssi_audio)){
     return(NULL);
@@ -693,12 +586,12 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   /* get filename and effect */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(play_dssi_audio)->filename);
   effect = g_strdup(AGS_RECALL(play_dssi_audio)->effect);
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find AgsDssiPlugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
@@ -715,12 +608,12 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
   
   /* get plugin name */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_name = g_strdup_printf("dssi-%u",
 				dssi_plugin->unique_id);
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
   
   plugin_port = start_plugin_port;
   start_port = NULL;
@@ -734,17 +627,17 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 
 	GValue *value;
 	
-	pthread_mutex_t *plugin_port_mutex;
+	GRecMutex *plugin_port_mutex;
 
 	/* get plugin port mutex */
 	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
 
 	/* get specifier */
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 	
 	specifier = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
 
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	if(specifier == NULL){
 	  plugin_port = plugin_port->next;
@@ -797,7 +690,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
       }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
 	/* audio port */
 	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	  pthread_mutex_lock(recall_mutex);
+	  g_rec_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->input_port == NULL){
 	    play_dssi_audio->input_port = (guint *) malloc(sizeof(guint));
@@ -810,9 +703,9 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	  
 	  play_dssi_audio->input_lines += 1;
 
-	  pthread_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  pthread_mutex_lock(recall_mutex);
+	  g_rec_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->output_port == NULL){
 	    play_dssi_audio->output_port = (guint *) malloc(sizeof(guint));
@@ -825,7 +718,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	  
 	  play_dssi_audio->output_lines += 1;
 
-	  pthread_mutex_unlock(recall_mutex);	  
+	  g_rec_mutex_unlock(recall_mutex);	  
 	}
       }
 
@@ -941,20 +834,20 @@ ags_play_dssi_audio_find(GList *recall,
     if(AGS_IS_PLAY_DSSI_AUDIO(recall->data)){
       gboolean success;
       
-      pthread_mutex_t *recall_mutex;
+      GRecMutex *recall_mutex;
 
       /* get recall mutex */
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check current filename and effect */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
 			    filename) &&
 		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 			    effect)) ? TRUE: FALSE;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(success){
 	break;

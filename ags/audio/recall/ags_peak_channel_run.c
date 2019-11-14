@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -132,16 +130,14 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
   
   void (*parent_class_run_pre)(AgsRecall *recall);  
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
 
   g_object_get(recall,
 	       "recall-channel", &peak_channel,
 	       NULL);
 
   /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-  buffer_mutex = peak_channel->buffer_mutex;
+  buffer_mutex = &(peak_channel->buffer_mutex);
   
   /* get parent class */
   AGS_RECALL_LOCK_CLASS();
@@ -160,7 +156,7 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
 	       "buffer-computed", &buffer_computed,
 	       NULL);
   
-  pthread_mutex_lock(buffer_mutex);
+  g_rec_mutex_lock(buffer_mutex);
   
   g_value_init(&value,
 	       G_TYPE_BOOLEAN);
@@ -186,7 +182,7 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
     g_value_unset(&value);
   }
   
-  pthread_mutex_unlock(buffer_mutex);
+  g_rec_mutex_unlock(buffer_mutex);
 
   /* lock free - buffer-computed reset by cyclic-task AgsResetPeak */
   if(!current_buffer_computed){

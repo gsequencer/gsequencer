@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_play_audio_signal.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
@@ -154,18 +152,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);  
 
-  pthread_mutex_t *recall_mutex;
-
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
   
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   g_object_get(play_audio_signal,
 	       "output-soundcard", &output_soundcard,

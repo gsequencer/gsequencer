@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_playback.h>
@@ -182,7 +180,7 @@ ags_play_channel_run_set_property(GObject *gobject,
 {
   AgsPlayChannelRun *play_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
@@ -199,10 +197,10 @@ ags_play_channel_run_set_property(GObject *gobject,
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
       old_stream_channel_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if((GObject *) stream_channel_run == play_channel_run->stream_channel_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -219,7 +217,7 @@ ags_play_channel_run_set_property(GObject *gobject,
 
       play_channel_run->stream_channel_run = (GObject *) stream_channel_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* dependency */
       if(ags_recall_test_flags((AgsRecall *) play_channel_run, AGS_RECALL_TEMPLATE)){
@@ -268,7 +266,7 @@ ags_play_channel_run_get_property(GObject *gobject,
 {
   AgsPlayChannelRun *play_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
@@ -278,11 +276,11 @@ ags_play_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(play_channel_run->stream_channel_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -367,19 +365,10 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   
   void (*parent_class_run_post)(AgsRecall *recall);
 
-  pthread_mutex_t *recall_mutex;
-
   play_channel_run = (AgsPlayChannelRun *) recall;
   
   /* get parent class and mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_post = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post;
-
-  AGS_RECALL_UNLOCK_CLASS();
-  
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_post(recall);
@@ -613,7 +602,7 @@ ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags
 {
   gboolean retval;  
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
     return(FALSE);
@@ -623,11 +612,11 @@ ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* test */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   retval = (flags & (play_channel_run->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   return(retval);
 }
@@ -644,7 +633,7 @@ ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags
 void
 ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
     return;
@@ -654,11 +643,11 @@ ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* set flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   play_channel_run->flags |= flags;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -673,7 +662,7 @@ ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
 void
 ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
     return;
@@ -683,11 +672,11 @@ ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flag
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* set flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   play_channel_run->flags &= (~flags);
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
