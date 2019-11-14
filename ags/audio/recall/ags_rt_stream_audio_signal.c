@@ -167,11 +167,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   void (*parent_class_run_pre)(AgsRecall *recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_pre(recall);

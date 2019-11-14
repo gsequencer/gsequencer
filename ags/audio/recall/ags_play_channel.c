@@ -170,14 +170,6 @@ ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable)
 }
 
 void
-ags_play_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_play_channel_set_ports;
-}
-
-void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
   GList *port;

@@ -157,9 +157,6 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   /* get parent class */
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre;
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* set flags */
   ags_recall_unset_behaviour_flags(recall,
 				   AGS_SOUND_BEHAVIOUR_PERSISTENT);
@@ -275,9 +272,6 @@ ags_copy_audio_signal_run_pre(AgsRecall *recall)
   /* get parent class */  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre;
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* call parent */
   parent_class_run_pre(recall);
 
@@ -343,9 +337,6 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   /* get parent class */
   parent_class_run_inter = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter;
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_inter(recall);

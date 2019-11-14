@@ -523,11 +523,7 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -605,12 +601,8 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
+  /* get parent class */  
   parent_class_done = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get AgsCopyPatternAudioRun */
   g_object_get(recall,

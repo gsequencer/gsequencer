@@ -167,7 +167,7 @@ ags_capture_wave_channel_set_property(GObject *gobject,
 {
   AgsCaptureWaveChannel *capture_wave_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   capture_wave_channel = AGS_CAPTURE_WAVE_CHANNEL(gobject);
 
@@ -181,10 +181,10 @@ ags_capture_wave_channel_set_property(GObject *gobject,
 
       x_offset = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(capture_wave_channel->x_offset == x_offset){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -199,7 +199,7 @@ ags_capture_wave_channel_set_property(GObject *gobject,
       
       capture_wave_channel->x_offset = x_offset;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -216,7 +216,7 @@ ags_capture_wave_channel_get_property(GObject *gobject,
 {
   AgsCaptureWaveChannel *capture_wave_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   capture_wave_channel = AGS_CAPTURE_WAVE_CHANNEL(gobject);
 
@@ -226,11 +226,11 @@ ags_capture_wave_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X_OFFSET:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, capture_wave_channel->x_offset);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:

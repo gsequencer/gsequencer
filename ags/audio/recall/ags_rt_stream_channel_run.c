@@ -216,11 +216,7 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
   rt_stream_channel_run = (AgsRtStreamChannelRun *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_done = AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->done;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(rt_stream_channel_run,

@@ -207,7 +207,7 @@ ags_route_lv2_audio_set_property(GObject *gobject,
 {
   AgsRouteLv2Audio *route_lv2_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
 
@@ -221,10 +221,10 @@ ags_route_lv2_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == route_lv2_audio->notation_input){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -239,7 +239,7 @@ ags_route_lv2_audio_set_property(GObject *gobject,
 
       route_lv2_audio->notation_input = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_INPUT:
@@ -248,10 +248,10 @@ ags_route_lv2_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == route_lv2_audio->sequencer_input){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -266,7 +266,7 @@ ags_route_lv2_audio_set_property(GObject *gobject,
 
       route_lv2_audio->sequencer_input = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -283,7 +283,7 @@ ags_route_lv2_audio_get_property(GObject *gobject,
 {
   AgsRouteLv2Audio *route_lv2_audio;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
 
@@ -293,20 +293,20 @@ ags_route_lv2_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_NOTATION_INPUT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, route_lv2_audio->notation_input);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_INPUT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, route_lv2_audio->sequencer_input);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:

@@ -134,11 +134,7 @@ ags_lfo_audio_signal_run_init_pre(AgsRecall *recall)
   lfo_audio_signal = (AgsLfoAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_lfo_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(lfo_audio_signal,
 	       "parent", &lfo_recycling,
@@ -189,11 +185,7 @@ ags_lfo_audio_signal_run_inter(AgsRecall *recall)
   lfo_audio_signal = (AgsLfoAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_lfo_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);

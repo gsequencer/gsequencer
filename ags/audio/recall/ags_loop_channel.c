@@ -138,7 +138,7 @@ ags_loop_channel_set_property(GObject *gobject,
 {
   AgsLoopChannel *loop_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
 
@@ -152,10 +152,10 @@ ags_loop_channel_set_property(GObject *gobject,
 
       delay_audio = (AgsDelayAudio *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(loop_channel->delay_audio == delay_audio){      
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -170,7 +170,7 @@ ags_loop_channel_set_property(GObject *gobject,
 
       loop_channel->delay_audio = delay_audio;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -187,7 +187,7 @@ ags_loop_channel_get_property(GObject *gobject,
 {
   AgsLoopChannel *loop_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
 
@@ -197,11 +197,11 @@ ags_loop_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, loop_channel->delay_audio);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:

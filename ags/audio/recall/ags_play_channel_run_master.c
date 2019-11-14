@@ -507,11 +507,7 @@ ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_play_channel_run_master_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_init_pre(recall);

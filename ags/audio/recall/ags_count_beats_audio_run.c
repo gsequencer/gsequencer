@@ -103,11 +103,6 @@ void ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio
 						   guint nth_run, gdouble delay, guint attack,
 						   AgsCountBeatsAudioRun *count_beats_audio_run);
 
-void ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-							GObject *recall);
-void ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						       GObject *recall);
-
 /**
  * SECTION:ags_count_beats_audio_run
  * @short_description: count beats
@@ -1481,11 +1476,7 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -1518,22 +1509,16 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   
   AgsCancelAudio *cancel_audio;
 
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsApplicationContext *application_context;
     
   void (*parent_class_done)(AgsRecall *recall);
 
-  GRecMutex *recall_mutex;
-
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_done = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done;
-  
-  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(count_beats_audio_run,
 	       "audio", &audio,
@@ -1549,16 +1534,16 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   application_context = ags_application_context_get_instance();
   
   /* get task thread */
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* create cancel task */
   cancel_audio = ags_cancel_audio_new(audio,
 				      AGS_SOUND_SCOPE_SEQUENCER);
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_audio);  
-
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);  
+  
   /* call parent */
   parent_class_done(recall);
 
@@ -1576,7 +1561,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 
   g_object_unref(delay_audio_run);
 
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 }
 
 /**
@@ -2663,52 +2648,6 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
   g_object_unref(audio);
 
   g_object_unref(count_beats_audio);
-}
-
-void
-ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						  GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file,
-							  xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", AGS_DELAY_AUDIO_RUN(id_ref->ref),
-		 NULL);
-  }
-}
-
-void
-ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						   GObject *recall)
-{
-  AgsDelayAudioRun *delay_audio_run;
-  
-  AgsFileIdRef *id_ref;
-
-  gchar *id;
-
-  g_object_get(G_OBJECT(file_lookup->ref),
-	       "delay-audio-run", &delay_audio_run,
-	       NULL);
-  
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      delay_audio_run);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-
-  g_object_unref(delay_audio_run);
 }
 
 gdouble

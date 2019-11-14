@@ -333,11 +333,7 @@ ags_play_channel_run_run_init_inter(AgsRecall *recall)
   play_channel_run = (AgsPlayChannelRun *) recall;
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_inter = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_init_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* set flags */
   ags_play_channel_run_set_flags(play_channel_run,

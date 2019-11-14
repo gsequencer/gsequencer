@@ -508,11 +508,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -882,11 +878,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   delay_audio_run = (AgsDelayAudioRun *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_duplicate = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);

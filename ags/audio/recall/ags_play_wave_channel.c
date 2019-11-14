@@ -221,7 +221,7 @@ ags_play_wave_channel_set_property(GObject *gobject,
 {
   AgsPlayWaveChannel *play_wave_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_channel = AGS_PLAY_WAVE_CHANNEL(gobject);
 
@@ -235,10 +235,10 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       wave = (AgsWave *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_wave_channel->wave == wave){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -253,7 +253,7 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       play_wave_channel->wave = wave;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DO_PLAYBACK:
@@ -262,10 +262,10 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       do_playback = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_wave_channel->do_playback == do_playback){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -280,7 +280,7 @@ ags_play_wave_channel_set_property(GObject *gobject,
       
       play_wave_channel->do_playback = do_playback;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_X_OFFSET:
@@ -289,10 +289,10 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       x_offset = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_wave_channel->x_offset == x_offset){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -307,7 +307,7 @@ ags_play_wave_channel_set_property(GObject *gobject,
       
       play_wave_channel->x_offset = x_offset;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -324,7 +324,7 @@ ags_play_wave_channel_get_property(GObject *gobject,
 {
   AgsPlayWaveChannel *play_wave_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   play_wave_channel = AGS_PLAY_WAVE_CHANNEL(gobject);
 
@@ -334,29 +334,29 @@ ags_play_wave_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_WAVE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_channel->wave);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DO_PLAYBACK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_channel->do_playback);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_X_OFFSET:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_wave_channel->x_offset);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:

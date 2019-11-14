@@ -143,11 +143,7 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
   prepare_audio_signal = (AgsPrepareAudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
@@ -229,11 +225,7 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
   void (*parent_class_run_pre)(AgsRecall *recall);  
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_pre(recall);

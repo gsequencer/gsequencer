@@ -218,9 +218,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   /* get parent class */
   parent_class_run_inter = AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter;
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* call parent */
   parent_class_run_inter(recall);
 

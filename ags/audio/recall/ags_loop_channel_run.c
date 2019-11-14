@@ -60,11 +60,6 @@ void ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio
 					guint run_order,
 					AgsLoopChannelRun *loop_channel_run);
 
-void ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						   GObject *recall);
-void ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						  GObject *recall);
-
 /**
  * SECTION:ags_loop_channel_run
  * @short_description: loop
@@ -201,7 +196,7 @@ ags_loop_channel_run_set_property(GObject *gobject,
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
 
@@ -218,10 +213,10 @@ ags_loop_channel_run_set_property(GObject *gobject,
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
       old_count_beats_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(loop_channel_run->count_beats_audio_run == count_beats_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -238,7 +233,7 @@ ags_loop_channel_run_set_property(GObject *gobject,
 
       loop_channel_run->count_beats_audio_run = count_beats_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* dependency */
       if(ags_recall_test_flags((AgsRecall *) count_beats_audio_run, AGS_RECALL_TEMPLATE)){
@@ -287,7 +282,7 @@ ags_loop_channel_run_get_property(GObject *gobject,
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
 
@@ -297,12 +292,12 @@ ags_loop_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value,
 			 loop_channel_run->count_beats_audio_run);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -679,41 +674,6 @@ ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				   AgsLoopChannelRun *loop_channel_run)
 {
   /* empty */
-}
-
-void
-ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-					      GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-					     GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
 }
 
 /**

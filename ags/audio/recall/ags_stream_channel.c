@@ -129,15 +129,6 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
 }
 
 void
-ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_stream_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_stream_channel_set_ports;
-
-}
-
-void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
   AgsConfig *config;

@@ -126,19 +126,10 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
 
-  pthread_mutex_t *recall_mutex;
-  
   feed_audio_signal = (AgsFeedAudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -242,19 +233,10 @@ ags_feed_audio_signal_run_post(AgsRecall *recall)
   
   void (*parent_class_run_post)(AgsRecall *recall);
 
-  pthread_mutex_t *recall_mutex;
-  
   feed_audio_signal = (AgsFeedAudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_post = AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_post;
-
-  AGS_RECALL_UNLOCK_CLASS();
-  
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_post(recall);

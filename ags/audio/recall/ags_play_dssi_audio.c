@@ -229,14 +229,6 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
 }
 
 void
-ags_play_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_dssi_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_play_dssi_audio_set_ports;
-}
-
-void
 ags_play_dssi_audio_init(AgsPlayDssiAudio *play_dssi_audio)
 {
   GList *port;

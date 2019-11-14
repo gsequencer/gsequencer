@@ -128,11 +128,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   volume_audio_signal = (AgsVolumeAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);

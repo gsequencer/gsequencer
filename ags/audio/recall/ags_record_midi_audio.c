@@ -341,7 +341,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
 {
   AgsRecordMidiAudio *record_midi_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
 
@@ -355,10 +355,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       playback = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->playback == playback){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -373,7 +373,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->playback = playback;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
@@ -382,10 +382,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       record = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->record == record){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -400,7 +400,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->record = record;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
@@ -409,10 +409,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       filename = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->filename == filename){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -427,7 +427,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->filename = filename;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DIVISION:
@@ -436,10 +436,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       division = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->division == division){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -454,7 +454,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->division = division;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TEMPO:
@@ -463,10 +463,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       tempo = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->tempo == tempo){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -481,7 +481,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->tempo = tempo;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BPM:
@@ -490,10 +490,10 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       bpm = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(record_midi_audio->bpm == bpm){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -508,7 +508,7 @@ ags_record_midi_audio_set_property(GObject *gobject,
       
       record_midi_audio->bpm = bpm;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -525,7 +525,7 @@ ags_record_midi_audio_get_property(GObject *gobject,
 {
   AgsRecordMidiAudio *record_midi_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
 
@@ -535,56 +535,56 @@ ags_record_midi_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PLAYBACK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->playback);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->record);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->filename);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DIVISION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->division);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TEMPO:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->tempo);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BPM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, record_midi_audio->bpm);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:

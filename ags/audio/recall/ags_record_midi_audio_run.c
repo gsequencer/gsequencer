@@ -51,11 +51,6 @@ void ags_record_midi_audio_run_resolve_dependency(AgsRecall *recall);
 void ags_record_midi_audio_run_run_init_pre(AgsRecall *recall);
 void ags_record_midi_audio_run_run_pre(AgsRecall *recall);
 
-void ags_record_midi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-							GObject *recall);
-void ags_record_midi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						       GObject *recall);
-
 /**
  * SECTION:ags_record_midi_audio_run
  * @short_description: record midi
@@ -179,15 +174,6 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
   recall->resolve_dependency = ags_record_midi_audio_run_resolve_dependency;
   recall->run_init_pre = ags_record_midi_audio_run_run_init_pre;
   recall->run_pre = ags_record_midi_audio_run_run_pre;
-}
-
-void
-ags_record_midi_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_record_midi_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_record_midi_audio_run_read;
-  plugin->write = ags_record_midi_audio_run_write;
 }
 
 void
@@ -517,106 +503,6 @@ ags_record_midi_audio_run_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_record_midi_audio_run_parent_class)->finalize(gobject);
 }
 
-
-void
-ags_record_midi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_record_midi_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", G_OBJECT(plugin),
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_record_midi_audio_run_read_resolve_dependency), G_OBJECT(plugin));
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_record_midi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-  gchar *id;
-
-  /* write parent */
-  node = ags_record_midi_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_record_midi_audio_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
-}
-
 void
 ags_record_midi_audio_run_resolve_dependency(AgsRecall *recall)
 {
@@ -723,11 +609,7 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-   
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(record_midi_audio_run,
@@ -829,11 +711,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(record_midi_audio_run,
@@ -1309,46 +1187,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   g_list_free_full(start_list,
 		   g_object_unref);
-}
-
-void
-ags_record_midi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						   GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_record_midi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						  GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", id_ref->ref,
-		 NULL);
-  }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
 }
 
 /**

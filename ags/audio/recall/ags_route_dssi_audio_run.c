@@ -61,11 +61,6 @@ void ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio
 						   gdouble delay, guint attack,
 						   AgsRouteDssiAudioRun *route_dssi_audio_run);
 
-void ags_route_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						       GObject *recall);
-void ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						      GObject *recall);
-
 void ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 					AgsNote *note);
 
@@ -1259,46 +1254,6 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
   g_object_unref(delay_audio);
 
   g_object_unref(output_soundcard);
-}
-
-void
-ags_route_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						  GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						 GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-  
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", id_ref->ref,
-		 NULL);
-  }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
 }
 
 /**

@@ -196,7 +196,7 @@ ags_mute_channel_set_property(GObject *gobject,
 {
   AgsMuteChannel *mute_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   mute_channel = AGS_MUTE_CHANNEL(gobject);
 
@@ -210,10 +210,10 @@ ags_mute_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == mute_channel->muted){      
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -228,7 +228,7 @@ ags_mute_channel_set_property(GObject *gobject,
 
       mute_channel->muted = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -245,7 +245,7 @@ ags_mute_channel_get_property(GObject *gobject,
 {
   AgsMuteChannel *mute_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   mute_channel = AGS_MUTE_CHANNEL(gobject);
 
@@ -255,11 +255,11 @@ ags_mute_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_MUTED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, mute_channel->muted);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -331,9 +331,9 @@ ags_mute_channel_get_muted_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -361,7 +361,7 @@ ags_mute_channel_get_muted_plugin_port()
 		      1.0);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(plugin_port);
 }

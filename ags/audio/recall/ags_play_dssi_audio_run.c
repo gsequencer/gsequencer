@@ -50,7 +50,6 @@
 
 void ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run);
 void ags_play_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_dssi_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run);
 void ags_play_dssi_audio_run_set_property(GObject *gobject,
 					  guint prop_id,
@@ -83,11 +82,6 @@ void ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_
 						  gdouble delay, guint attack,
 						  AgsPlayDssiAudioRun *play_dssi_audio_run);
 
-void ags_play_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						      GObject *recall);
-void ags_play_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						     GObject *recall);
-
 /**
  * SECTION:ags_play_dssi_audio_run
  * @short_description: play dssi
@@ -108,7 +102,6 @@ enum{
 
 static gpointer ags_play_dssi_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_play_dssi_audio_run_parent_connectable_interface;
-static AgsPluginInterface *ags_play_dssi_audio_run_parent_plugin_interface;
 
 GType
 ags_play_dssi_audio_run_get_type()
@@ -136,12 +129,6 @@ ags_play_dssi_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_dssi_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_dssi_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							  "AgsPlayDssiAudioRun",
 							  &ags_play_dssi_audio_run_info,
@@ -150,10 +137,6 @@ ags_play_dssi_audio_run_get_type()
     g_type_add_interface_static(ags_type_play_dssi_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_dssi_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave (&g_define_type_id__volatile, ags_type_play_dssi_audio_run);
   }
@@ -263,15 +246,6 @@ ags_play_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *conn
 
   connectable->connect_connection = ags_play_dssi_audio_run_connect_connection;
   connectable->disconnect_connection = ags_play_dssi_audio_run_disconnect_connection;
-}
-
-void
-ags_play_dssi_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_dssi_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_play_dssi_audio_run_read;
-  plugin->write = ags_play_dssi_audio_run_write;
 }
 
 void
@@ -798,109 +772,6 @@ ags_play_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObje
 }
 
 void
-ags_play_dssi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-
-  xmlNode *iter;
-
-  /* read parent */
-  ags_play_dssi_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", G_OBJECT(plugin),
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_play_dssi_audio_run_read_resolve_dependency), G_OBJECT(plugin));
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_play_dssi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  
-  GList *list;
-
-  gchar *id;
-
-  /* write parent */
-  node = ags_play_dssi_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependency */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_play_dssi_audio_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
-}
-
-void
 ags_play_dssi_audio_run_resolve_dependency(AgsRecall *recall)
 {
   AgsRecall *template;
@@ -1014,11 +885,7 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   GRecMutex *play_dssi_audio_mutex;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_play_dssi_audio_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -1194,11 +1061,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   GRecMutex *port_mutex;
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_play_dssi_audio_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -1859,46 +1722,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   g_object_unref(delay_audio);
 }  
-
-void
-ags_play_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						 GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_play_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", id_ref->ref,
-		 NULL);
-  }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
-}
 
 /**
  * ags_play_dssi_audio_run_load_ports:

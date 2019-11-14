@@ -52,7 +52,6 @@ enum{
 };
 
 static gpointer ags_play_wave_audio_parent_class = NULL;
-static AgsPluginInterface *ags_play_wave_parent_plugin_interface;
 
 static const gchar *ags_play_wave_audio_plugin_name = "ags-play-wave";
 static const gchar *ags_play_wave_audio_specifier[] = {
@@ -86,20 +85,10 @@ ags_play_wave_audio_get_type()
       (GInstanceInitFunc) ags_play_wave_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_wave_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_wave_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						      "AgsPlayWaveAudio",
 						      &ags_play_wave_audio_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_play_wave_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_wave_audio);
   }

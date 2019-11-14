@@ -217,16 +217,6 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
 }
 
 void
-ags_play_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_lv2_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_play_lv2_audio_read;
-  plugin->write = ags_play_lv2_audio_write;
-  plugin->set_ports = ags_play_lv2_audio_set_ports;
-}
-
-void
 ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio)
 {
   GList *port;

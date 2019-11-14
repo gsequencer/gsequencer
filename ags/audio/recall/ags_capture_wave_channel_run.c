@@ -392,11 +392,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_capture_wave_channel_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);

@@ -140,11 +140,7 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
   buffer_mutex = &(peak_channel->buffer_mutex);
   
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_pre(recall);
