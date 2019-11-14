@@ -71,7 +71,7 @@ ags_solver_matrix_get_type(void)
       (GInstanceInitFunc) ags_solver_matrix_init,
     };
 
-    ags_type_solver_matrix = g_type_register_static(AGS_TYPE_CONVERSION,
+    ags_type_solver_matrix = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsSolverMatrix",
 						    &ags_solver_matrix_info,
 						    0);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,25 +48,22 @@ typedef struct _AgsWorkerThreadClass AgsWorkerThreadClass;
  * enable/disable as sync_flags.
  */
 typedef enum{
-  AGS_WORKER_THREAD_RUNNING    = 1,
-  AGS_WORKER_THREAD_RUN_WAIT   = 1 <<  1,
-  AGS_WORKER_THREAD_RUN_DONE   = 1 <<  2,
-  AGS_WORKER_THREAD_RUN_SYNC   = 1 <<  3,
+  AGS_WORKER_THREAD_STATUS_RUNNING    = 1,
+  AGS_WORKER_THREAD_STATUS_RUN_WAIT   = 1 <<  1,
+  AGS_WORKER_THREAD_STATUS_RUN_DONE   = 1 <<  2,
+  AGS_WORKER_THREAD_STATUS_RUN_SYNC   = 1 <<  3,
 }AgsWorkerThreadFlags;
 
 struct _AgsWorkerThread
 {
   AgsThread thread;
 
-  volatile guint flags;
+  volatile guint status_flags;
 
-  pthread_mutex_t *run_mutex;
-  pthread_mutexattr_t *run_mutexattr;
-  
-  pthread_cond_t *run_cond;
+  GMutex run_mutex;
+  GCond run_cond;
 
-  pthread_t *worker_thread;
-  pthread_attr_t *worker_thread_attr;
+  GThread *worker_thread;
 };
 
 struct _AgsWorkerThreadClass
@@ -77,6 +74,10 @@ struct _AgsWorkerThreadClass
 };
 
 GType ags_worker_thread_get_type();
+
+gboolean ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
+void ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
+void ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
 
 void* ags_woker_thread_do_poll_loop(void *ptr);
 

@@ -85,20 +85,10 @@ ags_log_class_init(AgsLogClass *log)
 void
 ags_log_init(AgsLog *log)
 {
-  pthread_mutexattr_t *attr;
-
   log->flags = 0;
 
   /* create mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  log->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(log->mutex,
-		     attr);
+  g_rec_mutex_init(&(log->obj_mutex));
   
   log->messages = NULL;
 }
@@ -134,15 +124,15 @@ ags_log_finalize(GObject *gobject)
 AgsLog*
 ags_log_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(ags_log == NULL){
     ags_log = ags_log_new();
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_log);
 }
@@ -160,13 +150,13 @@ void
 ags_log_add_message(AgsLog *log,
 		    gchar *str)
 {
-  pthread_mutex_lock(log->mutex);
+  g_rec_mutex_lock(&(log->obj_mutex));
   
   g_atomic_pointer_set(&(log->messages),
 		       g_list_prepend(g_atomic_pointer_get(&(log->messages)),
 				      g_strdup(str)));
 
-  pthread_mutex_unlock(log->mutex);
+  g_rec_mutex_unlock(&(log->obj_mutex));
 }
 
 /**

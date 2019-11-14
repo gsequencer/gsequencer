@@ -237,16 +237,16 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
 AgsAuthenticationManager*
 ags_authentication_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&(mutex));
+  g_mutex_lock(&(mutex));
 
   if(ags_authentication_manager == NULL){
     ags_authentication_manager = ags_authentication_manager_new();
 
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }else{
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }
 
   return(ags_authentication_manager);

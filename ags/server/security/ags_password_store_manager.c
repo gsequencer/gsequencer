@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -161,16 +161,16 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 AgsPasswordStoreManager*
 ags_password_store_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GRecMutex mutex;
 
-  pthread_mutex_lock(&(mutex));
+  g_mutex_lock(&(mutex));
 
   if(ags_password_store_manager == NULL){
     ags_password_store_manager = ags_password_store_manager_new();
 
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }else{
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }
 
   return(ags_password_store_manager);

@@ -160,16 +160,16 @@ ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_ma
 AgsCertificateManager*
 ags_certificate_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GRecMutex mutex;
 
-  pthread_mutex_lock(&(mutex));
+  g_mutex_lock(&(mutex));
 
   if(ags_certificate_manager == NULL){
     ags_certificate_manager = ags_certificate_manager_new();
 
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }else{
-    pthread_mutex_unlock(&(mutex));
+    g_mutex_unlock(&(mutex));
   }
 
   return(ags_certificate_manager);

@@ -42,7 +42,6 @@
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
-typedef struct _AgsSolverVector AgsSolverVector;
 
 /**
  * AgsFunctionFlags:

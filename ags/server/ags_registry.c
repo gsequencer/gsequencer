@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -156,19 +156,7 @@ ags_registry_init(AgsRegistry *registry)
   
   registry->flags = 0;
 
-  registry->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(registry->mutexattr);
-  pthread_mutexattr_settype(registry->mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(registry->mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-  
-  registry->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(registry->mutex,
-		     registry->mutexattr);
+  g_rec_mutex_init(&(registry->obj_mutex));
 
 #ifdef AGS_WITH_XMLRPC_C
   registry->registry = xmlrpc_registry_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)));
@@ -304,13 +292,6 @@ ags_registry_finalize(GObject *gobject)
 
   g_list_free_full(registry->entry,
 		   (GDestroyNotify) ags_registry_entry_free);
-  
-  /* mutex */
-  pthread_mutex_destroy(registry->mutex);
-  free(registry->mutex);
-
-  pthread_mutexattr_destroy(registry->mutexattr);
-  free(registry->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_registry_parent_class)->finalize(gobject);
@@ -380,12 +361,21 @@ void
 ags_registry_add_entry(AgsRegistry *registry,
 		       AgsRegistryEntry *registry_entry)
 {
-  pthread_mutex_lock(registry->mutex);
+  GRecMutex *registry_mutex;
+
+  if(!AGS_IS_REGISTRY(registry) ||
+     registry_entry == NULL){
+    return;
+  }
+  
+  registry_mutex = AGS_REGISTRY_GET_OBJ_MUTEX(registry);
+  
+  g_rec_mutex_lock(registry_mutex);
 
   registry->entry = g_list_prepend(registry->entry,
 				   registry_entry);
 
-  pthread_mutex_unlock(registry->mutex);
+  g_rec_mutex_unlock(registry_mutex);
 }
 
 /**
@@ -404,7 +394,15 @@ ags_registry_find_entry(AgsRegistry *registry,
   GList *current;
   AgsRegistryEntry *entry;
 
-  pthread_mutex_lock(registry->mutex);
+  GRecMutex *registry_mutex;
+
+  if(!AGS_IS_REGISTRY(registry)){
+    return(NULL);
+  }
+  
+  registry_mutex = AGS_REGISTRY_GET_OBJ_MUTEX(registry);
+
+  g_rec_mutex_lock(registry_mutex);
 
   current = registry->entry;
   
@@ -413,7 +411,7 @@ ags_registry_find_entry(AgsRegistry *registry,
 
     if(!ags_uuid_compare(entry->id,
 			 id)){
-      pthread_mutex_unlock(registry->mutex);
+      g_rec_mutex_unlock(registry_mutex);
       
       return(entry);
     }
@@ -421,7 +419,7 @@ ags_registry_find_entry(AgsRegistry *registry,
     current = current->next;
   }
 
-  pthread_mutex_unlock(registry->mutex);
+  g_rec_mutex_unlock(registry_mutex);
 
   return(NULL);
 }
@@ -435,17 +433,27 @@ ags_registry_entry_bulk(xmlrpc_env *env,
   AgsServer *server;
   AgsRegistry *registry;
   AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+  
   GList *current;
+
   xmlrpc_value *bulk;
   xmlrpc_value *item;
 
+  GRecMutex *registry_mutex;
+
   server = ags_server_lookup(server_info);
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  registry_mutex = AGS_REGISTRY_GET_OBJ_MUTEX(registry);
 
   bulk = xmlrpc_array_new(env);
 
-  pthread_mutex_lock(&(registry->mutex));
+  g_rec_mutex_lock(registry_mutex);
 
   current = registry->entry;
 
@@ -458,7 +466,7 @@ ags_registry_entry_bulk(xmlrpc_env *env,
     current = current->next;
   }
 
-  pthread_mutex_unlock(&(registry->mutex));
+  g_rec_mutex_unlock(registry_mutex);
 
   return(bulk);
 }

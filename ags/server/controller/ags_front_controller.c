@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 #include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_security_context.h>
 
-#include <ags/server/controller/ags_local_factory_controller.h>
-
 #include <string.h>
 
 #ifdef AGS_WITH_XMLRPC_C
@@ -65,14 +63,6 @@ gpointer ags_front_controller_real_authenticate(AgsFrontController *front_contro
 						gchar *login,
 						gchar *password,
 						gchar *certs);
-
-gpointer ags_front_controller_delegate_local_factory_controller(AgsFrontController *front_controller,
-								AgsLocalFactoryController *local_factory_controller,
-								GObject *security_context,
-								gchar *context_path,
-								gchar *login,
-								gchar *security_token,
-								guint n_params, gchar **parameter_name, GValue *value);
 
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
 					      GObject *security_context,
@@ -250,7 +240,7 @@ ags_front_controller_add_to_registry(AgsConnectable *connectable)
   front_controller = AGS_FRONT_CONTROLLER(connectable);
   server = AGS_SERVER(AGS_CONTROLLER(front_controller)->server);
 
-  application_context = server->application_context;
+  application_context = ags_application_context_get_instance();
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
   
@@ -616,50 +606,6 @@ ags_front_controller_authenticate(AgsFrontController *front_controller,
   return(retval);
 }
 
-gpointer
-ags_front_controller_delegate_local_factory_controller(AgsFrontController *front_controller,
-						       AgsLocalFactoryController *local_factory_controller,
-						       GObject *security_context,
-						       gchar *context_path,
-						       gchar *login,
-						       gchar *security_token,
-						       guint n_params, gchar **parameter_name, GValue *value)
-{
-  gpointer response;
-
-  gchar *resource;
-
-  response = NULL;
-
-  resource = strstr(context_path,
-		    AGS_CONTROLLER(local_factory_controller)->context_path);
-  
-  if(n_params < 1 ||
-     resource == NULL){
-    return(NULL);
-  }
-
-  resource += strlen(AGS_CONTROLLER(local_factory_controller)->context_path);
-  
-  if(ags_controller_query_security_context(local_factory_controller,
-					   security_context, login)){
-    if(!g_ascii_strncasecmp(resource,
-			    AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE,
-			    strlen(AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE))){
-      if(g_strv_contains(AGS_SECURITY_CONTEXT(security_context)->permitted_context,
-			 resource)){
-#if 0
-	response = ags_local_factory_controller_create_instance(local_factory_controller,
-								g_value_get_ulong(&(params[0].value)),
-								((n_params > 1) ? &(params[1]): NULL),
-								n_params - 1);
-#endif
-      }
-    }
-  }
-
-  return(response);
-}
 
 gpointer
 ags_front_controller_real_do_request(AgsFrontController *front_controller,
@@ -672,8 +618,6 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   AgsServer *server;
   
   AgsAuthenticationManager *authentication_manager;
-
-  AgsLocalFactoryController *local_factory_controller;
 
   GList *list;
 
@@ -689,33 +633,6 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   //TODO:JK: use certs
 
   server = AGS_CONTROLLER(front_controller)->server;
-
-  local_factory_controller = NULL;
-  list = ags_list_util_find_type(server->controller,
-				 AGS_TYPE_LOCAL_FACTORY_CONTROLLER);
-
-  if(list != NULL){
-    local_factory_controller = AGS_LOCAL_FACTORY_CONTROLLER(list->data);    
-  }
-  
-  response = NULL;
-  
-  if(local_factory_controller != NULL &&
-     AGS_CONTROLLER(local_factory_controller)->context_path != NULL &&
-     !g_ascii_strncasecmp(context_path,
-			  AGS_CONTROLLER(local_factory_controller)->context_path,
-			  strlen(AGS_CONTROLLER(local_factory_controller)->context_path))){
-#if 0
-    response = ags_front_controller_delegate_local_factory_controller(front_controller,
-								      local_factory_controller,
-								      security_context,
-								      context_path,
-								      login,
-								      security_token,
-								      params,
-								      n_params);
-#endif
-  }
 
   //TODO:JK: implement me
 

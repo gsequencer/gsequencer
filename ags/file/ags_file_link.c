@@ -24,7 +24,6 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/i18n.h>
@@ -69,8 +68,6 @@ enum{
 };
 
 static gpointer ags_file_link_parent_class = NULL;
-
-static pthread_mutex_t ags_file_link_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_file_link_get_type()
@@ -183,20 +180,8 @@ ags_file_link_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_file_link_init(AgsFileLink *file_link)
 {
-  /* file_link mutex */
-  file_link->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(file_link->obj_mutexattr);
-  pthread_mutexattr_settype(file_link->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(file_link->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  file_link->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(file_link->obj_mutex,
-		     file_link->obj_mutexattr);  
+  /* file link mutex */
+  g_rec_mutex_init(&(file_link->obj_mutex));  
 
   
   file_link->version = NULL;
@@ -219,7 +204,7 @@ ags_file_link_set_property(GObject *gobject,
 {
   AgsFileLink *file_link;
 
-  pthread_mutex_t *file_link_mutex;
+  GRecMutex *file_link_mutex;
 
   file_link = AGS_FILE_LINK(gobject);
 
@@ -233,10 +218,10 @@ ags_file_link_set_property(GObject *gobject,
 
       filename = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(file_link_mutex);
+      g_rec_mutex_lock(file_link_mutex);
 
       if(filename == file_link->filename){
-	pthread_mutex_unlock(file_link_mutex);
+	g_rec_mutex_unlock(file_link_mutex);
 
 	return;
       }
@@ -247,7 +232,7 @@ ags_file_link_set_property(GObject *gobject,
 	
       file_link->filename = g_strdup(filename);
 
-      pthread_mutex_unlock(file_link_mutex);
+      g_rec_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_DATA:
@@ -256,17 +241,17 @@ ags_file_link_set_property(GObject *gobject,
 
       data = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(file_link_mutex);
+      g_rec_mutex_lock(file_link_mutex);
 
       if(data == file_link->data){
-	pthread_mutex_unlock(file_link_mutex);
+	g_rec_mutex_unlock(file_link_mutex);
 
 	return;
       }
 
       file_link->data = g_strdup(data);
 
-      pthread_mutex_unlock(file_link_mutex);
+      g_rec_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -283,7 +268,7 @@ ags_file_link_get_property(GObject *gobject,
 {
   AgsFileLink *file_link;
 
-  pthread_mutex_t *file_link_mutex;
+  GRecMutex *file_link_mutex;
 
   file_link = AGS_FILE_LINK(gobject);
   
@@ -293,20 +278,20 @@ ags_file_link_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      pthread_mutex_lock(file_link_mutex);
+      g_rec_mutex_lock(file_link_mutex);
 
       g_value_set_string(value, file_link->filename);
 
-      pthread_mutex_unlock(file_link_mutex);
+      g_rec_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_DATA:
     {
-      pthread_mutex_lock(file_link_mutex);
+      g_rec_mutex_lock(file_link_mutex);
 
       g_value_set_string(value, file_link->data);
 
-      pthread_mutex_unlock(file_link_mutex);
+      g_rec_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -322,12 +307,6 @@ ags_file_link_finalize(GObject *gobject)
 
   file_link = AGS_FILE_LINK(gobject);
 
-  pthread_mutex_destroy(file_link->obj_mutex);
-  free(file_link->obj_mutex);
-
-  pthread_mutexattr_destroy(file_link->obj_mutexattr);
-  free(file_link->obj_mutexattr);
-
   /* filename */
   if(file_link->filename != NULL){
     g_free(file_link->filename);
@@ -340,21 +319,6 @@ ags_file_link_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_file_link_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_file_link_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_file_link_get_class_mutex()
-{
-  return(&ags_file_link_class_mutex);
 }
 
 gchar*
@@ -414,9 +378,8 @@ ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
 				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, "id")),
 				   "reference", file_link,
 				   NULL));
 }
@@ -435,12 +398,11 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   node = xmlNewNode(NULL,
 		    AGS_FILE_LINK(plugin)->xml_type);
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
+	     "id",
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
 				   "node", node,
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
 				   "reference", file_link,

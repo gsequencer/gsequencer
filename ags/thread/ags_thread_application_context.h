@@ -59,7 +59,9 @@ struct _AgsThreadApplicationContext
 
   guint flags;
 
-  AgsThread *autosave_thread;
+  gchar *version;
+  gchar *build_id;
+
   AgsThreadPool *thread_pool;
 
   GList *worker;

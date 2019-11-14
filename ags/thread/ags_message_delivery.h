@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,8 @@
 #define AGS_IS_MESSAGE_DELIVERY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MESSAGE_DELIVERY))
 #define AGS_MESSAGE_DELIVERY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MESSAGE_DELIVERY, AgsMessageDeliveryClass))
 
+#define AGS_MESSAGE_DELIVERY_GET_OBJ_MUTEX(obj) (&(((AgsMessageDelivery *) obj)->obj_mutex))
+
 typedef struct _AgsMessageDelivery AgsMessageDelivery;
 typedef struct _AgsMessageDeliveryClass AgsMessageDeliveryClass;
 
@@ -41,8 +43,7 @@ struct _AgsMessageDelivery
 {
   GObject gobject;
 
-  pthread_mutexattr_t *obj_mutexattr;
-  pthread_mutex_t *obj_mutex;
+  GRecMutex obj_mutex;
 
   GList *message_queue;
 };

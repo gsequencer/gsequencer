@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,14 +114,7 @@ ags_destroy_worker_init(AgsDestroyWorker *destroy_worker)
   destroy_worker->destroy_interval->tv_nsec = 0;
   
   /* lock destroy list */
-  destroy_worker->destroy_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(destroy_worker->destroy_mutexattr);
-  pthread_mutexattr_settype(destroy_worker->destroy_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  destroy_worker->destroy_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(destroy_worker->destroy_mutex, destroy_worker->destroy_mutexattr);
+  g_rec_mutex_init(&(destroy_worker->destroy_mutex));
 
   /* destroy list */
   destroy_worker->destroy_list = NULL;
@@ -138,10 +131,6 @@ ags_destroy_worker_finalize(GObject *gobject)
     free(destroy_worker->destroy_interval);
   }
   
-  /* destroy mutex */
-  pthread_mutex_destroy(destroy_worker->destroy_mutex);
-  free(destroy_worker->destroy_mutex);
-
   /* call parent */
   G_OBJECT_CLASS(ags_destroy_worker_parent_class)->finalize(gobject);
 }
@@ -153,11 +142,11 @@ ags_destroy_worker_start(AgsThread *thread)
 
   worker_thread = AGS_WORKER_THREAD(thread);
 
-  g_atomic_int_or(&(worker_thread->flags),
-		  AGS_WORKER_THREAD_RUNNING);
+  ags_worker_thread_set_status_flags(worker_thread, AGS_WORKER_THREAD_STATUS_RUNNING);
 
-  pthread_create(worker_thread->worker_thread, worker_thread->worker_thread_attr,
-		 ags_woker_thread_do_poll_loop, worker_thread);
+  worker_thread->worker_thread = g_thread_new("Advanced Gtk+ Sequencer - destroy worker",
+					      ags_woker_thread_do_poll_loop,
+					      worker_thread);
 }
 
 void
@@ -167,8 +156,7 @@ ags_destroy_worker_stop(AgsThread *thread)
 
   worker_thread = AGS_WORKER_THREAD(thread);
 
-  g_atomic_int_and(&(worker_thread->flags),
-		   (~(AGS_WORKER_THREAD_RUNNING)));
+  ags_worker_thread_set_flags(worker_thread, AGS_WORKER_THREAD_STATUS_RUNNING);
 }
 
 void
@@ -180,13 +168,13 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
   
   destroy_worker = AGS_DESTROY_WORKER(worker_thread);
 
-  pthread_mutex_lock(destroy_worker->destroy_mutex);
+  g_rec_mutex_lock(&(destroy_worker->destroy_mutex));
 
   list_start =
     list = destroy_worker->destroy_list;
   destroy_worker->destroy_list = NULL;
   
-  pthread_mutex_unlock(destroy_worker->destroy_mutex);
+  g_rec_mutex_unlock(&(destroy_worker->destroy_mutex));
 
   while(list != NULL){
     AGS_DESTROY_ENTRY(list->data)->destroy_func(AGS_DESTROY_ENTRY(list->data)->ptr);
@@ -249,12 +237,12 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 
   destroy_entry = ags_destroy_entry_alloc(ptr, destroy_func);
   
-  pthread_mutex_lock(destroy_worker->destroy_mutex);
+  g_rec_mutex_lock(&(destroy_worker->destroy_mutex));
 
   destroy_worker->destroy_list = g_list_prepend(destroy_worker->destroy_list,
 						destroy_entry);
   
-  pthread_mutex_unlock(destroy_worker->destroy_mutex);
+  g_rec_mutex_unlock(&(destroy_worker->destroy_mutex));
 }
 
 /**
@@ -269,15 +257,15 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 AgsDestroyWorker*
 ags_destroy_worker_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(ags_destroy_worker == NULL){
     ags_destroy_worker = ags_destroy_worker_new();
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(ags_destroy_worker);
 }

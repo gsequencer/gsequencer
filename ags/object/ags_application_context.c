@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_log.h>
 
+#include <ags/file/ags_file.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <gio/gio.h>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,6 @@ void ags_message_delivery_finalize(GObject *gobject);
 AgsMessageDelivery *ags_message_delivery = NULL;
 
 static gpointer ags_message_delivery_parent_class = NULL;
-
-static pthread_mutex_t ags_message_delivery_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_message_delivery_get_type()
@@ -89,14 +87,7 @@ ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery)
 void
 ags_message_delivery_init(AgsMessageDelivery *message_delivery)
 {
-  message_delivery->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(message_delivery->obj_mutexattr);
-  pthread_mutexattr_settype(message_delivery->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  message_delivery->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(message_delivery->obj_mutex,
-		     message_delivery->obj_mutexattr);
+  g_rec_mutex_init(&(message_delivery->obj_mutex));
 
   message_delivery->message_queue = NULL;
 }
@@ -127,13 +118,6 @@ ags_message_delivery_finalize(GObject *gobject)
 
   message_delivery = AGS_MESSAGE_DELIVERY(gobject);
 
-  /* mutex */
-  pthread_mutexattr_destroy(message_delivery->obj_mutexattr);
-  free(message_delivery->obj_mutexattr);
-
-  pthread_mutex_destroy(message_delivery->obj_mutex);
-  free(message_delivery->obj_mutex);
-
   /* message queue */
   if(message_delivery->message_queue != NULL){
     g_list_free_full(message_delivery->message_queue,
@@ -143,21 +127,7 @@ ags_message_delivery_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_message_delivery_parent_class)->finalize(gobject);
 }
-
-/**
- * ags_message_delivery_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_message_delivery_get_class_mutex()
-{
-  return(&ags_message_delivery_class_mutex);
-}
+ 
 
 /**
  * ags_message_delivery_add_queue:
@@ -177,7 +147,7 @@ ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
     return;
   }
 
-  pthread_mutex_lock(message_delivery->obj_mutex);
+  g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
   if(g_list_find(message_delivery->message_queue,
 		 message_queue) == NULL){
@@ -186,7 +156,7 @@ ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
 						     message_queue);
   }
   
-  pthread_mutex_unlock(message_delivery->obj_mutex);
+  g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 }
 
 /**
@@ -207,7 +177,7 @@ ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
     return;
   }
 
-  pthread_mutex_lock(message_delivery->obj_mutex);
+  g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
   if(g_list_find(message_delivery->message_queue,
 		 message_queue) != NULL){
@@ -216,7 +186,7 @@ ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
     g_object_unref(message_queue);
   }
   
-  pthread_mutex_unlock(message_delivery->obj_mutex);
+  g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 }
 
 /**
@@ -243,37 +213,37 @@ ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
     return(NULL);
   }
 
-  pthread_mutex_lock(message_delivery->obj_mutex);
+  g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
   list = message_delivery->message_queue;
   
-  pthread_mutex_unlock(message_delivery->obj_mutex);
+  g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
   while(list != NULL){
-    pthread_mutex_lock(message_delivery->obj_mutex);
+    g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     message_queue = AGS_MESSAGE_QUEUE(list->data);
     
-    pthread_mutex_unlock(message_delivery->obj_mutex);
+    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
     /* compare namespace */
-    pthread_mutex_lock(message_queue->obj_mutex);
+    g_rec_mutex_lock(&(message_queue->obj_mutex));
     
     if(!g_strcmp0(namespace,
 		  message_queue->namespace)){
-      pthread_mutex_unlock(message_queue->obj_mutex);
+      g_rec_mutex_unlock(&(message_queue->obj_mutex));
 
       return((GObject *) message_queue);
     }
 
-    pthread_mutex_unlock(message_queue->obj_mutex);
+    g_rec_mutex_unlock(&(message_queue->obj_mutex));
     
     /* iterate */
-    pthread_mutex_lock(message_delivery->obj_mutex);
+    g_rec_mutex_lock(&(message_delivery->obj_mutex));
     
     list = list->next;
 
-    pthread_mutex_unlock(message_delivery->obj_mutex);
+    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
   }
   
   return(NULL);
@@ -373,18 +343,18 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
   match = NULL;
   
   if(namespace == NULL){
-    pthread_mutex_lock(message_delivery->obj_mutex);
+    g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     list = message_delivery->message_queue;
 
-    pthread_mutex_unlock(message_delivery->obj_mutex);
+    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
     while(list != NULL){
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
       message_queue = list->data;
       
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
       current_match = ags_message_queue_find_sender(message_queue,
 						    sender);
@@ -399,11 +369,11 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
       }
       
       /* iterate */
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
       
       list = list->next;
 
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
     }
   }else{
     message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
@@ -446,18 +416,18 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
   match = NULL;
   
   if(namespace == NULL){
-    pthread_mutex_lock(message_delivery->obj_mutex);
+    g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     list = message_delivery->message_queue;
 
-    pthread_mutex_unlock(message_delivery->obj_mutex);
+    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
     while(list != NULL){
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
       message_queue = list->data;
       
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
       current_match = ags_message_queue_find_recipient(message_queue,
 						       recipient);
@@ -472,11 +442,11 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
       }
       
       /* iterate */
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
       
       list = list->next;
 
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
     }
   }else{
     message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
@@ -519,18 +489,18 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
   match = NULL;
   
   if(namespace == NULL){
-    pthread_mutex_lock(message_delivery->obj_mutex);
+    g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     list = message_delivery->message_queue;
 
-    pthread_mutex_unlock(message_delivery->obj_mutex);
+    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
     while(list != NULL){
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
       message_queue = list->data;
       
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
       current_match = ags_message_queue_query_message(message_queue,
 						      xpath);
@@ -545,11 +515,11 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
       }
       
       /* iterate */
-      pthread_mutex_lock(message_delivery->obj_mutex);
+      g_rec_mutex_lock(&(message_delivery->obj_mutex));
       
       list = list->next;
 
-      pthread_mutex_unlock(message_delivery->obj_mutex);
+      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
     }
   }else{
     message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
@@ -574,15 +544,15 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
 AgsMessageDelivery*
 ags_message_delivery_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_message_delivery == NULL){
     ags_message_delivery = ags_message_delivery_new();
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_message_delivery);
 }

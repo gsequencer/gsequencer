@@ -41,17 +41,16 @@ struct _AgsGenericMainLoop
 {
   AgsThread thread;
 
-  volatile guint tic;
-  volatile guint last_sync;
+  guint tic;
+  guint last_sync;
 
-  guint sync_counter[3];
+  guint time_cycle;
+  guint time_spent;
 
-  GObject *application_context;
+  guint sync_tic;
+  guint sync_counter[6];
   
-  GObject *async_queue;
-
-  pthread_mutexattr_t tree_lock_mutexattr;
-  pthread_mutex_t *tree_lock;
+  GRecMutex tree_lock;
 };
 
 struct _AgsGenericMainLoopClass
@@ -61,6 +60,6 @@ struct _AgsGenericMainLoopClass
 
 GType ags_generic_main_loop_get_type();
 
-AgsGenericMainLoop* ags_generic_main_loop_new(GObject *application_context);
+AgsGenericMainLoop* ags_generic_main_loop_new();
 
 #endif /*__AGS_GENERIC_MAIN_LOOP_H__*/

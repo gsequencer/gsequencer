@@ -71,8 +71,7 @@ enum{
 
 static gpointer ags_turtle_parent_class = NULL;
 
-static pthread_mutex_t ags_turtle_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_turtle_get_type(void)
@@ -160,19 +159,7 @@ ags_turtle_init(AgsTurtle *turtle)
   turtle->flags = AGS_TURTLE_TOLOWER;
 
   /* add turtle mutex */
-  turtle->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(turtle->obj_mutexattr);
-  pthread_mutexattr_settype(turtle->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(turtle->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  turtle->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(turtle->obj_mutex,
-		     turtle->obj_mutexattr);  
+  g_rec_mutex_init(&(turtle->obj_mutex));
 
   /* fields */
   turtle->filename = NULL;
@@ -192,7 +179,7 @@ ags_turtle_set_property(GObject *gobject,
 {
   AgsTurtle *turtle;
 
-  pthread_mutex_t *turtle_mutex;
+  GRecMutex *turtle_mutex;
 
   turtle = AGS_TURTLE(gobject);
 
@@ -206,10 +193,10 @@ ags_turtle_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(turtle_mutex);
+      g_rec_mutex_lock(turtle_mutex);
 
       if(turtle->filename == filename){
-	pthread_mutex_unlock(turtle_mutex);
+	g_rec_mutex_unlock(turtle_mutex);
 
 	return;
       }
@@ -220,7 +207,7 @@ ags_turtle_set_property(GObject *gobject,
 
       turtle->filename = g_strdup(filename);
 
-      pthread_mutex_unlock(turtle_mutex);
+      g_rec_mutex_unlock(turtle_mutex);
     }
     break;
   case PROP_XML_DOC:
@@ -229,11 +216,11 @@ ags_turtle_set_property(GObject *gobject,
 
       doc = (xmlDoc *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(turtle_mutex);
+      g_rec_mutex_lock(turtle_mutex);
       
       turtle->doc = doc;
 
-      pthread_mutex_unlock(turtle_mutex);
+      g_rec_mutex_unlock(turtle_mutex);
     }
     break;
   default:
@@ -250,7 +237,7 @@ ags_turtle_get_property(GObject *gobject,
 {
   AgsTurtle *turtle;
 
-  pthread_mutex_t *turtle_mutex;
+  GRecMutex *turtle_mutex;
 
   turtle = AGS_TURTLE(gobject);
 
@@ -260,20 +247,20 @@ ags_turtle_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      pthread_mutex_lock(turtle_mutex);
+      g_rec_mutex_lock(turtle_mutex);
 
       g_value_set_string(value, turtle->filename);
 
-      pthread_mutex_unlock(turtle_mutex);
+      g_rec_mutex_unlock(turtle_mutex);
     }
     break;
   case PROP_XML_DOC:
     {
-      pthread_mutex_lock(turtle_mutex);
+      g_rec_mutex_lock(turtle_mutex);
 
       g_value_set_pointer(value, turtle->doc);
 
-      pthread_mutex_unlock(turtle_mutex);
+      g_rec_mutex_unlock(turtle_mutex);
     }
     break;
   default:
@@ -290,13 +277,6 @@ ags_turtle_finalize(GObject *gobject)
   
   turtle = AGS_TURTLE(gobject);
 
-  /* turtle mutex */
-  pthread_mutexattr_destroy(turtle->obj_mutexattr);
-  free(turtle->obj_mutexattr);
-
-  pthread_mutex_destroy(turtle->obj_mutex);
-  free(turtle->obj_mutex);
-
   if(turtle->filename != NULL){
     g_free(turtle->filename);
   }
@@ -309,21 +289,6 @@ ags_turtle_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_turtle_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_turtle_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.48
- */
-pthread_mutex_t*
-ags_turtle_get_class_mutex()
-{
-  return(&ags_turtle_class_mutex);
 }
 
 /**
@@ -356,7 +321,7 @@ ags_turtle_read_iriref(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -364,7 +329,7 @@ ags_turtle_read_iriref(gchar *offset,
     ags_regcomp(&iriref_regex, iriref_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&iriref_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -601,7 +566,7 @@ ags_turtle_read_langtag(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -609,7 +574,7 @@ ags_turtle_read_langtag(gchar *offset,
     ags_regcomp(&langtag_regex, langtag_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&langtag_regex, offset, max_matches, match_arr, 0) == 0){
     if(match_arr[0].rm_eo > match_arr[0].rm_so){
@@ -650,7 +615,7 @@ ags_turtle_read_boolean(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -658,7 +623,7 @@ ags_turtle_read_boolean(gchar *offset,
     ags_regcomp(&boolean_literal_regex, boolean_literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&boolean_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -697,7 +662,7 @@ ags_turtle_read_integer(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -705,7 +670,7 @@ ags_turtle_read_integer(gchar *offset,
     ags_regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&integer_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -744,7 +709,7 @@ ags_turtle_read_decimal(gchar *offset,
     
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -752,7 +717,7 @@ ags_turtle_read_decimal(gchar *offset,
     ags_regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&decimal_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -791,7 +756,7 @@ ags_turtle_read_double(gchar *offset,
     
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -799,7 +764,7 @@ ags_turtle_read_double(gchar *offset,
     ags_regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&double_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -838,7 +803,7 @@ ags_turtle_read_exponent(gchar *offset,
     
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -846,7 +811,7 @@ ags_turtle_read_exponent(gchar *offset,
     ags_regcomp(&exponent_literal_regex, exponent_literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&exponent_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -937,7 +902,7 @@ ags_turtle_read_string_literal_quote(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -945,7 +910,7 @@ ags_turtle_read_string_literal_quote(gchar *offset,
     ags_regcomp(&string_literal_double_quote_regex, string_literal_double_quote_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&string_literal_double_quote_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -988,7 +953,7 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
   
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -996,7 +961,7 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
     ags_regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&string_literal_single_quote_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -1326,7 +1291,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 
   str = NULL;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -1336,7 +1301,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     }
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   if(ags_regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
@@ -1510,7 +1475,7 @@ ags_turtle_read_pn_chars(gchar *offset,
 
   if(str == NULL &&
      offset < end_ptr){
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
     
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -1518,7 +1483,7 @@ ags_turtle_read_pn_chars(gchar *offset,
       ags_regcomp(&chars_regex, chars_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&chars_regex, offset, max_matches, match_arr, 0) == 0){
       str = g_strndup(offset,
@@ -2428,7 +2393,7 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
 
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2436,7 +2401,7 @@ ags_turtle_load(AgsTurtle *turtle,
       ags_regcomp(&prefix_id_regex, prefix_id_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
@@ -2500,7 +2465,7 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
 
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2508,7 +2473,7 @@ ags_turtle_load(AgsTurtle *turtle,
       ags_regcomp(&base_regex, base_pattern, REG_EXTENDED);      
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
@@ -2552,7 +2517,7 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
 
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2560,7 +2525,7 @@ ags_turtle_load(AgsTurtle *turtle,
       ags_regcomp(&sparql_prefix_regex, sparql_prefix_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
@@ -2609,7 +2574,7 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
 
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2617,7 +2582,7 @@ ags_turtle_load(AgsTurtle *turtle,
       ags_regcomp(&sparql_base_regex, sparql_base_pattern, REG_EXTENDED);      
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);

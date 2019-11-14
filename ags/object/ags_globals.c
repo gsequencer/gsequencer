@@ -35,7 +35,7 @@ static GMutex ags_globals_mutex;
 GHashTable*
 ags_globals_get_hash_table()
 {
-  g_mutex_lock(ags_globals_mutex);
+  g_mutex_lock(&ags_globals_mutex);
 
   if(ags_globals == NULL){
     ags_globals = g_hash_table_new_full(g_direct_hash, g_string_equal,
@@ -43,7 +43,7 @@ ags_globals_get_hash_table()
 					NULL);    
   }
   
-  g_mutex_unlock(ags_globals_mutex);
+  g_mutex_unlock(&ags_globals_mutex);
 
   return(ags_globals);
 }
@@ -65,12 +65,12 @@ ags_globals_set(gchar *key,
 
   globals = ags_globals_get_hash_table();  
 
-  g_mutex_lock(ags_globals_mutex);
+  g_mutex_lock(&ags_globals_mutex);
   
   g_hash_table_insert(globals,
 		      key, value);
 
-  g_mutex_unlock(ags_globals_mutex);
+  g_mutex_unlock(&ags_globals_mutex);
 }
 
 /**
@@ -91,12 +91,12 @@ ags_globals_get(gchar *key)
   
   globals = ags_globals_get_hash_table();  
 
-  g_mutex_lock(ags_globals_mutex);
+  g_mutex_lock(&ags_globals_mutex);
 
   value = g_hash_table_lookup(globals,
 			      key);
 
-  g_mutex_unlock(ags_globals_mutex);
+  g_mutex_unlock(&ags_globals_mutex);
 
   return(value);
 }

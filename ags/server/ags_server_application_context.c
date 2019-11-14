@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,21 +19,20 @@
 
 #include <ags/server/ags_server_application_context.h>
 
+#include <ags/lib/ags_log.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_thread_pool.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/server/ags_service_provider.h>
 
@@ -55,29 +54,37 @@ void ags_server_application_context_disconnect(AgsConnectable *connectable);
 void ags_server_application_context_finalize(GObject *gobject);
 
 AgsThread* ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-AgsThread* ags_server_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+void ags_server_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+						  AgsThread *main_loop);
+AgsTaskLauncher* ags_server_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+void ags_server_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+						      AgsTaskLauncher *task_launcher);
 AgsThreadPool* ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+void ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+						    AgsThreadPool *thread_pool);
+GList* ags_server_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_server_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					       GList *worker);
 
 gboolean ags_server_application_context_is_operating(AgsServiceProvider *service_provider);
+
 AgsServerStatus* ags_server_application_context_server_status(AgsServiceProvider *service_provider);
+
 void ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
-						 GObject *registry);
-GObject* ags_server_application_context_get_registry(AgsServiceProvider *service_provider);
+						 AgsRegistry *registry);
+AgsRegistry* ags_server_application_context_get_registry(AgsServiceProvider *service_provider);
+
 void ags_server_application_context_set_server(AgsServiceProvider *service_provider,
 					       GList *server);
 GList* ags_server_application_context_get_server(AgsServiceProvider *service_provider);
-void ags_server_application_context_set_certificate_manager(AgsServiceProvider *service_provider,
-							    AgsCertificateManager *certificate_manager);
-AgsCertificateManager* ags_server_application_context_get_certificate_manager(AgsServiceProvider *service_provider);
-void ags_server_application_context_set_password_store_manager(AgsServiceProvider *service_provider,
-							       AgsPasswordStoreManager *password_store_manager);
-AgsPasswordStoreManager* ags_server_application_context_get_password_store_manager(AgsServiceProvider *service_provider);
-void ags_server_application_context_set_authentication_manager(AgsServiceProvider *service_provider,
-							       AgsAuthenticationManager *authentication_manager);
-AgsAuthenticationManager* ags_server_application_context_get_authentication_manager(AgsServiceProvider *service_provider);
+
+void ags_server_application_context_prepare(AgsApplicationContext *application_context);
+void ags_server_application_context_setup(AgsApplicationContext *application_context);
 
 static gpointer ags_server_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_server_application_context_parent_connectable_interface;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_server_application_context_get_type()
@@ -160,6 +167,10 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
   application_context = (AgsApplicationContextClass *) server_application_context;
   
   application_context->load_config = NULL;
+
+  application_context->prepare = ags_server_application_context_prepare;
+  application_context->setup = ags_server_application_context_setup;
+
   application_context->register_types = NULL;
 }
 
@@ -167,30 +178,30 @@ void
 ags_server_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
 {
   concurrency_provider->get_main_loop = ags_server_application_context_get_main_loop;
-  concurrency_provider->get_task_thread = ags_server_application_context_get_task_thread;
+  concurrency_provider->set_main_loop = ags_server_application_context_set_main_loop;
+
+  concurrency_provider->get_task_launcher = ags_server_application_context_get_task_launcher;
+  concurrency_provider->set_task_launcher = ags_server_application_context_set_task_launcher;
+
   concurrency_provider->get_thread_pool = ags_server_application_context_get_thread_pool;
+  concurrency_provider->set_thread_pool = ags_server_application_context_set_thread_pool;
+
+  concurrency_provider->get_worker = ags_server_application_context_get_worker;
+  concurrency_provider->set_worker = ags_server_application_context_set_worker;
 }
 
 void
 ags_server_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider)
 {
   service_provider->is_operating = ags_server_application_context_is_operating;
+
   service_provider->server_status = ags_server_application_context_server_status;
 
   service_provider->set_registry = ags_server_application_context_set_registry;
   service_provider->get_registry = ags_server_application_context_get_registry;
-
+  
   service_provider->set_server = ags_server_application_context_set_server;
   service_provider->get_server = ags_server_application_context_get_server;
-
-  service_provider->set_certificate_manager = ags_server_application_context_set_certificate_manager;
-  service_provider->get_certificate_manager = ags_server_application_context_get_certificate_manager;
-
-  service_provider->set_password_store_manager = ags_server_application_context_set_password_store_manager;
-  service_provider->get_password_store_manager = ags_server_application_context_get_password_store_manager;
-
-  service_provider->set_authentication_manager = ags_server_application_context_set_authentication_manager;
-  service_provider->get_authentication_manager = ags_server_application_context_get_authentication_manager;
 }
 
 void
@@ -205,61 +216,36 @@ ags_server_application_context_connectable_interface_init(AgsConnectableInterfac
 void
 ags_server_application_context_init(AgsServerApplicationContext *server_application_context)
 {
-  AgsGenericMainLoop *generic_main_loop;
-
   AgsConfig *config;
-
-  server_application_context->flags = 0;
-
-  server_application_context->version = AGS_SERVER_DEFAULT_VERSION;
-  server_application_context->build_id = AGS_SERVER_BUILD_ID;
-
-#ifdef AGS_WITH_XMLRPC_C
-  server_application_context->env = (xmlrpc_env *) malloc(sizeof(xmlrpc_env));
-#else
-  server_application_context->env = NULL;
-#endif
+  AgsLog *log;
   
-  /**/
-  AGS_APPLICATION_CONTEXT(server_application_context)->log = NULL;
-
-  /* set config */
+  if(ags_application_context == NULL){
+    ags_application_context = (AgsApplicationContext *) server_application_context;
+  }
+  
+  /* fundamental instances */
   config = ags_config_get_instance();
+
   AGS_APPLICATION_CONTEXT(server_application_context)->config = config;
-  g_object_set(config,
-	       "application-context\0", server_application_context,
-	       NULL);
+  g_object_ref(config);
 
-  /* registry */
-  server_application_context->registry = ags_registry_new();
+  log = (GObject *) ags_log_get_instance();
 
-  /* server */
-  server_application_context->server = NULL;
-
-  /* manager */
-  server_application_context->certificate_manager = ags_certificate_manager_get_instance();
-  server_application_context->password_store_manager = ags_password_store_manager_get_instance();
-  server_application_context->authentication_manager = ags_authentication_manager_get_instance();
+  AGS_APPLICATION_CONTEXT(server_application_context)->log = log;
+  g_object_ref(log);
   
-  /* AgsGenericMainLoop */
-  generic_main_loop = ags_generic_main_loop_new((GObject *) server_application_context);
-  g_object_set(server_application_context,
-	       "main-loop\0", generic_main_loop,
-	       NULL);
+  /* server application context */  
+  server_application_context->thread_pool = NULL;
 
-  g_object_ref(generic_main_loop);
-  ags_connectable_connect(AGS_CONNECTABLE(generic_main_loop));
+  server_application_context->worker = NULL;
+  
+  server_application_context->is_operating = FALSE;
 
-  /* AgsTaskThread */
-  AGS_APPLICATION_CONTEXT(server_application_context)->task_thread = (GObject *) ags_task_thread_new();
-  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(generic_main_loop),
-				AGS_APPLICATION_CONTEXT(server_application_context)->task_thread);
-  ags_thread_add_child_extended(AGS_THREAD(generic_main_loop),
-				AGS_THREAD(AGS_APPLICATION_CONTEXT(server_application_context)->task_thread),
-				TRUE, TRUE);
+  server_application_context->server_status = NULL;
 
-  /* AgsThreadPool */
-  server_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(server_application_context)->task_thread)->thread_pool;
+  server_application_context->registry = NULL;
+
+  server_application_context->server = NULL;
 }
 
 void
@@ -337,110 +323,499 @@ ags_server_application_context_finalize(GObject *gobject)
 AgsThread*
 ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
-  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+
+  if(main_loop != NULL){
+    g_object_ref(main_loop);
+  }
+  
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(main_loop);
 }
 
-AgsThread*
-ags_server_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+void
+ags_server_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+					    AgsThread *main_loop)
 {
-  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+  AgsApplicationContext *application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(application_context->main_loop == main_loop){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  if(application_context->main_loop != NULL){
+    g_object_unref(application_context->main_loop);
+  }
+  
+  if(main_loop != NULL){
+    g_object_ref(main_loop);
+  }
+  
+  application_context->main_loop = (GObject *) main_loop;
+  
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
+AgsTaskLauncher*
+ags_server_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider)
+{
+  AgsTaskLauncher *task_launcher;
+
+  AgsApplicationContext *application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
+
+  task_launcher = (AgsThread *) application_context->task_launcher;
+
+  if(task_launcher != NULL){
+    g_object_ref(task_launcher);
+  }
+  
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(task_launcher);
+}
+
+void
+ags_server_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+						AgsTaskLauncher *task_launcher)
+{
+  AgsApplicationContext *application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(application_context->task_launcher == task_launcher){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  if(application_context->task_launcher != NULL){
+    g_object_unref(application_context->task_launcher);
+  }
+  
+  if(task_launcher != NULL){
+    g_object_ref(task_launcher);
+  }
+  
+  application_context->task_launcher = (GObject *) task_launcher;
+  
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 AgsThreadPool*
 ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+  AgsThreadPool *thread_pool;
+  
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get thread pool */
+  g_rec_mutex_lock(application_context_mutex);
+
+  thread_pool = server_application_context->thread_pool;
+
+  if(thread_pool != NULL){
+    g_object_ref(thread_pool);
+  }
+  
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(thread_pool);
+}
+
+void
+ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+					      AgsThreadPool *thread_pool)
+{
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_SERVER_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(server_application_context->thread_pool == thread_pool){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  if(server_application_context->thread_pool != NULL){
+    g_object_unref(server_application_context->thread_pool);
+  }
+  
+  if(thread_pool != NULL){
+    g_object_ref(thread_pool);
+  }
+  
+  server_application_context->thread_pool = (GObject *) thread_pool;
+  
+  g_rec_mutex_unlock(application_context_mutex);
+}
+
+GList*
+ags_server_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  AgsServerApplicationContext *server_application_context;
+  
+  GList *worker;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get worker */
+  g_rec_mutex_lock(application_context_mutex);
+
+  worker = g_list_copy_deep(server_application_context->worker,
+			    (GCopyFunc) g_object_ref,
+			    NULL);
+  
+  g_rec_mutex_unlock(application_context_mutex);
+
+  return(worker);
+}
+
+void
+ags_server_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					 GList *worker)
+{
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* set worker */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(server_application_context->worker == worker){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  g_list_free_full(server_application_context->worker,
+		   g_object_unref);
+  
+  server_application_context->worker = worker;
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 gboolean
 ags_server_application_context_is_operating(AgsServiceProvider *service_provider)
 {
-  //TODO:JK: implement me
+  AgsServerApplicationContext *server_application_context;
 
-  return(FALSE);
+  gboolean is_operating;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get gui ready */
+  g_rec_mutex_lock(application_context_mutex);
+
+  is_operating = server_application_context->is_operating;
+   
+  g_rec_mutex_unlock(application_context_mutex);
+
+  return(is_operating);
 }
 
 AgsServerStatus*
 ags_server_application_context_server_status(AgsServiceProvider *service_provider)
 {
-  //TODO:JK: implement me
+  AgsServerStatus *server_status;
+  
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
 
-  return(NULL);
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get thread pool */
+  g_rec_mutex_lock(application_context_mutex);
+
+  server_status = server_application_context->server_status;
+
+  if(server_status != NULL){
+    g_object_ref(server_status);
+  }
+  
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(server_status);
+}
+
+AgsRegistry*
+ags_server_application_context_get_registry(AgsServiceProvider *service_provider)
+{
+  AgsRegistry *registry;
+  
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
+
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get thread pool */
+  g_rec_mutex_lock(application_context_mutex);
+
+  registry = server_application_context->registry;
+
+  if(registry != NULL){
+    g_object_ref(registry);
+  }
+  
+  g_rec_mutex_unlock(application_context_mutex);
+  
+  return(registry);
 }
 
 void
 ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
-					    GObject *registry)
+					   AgsRegistry *registry)
 {
-  //TODO:JK: implement me
-}
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
 
-GObject*
-ags_server_application_context_get_registry(AgsServiceProvider *service_provider)
-{
-  //TODO:JK: implement me
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_SERVER_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
 
-  return(NULL);
-}
+  /* get main loop */
+  g_rec_mutex_lock(application_context_mutex);
 
-void
-ags_server_application_context_set_server(AgsServiceProvider *service_provider,
-					  GList *server)
-{
-  //TODO:JK: implement me
+  if(server_application_context->registry == registry){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  if(server_application_context->registry != NULL){
+    g_object_unref(server_application_context->registry);
+  }
+  
+  if(registry != NULL){
+    g_object_ref(registry);
+  }
+  
+  server_application_context->registry = (GObject *) registry;
+  
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 GList*
 ags_server_application_context_get_server(AgsServiceProvider *service_provider)
 {
-  //TODO:JK: implement me
+  AgsServerApplicationContext *server_application_context;
+  
+  GList *server;
+  
+  GRecMutex *application_context_mutex;
 
-  return(NULL);
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+
+  /* get server */
+  g_rec_mutex_lock(application_context_mutex);
+
+  server = g_list_copy_deep(server_application_context->server,
+			    (GCopyFunc) g_object_ref,
+			    NULL);
+  
+  g_rec_mutex_unlock(application_context_mutex);
+
+  return(server);
 }
 
 void
-ags_server_application_context_set_certificate_manager(AgsServiceProvider *service_provider,
-						       AgsCertificateManager *certificate_manager)
+ags_server_application_context_set_server(AgsServiceProvider *service_provider,
+					 GList *server)
 {
-  //TODO:JK: implement me
-}
+  AgsServerApplicationContext *server_application_context;
+  
+  GRecMutex *application_context_mutex;
 
-AgsCertificateManager*
-ags_server_application_context_get_certificate_manager(AgsServiceProvider *service_provider)
-{
-  //TODO:JK: implement me
+  server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
 
-  return(NULL);
+  /* set server */
+  g_rec_mutex_lock(application_context_mutex);
+
+  if(server_application_context->server == server){
+    g_rec_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  g_list_free_full(server_application_context->server,
+		   g_object_unref);
+  
+  server_application_context->server = server;
+
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 void
-ags_server_application_context_set_password_store_manager(AgsServiceProvider *service_provider,
-							  AgsPasswordStoreManager *password_store_manager)
+ags_server_application_context_prepare(AgsApplicationContext *application_context)
 {
-  //TODO:JK: implement me
-}
+  AgsServerApplicationContext *server_application_context;
 
-AgsPasswordStoreManager*
-ags_server_application_context_get_password_store_manager(AgsServiceProvider *service_provider)
-{
-  //TODO:JK: implement me
+  AgsThread *server_loop;
+  AgsTaskLauncher *task_launcher;
 
-  return(NULL);
+  GMainContext *server_main_context;
+    
+  server_application_context = (AgsServerApplicationContext *) application_context;
+
+  /* call parent */
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_server_application_context_parent_class)->prepare(application_context);
+  
+  /* register types */
+  ags_application_context_register_types(application_context);
+
+  /*
+   * fundamental thread setup
+   */
+  /* server main context and main loop */
+  server_main_context = g_main_context_new();
+  g_main_context_ref(server_main_context);
+
+  server_application_context->server_main_context = server_main_context;
+
+  g_main_loop_new(server_main_context,
+		  TRUE);
+
+  /* AgsTaskLauncher */
+  task_launcher = ags_task_launcher_new();
+  g_object_ref(task_launcher);
+
+  application_context->task_launcher = (GObject *) task_launcher;
+  ags_connectable_connect(AGS_CONNECTABLE(task_launcher));  
+
+  ags_task_launcher_attach(task_launcher,
+			   server_main_context);
+  
+  /* main loop run */
+  g_main_loop_run(g_main_loop_new(server_main_context,
+				  TRUE));
 }
 
 void
-ags_server_application_context_set_authentication_manager(AgsServiceProvider *service_provider,
-							  AgsAuthenticationManager *authentication_manager)
+ags_server_application_context_setup(AgsApplicationContext *application_context)
 {
-  //TODO:JK: implement me
-}
+  AgsServerApplicationContext *server_application_context;
 
-AgsAuthenticationManager*
-ags_server_application_context_get_authentication_manager(AgsServiceProvider *service_provider)
-{
-  //TODO:JK: implement me
+  AgsServer *server;
 
-  return(NULL);
+  AgsThread *main_loop;
+  AgsTaskLauncher *task_launcher;
+
+  AgsLog *log;
+  AgsConfig *config;    
+  
+  server_application_context = (AgsServerApplicationContext *) application_context;
+
+  /* config and log */
+  config = ags_config_get_instance();
+
+  log = ags_log_get_instance();
+
+  /* main loop and task launcher */
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  /* AgsWorkerThread */
+  server_application_context->worker = NULL;
+  
+  /* AgsThreadPool */
+  server_application_context->thread_pool = NULL;
+
+  /* unref */
+  g_object_unref(main_loop);
+  
+  g_object_unref(task_launcher);
 }
 
 AgsServerApplicationContext*

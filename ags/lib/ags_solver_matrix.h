@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_solver_vector.h>
 
 G_BEGIN_DECLS
 
@@ -56,7 +57,7 @@ struct _AgsSolverMatrix
   guint column_count;
 };
 
-struct _AgsSolverMatrix
+struct _AgsSolverMatrixClass
 {
   GObjectClass gobject;
 };

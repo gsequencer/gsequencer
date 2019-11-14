@@ -408,8 +408,8 @@ EXTRA_DIST += \
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
 libags_la_HEADERS_0 = ags/libags.h $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
 
-libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
-libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
+libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_task_c_sources)
+libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_task_h_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources)
 
@@ -663,15 +663,11 @@ deprecated_libags_thread_h_sources =
 
 libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
-	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
-	ags/thread/ags_condition_manager.h \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
-	ags/thread/ags_history.h \
 	ags/thread/ags_message_delivery.h \
 	ags/thread/ags_message_queue.h \
-	ags/thread/ags_mutex_manager.h \
 	ags/thread/ags_returnable_thread.h \
 	ags/thread/ags_task_completion.h \
 	ags/thread/ags_task.h \
@@ -686,15 +682,11 @@ deprecated_libags_thread_c_sources =
 
 libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
-	ags/thread/ags_autosave_thread.c \
 	ags/thread/ags_concurrency_provider.c \
-	ags/thread/ags_condition_manager.c \
 	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
-	ags/thread/ags_history.c \
 	ags/thread/ags_message_delivery.c \
 	ags/thread/ags_message_queue.c \
-	ags/thread/ags_mutex_manager.c \
 	ags/thread/ags_returnable_thread.c \
 	ags/thread/ags_task_completion.c \
 	ags/thread/ags_task.c \
@@ -704,19 +696,6 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread.c \
 	ags/thread/ags_timestamp.c \
 	ags/thread/ags_worker_thread.c
-
-# libags-thread - file
-deprecated_libags_thread_file_h_sources =
-
-libags_thread_file_h_sources = \
-	$(deprecated_libags_thread_file_h_sources) \
-	ags/thread/file/ags_thread_file_xml.h
-
-deprecated_libags_thread_file_c_sources =
-
-libags_thread_file_c_sources = \
-	$(deprecated_libags_thread_file_c_sources) \
-	ags/thread/file/ags_thread_file_xml.c
 
 # libags-server all files
 deprecated_libags_server_h_sources =
@@ -778,22 +757,14 @@ deprecated_libags_server_controller_h_sources =
 libags_server_controller_h_sources = \
 	$(deprecated_libags_server_controller_h_sources) \
 	ags/server/controller/ags_controller.h \
-	ags/server/controller/ags_front_controller.h \
-	ags/server/controller/ags_local_factory_controller.h \
-	ags/server/controller/ags_local_registry_controller.h \
-	ags/server/controller/ags_local_serialization_controller.h \
-	ags/server/controller/ags_local_task_controller.h
+	ags/server/controller/ags_front_controller.h
 
 deprecated_libags_server_controller_c_sources =
 
 libags_server_controller_c_sources = \
 	$(deprecated_libags_server_controller_c_sources) \
 	ags/server/controller/ags_controller.c \
-	ags/server/controller/ags_front_controller.c \
-	ags/server/controller/ags_local_factory_controller.c \
-	ags/server/controller/ags_local_registry_controller.c \
-	ags/server/controller/ags_local_serialization_controller.c \
-	ags/server/controller/ags_local_task_controller.c
+	ags/server/controller/ags_front_controller.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =

@@ -104,7 +104,7 @@ ags_task_launcher_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_task_launcher = g_type_register_static(AGS_TYPE_THREAD,
+    ags_type_task_launcher = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsTaskLauncher",
 						    &ags_task_launcher_info,
 						    0);
@@ -123,7 +123,6 @@ void
 ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher)
 {
   GObjectClass *gobject;
-  AgsThreadClass *thread;
 
   GParamSpec *param_spec;
 
@@ -405,7 +404,7 @@ ags_task_launcher_has_resource(AgsConnectable *connectable)
 gboolean
 ags_task_launcher_is_ready(AgsConnectable *connectable)
 {
-  AgsTask_Launcher *task_launcher;
+  AgsTaskLauncher *task_launcher;
   
   gboolean is_ready;
 
@@ -420,7 +419,7 @@ ags_task_launcher_is_ready(AgsConnectable *connectable)
 void
 ags_task_launcher_add_to_registry(AgsConnectable *connectable)
 {
-  AgsTask_Launcher *task_launcher;
+  AgsTaskLauncher *task_launcher;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -475,7 +474,7 @@ ags_task_launcher_xml_parse(AgsConnectable *connectable,
 gboolean
 ags_task_launcher_is_connected(AgsConnectable *connectable)
 {
-  AgsTask_Launcher *task_launcher;
+  AgsTaskLauncher *task_launcher;
   
   gboolean is_connected;
 

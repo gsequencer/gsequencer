@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,10 +24,7 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
 #include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_registry.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -100,8 +97,6 @@ static gpointer ags_server_parent_class = NULL;
 static guint server_signals[LAST_SIGNAL];
 
 static GList *ags_server_list = NULL;
-
-static pthread_mutex_t ags_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_server_get_type()
@@ -295,19 +290,7 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
-  server->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(server->obj_mutexattr);
-  pthread_mutexattr_settype(server->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(server->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-  
-  server->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(server->obj_mutex,
-		     server->obj_mutexattr);
+  g_rec_mutex_init(&(server->obj_mutex));
 
   /* uuid */
   server->uuid = ags_uuid_alloc();
@@ -347,8 +330,6 @@ ags_server_init(AgsServer *server)
   server->auth_module = AGS_SERVER_DEFAULT_AUTH_MODULE;
   
   server->controller = NULL;
-  
-  server->application_context = NULL;
 }
 
 void
@@ -359,16 +340,12 @@ ags_server_set_property(GObject *gobject,
 {
   AgsServer *server;
 
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   server = AGS_SERVER(gobject);
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -377,10 +354,10 @@ ags_server_set_property(GObject *gobject,
 
       domain = g_value_get_string(value);
 
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       if(server->domain == domain){
-	pthread_mutex_unlock(server_mutex);
+	g_rec_mutex_unlock(server_mutex);
 	
 	return;
       }
@@ -389,7 +366,7 @@ ags_server_set_property(GObject *gobject,
 
       server->domain = g_strdup(domain);
 
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   case PROP_SERVER_PORT:
@@ -398,11 +375,11 @@ ags_server_set_property(GObject *gobject,
 
       server_port = g_value_get_uint(value);
 
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
 
       server->server_port = server_port;
       
-      pthread_mutex_unlock(server_mutex);      
+      g_rec_mutex_unlock(server_mutex);      
     }
     break;
   case PROP_IP4:
@@ -411,10 +388,10 @@ ags_server_set_property(GObject *gobject,
 
       ip4 = g_value_get_string(value);
 
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       if(server->ip4 == ip4){
-	pthread_mutex_unlock(server_mutex);
+	g_rec_mutex_unlock(server_mutex);
 	
 	return;
       }
@@ -423,7 +400,7 @@ ags_server_set_property(GObject *gobject,
 
       server->ip4 = g_strdup(ip4);
 
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   case PROP_IP6:
@@ -432,10 +409,10 @@ ags_server_set_property(GObject *gobject,
 
       ip6 = g_value_get_string(value);
 
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       if(server->ip6 == ip6){
-	pthread_mutex_unlock(server_mutex);
+	g_rec_mutex_unlock(server_mutex);
 	
 	return;
       }
@@ -444,7 +421,7 @@ ags_server_set_property(GObject *gobject,
 
       server->ip6 = g_strdup(ip6);
 
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   default:
@@ -461,56 +438,52 @@ ags_server_get_property(GObject *gobject,
 {
   AgsServer *server;
 
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   server = AGS_SERVER(gobject);
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
   
   switch(prop_id){
   case PROP_DOMAIN:
     {
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
 
       g_value_set_string(value,
 			 server->domain);
       
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   case PROP_SERVER_PORT:
     {
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       g_value_set_uint(value,
 		       server->server_port);
 
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   case PROP_IP4:
     {
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       g_value_set_string(value,
 			 server->ip4);
       
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;
   case PROP_IP6:
     {
-      pthread_mutex_lock(server_mutex);
+      g_rec_mutex_lock(server_mutex);
       
       g_value_set_string(value,
 			 server->ip6);
 
-      pthread_mutex_unlock(server_mutex);
+      g_rec_mutex_unlock(server_mutex);
     }
     break;    
   default:
@@ -553,16 +526,12 @@ ags_server_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   server = AGS_SERVER(connectable);
 
   /* get server signal mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   /* get UUID */
   pthread_mutex_lock(server_mutex);
@@ -587,23 +556,10 @@ ags_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *server_mutex;
-
   server = AGS_SERVER(connectable);
 
-  /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
-
   /* check is added */
-  pthread_mutex_lock(server_mutex);
-
-  is_ready = (((AGS_SERVER_ADDED_TO_REGISTRY & (server->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(server_mutex);
+  is_ready = ags_server_test_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -674,23 +630,10 @@ ags_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *server_mutex;
-
   server = AGS_SERVER(connectable);
 
-  /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
-
   /* check is connected */
-  pthread_mutex_lock(server_mutex);
-
-  is_connected = (((AGS_SERVER_CONNECTED & (server->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(server_mutex);
+  is_connected = ags_server_test_flags(server, AGS_SERVER_CONNECTED);
   
   return(is_connected);
 }
@@ -725,21 +668,6 @@ ags_server_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_server_get_class_mutex()
-{
-  return(&ags_server_class_mutex);
-}
-
-/**
  * ags_server_test_flags:
  * @server: the #AgsServer
  * @flags: the flags
@@ -755,25 +683,21 @@ ags_server_test_flags(AgsServer *server, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   if(!AGS_IS_SERVER(server)){
     return(FALSE);
   }
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   /* test */
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 
   retval = (flags & (server->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(server_mutex);
+  g_rec_mutex_unlock(server_mutex);
 
   return(retval);
 }
@@ -790,27 +714,23 @@ ags_server_test_flags(AgsServer *server, guint flags)
 void
 ags_server_set_flags(AgsServer *server, guint flags)
 {
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   if(!AGS_IS_SERVER(server)){
     return;
   }
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 
   server->flags |= flags;
   
-  pthread_mutex_unlock(server_mutex);
+  g_rec_mutex_unlock(server_mutex);
 }
     
 /**
@@ -825,27 +745,23 @@ ags_server_set_flags(AgsServer *server, guint flags)
 void
 ags_server_unset_flags(AgsServer *server, guint flags)
 {  
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   if(!AGS_IS_SERVER(server)){
     return;
   }
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 
   server->flags &= (~flags);
   
-  pthread_mutex_unlock(server_mutex);
+  g_rec_mutex_unlock(server_mutex);
 }
 
 /**
@@ -877,11 +793,15 @@ ags_server_real_start(AgsServer *server)
 {
   AgsRegistry *registry;
 
+  AgsApplicationContext *application_context;
+
   const char *error;
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
   
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(registry));
 
 #ifndef AGS_W32API
 #if 0
@@ -933,17 +853,13 @@ ags_server_start(AgsServer *server)
 void
 ags_server_real_stop(AgsServer *server)
 {
-  pthread_mutex_t *server_mutex;
+  GRecMutex *server_mutex;
 
   /* get server mutex */
-  pthread_mutex_lock(ags_server_get_class_mutex());
-  
-  server_mutex = server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_server_get_class_mutex());
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   /* close fd */
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 
   if(server->ip4_fd != -1){
     close(server->ip4_fd);
@@ -953,7 +869,7 @@ ags_server_real_stop(AgsServer *server)
     close(server->ip6_fd);
   }
 
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 }
 
 /**

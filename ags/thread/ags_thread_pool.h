@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
@@ -66,20 +64,18 @@ struct _AgsThreadPool
   volatile guint max_unused_threads;
   volatile guint max_threads;
 
-  pthread_t *thread;
+  GThread *thread;
 
   volatile guint queued;
 
-  pthread_mutexattr_t *creation_mutexattr;
-  pthread_mutex_t *creation_mutex;
-  pthread_cond_t *creation_cond;
+  GMutex creation_mutex;
+  GCond creation_cond;
 
   volatile gboolean create_threads;
   volatile gboolean idle;
 
-  pthread_mutex_t *idle_mutex;
-  pthread_mutexattr_t *idle_mutexattr;
-  pthread_cond_t *idle_cond;
+  GMutex idle_mutex;
+  GCond idle_cond;
 
   AgsThread *parent;
 

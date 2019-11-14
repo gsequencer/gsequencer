@@ -126,7 +126,7 @@ enum{
 
 static gpointer ags_function_parent_class = NULL;
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_function_get_type(void)
@@ -453,7 +453,7 @@ ags_function_find_literals(AgsFunction *function,
   n_literals = 0;
   
   /* compile regex */
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -461,7 +461,7 @@ ags_function_find_literals(AgsFunction *function,
     regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   /* find literals */
   str = function->source_function;
@@ -552,7 +552,7 @@ ags_function_literal_solve(AgsFunction *function)
     static const size_t max_matches = 1;
     
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
 
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -560,7 +560,7 @@ ags_function_literal_solve(AgsFunction *function)
       regcomp(&function_regex, function_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     /*  */
     expanded_functions = NULL;

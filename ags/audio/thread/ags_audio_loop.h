@@ -77,8 +77,6 @@ struct _AgsAudioLoop
   guint sync_tic;
   guint sync_counter[6];
     
-  GObject *async_queue;
-    
   GRecMutex tree_lock;
 
   guint play_channel_ref;

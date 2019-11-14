@@ -55,7 +55,7 @@ struct _AgsSolverVector
   AgsComplex *exp_value;
 };
 
-struct _AgsSolverVector
+struct _AgsSolverVectorClass
 {
   GObjectClass gobject;
 };

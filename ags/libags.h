@@ -67,15 +67,11 @@
 #include <ags/file/ags_file_lookup.h>
 
 /* thread */
-#include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_destroy_worker.h>
 #include <ags/thread/ags_generic_main_loop.h>
-#include <ags/thread/ags_history.h>
 #include <ags/thread/ags_message_delivery.h>
 #include <ags/thread/ags_message_queue.h>
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_task_completion.h>
 #include <ags/thread/ags_task.h>
@@ -85,9 +81,6 @@
 #include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_timestamp.h>
 #include <ags/thread/ags_worker_thread.h>
-
-/* thread file */
-#include <ags/thread/file/ags_thread_file_xml.h>
 
 /* server */
 #include <ags/server/ags_registry.h>
@@ -108,11 +101,7 @@
 #include <ags/server/security/ags_authentication.h>
 #include <ags/server/security/ags_xml_password_store.h>
 
-#include <ags/server/controller/ags_local_factory_controller.h>
-#include <ags/server/controller/ags_front_controller.h>
 #include <ags/server/controller/ags_controller.h>
-#include <ags/server/controller/ags_local_task_controller.h>
-#include <ags/server/controller/ags_local_serialization_controller.h>
-#include <ags/server/controller/ags_local_registry_controller.h>
+#include <ags/server/controller/ags_front_controller.h>
 
 #endif /*__LIBAGS_H__*/

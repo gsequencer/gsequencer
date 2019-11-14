@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,7 +62,7 @@ struct _AgsReturnableThread
 
   GObject *thread_pool;
   
-  pthread_mutex_t *reset_mutex;
+  GRecMutex reset_mutex;
   volatile void *safe_data;
 
   gulong handler;

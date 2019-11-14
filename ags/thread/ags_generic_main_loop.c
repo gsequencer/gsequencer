@@ -36,16 +36,18 @@ void ags_generic_main_loop_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_generic_main_loop_finalize(GObject *gobject);
 
-pthread_mutex_t* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
-GObject* ags_generic_main_loop_get_async_queue(AgsMainLoop *main_loop);
+GRecMutex* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 void ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_generic_main_loop_get_tic(AgsMainLoop *main_loop);
 void ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop);
+void ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
+				     gdouble frequency);
 void ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
 void ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
 gboolean ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
+void ags_generic_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint tic);
+guint ags_generic_main_loop_get_sync_tic(AgsMainLoop *main_loop);
 
 void ags_generic_main_loop_start(AgsThread *thread);
 
@@ -64,7 +66,6 @@ static gpointer ags_generic_main_loop_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -128,21 +129,6 @@ ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop)
   gobject->finalize = ags_generic_main_loop_finalize;
 
   /* properties */
-  /**
-   * AgsGenericMainLoop:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) generic_main_loop;
@@ -157,18 +143,20 @@ ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_generic_main_loop_get_tree_lock;
 
-  main_loop->set_async_queue = ags_generic_main_loop_set_async_queue;
-  main_loop->get_async_queue = ags_generic_main_loop_get_async_queue;
-
   main_loop->set_tic = ags_generic_main_loop_set_tic;
   main_loop->get_tic = ags_generic_main_loop_get_tic;
 
   main_loop->set_last_sync = ags_generic_main_loop_set_last_sync;
   main_loop->get_last_sync = ags_generic_main_loop_get_last_sync;
 
+  main_loop->change_frequency = ags_generic_main_loop_change_frequency;
+
   main_loop->sync_counter_inc = ags_generic_main_loop_sync_counter_inc;
   main_loop->sync_counter_dec = ags_generic_main_loop_sync_counter_dec;
   main_loop->sync_counter_test = ags_generic_main_loop_sync_counter_test;
+
+  main_loop->set_sync_tic = ags_generic_main_loop_set_sync_tic;
+  main_loop->get_sync_tic = ags_generic_main_loop_get_sync_tic;
 }
 
 void
@@ -176,22 +164,29 @@ ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop)
 {
   AgsThread *thread;
 
+  guint i;
+  
   /* calculate frequency */
   thread = (AgsThread *) generic_main_loop;
   
+  ags_thread_set_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
+
   thread->freq = AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE;
 
-  g_atomic_int_set(&(generic_main_loop->tic), 0);
-  g_atomic_int_set(&(generic_main_loop->last_sync), 0);
+  ags_main_loop_set_tic(AGS_MAIN_LOOP(generic_main_loop), 0);
+  ags_main_loop_set_last_sync(AGS_MAIN_LOOP(generic_main_loop), 0);
 
-  generic_main_loop->application_context = NULL;
+  generic_main_loop->time_cycle = NSEC_PER_SEC / thread->freq;
+  generic_main_loop->time_spent = 0;
+
+  generic_main_loop->sync_tic = 0;
+  
+  for(i = 0; i < 6; i++){
+    generic_main_loop->sync_counter[i] = 0;
+  }
   
   /* tree lock mutex */
-  pthread_mutexattr_init(&(generic_main_loop->tree_lock_mutexattr));
-  pthread_mutexattr_settype(&(generic_main_loop->tree_lock_mutexattr), PTHREAD_MUTEX_RECURSIVE);
-
-  generic_main_loop->tree_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(generic_main_loop->tree_lock, &(generic_main_loop->tree_lock_mutexattr));
+  g_rec_mutex_init(&(generic_main_loop->tree_lock));
 }
 
 void
@@ -202,7 +197,7 @@ ags_generic_main_loop_set_property(GObject *gobject,
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
@@ -210,33 +205,6 @@ ags_generic_main_loop_set_property(GObject *gobject,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(thread_mutex);
-
-      if(generic_main_loop->application_context == (GObject *) application_context){
-	pthread_mutex_unlock(thread_mutex);
-
-	return;
-      }
-
-      if(generic_main_loop->application_context != NULL){
-	g_object_unref(G_OBJECT(generic_main_loop->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-      
-      generic_main_loop->application_context = (GObject *) application_context;
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -251,7 +219,7 @@ ags_generic_main_loop_get_property(GObject *gobject,
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
@@ -259,15 +227,6 @@ ags_generic_main_loop_get_property(GObject *gobject,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(thread_mutex);
-
-      g_value_set_object(value, generic_main_loop->application_context);
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -281,52 +240,109 @@ ags_generic_main_loop_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_generic_main_loop_parent_class)->finalize(gobject);
 }
 
-pthread_mutex_t*
+GRecMutex*
 ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 {
-  return(AGS_GENERIC_MAIN_LOOP(main_loop)->tree_lock);
-}
+  GRecMutex *tree_lock;
 
-void
-ags_generic_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
-{
-  AGS_GENERIC_MAIN_LOOP(main_loop)->async_queue = async_queue;
-}
-
-GObject*
-ags_generic_main_loop_get_async_queue(AgsMainLoop *main_loop)
-{
-  return(AGS_GENERIC_MAIN_LOOP(main_loop)->async_queue);
+  /* get tree lock mutex */
+  tree_lock = &(AGS_GENERIC_MAIN_LOOP(main_loop)->tree_lock);
+  
+  return(tree_lock);
 }
 
 void
 ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
 {
-  g_atomic_int_set(&(AGS_GENERIC_MAIN_LOOP(main_loop)->tic),
-		   tic);
+  AgsGenericMainLoop *generic_main_loop;
+  
+  GRecMutex *thread_mutex;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* set tic */
+  g_rec_mutex_lock(thread_mutex);
+
+  generic_main_loop->tic = tic;
+
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 guint
 ags_generic_main_loop_get_tic(AgsMainLoop *main_loop)
 {
-  return(g_atomic_int_get(&(AGS_GENERIC_MAIN_LOOP(main_loop)->tic)));
+  AgsGenericMainLoop *generic_main_loop;
+
+  guint tic;
+  
+  GRecMutex *thread_mutex;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* set tic */
+  g_rec_mutex_lock(thread_mutex);
+
+  tic = generic_main_loop->tic;
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(tic);
 }
 
 void
 ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
 {
-  g_atomic_int_set(&(AGS_GENERIC_MAIN_LOOP(main_loop)->last_sync),
-		   last_sync);
+  AgsGenericMainLoop *generic_main_loop;
+  
+  GRecMutex *thread_mutex;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* set tic */
+  g_rec_mutex_lock(thread_mutex);
+
+  generic_main_loop->last_sync = last_sync;
+
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 guint
 ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
 {
-  gint val;
+  AgsGenericMainLoop *generic_main_loop;
 
-  val = g_atomic_int_get(&(AGS_GENERIC_MAIN_LOOP(main_loop)->last_sync));
+  guint last_sync;
+  
+  GRecMutex *thread_mutex;
 
-  return(val);
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* set tic */
+  g_rec_mutex_lock(thread_mutex);
+
+  last_sync = generic_main_loop->last_sync;
+
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(last_sync);
+}
+
+void
+ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
+				gdouble frequency)
+{
 }
 
 void
@@ -334,9 +350,9 @@ ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
-  if(tic >= 3){
+  if(tic >= 6){
     return;
   }
   
@@ -346,11 +362,11 @@ ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   /* increment */
-  pthread_mutex_lock(thread_mutex);
+  g_rec_mutex_lock(thread_mutex);
   
   generic_main_loop->sync_counter[tic] += 1;
 
-  pthread_mutex_unlock(thread_mutex);
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 void
@@ -358,9 +374,9 @@ ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
-  if(tic >= 3){
+  if(tic >= 6){
     return;
   }
   
@@ -370,13 +386,15 @@ ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   /* increment */
-  pthread_mutex_lock(thread_mutex);
+  g_rec_mutex_lock(thread_mutex);
 
   if(generic_main_loop->sync_counter[tic] > 0){
     generic_main_loop->sync_counter[tic] -= 1;
+  }else{
+    g_critical("sync counter already equals 0");
   }
   
-  pthread_mutex_unlock(thread_mutex);
+  g_rec_mutex_unlock(thread_mutex);
 }
 
 gboolean
@@ -386,9 +404,9 @@ ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
 
   gboolean success;
   
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
-  if(tic >= 3){
+  if(tic >= 6){
     return(FALSE);
   }
   
@@ -400,29 +418,69 @@ ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
   /* test */
   success = FALSE;
   
-  pthread_mutex_lock(thread_mutex);
+  g_rec_mutex_lock(thread_mutex);
 
   if(generic_main_loop->sync_counter[tic] == 0){
     success = TRUE;
   }
   
-  pthread_mutex_unlock(thread_mutex);
+  g_rec_mutex_unlock(thread_mutex);
 
   return(success);
 }
 
 void
+ags_generic_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
+{
+  AgsGenericMainLoop *generic_main_loop;
+  
+  GRecMutex *thread_mutex;
+  
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* test */
+  g_rec_mutex_lock(thread_mutex);
+
+  generic_main_loop->sync_tic = sync_tic;
+  
+  g_rec_mutex_unlock(thread_mutex);
+}
+
+guint
+ags_generic_main_loop_get_sync_tic(AgsMainLoop *main_loop)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  guint sync_tic;
+  
+  GRecMutex *thread_mutex;
+  
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* test */
+  g_rec_mutex_lock(thread_mutex);
+
+  sync_tic = generic_main_loop->sync_tic;
+  
+  g_rec_mutex_unlock(thread_mutex);
+
+  return(sync_tic);
+}
+
+void
 ags_generic_main_loop_start(AgsThread *thread)
 {
-  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    /*  */
-    AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);
-  }
+  AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);
 }
  
 /**
  * ags_generic_main_loop_new:
- * @application_context: the #AgsMain
  *
  * Create a new #AgsGenericMainLoop.
  *
@@ -431,12 +489,11 @@ ags_generic_main_loop_start(AgsThread *thread)
  * Since: 2.0.0
  */
 AgsGenericMainLoop*
-ags_generic_main_loop_new(GObject *application_context)
+ags_generic_main_loop_new()
 {
   AgsGenericMainLoop *generic_main_loop;
 
   generic_main_loop = (AgsGenericMainLoop *) g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
-							  "application-context", application_context,
 							  NULL);
 
   return(generic_main_loop);

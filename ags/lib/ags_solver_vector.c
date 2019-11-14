@@ -71,7 +71,7 @@ ags_solver_vector_get_type(void)
       (GInstanceInitFunc) ags_solver_vector_init,
     };
 
-    ags_type_solver_vector = g_type_register_static(AGS_TYPE_CONVERSION,
+    ags_type_solver_vector = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsSolverVector",
 						    &ags_solver_vector_info,
 						    0);

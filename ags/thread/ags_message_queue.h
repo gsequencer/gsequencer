@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
 
 #define AGS_TYPE_MESSAGE_QUEUE                (ags_message_queue_get_type())
@@ -34,7 +32,7 @@
 #define AGS_IS_MESSAGE_QUEUE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MESSAGE_QUEUE))
 #define AGS_MESSAGE_QUEUE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MESSAGE_QUEUE, AgsMessageQueueClass))
 
-#define AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(obj) (((AgsMessageQueue *) obj)->obj_mutex)
+#define AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(obj) (&(((AgsMessageQueue *) obj)->obj_mutex))
 
 #define AGS_MESSAGE_ENVELOPE(ptr) ((AgsMessageEnvelope *)(ptr))
 
@@ -47,9 +45,8 @@ struct _AgsMessageQueue
   GObject gobject;
 
   gchar *namespace;
-
-  pthread_mutexattr_t *obj_mutexattr;
-  pthread_mutex_t *obj_mutex;
+  
+  GRecMutex obj_mutex;
 
   GList *message;
 };

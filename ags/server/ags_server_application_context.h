@@ -33,13 +33,11 @@
 #include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_launcher.h>
 
-#include <ags/server/ags_registry.h>
 #include <ags/server/ags_server.h>
-
-#include <ags/server/security/ags_authentication_manager.h>
-#include <ags/server/security/ags_certificate_manager.h>
-#include <ags/server/security/ags_password_store_manager.h>
+#include <ags/server/ags_server_status.h>
+#include <ags/server/ags_registry.h>
 
 G_BEGIN_DECLS
 
@@ -50,8 +48,8 @@ G_BEGIN_DECLS
 #define AGS_IS_SERVER_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER_APPLICATION_CONTEXT))
 #define AGS_SERVER_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContextClass))
 
-#define AGS_SERVER_BUILD_ID "Sun Feb 26 23:03:41 CET 2017\0"
-#define AGS_SERVER_DEFAULT_VERSION "1.0.0\0"
+#define AGS_SERVER_BUILD_ID "Sun Feb 26 23:03:41 CET 2017"
+#define AGS_SERVER_DEFAULT_VERSION "1.0.0"
 
 typedef struct _AgsServerApplicationContext AgsServerApplicationContext;
 typedef struct _AgsServerApplicationContextClass AgsServerApplicationContextClass;
@@ -78,18 +76,23 @@ struct _AgsServerApplicationContext
 
   AgsThreadPool *thread_pool;
 
+  GList *worker;
+
+  GMainContext *server_main_context;
+
+  gboolean is_operating;
+
+  AgsServerStatus *server_status;
+  
+  AgsRegistry *registry;
+  
+  GList *server;
+
 #ifdef AGS_WITH_XMLRPC_C
   xmlrpc_env *env;
 #else
   void *env;
 #endif
-
-  AgsRegistry *registry;
-  AgsServer *server;
-
-  AgsCertificateManager *certificate_manager;
-  AgsPasswordStoreManager *password_store_manager;
-  AgsAuthenticationManager *authentication_manager;
 };
 
 struct _AgsServerApplicationContextClass

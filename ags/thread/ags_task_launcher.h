@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_uuid.h>
+
 #include <ags/thread/ags_task.h>
 
 G_BEGIN_DECLS
