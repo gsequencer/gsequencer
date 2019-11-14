@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_recycling.h>
@@ -154,20 +152,11 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint length;
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  
+    
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* get some fields */
   g_object_get(buffer_audio_signal,
@@ -301,20 +290,11 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   GValue value = {0,};
 
   void (*parent_class_run_inter)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  
+    
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);

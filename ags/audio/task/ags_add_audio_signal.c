@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_add_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal);
@@ -431,7 +429,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   gdouble delay;
   guint attack;
 
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
@@ -452,11 +450,11 @@ ags_add_audio_signal_launch(AgsTask *task)
   old_template = NULL;
   
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){
-    pthread_mutex_lock(recycling_mutex);
+    g_rec_mutex_lock(recycling_mutex);
     
     old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
 
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
   }
 
   /* create audio signal */

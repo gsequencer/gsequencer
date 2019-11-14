@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 

@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_capture_wave_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -192,7 +190,7 @@ ags_capture_wave_channel_run_set_property(GObject *gobject,
 {
   AgsCaptureWaveChannelRun *capture_wave_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
 
@@ -206,11 +204,11 @@ ags_capture_wave_channel_run_set_property(GObject *gobject,
 
       x_offset = g_value_get_uint64(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       capture_wave_channel_run->x_offset = x_offset;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -227,7 +225,7 @@ ags_capture_wave_channel_run_get_property(GObject *gobject,
 {
   AgsCaptureWaveChannelRun *capture_wave_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
 
@@ -237,11 +235,11 @@ ags_capture_wave_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X_OFFSET:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint64(value, capture_wave_channel_run->x_offset);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -387,9 +385,9 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *buffer_mutex;
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *buffer_mutex;
+  GRecMutex *recall_mutex;
   
   capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(recall);
 
@@ -522,7 +520,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     g_object_unref(port);
     
     /* get target presets */
-    pthread_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
     target_audio_channels = audio->audio_channels;
     target_samplerate = audio->samplerate;
@@ -531,7 +529,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     list_start = g_list_copy(audio->wave);
     
-    pthread_mutex_unlock(audio_mutex);
+    g_rec_mutex_unlock(audio_mutex);
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
 
@@ -646,16 +644,16 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	break;
       }
       
-      pthread_mutex_lock(buffer_mutex);
+      g_rec_mutex_lock(buffer_mutex);
       
       ags_audio_buffer_util_clear_buffer(data, 1,
 					 target_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(target_format));
 
-      pthread_mutex_unlock(buffer_mutex);
+      g_rec_mutex_unlock(buffer_mutex);
     }
       
     /* copy to buffer */
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
@@ -663,16 +661,16 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 						frame_count, target_copy_mode);
 
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
     
     g_list_free(list_start);
     
     /* 2nd attempt */
-    pthread_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
     list_start = g_list_copy(audio->wave);
     
-    pthread_mutex_unlock(audio_mutex);
+    g_rec_mutex_unlock(audio_mutex);
 
     if(create_wave){
       ags_timestamp_set_ags_offset(timestamp,
@@ -730,16 +728,16 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     
       if(!is_new_buffer &&
 	 do_replace){
-	pthread_mutex_lock(buffer_mutex);
+	g_rec_mutex_lock(buffer_mutex);
       
 	ags_audio_buffer_util_clear_buffer(buffer->data, 1,
 					   target_buffer_size - frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
 
-	pthread_mutex_unlock(buffer_mutex);
+	g_rec_mutex_unlock(buffer_mutex);
       }
       
       /* copy to buffer */
-      pthread_mutex_lock(buffer_mutex);
+      g_rec_mutex_lock(buffer_mutex);
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     
       ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
@@ -747,7 +745,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 						  target_buffer_size - frame_count, target_copy_mode);
 
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
-      pthread_mutex_unlock(buffer_mutex);
+      g_rec_mutex_unlock(buffer_mutex);
     }
 
     if(resample_target){
@@ -773,11 +771,11 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   if(do_record){
     AgsAudioFile *audio_file;
 
-    pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_lock(&(capture_wave_audio->audio_file_mutex));
 
     audio_file = capture_wave_audio->audio_file;
     
-    pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_unlock(&(capture_wave_audio->audio_file_mutex));
     
     /* get presets */
     g_object_get(audio_file,
@@ -817,13 +815,13 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     }
     
     /* file */
-    pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_lock(&(capture_wave_audio->audio_file_mutex));
 
     ags_audio_file_write(audio_file,
 			 capture_wave_audio_run->file_buffer, file_buffer_size,
 			 file_format);
 
-    pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_unlock(&(capture_wave_audio->audio_file_mutex));
 #endif
   }
 

@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_move_note.h>
 
-#include <ags/audio/ags_audio.h>
-
 #include <ags/i18n.h>
 
 #include <math.h>

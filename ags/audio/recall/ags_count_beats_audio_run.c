@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
@@ -41,7 +39,6 @@ void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterfac
 void ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable);
 void ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_count_beats_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_set_property(GObject *gobject,
 					    guint prop_id,
@@ -69,9 +66,6 @@ guint64 ags_count_beats_audio_run_get_sequencer_counter(AgsCountable *countable)
 guint64 ags_count_beats_audio_run_get_notation_counter(AgsCountable *countable);
 guint64 ags_count_beats_audio_run_get_wave_counter(AgsCountable *countable);
 guint64 ags_count_beats_audio_run_get_midi_counter(AgsCountable *countable);
-
-void ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_count_beats_audio_run_notify_output_soundcard_callback(GObject *gobject,
 								GParamSpec *pspec,
@@ -151,7 +145,6 @@ enum{
 
 static gpointer ags_count_beats_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_count_beats_audio_run_parent_connectable_interface;
-static AgsPluginInterface *ags_count_beats_audio_run_parent_plugin_interface;
 
 static guint count_beats_audio_run_signals[LAST_SIGNAL];
 
@@ -199,12 +192,6 @@ ags_count_beats_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_count_beats_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_count_beats_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							    "AgsCountBeatsAudioRun",
 							    &ags_count_beats_audio_run_info,
@@ -225,10 +212,6 @@ ags_count_beats_audio_run_get_type()
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
-
-    g_type_add_interface_static(ags_type_count_beats_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_count_beats_audio_run);
   }
@@ -281,15 +264,6 @@ ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable
 
   tactable->change_bpm = ags_count_beats_audio_run_change_bpm;
   tactable->change_tact = ags_count_beats_audio_run_change_tact;
-}
-
-void
-ags_count_beats_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_count_beats_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_count_beats_audio_run_read;
-  plugin->write = ags_count_beats_audio_run_write;
 }
 
 void
@@ -1291,108 +1265,6 @@ ags_count_beats_audio_run_get_midi_counter(AgsCountable *countable)
 	       NULL);
 
   return(midi_counter);
-}
-
-void
-ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_count_beats_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", count_beats_audio_run,
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_count_beats_audio_run_read_resolve_dependency), count_beats_audio_run);
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-  gchar *id;
-
-  /* write parent */
-  node = ags_count_beats_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", G_OBJECT(plugin),
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_count_beats_audio_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
 }
 
 void

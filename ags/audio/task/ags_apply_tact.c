@@ -368,23 +368,14 @@ void
 ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 {
   AgsChannel *input, *output;
-  AgsChannel *channel;
+  AgsChannel *channel, *next_channel;
 
   GList *list_start, *list;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       NULL);
 
   /* apply tact - play */
   g_object_get(audio,
@@ -419,39 +410,45 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 		   g_object_unref);
   
   /* AgsChannel - output */
-  channel = output;
+  if(output != NULL){
+    channel = output;
+    g_object_ref(channel);
 
-  while(channel != NULL){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    while(channel != NULL){
+      /* apply tact */
+      ags_apply_tact_channel(apply_tact, channel);
 
-    /* apply tact */
-    ags_apply_tact_channel(apply_tact, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
+      /* iterate */
+      next_channel = ags_channel_next(channel);
     
-    pthread_mutex_unlock(channel_mutex);    
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    /* unref */
+    g_object_unref(output);
   }
 
   /* AgsChannel - input */
-  channel = input;
+  if(input != NULL){
+    channel = input;
+    g_object_ref(channel);
 
-  while(channel != NULL){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    while(channel != NULL){
+      /* apply tact */
+      ags_apply_tact_channel(apply_tact, channel);
 
-    /* apply tact */
-    ags_apply_tact_channel(apply_tact, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
+      /* iterate */
+      next_channel = ags_channel_next(channel);
     
-    pthread_mutex_unlock(channel_mutex);    
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    /* unref */
+    g_object_unref(input);
   }
 }
 

@@ -355,7 +355,7 @@ ags_add_note_launch(AgsTask *task)
   guint audio_channel;
   guint x0;
   
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   add_note = AGS_ADD_NOTE(task);
 
@@ -383,12 +383,12 @@ ags_add_note_launch(AgsTask *task)
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* find near timestamp */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
 					  timestamp);
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 					  
   if(list == NULL){
     notation = ags_notation_new((GObject *) audio,

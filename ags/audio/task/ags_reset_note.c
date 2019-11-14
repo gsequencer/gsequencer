@@ -160,7 +160,7 @@ ags_reset_note_launch(AgsTask *task)
   guint note_offset;
   guint x1;
   
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
 
   reset_note = AGS_RESET_NOTE(task);
 
@@ -170,10 +170,10 @@ ags_reset_note_launch(AgsTask *task)
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
   
   if((note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard))) == reset_note->note_offset){
-    pthread_mutex_unlock(task_mutex);
+    g_rec_mutex_unlock(task_mutex);
 
     return;
   }
@@ -194,7 +194,7 @@ ags_reset_note_launch(AgsTask *task)
     note = note->next;
   }
 
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 }
 
 /**
@@ -210,7 +210,7 @@ void
 ags_reset_note_add(AgsResetNote *reset_note,
 		   AgsNote *note)
 {
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
 
   if(!AGS_IS_RESET_NOTE(reset_note) ||
      !AGS_IS_NOTE(note)){
@@ -219,13 +219,13 @@ ags_reset_note_add(AgsResetNote *reset_note,
 
   task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_note);
 
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
 
   reset_note->note = g_list_prepend(reset_note->note,
 				    note);
   g_object_ref(note);
   
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 }
 
 /**
@@ -241,7 +241,7 @@ void
 ags_reset_note_remove(AgsResetNote *reset_note,
 		      AgsNote *note)
 {
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
 
   if(!AGS_IS_RESET_NOTE(reset_note) ||
      !AGS_IS_NOTE(note)){
@@ -250,7 +250,7 @@ ags_reset_note_remove(AgsResetNote *reset_note,
 
   task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_note);
 
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
 
   if(g_list_find(reset_note->note,
 		 note) != NULL){
@@ -259,7 +259,7 @@ ags_reset_note_remove(AgsResetNote *reset_note,
     g_object_unref(note);
   }
   
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 }
 
 /**
@@ -274,31 +274,31 @@ ags_reset_note_remove(AgsResetNote *reset_note,
 AgsResetNote*
 ags_reset_note_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_reset_note == NULL){
-    AgsTaskThread *task_thread;
+    AgsTaskLauncher *task_launcher;
     
     AgsApplicationContext *application_context;
 
     /* reset note */
     ags_reset_note = ags_reset_note_new();
 
-    pthread_mutex_unlock(&mutex);
+    g_mutex_unlock(&mutex);
 
     /* add cyclic task */
     application_context = ags_application_context_get_instance();
 
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-    ags_task_thread_append_cyclic_task(task_thread,
-				       (AgsTask *) ags_reset_note);
-
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+    ags_task_launcher_add_cyclic_task(task_launcher,
+				      (AgsTask *) ags_reset_note);
+    
     /* unref */
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
   }else{
-    pthread_mutex_unlock(&mutex);
+    g_mutex_unlock(&mutex);
   }
 
   return(ags_reset_note);

@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <ags/i18n.h>
 
 void ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio);
 void ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio);
 void ags_count_beats_audio_set_property(GObject *gobject,
 					guint prop_id,
@@ -48,8 +45,6 @@ void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, guin
 void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, guint64 duration);
 void ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, guint64 duration);
 void ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, guint64 duration);
-
-void ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_count_beats_audio
@@ -78,7 +73,6 @@ enum{
 };
 
 static gpointer ags_count_beats_audio_parent_class = NULL;
-static AgsPluginInterface *ags_count_beats_audio_parent_plugin_interface;
 
 static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats";
 static const gchar *ags_count_beats_audio_specifier[] = {
@@ -135,12 +129,6 @@ ags_count_beats_audio_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_count_beats_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_count_beats_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							"AgsCountBeatsAudio",
@@ -150,10 +138,6 @@ ags_count_beats_audio_get_type()
     g_type_add_interface_static(ags_type_count_beats_audio,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
-
-    g_type_add_interface_static(ags_type_count_beats_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_count_beats_audio);
   }
@@ -179,14 +163,6 @@ ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable)
 
   tactable->change_bpm = NULL;
   tactable->change_tact = NULL;
-}
-
-void
-ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_count_beats_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_count_beats_audio_set_ports;
 }
 
 void
@@ -1487,88 +1463,6 @@ ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, guint64 durati
   g_value_unset(&value);
 
   g_object_unref(port);
-}
-
-void
-ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-loop[0]",
-		      19)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-loop", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-loop-start[0]",
-		      24)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-loop-start", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-loop-end[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-loop-end", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./notation-loop[0]",
-		18)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-loop", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-loop-start[0]",
-		      23)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-loop-start", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-loop-end[0]",
-		      21)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-loop-end", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-loop[0]",
-		      19)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-loop-start[0]",
-		      24)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop-start", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-loop-end[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-loop-end", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-loop[0]",
-		      19)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-loop", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-loop-start[0]",
-		      24)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-loop-start", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-loop-end[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-loop-end", AGS_PORT(port->data),
-		   NULL);
-    }
-    
-    port = port->next;
-  }
 }
 
 /**

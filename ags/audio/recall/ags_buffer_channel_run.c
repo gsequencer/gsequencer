@@ -20,8 +20,6 @@
 #include <ags/audio/recall/ags_buffer_channel_run.h>
 #include <ags/audio/recall/ags_buffer_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_enums.h>
 
 #include <ags/audio/recall/ags_buffer_recycling.h>

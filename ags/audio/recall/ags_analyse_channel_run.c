@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_analyse_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
@@ -138,8 +136,8 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *buffer_mutex;
 
   analyse_channel_run = AGS_ANALYSE_CHANNEL_RUN(recall);
 
@@ -148,11 +146,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex and buffer mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -195,12 +189,12 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
     ags_analyse_channel_retrieve_frequency_and_magnitude(analyse_channel);
 
     /* clear buffer */
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
   
     ags_audio_buffer_util_clear_buffer(analyse_channel->in, 1,
 				       cache_buffer_size, cache_format);
   
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
   }
 
   g_object_unref(analyse_channel);

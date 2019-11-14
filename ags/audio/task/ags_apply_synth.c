@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_apply_synth.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -355,7 +353,7 @@ ags_apply_synth_launch(AgsTask *task)
   AgsApplySynth *apply_synth;
 
   AgsAudio *audio;
-  AgsChannel *channel, *input;
+  AgsChannel *channel, *next_channel, *input;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   AgsSynthGenerator *synth_generator;
@@ -367,16 +365,10 @@ ags_apply_synth_launch(AgsTask *task)
 
   gchar *str;
 
-  guint audio_flags;
   gdouble base_note;
   gdouble note;
   guint count;
   guint i;
-
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *input_mutex;
-  pthread_mutex_t *recycling_mutex;
   
   apply_synth = AGS_APPLY_SYNTH(task);
 
@@ -387,95 +379,81 @@ ags_apply_synth_launch(AgsTask *task)
   base_note = apply_synth->base_note;
   count = apply_synth->count;
 
-  /* get channel mutex */
-  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
   /* get some fields */
-  pthread_mutex_lock(channel_mutex);
-
-  audio = (AgsAudio *) channel->audio;
-
-  pthread_mutex_unlock(channel_mutex);
-
-  /* get audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  audio_flags = audio->flags;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(channel,
+	       "audio", &audio,
+	       NULL);
 
   /* compute */
   channel = apply_synth->start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+
+    for(i = 0; channel != NULL && i < apply_synth->count; i++){
+      /* get some fields */
+      g_object_get(channel,
+		   "first-recycling", &first_recycling,
+		   NULL);
 	
-  for(i = 0; channel != NULL && i < apply_synth->count; i++){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
-    /* get some fields */
-    pthread_mutex_lock(channel_mutex);
-
-    first_recycling = channel->first_recycling;
-		
-    pthread_mutex_unlock(channel_mutex);
-
-    /* get recycling mutex */
-    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(first_recycling);
+      /* get template */
+      g_object_get(first_recycling,
+		   "output-soundcard", &output_soundcard,
+		   "audio-signal", &list_start,
+		   NULL);
 	
-    /* get template */
-    g_object_get(first_recycling,
-		 "output-soundcard", &output_soundcard,
-		 "audio-signal", &list_start,
-		 NULL);
+      audio_signal = ags_audio_signal_get_template(list_start);
+
+      if(audio_signal == NULL){
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) first_recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(first_recycling,
+				       audio_signal);
+
+	g_object_ref(audio_signal);
+      }
 	
-    audio_signal = ags_audio_signal_get_template(list_start);
-
-    if(audio_signal == NULL){
-      audio_signal = ags_audio_signal_new(output_soundcard,
-					  (GObject *) first_recycling,
-					  NULL);
-      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(first_recycling,
-				     audio_signal);
-
-      g_object_ref(audio_signal);
-    }
+      /* compute audio signal */
+      note = apply_synth->base_note + i;
 	
-    /* compute audio signal */
-    note = apply_synth->base_note + i;
-	
-    ags_synth_generator_compute(synth_generator,
-				(GObject *) audio_signal,
-				note);
-
-    rt_template = 
-      rt_template_start = ags_audio_signal_get_rt_template(list_start);
-
-    while(rt_template != NULL){
       ags_synth_generator_compute(synth_generator,
-				  rt_template->data,
+				  (GObject *) audio_signal,
 				  note);
+
+      rt_template = 
+	rt_template_start = ags_audio_signal_get_rt_template(list_start);
+
+      while(rt_template != NULL){
+	ags_synth_generator_compute(synth_generator,
+				    rt_template->data,
+				    note);
 	  
-      rt_template = rt_template->next;
+	rt_template = rt_template->next;
+      }
+
+      g_list_free_full(rt_template_start,
+		       g_object_unref);
+    
+      g_list_free_full(list_start,
+		       g_object_unref);
+	
+      g_object_unref(output_soundcard);
+      g_object_unref(first_recycling);
+      g_object_unref(audio_signal);
+      
+      /* iterate */
+      next_channel = ags_channel_next(channel);
+    
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
+  }
 
-    g_list_free_full(rt_template_start,
-		     g_object_unref);
-    
-    g_list_free_full(list_start,
-		     g_object_unref);
-	
-    g_object_unref(output_soundcard);
-    g_object_unref(audio_signal);
-    
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-	
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+  if(audio != NULL){
+    g_object_unref(audio);
   }
 }
 

@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_apply_bpm.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -370,23 +368,15 @@ void
 ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 {
   AgsChannel *input, *output;
-  AgsChannel *channel;
+  AgsChannel *channel, *next_channel;
 
   GList *list_start, *list;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       NULL);
 
   /* set bpm */
   g_object_set(audio,
@@ -426,39 +416,45 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 		   g_object_unref);
   
   /* AgsChannel - output */
-  channel = output;
+  if(output != NULL){
+    channel = output;
+    g_object_ref(channel);
+  
+    while(channel != NULL){
+      /* apply bpm */
+      ags_apply_bpm_channel(apply_bpm, channel);
 
-  while(channel != NULL){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+      /* iterate */
+      next_channel = ags_channel_next(channel);
     
-    /* apply bpm */
-    ags_apply_bpm_channel(apply_bpm, channel);
+      g_object_unref(channel);
 
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
+      channel = next_channel;
+    }
     
-    pthread_mutex_unlock(channel_mutex);    
+    /* unref */
+    g_object_unref(output);
   }
 
   /* AgsChannel - input */
-  channel = input;
+  if(input != NULL){
+    channel = input;
+    g_object_ref(channel);
+  
+    while(channel != NULL){
+      /* apply bpm */
+      ags_apply_bpm_channel(apply_bpm, channel);
 
-  while(channel != NULL){
-    /* get channel mutex */
-    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
-    /* apply bpm */
-    ags_apply_bpm_channel(apply_bpm, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
+      /* iterate */
+      next_channel = ags_channel_next(channel);
     
-    pthread_mutex_unlock(channel_mutex);    
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    /* unref */
+    g_object_unref(input);
   }
 }
 

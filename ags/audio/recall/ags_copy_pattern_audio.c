@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
@@ -30,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
-void ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
 void ags_copy_pattern_audio_set_property(GObject *gobject,
 					 guint prop_id,
@@ -42,8 +39,6 @@ void ags_copy_pattern_audio_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_copy_pattern_audio_dispose(GObject *gobject);
 void ags_copy_pattern_audio_finalize(GObject *gobject);
-
-void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_copy_pattern_audio_get_bank_index_0_plugin_port();
 static AgsPluginPort* ags_copy_pattern_audio_get_bank_index_1_plugin_port();
@@ -97,20 +92,10 @@ ags_copy_pattern_audio_get_type()
       (GInstanceInitFunc) ags_copy_pattern_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_copy_pattern_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							 "AgsCopyPatternAudio",
 							 &ags_copy_pattern_audio_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_copy_pattern_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_audio);
   }
@@ -168,14 +153,6 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_1,
 				  param_spec);
-}
-
-void
-ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_copy_pattern_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_copy_pattern_audio_set_ports;
 }
 
 void
@@ -404,28 +381,6 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);
-}
-
-void
-ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./bank-index-0[0]",
-		16)){
-      g_object_set(G_OBJECT(plugin),
-		   "bank-index-0", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./bank-index-1[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "bank-index-1", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 static AgsPluginPort*

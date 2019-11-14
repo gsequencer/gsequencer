@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_buffer_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);

@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_midi.h>
@@ -33,7 +31,6 @@
 
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
 void ags_delay_audio_set_property(GObject *gobject,
 				  guint prop_id,
@@ -45,8 +42,6 @@ void ags_delay_audio_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_delay_audio_dispose(GObject *gobject);
 void ags_delay_audio_finalize(GObject *gobject);
-
-void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_delay_audio_notify_audio_after_callback(GObject *gobject,
 						 GParamSpec *pspec,
@@ -116,7 +111,6 @@ enum{
 };
 
 static gpointer ags_delay_audio_parent_class = NULL;
-static AgsPluginInterface *ags_delay_audio_parent_plugin_interface;
 
 static guint delay_audio_signals[LAST_SIGNAL];
 
@@ -173,12 +167,6 @@ ags_delay_audio_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_delay_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_delay_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						  "AgsDelayAudio",
 						  &ags_delay_audio_info,
@@ -187,10 +175,6 @@ ags_delay_audio_get_type()
     g_type_add_interface_static(ags_type_delay_audio,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
-
-    g_type_add_interface_static(ags_type_delay_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_delay_audio);
   }
@@ -472,14 +456,6 @@ ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable)
 }
 
 void
-ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_delay_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_delay_audio_set_ports;
-}
-
-void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
   GList *port;
@@ -698,7 +674,7 @@ ags_delay_audio_set_property(GObject *gobject,
 {
   AgsDelayAudio *delay_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
@@ -712,10 +688,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->bpm){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -730,7 +706,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->bpm = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TACT:
@@ -739,10 +715,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->tact){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -757,7 +733,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->tact = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_DELAY:
@@ -766,10 +742,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->sequencer_delay){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -784,7 +760,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->sequencer_delay = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTATION_DELAY:
@@ -793,10 +769,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->notation_delay){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -811,7 +787,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->notation_delay = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_DELAY:
@@ -820,10 +796,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->wave_delay){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -838,7 +814,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->wave_delay = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MIDI_DELAY:
@@ -847,10 +823,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->midi_delay){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -865,7 +841,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->midi_delay = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_DURATION:
@@ -874,10 +850,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->sequencer_duration){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -892,7 +868,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->sequencer_duration = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTATION_DURATION:
@@ -901,10 +877,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->notation_duration){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -919,7 +895,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->notation_duration = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_DURATION:
@@ -928,10 +904,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->wave_duration){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -946,7 +922,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->wave_duration = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MIDI_DURATION:
@@ -955,10 +931,10 @@ ags_delay_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == delay_audio->midi_duration){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -973,7 +949,7 @@ ags_delay_audio_set_property(GObject *gobject,
 
       delay_audio->midi_duration = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -990,7 +966,7 @@ ags_delay_audio_get_property(GObject *gobject,
 {
   AgsDelayAudio *delay_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
@@ -1000,92 +976,92 @@ ags_delay_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_BPM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->bpm);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TACT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->tact);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_DELAY:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->sequencer_delay);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTATION_DELAY:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->notation_delay);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_DELAY:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->wave_delay);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MIDI_DELAY:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->midi_delay);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTATION_DURATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->notation_duration);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_DURATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->sequencer_duration);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_WAVE_DURATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->wave_duration);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MIDI_DURATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, delay_audio->midi_duration);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -1273,76 +1249,6 @@ ags_delay_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_delay_audio_parent_class)->finalize(gobject);
-}
-
-void
-ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./bpm[0]",
-		8)){
-      g_object_set(G_OBJECT(plugin),
-		   "bpm", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./tact[0]",
-		      9)){
-      g_object_set(G_OBJECT(plugin),
-		   "tact", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-delay[0]",
-		      19)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-delay[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-delay[0]",
-		      15)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-delay[0]",
-		      15)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-duration[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-duration[0]",
-		      21)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-duration[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-duration[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-duration", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 void

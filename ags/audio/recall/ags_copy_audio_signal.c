@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>

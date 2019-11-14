@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -39,7 +37,6 @@
 
 void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_dispose(GObject *gobject);
 void ags_copy_pattern_channel_run_finalize(GObject *gobject);
@@ -82,7 +79,6 @@ void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *del
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
-static AgsPluginInterface *ags_copy_pattern_channel_run_parent_plugin_interface;
 
 GType
 ags_copy_pattern_channel_run_get_type()
@@ -110,12 +106,6 @@ ags_copy_pattern_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_copy_pattern_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							       "AgsCopyPatternChannelRun",
 							       &ags_copy_pattern_channel_run_info,
@@ -124,10 +114,6 @@ ags_copy_pattern_channel_run_get_type()
     g_type_add_interface_static(ags_type_copy_pattern_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-    
-    g_type_add_interface_static(ags_type_copy_pattern_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_channel_run);
   }
@@ -168,12 +154,6 @@ ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface 
 
   connectable->connect_connection = ags_copy_pattern_channel_run_connect_connection;
   connectable->disconnect_connection = ags_copy_pattern_channel_run_disconnect_connection;
-}
-
-void
-ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_copy_pattern_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

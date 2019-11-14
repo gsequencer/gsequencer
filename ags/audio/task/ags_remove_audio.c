@@ -248,14 +248,14 @@ ags_remove_audio_launch(AgsTask *task)
 
   /* remove audio */
   list =
-    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(remove_audio->application_context));
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   if(g_list_find(list,
 		 remove_audio->audio) != NULL){
     /* remove to sound provider */
     list = g_list_remove(list,
 			 remove_audio->audio);
-    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(remove_audio->application_context),
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 				 list);
 
     /* AgsAudio */

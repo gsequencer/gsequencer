@@ -62,7 +62,7 @@ struct _AgsCaptureWaveAudio
   AgsPort *wave_loop_start;
   AgsPort *wave_loop_end;
 
-  pthread_mutex_t *audio_file_mutex;
+  GRecMutex audio_file_mutex;
   
   AgsAudioFile *audio_file;
 };
