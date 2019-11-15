@@ -27,8 +27,6 @@
 #include <sys/types.h>
 #include <regex.h>
 
-#include <pthread.h>
-
 #include <ags/lib/ags_regex.h>
 
 #include <sys/stat.h>

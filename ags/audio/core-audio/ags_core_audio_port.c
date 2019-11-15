@@ -942,7 +942,9 @@ ags_core_audio_port_output_thread(AgsCoreAudioPort *core_audio_port)
 		       TRUE);
   }while(g_atomic_int_get(&(core_audio_port->output_running)));
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void*
@@ -959,7 +961,9 @@ ags_core_audio_port_input_thread(AgsCoreAudioPort *core_audio_port)
 		       TRUE);
   }while(g_atomic_int_get(&(core_audio_port->input_running)));
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 #endif
 
@@ -1079,7 +1083,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO);
 
     if(is_output){
-      pthread_t *thread;
+      GThread *thread;
 
       void **arr;
       
@@ -1119,7 +1123,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(!g_atomic_int_get(&ags_core_audio_port_output_run_loop_initialized)){
 	g_atomic_int_set(&(core_audio_port->output_running),
 			 TRUE);
-	pthread_create(&thread, NULL, &ags_core_audio_port_output_thread, core_audio_port);
+	thread = g_thread_new("Advanced Gtk+ Sequencer - core-audio output",
+			      ags_core_audio_port_output_thread,
+			      core_audio_port);
 
 	while(!g_atomic_int_get(&ags_core_audio_port_output_run_loop_initialized)){
 	  usleep(400);
@@ -1166,7 +1172,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   
 #endif
     }else{
-      pthread_t *thread;
+      GThread *thread;
 
       void **arr;
       
@@ -1206,7 +1212,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(!g_atomic_int_get(&ags_core_audio_port_input_run_loop_initialized)){
 	g_atomic_int_set(&(core_audio_port->input_running),
 			 TRUE);
-	pthread_create(&thread, NULL, &ags_core_audio_port_input_thread, core_audio_port);
+	thread = g_thread_new("Advanced Gtk+ Sequencer - core-audio input",
+			      ags_core_audio_port_input_thread,
+			      core_audio_port);
 
 	while(!g_atomic_int_get(&ags_core_audio_port_input_run_loop_initialized)){
 	  usleep(400);

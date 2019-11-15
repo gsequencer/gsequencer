@@ -246,7 +246,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 {
   AgsRecallLv2Run *recall_lv2_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
@@ -260,10 +260,10 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 
       route_lv2_audio_run = g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if((GObject *) route_lv2_audio_run == recall_lv2_run->route_lv2_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -278,7 +278,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 
       recall_lv2_run->route_lv2_audio_run = (GObject *) route_lv2_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTE:
@@ -287,11 +287,11 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 
       note = g_value_get_pointer(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(!AGS_IS_NOTE(note) ||
 	 g_list_find(recall_lv2_run->note, note) != NULL){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -300,7 +300,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 					     note);
       g_object_ref(note);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -317,7 +317,7 @@ ags_recall_lv2_run_get_property(GObject *gobject,
 {
   AgsRecallLv2Run *recall_lv2_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
@@ -327,21 +327,21 @@ ags_recall_lv2_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_ROUTE_LV2_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_lv2_run->route_lv2_audio_run);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
 			  g_list_copy(recall_lv2_run->note));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -438,7 +438,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 		       void *data_location);
   void (*activate)(LV2_Handle instance);
   
-  pthread_mutex_t *recall_lv2_mutex;
+  GRecMutex *recall_lv2_mutex;
 
   /* get recall mutex */
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_init_pre;
@@ -474,7 +474,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* get some fields */
-  pthread_mutex_lock(recall_lv2_mutex);
+  g_rec_mutex_lock(recall_lv2_mutex);
 
   lv2_plugin = recall_lv2->plugin;
 
@@ -484,7 +484,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   connect_port = recall_lv2->plugin_descriptor->connect_port;
   activate = recall_lv2->plugin_descriptor->activate;
   
-  pthread_mutex_unlock(recall_lv2_mutex);
+  g_rec_mutex_unlock(recall_lv2_mutex);
   
   /* set up buffer */
   input = NULL;
@@ -516,7 +516,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   ags_recall_lv2_run_load_ports(recall_lv2_run);
 
   /* can't be done in ags_recall_lv2_run_run_init_inter since possebility of overlapping buffers */
-  pthread_mutex_lock(recall_lv2_mutex);
+  g_rec_mutex_lock(recall_lv2_mutex);
 
   /* connect audio port */
   for(i = 0; i < input_lines; i++){
@@ -570,7 +570,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     activate(recall_lv2_run->lv2_handle[0]);
   }
 
-  pthread_mutex_unlock(recall_lv2_mutex);
+  g_rec_mutex_unlock(recall_lv2_mutex);
 
   /* set program */
   if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE)){
@@ -587,26 +587,26 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     guint bank, program;
     guint port_count;
 
-    pthread_mutex_t *base_plugin_mutex;
+    GRecMutex *base_plugin_mutex;
     
-    pthread_mutex_lock(recall_lv2_mutex);
+    g_rec_mutex_lock(recall_lv2_mutex);
 
     port = g_list_copy(AGS_RECALL(recall_lv2)->port);
 
     bank = recall_lv2->bank;
     program = recall_lv2->program;
     
-    pthread_mutex_unlock(recall_lv2_mutex);
+    g_rec_mutex_unlock(recall_lv2_mutex);
 
     /* get base plugin mutex */
     base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
     
     /* get plugin port */
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
 
     plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     /* create port data */
     port_count = g_list_length(plugin_port_start);
@@ -618,7 +618,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     for(i = 0; i < port_count && plugin_port != NULL; ){
       AgsPluginPort *current_plugin_port;
 
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
 
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -626,11 +626,11 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
       plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       specifier = g_strdup(current_plugin_port->port_name);
  	
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
 
       list = ags_port_find_specifier(port, specifier);
 
@@ -668,7 +668,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     for(i = 0; i < port_count && plugin_port != NULL;){
       AgsPluginPort *current_plugin_port;
 
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
 
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -676,11 +676,11 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
       plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       specifier = g_strdup(current_plugin_port->port_name);
  	
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
 
       list = ags_port_find_specifier(port, specifier);
 
@@ -754,8 +754,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   void (*deactivate)(LV2_Handle instance);
   void (*cleanup)(LV2_Handle instance);
   
-  pthread_mutex_t *recall_lv2_mutex;
-  pthread_mutex_t *port_mutex;
+  GRecMutex *recall_lv2_mutex;
+  GRecMutex *port_mutex;
   
   /* get parent class */
   parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre;
@@ -847,12 +847,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get some fields */
-  pthread_mutex_lock(recall_lv2_mutex);
+  g_rec_mutex_lock(recall_lv2_mutex);
 
   output_lines = recall_lv2->output_lines;
   input_lines = recall_lv2->input_lines;
 
-  pthread_mutex_unlock(recall_lv2_mutex);
+  g_rec_mutex_unlock(recall_lv2_mutex);
 
   g_object_get(count_beats_audio_run,
 	       "notation-counter", &notation_counter,
@@ -894,12 +894,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	!ags_note_test_flags(note_start->data, AGS_NOTE_FEED)) ||
        x0 > notation_counter){
       //    g_message("done");
-      pthread_mutex_lock(recall_lv2_mutex);
+      g_rec_mutex_lock(recall_lv2_mutex);
 
       deactivate = recall_lv2->plugin_descriptor->deactivate;
       cleanup = recall_lv2->plugin_descriptor->cleanup;
       
-      pthread_mutex_unlock(recall_lv2_mutex);
+      g_rec_mutex_unlock(recall_lv2_mutex);
 
       /* deactivate */
       if(deactivate != NULL){
@@ -943,11 +943,11 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
   
   /* process data */
-  pthread_mutex_lock(recall_lv2_mutex);
+  g_rec_mutex_lock(recall_lv2_mutex);
 
   run = recall_lv2->plugin_descriptor->run;
     
-  pthread_mutex_unlock(recall_lv2_mutex);
+  g_rec_mutex_unlock(recall_lv2_mutex);
   
   g_object_get(recall_lv2_run,
 	       "note", &note_start,
@@ -1021,7 +1021,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   void (*deactivate)(LV2_Handle instance);
   void (*cleanup)(LV2_Handle instance);
   
-  pthread_mutex_t *recall_lv2_mutex;
+  GRecMutex *recall_lv2_mutex;
 
   /* get recall mutex */
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter;
@@ -1112,7 +1112,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 	       NULL);
 
   /* get some fields */
-  pthread_mutex_lock(recall_lv2_mutex);
+  g_rec_mutex_lock(recall_lv2_mutex);
 
   output_lines = recall_lv2->output_lines;
   input_lines = recall_lv2->input_lines;
@@ -1122,7 +1122,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   deactivate = recall_lv2->plugin_descriptor->deactivate;
   cleanup = recall_lv2->plugin_descriptor->cleanup;
   
-  pthread_mutex_unlock(recall_lv2_mutex);
+  g_rec_mutex_unlock(recall_lv2_mutex);
   
   /* set up buffer */
   if(audio_signal->stream_current == NULL){
@@ -1233,9 +1233,9 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 		       uint32_t port,
 		       void *data_location);
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *recall_lv2_mutex;
-  pthread_mutex_t *port_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *recall_lv2_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_RECALL_LV2_RUN(recall_lv2_run)){
     return;
@@ -1260,7 +1260,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   lv2_handle = NULL;
 
@@ -1275,7 +1275,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   connect_port = recall_lv2->plugin_descriptor->connect_port;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   if(lv2_handle == NULL){
     return;
@@ -1297,7 +1297,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
     for(i = 0; plugin_port != NULL; i++){
       AgsPluginPort *current_plugin_port;
       
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
       
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -1306,11 +1306,11 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_CONTROL)){
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 	  
 	specifier = g_strdup(current_plugin_port->port_name);
 	
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	list = ags_port_find_specifier(port, specifier);
 	g_free(specifier);
@@ -1327,11 +1327,11 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
 	  /* get port pointer */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 	    
 	  port_pointer = (float *) &(current_port->port_value.ags_port_ladspa);
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  g_object_get(current_plugin_port,
 		       "port-index", &port_index,

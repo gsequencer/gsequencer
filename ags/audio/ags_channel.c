@@ -62,8 +62,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <pthread.h>
-
 #include <ladspa.h>
 #include <dssi.h>
 #include <lv2.h>
@@ -2771,14 +2769,14 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
   /* get channel fields */
-  pthread_mutex_lock(channel_mutex);
+  g_rec_mutex_lock(channel_mutex);
   
   channel_ability_flags = channel->ability_flags;
   
   samplerate = channel->samplerate;
   buffer_size = channel->buffer_size;
 
-  pthread_mutex_unlock(channel_mutex);
+  g_rec_mutex_unlock(channel_mutex);
 
   g_object_get(channel,
 	       "audio", &audio,
@@ -2950,11 +2948,11 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   }
 
   /* set flags */
-  pthread_mutex_lock(channel_mutex);
+  g_rec_mutex_lock(channel_mutex);
 
   channel->ability_flags |= ability_flags;
   
-  pthread_mutex_unlock(channel_mutex);
+  g_rec_mutex_unlock(channel_mutex);
 }
 
 /**
@@ -2984,11 +2982,11 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
   /* get channel fields */
-  pthread_mutex_lock(channel_mutex);
+  g_rec_mutex_lock(channel_mutex);
   
   channel_ability_flags = channel->ability_flags;
   
-  pthread_mutex_unlock(channel_mutex);
+  g_rec_mutex_unlock(channel_mutex);
   
   g_object_get(channel,
 	       "playback", &playback,
@@ -3098,11 +3096,11 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   }
   
   /* unset flags */
-  pthread_mutex_lock(channel_mutex);
+  g_rec_mutex_lock(channel_mutex);
 
   channel->ability_flags &= (~ability_flags);
   
-  pthread_mutex_unlock(channel_mutex);
+  g_rec_mutex_unlock(channel_mutex);
 }
 
 /**

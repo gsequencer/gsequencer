@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/server/security/ags_certificate_manager.h>
-
-#include <pthread.h>
 
 void ags_certificate_manager_class_init(AgsCertificateManagerClass *certificate_manager);
 void ags_certificate_manager_init (AgsCertificateManager *certificate_manager);

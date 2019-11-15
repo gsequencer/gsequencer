@@ -1881,7 +1881,7 @@ ags_pulse_server_do_poll_loop(void *ptr)
 		  NULL);
 #endif
 
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
   return(NULL);
 }
@@ -1889,8 +1889,9 @@ ags_pulse_server_do_poll_loop(void *ptr)
 void
 ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
 {
-  pthread_create(pulse_server->thread, NULL,
-		 ags_pulse_server_do_poll_loop, pulse_server);
+  pulse_server->thread = g_thread_new("Advanced Gtk+ Sequencer - pulseaudio server",
+				      ags_pulse_server_do_poll_loop,
+				      pulse_server);
 }
 
 /**

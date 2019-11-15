@@ -194,13 +194,9 @@ ags_setup_thread(void *ptr)
     usleep(500000);
   }
 
-  //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
-  
   ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
-
-  //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
   return(NULL);
 }
@@ -211,7 +207,7 @@ ags_setup(int argc, char **argv)
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  pthread_t thread;
+  GThread *thread;
 
   /* application context */
   application_context = 
@@ -227,8 +223,9 @@ ags_setup(int argc, char **argv)
 		      "Welcome to Advanced Gtk+ Sequencer");
   
   /* application context */
-  pthread_create(&thread, NULL,
-		 ags_setup_thread, application_context);
+  thread = g_thread_new("Advanced Gtk+ Sequencer - setup",
+			ags_setup_thread,
+			application_context);
   
   ags_application_context_prepare(application_context);
 }

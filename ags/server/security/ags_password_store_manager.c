@@ -19,8 +19,6 @@
 
 #include <ags/server/security/ags_password_store_manager.h>
 
-#include <pthread.h>
-
 void ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_store_manager);
 void ags_password_store_manager_init (AgsPasswordStoreManager *password_store_manager);
 void ags_password_store_manager_finalize(GObject *gobject);

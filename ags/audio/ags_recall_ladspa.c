@@ -181,7 +181,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
 {
   AgsRecallLadspa *recall_ladspa;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
 
@@ -195,10 +195,10 @@ ags_recall_ladspa_set_property(GObject *gobject,
 
       plugin = (AgsLadspaPlugin *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_ladspa->plugin == plugin){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -213,7 +213,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
 
       recall_ladspa->plugin = plugin;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -230,7 +230,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
 {
   AgsRecallLadspa *recall_ladspa;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
 
@@ -240,11 +240,11 @@ ags_recall_ladspa_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_ladspa->plugin);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -294,7 +294,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_LADSPA(recall_ladspa)){
     return;
@@ -304,14 +304,14 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_ladspa)->filename);
   effect = g_strdup(AGS_RECALL(recall_ladspa)->effect);
   
   effect_index = AGS_RECALL(recall_ladspa)->effect_index;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find ladspa plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
@@ -341,12 +341,12 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 #endif
 
     if(success && ladspa_descriptor){
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_ladspa->plugin_descriptor = 
 	plugin_descriptor = ladspa_descriptor(effect_index);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
   }
 }
@@ -379,8 +379,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   guint port_count;
   guint i;
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_RECALL_LADSPA(recall_ladspa)){
     return(NULL);
@@ -390,14 +390,14 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_ladspa)->filename);
   effect = g_strdup(AGS_RECALL(recall_ladspa)->effect);
   
   effect_index = AGS_RECALL(recall_ladspa)->effect_index;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* find ladspa plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
@@ -409,12 +409,12 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
   /* get port descriptor */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_port =
     plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(ladspa_plugin)->plugin_port);
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   port = NULL;
   retval = NULL;
@@ -425,7 +425,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
     for(i = 0; i < port_count; i++){
       AgsPluginPort *current_plugin_port;
       
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
       
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -446,13 +446,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	g_value_init(default_value,
 		     G_TYPE_FLOAT);
 	
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
 	g_value_copy(current_plugin_port->default_value,
 		     default_value);
 	
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	current_port = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", plugin_name,
@@ -502,7 +502,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
 					  AGS_PLUGIN_PORT_AUDIO)){
-	pthread_mutex_lock(recall_mutex);
+	g_rec_mutex_lock(recall_mutex);
 
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
@@ -530,7 +530,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	  recall_ladspa->output_lines += 1;
 	}
 
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       }
 
       /* iterate plugin port */
@@ -538,13 +538,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
     }
     
     /* reverse port */
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
     
     retval = g_list_copy(AGS_RECALL(recall_ladspa)->port);
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
   }
 
   g_list_free(plugin_port_start);
@@ -638,7 +638,7 @@ ags_recall_ladspa_find(GList *recall,
 {
   gboolean success;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   while(recall != NULL){
     if(AGS_IS_RECALL_LADSPA(recall->data)){
@@ -646,14 +646,14 @@ ags_recall_ladspa_find(GList *recall,
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check filename and effect */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
 			    filename) &&
 		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 			    effect)) ? TRUE: FALSE;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
       
       if(success){
 	return(recall);

@@ -291,7 +291,7 @@ ags_core_audio_server_init(AgsCoreAudioServer *core_audio_server)
   
   g_atomic_int_set(&(core_audio_server->running),
 		   TRUE);
-  core_audio_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
+  core_audio_server->thread = NULL;
 
   /* uuid */
   core_audio_server->uuid = ags_uuid_alloc();

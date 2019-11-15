@@ -1775,7 +1775,7 @@ ags_core_audio_devin_port_free(AgsSoundcard *soundcard)
   core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
 
   /*  */
-  pthread_mutex_lock(core_audio_devin_mutex);
+  g_rec_mutex_lock(core_audio_devin_mutex);
 
   callback_mutex = &(core_audio_devin->callback_mutex);
   callback_finish_mutex = &(core_audio_devin->callback_finish_mutex);

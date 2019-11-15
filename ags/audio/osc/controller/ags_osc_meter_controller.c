@@ -308,7 +308,7 @@ ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller)
   osc_meter_controller->monitor_timeout->tv_nsec = (monitor_timeout - floor(monitor_timeout)) * NSEC_PER_SEC;
 
   /* monitor thread */
-  osc_meter_controller->monitor_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  osc_meter_controller->monitor_thread = NULL;
 
   /* monitor structs */
   osc_meter_controller->monitor = NULL;
@@ -685,11 +685,9 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
     nanosleep(osc_meter_controller->monitor_timeout, NULL);
   }
 
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 /**
@@ -1083,8 +1081,9 @@ ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_con
   g_rec_mutex_unlock(osc_controller_mutex);
 
   /* create monitor thread */
-  pthread_create(osc_meter_controller->monitor_thread, NULL,
-		 ags_osc_meter_controller_monitor_thread, osc_meter_controller);
+  osc_meter_controller->monitor_thread = g_thread_new("Advanced Gtk+ Sequencer - OSC meter monitor",
+						      ags_osc_meter_controller_monitor_thread,
+						      osc_meter_controller);
 }
 
 /**

@@ -177,7 +177,7 @@ ags_sfz_loader_init(AgsSFZLoader *sfz_loader)
   g_rec_mutex_init(&(sfz_loader->obj_mutex)); 
 
   /* fields */
-  sfz_loader->thread = (pthread_t *) malloc(sizeof(pthread_t));
+  sfz_loader->thread = NULL;
   
   sfz_loader->audio = NULL;
 
@@ -1154,11 +1154,9 @@ ags_sfz_loader_run(void *ptr)
   ags_sfz_loader_set_flags(sfz_loader,
 			   AGS_SFZ_LOADER_HAS_COMPLETED);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 void
@@ -1168,8 +1166,9 @@ ags_sfz_loader_start(AgsSFZLoader *sfz_loader)
     return;
   }
   
-  pthread_create(sfz_loader->thread, NULL,
-		 ags_sfz_loader_run, sfz_loader);
+  sfz_loader->thread = g_thread_new("Advanced Gtk+ Sequencer - SFZ loader",
+				    ags_sfz_loader_run,
+				    sfz_loader);
 }
 
 

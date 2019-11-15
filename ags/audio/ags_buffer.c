@@ -27,8 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <pthread.h>
-
 void ags_buffer_class_init(AgsBufferClass *buffer);
 void ags_buffer_init(AgsBuffer *buffer);
 void ags_buffer_set_property(GObject *gobject,

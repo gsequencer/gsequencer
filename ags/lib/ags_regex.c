@@ -21,7 +21,6 @@
 
 #define _GNU_SOURCE
 #include <locale.h>
-#include <pthread.h>
 
 #include <sys/types.h>
 #include <regex.h>

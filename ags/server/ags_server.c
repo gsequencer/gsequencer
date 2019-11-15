@@ -534,11 +534,11 @@ ags_server_get_uuid(AgsConnectable *connectable)
   server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
   /* get UUID */
-  pthread_mutex_lock(server_mutex);
+  g_rec_mutex_lock(server_mutex);
 
   ptr = server->uuid;
 
-  pthread_mutex_unlock(server_mutex);
+  g_rec_mutex_unlock(server_mutex);
   
   return(ptr);
 }

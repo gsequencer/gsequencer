@@ -3118,25 +3118,25 @@ ags_thread_hangcheck(AgsThread *thread)
 
     if(AGS_THREAD_WAIT_0 & sync_flags){
       if(broadcast){
-	pthread_cond_broadcast(thread->cond);
+	g_cond_broadcast(&(thread->cond));
       }else{
-	pthread_cond_signal(thread->cond);
+	g_cond_signal(&(thread->cond));
       }
     }
 
     if(AGS_THREAD_WAIT_1 & sync_flags){
       if(broadcast){
-	pthread_cond_broadcast(thread->cond);
+	g_cond_broadcast(&(thread->cond));
       }else{
-	pthread_cond_signal(thread->cond);
+	g_cond_signal(&(thread->cond));
       }
     }
 
     if(AGS_THREAD_WAIT_2 & sync_flags){
       if(broadcast){
-	pthread_cond_broadcast(thread->cond);
+	g_cond_broadcast(&(thread->cond));
       }else{
-	pthread_cond_signal(thread->cond);
+	g_cond_signal(&(thread->cond));
       }
     }
 

@@ -1371,8 +1371,8 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 
       while((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0 &&
 	    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
-	pthread_cond_wait(&(core_audio_midiin->callback_finish_cond),
-			  callback_finish_mutex);
+	g_cond_wait(&(core_audio_midiin->callback_finish_cond),
+		    callback_finish_mutex);
       }
     }
 

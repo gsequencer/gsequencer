@@ -19,8 +19,6 @@
 
 #include <ags/server/security/ags_authentication_manager.h>
 
-#include <pthread.h>
-
 void ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authentication_manager);
 void ags_authentication_manager_init (AgsAuthenticationManager *authentication_manager);
 void ags_authentication_manager_finalize(GObject *gobject);

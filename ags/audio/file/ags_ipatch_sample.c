@@ -1073,11 +1073,11 @@ ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
   ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* test */
-  pthread_mutex_lock(ipatch_sample_mutex);
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   retval = (flags & (ipatch_sample->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 
   return(retval);
 }
@@ -1106,11 +1106,11 @@ ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(ipatch_sample_mutex);
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   ipatch_sample->flags |= flags;
   
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
     
 /**
@@ -1137,11 +1137,11 @@ ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(ipatch_sample_mutex);
+  g_rec_mutex_lock(ipatch_sample_mutex);
 
   ipatch_sample->flags &= (~flags);
   
-  pthread_mutex_unlock(ipatch_sample_mutex);
+  g_rec_mutex_unlock(ipatch_sample_mutex);
 }
 
 /**

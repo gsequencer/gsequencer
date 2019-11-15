@@ -168,7 +168,7 @@ ags_wave_loader_init(AgsWaveLoader *wave_loader)
   g_rec_mutex_init(&(wave_loader->obj_mutex));
 
   /* fields */
-  wave_loader->thread = (pthread_t *) malloc(sizeof(pthread_t));
+  wave_loader->thread = NULL;
   
   wave_loader->audio = NULL;
 
@@ -574,11 +574,9 @@ ags_wave_loader_run(void *ptr)
   ags_wave_loader_set_flags(wave_loader,
 			    AGS_WAVE_LOADER_HAS_COMPLETED);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 void
@@ -588,8 +586,9 @@ ags_wave_loader_start(AgsWaveLoader *wave_loader)
     return;
   }
   
-  pthread_create(wave_loader->thread, NULL,
-		 ags_wave_loader_run, wave_loader);
+  wave_loader->thread = g_thread_new("Advanced Gtk+ Sequencer - SFZ loader",
+				     ags_wave_loader_run,
+				     wave_loader);
 }
 
 
