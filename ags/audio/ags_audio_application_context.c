@@ -2136,12 +2136,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
           
       continue;
     }
-
-    if(audio_application_context->soundcard == NULL){
-      g_object_set(main_loop,
-		   "default-output-soundcard", G_OBJECT(soundcard),
-		   NULL);
-    }
     
     audio_application_context->soundcard = g_list_append(audio_application_context->soundcard,
 							 soundcard);
@@ -2419,7 +2413,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   g_free(sequencer_group);
 
   /* AgsServer */
-  audio_application_context->server = ags_server_new();
+  audio_application_context->server = g_list_append(audio_application_context->server,
+						    ags_server_new());
   
   /* AgsSoundcardThread and AgsExportThread */
   audio_application_context->default_soundcard_thread = NULL;

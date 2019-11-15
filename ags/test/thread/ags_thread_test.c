@@ -55,7 +55,6 @@ void ags_thread_test_stop();
 
 #define AGS_THREAD_TEST_ADD_CHILD_N_THREADS (16)
 
-extern AgsApplicationContext *ags_application_context;
 AgsApplicationContext *application_context;
 
 AgsThread *main_loop;
@@ -67,8 +66,7 @@ AgsThread *main_loop;
 int
 ags_thread_test_init_suite()
 {
-  ags_application_context = 
-    application_context = ags_thread_application_context_new();
+  application_context = ags_thread_application_context_new();
   g_object_ref(application_context);
   
   ags_application_context_prepare(application_context);
@@ -421,7 +419,7 @@ ags_thread_test_remove_child()
       current = next_current;
     }
 
-    CU_ASSERT(g_atomic_pointer_get(&(thread[i]->parent)) == NULL);
+    CU_ASSERT(ags_thread_parent(thread[i]) == NULL);
     
     g_object_unref(thread[i]);
   }
@@ -450,7 +448,7 @@ ags_thread_test_add_child()
 				  thread[i],
 				  TRUE, TRUE);
 
-    current = g_atomic_pointer_get(&(parent->children));
+    current = ags_thread_children(parent);
 
     success = FALSE;
     
@@ -470,7 +468,7 @@ ags_thread_test_add_child()
     }
 
     CU_ASSERT(success);
-    CU_ASSERT(g_atomic_pointer_get(&(thread[i]->parent)) == parent);
+    CU_ASSERT(ags_thread_parent(thread[i]) == parent);
   }
 }
 

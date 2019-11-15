@@ -319,7 +319,8 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
 
   ags_sequencer_thread_parent_connectable_interface->connect(connectable);
 
-  audio_loop = ags_thread_get_toplevel(sequencer_thread);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+
   g_signal_connect((GObject *) audio_loop, "stopped-all",
 		   G_CALLBACK(ags_sequencer_stopped_all_callback), sequencer_thread);    
 }

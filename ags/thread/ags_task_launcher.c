@@ -784,7 +784,7 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
   GList *start_cyclic_task, *cyclic_task;
 
   GRecMutex *task_launcher_mutex;
-
+  
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 

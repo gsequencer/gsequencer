@@ -71,9 +71,9 @@ void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_set_sync_all_reset(AgsThread *thread);
 void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
 
-gboolean ags_thread_is_tree_ready_current_tic(AgsThread *current,
+gboolean ags_thread_is_tree_ready_current_tic(AgsThread *thread, AgsThread *current,
 					      guint tic);
-gboolean ags_thread_is_tree_ready_recursive(AgsThread *current,
+gboolean ags_thread_is_tree_ready_recursive(AgsThread *thread, AgsThread *current,
 					    guint tic);
 
 void ags_thread_clock_sync(AgsThread *thread);
@@ -614,6 +614,8 @@ ags_thread_finalize(GObject *gobject)
   
   thread = AGS_THREAD(gobject);
 
+  g_message("fin");
+  
   if(thread == ags_thread_self()){
     do_exit = TRUE;
   }else{
@@ -1052,13 +1054,23 @@ ags_thread_parent(AgsThread *thread)
   g_rec_mutex_lock(thread_mutex);
 
   parent = thread->parent;
-
-  if(parent != NULL){
-    g_object_ref(parent);
-  }
   
   g_rec_mutex_unlock(thread_mutex);
 
+#if 0
+  if(parent != NULL){
+    GRecMutex *parent_mutex;  
+
+    parent_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+    g_rec_mutex_lock(parent_mutex);
+    
+    g_object_ref(parent);
+
+    g_rec_mutex_unlock(parent_mutex);
+  }
+#endif
+  
   return(parent);
 }
 
@@ -1190,11 +1202,16 @@ ags_thread_get_toplevel(AgsThread *thread)
   }
 
   current = thread;
+
+#if 0
   g_object_ref(current);
+#endif
   
   while((current_parent = ags_thread_parent(current)) != NULL){
+#if 0
     /* iterate */
     g_object_unref(current);
+#endif
     
     current = current_parent;
   }
@@ -1283,7 +1300,8 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   guint status_flags;
   gboolean broadcast;
   gboolean waiting;
-
+  gboolean immediate_sync;
+  
   GMutex *tic_mutex;
 
   if(!AGS_IS_THREAD(thread)){
@@ -1299,12 +1317,14 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     tic = tic % 3;
   }
 
+  immediate_sync = ags_thread_test_flags(thread, AGS_THREAD_IMMEDIATE_SYNC);
+
   g_mutex_lock(tic_mutex);
 
   status_flags = g_atomic_int_get(&(thread->status_flags));
 
   /* return if no immediate sync and initial run */
-  if(!ags_thread_test_flags(thread, AGS_THREAD_IMMEDIATE_SYNC)){
+  if(!immediate_sync){
     if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
       g_mutex_unlock(tic_mutex);
       
@@ -1498,7 +1518,9 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
   ags_thread_set_sync_all_reset(main_loop);
   ags_thread_set_sync_all_recursive(main_loop, tic);
 
-  g_object_unref(main_loop);
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
 }
 
 /**
@@ -1739,16 +1761,29 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   current_parent = ags_thread_parent(child);
 
   if(current_parent == thread){
-    g_object_unref(current_parent);
+#if 0
+    if(current_parent != NULL){
+      g_object_unref(current_parent);
+    }
+#endif
     
     return;
   }  
 
-  main_loop = ags_thread_get_toplevel(thread);
-  tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+  
+  tree_lock = NULL;
 
+  if(main_loop != NULL){
+    tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
+  }
+  
   if(tree_lock != NULL){
     g_rec_mutex_lock(tree_lock);
+  }
+
+  if(current_parent != NULL){
+    g_object_unref(current_parent);
   }
   
   g_object_ref(thread);
@@ -1775,6 +1810,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
     g_rec_mutex_lock(AGS_THREAD_GET_OBJ_MUTEX(last_child));
 
     last_child->next = child;
+    g_object_ref(child);
     
     g_rec_mutex_unlock(AGS_THREAD_GET_OBJ_MUTEX(last_child));
 
@@ -1792,8 +1828,10 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   if(tree_lock != NULL){
     g_rec_mutex_unlock(tree_lock);
   }
-  
-  g_object_unref(main_loop);
+
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
   
   if(!no_start){
     if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
@@ -1912,7 +1950,7 @@ ags_thread_is_current_ready(AgsThread *current,
 }
 
 gboolean
-ags_thread_is_tree_ready_current_tic(AgsThread *current,
+ags_thread_is_tree_ready_current_tic(AgsThread *thread, AgsThread *current,
 				     guint tic)
 {
   guint status_flags;
@@ -1936,7 +1974,7 @@ ags_thread_is_tree_ready_current_tic(AgsThread *current,
     retval = TRUE;
   }
 
-  if(!ags_thread_test_flags(current, AGS_THREAD_IMMEDIATE_SYNC)){
+  if(!ags_thread_test_flags(thread, AGS_THREAD_IMMEDIATE_SYNC)){
     if((AGS_THREAD_STATUS_INITIAL_RUN & status_flags) != 0){
       g_mutex_unlock(tic_mutex);
 	
@@ -1988,7 +2026,7 @@ ags_thread_is_tree_ready_current_tic(AgsThread *current,
 }
 
 gboolean
-ags_thread_is_tree_ready_recursive(AgsThread *current,
+ags_thread_is_tree_ready_recursive(AgsThread *thread, AgsThread *current,
 				   guint tic)
 {
   AgsThread *children, *current_child, *next_child;
@@ -1999,7 +2037,7 @@ ags_thread_is_tree_ready_recursive(AgsThread *current,
     return(TRUE);
   }
 
-  if(!ags_thread_is_tree_ready_current_tic(current,
+  if(!ags_thread_is_tree_ready_current_tic(thread, current,
 					   tic)){
     return(FALSE);
   }
@@ -2013,7 +2051,7 @@ ags_thread_is_tree_ready_recursive(AgsThread *current,
     g_object_ref(current_child);
     
     while(current_child != NULL){
-      if(!ags_thread_is_tree_ready_recursive(current_child,
+      if(!ags_thread_is_tree_ready_recursive(thread, current_child,
 					     tic)){
 	is_tree_ready = FALSE;
 
@@ -2068,11 +2106,13 @@ ags_thread_is_tree_ready(AgsThread *thread,
   if(ags_thread_global_get_use_sync_counter()){    
     retval = ags_main_loop_sync_counter_test(AGS_MAIN_LOOP(main_loop), tic);
   }else{
-    retval = ags_thread_is_tree_ready_recursive(main_loop,
+    retval = ags_thread_is_tree_ready_recursive(thread, main_loop,
 						tic);
   }
 
-  g_object_unref(main_loop);
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
   
   return(retval);
 }
@@ -2090,13 +2130,21 @@ ags_thread_clock_sync(AgsThread *thread)
   gboolean skip_sync_counter;
 
   GRecMutex *tree_lock;
+
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
   
   /* get main loop */
   application_context = ags_application_context_get_instance();
   
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  tree_lock = NULL;
 
-  tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
+  if(main_loop != NULL){
+    tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
+  }
   
   /* sync */
   skip_sync_counter = FALSE;
@@ -2104,9 +2152,11 @@ ags_thread_clock_sync(AgsThread *thread)
   if(thread != main_loop){
     ags_thread_set_flags(thread, AGS_THREAD_MARK_SYNCED);
   }
-    
-  g_rec_mutex_lock(tree_lock);
-    
+
+  if(tree_lock != NULL){
+    g_rec_mutex_lock(tree_lock);
+  }
+  
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
     AgsThread *parent_thread;
     
@@ -2156,9 +2206,11 @@ ags_thread_clock_sync(AgsThread *thread)
 
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN);
 
+#if 0    
     if(parent_thread != NULL){
       g_object_unref(parent_thread);
     }
+#endif
   }
 
   sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
@@ -2221,8 +2273,10 @@ ags_thread_clock_sync(AgsThread *thread)
   if(!ags_thread_is_tree_ready(thread,
 			       sync_tic)){
     //      ags_thread_hangcheck(main_loop);
-    g_rec_mutex_unlock(tree_lock);
-      
+    if(tree_lock != NULL){
+      g_rec_mutex_unlock(tree_lock);
+    }
+    
     if(!ags_thread_is_current_ready(thread,
 				    current_tic)){
       g_mutex_lock(AGS_THREAD_GET_WAIT_MUTEX(thread));
@@ -2252,16 +2306,20 @@ ags_thread_clock_sync(AgsThread *thread)
 
     ags_thread_set_sync_all(main_loop, thread->current_tic);
 
-    g_rec_mutex_unlock(tree_lock);
+    if(tree_lock != NULL){
+      g_rec_mutex_unlock(tree_lock);
+    }
   }
 
-  g_object_unref(main_loop);
+  if(main_loop != NULL){
+    g_object_unref(main_loop);
+  }
 }
 
 guint
 ags_thread_real_clock(AgsThread *thread)
 {
-  AgsThread *toplevel;
+  AgsThread *main_loop;
 
 #ifdef __APPLE__
   clock_serv_t cclock;
@@ -2270,19 +2328,21 @@ ags_thread_real_clock(AgsThread *thread)
   
   struct timespec time_now;
 
+  gdouble main_loop_delay;
   guint delay, tic_delay;
   gdouble delay_per_hertz;
   guint steps;
 
+  GRecMutex *main_loop_mutex;
   GRecMutex *thread_mutex;
   
   /* get thread mutex */  
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* check toplevel to be main loop */
-  toplevel = ags_thread_get_toplevel(thread);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
 
-  if(!AGS_IS_MAIN_LOOP(toplevel)){
+  if(main_loop == NULL){
     g_rec_mutex_lock(thread_mutex);
     
     if(thread->tic_delay == 0){
@@ -2297,16 +2357,23 @@ ags_thread_real_clock(AgsThread *thread)
 
     g_rec_mutex_unlock(thread_mutex);
 
-    g_object_unref(toplevel);
-    
     return(steps);
   }
   
-  g_object_unref(toplevel);
-
-  toplevel = NULL;
+  main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
   
   steps = 0;
+
+  /* calculate main loop delay */
+  g_rec_mutex_lock(main_loop_mutex);
+  
+  main_loop_delay = main_loop->max_precision / main_loop->freq / (AGS_THREAD_HERTZ_JIFFIE / main_loop->max_precision);
+  
+  g_rec_mutex_unlock(main_loop_mutex);
+
+  g_object_unref(main_loop);
+
+  main_loop = NULL;
   
   /* calculate thread delay */
   g_rec_mutex_lock(thread_mutex);
@@ -2693,12 +2760,14 @@ ags_thread_loop(void *ptr)
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* retrieve current tic */
-  g_rec_mutex_lock(tree_lock);
+  if(main_loop != NULL){
+    g_rec_mutex_lock(tree_lock);
   
-  thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
   
-  g_rec_mutex_unlock(tree_lock);
-
+    g_rec_mutex_unlock(tree_lock);
+  }
+  
   /* check is running */
   is_running = ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING);
   
@@ -2739,12 +2808,14 @@ ags_thread_loop(void *ptr)
 #endif
   }
 
+#if 0  
   if(parent != NULL){
     g_object_unref(parent);
 
     parent = NULL;
   }
-    
+#endif
+  
   while(is_running){
     guint tic_delay;
     
@@ -2771,7 +2842,9 @@ ags_thread_loop(void *ptr)
       g_mutex_lock(AGS_THREAD_GET_START_MUTEX(queued_thread));
 
       if(!ags_thread_test_status_flags(queued_thread, AGS_THREAD_STATUS_START_DONE)){
-	g_rec_mutex_lock(tree_lock);
+	if(tree_lock != NULL){
+	  g_rec_mutex_lock(tree_lock);
+	}
 	
 	/* ordinary sync */
 	g_rec_mutex_lock(AGS_THREAD_GET_OBJ_MUTEX(queued_thread));
@@ -2805,8 +2878,10 @@ ags_thread_loop(void *ptr)
 	g_rec_mutex_unlock(AGS_THREAD_GET_OBJ_MUTEX(queued_thread));
 
 	/*  */
-	g_rec_mutex_unlock(tree_lock);
-
+	if(tree_lock != NULL){
+	  g_rec_mutex_unlock(tree_lock);
+	}
+	
 	ags_thread_set_status_flags(queued_thread, AGS_THREAD_STATUS_START_WAIT);
       
 	while(ags_thread_test_status_flags(queued_thread, AGS_THREAD_STATUS_START_WAIT) &&
@@ -2860,8 +2935,10 @@ ags_thread_loop(void *ptr)
   }
 
   //  g_object_ref(thread);
-  g_rec_mutex_lock(tree_lock);  
-
+  if(tree_lock != NULL){
+    g_rec_mutex_lock(tree_lock);  
+  }
+  
   skip_sync_counter = FALSE;  
 	
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
@@ -2997,13 +3074,18 @@ ags_thread_loop(void *ptr)
     ags_thread_remove_child(parent,
 			    thread);
 
+#if 0
     g_object_unref(parent);
+#endif
+    
     g_object_unref(thread);
 
     parent = NULL;
   }
   
-  g_rec_mutex_unlock(tree_lock);  
+  if(tree_lock != NULL){
+    g_rec_mutex_unlock(tree_lock);
+  }
   
 #ifdef AGS_DEBUG
   g_message("thread finished");

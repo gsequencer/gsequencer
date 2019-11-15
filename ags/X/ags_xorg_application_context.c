@@ -20,6 +20,7 @@
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_animation_window.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
@@ -156,6 +157,10 @@ void ags_xorg_application_context_set_file_ready(AgsUiProvider *ui_provider,
 gdouble ags_xorg_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
 						       gdouble gui_scale_factor);
+void ags_xorg_application_context_schedule_task(AgsUiProvider *ui_provider,
+						AgsTask *task);
+void ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
+						    GList *task);
 GtkWidget* ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
 						       GtkWidget *widget);
@@ -211,6 +216,8 @@ void ags_xorg_application_context_quit(AgsApplicationContext *application_contex
 
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
+
+void* ags_xorg_application_context_main_loop_thread(GMainLoop *main_loop);
 
 /**
  * SECTION:ags_xorg_application_context
@@ -465,7 +472,10 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
 
   ui_provider->get_gui_scale_factor = ags_xorg_application_context_get_gui_scale_factor;
   ui_provider->set_gui_scale_factor = ags_xorg_application_context_set_gui_scale_factor;
-  
+
+  ui_provider->schedule_task = ags_xorg_application_context_schedule_task;
+  ui_provider->schedule_task_all = ags_xorg_application_context_schedule_task_all;
+
   ui_provider->get_animation_window = ags_xorg_application_context_get_animation_window;
   ui_provider->set_animation_window = ags_xorg_application_context_set_animation_window;
 
@@ -2539,18 +2549,38 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
   GtkWidget *widget;
-  
+  AgsWindow *window;
+
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
 
   GMainContext *server_main_context;
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
+  GMainLoop *main_loop;
+  GThread *main_loop_thread;
   
   GList *start_queue;
+
+  gchar *filename;
+
+  guint i;
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
+  /* check filename */
+  filename = NULL;
+
+  for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
+    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
+       i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
+       AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1] != NULL){      
+      filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
+      
+      break;
+    }
+  }
+  
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
   
@@ -2575,9 +2605,13 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   xorg_application_context->audio_main_context = audio_main_context;
 
-  g_main_loop_new(audio_main_context,
-		  TRUE);
+  main_loop = g_main_loop_new(audio_main_context,
+			      TRUE);
 
+  g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
+	       ags_xorg_application_context_main_loop_thread,
+	       main_loop);
+  
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();
   g_main_context_ref(osc_server_main_context);
@@ -2588,7 +2622,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 		  TRUE);
 
   /* AgsAudioLoop */
-  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) NULL);
+  audio_loop = (AgsThread *) ags_audio_loop_new();
   g_object_ref(audio_loop);
   
   application_context->main_loop = (GObject *) audio_loop;
@@ -2627,19 +2661,36 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
 		(gpointer) xorg_application_context);
   
-  g_timeout_add(1000.0,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_xorg_application_context_task_timeout,
 		(gpointer) xorg_application_context);
 
   /* show animation */
   ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(application_context),
 				TRUE);
-
+  
   widget = ags_animation_window_new();
   ags_ui_provider_set_animation_window(AGS_UI_PROVIDER(application_context),
 				       widget);
   
   gtk_widget_show(widget);
+
+  /* AgsWindow */
+#ifdef AGS_WITH_QUARTZ
+  g_object_new(GTKOSX_TYPE_APPLICATION,
+	       NULL);
+#endif
+  window =
+    xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
+						    NULL);
+  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window));
+  
+  if(filename != NULL){
+    window->filename = filename;
+  }
 
   /* gtk main */
   gtk_main();
@@ -2649,7 +2700,6 @@ void
 ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
-  AgsWindow *window;
 
   AgsServer *server;
 
@@ -2708,6 +2758,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
+  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
+    usleep(4);
+  }
+  
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
 
@@ -3161,12 +3215,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
           
       continue;
     }
-
-    if(xorg_application_context->soundcard == NULL){
-      g_object_set(main_loop,
-		   "default-output-soundcard", G_OBJECT(soundcard),
-		   NULL);
-    }
     
     xorg_application_context->soundcard = g_list_append(xorg_application_context->soundcard,
 							soundcard);
@@ -3443,24 +3491,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   g_free(sequencer_group);
   
-  /* AgsWindow */
-#ifdef AGS_WITH_QUARTZ
-  g_object_new(GTKOSX_TYPE_APPLICATION,
-	       NULL);
-#endif
-  window =
-    xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
-						    NULL);
-  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-  gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-  ags_connectable_connect(AGS_CONNECTABLE(window));
-
   /* stop animation */
   ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
 
   /* AgsServer */
-  xorg_application_context->server = ags_server_new();
+  xorg_application_context->server = g_list_append(xorg_application_context->server,
+						   ags_server_new());
   
   /* AgsSoundcardThread and AgsExportThread */
   xorg_application_context->default_soundcard_thread = NULL;
@@ -3474,7 +3510,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
 							      soundcard_capability);
     ags_thread_add_child_extended(main_loop,
-				  (AgsThread *) soundcard_thread,
+				  soundcard_thread,
 				  TRUE, TRUE);
 
     /* export thread */
@@ -3722,10 +3758,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
-  }
-  
-  if(filename != NULL){
-    window->filename = filename;
   }
 
   /* unref */
@@ -3998,6 +4030,16 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
   //TODO:JK: implement me
   
   return(node);
+}
+
+void*
+ags_xorg_application_context_main_loop_thread(GMainLoop *main_loop)
+{
+  g_main_loop_run(main_loop);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 gboolean

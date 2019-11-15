@@ -1223,11 +1223,14 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   if(new_start_changed_region != NULL){
     /* get some fields */
     g_object_get(new_start_changed_region,
-		 "recall-id", &recall_id,
 		 "output-soundcard", &output_soundcard,
 		 "input-soundcard", &input_soundcard,
 		 NULL);
 
+    g_object_get(recall_channel_run,
+      		 "recall-id", &recall_id,
+		 NULL);
+    
     g_rec_mutex_lock(recall_mutex);
 
     output_soundcard_channel = AGS_RECALL(recall_channel_run)->output_soundcard_channel;

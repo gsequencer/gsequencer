@@ -136,14 +136,9 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_config_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_connectable_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_soundcard_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_condition_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_destroy_worker_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_mutex_manager_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_poll_fd_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_polling_thread_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_returnable_thread_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_task_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_task_thread_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_thread_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_thread_pool_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_worker_thread_test$(EXEEXT) \
@@ -273,7 +268,6 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_free_selection_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_link_channel_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_move_note_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_notify_soundcard_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_audio_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_audio_signal_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_note_test$(EXEEXT) \
@@ -838,19 +832,6 @@ ags_check_system_complex_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_check_system_complex_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_complex_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_condition_manager_test_SOURCES_DIST =  \
-	ags/test/thread/ags_condition_manager_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_condition_manager_test_OBJECTS = ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.$(OBJEXT)
-ags_check_system_condition_manager_test_OBJECTS =  \
-	$(am_ags_check_system_condition_manager_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_condition_manager_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_condition_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) \
-	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_condition_manager_test_CFLAGS) \
-	$(CFLAGS) $(ags_check_system_condition_manager_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am__ags_check_system_config_test_SOURCES_DIST =  \
 	ags/test/object/ags_config_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_config_test_OBJECTS = ags/test/object/check_system_config_test-ags_config_test.$(OBJEXT)
@@ -1695,19 +1676,6 @@ ags_check_system_mute_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_mute_channel_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_mute_channel_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_mutex_manager_test_SOURCES_DIST =  \
-	ags/test/thread/ags_mutex_manager_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_mutex_manager_test_OBJECTS = ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.$(OBJEXT)
-ags_check_system_mutex_manager_test_OBJECTS =  \
-	$(am_ags_check_system_mutex_manager_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_mutex_manager_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_mutex_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) \
-	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_mutex_manager_test_CFLAGS) \
-	$(CFLAGS) $(ags_check_system_mutex_manager_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am__ags_check_system_notation_test_SOURCES_DIST =  \
 	ags/test/audio/ags_notation_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_notation_test_OBJECTS = ags/test/audio/check_system_notation_test-ags_notation_test.$(OBJEXT)
@@ -1740,23 +1708,6 @@ ags_check_system_note_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_check_system_note_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_note_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_notify_soundcard_test_SOURCES_DIST =  \
-	ags/test/audio/task/ags_notify_soundcard_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_notify_soundcard_test_OBJECTS = ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.$(OBJEXT)
-ags_check_system_notify_soundcard_test_OBJECTS =  \
-	$(am_ags_check_system_notify_soundcard_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_notify_soundcard_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_notify_soundcard_test_LINK = $(LIBTOOL) $(AM_V_lt) \
-	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_notify_soundcard_test_CFLAGS) \
-	$(CFLAGS) $(ags_check_system_notify_soundcard_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am__ags_check_system_osc_action_controller_test_SOURCES_DIST = ags/test/audio/osc/controller/ags_osc_action_controller_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_osc_action_controller_test_OBJECTS = ags/test/audio/osc/controller/check_system_osc_action_controller_test-ags_osc_action_controller_test.$(OBJEXT)
 ags_check_system_osc_action_controller_test_OBJECTS =  \
@@ -2162,31 +2113,6 @@ ags_check_system_plugin_port_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_plugin_port_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_plugin_port_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_poll_fd_test_SOURCES_DIST =  \
-	ags/test/thread/ags_poll_fd_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_poll_fd_test_OBJECTS = ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.$(OBJEXT)
-ags_check_system_poll_fd_test_OBJECTS =  \
-	$(am_ags_check_system_poll_fd_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_poll_fd_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_poll_fd_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(ags_check_system_poll_fd_test_CFLAGS) $(CFLAGS) \
-	$(ags_check_system_poll_fd_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_polling_thread_test_SOURCES_DIST =  \
-	ags/test/thread/ags_polling_thread_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_polling_thread_test_OBJECTS = ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.$(OBJEXT)
-ags_check_system_polling_thread_test_OBJECTS =  \
-	$(am_ags_check_system_polling_thread_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_polling_thread_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_polling_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) \
-	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_polling_thread_test_CFLAGS) \
-	$(CFLAGS) $(ags_check_system_polling_thread_test_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am__ags_check_system_port_test_SOURCES_DIST =  \
 	ags/test/audio/ags_port_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_port_test_OBJECTS = ags/test/audio/check_system_port_test-ags_port_test.$(OBJEXT)
@@ -2777,18 +2703,6 @@ ags_check_system_task_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_check_system_task_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_task_test_LDFLAGS) $(LDFLAGS) -o $@
-am__ags_check_system_task_thread_test_SOURCES_DIST =  \
-	ags/test/thread/ags_task_thread_test.c
-@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_task_thread_test_OBJECTS = ags/test/thread/check_system_task_thread_test-ags_task_thread_test.$(OBJEXT)
-ags_check_system_task_thread_test_OBJECTS =  \
-	$(am_ags_check_system_task_thread_test_OBJECTS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_thread_test_DEPENDENCIES =  \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
-ags_check_system_task_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) \
-	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(ags_check_system_task_thread_test_CFLAGS) $(CFLAGS) \
-	$(ags_check_system_task_thread_test_LDFLAGS) $(LDFLAGS) -o $@
 am__ags_check_system_thread_file_xml_test_SOURCES_DIST =  \
 	ags/test/thread/file/ags_thread_file_xml_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_thread_file_xml_test_OBJECTS = ags/test/thread/file/check_system_thread_file_xml_test-ags_thread_file_xml_test.$(OBJEXT)
@@ -3031,7 +2945,6 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_clear_audio_signal_test_SOURCES) \
 	$(ags_check_system_clear_buffer_test_SOURCES) \
 	$(ags_check_system_complex_test_SOURCES) \
-	$(ags_check_system_condition_manager_test_SOURCES) \
 	$(ags_check_system_config_test_SOURCES) \
 	$(ags_check_system_connectable_test_SOURCES) \
 	$(ags_check_system_conversion_test_SOURCES) \
@@ -3085,10 +2998,8 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_mute_audio_signal_test_SOURCES) \
 	$(ags_check_system_mute_audio_test_SOURCES) \
 	$(ags_check_system_mute_channel_test_SOURCES) \
-	$(ags_check_system_mutex_manager_test_SOURCES) \
 	$(ags_check_system_notation_test_SOURCES) \
 	$(ags_check_system_note_test_SOURCES) \
-	$(ags_check_system_notify_soundcard_test_SOURCES) \
 	$(ags_check_system_osc_action_controller_test_SOURCES) \
 	$(ags_check_system_osc_buffer_util_test_SOURCES) \
 	$(ags_check_system_osc_client_test_SOURCES) \
@@ -3113,8 +3024,6 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_playback_domain_test_SOURCES) \
 	$(ags_check_system_playback_test_SOURCES) \
 	$(ags_check_system_plugin_port_test_SOURCES) \
-	$(ags_check_system_poll_fd_test_SOURCES) \
-	$(ags_check_system_polling_thread_test_SOURCES) \
 	$(ags_check_system_port_test_SOURCES) \
 	$(ags_check_system_prepare_audio_signal_test_SOURCES) \
 	$(ags_check_system_preset_test_SOURCES) \
@@ -3151,7 +3060,6 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_stream_audio_signal_test_SOURCES) \
 	$(ags_check_system_synth_generator_test_SOURCES) \
 	$(ags_check_system_task_test_SOURCES) \
-	$(ags_check_system_task_thread_test_SOURCES) \
 	$(ags_check_system_thread_file_xml_test_SOURCES) \
 	$(ags_check_system_thread_pool_test_SOURCES) \
 	$(ags_check_system_thread_test_SOURCES) \
@@ -3197,7 +3105,6 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_clear_audio_signal_test_SOURCES_DIST) \
 	$(am__ags_check_system_clear_buffer_test_SOURCES_DIST) \
 	$(am__ags_check_system_complex_test_SOURCES_DIST) \
-	$(am__ags_check_system_condition_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_config_test_SOURCES_DIST) \
 	$(am__ags_check_system_connectable_test_SOURCES_DIST) \
 	$(am__ags_check_system_conversion_test_SOURCES_DIST) \
@@ -3251,10 +3158,8 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_mute_audio_signal_test_SOURCES_DIST) \
 	$(am__ags_check_system_mute_audio_test_SOURCES_DIST) \
 	$(am__ags_check_system_mute_channel_test_SOURCES_DIST) \
-	$(am__ags_check_system_mutex_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_notation_test_SOURCES_DIST) \
 	$(am__ags_check_system_note_test_SOURCES_DIST) \
-	$(am__ags_check_system_notify_soundcard_test_SOURCES_DIST) \
 	$(am__ags_check_system_osc_action_controller_test_SOURCES_DIST) \
 	$(am__ags_check_system_osc_buffer_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_osc_client_test_SOURCES_DIST) \
@@ -3279,8 +3184,6 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_playback_domain_test_SOURCES_DIST) \
 	$(am__ags_check_system_playback_test_SOURCES_DIST) \
 	$(am__ags_check_system_plugin_port_test_SOURCES_DIST) \
-	$(am__ags_check_system_poll_fd_test_SOURCES_DIST) \
-	$(am__ags_check_system_polling_thread_test_SOURCES_DIST) \
 	$(am__ags_check_system_port_test_SOURCES_DIST) \
 	$(am__ags_check_system_prepare_audio_signal_test_SOURCES_DIST) \
 	$(am__ags_check_system_preset_test_SOURCES_DIST) \
@@ -3317,7 +3220,6 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_stream_audio_signal_test_SOURCES_DIST) \
 	$(am__ags_check_system_synth_generator_test_SOURCES_DIST) \
 	$(am__ags_check_system_task_test_SOURCES_DIST) \
-	$(am__ags_check_system_task_thread_test_SOURCES_DIST) \
 	$(am__ags_check_system_thread_file_xml_test_SOURCES_DIST) \
 	$(am__ags_check_system_thread_pool_test_SOURCES_DIST) \
 	$(am__ags_check_system_thread_test_SOURCES_DIST) \
@@ -3648,14 +3550,9 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_config_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_connectable_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_soundcard_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_condition_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_destroy_worker_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_mutex_manager_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_poll_fd_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_polling_thread_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_returnable_thread_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_task_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_task_thread_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_thread_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_thread_pool_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_worker_thread_test \
@@ -3789,7 +3686,6 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_free_selection_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_link_channel_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_move_note_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_notify_soundcard_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_audio_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_audio_signal_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_remove_note_test \
@@ -3878,35 +3774,11 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_soundcard_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
-# condition manager unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_condition_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_condition_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_condition_manager_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
 # destroy worker unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_destroy_worker_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# mutex manager unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_mutex_manager_test_SOURCES = ags/test/thread/ags_mutex_manager_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_mutex_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_mutex_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_mutex_manager_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# poll fd unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_poll_fd_test_SOURCES = ags/test/thread/ags_poll_fd_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_poll_fd_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_poll_fd_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_poll_fd_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# polling thread unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_polling_thread_test_SOURCES = ags/test/thread/ags_polling_thread_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_polling_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_polling_thread_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_polling_thread_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # returnable thread unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c
@@ -3919,12 +3791,6 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# task thread unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_thread_test_SOURCES = ags/test/thread/ags_task_thread_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_thread_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_task_thread_test_LDADD = -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
@@ -4700,12 +4566,6 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_move_note_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_move_note_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
-# notify soundcard unit test
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_notify_soundcard_test_SOURCES = ags/test/audio/task/ags_notify_soundcard_test.c
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_notify_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_notify_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_notify_soundcard_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-
 # remove audio unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_remove_audio_test_SOURCES = ags/test/audio/task/ags_remove_audio_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_remove_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -5100,15 +4960,6 @@ ags/test/lib/check_system_complex_test-ags_complex_test.$(OBJEXT):  \
 ags_check_system_complex_test$(EXEEXT): $(ags_check_system_complex_test_OBJECTS) $(ags_check_system_complex_test_DEPENDENCIES) $(EXTRA_ags_check_system_complex_test_DEPENDENCIES) 
 	@rm -f ags_check_system_complex_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_complex_test_LINK) $(ags_check_system_complex_test_OBJECTS) $(ags_check_system_complex_test_LDADD) $(LIBS)
-ags/test/thread/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/thread
-	@: > ags/test/thread/$(am__dirstamp)
-ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.$(OBJEXT):  \
-	ags/test/thread/$(am__dirstamp)
-
-ags_check_system_condition_manager_test$(EXEEXT): $(ags_check_system_condition_manager_test_OBJECTS) $(ags_check_system_condition_manager_test_DEPENDENCIES) $(EXTRA_ags_check_system_condition_manager_test_DEPENDENCIES) 
-	@rm -f ags_check_system_condition_manager_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_condition_manager_test_LINK) $(ags_check_system_condition_manager_test_OBJECTS) $(ags_check_system_condition_manager_test_LDADD) $(LIBS)
 ags/test/object/check_system_config_test-ags_config_test.$(OBJEXT):  \
 	ags/test/object/$(am__dirstamp)
 
@@ -5169,6 +5020,9 @@ ags/test/audio/recall/check_system_delay_audio_test-ags_delay_audio_test.$(OBJEX
 ags_check_system_delay_audio_test$(EXEEXT): $(ags_check_system_delay_audio_test_OBJECTS) $(ags_check_system_delay_audio_test_DEPENDENCIES) $(EXTRA_ags_check_system_delay_audio_test_DEPENDENCIES) 
 	@rm -f ags_check_system_delay_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_delay_audio_test_LINK) $(ags_check_system_delay_audio_test_OBJECTS) $(ags_check_system_delay_audio_test_LDADD) $(LIBS)
+ags/test/thread/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/thread
+	@: > ags/test/thread/$(am__dirstamp)
 ags/test/thread/check_system_destroy_worker_test-ags_destroy_worker_test.$(OBJEXT):  \
 	ags/test/thread/$(am__dirstamp)
 
@@ -5433,12 +5287,6 @@ ags/test/audio/recall/check_system_mute_channel_test-ags_mute_channel_test.$(OBJ
 ags_check_system_mute_channel_test$(EXEEXT): $(ags_check_system_mute_channel_test_OBJECTS) $(ags_check_system_mute_channel_test_DEPENDENCIES) $(EXTRA_ags_check_system_mute_channel_test_DEPENDENCIES) 
 	@rm -f ags_check_system_mute_channel_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_mute_channel_test_LINK) $(ags_check_system_mute_channel_test_OBJECTS) $(ags_check_system_mute_channel_test_LDADD) $(LIBS)
-ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.$(OBJEXT):  \
-	ags/test/thread/$(am__dirstamp)
-
-ags_check_system_mutex_manager_test$(EXEEXT): $(ags_check_system_mutex_manager_test_OBJECTS) $(ags_check_system_mutex_manager_test_DEPENDENCIES) $(EXTRA_ags_check_system_mutex_manager_test_DEPENDENCIES) 
-	@rm -f ags_check_system_mutex_manager_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_mutex_manager_test_LINK) $(ags_check_system_mutex_manager_test_OBJECTS) $(ags_check_system_mutex_manager_test_LDADD) $(LIBS)
 ags/test/audio/check_system_notation_test-ags_notation_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp)
 
@@ -5451,12 +5299,6 @@ ags/test/audio/check_system_note_test-ags_note_test.$(OBJEXT):  \
 ags_check_system_note_test$(EXEEXT): $(ags_check_system_note_test_OBJECTS) $(ags_check_system_note_test_DEPENDENCIES) $(EXTRA_ags_check_system_note_test_DEPENDENCIES) 
 	@rm -f ags_check_system_note_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_note_test_LINK) $(ags_check_system_note_test_OBJECTS) $(ags_check_system_note_test_LDADD) $(LIBS)
-ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.$(OBJEXT):  \
-	ags/test/audio/task/$(am__dirstamp)
-
-ags_check_system_notify_soundcard_test$(EXEEXT): $(ags_check_system_notify_soundcard_test_OBJECTS) $(ags_check_system_notify_soundcard_test_DEPENDENCIES) $(EXTRA_ags_check_system_notify_soundcard_test_DEPENDENCIES) 
-	@rm -f ags_check_system_notify_soundcard_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_notify_soundcard_test_LINK) $(ags_check_system_notify_soundcard_test_OBJECTS) $(ags_check_system_notify_soundcard_test_LDADD) $(LIBS)
 ags/test/audio/osc/controller/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/osc/controller
 	@: > ags/test/audio/osc/controller/$(am__dirstamp)
@@ -5607,18 +5449,6 @@ ags/test/plugin/check_system_plugin_port_test-ags_plugin_port_test.$(OBJEXT):  \
 ags_check_system_plugin_port_test$(EXEEXT): $(ags_check_system_plugin_port_test_OBJECTS) $(ags_check_system_plugin_port_test_DEPENDENCIES) $(EXTRA_ags_check_system_plugin_port_test_DEPENDENCIES) 
 	@rm -f ags_check_system_plugin_port_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_plugin_port_test_LINK) $(ags_check_system_plugin_port_test_OBJECTS) $(ags_check_system_plugin_port_test_LDADD) $(LIBS)
-ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.$(OBJEXT):  \
-	ags/test/thread/$(am__dirstamp)
-
-ags_check_system_poll_fd_test$(EXEEXT): $(ags_check_system_poll_fd_test_OBJECTS) $(ags_check_system_poll_fd_test_DEPENDENCIES) $(EXTRA_ags_check_system_poll_fd_test_DEPENDENCIES) 
-	@rm -f ags_check_system_poll_fd_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_poll_fd_test_LINK) $(ags_check_system_poll_fd_test_OBJECTS) $(ags_check_system_poll_fd_test_LDADD) $(LIBS)
-ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.$(OBJEXT):  \
-	ags/test/thread/$(am__dirstamp)
-
-ags_check_system_polling_thread_test$(EXEEXT): $(ags_check_system_polling_thread_test_OBJECTS) $(ags_check_system_polling_thread_test_DEPENDENCIES) $(EXTRA_ags_check_system_polling_thread_test_DEPENDENCIES) 
-	@rm -f ags_check_system_polling_thread_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_polling_thread_test_LINK) $(ags_check_system_polling_thread_test_OBJECTS) $(ags_check_system_polling_thread_test_LDADD) $(LIBS)
 ags/test/audio/check_system_port_test-ags_port_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp)
 
@@ -5835,12 +5665,6 @@ ags/test/thread/check_system_task_test-ags_task_test.$(OBJEXT):  \
 ags_check_system_task_test$(EXEEXT): $(ags_check_system_task_test_OBJECTS) $(ags_check_system_task_test_DEPENDENCIES) $(EXTRA_ags_check_system_task_test_DEPENDENCIES) 
 	@rm -f ags_check_system_task_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_task_test_LINK) $(ags_check_system_task_test_OBJECTS) $(ags_check_system_task_test_LDADD) $(LIBS)
-ags/test/thread/check_system_task_thread_test-ags_task_thread_test.$(OBJEXT):  \
-	ags/test/thread/$(am__dirstamp)
-
-ags_check_system_task_thread_test$(EXEEXT): $(ags_check_system_task_thread_test_OBJECTS) $(ags_check_system_task_thread_test_DEPENDENCIES) $(EXTRA_ags_check_system_task_thread_test_DEPENDENCIES) 
-	@rm -f ags_check_system_task_thread_test$(EXEEXT)
-	$(AM_V_CCLD)$(ags_check_system_task_thread_test_LINK) $(ags_check_system_task_thread_test_OBJECTS) $(ags_check_system_task_thread_test_LDADD) $(LIBS)
 ags/test/thread/file/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/thread/file
 	@: > ags/test/thread/file/$(am__dirstamp)
@@ -6145,12 +5969,6 @@ ags/test/lib/check_system_complex_test-ags_complex_test.o: ags/test/lib/ags_comp
 
 ags/test/lib/check_system_complex_test-ags_complex_test.obj: ags/test/lib/ags_complex_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_complex_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_complex_test-ags_complex_test.obj `if test -f 'ags/test/lib/ags_complex_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_complex_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_complex_test.c'; fi`
-
-ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.o: ags/test/thread/ags_condition_manager_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_condition_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.o `test -f 'ags/test/thread/ags_condition_manager_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_condition_manager_test.c
-
-ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.obj: ags/test/thread/ags_condition_manager_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_condition_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_condition_manager_test-ags_condition_manager_test.obj `if test -f 'ags/test/thread/ags_condition_manager_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_condition_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_condition_manager_test.c'; fi`
 
 ags/test/object/check_system_config_test-ags_config_test.o: ags/test/object/ags_config_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_config_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/check_system_config_test-ags_config_test.o `test -f 'ags/test/object/ags_config_test.c' || echo '$(srcdir)/'`ags/test/object/ags_config_test.c
@@ -6470,12 +6288,6 @@ ags/test/audio/recall/check_system_mute_channel_test-ags_mute_channel_test.o: ag
 ags/test/audio/recall/check_system_mute_channel_test-ags_mute_channel_test.obj: ags/test/audio/recall/ags_mute_channel_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_mute_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/check_system_mute_channel_test-ags_mute_channel_test.obj `if test -f 'ags/test/audio/recall/ags_mute_channel_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_mute_channel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_mute_channel_test.c'; fi`
 
-ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.o: ags/test/thread/ags_mutex_manager_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_mutex_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.o `test -f 'ags/test/thread/ags_mutex_manager_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_mutex_manager_test.c
-
-ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.obj: ags/test/thread/ags_mutex_manager_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_mutex_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_mutex_manager_test-ags_mutex_manager_test.obj `if test -f 'ags/test/thread/ags_mutex_manager_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_mutex_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_mutex_manager_test.c'; fi`
-
 ags/test/audio/check_system_notation_test-ags_notation_test.o: ags/test/audio/ags_notation_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_notation_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_notation_test-ags_notation_test.o `test -f 'ags/test/audio/ags_notation_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_notation_test.c
 
@@ -6487,12 +6299,6 @@ ags/test/audio/check_system_note_test-ags_note_test.o: ags/test/audio/ags_note_t
 
 ags/test/audio/check_system_note_test-ags_note_test.obj: ags/test/audio/ags_note_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_note_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_note_test-ags_note_test.obj `if test -f 'ags/test/audio/ags_note_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_note_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_note_test.c'; fi`
-
-ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.o: ags/test/audio/task/ags_notify_soundcard_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_notify_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.o `test -f 'ags/test/audio/task/ags_notify_soundcard_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_notify_soundcard_test.c
-
-ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.obj: ags/test/audio/task/ags_notify_soundcard_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_notify_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/check_system_notify_soundcard_test-ags_notify_soundcard_test.obj `if test -f 'ags/test/audio/task/ags_notify_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_notify_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_notify_soundcard_test.c'; fi`
 
 ags/test/audio/osc/controller/check_system_osc_action_controller_test-ags_osc_action_controller_test.o: ags/test/audio/osc/controller/ags_osc_action_controller_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_osc_action_controller_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/controller/check_system_osc_action_controller_test-ags_osc_action_controller_test.o `test -f 'ags/test/audio/osc/controller/ags_osc_action_controller_test.c' || echo '$(srcdir)/'`ags/test/audio/osc/controller/ags_osc_action_controller_test.c
@@ -6637,18 +6443,6 @@ ags/test/plugin/check_system_plugin_port_test-ags_plugin_port_test.o: ags/test/p
 
 ags/test/plugin/check_system_plugin_port_test-ags_plugin_port_test.obj: ags/test/plugin/ags_plugin_port_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_plugin_port_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/check_system_plugin_port_test-ags_plugin_port_test.obj `if test -f 'ags/test/plugin/ags_plugin_port_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_plugin_port_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_plugin_port_test.c'; fi`
-
-ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.o: ags/test/thread/ags_poll_fd_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_poll_fd_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.o `test -f 'ags/test/thread/ags_poll_fd_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_poll_fd_test.c
-
-ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.obj: ags/test/thread/ags_poll_fd_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_poll_fd_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_poll_fd_test-ags_poll_fd_test.obj `if test -f 'ags/test/thread/ags_poll_fd_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_poll_fd_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_poll_fd_test.c'; fi`
-
-ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.o: ags/test/thread/ags_polling_thread_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_polling_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.o `test -f 'ags/test/thread/ags_polling_thread_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_polling_thread_test.c
-
-ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.obj: ags/test/thread/ags_polling_thread_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_polling_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_polling_thread_test-ags_polling_thread_test.obj `if test -f 'ags/test/thread/ags_polling_thread_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_polling_thread_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_polling_thread_test.c'; fi`
 
 ags/test/audio/check_system_port_test-ags_port_test.o: ags/test/audio/ags_port_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_port_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_port_test-ags_port_test.o `test -f 'ags/test/audio/ags_port_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_port_test.c
@@ -6865,12 +6659,6 @@ ags/test/thread/check_system_task_test-ags_task_test.o: ags/test/thread/ags_task
 
 ags/test/thread/check_system_task_test-ags_task_test.obj: ags/test/thread/ags_task_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_task_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_task_test-ags_task_test.obj `if test -f 'ags/test/thread/ags_task_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_task_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_task_test.c'; fi`
-
-ags/test/thread/check_system_task_thread_test-ags_task_thread_test.o: ags/test/thread/ags_task_thread_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_task_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_task_thread_test-ags_task_thread_test.o `test -f 'ags/test/thread/ags_task_thread_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_task_thread_test.c
-
-ags/test/thread/check_system_task_thread_test-ags_task_thread_test.obj: ags/test/thread/ags_task_thread_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_task_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/check_system_task_thread_test-ags_task_thread_test.obj `if test -f 'ags/test/thread/ags_task_thread_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_task_thread_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_task_thread_test.c'; fi`
 
 ags/test/thread/file/check_system_thread_file_xml_test-ags_thread_file_xml_test.o: ags/test/thread/file/ags_thread_file_xml_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_thread_file_xml_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/file/check_system_thread_file_xml_test-ags_thread_file_xml_test.o `test -f 'ags/test/thread/file/ags_thread_file_xml_test.c' || echo '$(srcdir)/'`ags/test/thread/file/ags_thread_file_xml_test.c

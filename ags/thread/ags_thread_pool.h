@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
 #define AGS_THREAD_POOL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_POOL, AgsThreadPool))
 #define AGS_THREAD_POOL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD_POOL, AgsThreadPoolClass))
@@ -96,5 +98,7 @@ AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 void ags_thread_pool_start(AgsThreadPool *thread_pool);
 
 AgsThreadPool* ags_thread_pool_new(AgsThread *parent);
+
+G_END_DECLS
 
 #endif /*__AGS_THREAD_POOL_H__*/

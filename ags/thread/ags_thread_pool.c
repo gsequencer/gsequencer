@@ -419,6 +419,7 @@ ags_thread_pool_creation_thread(void *ptr)
 				    TRUE, TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(returnable_thread));
 
+#if 0
       ags_thread_start(returnable_thread);
 
       /* wait returnable_thread */
@@ -436,9 +437,10 @@ ags_thread_pool_creation_thread(void *ptr)
       }
 
       g_mutex_unlock(&(returnable_thread->start_mutex));
+#endif
       
-      //      start_queue = g_list_prepend(start_queue,
-      //			   returnable_thread);
+      start_queue = g_list_prepend(start_queue,
+				   returnable_thread);
       
       g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			   g_list_prepend(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
@@ -454,16 +456,8 @@ ags_thread_pool_creation_thread(void *ptr)
     if(thread_pool->parent != NULL){
       g_rec_mutex_lock(parent_mutex);
 
-      if(start_queue != NULL){
-	if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
-	  g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			       g_list_concat(start_queue,
-					     g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
-	}else{
-	  g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			       start_queue);
-	}
-      }
+      ags_thread_add_start_queue_all(thread_pool->parent,
+				     start_queue);
 
       g_rec_mutex_unlock(parent_mutex);
     }
@@ -596,16 +590,8 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   if(parent_mutex != NULL){
     g_rec_mutex_lock(parent_mutex);
 
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
-	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			     start_queue);
-      }
-    }
+    ags_thread_add_start_queue_all(thread_pool->parent,
+				   start_queue);
 
     g_rec_mutex_unlock(parent_mutex);
   }
@@ -650,5 +636,9 @@ ags_thread_pool_new(AgsThread *parent)
 
   thread_pool->parent = parent;
 
+  if(parent != NULL){
+    g_object_ref(parent);
+  }
+  
   return(thread_pool);
 }

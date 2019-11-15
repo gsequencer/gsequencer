@@ -342,9 +342,12 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
 
   ags_soundcard_thread_parent_connectable_interface->connect(connectable);
 
-  audio_loop = ags_thread_get_toplevel(soundcard_thread);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+   
   g_signal_connect((GObject *) audio_loop, "stopped-all",
 		   G_CALLBACK(ags_soundcard_thread_stopped_all_callback), soundcard_thread);    
+
+  g_object_unref(audio_loop);
 }
 
 void
@@ -394,16 +397,7 @@ ags_soundcard_thread_start(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
 
-  AgsThread *main_loop;
-
-  GObject *soundcard;
-  
-  GError *error;
-
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-  main_loop = ags_thread_get_toplevel(thread);
-  
-  soundcard = soundcard_thread->soundcard;
 
   /* disable timing */
   ags_thread_unset_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
@@ -492,13 +486,10 @@ void
 ags_soundcard_thread_stop(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
-
-  AgsThread *main_loop;
   
   GObject *soundcard;
     
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-  main_loop = ags_thread_get_toplevel(thread);
 
   soundcard = soundcard_thread->soundcard;
   

@@ -37,7 +37,11 @@ void ags_thread_pool_test_start();
 
 void ags_thread_pool_stub_start(AgsThreadPool *thread_pool);
 
-#define AGS_THREAD_POOL_TEST_INITIAL_DELAY (5000000)
+#define AGS_THREAD_POOL_TEST_INITIAL_DELAY (50000000)
+
+AgsApplicationContext *application_context;
+
+AgsThread *main_loop;
 
 gboolean stub_start = FALSE;
 
@@ -48,6 +52,16 @@ gboolean stub_start = FALSE;
 int
 ags_thread_pool_test_init_suite()
 {  
+  application_context = ags_thread_application_context_new();
+  g_object_ref(application_context);
+  
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+  
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  ags_thread_start(main_loop);
+
   return(0);
 }
 
@@ -58,6 +72,11 @@ ags_thread_pool_test_init_suite()
 int
 ags_thread_pool_test_clean_suite()
 {
+  ags_thread_stop(main_loop);
+  g_object_unref(main_loop);
+  
+  g_object_unref(application_context);
+
   return(0);
 }
 
@@ -68,12 +87,11 @@ ags_thread_pool_test_pull()
   AgsThread *parent;
   AgsReturnableThread *returnable_thread;
 
-  parent = g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
-			NULL);
-  ags_connectable_connect(AGS_CONNECTABLE(parent));
-  ags_thread_start(parent);
+  parent = main_loop;
   
   thread_pool = ags_thread_pool_new(parent);
+  ags_concurrency_provider_set_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context), thread_pool);
+  
   ags_thread_pool_start(thread_pool);
 
   usleep(AGS_THREAD_POOL_TEST_INITIAL_DELAY);

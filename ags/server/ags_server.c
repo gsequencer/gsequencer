@@ -938,12 +938,11 @@ ags_server_lookup(AgsServerInfo *server_info)
  * Since: 2.0.0
  */
 AgsServer*
-ags_server_new(GObject *application_context)
+ags_server_new()
 {
   AgsServer *server;
 
   server = (AgsServer *) g_object_new(AGS_TYPE_SERVER,
-				      "application-context", application_context,
 				      NULL);
 
   return(server);

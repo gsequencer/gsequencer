@@ -841,16 +841,18 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
   application_context = ags_application_context_get_instance();
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
 
-  g_object_set(navigation->duration_time,
-	       "label", str,
-	       NULL);
-  g_free(str);
-  
-  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+  if(default_soundcard != NULL){
+    str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
 
+    g_object_set(navigation->duration_time,
+		 "label", str,
+		 NULL);
+    g_free(str);
+  
+    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
+  }
+  
   return(TRUE);
 }
 
