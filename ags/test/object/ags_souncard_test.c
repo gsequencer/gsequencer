@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,6 @@
 int ags_soundcard_test_init_suite();
 int ags_soundcard_test_clean_suite();
 
-void ags_soundcard_test_set_application_context();
-void ags_soundcard_test_get_application_context();
 void ags_soundcard_test_set_device();
 void ags_soundcard_test_get_device();
 void ags_soundcard_test_pcm_info();
@@ -129,81 +127,6 @@ int
 ags_soundcard_test_clean_suite()
 {  
   return(0);
-}
-
-void
-ags_soundcard_test_set_application_context()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint i;
-  gboolean success;
-
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_application_context == NULL){
-      g_message("AgsSoundcard::set-application-context missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-    
-    ags_soundcard_set_application_context(AGS_SOUNDCARD(current),
-					  application_context);
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_soundcard_test_get_application_context()
-{
-  AgsApplicationContext *application_context;
-  AgsApplicationContext *retval;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint i;
-  gboolean success;
-
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    ags_soundcard_set_application_context(AGS_SOUNDCARD(current),
-					  application_context);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_application_context == NULL){
-      g_message("AgsSoundcard::get-application-context missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_soundcard_get_application_context(AGS_SOUNDCARD(current));
-
-    if(retval != application_context){
-      g_message("AgsSoundcard::get-application-context failed: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-  }
-
-  CU_ASSERT(success);
 }
 
 void
@@ -1489,9 +1412,7 @@ main(int argc, char **argv)
   }
 
   /* remove the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsSoundcard set application context", ags_soundcard_test_set_application_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSoundcard get application context", ags_soundcard_test_get_application_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSoundcard set device", ags_soundcard_test_set_device) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsSoundcard set device", ags_soundcard_test_set_device) == NULL) ||
      (CU_add_test(pSuite, "test of AgsSoundcard get device", ags_soundcard_test_get_device) == NULL) ||
      (CU_add_test(pSuite, "test of AgsSoundcard pcm info", ags_soundcard_test_pcm_info) == NULL) ||
      (CU_add_test(pSuite, "test of AgsSoundcard get capability", ags_soundcard_test_get_capability) == NULL) ||
