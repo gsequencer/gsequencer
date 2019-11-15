@@ -101,16 +101,14 @@ ags_midiin_test_dispose()
   gboolean success;
   
   midiin = g_object_new(AGS_TYPE_MIDIIN,
-			"application-context", audio_application_context,
 			NULL);
   g_object_ref(midiin);
 
   /* run dispose */
   g_object_run_dispose(midiin);
 
-  /* assert no application context */
-  CU_ASSERT(ags_sequencer_get_application_context(AGS_SEQUENCER(midiin)) == NULL);
-
+  success = TRUE;
+  
   /* assert */
   CU_ASSERT(success == TRUE);
 }
@@ -124,7 +122,6 @@ ags_midiin_test_finalize()
   guint i;
   
   midiin = g_object_new(AGS_TYPE_MIDIIN,
-			"application-context", audio_application_context,
 			NULL);
 
   /* run dispose */

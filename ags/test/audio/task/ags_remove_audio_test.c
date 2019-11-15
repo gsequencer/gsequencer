@@ -86,11 +86,9 @@ ags_remove_audio_test_launch()
 			       list);
 
   /* create remove audio */
-  remove_audio = ags_remove_audio_new(application_context,
-				      audio);
+  remove_audio = ags_remove_audio_new(audio);
 
   CU_ASSERT(AGS_IS_REMOVE_AUDIO(remove_audio));
-  CU_ASSERT(remove_audio->application_context == application_context);
   CU_ASSERT(remove_audio->audio == audio);
 
   /* launch */

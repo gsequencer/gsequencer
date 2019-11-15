@@ -460,6 +460,7 @@ ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_fifoout_list_cards;
   soundcard->pcm_info = ags_fifoout_pcm_info;
+  soundcard->get_capability = NULL;
 
   soundcard->is_available = ags_fifoout_is_available;
 

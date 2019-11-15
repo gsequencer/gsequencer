@@ -1746,9 +1746,11 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 
   main_loop = ags_thread_get_toplevel(thread);
   tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
-  
-  g_rec_mutex_lock(tree_lock);
 
+  if(tree_lock != NULL){
+    g_rec_mutex_lock(tree_lock);
+  }
+  
   g_object_ref(thread);
   g_object_ref(child);
 
@@ -1787,8 +1789,10 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
     g_object_unref(children);
   }
 
-  g_rec_mutex_unlock(tree_lock);
-
+  if(tree_lock != NULL){
+    g_rec_mutex_unlock(tree_lock);
+  }
+  
   g_object_unref(main_loop);
   
   if(!no_start){
@@ -2152,7 +2156,9 @@ ags_thread_clock_sync(AgsThread *thread)
 
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN);
 
-    g_object_unref(parent_thread);
+    if(parent_thread != NULL){
+      g_object_unref(parent_thread);
+    }
   }
 
   sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
@@ -2733,10 +2739,12 @@ ags_thread_loop(void *ptr)
 #endif
   }
 
-  g_object_unref(parent);
+  if(parent != NULL){
+    g_object_unref(parent);
 
-  parent = NULL;
-  
+    parent = NULL;
+  }
+    
   while(is_running){
     guint tic_delay;
     

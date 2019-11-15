@@ -55,7 +55,7 @@ typedef enum{
 
 struct _AgsThreadApplicationContext
 {
-  AgsApplicationContextClass application_contex;
+  AgsApplicationContext application_context;
 
   guint flags;
 
@@ -69,7 +69,7 @@ struct _AgsThreadApplicationContext
 
 struct _AgsThreadApplicationContextClass
 {
-  AgsApplicationContextClass application_contex;
+  AgsApplicationContextClass application_context;
 };
 
 GType ags_thread_application_context_get_type();

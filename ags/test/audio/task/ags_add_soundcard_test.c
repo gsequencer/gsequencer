@@ -71,11 +71,9 @@ ags_add_soundcard_test_launch()
   devout = ags_devout_new(application_context);
   g_object_ref(devout);
   
-  add_soundcard = ags_add_soundcard_new(application_context,
-					devout);
+  add_soundcard = ags_add_soundcard_new(devout);
 
   CU_ASSERT(AGS_IS_ADD_SOUNDCARD(add_soundcard));
-  CU_ASSERT(add_soundcard->application_context == application_context);
   CU_ASSERT(add_soundcard->soundcard == devout);
 
   /* test */

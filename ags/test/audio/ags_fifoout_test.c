@@ -98,16 +98,13 @@ ags_fifoout_test_dispose()
   gboolean success;
   
   fifoout = g_object_new(AGS_TYPE_FIFOOUT,
-			"application-context", audio_application_context,
 			NULL);
   g_object_ref(fifoout);
   
-
   /* run dispose */
   g_object_run_dispose(fifoout);
 
-  /* assert no application context */
-  CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(fifoout)) == NULL);
+  success = TRUE;
   
   /* assert */
   CU_ASSERT(success == TRUE);
@@ -122,7 +119,6 @@ ags_fifoout_test_finalize()
   guint i;
   
   fifoout = g_object_new(AGS_TYPE_FIFOOUT,
-			"application-context", audio_application_context,
 			NULL);
 
   /* run dispose */

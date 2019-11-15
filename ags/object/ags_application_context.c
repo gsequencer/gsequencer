@@ -945,7 +945,6 @@ ags_application_context_load_config(AgsApplicationContext *application_context)
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[LOAD_CONFIG], 0);
   g_object_unref(G_OBJECT(application_context));
-  g_object_unref(application_context);
 }
 
 void
@@ -971,7 +970,6 @@ ags_application_context_prepare(AgsApplicationContext *application_context)
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[PREPARE], 0);
   g_object_unref(G_OBJECT(application_context));
-  g_object_unref(application_context);
 }
 
 void
@@ -997,7 +995,6 @@ ags_application_context_setup(AgsApplicationContext *application_context)
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[SETUP], 0);
   g_object_unref(G_OBJECT(application_context));
-  g_object_unref(application_context);
 }
 
 void
@@ -1023,7 +1020,6 @@ ags_application_context_register_types(AgsApplicationContext *application_contex
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[REGISTER_TYPES], 0);
   g_object_unref(G_OBJECT(application_context));
-  g_object_unref(application_context);
 }
 
 void
@@ -1102,5 +1098,3 @@ ags_application_context_new(GObject *main_loop,
 
   return(application_context);
 }
-
-

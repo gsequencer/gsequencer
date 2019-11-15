@@ -120,7 +120,6 @@ ags_audio_application_context_test_dispose()
   CU_ASSERT(audio_application_context->default_soundcard == NULL);
   CU_ASSERT(audio_application_context->default_soundcard_thread == NULL);
   CU_ASSERT(audio_application_context->default_export_thread == NULL);
-  CU_ASSERT(audio_application_context->autosave_thread == NULL);
   CU_ASSERT(audio_application_context->server == NULL);
   CU_ASSERT(audio_application_context->soundcard == NULL);
   CU_ASSERT(audio_application_context->sequencer == NULL);

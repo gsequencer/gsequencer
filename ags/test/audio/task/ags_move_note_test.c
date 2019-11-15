@@ -94,7 +94,8 @@ ags_move_note_test_launch()
 
   ags_notation_add_all_to_selection(notation);
   selection = ags_list_util_copy_and_ref(ags_notation_get_selection(notation));
-  move_note = ags_move_note_new(notation,
+  move_note = ags_move_note_new(audio,
+				notation,
 				selection,
 				0, 0,
 				8 * 16, 0,

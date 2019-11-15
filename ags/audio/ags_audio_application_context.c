@@ -318,7 +318,7 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
   gobject->dispose = ags_audio_application_context_dispose;
   gobject->finalize = ags_audio_application_context_finalize;
   
-  /* AgsAudioApplicationContextClass */
+  /* AgsApplicationContextClass */
   application_context = (AgsApplicationContextClass *) audio_application_context;
   
   application_context->prepare = ags_audio_application_context_prepare;
@@ -1727,10 +1727,12 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   }
 
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
-  
+
+#if 0
   /* main loop run */
   g_main_loop_run(g_main_loop_new(audio_main_context,
 				  TRUE));
+#endif
 }
 
 void
@@ -1900,7 +1902,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   ags_lv2_manager_load_default_directory(lv2_manager);
   
-  /* launch GUI */
+  /* launch audio */
   ags_log_add_message(log,
 		      "* Launch audio");
 

@@ -19,15 +19,11 @@ check_PROGRAMS += \
 	ags_connectable_test \
 	ags_soundcard_test \
 	ags_destroy_worker_test \
-	ags_poll_fd_test \
-	ags_polling_thread_test \
 	ags_returnable_thread_test \
 	ags_task_test \
-	ags_task_thread_test \
 	ags_thread_test \
 	ags_thread_pool_test \
 	ags_worker_thread_test \
-	ags_thread_file_xml_test \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
@@ -164,7 +160,6 @@ check_PROGRAMS += \
 	ags_free_selection_test \
 	ags_link_channel_test \
 	ags_move_note_test \
-	ags_notify_soundcard_test \
 	ags_remove_audio_test \
 	ags_remove_audio_signal_test \
 	ags_remove_note_test \
@@ -258,18 +253,6 @@ ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
-# poll fd unit test
-ags_poll_fd_test_SOURCES = ags/test/thread/ags_poll_fd_test.c
-ags_poll_fd_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_poll_fd_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_poll_fd_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# polling thread unit test
-ags_polling_thread_test_SOURCES = ags/test/thread/ags_polling_thread_test.c
-ags_polling_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_polling_thread_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_polling_thread_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
 # returnable thread unit test
 ags_returnable_thread_test_SOURCES = ags/test/thread/ags_returnable_thread_test.c
 ags_returnable_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
@@ -281,12 +264,6 @@ ags_task_test_SOURCES = ags/test/thread/ags_task_test.c
 ags_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 ags_task_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# task thread unit test
-ags_task_thread_test_SOURCES = ags/test/thread/ags_task_thread_test.c
-ags_task_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_task_thread_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_task_thread_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
@@ -305,12 +282,6 @@ ags_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
 ags_worker_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_worker_thread_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_worker_thread_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# thread file xml unit test
-ags_thread_file_xml_test_SOURCES = ags/test/thread/file/ags_thread_file_xml_test.c
-ags_thread_file_xml_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_thread_file_xml_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_thread_file_xml_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # file unit test
 ags_file_test_SOURCES = ags/test/file/ags_file_test.c
@@ -1061,12 +1032,6 @@ ags_move_note_test_SOURCES = ags/test/audio/task/ags_move_note_test.c
 ags_move_note_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_move_note_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_move_note_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-
-# notify soundcard unit test
-ags_notify_soundcard_test_SOURCES = ags/test/audio/task/ags_notify_soundcard_test.c
-ags_notify_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_notify_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_notify_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # remove audio unit test
 ags_remove_audio_test_SOURCES = ags/test/audio/task/ags_remove_audio_test.c
