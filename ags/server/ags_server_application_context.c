@@ -485,7 +485,7 @@ ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurren
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_SERVER_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
@@ -656,7 +656,7 @@ ags_server_application_context_set_registry(AgsServiceProvider *service_provider
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(service_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_SERVER_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(server_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);

@@ -1709,7 +1709,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
     return;
   }
 
-  application_context = aggs_application_context_get_instance();
+  application_context = ags_application_context_get_instance();
 
   core_audio_server = NULL;
   core_audio_devout = NULL;

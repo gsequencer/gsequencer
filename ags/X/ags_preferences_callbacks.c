@@ -19,6 +19,7 @@
 
 #include <ags/X/ags_preferences_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 gboolean

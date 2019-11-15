@@ -25,6 +25,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_task_launcher.h>
 
 #include <stdlib.h>
@@ -1743,7 +1744,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
     return;
   }  
 
-  main_loop = ags_thread_toplevel(thread);
+  main_loop = ags_thread_get_toplevel(thread);
   tree_lock = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
   
   g_rec_mutex_lock(tree_lock);

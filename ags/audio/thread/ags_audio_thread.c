@@ -734,7 +734,7 @@ ags_audio_thread_stop(AgsThread *thread)
 
   ags_audio_thread_unset_status_flags(audio_thread, AGS_AUDIO_THREAD_STATUS_WAIT_SYNC);
 
-  if(!ags_audio_thread_test_flags(audio_thread, AGS_AUDIO_THREAD_STATUS_DONE_SYNC)){
+  if(!ags_audio_thread_test_status_flags(audio_thread, AGS_AUDIO_THREAD_STATUS_DONE_SYNC)){
     g_cond_signal(&(audio_thread->done_cond));
   }
   

@@ -1139,7 +1139,7 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
 	  ags_channel_thread_unset_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC);
 	
 	  while(!ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_DONE_SYNC) &&
-		ags_channel_thread_test_status_flgs(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC)){
+		ags_channel_thread_test_status_flags(channel_thread, AGS_CHANNEL_THREAD_STATUS_WAIT_SYNC)){
 	    g_cond_wait(&(channel_thread->done_cond),
 			&(channel_thread->done_mutex));
 	  }

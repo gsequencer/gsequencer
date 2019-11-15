@@ -749,7 +749,7 @@ ags_ladspa_bridge_menu_new()
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   /* get ladspa manager mutex */
-  ladspa_manager_mutex = AGS_LADSPA_MANGER_GET_OBJ_MUTEX(ladspa_manager);
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* get plugin */
   g_rec_mutex_lock(ladspa_manager_mutex);

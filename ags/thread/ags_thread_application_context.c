@@ -509,7 +509,7 @@ ags_thread_application_context_set_thread_pool(AgsConcurrencyProvider *concurren
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_THREAD_APPLICATION_CONTEXT_GET_OBJ_MUTEX(thread_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(thread_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
@@ -624,7 +624,7 @@ ags_thread_application_context_register_types(AgsApplicationContext *application
 {
   ags_thread_get_type();
 
-  ags_task_thread_get_type();
+  ags_task_launcher_get_type();
 
   ags_thread_pool_get_type();
   ags_returnable_thread_get_type();

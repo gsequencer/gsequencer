@@ -217,11 +217,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre;
-  
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -365,11 +361,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter;
-  
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_inter(recall);

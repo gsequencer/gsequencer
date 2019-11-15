@@ -176,8 +176,6 @@ GList* ags_audio_application_context_get_osc_server(AgsSoundProvider *sound_prov
 void ags_audio_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 						  GList *osc_server);
 
-void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
-
 void ags_audio_application_context_prepare(AgsApplicationContext *application_context);
 void ags_audio_application_context_setup(AgsApplicationContext *application_context);
 
@@ -323,8 +321,6 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
   /* AgsAudioApplicationContextClass */
   application_context = (AgsApplicationContextClass *) audio_application_context;
   
-  application_context->load_config = ags_audio_application_context_load_config;
-
   application_context->prepare = ags_audio_application_context_prepare;
   application_context->setup = ags_audio_application_context_setup;
 
@@ -929,7 +925,7 @@ ags_audio_application_context_set_thread_pool(AgsConcurrencyProvider *concurrenc
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_AUDIO_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
@@ -1100,7 +1096,7 @@ ags_audio_application_context_set_registry(AgsServiceProvider *service_provider,
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(service_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_AUDIO_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);

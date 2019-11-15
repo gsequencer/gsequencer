@@ -6782,9 +6782,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (behaviour_flags)) != 0){
 	  if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0){
-	    ags_audio_set_pads_shrink_notation(audio,
-					       AGS_TYPE_OUTPUT,
-					       pads);
+	    ags_audio_set_pads_remove_notes(audio,
+					    AGS_TYPE_OUTPUT,
+					    pads);
 	  }
 
 	  if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0){
@@ -6801,9 +6801,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
 	      
 	/* unlink and remove */
-	ags_audio_set_pads_unlink_all(audio,
-				      AGS_TYPE_OUTPUT,
-				      0);
+	ags_audio_set_pads_unlink(audio,
+				  AGS_TYPE_OUTPUT,
+				  0);
 	ags_audio_set_pads_shrink_zero(audio,
 				       AGS_TYPE_OUTPUT,
 				       0);
@@ -7003,9 +7003,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (behaviour_flags)) != 0){
 	  if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0){
-	    ags_audio_set_pads_shrink_notation(audio,
-					       AGS_TYPE_INPUT,
-					       pads);
+	    ags_audio_set_pads_remove_notes(audio,
+					    AGS_TYPE_INPUT,
+					    pads);
 	  }
 
 	  if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0){

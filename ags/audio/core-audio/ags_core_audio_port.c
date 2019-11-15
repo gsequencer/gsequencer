@@ -1329,8 +1329,6 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
     
   AgsAudioLoop *audio_loop;
 
-  AgsTaskThread *task_thread;
-  
   AgsApplicationContext *application_context;
 
   GObject *soundcard;
@@ -1357,7 +1355,6 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(audio_loop != NULL){
     g_rec_mutex_lock(audio_loop->timing_mutex);
@@ -1486,7 +1483,6 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
 
   /* unref */
   g_object_unref(audio_loop);
-  g_object_unref(task_thread);
 }
 
 void
@@ -1506,8 +1502,6 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   
   AgsAudioLoop *audio_loop;
 
-  AgsTaskThread *task_thread;
-  
   AgsApplicationContext *application_context;
 
   guint word_size;
@@ -1547,7 +1541,6 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16);
   ags_audio_buffer_util_clear_buffer(in_buffer->mAudioData, 1,
@@ -1555,9 +1548,6 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
-
-    /* unref */
-    g_object_unref(task_thread);
 
     return;
   }
@@ -1755,7 +1745,6 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 
   /* unref */
   g_object_unref(audio_loop);
-  g_object_unref(task_thread);
 }
 
 void
@@ -1767,8 +1756,6 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   AgsCoreAudioDevin *core_audio_devin;
   
   AgsAudioLoop *audio_loop;
-
-  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
 
@@ -1809,13 +1796,9 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
-
-    /* unref */
-    g_object_unref(task_thread);
 
     return;
   }
@@ -2026,7 +2009,6 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 
   /* unref */
   g_object_unref(audio_loop);
-  g_object_unref(task_thread);
 }
   
 void
@@ -2045,8 +2027,6 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   AgsCoreAudioMidiin *core_audio_midiin;
   
   AgsAudioLoop *audio_loop;
-
-  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
 
@@ -2078,7 +2058,6 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /*  */
   g_rec_mutex_lock(core_audio_port_mutex);

@@ -202,8 +202,6 @@ GtkWidget* ags_xorg_application_context_get_navigation(AgsUiProvider *ui_provide
 void ags_xorg_application_context_set_navigation(AgsUiProvider *ui_provider,
 						 GtkWidget *widget);
 
-void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
-
 void ags_xorg_application_context_prepare(AgsApplicationContext *application_context);
 void ags_xorg_application_context_setup(AgsApplicationContext *application_context);
 
@@ -377,9 +375,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
 
   /* AgsXorgApplicationContextClass */
   application_context = (AgsApplicationContextClass *) xorg_application_context;
-  
-  application_context->load_config = ags_xorg_application_context_load_config;
-
+ 
   application_context->prepare = ags_xorg_application_context_prepare;
   application_context->setup = ags_xorg_application_context_setup;
 
@@ -1115,7 +1111,7 @@ ags_xorg_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_XORG_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);
@@ -1286,7 +1282,7 @@ ags_xorg_application_context_set_registry(AgsServiceProvider *service_provider,
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(service_provider);
   
   /* get mutex */
-  application_context_mutex = AGS_XORG_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
 
   /* get main loop */
   g_rec_mutex_lock(application_context_mutex);

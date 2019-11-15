@@ -1870,7 +1870,7 @@ ags_audio_unit_devout_port_play(AgsSoundcard *soundcard,
   
   audio_unit_devout = AGS_AUDIO_UNIT_DEVOUT(soundcard);
   
-  application_context = ags_soundcard_get_application_context(soundcard);
+  application_context = ags_application_context_get_instance();
   
   /* get audio-unit devout mutex */
   audio_unit_devout_mutex = AGS_AUDIO_UNIT_DEVOUT_GET_OBJ_MUTEX(audio_unit_devout);
@@ -1996,8 +1996,8 @@ ags_audio_unit_devout_port_play(AgsSoundcard *soundcard,
 		       switch_buffer_flag);
 
   /* append tasks */
-  ags_task_launcher_add_task_launcher(task_launcher,
-				      task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* unref */
   g_object_unref(task_launcher);

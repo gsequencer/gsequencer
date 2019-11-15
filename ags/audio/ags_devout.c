@@ -792,7 +792,7 @@ ags_devout_set_property(GObject *gobject,
 
       /* destroy if less pcm-channels */
       for(i = 4 * devout->sub_block_count * pcm_channels; i < 4 * devout->sub_block_count * old_pcm_channels; i++){
-	g_rec_mutex_destroy(devout->sub_block_mutex[i]);
+	g_rec_mutex_clear(devout->sub_block_mutex[i]);
 
 	free(devout->sub_block_mutex[i]);
       }

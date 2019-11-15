@@ -1865,7 +1865,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* get audio loop mutex */
-  audio_loop_mutex = AGS_AUDIO_LOOP_GET_OBJ_MUTEX(audio_loop);
+  audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
   /* increase time spent */
   g_rec_mutex_lock(audio_loop_mutex);

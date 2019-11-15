@@ -424,7 +424,6 @@ main(int argc, char **argv)
 
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
-  ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
 
   if(!builtin_theme_disabled){
@@ -523,7 +522,7 @@ main(int argc, char **argv)
   /* some GUI scaling */
   if(!builtin_theme_disabled &&
      !has_file){
-    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+//    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
   }
 
   ags_setup(argc, argv);

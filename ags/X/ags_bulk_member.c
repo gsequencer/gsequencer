@@ -1378,7 +1378,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				    bulk_member->control_port, port_data,
 				    NULL);
 
-    ags_ui_provider_schedule_task(AGS_UI_PROIIDER(application_context),
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				  task);
   }
 }

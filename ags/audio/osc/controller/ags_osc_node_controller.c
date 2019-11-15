@@ -2722,7 +2722,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 {
   AgsOscResponse *osc_response;
 
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -2742,7 +2742,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
   
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   real_packet_size = 0;
   packet_size = 0;
@@ -2776,7 +2776,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
     
     return(start_response);
   }else if(!strncmp(path + path_offset,
@@ -2911,7 +2911,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -2930,7 +2930,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -2968,7 +2968,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -3017,7 +3017,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	g_list_free_full(start_port,
 			 g_object_unref);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 	
 	return(start_response);
       }
@@ -3059,7 +3059,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       g_list_free_full(start_port,
 		       g_object_unref);      
 
-      g_object_unref(task_thread);
+      g_object_unref(task_launcher);
 
       return(start_response);
     }    
@@ -3078,12 +3078,12 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
 
     return(start_response);
   }
 
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
   
   return(start_response);
 }

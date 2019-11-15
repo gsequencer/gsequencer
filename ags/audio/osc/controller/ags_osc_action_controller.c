@@ -344,14 +344,14 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = (AgsTask *) ags_start_soundcard_new(application_context);
 
-	ags_task_launcer_add_task(task_launcher,
-				  task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = (AgsTask *) ags_stop_soundcard_new(application_context);
 
-	ags_task_thread_add_task(task_launcher,
-				 task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -379,14 +379,14 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = (AgsTask *) ags_start_sequencer_new(application_context);
 
-	ags_task_thread_add_task(task_launcher,
-				 task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = (AgsTask *) ags_stop_sequencer_new(application_context);
 
-	ags_task_thread_add_task(task_launcher,
-				 task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,

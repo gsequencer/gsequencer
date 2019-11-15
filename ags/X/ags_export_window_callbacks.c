@@ -385,8 +385,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* append AgsStartSoundcard */
       task = g_list_reverse(task);
       
-      ags_ui_provider_schedule_task_list(AGS_UI_PROVIDER(application_context),
-					 task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
       
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

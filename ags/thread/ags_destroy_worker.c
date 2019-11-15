@@ -156,7 +156,7 @@ ags_destroy_worker_stop(AgsThread *thread)
 
   worker_thread = AGS_WORKER_THREAD(thread);
 
-  ags_worker_thread_set_flags(worker_thread, AGS_WORKER_THREAD_STATUS_RUNNING);
+  ags_worker_thread_set_status_flags(worker_thread, AGS_WORKER_THREAD_STATUS_RUNNING);
 }
 
 void

@@ -2093,8 +2093,8 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
 			 switch_buffer_flag);
 
     /* append tasks */
-    ags_task_launcher_add_task_launcher(task_launcher,
-					task);
+    ags_task_launcher_add_task_all(task_launcher,
+				   task);
   
     /* unref */
     g_object_unref(task_launcher);
