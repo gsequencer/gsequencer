@@ -809,7 +809,7 @@ ags_functional_audio_test_playback()
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* wait for audio loop */
-  pthread_mutex_lock(audio_loop->start_mutex);
+  g_mutex_lock(&(audio_loop->start_mutex));
 
   if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
     g_atomic_int_set(&(audio_loop->start_done),
@@ -817,12 +817,12 @@ ags_functional_audio_test_playback()
       
     while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
 	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
+      g_cond_wait(&(audio_loop->start_cond),
+		  &(audio_loop->start_mutex));
     }
   }
-    
-  pthread_mutex_unlock(audio_loop->start_mutex);
+  
+  g_mutex_unlock(&(audio_loop->start_mutex));
 
   /* start playback */
   g_message("start playback");

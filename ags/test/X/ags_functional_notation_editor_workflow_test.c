@@ -580,8 +580,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_notation_editor_workflow_test_add_test, &is_available);
 
-  pthread_join(ags_functional_test_util_self(),
-	       NULL);
+  g_thread_join(ags_functional_test_util_self());
 
   return(-1);
 }

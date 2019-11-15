@@ -1382,8 +1382,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_line_member_add_and_destroy_test_add_test, &is_available);
 
-  pthread_join(ags_functional_test_util_self(),
-	       NULL);
+  g_thread_join(ags_functional_test_util_self());
 
   return(-1);
 }

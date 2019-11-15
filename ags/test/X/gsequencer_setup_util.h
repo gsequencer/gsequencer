@@ -46,8 +46,7 @@ void ags_test_setup(int argc, char **argv);
 void ags_test_start_animation(pthread_t *thread);
 void* ags_test_start_animation_thread(void *ptr);
 
-void ags_test_launch(gboolean single_thread);
-void ags_test_launch_filename(gchar *filename,
-			      gboolean single_thread);
+void ags_test_launch();
+void ags_test_launch_filename(gchar *filename);
 
 #endif /*__GSEQUENCER_TEST_SETUP_UTIL_H__*/

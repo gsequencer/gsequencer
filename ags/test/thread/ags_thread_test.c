@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,11 +76,9 @@ void ags_thread_test_stop();
 
 #define AGS_THREAD_TEST_LOCK_CHILDREN_CHILDREN_COUNT (8)
 
-  AgsApplicationContext *application_context;
+AgsApplicationContext *application_context;
 
 AgsThread *main_loop;
-
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -133,20 +131,22 @@ ags_thread_test_sync()
 
     thread = (AgsThread *) ptr;
 
-    pthread_mutex_lock(thread->mutex);
+    g_rec_mutex_lock(&(thread->mutex));
 
     g_atomic_int_inc(&n_waiting);
     
     while(((AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
 	  ((AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
 	  ((AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(thread->flags)))) != 0)){
-      pthread_cond_wait(thread->cond,
-			thread->mutex);
+      g_cond_wait(&(thread->cond),
+		  &(thread->mutex));
     }
     
-    pthread_mutex_unlock(thread->mutex);
+    g_rec_mutex_unlock(&(thread->mutex));
 
-    pthread_exit(NULL);
+    g_thread_exit(NULL);
+
+    return(NULL);
   }
   
   main_loop = ags_generic_main_loop_new(application_context);
@@ -165,18 +165,18 @@ ags_thread_test_sync()
   }
   
   /* check AGS_THREAD_WAIT_0 - setup */
-  g_atomic_int_or(&(main_loop->flags),
-		  AGS_THREAD_WAIT_0);
-  pthread_create(main_loop->thread, &(main_loop->thread_attr),
-		 ags_thread_test_sync_waiter_thread, main_loop);
+  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_0);
+  main_loop->thread = g_thread_new("libags.so - unit test",
+				   ags_thread_test_sync_waiter_thread,
+				   main_loop);
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    g_atomic_int_or(&(thread[i]->flags),
-		    AGS_THREAD_WAIT_0);
+    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_0);
 
     /* since signal expects a thread waiting we do one */
-    pthread_create(thread[i]->thread, &(thread[i]->thread_attr),
-		   ags_thread_test_sync_waiter_thread, thread[i]);
+    thread[i]->thread = g_thread_new("libags.so - unit test",
+				     ags_thread_test_sync_waiter_thread,
+				     thread[i]);
   }
 
   /* wait until all waiting */
@@ -189,25 +189,25 @@ ags_thread_test_sync()
 			  0);
 
   /* assert flag not set anymore */
-  CU_ASSERT((AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(main_loop->flags)))) == 0);
+  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_0));
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT((AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(thread[i]->flags)))) == 0);
+    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_0));
   }
   
   /* check AGS_THREAD_WAIT_1 - setup */
-  g_atomic_int_or(&(main_loop->flags),
-		  AGS_THREAD_WAIT_1);
-  pthread_create(main_loop->thread, &(main_loop->thread_attr),
-		 ags_thread_test_sync_waiter_thread, main_loop);
+  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_1);
+  main_loop->thread = g_thread_new("libags.so - unit test",
+				   ags_thread_test_sync_waiter_thread,
+				   main_loop);
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    g_atomic_int_or(&(thread[i]->flags),
-		    AGS_THREAD_WAIT_1);
+    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_1);
 
     /* since signal expects a thread waiting we do one */
-    pthread_create(thread[i]->thread, &(thread[i]->thread_attr),
-		   ags_thread_test_sync_waiter_thread, thread[i]);
+    thread[i]->thread = g_thread_new("libags.so - unit test",
+				     ags_thread_test_sync_waiter_thread,
+				     thread[i]);
   }
 
   /* wait until all waiting */
@@ -220,25 +220,25 @@ ags_thread_test_sync()
 			  1);
 
   /* assert flag not set anymore */
-  CU_ASSERT((AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(main_loop->flags)))) == 0);
+  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_1));
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT((AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(thread[i]->flags)))) == 0);
+    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_1));
   }
 
   /* check AGS_THREAD_WAIT_2 - setup */
-  g_atomic_int_or(&(main_loop->flags),
-		  AGS_THREAD_WAIT_2);
-  pthread_create(main_loop->thread, &(main_loop->thread_attr),
-		 ags_thread_test_sync_waiter_thread, main_loop);
+  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_2);
+  main_loop->thread = g_thread_new("libags.so - unit test",
+				   ags_thread_test_sync_waiter_thread,
+				   main_loop);
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    g_atomic_int_or(&(thread[i]->flags),
-		    AGS_THREAD_WAIT_2);
+    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_2);
 
     /* since signal expects a thread waiting we do one */
-    pthread_create(thread[i]->thread, &(thread[i]->thread_attr),
-		   ags_thread_test_sync_waiter_thread, thread[i]);
+    thread[i]->thread = g_thread_new("libags.so - unit test",
+				     ags_thread_test_sync_waiter_thread,
+				     thread[i]);
   }
 
   /* wait until all waiting */
@@ -251,10 +251,10 @@ ags_thread_test_sync()
 			  2);
 
   /* assert flag not set anymore */
-  CU_ASSERT((AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(main_loop->flags)))) == 0);
+  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_2));
 
   for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT((AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(thread[i]->flags)))) == 0);
+    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_2));
   }
 }
 
@@ -265,7 +265,7 @@ ags_thread_test_lock()
 
   guint i;
   
-  pthread_t assert_thread;
+  GThread *assert_thread;
   
   auto void* ags_thread_test_lock_assert_locked(void *ptr);
 
@@ -280,7 +280,9 @@ ags_thread_test_lock()
       CU_ASSERT(ags_thread_trylock(thread[i]) == FALSE);
     }
 
-    pthread_exit(NULL);
+    g_thread_exit(NULL);
+
+    return(NULL);
   }
 
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_LOCK_N_THREADS * sizeof(AgsThread*));
@@ -298,11 +300,12 @@ ags_thread_test_lock()
   }
 
   /* try to lock from another thread */
-  pthread_create(&assert_thread, NULL,
-		 ags_thread_test_lock_assert_locked, thread);
-  pthread_join(assert_thread,
-	       NULL);
+  assert_thread = g_thread_new("libags.so - unit test",
+			       ags_thread_test_lock_assert_locked,
+			       main_loop);
 
+  g_thread_join(assert_thread);
+  
   /* unlock the threads */
   for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
     ags_thread_unlock(thread[i]);

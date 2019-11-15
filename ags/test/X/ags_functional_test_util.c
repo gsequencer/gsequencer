@@ -30,8 +30,6 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
-#include <pthread.h>
-
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
@@ -51,14 +49,14 @@ gboolean ags_functional_test_util_driver_dispatch(GSource *source,
 void* ags_functional_test_util_add_test_thread(void *ptr);
 void* ags_functional_test_util_do_run_thread(void *ptr);
 
-pthread_t *ags_functional_test_util_thread = NULL;
-
 extern AgsApplicationContext *ags_application_context;
 
 extern AgsLadspaManager *ags_ladspa_manager;
 extern AgsDssiManager *ags_dssi_manager;
 extern AgsLv2Manager *ags_lv2_manager;
 extern AgsLv2uiManager *ags_lv2ui_manager;
+
+GThread *ags_functional_test_util_thread;
 
 AgsTaskThread *task_thread;
 AgsGuiThread *gui_thread;
@@ -99,11 +97,11 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   g_main_context_iteration(g_main_context_default(),
 			   FALSE);
 
-  pthread_mutex_unlock(ags_test_get_driver_mutex());
+  g_rec_mutex_unlock(ags_test_get_driver_mutex());
   
   usleep(4000);
   
-  pthread_mutex_lock(ags_test_get_driver_mutex());
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
 
   g_main_context_iteration(g_main_context_default(),
 			   FALSE);
@@ -111,10 +109,10 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   return(G_SOURCE_CONTINUE);
 }
 
-pthread_t*
+GThread*
 ags_functional_test_util_self()
 {
-  return(ags_functional_test_util_thread);
+  return(g_thread_self());
 }
 
 void*
@@ -122,7 +120,7 @@ ags_functional_test_util_add_test_thread(void *ptr)
 {
   struct _AddTest *test;
 
-  ags_functional_test_util_thread = pthread_self();
+  ags_functional_test_util_thread = g_self_self();
   
   test = ptr;
   
@@ -132,7 +130,9 @@ ags_functional_test_util_add_test_thread(void *ptr)
 
   test->add_test();
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -141,15 +141,16 @@ ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 {
   struct _AddTest *test;
 
-  pthread_t thread;
+  GThread *thread;
 
   test = (struct _AddTest *) malloc(sizeof(struct _AddTest));
 
   test->add_test = add_test;
   test->is_available = is_available;
 
-  pthread_create(&thread, NULL,
-		 ags_functional_test_util_add_test_thread, test);
+  thread = g_thread_new("libgsequencer.so - functional test",
+			ags_functional_test_util_add_test_thread,
+			test);
 }
 
 void
@@ -195,7 +196,9 @@ ags_functional_test_util_do_run_thread(void *ptr)
   
   ags_functional_test_util_notify_add_test(is_available);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -205,8 +208,8 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  pthread_t thread;
-  pthread_mutex_t *mutex;
+  GThread *thread;
+  GRecMutex *mutex;
   
   GSource *driver_source;
   GSourceFuncs driver_funcs;
@@ -228,10 +231,11 @@ ags_functional_test_util_do_run(int argc, char **argv,
   
   /* application context */
   mutex = ags_test_get_driver_mutex();
-  pthread_mutex_lock(mutex);
+  g_rec_mutex_lock(mutex);
 
-  pthread_create(&thread, NULL,
-		 ags_functional_test_util_do_run_thread, is_available);
+  thread = g_thread_new("libgsequencer.so - functional test",
+			ags_functional_test_util_do_run_thread,
+			is_available);
 
   driver_funcs.prepare = ags_functional_test_util_driver_prepare;
   driver_funcs.check = ags_functional_test_util_driver_check;

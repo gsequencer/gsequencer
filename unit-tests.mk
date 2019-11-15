@@ -18,9 +18,7 @@ check_PROGRAMS += \
 	ags_config_test \
 	ags_connectable_test \
 	ags_soundcard_test \
-	ags_condition_manager_test \
 	ags_destroy_worker_test \
-	ags_mutex_manager_test \
 	ags_poll_fd_test \
 	ags_polling_thread_test \
 	ags_returnable_thread_test \
@@ -254,23 +252,11 @@ ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIB
 ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
-# condition manager unit test
-ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
-ags_condition_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_condition_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_condition_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
 # destroy worker unit test
 ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# mutex manager unit test
-ags_mutex_manager_test_SOURCES = ags/test/thread/ags_mutex_manager_test.c
-ags_mutex_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_mutex_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_mutex_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # poll fd unit test
 ags_poll_fd_test_SOURCES = ags/test/thread/ags_poll_fd_test.c
