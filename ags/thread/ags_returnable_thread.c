@@ -184,7 +184,9 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   ags_thread_set_flags(thread, AGS_THREAD_UNREF_ON_EXIT);
 
-  thread->freq = AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE;
+  g_object_set(thread,
+	       "frequency", AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE,
+	       NULL);
 
   g_atomic_int_set(&(returnable_thread->flags),
 		   AGS_RETURNABLE_THREAD_RUN_ONCE);

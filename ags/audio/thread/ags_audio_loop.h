@@ -67,17 +67,10 @@ struct _AgsAudioLoop
   AgsThread thread;
 
   guint flags;
-  
-  guint tic;
-  guint last_sync;
-
-  guint time_cycle;
-  guint time_spent;
-
-  guint sync_tic;
-  guint sync_counter[6];
-    
+      
   GRecMutex tree_lock;
+
+  volatile gboolean is_syncing;
 
   guint play_channel_ref;
   GList *play_channel; // play AgsChannel

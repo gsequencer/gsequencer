@@ -178,6 +178,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 
   AgsConfig *config;
 
+  gdouble frequency;
   guint samplerate;
   guint buffer_size;
   
@@ -189,8 +190,12 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
   buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  
-  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;  
+
+  frequency = ((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+  g_object_set(thread,
+	       "frequency", frequency,
+	       NULL);
 
   g_atomic_int_set(&(channel_thread->status_flags),
 		   0);

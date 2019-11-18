@@ -1180,14 +1180,6 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  if(audio_loop != NULL){
-    g_rec_mutex_lock(AGS_THREAD_GET_OBJ_MUTEX(audio_loop));
-  
-    audio_loop->time_spent = audio_loop->time_cycle;
-  
-    g_rec_mutex_unlock(AGS_THREAD_GET_OBJ_MUTEX(audio_loop));
-  }
-
   ags_thread_unset_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING);
 
   /* get pulse port mutex */
@@ -1868,12 +1860,6 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   audio_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
   /* increase time spent */
-  g_rec_mutex_lock(audio_loop_mutex);
-
-  audio_loop->time_spent = audio_loop->time_cycle;
-
-  g_rec_mutex_unlock(audio_loop_mutex);
-
   g_atomic_int_add(&(pulse_port->underflow),
 		   1);
 

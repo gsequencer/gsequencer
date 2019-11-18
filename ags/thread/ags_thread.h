@@ -105,12 +105,6 @@ typedef enum{
  * @AGS_THREAD_STATUS_RUNNING: the thread is running
  * @AGS_THREAD_STATUS_LOCKED: the thread is locked
  * @AGS_THREAD_STATUS_BUSY: the thread is busy
- * @AGS_THREAD_STATUS_TREE_SYNC_0: exclusively synced tic group
- * @AGS_THREAD_STATUS_WAIT_0: wait tree to be synced
- * @AGS_THREAD_STATUS_TREE_SYNC_1: exclusively synced tic group
- * @AGS_THREAD_STATUS_WAIT_1: wait tree to be synced
- * @AGS_THREAD_STATUS_TREE_SYNC_2: exclusively synced tic group
- * @AGS_THREAD_STATUS_WAIT_2: wait tree to be synced
  * @AGS_THREAD_STATUS_SYNCED: the thread joined the tic based system, it is synced
  * @AGS_THREAD_STATUS_SYNCED_FREQ: the frequency was synced
  *
@@ -129,15 +123,54 @@ typedef enum{
   AGS_THREAD_STATUS_RUNNING                 = 1 <<  8,
   AGS_THREAD_STATUS_LOCKED                  = 1 <<  9,
   AGS_THREAD_STATUS_BUSY                    = 1 << 10,
-  AGS_THREAD_STATUS_TREE_SYNC_0             = 1 << 11,
-  AGS_THREAD_STATUS_WAIT_0                  = 1 << 12,
-  AGS_THREAD_STATUS_TREE_SYNC_1             = 1 << 13,
-  AGS_THREAD_STATUS_WAIT_1                  = 1 << 14,
-  AGS_THREAD_STATUS_TREE_SYNC_2             = 1 << 15,
-  AGS_THREAD_STATUS_WAIT_2                  = 1 << 16,
-  AGS_THREAD_STATUS_SYNCED                  = 1 << 17,
-  AGS_THREAD_STATUS_SYNCED_FREQ             = 1 << 18,
+  AGS_THREAD_STATUS_SYNCED                  = 1 << 11,
+  AGS_THREAD_STATUS_SYNCED_FREQ             = 1 << 12,
 }AgsThreadStatusFlags;
+
+/**
+ * AgsThreadSyncTicFlags:
+ * @AGS_THREAD_STATUS_WAIT_0: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_0: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_1: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_1: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_2: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_2: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_3: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_3: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_4: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_4: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_5: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_5: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_6: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_6: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_7: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_7: done tree to be synced
+ * @AGS_THREAD_STATUS_WAIT_8: wait tree to be synced
+ * @AGS_THREAD_STATUS_DONE_8: done tree to be synced
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsThread by
+ * enable/disable as status flags.
+ */
+typedef enum{
+  AGS_THREAD_SYNC_TIC_WAIT_0                  = 1,
+  AGS_THREAD_SYNC_TIC_DONE_0                  = 1 <<  1,
+  AGS_THREAD_SYNC_TIC_WAIT_1                  = 1 <<  2,
+  AGS_THREAD_SYNC_TIC_DONE_1                  = 1 <<  3,
+  AGS_THREAD_SYNC_TIC_WAIT_2                  = 1 <<  4,
+  AGS_THREAD_SYNC_TIC_DONE_2                  = 1 <<  5,
+  AGS_THREAD_SYNC_TIC_WAIT_3                  = 1 <<  6,
+  AGS_THREAD_SYNC_TIC_DONE_3                  = 1 <<  7,
+  AGS_THREAD_SYNC_TIC_WAIT_4                  = 1 <<  8,
+  AGS_THREAD_SYNC_TIC_DONE_4                  = 1 <<  9,
+  AGS_THREAD_SYNC_TIC_WAIT_5                  = 1 << 10,
+  AGS_THREAD_SYNC_TIC_DONE_5                  = 1 << 11,
+  AGS_THREAD_SYNC_TIC_WAIT_6                  = 1 << 12,
+  AGS_THREAD_SYNC_TIC_DONE_6                  = 1 << 13,
+  AGS_THREAD_SYNC_TIC_WAIT_7                  = 1 << 14,
+  AGS_THREAD_SYNC_TIC_DONE_7                  = 1 << 15,
+  AGS_THREAD_SYNC_TIC_WAIT_8                  = 1 << 16,
+  AGS_THREAD_SYNC_TIC_DONE_8                  = 1 << 17,
+}AgsThreadSyncTicFlags;
 
 struct _AgsThread
 {
@@ -145,23 +178,24 @@ struct _AgsThread
 
   guint my_flags;
   volatile guint status_flags;
-
+  volatile guint sync_tic_flags;
+  
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
-  guint delay;
-  guint tic_delay;
-  guint current_tic;
+  volatile guint current_sync_tic;
 
-  guint cycle_iteration;
-  guint time_late;
-  struct timespec *computing_time;
+  gdouble delay;
+  gdouble tic_delay;
+  
+  gdouble frequency;
+  gdouble max_precision;
+
+  gint64 last_run_start;
+  gint64 last_run_end;
   
   GThread *thread;
-
-  gdouble freq;
-  gdouble max_precision;
 
   GMutex wait_mutex;
   GCond wait_cond;
@@ -205,6 +239,22 @@ gboolean ags_thread_test_status_flags(AgsThread *thread, guint status_flags);
 void ags_thread_set_status_flags(AgsThread *thread, guint status_flags);
 void ags_thread_unset_status_flags(AgsThread *thread, guint status_flags);
 
+gboolean ags_thread_test_sync_tic_flags(AgsThread *thread, guint sync_tic_flags);
+void ags_thread_set_sync_tic_flags(AgsThread *thread, guint sync_tic_flags);
+void ags_thread_unset_sync_tic_flags(AgsThread *thread, guint sync_tic_flags);
+
+void ags_thread_set_current_sync_tic(AgsThread *thread, guint current_sync_tic);
+guint ags_thread_get_current_sync_tic(AgsThread *thread);
+
+void ags_thread_set_delay(AgsThread *thread, gdouble delay);
+gdouble ags_thread_get_delay(AgsThread *thread);
+
+void ags_thread_set_frequency(AgsThread *thread, gdouble frequency);
+gdouble ags_thread_get_frequency(AgsThread *thread);
+
+void ags_thread_set_max_precision(AgsThread *thread, gdouble max_precision);
+gdouble ags_thread_get_max_precision(AgsThread *thread);
+
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 AgsThread* ags_thread_self(void);
 
@@ -217,9 +267,6 @@ AgsThread* ags_thread_get_toplevel(AgsThread *thread);
 AgsThread* ags_thread_first(AgsThread *thread);
 AgsThread* ags_thread_last(AgsThread *thread);
 
-void ags_thread_set_sync(AgsThread *thread, guint tic);
-void ags_thread_set_sync_all(AgsThread *thread, guint tic);
-
 void ags_thread_lock(AgsThread *thread);
 gboolean ags_thread_trylock(AgsThread *thread);
 void ags_thread_unlock(AgsThread *thread);
@@ -229,12 +276,11 @@ void ags_thread_add_child(AgsThread *thread, AgsThread *child);
 void ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 				   gboolean no_start, gboolean no_wait);
 
-gboolean ags_thread_is_current_ready(AgsThread *current,
-				     guint tic);
-gboolean ags_thread_is_tree_ready(AgsThread *thread,
-				  guint tic);
+gboolean ags_thread_is_current_ready(AgsThread *current, guint current_sync_tic);
+gboolean ags_thread_is_tree_ready_recursive(AgsThread *thread, guint current_sync_tic);
 
-gboolean ags_thread_is_running(AgsThread *thread);
+void ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic);
+void ags_thread_set_tree_sync_recursive(AgsThread *thread, guint current_sync_tic);
 
 guint ags_thread_clock(AgsThread *thread);
 

@@ -646,7 +646,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
   g_rec_mutex_lock(playback_mutex);
 
   if(playback->channel_thread[sound_scope] != NULL){
-    if(ags_thread_is_running(playback->channel_thread[sound_scope])){
+    if(ags_thread_test_status_flags(playback->channel_thread[sound_scope], AGS_THREAD_STATUS_RUNNING)){
       ags_thread_stop(playback->channel_thread[sound_scope]);
     }
     

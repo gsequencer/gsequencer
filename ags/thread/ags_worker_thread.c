@@ -130,7 +130,10 @@ ags_worker_thread_init(AgsWorkerThread *worker_thread)
   AgsThread *thread;
 
   thread = (AgsThread *) worker_thread;
-  thread->freq = AGS_WORKER_THREAD_DEFAULT_JIFFIE;
+
+  g_object_set(thread,
+	       "frequency", AGS_WORKER_THREAD_DEFAULT_JIFFIE,
+	       NULL);
   
   g_atomic_int_set(&(worker_thread->status_flags),
 		   0);

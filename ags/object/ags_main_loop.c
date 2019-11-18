@@ -106,197 +106,47 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
   return(main_loop_interface->get_tree_lock(main_loop));
 }
 
-
 /**
- * ags_main_loop_set_tic:
+ * ags_main_loop_set_syncing:
  * @main_loop: the #AgsMainLoop
- * @tic: tic
+ * @is_syncing: set %TRUE if syncing
  *
- * Sets tic to @tic. 
+ * Set thread tree is syncing.
  *
  * Since: 3.0.0
  */
 void
-ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
+ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
 {
   AgsMainLoopInterface *main_loop_interface;
 
   g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_tic);
-  main_loop_interface->set_tic(main_loop, tic);
+  g_return_if_fail(main_loop_interface->set_syncing);
+
+  main_loop_interface->set_syncing(main_loop, is_syncing);
 }
 
 /**
- * ags_main_loop_get_tic:
+ * ags_main_loop_is_syncing:
  * @main_loop: the #AgsMainLoop
  *
- * Retrieve current tic of synchronization context.
+ * Check if thread tree is syncing.
  *
- * Returns: current tic
+ * Returns: %TRUE if sync in progress, otherwise %FALS
  *
- * Since: 3.0.0
- */
-guint
-ags_main_loop_get_tic(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_tic, G_MAXUINT);
-
-  return(main_loop_interface->get_tic(main_loop));
-}
-
-/**
- * ags_main_loop_set_last_sync:
- * @main_loop: the #AgsMainLoop
- * @last_sync: last sync
- *
- * Sets last sync to @last_sync. 
- *
- * Since: 3.0.0
- */
-void
-ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_last_sync);
-  main_loop_interface->set_last_sync(main_loop, last_sync);
-}
-
-/**
- * ags_main_loop_get_last_sync:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve last sync as tic of synchronization context.
- *
- * Returns: last synced tic
- *
- * Since: 3.0.0
- */
-guint
-ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_last_sync, G_MAXUINT);
-
-  return(main_loop_interface->get_last_sync(main_loop));
-}
-
-/**
- * ags_main_loop_set_sync_tic:
- * @main_loop: the #AgsMainLoop
- * @tic: the current sync tic
- *
- * Set current tic of sync counter.
- *
- * Since: 3.0.0
- */
-void
-ags_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_sync_tic);
-
-  main_loop_interface->set_sync_tic(main_loop, sync_tic);
-}
-
-/**
- * ags_main_loop_get_sync_tic:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve current tic of sync counter.
- *
- * Returns: current sync tic
- *
- * Since: 3.0.0
- */
-guint
-ags_main_loop_get_sync_tic(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_sync_tic, G_MAXUINT);
-
-  return(main_loop_interface->get_sync_tic(main_loop));
-}
-
-/**
- * ags_main_loop_sync_counter_inc:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * Increment sync counter.
- *
- * Since: 3.0.0
- */
-void
-ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->sync_counter_inc);
-
-  main_loop_interface->sync_counter_inc(main_loop, tic);
-}
-
-/**
- * ags_main_loop_sync_counter_dec:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * Decrement sync counter.
- *
- * Since: 3.0.0
- */
-void
-ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->sync_counter_dec);
-
-  main_loop_interface->sync_counter_dec(main_loop, tic);
-}
-
-/**
- * ags_main_loop_sync_counter_inc:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * test sync counter.
- *
- * Returns: %TRUE if synced, otherwise %FALSE
- * 
  * Since: 3.0.0
  */
 gboolean
-ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
+ags_main_loop_is_syncing(AgsMainLoop *main_loop)
 {
   AgsMainLoopInterface *main_loop_interface;
 
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->sync_counter_test, FALSE);
+  g_return_val_if_fail(main_loop_interface->is_syncing, FALSE);
 
-  return(main_loop_interface->sync_counter_test(main_loop, tic));
+  return(main_loop_interface->is_syncing(main_loop));
 }
 
 /**

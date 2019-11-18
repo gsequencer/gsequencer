@@ -206,8 +206,10 @@ ags_export_thread_init(AgsExportThread *export_thread)
   AgsThread *thread;
 
   AgsConfig *config;
-  
-  gchar *str0, *str1;
+
+  gdouble frequency;
+  guint samplerate;
+  guint buffer_size;
   
   thread = (AgsThread *) export_thread;
 
@@ -216,44 +218,14 @@ ags_export_thread_init(AgsExportThread *export_thread)
   
   config = ags_config_get_instance();
   
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate");
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
 
-  if(str0 == NULL){
-    str0 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate");
-  }
-  
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size");
+  frequency = ((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-  if(str1 == NULL){
-    str1 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size");
-  }
-
-  if(str0 == NULL || str1 == NULL){
-    thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
-  }else{
-    guint samplerate;
-    guint buffer_size;
-
-    samplerate = g_ascii_strtoull(str0,
-				  NULL,
-				  10);
-    buffer_size = g_ascii_strtoull(str1,
-				   NULL,
-				   10);
-
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-  }
-
-  g_free(str0);
-  g_free(str1);
+  g_object_set(thread,
+	       "frequency", frequency,
+	       NULL);
 
   export_thread->flags = 0;
 

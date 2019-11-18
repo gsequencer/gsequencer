@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_GENERIC_MAIN_LOOP                (ags_generic_main_loop_get_type())
 #define AGS_GENERIC_MAIN_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_MAIN_LOOP, AgsGenericMainLoop))
 #define AGS_GENERIC_MAIN_LOOP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_GENERIC_MAIN_LOOP, AgsGenericMainLoopClass))
@@ -40,17 +42,10 @@ typedef struct _AgsGenericMainLoopClass AgsGenericMainLoopClass;
 struct _AgsGenericMainLoop
 {
   AgsThread thread;
-
-  guint tic;
-  guint last_sync;
-
-  guint time_cycle;
-  guint time_spent;
-
-  guint sync_tic;
-  guint sync_counter[6];
   
   GRecMutex tree_lock;
+
+  volatile gboolean is_syncing;
 };
 
 struct _AgsGenericMainLoopClass
@@ -61,5 +56,7 @@ struct _AgsGenericMainLoopClass
 GType ags_generic_main_loop_get_type();
 
 AgsGenericMainLoop* ags_generic_main_loop_new();
+
+G_END_DECLS
 
 #endif /*__AGS_GENERIC_MAIN_LOOP_H__*/

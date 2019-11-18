@@ -37,17 +37,10 @@ void ags_generic_main_loop_get_property(GObject *gobject,
 void ags_generic_main_loop_finalize(GObject *gobject);
 
 GRecMutex* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_generic_main_loop_get_tic(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
-guint ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop);
+void ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+gboolean ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop);
 void ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
-				     gdouble frequency);
-void ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
-void ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
-gboolean ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
-void ags_generic_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_generic_main_loop_get_sync_tic(AgsMainLoop *main_loop);
+					    gdouble frequency);
 
 void ags_generic_main_loop_start(AgsThread *thread);
 
@@ -143,20 +136,10 @@ ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_generic_main_loop_get_tree_lock;
 
-  main_loop->set_tic = ags_generic_main_loop_set_tic;
-  main_loop->get_tic = ags_generic_main_loop_get_tic;
-
-  main_loop->set_last_sync = ags_generic_main_loop_set_last_sync;
-  main_loop->get_last_sync = ags_generic_main_loop_get_last_sync;
+  main_loop->set_syncing = ags_generic_main_loop_set_syncing;
+  main_loop->is_syncing = ags_generic_main_loop_is_syncing;
 
   main_loop->change_frequency = ags_generic_main_loop_change_frequency;
-
-  main_loop->sync_counter_inc = ags_generic_main_loop_sync_counter_inc;
-  main_loop->sync_counter_dec = ags_generic_main_loop_sync_counter_dec;
-  main_loop->sync_counter_test = ags_generic_main_loop_sync_counter_test;
-
-  main_loop->set_sync_tic = ags_generic_main_loop_set_sync_tic;
-  main_loop->get_sync_tic = ags_generic_main_loop_get_sync_tic;
 }
 
 void
@@ -171,22 +154,14 @@ ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop)
   
   ags_thread_set_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
 
-  thread->freq = AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE;
-
-  ags_main_loop_set_tic(AGS_MAIN_LOOP(generic_main_loop), 0);
-  ags_main_loop_set_last_sync(AGS_MAIN_LOOP(generic_main_loop), 0);
-
-  generic_main_loop->time_cycle = NSEC_PER_SEC / thread->freq;
-  generic_main_loop->time_spent = 0;
-
-  generic_main_loop->sync_tic = 0;
-  
-  for(i = 0; i < 6; i++){
-    generic_main_loop->sync_counter[i] = 0;
-  }
+  g_object_set(thread,
+	       "frequency", AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE,
+	       NULL);
   
   /* tree lock mutex */
   g_rec_mutex_init(&(generic_main_loop->tree_lock));
+
+  ags_main_loop_set_syncing(AGS_MAIN_LOOP(generic_main_loop), FALSE);
 }
 
 void
@@ -252,225 +227,36 @@ ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 }
 
 void
-ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
+ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
 {
   AgsGenericMainLoop *generic_main_loop;
-  
-  GRecMutex *thread_mutex;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* set tic */
-  g_rec_mutex_lock(thread_mutex);
-
-  generic_main_loop->tic = tic;
-
-  g_rec_mutex_unlock(thread_mutex);
+  /* set syncing */
+  g_atomic_int_set(&(generic_main_loop->is_syncing), is_syncing);
 }
 
-guint
-ags_generic_main_loop_get_tic(AgsMainLoop *main_loop)
+gboolean
+ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop)
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  guint tic;
-  
-  GRecMutex *thread_mutex;
+  gboolean is_syncing;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+  /* is syncing */
+  is_syncing = g_atomic_int_get(&(generic_main_loop->is_syncing));
 
-  /* set tic */
-  g_rec_mutex_lock(thread_mutex);
-
-  tic = generic_main_loop->tic;
-
-  g_rec_mutex_unlock(thread_mutex);
-
-  return(tic);
-}
-
-void
-ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
-{
-  AgsGenericMainLoop *generic_main_loop;
-  
-  GRecMutex *thread_mutex;
-
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* set tic */
-  g_rec_mutex_lock(thread_mutex);
-
-  generic_main_loop->last_sync = last_sync;
-
-  g_rec_mutex_unlock(thread_mutex);
-}
-
-guint
-ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  guint last_sync;
-  
-  GRecMutex *thread_mutex;
-
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* set tic */
-  g_rec_mutex_lock(thread_mutex);
-
-  last_sync = generic_main_loop->last_sync;
-
-  g_rec_mutex_unlock(thread_mutex);
-
-  return(last_sync);
+  return(is_syncing);
 }
 
 void
 ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
-				gdouble frequency)
+				       gdouble frequency)
 {
-}
-
-void
-ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  GRecMutex *thread_mutex;
-
-  if(tic >= 6){
-    return;
-  }
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* increment */
-  g_rec_mutex_lock(thread_mutex);
-  
-  generic_main_loop->sync_counter[tic] += 1;
-
-  g_rec_mutex_unlock(thread_mutex);
-}
-
-void
-ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  GRecMutex *thread_mutex;
-
-  if(tic >= 6){
-    return;
-  }
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* increment */
-  g_rec_mutex_lock(thread_mutex);
-
-  if(generic_main_loop->sync_counter[tic] > 0){
-    generic_main_loop->sync_counter[tic] -= 1;
-  }else{
-    g_critical("sync counter already equals 0");
-  }
-  
-  g_rec_mutex_unlock(thread_mutex);
-}
-
-gboolean
-ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  gboolean success;
-  
-  GRecMutex *thread_mutex;
-
-  if(tic >= 6){
-    return(FALSE);
-  }
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* test */
-  success = FALSE;
-  
-  g_rec_mutex_lock(thread_mutex);
-
-  if(generic_main_loop->sync_counter[tic] == 0){
-    success = TRUE;
-  }
-  
-  g_rec_mutex_unlock(thread_mutex);
-
-  return(success);
-}
-
-void
-ags_generic_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
-{
-  AgsGenericMainLoop *generic_main_loop;
-  
-  GRecMutex *thread_mutex;
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* test */
-  g_rec_mutex_lock(thread_mutex);
-
-  generic_main_loop->sync_tic = sync_tic;
-  
-  g_rec_mutex_unlock(thread_mutex);
-}
-
-guint
-ags_generic_main_loop_get_sync_tic(AgsMainLoop *main_loop)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  guint sync_tic;
-  
-  GRecMutex *thread_mutex;
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* test */
-  g_rec_mutex_lock(thread_mutex);
-
-  sync_tic = generic_main_loop->sync_tic;
-  
-  g_rec_mutex_unlock(thread_mutex);
-
-  return(sync_tic);
+  //empty
 }
 
 void

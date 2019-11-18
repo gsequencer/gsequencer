@@ -40,19 +40,9 @@ struct _AgsMainLoopInterface
   GTypeInterface ginterface;
   
   GRecMutex* (*get_tree_lock)(AgsMainLoop *main_loop);
-    
-  void (*set_tic)(AgsMainLoop *main_loop, guint tic);
-  guint (*get_tic)(AgsMainLoop *main_loop);
 
-  void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
-  guint (*get_last_sync)(AgsMainLoop *main_loop);
-
-  void (*set_sync_tic)(AgsMainLoop *main_loop, guint sync_tic);
-  guint (*get_sync_tic)(AgsMainLoop *main_loop);
-
-  void (*sync_counter_inc)(AgsMainLoop *main_loop, guint tic);
-  void (*sync_counter_dec)(AgsMainLoop *main_loop, guint tic);
-  gboolean (*sync_counter_test)(AgsMainLoop *main_loop, guint tic);
+  void (*set_syncing)(AgsMainLoop *main_loop, gboolean is_syncing);
+  gboolean (*is_syncing)(AgsMainLoop *main_loop);
 
   void (*change_frequency)(AgsMainLoop *main_loop,
 			   gdouble frequency);
@@ -62,18 +52,8 @@ GType ags_main_loop_get_type();
 
 GRecMutex* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
-void ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_main_loop_get_tic(AgsMainLoop *main_loop);
-
-void ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
-guint ags_main_loop_get_last_sync(AgsMainLoop *main_loop);
-
-void ags_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic);
-guint ags_main_loop_get_sync_tic(AgsMainLoop *main_loop);
-
-void ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
-void ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
-gboolean ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
+void ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+gboolean ags_main_loop_is_syncing(AgsMainLoop *main_loop);
 
 void ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 				    gdouble frequency);

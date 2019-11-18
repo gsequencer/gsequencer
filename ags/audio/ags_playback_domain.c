@@ -560,7 +560,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
   g_rec_mutex_lock(playback_domain_mutex);
 
   if(playback_domain->audio_thread[sound_scope] != NULL){
-    if(ags_thread_is_running(playback_domain->audio_thread[sound_scope])){
+    if(ags_thread_test_status_flags(playback_domain->audio_thread[sound_scope], AGS_THREAD_STATUS_RUNNING)){
       ags_thread_stop(playback_domain->audio_thread[sound_scope]);
     }
     

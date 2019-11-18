@@ -196,7 +196,8 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   AgsThread *thread;
 
   AgsConfig *config;
-  
+
+  gdouble frequency;
   guint samplerate;
   guint buffer_size;
   
@@ -213,7 +214,11 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   samplerate = (guint) ags_soundcard_helper_config_get_samplerate(config);
   buffer_size = (guint) ags_soundcard_helper_config_get_buffer_size(config);
 
-  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  frequency = ((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+  g_object_set(thread,
+	       "frequency", frequency,
+	       NULL);
 
   /*  */
   soundcard_thread->soundcard_capability = 0;
