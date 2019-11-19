@@ -10342,7 +10342,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
   
   gint sound_scope;
   
-  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){
+  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){    
     sound_scope = ags_recall_get_sound_scope(recall);
 
     start_recall_id = ags_audio_check_scope(audio, sound_scope);

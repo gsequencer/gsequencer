@@ -191,7 +191,8 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   
   thread = (AgsThread *) audio_thread;
 
-  ags_thread_set_flags(thread, AGS_THREAD_START_SYNCED_FREQ);
+  ags_thread_set_flags(thread, (AGS_THREAD_START_SYNCED_FREQ |
+				AGS_THREAD_IMMEDIATE_SYNC));
   
   config = ags_config_get_instance();
 
@@ -436,8 +437,8 @@ ags_audio_thread_run(AgsThread *thread)
   }
 #endif
 
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN) ||
-     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC) ||
+     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
     return;
   }
   
@@ -485,6 +486,8 @@ ags_audio_thread_run(AgsThread *thread)
   /* 
    * do audio processing
    */
+  g_message("audio thread");
+  
   /* input */
   g_rec_mutex_lock(thread_mutex);
 
@@ -578,7 +581,7 @@ ags_audio_thread_run(AgsThread *thread)
   while(playback != NULL){    
     if(ags_playback_test_flags(playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       ags_audio_thread_play_channel_super_threaded(audio_thread, playback->data);
-    }else{
+    }else{      
       g_object_get(playback->data,
 		   "channel", &channel,
 		   NULL);

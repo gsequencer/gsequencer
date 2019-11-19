@@ -9274,7 +9274,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
-  
+
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 

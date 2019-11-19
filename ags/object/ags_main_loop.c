@@ -133,7 +133,7 @@ ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
  *
  * Check if thread tree is syncing.
  *
- * Returns: %TRUE if sync in progress, otherwise %FALS
+ * Returns: %TRUE if sync in progress, otherwise %FALSE
  *
  * Since: 3.0.0
  */
@@ -147,6 +147,111 @@ ags_main_loop_is_syncing(AgsMainLoop *main_loop)
   g_return_val_if_fail(main_loop_interface->is_syncing, FALSE);
 
   return(main_loop_interface->is_syncing(main_loop));
+}
+
+/**
+ * ags_main_loop_set_critical_region:
+ * @main_loop: the #AgsMainLoop
+ * @is_critical_region: set %TRUE if critical region
+ *
+ * Set main loop is in critical region.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->set_critical_region);
+
+  main_loop_interface->set_critical_region(main_loop, is_critical_region);
+}
+
+/**
+ * ags_main_loop_is_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Check if main loop is in critical region.
+ *
+ * Returns: %TRUE if sync in progress, otherwise %FALSE
+ *
+ * Since: 3.0.0
+ */
+gboolean
+ags_main_loop_is_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->is_critical_region, FALSE);
+
+  return(main_loop_interface->is_critical_region(main_loop));
+}
+
+/**
+ * ags_main_loop_inc_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Increment thread needs access to main loop's critical region field.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->inc_queued_critical_region);
+
+  main_loop_interface->inc_queued_critical_region(main_loop);
+}
+  
+/**
+ * ags_main_loop_dec_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Decrement thread needs access to main loop's critical region field.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->dec_queued_critical_region);
+
+  main_loop_interface->dec_queued_critical_region(main_loop);
+}
+  
+/**
+ * ags_main_loop_test_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Test main loop may enter critical region.
+ * 
+ * Returns: 0 if main loop may enter critical region, otherwise not
+ * 
+ * Since: 3.0.0
+ */
+guint
+ags_main_loop_test_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->test_queued_critical_region, 0);
+
+  return(main_loop_interface->test_queued_critical_region(main_loop));
 }
 
 /**

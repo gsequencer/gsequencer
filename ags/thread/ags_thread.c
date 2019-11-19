@@ -2067,14 +2067,36 @@ ags_thread_real_clock(AgsThread *thread)
 
   main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
 
-  tree_mutex = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));  
+  tree_mutex = ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop));
   
   /* wait */
   wait_mutex = AGS_THREAD_GET_WAIT_MUTEX(thread);
   wait_cond = AGS_THREAD_GET_WAIT_COND(thread);
 
+  /* check initial sync */
+  initial_sync = FALSE;
+  
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC)){
+    initial_sync = TRUE;
+
+    while(ags_main_loop_is_critical_region(AGS_MAIN_LOOP(main_loop)));
+
+    /* increment queued critical region */
+    ags_main_loop_inc_queued_critical_region(AGS_MAIN_LOOP(main_loop));
+  }
+
   g_rec_mutex_lock(tree_mutex);
 
+  if(thread == main_loop){
+    while(ags_main_loop_test_queued_critical_region(AGS_MAIN_LOOP(main_loop)) != 0){
+      g_rec_mutex_unlock(tree_mutex);
+    
+      g_rec_mutex_lock(tree_mutex);
+    }
+
+    ags_main_loop_set_critical_region(AGS_MAIN_LOOP(main_loop), TRUE);
+  }  
+  
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_IS_CHAOS_TREE)){
     while(ags_main_loop_is_syncing(AGS_MAIN_LOOP(main_loop))){
       g_rec_mutex_unlock(tree_mutex);
@@ -2234,15 +2256,11 @@ ags_thread_real_clock(AgsThread *thread)
     g_critical("invalid main sync-tic");
   }
 
-  /* check initial sync */
-  initial_sync = FALSE;
-  
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC)){
+  /* do initial sync */
+  if(initial_sync){
     gdouble main_delay;
     gdouble main_tic_delay, next_main_tic_delay, prev_main_tic_delay;
     
-    initial_sync = TRUE;
-
     g_rec_mutex_lock(main_loop_mutex);
       
     main_delay = main_loop->delay;
@@ -2272,6 +2290,8 @@ ags_thread_real_clock(AgsThread *thread)
       thread->tic_delay = next_main_tic_delay;
     }else if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_POST_SYNC)){
       thread->tic_delay = prev_main_tic_delay;
+    }else{
+      thread->tic_delay = 0.0;
     }
       
     ags_thread_set_flags(thread, AGS_THREAD_MARK_SYNCED);
@@ -2279,6 +2299,9 @@ ags_thread_real_clock(AgsThread *thread)
     
     /* unset status flags */
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC);
+
+    /* decrement queued critical region */
+    ags_main_loop_dec_queued_critical_region(AGS_MAIN_LOOP(main_loop));
   }
 
   /* synchronize */
@@ -2355,16 +2378,15 @@ ags_thread_real_clock(AgsThread *thread)
   if(thread->delay >= 1.0){
     thread->tic_delay += 1.0;
     
-    if(initial_sync ||
-       thread->tic_delay >= thread->delay){
+    if(thread->tic_delay >= thread->delay){
       clocked_steps = 1;
 
       thread->tic_delay -= thread->delay;
+    }
 
-      if(initial_sync){
-	/* prepare initial run */
-	ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN);	
-      }
+    if(initial_sync){
+      /* prepare initial run */
+      ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN);	
     }
   }else{
     clocked_steps = (guint) floor((1.0 + thread->tic_delay) / thread->delay);
@@ -2373,6 +2395,10 @@ ags_thread_real_clock(AgsThread *thread)
   }
 
   g_rec_mutex_unlock(thread_mutex);
+
+  if(thread == main_loop){
+    ags_main_loop_set_critical_region(AGS_MAIN_LOOP(main_loop), FALSE);
+  }
   
   return(clocked_steps);
 }

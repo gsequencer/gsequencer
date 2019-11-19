@@ -184,7 +184,8 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   thread = (AgsThread *) channel_thread;
 
-  ags_thread_set_flags(thread, AGS_THREAD_START_SYNCED_FREQ);
+  ags_thread_set_flags(thread, (AGS_THREAD_START_SYNCED_FREQ |
+				AGS_THREAD_IMMEDIATE_SYNC));
   
   config = ags_config_get_instance();
   
@@ -422,8 +423,8 @@ ags_channel_thread_run(AgsThread *thread)
   }
 #endif
 
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN) ||
-     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC) ||
+     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
     return;
   }
 

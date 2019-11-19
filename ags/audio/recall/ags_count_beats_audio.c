@@ -421,7 +421,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 							 NULL);
   g_object_ref(count_beats_audio->sequencer_loop_start);
   
-  count_beats_audio->sequencer_loop_start->port_value.ags_port_uint = 0.0;
+  count_beats_audio->sequencer_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->sequencer_loop_start);
@@ -439,7 +439,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						       NULL);
   g_object_ref(count_beats_audio->sequencer_loop_end);
   
-  count_beats_audio->sequencer_loop_end->port_value.ags_port_uint = 16.0;
+  count_beats_audio->sequencer_loop_end->port_value.ags_port_uint = 16;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->sequencer_loop_end);
@@ -475,7 +475,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 							NULL);
   g_object_ref(count_beats_audio->notation_loop_start);
   
-  count_beats_audio->notation_loop_start->port_value.ags_port_uint = 0.0;
+  count_beats_audio->notation_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->notation_loop_start);
@@ -493,7 +493,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						      NULL);
   g_object_ref(count_beats_audio->notation_loop_end);
   
-  count_beats_audio->notation_loop_end->port_value.ags_port_uint = 64.0;
+  count_beats_audio->notation_loop_end->port_value.ags_port_uint = 64;
   
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->notation_loop_end);
@@ -529,7 +529,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						    NULL);
   g_object_ref(count_beats_audio->wave_loop_start);
   
-  count_beats_audio->wave_loop_start->port_value.ags_port_uint = 0.0;
+  count_beats_audio->wave_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->wave_loop_start);
@@ -547,7 +547,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						  NULL);
   g_object_ref(count_beats_audio->wave_loop_end);
   
-  count_beats_audio->wave_loop_end->port_value.ags_port_uint = 16.0;
+  count_beats_audio->wave_loop_end->port_value.ags_port_uint = 16;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->wave_loop_end);
@@ -583,7 +583,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						    NULL);
   g_object_ref(count_beats_audio->midi_loop_start);
   
-  count_beats_audio->midi_loop_start->port_value.ags_port_uint = 0.0;
+  count_beats_audio->midi_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->midi_loop_start);
@@ -601,7 +601,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						  NULL);
   g_object_ref(count_beats_audio->midi_loop_end);
   
-  count_beats_audio->midi_loop_end->port_value.ags_port_uint = 16.0;
+  count_beats_audio->midi_loop_end->port_value.ags_port_uint = 16;
 
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->midi_loop_end);

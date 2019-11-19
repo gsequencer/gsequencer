@@ -44,6 +44,13 @@ struct _AgsMainLoopInterface
   void (*set_syncing)(AgsMainLoop *main_loop, gboolean is_syncing);
   gboolean (*is_syncing)(AgsMainLoop *main_loop);
 
+  void (*set_critical_region)(AgsMainLoop *main_loop, gboolean is_critical_region);
+  gboolean (*is_critical_region)(AgsMainLoop *main_loop);
+
+  void (*inc_queued_critical_region)(AgsMainLoop *main_loop);
+  void (*dec_queued_critical_region)(AgsMainLoop *main_loop);
+  guint (*test_queued_critical_region)(AgsMainLoop *main_loop);
+  
   void (*change_frequency)(AgsMainLoop *main_loop,
 			   gdouble frequency);
 };
@@ -54,6 +61,13 @@ GRecMutex* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
 gboolean ags_main_loop_is_syncing(AgsMainLoop *main_loop);
+
+void ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+gboolean ags_main_loop_is_critical_region(AgsMainLoop *main_loop);
+
+void ags_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
+void ags_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
+guint ags_main_loop_test_queued_critical_region(AgsMainLoop *main_loop);
 
 void ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 				    gdouble frequency);
