@@ -419,9 +419,9 @@ ags_audio_thread_run(AgsThread *thread)
   gint sound_scope;
 
   GRecMutex *thread_mutex;
-  
-  //g_message("do: audio");
 
+//  g_message("do: audio %f", thread->tic_delay);
+  
 #ifdef AGS_WITH_RT
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP)){
     struct sched_param param;
@@ -437,8 +437,7 @@ ags_audio_thread_run(AgsThread *thread)
   }
 #endif
 
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC) ||
-     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
+  if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;
   }
   
@@ -486,7 +485,7 @@ ags_audio_thread_run(AgsThread *thread)
   /* 
    * do audio processing
    */
-  g_message("audio thread");
+//  g_message("audio thread");
   
   /* input */
   g_rec_mutex_lock(thread_mutex);

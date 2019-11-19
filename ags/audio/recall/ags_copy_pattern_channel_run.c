@@ -712,10 +712,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
   
   /* write pattern port - current offset */
+#if 0
   g_object_set(pattern,
 	       "first-index", (guint) g_value_get_float(&i_value),
 	       "second-index", (guint) g_value_get_float(&j_value),
 	       NULL);
+#endif
   
   /* get sequencer counter */
   g_object_get(count_beats_audio_run,
@@ -726,7 +728,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   current_bit = ags_pattern_get_bit(pattern,
 				    (guint) g_value_get_float(&i_value),
 				    (guint) g_value_get_float(&j_value),
-				    sequencer_counter);
+				    (guint) sequencer_counter);
   
   g_value_unset(&pattern_value);
 

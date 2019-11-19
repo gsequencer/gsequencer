@@ -72,6 +72,9 @@ struct _AgsAudioLoop
 
   volatile gboolean is_syncing;
 
+  volatile gboolean is_critical_region;
+  volatile guint critical_region_ref;
+  
   guint play_channel_ref;
   GList *play_channel; // play AgsChannel
 

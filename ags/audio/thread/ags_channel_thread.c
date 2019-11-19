@@ -423,8 +423,7 @@ ags_channel_thread_run(AgsThread *thread)
   }
 #endif
 
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC) ||
-     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
+  if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;
   }
 

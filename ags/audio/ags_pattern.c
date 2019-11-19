@@ -1234,6 +1234,13 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
   /* get pattern mutex */
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
+  if(!(i < pattern->dim[0] ||
+       j < pattern->dim[1])){
+    g_rec_mutex_unlock(pattern_mutex);
+
+    return(FALSE);
+  }
+
   /* check */
   g_rec_mutex_lock(pattern_mutex);
 
@@ -1281,6 +1288,14 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 
   /* get bit */
   g_rec_mutex_lock(pattern_mutex);
+
+  if(!(i < pattern->dim[0] ||
+       j < pattern->dim[1] ||
+       bit < pattern->dim[2])){
+    g_rec_mutex_unlock(pattern_mutex);
+
+    return(FALSE);
+  }
 
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
@@ -1330,6 +1345,14 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   /* toggle */
   g_rec_mutex_lock(pattern_mutex);
 
+  if(!(i < pattern->dim[0] ||
+       j < pattern->dim[1] ||
+       bit < pattern->dim[2])){
+    g_rec_mutex_unlock(pattern_mutex);
+
+    return;
+  }
+  
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
 

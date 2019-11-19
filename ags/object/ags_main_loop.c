@@ -159,7 +159,7 @@ ags_main_loop_is_syncing(AgsMainLoop *main_loop)
  * Since: 3.0.0
  */
 void
-ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region)
 {
   AgsMainLoopInterface *main_loop_interface;
 
