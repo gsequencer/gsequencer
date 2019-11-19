@@ -1256,7 +1256,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 
     /*  */
     source_recycling = new_start_changed_region;
-      
+    g_object_ref(source_recycling);
+    
     while(source_recycling != source_end_recycling){
       AgsRecallRecycling *recall_recycling;
 

@@ -916,6 +916,24 @@ ags_thread_unset_status_flags(AgsThread *thread, guint status_flags)
 }
 
 /**
+ * ags_thread_clear_status_flags:
+ * @thread: the #AgsThread
+ *
+ * Clear status flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_thread_clear_status_flags(AgsThread *thread)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_set(&(thread->status_flags), 0);
+}
+
+/**
  * ags_thread_test_sync_tic_flags:
  * @thread: the #AgsThread
  * @sync_tic_flags: the sync-tic flags
@@ -976,6 +994,24 @@ ags_thread_unset_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
   }
 
   g_atomic_int_and(&(thread->sync_tic_flags), (~sync_tic_flags));
+}
+
+/**
+ * ags_thread_clear_sync_tic_flags:
+ * @thread: the #AgsThread
+ *
+ * Clear sync-tic flags.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_thread_clear_sync_tic_flags(AgsThread *thread)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+  
+  g_atomic_int_set(&(thread->sync_tic_flags), 0);
 }
 
 /**
@@ -1906,7 +1942,9 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
     return;
   }
 
-  if(ags_thread_get_current_sync_tic(current) != current_sync_tic){    
+  if(ags_thread_get_current_sync_tic(current) != current_sync_tic){
+    g_critical("out-of-sync - main sync-tic != current sync-tic");
+    
     return;
   }
   
@@ -2610,19 +2648,23 @@ ags_thread_loop(void *ptr)
   current_sync_tic = ags_thread_get_current_sync_tic(thread);
 
   g_message("thread finish %d %d", main_sync_tic, current_sync_tic);
+
+  ags_thread_clear_status_flags(thread);
+  ags_thread_clear_sync_tic_flags(thread);
   
-  if(!ags_thread_is_tree_ready_recursive(main_loop, main_sync_tic)){
-    ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_READY);
+  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic) ||
+     current_sync_tic != main_sync_tic){
+    if(main_sync_tic != current_sync_tic){
+      g_critical("out-of-sync - main sync-tic != current sync-tic");
+    }
     
     g_rec_mutex_unlock(tree_mutex);
   }else{
     AgsTaskLauncher *task_launcher;
 
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), TRUE);
-    
+      
     g_rec_mutex_unlock(tree_mutex);
-
-    ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_READY);
 
     /* get task launcher */
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -2647,6 +2689,8 @@ ags_thread_loop(void *ptr)
   }
   
   /* exit thread */
+  ags_thread_unset_flags(thread, AGS_THREAD_MARK_SYNCED);
+
   thread->thread = NULL;
   
   g_thread_exit(NULL);
