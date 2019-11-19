@@ -419,7 +419,7 @@ ags_audio_thread_run(AgsThread *thread)
 
   GRecMutex *thread_mutex;
   
-  //  g_message("do: audio");
+  //g_message("do: audio");
 
 #ifdef AGS_WITH_RT
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP)){
@@ -448,7 +448,7 @@ ags_audio_thread_run(AgsThread *thread)
   g_object_get(audio_thread,
 	       "audio", &audio,
 	       NULL);
-  
+
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
 	        NULL);

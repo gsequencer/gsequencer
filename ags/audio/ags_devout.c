@@ -129,6 +129,10 @@ void ags_devout_oss_play(AgsSoundcard *soundcard,
 			 GError **error);
 void ags_devout_oss_free(AgsSoundcard *soundcard);
 
+gboolean ags_devout_alsa_io_func(GIOChannel *source,
+				 GIOCondition condition,
+				 AgsDevout *devout);
+
 void ags_devout_alsa_init(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_play_fill_ring_buffer(void *buffer,
@@ -665,7 +669,7 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[3] = NULL;
 
   g_atomic_int_set(&(devout->available),
-		   FALSE);
+		   TRUE);
   
   devout->ring_buffer_size = AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE;
   devout->nth_ring_buffer = 0;
@@ -719,6 +723,9 @@ ags_devout_init(AgsDevout *devout)
   devout->do_loop = FALSE;
 
   devout->loop_offset = 0;
+
+  devout->io_channel = NULL;
+  devout->tag = NULL;
 }
 
 void
@@ -1920,21 +1927,14 @@ ags_devout_is_available(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
-  gboolean retval;
-  
-  GRecMutex *devout_mutex;
+  gboolean is_available;
   
   devout = AGS_DEVOUT(soundcard);
 
-  /* get devout mutex */
-  devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);
-
   /* check available */
-  retval = FALSE;
-
-  //TODO:JK: implement me
+  is_available = g_atomic_int_get(&(devout->available));
   
-  return(retval);
+  return(is_available);
 }
 
 gboolean
@@ -2616,6 +2616,16 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   g_rec_mutex_unlock(devout_mutex);
 }
 
+gboolean
+ags_devout_alsa_io_func(GIOChannel *source,
+			GIOCondition condition,
+			AgsDevout *devout)
+{
+  g_atomic_int_set(&(devout->available), TRUE);
+
+  return(TRUE);
+}
+
 void
 ags_devout_alsa_init(AgsSoundcard *soundcard,
 		     GError **error)
@@ -2647,7 +2657,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 #endif
 
   guint word_size;
-  guint i;
+  guint i, i_stop;
   
   GRecMutex *devout_mutex; 
  
@@ -3055,6 +3065,33 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /*  */
   devout->out.alsa.handle = handle;
+
+  i_stop = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
+
+  if(i_stop > 0){
+    struct pollfd *fds;
+    
+    fds = (struct pollfd *) malloc(i_stop * sizeof(struct pollfd));
+    
+    snd_pcm_poll_descriptors(devout->out.alsa.handle, fds, i_stop);
+    
+    for(i = 0; i < i_stop; i++){
+      GIOChannel *io_channel;
+
+      guint tag;
+
+      io_channel = g_io_channel_unix_new(fds[i].fd);
+      tag = g_io_add_watch(io_channel,
+			   G_IO_OUT,
+			   (GIOFunc) ags_devout_alsa_io_func,
+			   devout);
+      
+      devout->io_channel = g_list_prepend(devout->io_channel,
+					  io_channel);
+      devout->tag = g_list_prepend(devout->tag,
+				   GUINT_TO_POINTER(tag));
+    }
+  }
 #endif
 
   devout->tact_counter = 0.0;
@@ -3394,8 +3431,15 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 					devout->pcm_channels, devout->buffer_size);
 
   /* wait until available */
-  //TODO:JK: implement me
+  g_rec_mutex_unlock(devout_mutex);
   
+  //TODO:JK: implement me
+  while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
+    g_usleep(1);
+  }
+  
+  g_rec_mutex_lock(devout_mutex);
+
   /* write ring buffer */
   devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 				       devout->ring_buffer[devout->nth_ring_buffer],
@@ -3488,6 +3532,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  GList *start_list, *list;
+  
   guint i;
   
   GRecMutex *devout_mutex;
@@ -3540,6 +3586,25 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   devout->note_offset = devout->start_note_offset;
   devout->note_offset_absolute = devout->start_note_offset;
 
+  list = devout->tag;
+
+  while(list != NULL){
+    g_source_remove(GPOINTER_TO_UINT(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(devout->tag);
+  
+  devout->tag = NULL;
+
+  g_list_free_full(devout->io_channel,
+		   g_source_unref);
+
+  devout->io_channel = NULL;
+
+  g_atomic_int_set(&(devout->available), TRUE);
+  
   g_rec_mutex_unlock(devout_mutex);
 }
 

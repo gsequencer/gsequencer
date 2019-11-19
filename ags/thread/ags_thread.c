@@ -2320,7 +2320,8 @@ ags_thread_real_clock(AgsThread *thread)
   /* synchronize */
   ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAITING);
     
-  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic)){
+  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic) ||
+     current_sync_tic != main_sync_tic){
     g_rec_mutex_unlock(tree_mutex);
       
     g_mutex_lock(wait_mutex);
@@ -2336,6 +2337,8 @@ ags_thread_real_clock(AgsThread *thread)
       }
     }
 
+    ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAITING);
+
     ags_thread_unset_sync_tic_flags(thread, sync_tic_wait);
     ags_thread_unset_sync_tic_flags(thread, sync_tic_done);
 
@@ -2350,6 +2353,8 @@ ags_thread_real_clock(AgsThread *thread)
 
     g_rec_mutex_unlock(tree_mutex);
 
+    ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAITING);
+
     /* get task launcher */
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
       
@@ -2357,7 +2362,7 @@ ags_thread_real_clock(AgsThread *thread)
     ags_task_launcher_sync_run(task_launcher);
       
     /* signal */
-#if 0    
+#if 1
     if(main_sync_tic == current_sync_tic){
       ags_thread_set_tree_sync_recursive(main_loop,
 					 main_sync_tic);
@@ -2625,7 +2630,7 @@ ags_thread_loop(void *ptr)
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
     /* signal */
-#if 0    
+#if 1
     if(main_sync_tic == current_sync_tic){
       ags_thread_set_tree_sync_recursive(main_loop,
 					 main_sync_tic);

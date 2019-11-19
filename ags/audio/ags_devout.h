@@ -177,6 +177,9 @@ struct _AgsDevout
     }alsa;
 #endif
   }out;
+
+  GList *io_channel;
+  GList *tag;
 };
 
 struct _AgsDevoutClass

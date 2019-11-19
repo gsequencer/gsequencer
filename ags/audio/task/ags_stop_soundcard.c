@@ -184,6 +184,7 @@ ags_stop_soundcard_launch(AgsTask *task)
   AgsThread *audio_loop;
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
+  AgsThread *next_thread;
 
   AgsApplicationContext *application_context;
 
@@ -203,7 +204,12 @@ ags_stop_soundcard_launch(AgsTask *task)
       ags_thread_stop(soundcard_thread);
     }
     
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    /* iterate */
+    next_thread = ags_thread_next(soundcard_thread);
+
+    g_object_unref(soundcard_thread);
+    
+    soundcard_thread = next_thread;
   }
 
   export_thread = ags_thread_find_type(audio_loop,
@@ -215,7 +221,12 @@ ags_stop_soundcard_launch(AgsTask *task)
       ags_thread_stop(export_thread);
     }
     
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+    /* iterate */
+    next_thread = ags_thread_next(export_thread);
+
+    g_object_unref(export_thread);
+    
+    export_thread = next_thread;
   }
 
   g_object_unref(audio_loop);
