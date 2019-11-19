@@ -264,7 +264,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       "label", "0000:00.000",
 	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
@@ -844,7 +844,7 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 
   if(default_soundcard != NULL){
     str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
-
+    
     g_object_set(navigation->duration_time,
 		 "label", str,
 		 NULL);

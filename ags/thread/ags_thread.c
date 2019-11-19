@@ -990,19 +990,11 @@ ags_thread_unset_sync_tic_flags(AgsThread *thread, guint sync_tic_flags)
 void
 ags_thread_set_current_sync_tic(AgsThread *thread, guint current_sync_tic)
 {
-  GRecMutex *thread_mutex;
-  
   if(!AGS_IS_THREAD(thread)){
     return;
   }
 
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
-
-  g_rec_mutex_lock(thread_mutex);
-
-  thread->current_sync_tic = current_sync_tic;
-  
-  g_rec_mutex_unlock(thread_mutex);
+  g_atomic_int_set(&(thread->current_sync_tic), current_sync_tic);
 }
 
 /**
@@ -1020,19 +1012,11 @@ ags_thread_get_current_sync_tic(AgsThread *thread)
 {
   guint current_sync_tic;
   
-  GRecMutex *thread_mutex;
-  
   if(!AGS_IS_THREAD(thread)){
     return(G_MAXUINT);
   }
 
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
-
-  g_rec_mutex_lock(thread_mutex);
-
-  current_sync_tic = thread->current_sync_tic;
-  
-  g_rec_mutex_unlock(thread_mutex);
+  current_sync_tic = g_atomic_int_get(&(thread->current_sync_tic));
 
   return(current_sync_tic);
 }
@@ -1838,15 +1822,10 @@ ags_thread_is_current_ready(AgsThread *current, guint current_sync_tic)
   guint sync_tic;
   gboolean is_current_ready;
 
-  GRecMutex *current_mutex;
-
   if(!AGS_IS_THREAD(current)){
     return(TRUE);
   }
   
-  /* get current mutex */  
-  current_mutex = AGS_THREAD_GET_OBJ_MUTEX(current);
-
   if((!ags_thread_test_status_flags(current, AGS_THREAD_STATUS_RUNNING) &&
       !ags_thread_test_status_flags(current, AGS_THREAD_STATUS_READY)) ||
      ags_thread_test_status_flags(current, AGS_THREAD_STATUS_IS_CHAOS_TREE)){
@@ -1856,11 +1835,7 @@ ags_thread_is_current_ready(AgsThread *current, guint current_sync_tic)
   is_current_ready = TRUE;
 
   /* check current sync tic */
-  g_rec_mutex_lock(current_mutex);
-
-  sync_tic = current->current_sync_tic;
-
-  g_rec_mutex_unlock(current_mutex);
+  sync_tic = ags_thread_get_current_sync_tic(current);
   
   if(current_sync_tic == sync_tic){
     if(!ags_thread_test_status_flags(current, AGS_THREAD_STATUS_WAITING)){
@@ -1917,7 +1892,6 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
   guint next_current_sync_tic;
   guint sync_tic_wait, sync_tic_done;
 
-  GRecMutex *current_mutex;
   GMutex *wait_mutex;
   GCond *wait_cond;
 
@@ -1926,23 +1900,15 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
   }
   
   /* get current mutex */  
-  current_mutex = AGS_THREAD_GET_OBJ_MUTEX(current);
-
   if((!ags_thread_test_status_flags(current, AGS_THREAD_STATUS_RUNNING) &&
       !ags_thread_test_status_flags(current, AGS_THREAD_STATUS_READY)) ||
      ags_thread_test_status_flags(current, AGS_THREAD_STATUS_IS_CHAOS_TREE)){
     return;
   }
   
-  g_rec_mutex_lock(current_mutex);
-
-  if(current->current_sync_tic != current_sync_tic){
-    g_rec_mutex_unlock(current_mutex);
-    
+  if(ags_thread_get_current_sync_tic(current) != current_sync_tic){    
     return;
   }
-  
-  g_rec_mutex_unlock(current_mutex);
   
   wait_mutex = AGS_THREAD_GET_WAIT_MUTEX(current);
   wait_cond = AGS_THREAD_GET_WAIT_COND(current);
@@ -2029,6 +1995,8 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
     g_critical("invalid current sync-tic");
   }
 
+  ags_thread_unset_status_flags(current, AGS_THREAD_STATUS_WAITING);
+
   g_mutex_lock(wait_mutex);
 
   ags_thread_set_sync_tic_flags(current, sync_tic_done);
@@ -2040,11 +2008,7 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
   g_mutex_unlock(wait_mutex);
 
   /* apply next current sync tic */
-  g_rec_mutex_lock(current_mutex);
-
-  current->current_sync_tic = next_current_sync_tic;
-  
-  g_rec_mutex_unlock(current_mutex);
+  ags_thread_set_current_sync_tic(current, next_current_sync_tic);
 }
 
 void
@@ -2360,7 +2324,7 @@ ags_thread_real_clock(AgsThread *thread)
       
     /* run task launcher */
     ags_task_launcher_sync_run(task_launcher);
-      
+    
     /* signal */
 #if 1
     if(main_sync_tic == current_sync_tic){

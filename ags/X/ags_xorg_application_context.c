@@ -2137,6 +2137,7 @@ ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
   /* unref */
   g_object_unref(task_launcher);
 }
+
 GtkWidget*
 ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
 {
@@ -4103,6 +4104,10 @@ gboolean
 ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context)
 {
   AgsTaskLauncher *task_launcher;
+
+  if(xorg_application_context->task == NULL){
+    return(TRUE);
+  }
   
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
 

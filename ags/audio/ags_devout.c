@@ -2750,9 +2750,6 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  g_atomic_int_set(&(devout->available),
-		   FALSE);
-  
   devout->ring_buffer = (unsigned char **) malloc(devout->ring_buffer_size * sizeof(unsigned char *));
 
   for(i = 0; i < devout->ring_buffer_size; i++){
@@ -3437,6 +3434,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
     g_usleep(1);
   }
+
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
   
   g_rec_mutex_lock(devout_mutex);
 
@@ -3444,9 +3444,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 				       devout->ring_buffer[devout->nth_ring_buffer],
 				       (snd_pcm_uframes_t) (devout->buffer_size));
-
-  g_atomic_int_set(&(devout->available),
-		   FALSE);
   
   /* check error flag */
   if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
@@ -3484,9 +3481,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 #endif
 
   /* increment nth ring-buffer */
-  g_atomic_int_set(&(devout->available),
-		   FALSE);
-  
   if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
     devout->nth_ring_buffer = 0;
   }else{
@@ -3502,22 +3496,33 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   /* tic soundcard */
   tic_device = ags_tic_device_new((GObject *) devout);
-  task = g_list_append(task,
-		       tic_device);
+  
+  task = g_list_prepend(task,
+			tic_device);
+  g_object_ref(tic_device);
 
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) devout);
-  task = g_list_append(task,
-		       clear_buffer);
+
+  task = g_list_prepend(task,
+			clear_buffer);
+  g_object_ref(clear_buffer);
 
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
-  task = g_list_append(task,
-		       switch_buffer_flag);
+
+  task = g_list_prepend(task,
+			switch_buffer_flag);
+  g_object_ref(switch_buffer_flag);
 
   /* append tasks */
+  task = g_list_reverse(task);
+  
   ags_task_launcher_add_task_all(task_launcher,
 				 task);
+
+  g_list_free_full(task,
+		   g_object_unref);
   
 #ifdef AGS_WITH_ALSA
   snd_pcm_prepare(devout->out.alsa.handle);
@@ -3623,7 +3628,7 @@ ags_devout_tic(AgsSoundcard *soundcard)
   GRecMutex *devout_mutex;
   
   devout = AGS_DEVOUT(soundcard);
-
+  
   /* get devout mutex */
   devout_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(devout);
   
@@ -3659,7 +3664,7 @@ ags_devout_tic(AgsSoundcard *soundcard)
     /* delay */
     ags_soundcard_offset_changed(soundcard,
 				 note_offset);
-    
+
     /* reset - delay counter */
     g_rec_mutex_lock(devout_mutex);
     

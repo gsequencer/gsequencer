@@ -699,14 +699,15 @@ ags_task_launcher_add_task_all(AgsTaskLauncher *task_launcher,
 
   g_rec_mutex_lock(task_launcher_mutex);
 
-  while(list != NULL){
-    if(AGS_IS_TASK(list->data)){
-      task_launcher->task = g_list_prepend(task_launcher->task,
-					   list->data);
-      g_object_ref(list->data);
-    }
-    
-    list = list->next;
+  if(task_launcher->task != NULL){
+    task_launcher->task = g_list_concat(task_launcher->task,
+					g_list_copy_deep(list,
+							 (GCopyFunc) g_object_ref,
+							 NULL));
+  }else{
+    task_launcher->task = g_list_copy_deep(list,
+					   (GCopyFunc) g_object_ref,
+					   NULL);
   }
   
   g_rec_mutex_unlock(task_launcher_mutex);
@@ -784,31 +785,30 @@ ags_task_launcher_real_run(AgsTaskLauncher *task_launcher)
   GList *start_cyclic_task, *cyclic_task;
 
   GRecMutex *task_launcher_mutex;
-  
+
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
+
+  g_rec_mutex_lock(task_launcher_mutex);
 
   g_object_get(task_launcher,
 	       "task", &start_task,
 	       "cyclic-task", &start_cyclic_task,
 	       NULL);
 
+  g_list_free_full(task_launcher->task,
+		   g_object_unref);
+  
+  task_launcher->task = NULL;
+  
+  g_rec_mutex_unlock(task_launcher_mutex);
+  
   /* one shot task */
   task = start_task;
 
   while(task != NULL){
     ags_task_launch(task->data);
-
-    g_rec_mutex_lock(task_launcher_mutex);
-
-    task_launcher->task = g_list_remove(task_launcher->task,
-					task->data);
       
-    g_rec_mutex_unlock(task_launcher_mutex);
-      
-    g_object_run_dispose(task->data);
-    g_object_unref(task->data);
-
     /* iterate */
     task = task->next;
   }
@@ -842,7 +842,7 @@ void
 ags_task_launcher_run(AgsTaskLauncher *task_launcher)
 {
   g_return_if_fail(AGS_IS_TASK_LAUNCHER(task_launcher));
-
+  
   g_object_ref(task_launcher);
   g_signal_emit(task_launcher,
 		task_launcher_signals[RUN], 0);
@@ -871,11 +871,12 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   GMainContext *main_context;
   
   GRecMutex *task_launcher_mutex;
-
+  
   if(!AGS_IS_TASK_LAUNCHER(task_launcher)){
     return;
   }
-
+  
+#if 1
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
@@ -890,13 +891,16 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   /* invoke */
   g_object_ref(task_launcher);
   g_main_context_invoke_full(main_context,
-			     G_PRIORITY_DEFAULT,
+			     G_PRIORITY_HIGH,
 			     ags_task_launcher_source_func,
 			     task_launcher,
 			     (GDestroyNotify) g_object_unref);
 
   /* unref */
   g_main_context_unref(main_context);
+#else
+  ags_task_launcher_run(task_launcher);
+#endif
 }
 
 /**
