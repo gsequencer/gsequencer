@@ -2245,7 +2245,7 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
     g_object_unref(first_recycling);
     g_object_unref(last_recycling);
 
-    if(end_recycling){
+    if(end_recycling != NULL){
       g_object_unref(end_recycling);
     }
   }
@@ -2369,11 +2369,12 @@ ags_channel_connect(AgsConnectable *connectable)
 	       NULL);
   
   /* connect recycling */
-  recycling = first_recycling;
-  
-  if(recycling != NULL &&
+  if(first_recycling != NULL &&
      (AGS_IS_OUTPUT(channel) ||
       (AGS_IS_INPUT(channel) && link == NULL))){
+    recycling = first_recycling;
+    g_object_ref(recycling);
+    
     /* get end recycling */
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -2389,7 +2390,7 @@ ags_channel_connect(AgsConnectable *connectable)
       recycling = next_recycling;
     }
 
-    if(end_recycling){
+    if(end_recycling != NULL){
       g_object_unref(end_recycling);
     }
   }
@@ -2503,11 +2504,12 @@ ags_channel_disconnect(AgsConnectable *connectable)
 	       NULL);
   
   /* disconnect recycling */
-  recycling = first_recycling;
-
-  if(recycling != NULL &&
+  if(first_recycling != NULL &&
      (AGS_IS_OUTPUT(channel) ||
       (AGS_IS_INPUT(channel) && link == NULL))){
+    recycling = first_recycling;
+    g_object_ref(recycling);
+    
     /* get end recycling */
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -2523,7 +2525,7 @@ ags_channel_disconnect(AgsConnectable *connectable)
       recycling = next_recycling;
     }
 
-    if(end_recycling){
+    if(end_recycling != NULL){
       g_object_unref(end_recycling);
     }
   }

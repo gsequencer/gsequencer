@@ -876,7 +876,6 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
     return;
   }
   
-#if 1
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
 
@@ -898,9 +897,6 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
 
   /* unref */
   g_main_context_unref(main_context);
-#else
-  ags_task_launcher_run(task_launcher);
-#endif
 }
 
 /**

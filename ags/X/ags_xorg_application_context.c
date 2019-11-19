@@ -2104,7 +2104,8 @@ ags_xorg_application_context_schedule_task(AgsUiProvider *ui_provider,
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
 
-  if(task_launcher == NULL){
+  if(!AGS_IS_TASK_LAUNCHER(task_launcher) ||
+     !AGS_IS_TASK(task)){
     return;
   }
   
@@ -2127,13 +2128,18 @@ ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
 
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
 
-  if(task_launcher == NULL){
+  if(!AGS_IS_TASK_LAUNCHER(task_launcher) ||
+     task == NULL){
     return;
   }
 
-  xorg_application_context->task = g_list_concat(g_list_reverse(task),
-						 xorg_application_context->task);
-
+  if(xorg_application_context->task != NULL){
+    xorg_application_context->task = g_list_concat(g_list_reverse(task),
+						   xorg_application_context->task);
+  }else{
+    xorg_application_context->task = g_list_reverse(task);
+  }
+  
   /* unref */
   g_object_unref(task_launcher);
 }
@@ -4070,6 +4076,7 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
 				"method"),
 		     "AgsSoundProvider::set-default-soundcard",
 		     40)){
+#if 0	
 	GObject *default_soundcard;
 
 	gint position;
@@ -4084,6 +4091,7 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
 		       "soundcard", default_soundcard,
 		       NULL);
 	}
+#endif
       }
     }
     
@@ -4113,6 +4121,9 @@ ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_applic
 
   ags_task_launcher_add_task_all(task_launcher,
 				 g_list_reverse(xorg_application_context->task));
+
+  g_list_free_full(xorg_application_context->task,
+		   g_object_unref);
   
   xorg_application_context->task = NULL;
   

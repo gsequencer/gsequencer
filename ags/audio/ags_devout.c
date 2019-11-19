@@ -3499,21 +3499,18 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   task = g_list_prepend(task,
 			tic_device);
-  g_object_ref(tic_device);
 
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) devout);
 
   task = g_list_prepend(task,
 			clear_buffer);
-  g_object_ref(clear_buffer);
 
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
 
   task = g_list_prepend(task,
 			switch_buffer_flag);
-  g_object_ref(switch_buffer_flag);
 
   /* append tasks */
   task = g_list_reverse(task);
@@ -3604,7 +3601,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   devout->tag = NULL;
 
   g_list_free_full(devout->io_channel,
-		   g_source_unref);
+		   g_io_channel_unref);
 
   devout->io_channel = NULL;
 

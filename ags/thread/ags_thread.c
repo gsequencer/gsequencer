@@ -2577,7 +2577,8 @@ ags_thread_loop(void *ptr)
 
   current_sync_tic = ags_thread_get_current_sync_tic(thread);
 
-  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic)){
+  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic) ||
+     current_sync_tic != main_sync_tic){
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_READY);
     
     g_rec_mutex_unlock(tree_mutex);
