@@ -71,7 +71,7 @@ void ags_thread_real_stop(AgsThread *thread);
 void* ags_thread_loop(void *ptr);
 
 /**
- * SECTION:ags_thread-posix
+ * SECTION:ags_thread
  * @short_description: threads
  * @title: AgsThread
  * @section_id:

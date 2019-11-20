@@ -6939,6 +6939,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
       link_recycling = TRUE;
     }
 
+    bank_dim[0] = 0;
+    bank_dim[1] = 0;
+    bank_dim[2] = 0;
+
     g_rec_mutex_lock(audio_mutex);
       
     if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) != 0){
@@ -6963,7 +6967,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	ags_audio_set_pads_grow(audio,
 				AGS_TYPE_INPUT,
 				pads, pads_old,
-				0, 0, 0,
+				bank_dim[0], bank_dim[1], bank_dim[2],
 				add_recycling, add_pattern, add_synth_generator,
 				link_recycling,
 				set_sync_link, set_async_link);
