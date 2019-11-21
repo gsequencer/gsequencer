@@ -30,8 +30,8 @@ int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint resp
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
-int
-ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor)
+void
+ags_link_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLinkEditor *link_editor)
 {
   AgsMachine *machine;
   AgsLineEditor *line_editor;
@@ -42,7 +42,7 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   GtkTreeModel *model;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   //TODO:JK: missing mutex
@@ -109,9 +109,7 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 	g_object_unref(audio);
       }
     }
-  }
-  
-  return(0);
+  }  
 }
 
 void

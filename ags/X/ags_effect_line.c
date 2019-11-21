@@ -1000,7 +1000,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   AgsRecallHandler *recall_handler;
   
-  GList *list;
+  GList *start_list, *list;
   GList *start_recall, *recall;
   GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
@@ -1022,15 +1022,25 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   x = 0;
   y = 0;
   
-  list = effect_line->table->children;
+  list =
+    start_list = gtk_container_get_children(effect_line->table);
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_line->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* play - find ports */
   g_object_get(effect_line->channel,
@@ -1579,7 +1589,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   AgsRecallHandler *recall_handler;
 
-  GList *list;
+  GList *start_list, *list;
   GList *start_recall, *recall;
   GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
@@ -1600,15 +1610,25 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   x = 0;
   y = 0;
 
-  list = effect_line->table->children;
+  list =
+    start_list = gtk_container_get_children(effect_line->table);
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_line->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* play - find ports */
   g_object_get(effect_line->channel,
@@ -2847,7 +2867,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	GRecMutex *plugin_port_mutex;
 	
 	line_member = AGS_LINE_MEMBER(list->data);
-	child = GTK_BIN(line_member)->child;
+	child = gtk_bin_get_child(GTK_BIN(line_member));
       
 	average_peak = 0.0;
       

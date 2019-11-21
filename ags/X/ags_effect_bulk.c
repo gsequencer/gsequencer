@@ -814,7 +814,7 @@ ags_effect_bulk_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_effect_bulk_parent_class)->show(widget);
 
   if((AGS_EFFECT_BULK_HIDE_BUTTONS & (effect_bulk->flags)) == 0){
-    gtk_widget_show(GTK_WIDGET(effect_bulk->add)->parent);
+    gtk_widget_show(gtk_widget_get_parent(GTK_WIDGET(effect_bulk->add)));
   }
 
   if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
@@ -905,7 +905,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   
   GList *retport;
   GList *port, *recall_port;
-  GList *list;
+  GList *start_list, *list;
   GList *task;
   GList *start_plugin_port, *plugin_port;
 
@@ -1116,15 +1116,25 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list = effect_bulk->table->children;
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* load ports */
   g_object_get(ladspa_plugin,
@@ -1449,7 +1459,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   GList *retport;
   GList *port, *recall_port;
-  GList *list;
+  GList *start_list, *list;
   GList *task;
   GList *start_plugin_port, *plugin_port;
 
@@ -1668,15 +1678,25 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list = effect_bulk->table->children;
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* load ports */
   g_object_get(dssi_plugin,
@@ -1985,7 +2005,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   GList *retport;
   GList *port, *recall_port;
-  GList *list;
+  GList *start_list, *list;
   GList *task;
   GList *start_plugin_port, *plugin_port;
 
@@ -2211,15 +2231,25 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list = effect_bulk->table->children;
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 
   /* load ports */
   g_object_get(lv2_plugin,

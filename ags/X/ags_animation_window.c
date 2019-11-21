@@ -30,10 +30,7 @@ void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_show(GtkWidget *widget);
 
-gboolean ags_animation_window_expose(GtkWidget *widget,
-				     GdkEventExpose *event);
-
-void ags_animation_window_draw(AgsAnimationWindow *animation_window);
+gboolean ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -74,9 +71,10 @@ ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
   
   ags_animation_window_parent_class = g_type_class_peek_parent(animation_window);
 
+  /* GtkWidgetClass */
   widget = (GtkWidgetClass *) animation_window;
 
-  widget->expose_event = ags_animation_window_expose;
+  widget->draw = ags_animation_window_draw;
 //  widget->show = ags_animation_window_show;
 }
 
@@ -169,30 +167,20 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_animation_window_progress_timeout, (gpointer) animation_window);
 }
 
-gboolean
-ags_animation_window_expose(GtkWidget *widget,
-			    GdkEventExpose *event)
-{
-  ags_animation_window_draw(AGS_ANIMATION_WINDOW(widget));
-
-  return(FALSE);
-}
-
 void
 ags_animation_window_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_animation_window_parent_class)->show(widget);
 }
 
-void
-ags_animation_window_draw(AgsAnimationWindow *animation_window)
+gboolean
+ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr)
 {
   AgsLog *log;
 
   PangoLayout *layout;
   PangoFontDescription *desc;
     
-  cairo_t *cr;
   cairo_surface_t *surface;
 
   GList *start_list, *list;
@@ -207,7 +195,7 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   GRecMutex *log_mutex;
   
   if(!AGS_IS_ANIMATION_WINDOW(animation_window)){
-    return;
+    return(FALSE);
   }
 
   log = ags_log_get_instance();
@@ -225,12 +213,6 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   }
 #endif
   
-  cr = gdk_cairo_create(GTK_WIDGET(animation_window)->window);
-
-  if(cr == NULL){
-    return;
-  }
-
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
 				       800, 600);
 
@@ -317,9 +299,11 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   g_free(font_name);
   
   cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+//  cairo_destroy(cr);
 
   cairo_surface_destroy(surface);
+
+  return(FALSE);
 }
 
 gboolean
@@ -343,7 +327,7 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
     i_stop = g_list_length(start_list);
     
     if(animation_window->message_count < i_stop){
-      ags_animation_window_draw(animation_window);
+      gtk_widget_queue_draw(animation_window);
     }
 
     return(TRUE);

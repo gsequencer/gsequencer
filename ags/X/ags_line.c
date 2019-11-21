@@ -2932,7 +2932,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	GRecMutex *plugin_port_mutex;
 	
 	line_member = AGS_LINE_MEMBER(list->data);
-	child = GTK_BIN(line_member)->child;
+	child = gtk_bin_get_child(GTK_BIN(line_member));
       
 	average_peak = 0.0;
       

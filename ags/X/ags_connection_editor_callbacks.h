@@ -33,8 +33,6 @@
 
 G_BEGIN_DECLS
 
-int ags_connection_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsConnectionEditor *connection_editor);
-
 int ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 int ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 int ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);

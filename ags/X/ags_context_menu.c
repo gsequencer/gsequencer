@@ -301,7 +301,7 @@ ags_context_menu_connect(AgsConnectable *connectable)
   AgsContextMenu *context_menu;
 
   GList *list0, *list1, *list2, *list3, *list4;
-  GList *list1_start, *list2_start, *list3_start, *list4_start;
+  GList *list0_start, *list1_start, *list2_start, *list3_start, *list4_start;
 
   context_menu = AGS_CONTEXT_MENU(connectable);
 
@@ -312,7 +312,8 @@ ags_context_menu_connect(AgsConnectable *connectable)
   context_menu->flags |= AGS_CONTEXT_MENU_CONNECTED;
   
   /* File */
-  list0 = GTK_MENU_SHELL(context_menu)->children;
+  list0 =
+    list0_start = gtk_container_get_children(context_menu);
   list0 = list0->next;
 
   list1_start = 
@@ -525,6 +526,8 @@ ags_context_menu_connect(AgsConnectable *connectable)
 		   G_CALLBACK (ags_menu_action_about_callback), (gpointer) context_menu);
 
   g_list_free(list1_start);
+
+  g_list_free(list0_start);
 }
 
 void

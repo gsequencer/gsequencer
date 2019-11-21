@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,14 +21,14 @@
 
 #include <ags/X/ags_machine_editor.h>
 
-int
-ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
+void
+ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent,
 					       AgsLinkCollectionEditor *link_collection_editor)
 {
   AgsMachineEditor *machine_editor;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget, 
@@ -41,8 +41,6 @@ ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old
 
     ags_link_collection_editor_check(link_collection_editor);
   }
-
-  return(0);
 }
 
 void ags_link_collection_editor_link_callback(GtkComboBox *combo,

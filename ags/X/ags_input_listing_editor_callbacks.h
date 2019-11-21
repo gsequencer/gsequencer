@@ -35,9 +35,9 @@
 
 G_BEGIN_DECLS
 
-int ags_input_listing_editor_parent_set_callback(GtkWidget *widget,
-						 GtkObject *old_parent,
-						 AgsInputListingEditor *input_listing_editor);
+void ags_input_listing_editor_parent_set_callback(GtkWidget *widget,
+						  GtkWidget *old_parent,
+						  AgsInputListingEditor *input_listing_editor);
 
 void ags_input_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 						   guint pads, guint pads_old,

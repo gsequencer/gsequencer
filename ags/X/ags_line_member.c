@@ -553,9 +553,9 @@ ags_line_member_set_property(GObject *gobject,
       active = FALSE;
     
       if(GTK_IS_RANGE(child)){
-	adjustment = GTK_RANGE(child)->adjustment;
+	adjustment = gtk_range_get_adjustment(GTK_RANGE(child));
       }else if(GTK_IS_SPIN_BUTTON(child)){
-	adjustment = GTK_SPIN_BUTTON(child)->adjustment;
+	adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(child));
       }else if(AGS_IS_DIAL(child)){
 	adjustment = AGS_DIAL(child)->adjustment;
       }else if(GTK_IS_TOGGLE_BUTTON(child)){
@@ -622,29 +622,42 @@ ags_line_member_set_property(GObject *gobject,
 
       /* set range */
       if(GTK_IS_RANGE(new_child)){
-	gtk_adjustment_set_lower(GTK_RANGE(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(GTK_RANGE(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(GTK_RANGE(new_child)->adjustment,
-				 adjustment->value);
+	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
+	
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
       }else if(GTK_IS_SPIN_BUTTON(new_child)){
-	gtk_adjustment_set_lower(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->value);
+	new_adjustment = gtk_spin_button_get_adjustment(GTK_RANGE(new_child));
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
       }else if(AGS_IS_DIAL(new_child)){
-	gtk_adjustment_set_lower(AGS_DIAL(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(AGS_DIAL(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(AGS_DIAL(new_child)->adjustment,
-				 adjustment->value);
+	new_adjustment = AGS_DIAL(new_child)->adjustment;
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+
 	ags_dial_draw((AgsDial *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
@@ -1064,9 +1077,9 @@ ags_line_member_connect(AgsConnectable *connectable)
     if(AGS_IS_DIAL(control)){
       adjustment = AGS_DIAL(control)->adjustment;
     }else if(GTK_IS_RANGE(control)){
-      adjustment = GTK_RANGE(control)->adjustment;
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(control));
     }else if(GTK_IS_SPIN_BUTTON(control)){
-      adjustment = GTK_SPIN_BUTTON(control)->adjustment;
+      adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(control));
     }else if(GTK_IS_TOGGLE_BUTTON(control)){
       line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) control);
 
@@ -1077,8 +1090,12 @@ ags_line_member_connect(AgsConnectable *connectable)
       ags_line_member_change_port(line_member,
 				  &(line_member->active));
     }else if(adjustment != NULL){
+      gdouble value;
+
+      value = gtk_adjustment_get_value(adjustment);
+      
       ags_line_member_change_port(line_member,
-				  &(adjustment->value));
+				  &value);
     }
     
     line_member->flags &= (~AGS_LINE_MEMBER_APPLY_INITIAL);
@@ -1712,13 +1729,13 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
 	      if(AGS_IS_DIAL(child_widget)){
 		ags_dial_set_value((AgsDial *) child_widget,
-				   adjustment->value);
+				   gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
-					  adjustment->value);
+					  gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SCALE(child_widget)){
 		gtk_range_set_value((GtkRange *) child_widget,
-				    adjustment->value);
+				    gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
@@ -1767,13 +1784,13 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
 	      if(AGS_IS_DIAL(child_widget)){
 		ags_dial_set_value((AgsDial *) child_widget,
-				   adjustment->value);
+				   gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
-					  adjustment->value);
+					  gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SCALE(child_widget)){
 		gtk_range_set_value((GtkRange *) child_widget,
-				    adjustment->value);
+				    gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);

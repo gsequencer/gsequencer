@@ -19,26 +19,29 @@
 
 #include <ags/X/ags_line_member_callbacks.h>
 
-int
-ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member)
+void
+ags_line_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineMember *line_member)
 {
   if(old_parent == NULL){
     //TODO:JK: implement me
   }
-
-  return(0);
 }
 
 void
 ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member)
 {
   GtkAdjustment *adjustment;
+
+  gdouble value;
   
   g_object_get(dial,
 	       "adjustment", &adjustment,
 	       NULL);
+
+  value = gtk_adjustent_get_value(adjustment);
+  
   ags_line_member_change_port(line_member,
-			      (gpointer) &(adjustment->value));
+			      (gpointer) &value);
   ags_line_member_chained_event(line_member);
 }
 
@@ -47,9 +50,14 @@ ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_m
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+  
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
+
+  value = gtk_adjustent_get_value(adjustment);
+
   ags_line_member_change_port(line_member,
-			      (gpointer) &(adjustment->value));
+			      (gpointer) &value);
   ags_line_member_chained_event(line_member);
 }
 
@@ -58,9 +66,14 @@ ags_line_member_hscale_changed_callback(GtkWidget *hscale, AgsLineMember *line_m
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+  
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
+
+  value = gtk_adjustent_get_value(adjustment);
+
   ags_line_member_change_port(line_member,
-			      &(adjustment->value));
+			      &value);
   ags_line_member_chained_event(line_member);
 }
 
@@ -69,9 +82,14 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+  
   adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
+
+  value = gtk_adjustent_get_value(adjustment);
+
   ags_line_member_change_port(line_member,
-			      &(adjustment->value));
+			      &value);
   ags_line_member_chained_event(line_member);
 }
 

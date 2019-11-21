@@ -970,9 +970,9 @@ ags_bulk_member_connect(AgsConnectable *connectable)
     if(AGS_IS_DIAL(control)){
       adjustment = AGS_DIAL(control)->adjustment;
     }else if(GTK_IS_RANGE(control)){
-      adjustment = GTK_RANGE(control)->adjustment;
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(control));
     }else if(GTK_IS_SPIN_BUTTON(control)){
-      adjustment = GTK_SPIN_BUTTON(control)->adjustment;
+      adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(control));
     }else if(GTK_IS_TOGGLE_BUTTON(control)){
       
       active = gtk_toggle_button_get_active((GtkToggleButton *) control);
@@ -984,8 +984,12 @@ ags_bulk_member_connect(AgsConnectable *connectable)
       ags_bulk_member_change_port(bulk_member,
 				  &(active));
     }else if(adjustment != NULL){
+      gdouble value;
+
+      value = gtk_adjustment_get_value(adjustment);
+      
       ags_bulk_member_change_port(bulk_member,
-				  &(adjustment->value));
+				  &value);
     }
     
     bulk_member->flags &= (~AGS_BULK_MEMBER_APPLY_INITIAL);

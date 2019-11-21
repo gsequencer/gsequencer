@@ -19,14 +19,12 @@
 
 #include <ags/X/ags_bulk_member_callbacks.h>
 
-int
-ags_bulk_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsBulkMember *bulk_member)
+void
+ags_bulk_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsBulkMember *bulk_member)
 {
   if(old_parent == NULL){
     //TODO:JK: implement me
   }
-
-  return(0);
 }
 
 void
@@ -34,6 +32,8 @@ ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_membe
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+  
   if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
     return;
   }
@@ -42,8 +42,10 @@ ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_membe
 	       "adjustment", &adjustment,
 	       NULL);
 
+  value = gtk_adjustment_get_value(adjustment);
+
   ags_bulk_member_change_port(bulk_member,
-			      (gpointer) &(adjustment->value));
+			      (gpointer) &value);
 }
 
 void
@@ -51,13 +53,18 @@ ags_bulk_member_vscale_changed_callback(GtkWidget *vscale, AgsBulkMember *bulk_m
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+
   if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
     return;
   }
 
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
+
+  value = gtk_adjustment_get_value(adjustment);
+
   ags_bulk_member_change_port(bulk_member,
-			      (gpointer) &(adjustment->value));
+			      (gpointer) &value);
 }
 
 void
@@ -65,13 +72,18 @@ ags_bulk_member_hscale_changed_callback(GtkWidget *hscale, AgsBulkMember *bulk_m
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+
   if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
     return;
   }
 
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
+
+  value = gtk_adjustment_get_value(adjustment);
+
   ags_bulk_member_change_port(bulk_member,
-			      &(adjustment->value));
+			      &value);
 }
 
 void
@@ -79,13 +91,18 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
 {
   GtkAdjustment *adjustment;
 
+  gdouble value;
+
   if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
     return;
   }
 
   adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
+
+  value = gtk_adjustment_get_value(adjustment);
+
   ags_bulk_member_change_port(bulk_member,
-			      &(adjustment->value));
+			      &value);
 }
 
 void

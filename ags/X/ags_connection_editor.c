@@ -219,7 +219,7 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   connection_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.vbox, (GtkWidget*) notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(connection_editor), (GtkWidget*) notebook, TRUE, TRUE, 0);
 
   /* output listing editor */
   connection_editor->output_listing_editor_scrolled_window =
@@ -239,13 +239,13 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   /* GtkButton's in GtkDialog->action_area  */
   connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
 
   connection_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
 
   connection_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
 }
 
 void
@@ -312,10 +312,6 @@ ags_connection_editor_connect(AgsConnectable *connectable)
   g_signal_connect(connection_editor, "delete-event",
 		   G_CALLBACK(ags_connection_editor_delete_event), connection_editor);
   
-  /* GtkNotebook */
-  g_signal_connect((GtkNotebook *) connection_editor->notebook, "switch-page",
-		   G_CALLBACK(ags_connection_editor_switch_page_callback), (gpointer) connection_editor);
-
   /* AgsConnectionEditor tabs */
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_listing_editor));
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_listing_editor));

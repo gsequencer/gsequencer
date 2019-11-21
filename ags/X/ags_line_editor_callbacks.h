@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-int ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineEditor *line_editor);
+void ags_line_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineEditor *line_editor);
 int ags_line_editor_show_callback(GtkWidget *widget, AgsLineEditor *line_editor);
 
 G_END_DECLS

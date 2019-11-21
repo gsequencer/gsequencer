@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-int ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member);
+void ags_line_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineMember *line_member);
 
 void ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member);
 void ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_member);

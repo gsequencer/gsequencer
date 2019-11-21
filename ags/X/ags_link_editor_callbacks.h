@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-int ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor);
+void ags_link_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLinkEditor *link_editor);
 
 void ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor);
 

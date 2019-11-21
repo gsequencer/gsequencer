@@ -736,6 +736,12 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkAdjustment *audio_vscrollbar_adjustment;
+  GtkAdjustment *audio_hscrollbar_adjustment;
+
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
+  
   GList *list_start, *list;
 
   gdouble old_h_upper;
@@ -746,14 +752,23 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* audio */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+  
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
+
+  audio_vscrollbar_adjustment = gtk_range_get_adjustment(automation_editor->audio_vscrollbar);
   
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_vscrollbar)->adjustment,
+  gtk_adjustment_set_upper(audio_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport),
@@ -765,12 +780,14 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->upper;
+  audio_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->audio_hscrollbar));
+
+  old_h_upper = gtk_adjustment_get_upper(audio_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -779,7 +796,7 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   gtk_adjustment_set_upper(automation_editor->audio_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(audio_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -787,9 +804,12 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
-			     h_upper);
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
     
+    gtk_adjustment_set_upper(adjustment,
+			     h_upper);    
 
     list = list->next;
   }
@@ -798,8 +818,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+    gtk_adjustment_set_value(audio_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(audio_hscrollbar_adjustment) / old_h_upper * h_upper);
   }
 }
 
@@ -808,6 +828,12 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkAdjustment *output_vscrollbar_adjustment;
+  GtkAdjustment *output_hscrollbar_adjustment;
+  
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
+  
   GList *list_start, *list;
   
   gdouble old_h_upper;
@@ -818,14 +844,23 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* output */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+  
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
+
+  output_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->output_vscrollbar));
   
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_vscrollbar)->adjustment,
+  gtk_adjustment_set_upper(output_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport),
@@ -837,12 +872,14 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->upper;
+  output_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->output_hscrollbar));
+  
+  old_h_upper = gtk_adjustment_get_upper(output_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -851,7 +888,7 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   gtk_adjustment_set_upper(automation_editor->output_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(output_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -859,7 +896,11 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->output_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
+
+    gtk_adjustment_set_upper(adjustment,
 			     h_upper);
     
 
@@ -870,8 +911,8 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+    gtk_adjustment_set_value(output_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(output_hscrollbar_adjustment) / old_h_upper * h_upper);
   }
 }
 
@@ -879,6 +920,12 @@ void
 ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_editor)
 {
   AgsAutomationToolbar *automation_toolbar;
+
+  GtkAdjustment *input_vscrollbar_adjustment;
+  GtkAdjustment *input_hscrollbar_adjustment;
+  
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
 
   GList *list_start, *list;
   
@@ -890,14 +937,23 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* input */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
-  
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_vscrollbar)->adjustment,
+
+  input_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->input_vscrollbar));
+
+  gtk_adjustment_set_upper(input_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport),
@@ -909,12 +965,14 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->upper;
+  input_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->input_hscrollbar));
+
+  old_h_upper = gtk_adjustment_get_upper(input_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -923,7 +981,7 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   gtk_adjustment_set_upper(automation_editor->input_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(input_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -931,7 +989,11 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->input_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
+
+    gtk_adjustment_set_upper(adjustment,
 			     h_upper);
     
 
@@ -942,8 +1004,8 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+    gtk_adjustment_set_value(input_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(input_hscrollbar_adjustment) / old_h_upper * h_upper);
   }
 }
 
@@ -1556,9 +1618,13 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
   AgsMachine *machine;
   AgsNotebook *notebook;
 
+  GtkAdjustment *automation_edit_vscrollbar_adjustment;
+
   AgsAutomation *automation;
 
   AgsTimestamp *timestamp;
+
+  GtkAllocation automation_edit_allocation;
 
   GList *start_list_automation, *list_automation;
 
@@ -1591,7 +1657,12 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       c_range = automation_editor->focused_automation_edit->upper - automation_editor->focused_automation_edit->lower;
     }
 
-    g_range = GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area)->allocation.height;
+    gtk_widget_get_allocation(GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area),
+			      &automation_edit_allocation);
+    
+    automation_edit_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar));
+    
+    g_range = gtk_adjustment_get_upper(automation_edit_vscrollbar_adjustment) + automation_edit_allocation.height;
 
     /* check all active tabs */
     g_object_get(machine->audio,

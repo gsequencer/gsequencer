@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-int ags_bulk_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsBulkMember *bulk_member);
+void ags_bulk_member_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsBulkMember *bulk_member);
 
 void ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_member);
 void ags_bulk_member_vscale_changed_callback(GtkWidget *vscale, AgsBulkMember *bulk_member);
