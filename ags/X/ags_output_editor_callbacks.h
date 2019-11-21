@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-int ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsOutputEditor *output_editor);
+void ags_output_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsOutputEditor *output_editor);
 
 void ags_output_editor_soundcard_callback(GtkComboBoxText *combo_box, AgsOutputEditor *output_editor);
 

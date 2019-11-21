@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_plugin_browser_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
@@ -147,7 +144,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   plugin_browser->flags = 0;
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) plugin_browser->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(plugin_browser)),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);

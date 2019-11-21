@@ -23,27 +23,15 @@
 #include <ags/X/ags_window.h>
 
 void
-ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
-				   gpointer data)
-{
-  AgsWindow *window;
-  AgsNavigation *navigation;
-
-  if(old_parent != NULL)
-    return;
-
-  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
-					      AGS_TYPE_WINDOW));
-  navigation = AGS_NAVIGATION(widget);
-}
-
-void
 ags_navigation_expander_callback(GtkWidget *widget,
 				 AgsNavigation *navigation)
 {
   GtkArrow *arrow;
+
   GList *list;
 
+  guint arrow_type;
+  
   list = gtk_container_get_children((GtkContainer *) widget);
   arrow = (GtkArrow *) list->data;
   g_list_free(list);
@@ -52,12 +40,22 @@ ags_navigation_expander_callback(GtkWidget *widget,
   widget = (GtkWidget *) list->next->data;
   g_list_free(list);
 
-  if(arrow->arrow_type == GTK_ARROW_DOWN){
+  g_object_get(arrow,
+	       "arrow-type", &arrow_type,
+	       NULL);
+  
+  if(arrow_type == GTK_ARROW_DOWN){
     gtk_widget_hide_all(widget);
-    arrow->arrow_type = GTK_ARROW_RIGHT;
+
+    g_object_set(arrow,
+		 "arrow-type", GTK_ARROW_RIGHT,
+		 NULL);
   }else{
     gtk_widget_show_all(widget);
-    arrow->arrow_type = GTK_ARROW_DOWN;
+
+    g_object_set(arrow,
+		 "arrow-type", GTK_ARROW_DOWN,
+		 NULL);
   }
 }
 
@@ -73,7 +71,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 
   /* get task thread */
   apply_bpm = ags_apply_bpm_new(application_context,
-				navigation->bpm->adjustment->value);
+				gtk_spin_button_get_value(navigation->bpm));
   
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) apply_bpm);
@@ -250,7 +248,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
   navigation->start_tact = 0.0;
 
   timestr = ags_time_get_uptime_from_offset(0.0,
-					    navigation->bpm->adjustment->value,
+					    gtk_spin_button_get_value(navigation->bpm),
 					    ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard)),
 					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard)));
   gtk_label_set_text(navigation->duration_time, timestr);
@@ -332,8 +330,8 @@ ags_navigation_loop_callback(GtkWidget *widget,
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
-  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
@@ -485,8 +483,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
-  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,
@@ -626,8 +624,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
-  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
 			 loop_left, loop_right,

@@ -2637,8 +2637,8 @@ ags_machine_get_possible_links(AgsMachine *machine)
 		     1, NULL,
 		     -1);
 
-  if(GTK_WIDGET(machine)->parent != NULL){
-    list = gtk_container_get_children(GTK_CONTAINER(GTK_WIDGET(machine)->parent));
+  if(gtk_widget_get_parent(GTK_WIDGET(machine)) != NULL){
+    list = gtk_container_get_children(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(machine))));
 
     while(list != NULL){
       if(list->data != machine){
@@ -2685,12 +2685,12 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
 
   return(file_chooser);

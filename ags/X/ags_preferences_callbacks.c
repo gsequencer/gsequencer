@@ -90,7 +90,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   GList *list, *list_start;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(preferences)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(preferences)));
   list = g_list_nth(list,
 		    3);
   

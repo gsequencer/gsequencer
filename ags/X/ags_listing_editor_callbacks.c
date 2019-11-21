@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_listing_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_machine_editor.h>
 
 void

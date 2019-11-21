@@ -33,9 +33,6 @@
 
 G_BEGIN_DECLS
 
-void ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
-					gpointer data);
-
 void ags_navigation_expander_callback(GtkWidget *widget,
 				      AgsNavigation *navigation);
 

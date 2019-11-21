@@ -186,9 +186,6 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->soundcard = NULL;
 
-  g_signal_connect_after(G_OBJECT(navigation), "parent-set",
-			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
-
   navigation->start_tact = 0.0;
   navigation->note_offset = 0.0;
   
@@ -207,7 +204,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
-  navigation->bpm->adjustment->value = 120.0;
+  gtk_spin_button_set_value(navigation->bpm, 120.0);
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->bpm, FALSE, FALSE, 2);
 
   navigation->current_bpm = 120.0;
@@ -602,7 +599,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   /* update */
   timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
-					    navigation->bpm->adjustment->value,
+					    gtk_spin_button_get_value(navigation->bpm),
 					    delay,
 					    delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);

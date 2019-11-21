@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,14 +21,14 @@
 
 #include <ags/X/ags_connection_editor.h>
 
-int
-ags_output_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
+void
+ags_output_collection_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent,
 						 AgsOutputCollectionEditor *output_collection_editor)
 {
   AgsConnectionEditor *connection_editor;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(widget, 
@@ -41,8 +41,6 @@ ags_output_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *o
 
     ags_output_collection_editor_check(output_collection_editor);
   }
-
-  return(0);
 }
 
 void

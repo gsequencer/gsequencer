@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/export/ags_machine_collection.h>
 #include <ags/X/export/ags_machine_collection_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -288,7 +285,7 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   window = (AgsWindow *) midi_export_wizard->main_window;
 
   /* destroy old */
-  parent = GTK_WIDGET(machine_collection->child)->parent;
+  parent = gtk_widget_get_parent(GTK_WIDGET(machine_collection->child));
   gtk_widget_destroy((GtkWidget *) machine_collection->child);
   
   machine_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,

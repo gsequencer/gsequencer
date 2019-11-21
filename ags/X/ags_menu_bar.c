@@ -295,7 +295,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   AgsMenuBar *menu_bar;
 
   GList *list0, *list1, *list2, *list3, *list4;
-  GList *list1_start, *list2_start, *list3_start, *list4_start;
+  GList *list0_start, *list1_start, *list2_start, *list3_start, *list4_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -306,7 +306,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   menu_bar->flags |= AGS_MENU_BAR_CONNECTED;
   
   /* File */
-  list0 = GTK_MENU_SHELL(menu_bar)->children;
+  list0 =
+    list0_start = gtk_container_get_children(GTK_MENU_SHELL(menu_bar));
 
   list1_start = 
     list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
@@ -518,6 +519,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 		   G_CALLBACK (ags_menu_action_about_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
+
+  g_list_free(list0_start);
 }
 
 void

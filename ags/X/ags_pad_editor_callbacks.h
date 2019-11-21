@@ -34,8 +34,6 @@
 
 G_BEGIN_DECLS
 
-int ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPadEditor *pad_editor);
-
 void ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 						   guint audio_channels, guint audio_channels_old,
 						   AgsPadEditor *pad_editor);

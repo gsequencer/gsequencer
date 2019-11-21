@@ -53,8 +53,6 @@ struct _AgsMidiImportWizard
 
   guint flags;
 
-  AgsApplicationContext *application_context;
-
   GtkWidget *main_window;
   
   GtkWidget *file_chooser;

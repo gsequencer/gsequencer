@@ -20,9 +20,6 @@
 #include <ags/X/ags_midi_dialog.h>
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/i18n.h>
@@ -197,7 +194,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   /* connection */
   midi_dialog->io_options = (GtkVBox *) gtk_vbox_new(FALSE,
 						     0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->io_options),
 		     FALSE, FALSE,
 		     0);
@@ -240,7 +237,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* mapping */
   midi_dialog->mapping = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->mapping),
 		     FALSE, FALSE,
 		     0);
@@ -342,7 +339,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* device */
   midi_dialog->device = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->device),
 		     FALSE, FALSE,
 		     0);
@@ -376,19 +373,19 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->apply,
 		     FALSE, FALSE,
 		     0);
   
   midi_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->ok,
 		     FALSE, FALSE,
 		     0);
   
   midi_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->cancel,
 		     FALSE, FALSE,
 		     0);

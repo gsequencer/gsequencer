@@ -501,6 +501,11 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 {
   AgsWaveToolbar *wave_toolbar;
 
+  GtkAdjustment *vscrollbar_adjustment, *hscrollbar_adjustment;
+
+  GtkAllocation wave_edit_box_allocation;
+  GtkAllocation viewport_allocation;
+  
   GList *list_start, *list;
 
   gdouble old_h_upper;
@@ -512,13 +517,21 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   wave_toolbar = wave_editor->wave_toolbar;
 
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box)->allocation.height - GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport)->allocation.height;
+  gtk_wiget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box),
+			   &wave_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport),
+			    &viewport_allocation);
+  
+  v_upper = wave_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
+
+  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_editor->vscrollbar));
   
-  gtk_adjustment_set_upper(GTK_RANGE(wave_editor->vscrollbar)->adjustment,
+  gtk_adjustment_set_upper(vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(wave_editor->scrolled_wave_edit_box->viewport),
@@ -530,12 +543,14 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(wave_editor->hscrollbar)->adjustment->upper;
+  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(wave_editor->hscrollbar));
+  
+  old_h_upper = gtk_adjustment_get_upper(hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box)->allocation.width;
+  h_upper = map_width - wave_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -544,7 +559,7 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   gtk_adjustment_set_upper(wave_editor->ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(wave_editor->hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(hscrollbar_adjustment,
 			   h_upper);
 
   /* wave edit */
@@ -552,7 +567,7 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
     list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
+    gtk_adjustment_set_upper(hscrollbar_adjustment,
 			     h_upper);
     
 
@@ -563,8 +578,8 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(wave_editor->hscrollbar)->adjustment,
-			     GTK_RANGE(wave_editor->hscrollbar)->adjustment->value / old_h_upper * h_upper);
+    gtk_adjustment_set_value(hscrollbar_adjustment,
+			     gtk_adjustment_get_value(hscrollbar_adjustment) / old_h_upper * h_upper);
   }
 }
 

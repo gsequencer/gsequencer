@@ -2343,7 +2343,7 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 				     (GObject *) devout);
 
   /*  */
-  list = gtk_container_get_children((GtkContainer *) GTK_WIDGET(soundcard_editor)->parent);
+  list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(soundcard_editor)));
 
   if(list->data == soundcard_editor){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
@@ -2412,7 +2412,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 				     (GObject *) devout);
 
   /*  */
-  list = gtk_container_get_children((GtkContainer *) GTK_WIDGET(soundcard_editor)->parent);
+  list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(soundcard_editor)));
 
   if(list->data == soundcard_editor){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
@@ -2475,7 +2475,7 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 				     (GObject *) devout);
 
   /*  */
-  list = gtk_container_get_children((GtkContainer *) GTK_WIDGET(soundcard_editor)->parent);
+  list = gtk_container_get_children((GtkContainer *) gtk_widget_get_parent(GTK_WIDGET(soundcard_editor)));
   
   if(list->data == soundcard_editor){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,

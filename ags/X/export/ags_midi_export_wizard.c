@@ -214,7 +214,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 						 1.0, 1.0);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
-  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
 		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
@@ -230,7 +230,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 			   NULL);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
-  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
 		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
@@ -485,12 +485,12 @@ ags_midi_export_wizard_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_midi_export_wizard_parent_class)->show(widget);
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
-    gtk_widget_show(midi_export_wizard->file_chooser->parent);
+    gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->file_chooser));
     gtk_widget_show_all(midi_export_wizard->file_chooser);
   }
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION & (midi_export_wizard->flags)) != 0){
-    gtk_widget_show(midi_export_wizard->machine_collection->parent);
+    gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->machine_collection));
     gtk_widget_show_all(midi_export_wizard->machine_collection);
   }
 }

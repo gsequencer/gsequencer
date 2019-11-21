@@ -33,8 +33,6 @@
 
 G_BEGIN_DECLS
 
-int ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor);
-
 int ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
 int ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);
 int ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor);

@@ -19,21 +19,18 @@
 
 #include <ags/X/ags_output_listing_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
 
-int
+void
 ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
-					      GtkObject *old_parent,
+					      GtkWidget *old_parent,
 					      AgsOutputListingEditor *output_listing_editor)
 {
   AgsConnectionEditor *connection_editor;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(widget,
@@ -44,9 +41,7 @@ ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
     ags_output_listing_editor_add_children(output_listing_editor,
 					   connection_editor->machine->audio, 0,
 					   FALSE);
-  }
-  
-  return(0);
+  }  
 }
 
 void

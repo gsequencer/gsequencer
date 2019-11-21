@@ -160,7 +160,7 @@ ags_preferences_init(AgsPreferences *preferences)
   g_object_set(G_OBJECT(preferences->notebook),
 	       "tab-pos", GTK_POS_LEFT,
 	       NULL);
-  gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
+  gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(preferences))),
 		    GTK_WIDGET(preferences->notebook));
 
   preferences->generic_preferences = ags_generic_preferences_new();
@@ -347,7 +347,7 @@ ags_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
   
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
 		    3);
   
@@ -368,7 +368,7 @@ ags_preferences_show_all(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
 		    3);
   
