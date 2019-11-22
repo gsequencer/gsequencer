@@ -1157,8 +1157,8 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   /* background */
   cairo_set_source_rgb(cr,
 		       wave_edit_style->bg[0].red / white_gc,
-		       wave_edit_style->bg[0].red / white_gc,
-		       wave_edit_style->bg[0].red / white_gc);
+		       wave_edit_style->bg[0].green / white_gc,
+		       wave_edit_style->bg[0].blue / white_gc);
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_fill(cr);
 

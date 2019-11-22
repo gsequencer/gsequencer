@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer *mixer);
+void ags_mixer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMixer *mixer);
 
 G_END_DECLS
 

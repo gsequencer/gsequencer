@@ -78,7 +78,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 		     FALSE, FALSE,
 		     0);
 
-  if(drum_input_pad->pad.group->active){
+  if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad)->group)){
     gtk_widget_set_sensitive((GtkWidget *) spin_button,
 			     FALSE);
   }
@@ -141,7 +141,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     /* task */
     task = NULL;
     
-    if(AGS_PAD(drum_input_pad)->group->active){
+    if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad))){
       AgsChannel *current, *next_pad, *next_current;
 
       guint i;
@@ -187,7 +187,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
       open_single_file = ags_open_single_file_new(line->channel,
 						  name0,
-						  (guint) spin_button->adjustment->value);
+						  (guint) gtk_spin_button_get_value(spin_button));
       task = g_list_prepend(task,
 			    open_single_file);
       

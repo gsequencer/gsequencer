@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel *panel);
+void ags_panel_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPanel *panel);
 
 G_END_DECLS
 

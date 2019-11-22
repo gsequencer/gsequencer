@@ -33,6 +33,8 @@
 
 G_BEGIN_DECLS
 
+void ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern);
+
 /* controls */
 gboolean ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern);
 

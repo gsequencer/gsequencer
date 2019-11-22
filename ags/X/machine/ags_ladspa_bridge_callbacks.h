@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLadspaBridge *ladspa_bridge);
+void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLadspaBridge *ladspa_bridge);
 
 G_END_DECLS
 

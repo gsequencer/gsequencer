@@ -212,7 +212,7 @@ ags_fm_synth_init(AgsFMSynth *fm_synth)
   fm_synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_FM_SYNTH_BASE_NOTE_MIN,
 								     AGS_FM_SYNTH_BASE_NOTE_MAX,
 								     1.0);
-  fm_synth->lower->adjustment->value = -48.0;
+  gtk_spin_button_set_value(fm_synth->lower, -48.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(fm_synth->lower),
 		   1, 2,

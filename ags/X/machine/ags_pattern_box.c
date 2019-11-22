@@ -321,7 +321,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
       str = g_strdup_printf("%d-%d",
 			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group,
+			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radion_button_get_group(radio_button),
 								       str),
 			 FALSE, FALSE,
 			 0);
@@ -741,7 +741,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   /* read boundaries */
   list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < pattern_box->n_indices && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
+  for(i = 0; i < pattern_box->n_indices && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data)); i++){
     list = list->next;
   }
 

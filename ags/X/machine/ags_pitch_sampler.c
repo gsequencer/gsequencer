@@ -312,7 +312,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									     0.001);
   gtk_spin_button_set_digits(pitch_sampler->lfo_freq,
 			     3);
-  pitch_sampler->lfo_freq->adjustment->value = AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ;
+  gtk_spin_button_set_value(pitch_sampler->lfo_freq, AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_freq,
 		   2, 3,
@@ -331,7 +331,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->lfo_phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									      G_MAXDOUBLE,
 									      1.0);
-  pitch_sampler->lfo_phase->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_phase, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_phase,
 		   2, 3,
@@ -352,7 +352,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									      1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_depth,
 			     3);
-  pitch_sampler->lfo_depth->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_depth, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_depth,
 		   2, 3,
@@ -373,7 +373,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									       1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_tuning,
 			     2);
-  pitch_sampler->lfo_tuning->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_tuning, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_tuning,
 		   2, 3,
@@ -1061,7 +1061,7 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1073,13 +1073,13 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{

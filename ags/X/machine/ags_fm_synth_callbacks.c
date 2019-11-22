@@ -29,7 +29,7 @@
 #include <math.h>
 
 void
-ags_fm_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFMSynth *fm_synth)
+ags_fm_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSynth *fm_synth)
 {
   AgsWindow *window;
 

@@ -216,7 +216,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    2, 3,
 			    0, 1);
   fm_oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->attack->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->attack, 0.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->attack,
 			    3, 4,
@@ -227,7 +227,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    4, 5,
 			    0, 1);
   fm_oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->frame_count->adjustment->value = AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT;
+  gtk_spin_button_set_value(fm_oscillator->frame_count, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
@@ -235,7 +235,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    0, 1,
 			    1, 2);
   fm_oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->phase->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->phase, 0.0);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
@@ -245,7 +245,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(fm_oscillator->frequency,
 			     3);
-  fm_oscillator->frequency->adjustment->value = 27.5;
+  gtk_spin_button_set_value(fm_oscillator->frequency, 27.5);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->frequency,
 			    3, 4,
@@ -257,7 +257,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
   gtk_spin_button_set_digits(fm_oscillator->volume,
 			     3);
-  fm_oscillator->volume->adjustment->value = 0.2;
+  gtk_spin_button_set_value(fm_oscillator->volume, 0.2);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->volume, 5, 6, 1, 2);
 
   /* do sync */
@@ -362,7 +362,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 24.0, 1.0);
   gtk_spin_button_set_digits(fm_oscillator->fm_lfo_frequency,
 			     3);
-  fm_oscillator->fm_lfo_frequency->adjustment->value = 12.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_lfo_frequency, 12.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_lfo_frequency,
 			    3, 4,
@@ -375,7 +375,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.01);
   gtk_spin_button_set_digits(fm_oscillator->fm_lfo_depth,
 			     3);
-  fm_oscillator->fm_lfo_depth->adjustment->value = 1.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_lfo_depth, 1.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_lfo_depth,
 			    5, 6,
@@ -388,7 +388,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-96.0, 96.0, 0.01);
   gtk_spin_button_set_digits(fm_oscillator->fm_tuning,
 			     2);
-  fm_oscillator->fm_tuning->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_tuning, 0.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_tuning,
 			    3, 4,

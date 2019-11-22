@@ -470,13 +470,13 @@ ags_audiorec_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_end,
 			&value);
   }
@@ -517,13 +517,13 @@ ags_audiorec_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_end,
 			&value);
   }
@@ -611,7 +611,7 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
       GValue value = {0,};
       
       ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * window->navigation->position_tact->adjustment->value,
+			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 			AGS_SEEK_SET);
     }
 
@@ -662,7 +662,7 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
       GValue value = {0,};
       
       ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * window->navigation->position_tact->adjustment->value,
+			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 			AGS_SEEK_SET);
     }
 

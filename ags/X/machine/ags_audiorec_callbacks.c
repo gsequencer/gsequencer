@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_audiorec_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/i18n.h>
@@ -31,7 +27,7 @@ void ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
 					 AgsAudiorec *audiorec);
 
 void
-ags_audiorec_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudiorec *audiorec)
+ags_audiorec_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudiorec *audiorec)
 {
   AgsWindow *window;
 

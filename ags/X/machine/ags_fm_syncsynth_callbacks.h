@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFMSyncsynth *fm_syncsynth);
+void ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSyncsynth *fm_syncsynth);
 
 void ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 						  guint samplerate, guint old_samplerate,

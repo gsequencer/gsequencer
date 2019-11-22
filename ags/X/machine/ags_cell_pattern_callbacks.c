@@ -29,28 +29,21 @@
 
 void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
 
+void
+ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern)
+{
+  ags_cell_pattern_draw_gutter(cell_pattern, cr);
+  ags_cell_pattern_draw_matrix(cell_pattern, cr);
+
+  ags_cell_pattern_draw_cursor(cell_pattern, cr);
+}
+
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
 {
   //TODO:JK: implement me, blink cursor
   
   return(TRUE);
-}
-
-gboolean
-ags_cell_pattern_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsCellPattern *cell_pattern)
-{
-  ags_cell_pattern_paint(cell_pattern);
-  
-  return(FALSE);
-}
-
-gboolean
-ags_cell_pattern_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsCellPattern *cell_pattern)
-{
-  ags_cell_pattern_paint(cell_pattern);
-
-  return(FALSE);
 }
 
 gboolean
@@ -86,7 +79,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     index1 = machine->bank_1;
 
     nth_channel = ags_channel_nth(start_input,
-				  input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + i) - 1);
+				  input_lines - ((guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + i) - 1);
 
     if(nth_channel != NULL){
       /* toggle pattern */
@@ -336,9 +329,9 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	}
       }
       
-      if(cell_pattern->cursor_y < GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value){
+      if(cell_pattern->cursor_y < gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar))){
 	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value - 1.0);
+			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) - 1.0);
       }
     }
     break;
@@ -389,9 +382,9 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	}
       }
       
-      if(cell_pattern->cursor_y >= GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+      if(cell_pattern->cursor_y >= gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
 	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + 1.0);
+			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + 1.0);
       }
     }
     break;
@@ -462,7 +455,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern)
 {
-  ags_cell_pattern_paint(cell_pattern);
+  gtk_widget_queue_draw(cell_pattern->drawing_area);
 }
 
 void

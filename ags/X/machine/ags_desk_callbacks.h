@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_desk_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDesk *desk);
+void ags_desk_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDesk *desk);
 
 void ags_desk_resize_audio_channels_callback(AgsDesk *desk,
 					     guint audio_channels, guint audio_channels_old,

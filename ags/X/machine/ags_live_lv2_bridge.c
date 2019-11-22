@@ -1230,7 +1230,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1242,13 +1242,13 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
@@ -1665,7 +1665,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AgsLv2Plugin *lv2_plugin;
   
-  GList *list;
+  GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
@@ -1719,15 +1719,25 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   x = 0;
   y = 0;
   
-  list = effect_bulk->table->children;
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 
   /* load ports */
   g_object_get(lv2_plugin,

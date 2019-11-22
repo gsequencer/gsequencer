@@ -111,7 +111,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < 4 && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
+  for(i = 0; i < 4 && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data)); i++){
     list = list->next;
   }
 

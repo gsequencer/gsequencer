@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
+void ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *drum);
 void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
 
 /* controls */

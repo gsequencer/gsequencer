@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPitchSampler *pitch_sampler);
+void ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPitchSampler *pitch_sampler);
 
 void ags_pitch_sampler_open_callback(GtkButton *button, AgsPitchSampler *pitch_sampler);
 
