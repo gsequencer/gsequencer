@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_position_automation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -211,7 +208,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 	       NULL);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) position_automation_cursor_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_automation_cursor_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  
@@ -448,14 +445,14 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   automation_edit->cursor_position_x = 16 * x;
   automation_edit->cursor_position_y = 0.0;
 
-  hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
+  hadjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
 
   widget = (GtkWidget *) automation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
+			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
   }
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) position_automation_cursor_dialog->set_focus)){

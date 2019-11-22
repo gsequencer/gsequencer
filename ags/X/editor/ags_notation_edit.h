@@ -130,19 +130,19 @@ GType ags_notation_edit_get_type(void);
 void ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit);
 void ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit);
-void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr);
 
-void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit);
-void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 AgsNote *note,
 				 cairo_t *cr,
-				 double r, double g, double b, double a);
-void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
+				 gdouble opacity);
+void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr);
 
-void ags_notation_edit_draw(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 AgsNotationEdit* ags_notation_edit_new();
 

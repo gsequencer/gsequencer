@@ -20,9 +20,6 @@
 #include <ags/X/editor/ags_ramp_acceleration_dialog.h>
 #include <ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -209,7 +206,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 				  0);
-  gtk_box_pack_start((GtkBox *) ramp_acceleration_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(ramp_acceleration_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -208,7 +205,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 	       NULL);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) position_notation_cursor_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_notation_cursor_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  
@@ -468,14 +465,14 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   notation_edit->cursor_position_x = 16 * x;
   notation_edit->cursor_position_y = 0.0;
 
-  hadjustment = GTK_RANGE(notation_edit->hscrollbar)->adjustment;
+  hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
 
   widget = (GtkWidget *) notation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_NOTATION_EDITOR_MAX_CONTROLS / zoom))));
+			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_EDITOR_MAX_CONTROLS / zoom))));
   }
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus)){

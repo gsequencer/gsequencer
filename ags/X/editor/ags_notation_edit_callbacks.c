@@ -21,10 +21,6 @@
 
 #include <ags/X/ags_notation_editor.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <math.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -35,7 +31,7 @@ ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *e
   ags_notation_edit_reset_vscrollbar(notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_edit);
   
-  ags_notation_edit_draw(notation_edit);
+  gtk_widget_queue_draw(notation_edit);
   
   return(TRUE);
 }
@@ -46,7 +42,7 @@ ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfig
   ags_notation_edit_reset_vscrollbar(notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_edit);
 
-  ags_notation_edit_draw(notation_edit);
+  gtk_widget_queue_draw(notation_edit);
 
   return(FALSE);
 }
@@ -70,10 +66,10 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* cursor position */
-    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
     
-    notation_edit->cursor_position_y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    notation_edit->cursor_position_y = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
 
     /* queue draw */
     gtk_widget_queue_draw((GtkWidget *) notation_edit);
@@ -91,7 +87,7 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* note */
-    note->x[0] = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    note->x[0] = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     note->x[0] = zoom_factor * floor(note->x[0] / zoom_factor);
 
     if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){
@@ -100,7 +96,7 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
       note->x[1] = note->x[0] + 1;
     }
     
-    note->y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    note->y = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
 
     /* current note */
     if(notation_edit->current_note != NULL){
@@ -118,10 +114,10 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
 
   void ags_notation_edit_drawing_area_button_press_select_note()
   {
-    notation_edit->selection_x0 = (guint) event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    notation_edit->selection_x0 = (guint) event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar));
     notation_edit->selection_x1 = notation_edit->selection_x0;
     
-    notation_edit->selection_y0 = (guint) event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+    notation_edit->selection_y0 = (guint) event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar));
     notation_edit->selection_y1 = notation_edit->selection_y0;
 
     gtk_widget_queue_draw((GtkWidget *) notation_edit);
@@ -180,10 +176,10 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* cursor position */
-    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
 
-    notation_edit->cursor_position_y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    notation_edit->cursor_position_y = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
     
     /* queue draw */
     gtk_widget_queue_draw((GtkWidget *) notation_edit);
@@ -207,7 +203,7 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
 
     /* new x[1] */
     if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){
-      new_x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+      new_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
       new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
     
       if(new_x >= note->x[0] + zoom_factor){
@@ -238,10 +234,10 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* note */
-    x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     x = zoom_factor * floor(x / zoom_factor);
     
-    y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    y = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
 
     /* delete note */
     ags_notation_editor_delete_note(notation_editor,
@@ -261,9 +257,9 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
 
     y0 = (guint) (notation_edit->selection_y0 / notation_edit->control_height);
     
-    x1 = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    x1 = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     
-    y1 = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    y1 = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
 
     /* select region */
     ags_notation_editor_select_region(notation_editor,
@@ -321,10 +317,10 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* cursor position */
-    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+    notation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
     notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
 
-    notation_edit->cursor_position_y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
+    notation_edit->cursor_position_y = (guint) ((event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) / notation_edit->control_height);
 
 #ifdef AGS_DEBUG
     g_message("%lu %lu", notation_edit->cursor_position_x, notation_edit->cursor_position_y);
@@ -352,7 +348,7 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 
     /* new x[1] */
     if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){    
-      new_x = (guint) (zoom_factor * (event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value)) / notation_edit->control_width;
+      new_x = (guint) (zoom_factor * (event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)))) / notation_edit->control_width;
       new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
     
       if(new_x >= note->x[0] + zoom_factor){
@@ -372,14 +368,14 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 
   void ags_notation_edit_drawing_area_motion_notify_select_note()
   {
-    if(event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value >= 0.0){
-      notation_edit->selection_x1 = (guint) event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    if(event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) >= 0.0){
+      notation_edit->selection_x1 = (guint) event->x + gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar));
     }else{
       notation_edit->selection_x1 = 0.0;
     }
     
-    if(event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value >= 0.0){
-      notation_edit->selection_y1 = (guint) event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+    if(event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar)) >= 0.0){
+      notation_edit->selection_y1 = (guint) event->y + gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar));
     }else{
       notation_edit->selection_y1 = 0.0;
     }
@@ -419,7 +415,7 @@ ags_notation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *e
   gboolean retval;
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -511,6 +507,8 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   AgsNotationToolbar *notation_toolbar;
   AgsMachine *machine;
 
+  GtkAllocation allocation;
+
   double zoom_factor;
   gint i;
   gboolean retval;
@@ -526,7 +524,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   machine = notation_editor->selected_machine;
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -537,6 +535,9 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   }else{
     retval = TRUE;
   }
+
+  gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
+			    &allocation);
 
   if(machine != NULL){
     /* get audio mutex */
@@ -636,7 +637,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
 	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
       
-	  if(x0_offset < GTK_RANGE(notation_edit->hscrollbar)->adjustment->value){
+	  if(x0_offset < gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar))){
 	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
 				x0_offset);
 	  }
@@ -704,7 +705,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
 	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
       
-	  if(x0_offset + notation_edit->control_width > GTK_RANGE(notation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+	  if(x0_offset + notation_edit->control_width > gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) + allocation.width){
 	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
 				x0_offset);
 	  }
@@ -724,7 +725,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
 	y0_offset = notation_edit->cursor_position_y * notation_edit->control_height;
       
-	if(y0_offset < GTK_RANGE(notation_edit->vscrollbar)->adjustment->value){
+	if(y0_offset < gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))){
 	  gtk_range_set_value(GTK_RANGE(notation_edit->vscrollbar),
 			      y0_offset);
 	}
@@ -743,7 +744,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
 	y0_offset = notation_edit->cursor_position_y * notation_edit->control_height;
       
-	if(y0_offset < GTK_RANGE(notation_edit->vscrollbar)->adjustment->value){
+	if(y0_offset < gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))){
 	  gtk_range_set_value(GTK_RANGE(notation_edit->vscrollbar),
 			      y0_offset);
 	}
@@ -808,7 +809,7 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 	       NULL);
 
   gtk_adjustment_set_value(piano_adjustment,
-			   range->adjustment->value);
+			   gtk_range_get_value(range));
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
 
   /* queue draw */
@@ -841,7 +842,7 @@ ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
     g_free(str);
   }
 
-  value = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / (guint) (gui_scale_factor * 64.0);
+  value = gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
 			   value);
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);

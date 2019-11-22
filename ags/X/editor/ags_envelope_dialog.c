@@ -187,7 +187,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) envelope_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(envelope_dialog),
 		     (GtkWidget *) notebook,
 		     TRUE, TRUE,
 		     0);
@@ -219,19 +219,19 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   
   /* GtkButton's in GtkDialog->action_area  */
   envelope_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(envelope_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->apply,
 		     FALSE, FALSE,
 		     0);
   
   envelope_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(envelope_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->ok,
 		     FALSE, FALSE,
 		     0);
   
   envelope_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(envelope_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(envelope_dialog)),
 		     (GtkWidget *) envelope_dialog->cancel,
 		     FALSE, FALSE,
 		     0);

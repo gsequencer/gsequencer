@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,6 @@
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_notation_toolbar_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 
@@ -30,8 +27,6 @@
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
-
-#include <gtk/gtkstock.h>
 
 #include <ags/i18n.h>
 

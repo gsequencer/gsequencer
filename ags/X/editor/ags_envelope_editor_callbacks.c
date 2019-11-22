@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -58,7 +55,7 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
 						       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) dialog->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
 		     (GtkWidget *) entry,
 		     FALSE, FALSE,
 		     0);
@@ -92,6 +89,8 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 {
   if(response == GTK_RESPONSE_ACCEPT){
     AgsEnvelopeDialog *envelope_dialog;
+
+    GList *start_list;
     
     gchar *text;
 
@@ -99,8 +98,11 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
-    text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+    start_list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
+    text = gtk_editable_get_chars(GTK_EDITABLE(start_list->data),
 				  0, -1);
+
+    g_list_free(start_list);
     
     /* add preset */
     ags_envelope_editor_add_preset(envelope_editor,

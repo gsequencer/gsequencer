@@ -186,7 +186,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 	       NULL);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) crop_note_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(crop_note_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  
