@@ -69,7 +69,6 @@ gchar* ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 static gpointer ags_cell_pattern_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *cell_pattern_style = NULL;
 GHashTable *ags_cell_pattern_led_queue_draw = NULL;
 
 GType
@@ -422,18 +421,6 @@ ags_cell_pattern_realize(GtkWidget *widget)
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
-
-#if 0
-  if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_rc_get_style((GtkWidget *) cell_pattern));
-  }
-#endif
-  
-  gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
-		       NULL);  
-
-  gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
-		       NULL);
 }
 
 void
@@ -656,12 +643,12 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
   AgsChannel *start_channel, *nth_channel;
   AgsChannel *channel, *prev_pad;
 
-  GValue value = {0,};
-
   guint input_pads;
   guint gutter;
   guint current_gutter;
   int i, j;
+
+  GValue value = {0,};
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);

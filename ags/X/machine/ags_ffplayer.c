@@ -160,6 +160,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   PangoAttrList *attr_list;
   PangoAttribute *attr;
 
+  GtkAllocation allocation;
+  
   AgsAudio *audio;
   
   AgsConfig *config;
@@ -366,9 +368,11 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  gtk_widget_get_allocation(GTK_WIDGET(ffplayer->drawing_area), &allocation);
+  
   ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0,
 							       0.0,
-							       76 * ffplayer->control_width - GTK_WIDGET(ffplayer->drawing_area)->allocation.width,
+							       76 * ffplayer->control_width - allocation.width,
 							       1.0,
 							       (double) ffplayer->control_width,
 							       (double) (16 * ffplayer->control_width));
@@ -459,6 +463,9 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) ffplayer->instrument, "changed",
 			 G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
 
+
+  g_signal_connect((GObject *) ffplayer->drawing_area, "draw",
+                   G_CALLBACK(ags_ffplayer_draw_callback), (gpointer) ffplayer);
 
   g_signal_connect((GObject *) ffplayer->drawing_area, "expose_event",
                    G_CALLBACK(ags_ffplayer_drawing_area_expose_callback), (gpointer) ffplayer);
@@ -1061,7 +1068,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1073,13 +1080,13 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
@@ -1460,146 +1467,6 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
   }
   
   ffplayer->mapped_output_pad = output_pads;
-}
-
-void
-ags_ffplayer_paint(AgsFFPlayer *ffplayer)
-{
-  GtkWidget *widget;
-
-  GtkStyle *ffplayer_style;
-  
-  cairo_t *cr;
-
-  double semi_key_height;
-  guint bitmap;
-  guint x[2];
-  guint i, i_stop, j, j0;
-  
-  static const gdouble white_gc = 65535.0;
-    
-  widget = (GtkWidget *) ffplayer->drawing_area;
-  ffplayer_style = gtk_widget_get_style(widget);
-
-  semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
-  bitmap = 0x52a52a; // description of the keyboard
-
-  j = (guint) ceil(ffplayer->hadjustment->value / (double) ffplayer->control_width);
-  j = j % 12;
-
-  x[0] = (guint) round(ffplayer->hadjustment->value) % ffplayer->control_width;
-
-  if(x[0] != 0){
-    x[0] = ffplayer->control_width - x[0];
-  }
-
-  x[1] = ((guint) widget->allocation.width - x[0]) % ffplayer->control_width;
-  i_stop = (widget->allocation.width - x[0] - x[1]) / ffplayer->control_width;
-
-  cr = gdk_cairo_create(widget->window);
-
-  /* clear with background color */
-  cairo_set_source_rgb(cr,
-		       ffplayer_style->bg[0].red / white_gc,
-		       ffplayer_style->bg[0].green / white_gc,
-		       ffplayer_style->bg[0].blue / white_gc);
-  cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
-  cairo_fill(cr);
-
-  /* draw piano */
-  cairo_set_line_width(cr, 1.0);
-
-  cairo_set_source_rgb(cr,
-		       ffplayer_style->fg[0].red / white_gc,
-		       ffplayer_style->fg[0].green / white_gc,
-		       ffplayer_style->fg[0].blue / white_gc);
-
-  if(x[0] != 0){
-    j0 = (j != 0) ? j -1: 11;
-
-    if(((1 << j0) & bitmap) != 0){
-      cairo_rectangle(cr, 0.0, 0.0, x[0], (double) semi_key_height);
-      cairo_fill(cr); 	
-
-      if(x[0] > ffplayer->control_width / 2){
-	cairo_move_to(cr, (double) (x[0] - ffplayer->control_width / 2),  semi_key_height);
-	cairo_line_to(cr, (double) (x[0] - ffplayer->control_width / 2), (double) ffplayer->control_height);
-	cairo_stroke(cr);
-      }
-
-      cairo_move_to(cr, 0.0, ffplayer->control_height);
-      cairo_line_to(cr, (double) x[0], ffplayer->control_height);
-      cairo_stroke(cr);
-    }else{
-      if(((1 << (j0 + 1)) & bitmap) == 0){
-	cairo_move_to(cr, (double) x[0], 0.0);
-	cairo_line_to(cr, (double) x[0], ffplayer->control_height);
-	cairo_stroke(cr);
-      }
-
-      cairo_move_to(cr, 0.0, ffplayer->control_height);
-      cairo_line_to(cr, (double) x[0], ffplayer->control_height);
-      cairo_stroke(cr);
-    }
-  }
-
-  for(i = 0; i < i_stop; i++){
-    if(((1 << j) & bitmap) != 0){
-      // draw semi tone key
-      cairo_rectangle(cr, (double) (i * ffplayer->control_width + x[0]), 0.0, (double) ffplayer->control_width, semi_key_height);
-      cairo_fill(cr); 	
-
-      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), semi_key_height);
-      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), ffplayer->control_height);
-      cairo_stroke(cr);
-
-      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0]), ffplayer->control_height);
-      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
-      cairo_stroke(cr);
-    }else{
-      // no semi tone key
-      if(((1 << (j + 1)) & bitmap) == 0){
-	cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), 0.0);
-	cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
-	cairo_stroke(cr);
-      }
-
-      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0]), ffplayer->control_height);
-      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
-      cairo_stroke(cr);
-    }
-
-    if(j == 11)
-      j = 0;
-    else
-      j++;
-  }
-
-  if(x[1] != 0){
-    j0 = j;
-
-    if(((1 << j0) & bitmap) != 0){
-      cairo_rectangle(cr, (double) (widget->allocation.width - x[1]), 0.0, (double) x[1], semi_key_height);
-      cairo_fill(cr); 	
-
-      if(x[1] > ffplayer->control_width / 2){
-	cairo_move_to(cr, (double) (widget->allocation.width - x[1] + ffplayer->control_width / 2), semi_key_height);
-	cairo_line_to(cr, (double) (widget->allocation.width - x[1] + ffplayer->control_width / 2), ffplayer->control_height);
-	cairo_stroke(cr);
-      }
-
-      cairo_move_to(cr, (double) (widget->allocation.width - x[1]), ffplayer->control_height);
-      cairo_line_to(cr, (double) widget->allocation.width, ffplayer->control_height);
-      cairo_stroke(cr);
-    }else{
-      cairo_move_to(cr, (double) (widget->allocation.width - x[1]), ffplayer->control_height);
-      cairo_line_to(cr, (double) widget->allocation.width, ffplayer->control_height);
-      cairo_stroke(cr);
-    }
-  }
-  
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
 }
 
 void

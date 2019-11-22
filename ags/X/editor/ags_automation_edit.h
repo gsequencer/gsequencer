@@ -162,19 +162,19 @@ GType ags_automation_edit_get_type(void);
 void ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
 
-void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
-void ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
 void ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 					   AgsAcceleration *acceleration_a, AgsAcceleration *acceleration_b,
 					   cairo_t *cr,
-					   double r, double g, double b, double a);
-void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit);
+					   gdouble opacity);
+void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
-void ags_automation_edit_draw(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
 AgsAutomationEdit* ags_automation_edit_new();
 

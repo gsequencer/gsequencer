@@ -20,16 +20,12 @@
 #include <ags/X/machine/ags_synth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <math.h>
 
 void
-ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth)
+ags_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSynth *synth)
 {
   AgsWindow *window;
 

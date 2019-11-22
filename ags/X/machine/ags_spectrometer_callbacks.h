@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-void ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSpectrometer *spectrometer);
+void ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSpectrometer *spectrometer);
 
 void ags_spectrometer_resize_audio_channels_callback(AgsSpectrometer *spectrometer,
 						     guint audio_channels, guint audio_channels_old,

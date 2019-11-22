@@ -213,7 +213,7 @@ ags_synth_init(AgsSynth *synth)
 								  1.0);
   gtk_spin_button_set_digits(synth->lower,
 			     2);
-  synth->lower->adjustment->value = -48.0;
+  gtk_spin_button_set_value(synth->lower, -48.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
 		   1, 2,

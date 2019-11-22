@@ -35,7 +35,7 @@ void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response
 						AgsMachine *machine);
 
 void
-ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
+ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
 
@@ -66,6 +66,171 @@ ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   if(ffplayer->open_dialog != NULL){
     gtk_widget_destroy(ffplayer->open_dialog);
   }
+}
+
+void
+ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
+			   AgsFFPlayer *ffplayer)
+{
+  GtkWidget *widget;
+
+  GtkStyleContext *ffplayer_style_context;
+
+  GtkAllocation allocation;
+  
+  GdkRGBA *fg_color;
+  GdkRGBA *bg_color;
+
+  double semi_key_height;
+  guint bitmap;
+  guint x[2];
+  guint i, i_stop, j, j0;
+  
+  GValue value = {0,};
+
+  static const gdouble white_gc = 65535.0;
+    
+  widget = (GtkWidget *) ffplayer->drawing_area;
+
+  gtk_widget_get_allocation(ffplayer->drawing_area, &allocation);
+
+  /* style context */
+  ffplayer_style_context = gtk_widget_get_style_context(GTK_WIDGET(ffplayer->drawing_area));
+
+  gtk_style_context_get_property(ffplayer_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(ffplayer_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+  
+  semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
+  bitmap = 0x52a52a; // description of the keyboard
+
+  j = (guint) ceil(gtk_adjustment_get_value(ffplayer->hadjustment) / (double) ffplayer->control_width);
+  j = j % 12;
+
+  x[0] = (guint) round(gtk_adjustment_get_value(ffplayer->hadjustment)) % ffplayer->control_width;
+
+  if(x[0] != 0){
+    x[0] = ffplayer->control_width - x[0];
+  }
+
+  x[1] = ((guint) allocation.width - x[0]) % ffplayer->control_width;
+  i_stop = (allocation.width - x[0] - x[1]) / ffplayer->control_width;
+
+  /* clear with background color */
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+  cairo_rectangle(cr, 0.0, 0.0, (double) allocation.width, (double) allocation.height);
+  cairo_fill(cr);
+
+  /* draw piano */
+  cairo_set_line_width(cr, 1.0);
+
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->green,
+			fg_color->blue,
+			fg_color->alpha);
+
+  if(x[0] != 0){
+    j0 = (j != 0) ? j -1: 11;
+
+    if(((1 << j0) & bitmap) != 0){
+      cairo_rectangle(cr, 0.0, 0.0, x[0], (double) semi_key_height);
+      cairo_fill(cr); 	
+
+      if(x[0] > ffplayer->control_width / 2){
+	cairo_move_to(cr, (double) (x[0] - ffplayer->control_width / 2),  semi_key_height);
+	cairo_line_to(cr, (double) (x[0] - ffplayer->control_width / 2), (double) ffplayer->control_height);
+	cairo_stroke(cr);
+      }
+
+      cairo_move_to(cr, 0.0, ffplayer->control_height);
+      cairo_line_to(cr, (double) x[0], ffplayer->control_height);
+      cairo_stroke(cr);
+    }else{
+      if(((1 << (j0 + 1)) & bitmap) == 0){
+	cairo_move_to(cr, (double) x[0], 0.0);
+	cairo_line_to(cr, (double) x[0], ffplayer->control_height);
+	cairo_stroke(cr);
+      }
+
+      cairo_move_to(cr, 0.0, ffplayer->control_height);
+      cairo_line_to(cr, (double) x[0], ffplayer->control_height);
+      cairo_stroke(cr);
+    }
+  }
+
+  for(i = 0; i < i_stop; i++){
+    if(((1 << j) & bitmap) != 0){
+      // draw semi tone key
+      cairo_rectangle(cr, (double) (i * ffplayer->control_width + x[0]), 0.0, (double) ffplayer->control_width, semi_key_height);
+      cairo_fill(cr); 	
+
+      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), semi_key_height);
+      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), ffplayer->control_height);
+      cairo_stroke(cr);
+
+      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0]), ffplayer->control_height);
+      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
+      cairo_stroke(cr);
+    }else{
+      // no semi tone key
+      if(((1 << (j + 1)) & bitmap) == 0){
+	cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), 0.0);
+	cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
+	cairo_stroke(cr);
+      }
+
+      cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0]), ffplayer->control_height);
+      cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width), ffplayer->control_height);
+      cairo_stroke(cr);
+    }
+
+    if(j == 11)
+      j = 0;
+    else
+      j++;
+  }
+
+  if(x[1] != 0){
+    j0 = j;
+
+    if(((1 << j0) & bitmap) != 0){
+      cairo_rectangle(cr, (double) (allocation.width - x[1]), 0.0, (double) x[1], semi_key_height);
+      cairo_fill(cr); 	
+
+      if(x[1] > ffplayer->control_width / 2){
+	cairo_move_to(cr, (double) (allocation.width - x[1] + ffplayer->control_width / 2), semi_key_height);
+	cairo_line_to(cr, (double) (allocation.width - x[1] + ffplayer->control_width / 2), ffplayer->control_height);
+	cairo_stroke(cr);
+      }
+
+      cairo_move_to(cr, (double) (allocation.width - x[1]), ffplayer->control_height);
+      cairo_line_to(cr, (double) allocation.width, ffplayer->control_height);
+      cairo_stroke(cr);
+    }else{
+      cairo_move_to(cr, (double) (allocation.width - x[1]), ffplayer->control_height);
+      cairo_line_to(cr, (double) allocation.width, ffplayer->control_height);
+      cairo_stroke(cr);
+    }
+  }
+  
+  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 void
