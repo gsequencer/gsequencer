@@ -49,7 +49,6 @@ void ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
 void ags_ffplayer_map_recall(AgsMachine *machine);
 void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
-void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
 /**
  * SECTION:ags_ffplayer

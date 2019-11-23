@@ -37,14 +37,16 @@ void ags_cartesian_show(GtkWidget *widget);
 
 void ags_cartesian_map(GtkWidget *widget);
 void ags_cartesian_realize(GtkWidget *widget);
-void ags_cartesian_size_request(GtkWidget *widget,
-				GtkRequisition   *requisition);
 void ags_cartesian_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation);
-gboolean ags_cartesian_expose(GtkWidget *widget,
-			      GdkEventExpose *event);
+void ags_cartesian_get_preferred_width(GtkWidget *widget,
+				       gint *minimum_width,
+				       gint *natural_width);
+void ags_cartesian_get_preferred_height(GtkWidget *widget,
+					gint *minimum_height,
+					gint *natural_height);
 
-void ags_cartesian_draw(AgsCartesian *cartesian);
+void ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
 
 /**
  * SECTION:ags_cartesian
@@ -661,10 +663,11 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 
   //  widget->map = ags_cartesian_map;
   widget->realize = ags_cartesian_realize;
-  widget->expose_event = ags_cartesian_expose;
-  widget->size_request = ags_cartesian_size_request;
   widget->size_allocate = ags_cartesian_size_allocate;
+  widget->get_preferred_width = ags_cartesian_get_preferred_width;
+  widget->get_preferred_height = ags_cartesian_get_preferred_height;
   widget->show = ags_cartesian_show;
+  widget->draw = ags_cartesian_draw;
 }
 
 void
@@ -839,8 +842,8 @@ ags_cartesian_map(GtkWidget *widget)
   if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
     GTK_WIDGET_CLASS(ags_cartesian_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_cartesian_draw((AgsCartesian *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
+//    ags_cartesian_draw((AgsCartesian *) widget);
   }
 }
 
@@ -849,6 +852,10 @@ ags_cartesian_realize(GtkWidget *widget)
 {
   AgsCartesian *cartesian;
 
+  GdkWindow *window;
+  
+  GtkAllocation allocation;
+  
   GdkWindowAttr attributes;
 
   gint attributes_mask;
@@ -862,31 +869,28 @@ ags_cartesian_realize(GtkWidget *widget)
 
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
-  
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.window_type = GDK_WINDOW_CHILD;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, cartesian);
-
-  widget->style = gtk_style_attach(widget->style,
-				   widget->window);
-  gtk_style_set_background(widget->style,
-			   widget->window,
-			   GTK_STATE_NORMAL);
+  window = gdk_window_new(gtk_widget_get_parent_window (widget),
+			  &attributes, attributes_mask);
+  gtk_widget_set_window(widget, window);
+  gdk_window_set_user_data(window, cartesian);
 
   gtk_widget_queue_resize(widget);
 }
@@ -895,16 +899,6 @@ void
 ags_cartesian_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_cartesian_parent_class)->show(widget);
-}
-
-void
-ags_cartesian_size_request(GtkWidget *widget,
-			   GtkRequisition *requisition)
-{
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->size_request(widget,
-							     requisition);
-
-  //TODO:JK: implement me
 }
 
 void
@@ -917,23 +911,44 @@ ags_cartesian_size_allocate(GtkWidget *widget,
   //TODO:JK: implement me
 }
 
-gboolean
-ags_cartesian_expose(GtkWidget *widget,
-		     GdkEventExpose *event)
+void
+ags_cartesian_get_preferred_width(GtkWidget *widget,
+				  gint *minimum_width,
+				  gint *natural_width)
 {
-  ags_cartesian_draw(AGS_CARTESIAN(widget));
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_width(widget,
+								    minimum_width,
+								    natural_width);
 
-  return(FALSE);
+  //TODO:JK: implement me
 }
 
 void
-ags_cartesian_draw(AgsCartesian *cartesian)
+ags_cartesian_get_preferred_height(GtkWidget *widget,
+				   gint *minimum_height,
+				   gint *natural_height)
+{
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_height(widget,
+								     minimum_height,
+								     natural_height);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 {
   GtkWidget *widget;
 
-  GtkStyle *cartesian_style;
-  cairo_t *cr;
+  GtkStyleContext *cartesian_style_context;
+
+  GtkAllocation allocation;
   
+  GdkRGBA *fg_color;
+  GdkRGBA *fg_color_active;
+  GdkRGBA *bg_color;
+  GdkRGBA *border_color;
+
   GList *list;
   
   unsigned char *data;
@@ -950,9 +965,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   guint stride;
   guint i_stop;
   guint i;
-  
-  static const gdouble white_gc = 65535.0;
 
+  GValue value = {0,};
+  
   auto void ags_cartesian_draw_area();
 
   auto void ags_cartesian_draw_x_label();
@@ -977,10 +992,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     cairo_set_line_width(cr, cartesian->line_width);
 
     /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->mid[0].red / white_gc,
-			 cartesian_style->mid[0].green / white_gc,
-			 cartesian_style->mid[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
     
     /* dash */
     cairo_set_dash(cr,
@@ -1197,10 +1213,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     cairo_set_line_width(cr, cartesian->line_width);
 
     /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
     
     /* draw line */
     cairo_move_to(cr,
@@ -1246,10 +1263,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     cairo_set_line_width(cr, cartesian->line_width);
 
     /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);    
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
 
     /* draw big scale steps */
     factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
@@ -1283,10 +1301,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
   void ags_cartesian_draw_y_small_scale(){
     /* color and line width */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
     
     cairo_set_line_width(cr, cartesian->line_width);
 
@@ -1334,10 +1353,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     cairo_set_line_width(cr, cartesian->line_width);
 
     /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);    
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
 
     /* draw big scale steps */
     factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
@@ -1399,10 +1419,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     unsigned char *data;
     guint i;
 
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color_active->red,
+			  fg_color_active->blue,
+			  fg_color_active->green,
+			  fg_color_active->alpha);
 
     /* points */
     for(i = 0; i < plot->n_points; i++){
@@ -1499,27 +1520,59 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
   
   widget = GTK_WIDGET(cartesian);
-  cartesian_style = gtk_widget_get_style(widget);
 
-  cr = gdk_cairo_create(widget->window);
+  gtk_widget_get_allocation(GTK_WIDGET(cartesian),
+			    &allocation);
 
-  if(cr == NULL){
-    return;
-  }
+  /* style context */
+  cartesian_style_context = gtk_widget_get_style_context(GTK_WIDGET(cartesian));
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_ACTIVE,
+				 &value);
+
+  fg_color_active = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "border-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  border_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
 
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);
   
   /* clear bg */
-  cairo_set_source_rgb(cr,
-		       cartesian_style->bg[0].red / white_gc,
-		       cartesian_style->bg[0].green / white_gc,
-		       cartesian_style->bg[0].blue / white_gc);
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
 
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  widget->allocation.width, widget->allocation.height);
+		  allocation.width, allocation.height);
   cairo_fill(cr);
   
   /* cartesian offset, width and height */
@@ -1529,14 +1582,15 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
   y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
   
-  /* clear surface to white */
+  /* clear surface */
   data = cairo_image_surface_get_data(cartesian->surface);
   stride = cairo_image_surface_get_stride(cartesian->surface);
 
   data_ptr = data;
-  clear_color = (cartesian_style->base[0].red << 16) |
-    (cartesian_style->base[0].green << 8) |
-    (cartesian_style->base[0].blue);
+  
+  clear_color = (((guint) (255.0 * bg_color->red) << 16) |
+		 ((guint) (255.0 * bg_color->green) << 8) |
+		 ((guint) (255.0 * bg_color->blue)));
   
   //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
   for(i = 0; i < width * height; i++){
@@ -1590,11 +1644,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
 
   /* x and y label */
-  cairo_select_font_face(cr, "Georgia",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  
-  cairo_set_font_size(cr, (gdouble) cartesian->font_size);
-  
   if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
     ags_cartesian_draw_x_label();
   }
@@ -1676,7 +1725,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   cairo_paint(cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
 }
 
 AgsPlot*

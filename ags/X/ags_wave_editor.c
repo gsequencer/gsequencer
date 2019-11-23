@@ -517,8 +517,8 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   wave_toolbar = wave_editor->wave_toolbar;
 
   /* reset vertical scrollbar */
-  gtk_wiget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box),
-			   &wave_edit_box_allocation);
+  gtk_widget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box),
+			    &wave_edit_box_allocation);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport),
 			    &viewport_allocation);

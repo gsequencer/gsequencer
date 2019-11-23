@@ -34,10 +34,14 @@ void ags_scrolled_level_box_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_scrolled_level_box_finalize(GObject *gobject);
 
+void ags_scrolled_level_get_preferred_width(GtkWidget *widget,
+					    gint *minimal_width,
+					    gint *natural_width);
+void ags_scrolled_level_get_preferred_height(GtkWidget *widget,
+					     gint *minimal_height,
+					     gint *natural_height);
 void ags_scrolled_level_box_size_allocate(GtkWidget *widget,
 					  GtkAllocation *allocation);
-void ags_scrolled_level_box_size_request(GtkWidget *widget,
-					 GtkRequisition *requisition);
 
 /**
  * SECTION:ags_scrolled_level_box
@@ -183,7 +187,8 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_level_box;
 
-  widget->size_request = ags_scrolled_level_box_size_request;
+  widget->get_preferred_width = ags_scrolled_level_get_preferred_width;
+  widget->get_preferred_height = ags_scrolled_level_get_preferred_height;
   widget->size_allocate = ags_scrolled_level_box_size_allocate;
 }
 
@@ -303,6 +308,25 @@ ags_scrolled_level_box_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_scrolled_level_box_parent_class)->finalize(gobject);
 }
 
+
+void
+ags_scrolled_level_get_preferred_width(GtkWidget *widget,
+				       gint *minimal_width,
+				       gint *natural_width)
+{
+  minimal_width[0] =
+    natural_width[0] = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
+}
+
+void
+ags_scrolled_level_get_preferred_height(GtkWidget *widget,
+					gint *minimal_height,
+					gint *natural_height)
+{
+  minimal_height[0] =
+    natural_height[0] = -1;
+}
+
 void
 ags_scrolled_level_box_size_allocate(GtkWidget *widget,
 				     GtkAllocation *allocation)
@@ -339,19 +363,6 @@ ags_scrolled_level_box_size_allocate(GtkWidget *widget,
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_level_box->level_box,
 			   &child_allocation);
-}
-
-void
-ags_scrolled_level_box_size_request(GtkWidget *widget,
-				    GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-
-  requisition->width = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
-  requisition->height = -1;
-  
-  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
-			  &child_requisition);
 }
 
 /**

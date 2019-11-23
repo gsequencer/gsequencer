@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_automation_edit.h>
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -1133,18 +1134,18 @@ ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 }
 
 void
-ags_automation_edit_size_get_preferred_width(GtkWidget *widget,
-					     gint *minimal_width,
-					     gint *natural_width)
+ags_automation_edit_get_preferred_width(GtkWidget *widget,
+					gint *minimal_width,
+					gint *natural_width)
 {
   minimal_width[0] =
     natural_width[0] = -1;
 }
 
 void
-ags_automation_edit_size_get_preferred_height(GtkWidget *widget,
-					      gint *minimal_height,
-					      gint *natural_height)
+ags_automation_edit_get_preferred_height(GtkWidget *widget,
+					 gint *minimal_height,
+					 gint *natural_height)
 {  
   AgsApplicationContext *application_context;
   
@@ -1519,6 +1520,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 			bg_color->green,
 			bg_color->blue,
 			bg_color->alpha);
+
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_fill(cr);
 
@@ -1528,6 +1530,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 			border_color->green,
 			border_color->blue,
 			border_color->alpha);
+
   cairo_set_line_width(cr, 1.0);
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_stroke(cr);

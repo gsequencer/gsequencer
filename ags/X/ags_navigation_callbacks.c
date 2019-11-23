@@ -45,7 +45,7 @@ ags_navigation_expander_callback(GtkWidget *widget,
 	       NULL);
   
   if(arrow_type == GTK_ARROW_DOWN){
-    gtk_widget_hide_all(widget);
+    gtk_widget_hide(widget);
 
     g_object_set(arrow,
 		 "arrow-type", GTK_ARROW_RIGHT,

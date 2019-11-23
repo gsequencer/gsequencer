@@ -31,12 +31,14 @@ void ags_scrolled_piano_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_scrolled_piano_finalize(GObject *gobject);
 
+void ags_scrolled_piano_get_preferred_width(GtkWidget *widget,
+					    gint *minimal_width,
+					    gint *natural_width);
+void ags_scrolled_piano_get_preferred_height(GtkWidget *widget,
+					     gint *minimal_height,
+					     gint *natural_height);
 void ags_scrolled_piano_size_allocate(GtkWidget *widget,
 				      GtkAllocation *allocation);
-void ags_scrolled_piano_size_request(GtkWidget *widget,
-				     GtkRequisition *requisition);
-gboolean ags_scrolled_piano_expose(GtkWidget *widget,
-				   GdkEventExpose *event);
 
 void ags_scrolled_piano_allocate_viewport(GtkWidget *widget);
 
@@ -184,9 +186,9 @@ ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_piano;
 
-  widget->size_request = ags_scrolled_piano_size_request;
+  widget->get_preferred_width = ags_scrolled_piano_get_preferred_width;
+  widget->get_preferred_height = ags_scrolled_piano_get_preferred_height;
   widget->size_allocate = ags_scrolled_piano_size_allocate;
-  widget->expose_event = ags_scrolled_piano_expose;
 }
 
 void
@@ -304,6 +306,56 @@ ags_scrolled_piano_finalize(GObject *gobject)
 }
 
 void
+ags_scrolled_piano_get_preferred_width(GtkWidget *widget,
+				       gint *minimal_width,
+				       gint *natural_width)
+{
+  AgsScrolledPiano *scrolled_piano;
+  
+  scrolled_piano = AGS_SCROLLED_PIANO(widget);
+
+  if(scrolled_piano->piano == NULL){
+    minimal_width[0] =
+      natural_width[0] = -1;
+
+    return;
+  }
+  
+  if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    minimal_width[0] =
+      natural_width[0] = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
+  }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    minimal_width[0] =
+      natural_width[0] = -1;
+  }
+}
+
+void
+ags_scrolled_piano_get_preferred_height(GtkWidget *widget,
+					gint *minimal_height,
+					gint *natural_height)
+{
+  AgsScrolledPiano *scrolled_piano;
+  
+  scrolled_piano = AGS_SCROLLED_PIANO(widget);
+
+  if(scrolled_piano->piano == NULL){
+    minimal_height[0] =
+      natural_height[0] = -1;
+
+    return;
+  }
+  
+  if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    minimal_height[0] =
+      natural_height[0] = -1;
+  }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    minimal_height[0] =
+      natural_height[0] = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
+  }
+}
+
+void
 ags_scrolled_piano_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation)
 {
@@ -317,50 +369,15 @@ ags_scrolled_piano_size_allocate(GtkWidget *widget,
 
   scrolled_piano = AGS_SCROLLED_PIANO(widget);
   
-  widget->allocation = *allocation;
 
   if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    widget->allocation.width = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
+    allocation->width = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
   }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    widget->allocation.height = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
+    allocation->height = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
   }
 
   /* viewport allocation */
   ags_scrolled_piano_allocate_viewport(widget);
-}
-
-void
-ags_scrolled_piano_size_request(GtkWidget *widget,
-				GtkRequisition *requisition)
-{
-  AgsScrolledPiano *scrolled_piano;
-  
-  GtkRequisition child_requisition;
-
-  scrolled_piano = AGS_SCROLLED_PIANO(widget);
-
-  if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    requisition->width = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
-    requisition->height = -1;
-  }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    requisition->width = -1;
-    requisition->height = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
-  }
-
-  gtk_widget_size_request((GtkWidget *) gtk_bin_get_child((GtkBin *) scrolled_piano),
-			  &child_requisition);
-}
-
-gboolean
-ags_scrolled_piano_expose(GtkWidget *widget,
-			  GdkEventExpose *event)
-{
-  ags_scrolled_piano_allocate_viewport(widget);
-  
-  gtk_widget_queue_draw(AGS_SCROLLED_PIANO(widget)->viewport);
-  gtk_widget_queue_draw(AGS_SCROLLED_PIANO(widget)->piano);
-
-  return(FALSE);
 }
 
 void
@@ -372,29 +389,33 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
 
   GdkWindow *viewport_window;
   
+  GtkAllocation allocation;
   GtkAllocation child_allocation;
 
   gdouble upper;
 
   scrolled_piano = AGS_SCROLLED_PIANO(widget);
 
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
   /* viewport allocation */
-  child_allocation.x = widget->allocation.x + scrolled_piano->margin_left;
-  child_allocation.y = widget->allocation.y + scrolled_piano->margin_top;
+  child_allocation.x = allocation.x + scrolled_piano->margin_left;
+  child_allocation.y = allocation.y + scrolled_piano->margin_top;
 
   if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     child_allocation.width = scrolled_piano->piano->key_width;
 
-    if(widget->allocation.height < scrolled_piano->piano->key_count * scrolled_piano->piano->key_height){
+    if(allocation.height < scrolled_piano->piano->key_count * scrolled_piano->piano->key_height){
       child_allocation.height = scrolled_piano->piano->key_count * scrolled_piano->piano->key_height;
     }else{
-      child_allocation.height = widget->allocation.height;
+      child_allocation.height = allocation.height;
     }
   }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    if(widget->allocation.width < scrolled_piano->piano->key_count * scrolled_piano->piano->key_height){
+    if(allocation.width < scrolled_piano->piano->key_count * scrolled_piano->piano->key_height){
       child_allocation.width = scrolled_piano->piano->key_count * scrolled_piano->piano->key_height;
     }else{
-      child_allocation.width = widget->allocation.width;
+      child_allocation.width = allocation.width;
     }
     
     child_allocation.height = scrolled_piano->piano->key_width;
@@ -409,7 +430,7 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
 		 "vadjustment", &piano_adjustment,
 		 NULL);
 
-    upper = GTK_WIDGET(scrolled_piano->piano)->allocation.height - (widget->allocation.height - (scrolled_piano->margin_top + scrolled_piano->margin_bottom));
+    upper = child_allocation.height - (allocation.height - (scrolled_piano->margin_top + scrolled_piano->margin_bottom));
 
     gtk_adjustment_set_upper(piano_adjustment,
 			     upper);
@@ -418,7 +439,7 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
 		 "hadjustment", &piano_adjustment,
 		 NULL);
 
-    upper = GTK_WIDGET(scrolled_piano->piano)->allocation.width - (widget->allocation.width - (scrolled_piano->margin_left + scrolled_piano->margin_right));
+    upper = child_allocation.width - (allocation.width - (scrolled_piano->margin_left + scrolled_piano->margin_right));
 
     gtk_adjustment_set_upper(piano_adjustment,
 			     upper);

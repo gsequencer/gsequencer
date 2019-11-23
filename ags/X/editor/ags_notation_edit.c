@@ -1413,7 +1413,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get offset */
-  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - (gtk_ranbe_get_value(GTK_RANGE(notation_edit->hscrollbar)) * zoom_factor);
+  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - (gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) * zoom_factor);
   y = ((double) notation_edit->cursor_position_y * (double) notation_edit->control_height) - gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar));
 
   width = (double) notation_edit->control_width;

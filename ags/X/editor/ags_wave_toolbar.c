@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/editor/ags_wave_toolbar.h>
 #include <ags/X/editor/ags_wave_toolbar_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_wave_window.h>
@@ -122,35 +118,27 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 					"label", i18n("Position"),
 					"stock-id", GTK_STOCK_JUMP_TO,
 					NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->position,
-			    "position cursor",
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->position);
   
   wave_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 				      "label", i18n("Select"),
 				      "stock-id", GTK_STOCK_SELECT_ALL,
 				      NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->select,
-			    "select wave",
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->select);
 
   wave_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 						      "stock-id", GTK_STOCK_COPY,
 						      NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->copy,
-			    "copy wave",
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->copy);
 
   wave_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 						     "stock-id", GTK_STOCK_CUT,
 						     NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->cut,
-			    "cut wave",
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->cut);
 
   wave_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								"stock-id", GTK_STOCK_PASTE,
@@ -169,17 +157,16 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 				(GtkWidget *) menu);
   gtk_widget_show_all((GtkWidget *) menu);
 
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->paste_tool,
-			    "paste wave",
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->paste_tool);
   
   /* menu tool */
   wave_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 							       "label", i18n("Tool"),
 							       "stock-id", GTK_STOCK_EXECUTE,
 							       NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar, (GtkWidget *) wave_toolbar->menu_tool, i18n("additional tools"), NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->menu_tool);
 
   /* menu tool - tool popup */
   wave_toolbar->tool_popup = ags_wave_toolbar_tool_popup_new(wave_toolbar);
@@ -200,10 +187,8 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   wave_toolbar->zoom = ags_zoom_combo_box_new();
   gtk_combo_box_set_active(GTK_COMBO_BOX(wave_toolbar->zoom),
 			   2);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->zoom,
-			    NULL,
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->zoom);
 
   /* opacity */
   label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
@@ -212,10 +197,8 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 
   wave_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
   gtk_spin_button_set_value(wave_toolbar->opacity, 0.5);
-  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->opacity,
-			    NULL,
-			    NULL);
+  gtk_container_add((GtkToolbar *) wave_toolbar,
+		    (GtkWidget *) wave_toolbar->opacity);
 }
 
 void

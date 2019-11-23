@@ -351,7 +351,7 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
   audio = AGS_MACHINE(fm_synth)->audio;
 
   /*  */
-  start_frequency = (gdouble) gtk_spin_button_get_value_as_float(fm_synth->lower);
+  start_frequency = (gdouble) gtk_spin_button_get_value(fm_synth->lower);
 
   /* clear output */
   input_pad_start = 

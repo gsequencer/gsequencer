@@ -1556,7 +1556,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   audio = AGS_MACHINE(syncsynth)->audio;
 
   /*  */
-  start_frequency = (gdouble) gtk_spin_button_get_value_as_float(syncsynth->lower);
+  start_frequency = (gdouble) gtk_spin_button_get_value(syncsynth->lower);
 
   /* clear input */
   g_object_get(audio,
@@ -1645,9 +1645,9 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
         
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
-    phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
-    frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
-    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+    phase = (gdouble) gtk_spin_button_get_value(oscillator->phase);
+    frequency = (gdouble) gtk_spin_button_get_value(oscillator->frequency);
+    volume = (gdouble) gtk_spin_button_get_value(oscillator->volume);
 
     g_object_set(synth_generator->data,
 		 "format", format,

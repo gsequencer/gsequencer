@@ -41,14 +41,14 @@ void ags_ruler_show(GtkWidget *widget);
 
 void ags_ruler_map(GtkWidget *widget);
 void ags_ruler_realize(GtkWidget *widget);
-void ags_ruler_size_allocate(GtkWidget *widget,
-			     GtkAllocation *allocation);
-void ags_ruler_size_request(GtkWidget *widget,
-			    GtkRequisition   *requisition);
-gboolean ags_ruler_expose(GtkWidget *widget,
-			  GdkEventExpose *event);
+void ags_ruler_get_preferred_width(GtkWidget *widget,
+				   gint *minimal_width,
+				   gint *natural_width);
+void ags_ruler_get_preferred_height(GtkWidget *widget,
+				    gint *minimal_height,
+				    gint *natural_height);
 
-void ags_ruler_draw(AgsRuler *ruler);
+void ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
 
 /**
  * SECTION:ags_ruler
@@ -120,9 +120,9 @@ ags_ruler_class_init(AgsRulerClass *ruler)
 
   //  widget->map = ags_ruler_map;
   widget->realize = ags_ruler_realize;
-  widget->expose_event = ags_ruler_expose;
-  widget->size_allocate = ags_ruler_size_allocate;
-  widget->size_request = ags_ruler_size_request;
+  widget->get_preferred_width = ags_ruler_get_preferred_width;
+  widget->get_preferred_height = ags_ruler_get_preferred_height;
+  widget->draw = ags_ruler_draw;
   widget->show = ags_ruler_show;
 
   /* properties */
@@ -312,8 +312,7 @@ ags_ruler_map(GtkWidget *widget)
   if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
     GTK_WIDGET_CLASS (ags_ruler_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_ruler_draw((AgsRuler *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
   }
 }
 
@@ -321,7 +320,12 @@ void
 ags_ruler_realize(GtkWidget *widget)
 {
   AgsRuler *ruler;
+
+  GdkWindow *window;
+
+  GtkAllocation allocation;
   GdkWindowAttr attributes;
+
   gint attributes_mask;
   gint border_left, border_top;
 
@@ -330,24 +334,26 @@ ags_ruler_realize(GtkWidget *widget)
 
   ruler = AGS_RULER(widget);
 
-  gtk_widget_set_realized (widget, TRUE);
+  gtk_widget_set_realized(widget, TRUE);
+
+  gtk_widget_get_allocation(widget,
+			    &allocation);
 
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.window_type = GDK_WINDOW_CHILD;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.visual = gtk_widget_get_visual(widget);
+  attributes.event_mask = gtk_widget_get_events(widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
                             GDK_BUTTON_PRESS_MASK |
                             GDK_BUTTON_RELEASE_MASK |
@@ -358,12 +364,10 @@ ags_ruler_realize(GtkWidget *widget)
                             GDK_ENTER_NOTIFY_MASK |
                             GDK_LEAVE_NOTIFY_MASK);
 
-  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget),
-				   &attributes, attributes_mask);
-  gdk_window_set_user_data (widget->window, ruler);
-
-  widget->style = gtk_style_attach (widget->style, widget->window);
-  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+  window = gdk_window_new(gtk_widget_get_parent_window (widget),
+			  &attributes, attributes_mask);
+  gtk_widget_set_window(widget, window);
+  gdk_window_set_user_data(window, ruler);
 
   gtk_widget_queue_resize (widget);
 }
@@ -375,37 +379,21 @@ ags_ruler_show(GtkWidget *widget)
 }
 
 void
-ags_ruler_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
+ags_ruler_get_preferred_width(GtkWidget *widget,
+			      gint *minimal_width,
+			      gint *natural_width)
 {
-  AgsRuler *ruler;
-
-  ruler = AGS_RULER(widget);
-
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_allocate(widget,
-							  allocation);
+  minimal_width[0] =
+    natural_width[0] = -1;
 }
 
 void
-ags_ruler_size_request(GtkWidget *widget,
-		       GtkRequisition *requisition)
+ags_ruler_get_preferred_height(GtkWidget *widget,
+			       gint *minimal_height,
+			       gint *natural_height)
 {
-  AgsRuler *ruler;
-
-  ruler = AGS_RULER(widget);
-  
-  requisition->width = -1;
-  requisition->height = (gint) AGS_RULER_DEFAULT_HEIGHT;
-}
-
-gboolean
-ags_ruler_expose(GtkWidget *widget,
-		 GdkEventExpose *event)
-{
-  ags_ruler_draw(AGS_RULER(widget));
-
-  return(FALSE);
+  minimal_height[0] =
+    natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
 }
 
 /**
@@ -415,12 +403,12 @@ ags_ruler_expose(GtkWidget *widget,
  * draws the widget
  */
 void
-ags_ruler_draw(AgsRuler *ruler)
+ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 {
   GtkWidget *widget;
-
-  cairo_t *cr;
     
+  GtkAllocation allocation;
+
   gchar *font_name;
 
   gdouble tact_factor, zoom_factor;
@@ -438,15 +426,12 @@ ags_ruler_draw(AgsRuler *ruler)
 
   widget = GTK_WIDGET(ruler);
 
-  cr = gdk_cairo_create(widget->window);
-
-  if(cr == NULL){
-    return;
-  }
-
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);
+
+  gtk_widget_get_allocation(widget,
+			    &allocation);
     
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
@@ -460,7 +445,7 @@ ags_ruler_draw(AgsRuler *ruler)
   cairo_set_source_rgba(cr, 0.0, 0.0, 0.125, 1.0);
   cairo_rectangle(cr,
 		  0, 0,
-		  widget->allocation.width, widget->allocation.height);
+		  allocation.width, allocation.height);
   cairo_fill(cr);
 
   cairo_set_source_rgba(cr,
@@ -472,17 +457,17 @@ ags_ruler_draw(AgsRuler *ruler)
 		       1.25);
 
   /* draw scale */
-  offset = (ruler->adjustment->value * step);
+  offset = (gtk_adjustment_get_value(ruler->adjustment) * step);
   x0 = offset % step;
   
   z = (guint) floor((offset - x0) / step);
   
-  i_stop = (guint) ceil((double) (widget->allocation.width + (step + x0)) / (double) step);
+  i_stop = (guint) ceil((double) (allocation.width + (step + x0)) / (double) step);
   
   for(i = 0; i < i_stop; i++, z++){
     cairo_move_to(cr,
 		  (double) (i * step - x0),
-		  (double) (widget->allocation.height));
+		  (double) (allocation.height));
     
     if(tact < 1.0){
       PangoLayout *layout;
@@ -516,12 +501,12 @@ ags_ruler_draw(AgsRuler *ruler)
 
       cairo_line_to(cr,
 		    (double) (i * step - x0),
-		    (double) (widget->allocation.height - ruler->large_step));
+		    (double) (allocation.height - ruler->large_step));
 
       /* draw scale step */
       cairo_move_to(cr,
 		    (double) (i * step - x0),
-		    (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
+		    (double) (allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
       pango_cairo_show_layout(cr,
 			      layout);
@@ -562,12 +547,12 @@ ags_ruler_draw(AgsRuler *ruler)
 
 	cairo_line_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - ruler->large_step));
+		      (double) (allocation.height - ruler->large_step));
 
 	/* draw scale step */
 	cairo_move_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
+		      (double) (allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
 	pango_cairo_show_layout(cr,
 				layout);
@@ -582,7 +567,7 @@ ags_ruler_draw(AgsRuler *ruler)
 
 	cairo_line_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - ruler->small_step));
+		      (double) (allocation.height - ruler->small_step));
       }
     }
 
@@ -595,7 +580,6 @@ ags_ruler_draw(AgsRuler *ruler)
   cairo_paint(cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
 }
 
 /**

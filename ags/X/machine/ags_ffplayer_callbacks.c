@@ -379,7 +379,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 gboolean
 ags_ffplayer_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsFFPlayer *ffplayer)
 {
-  ags_ffplayer_paint(ffplayer);
+  gtk_widget_queue_draw(ffplayer);
 
   return(FALSE);
 }
@@ -387,7 +387,7 @@ ags_ffplayer_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *eve
 gboolean
 ags_ffplayer_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsFFPlayer *ffplayer)
 {
-  ags_ffplayer_paint(ffplayer);
+  gtk_widget_queue_draw(ffplayer);
 
   return(FALSE);
 }
@@ -402,5 +402,5 @@ ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *
 void
 ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer)
 {
-  ags_ffplayer_paint(ffplayer);
+  gtk_widget_queue_draw(ffplayer);
 }

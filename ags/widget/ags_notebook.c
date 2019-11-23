@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,14 @@ void ags_notebook_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notebook_finalize(GObject *gobject);
 
+void ags_notebook_get_preferred_width(GtkWidget *widget,
+				      gint *minimal_width,
+				      gint *natural_width);
+void ags_notebook_get_preferred_height(GtkWidget *widget,
+				       gint *minimal_height,
+				       gint *natural_height);
 void ags_notebook_size_allocate(AgsNotebook *notebook,
 				GtkAllocation *allocation);
-void ags_notebook_size_request(AgsNotebook *notebook,
-			       GtkRequisition *requisition);
 
 void ags_notebook_scroll_prev_callback(GtkWidget *button,
 				       AgsNotebook *notebook);
@@ -127,8 +131,9 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
 
+  widget->get_preferred_width = ags_notebook_get_preferred_width;
+  widget->get_preferred_height = ags_notebook_get_preferred_height;
   widget->size_allocate = ags_notebook_size_allocate;
-  widget->size_request = ags_notebook_size_request;
 }
 
 void
@@ -272,6 +277,24 @@ ags_notebook_finalize(GObject *gobject)
 }
 
 void
+ags_notebook_get_preferred_width(GtkWidget *widget,
+				 gint *minimal_width,
+				 gint *natural_width)
+{
+  minimal_width[0] =
+    natural_width[0] = -1;
+}
+
+void
+ags_notebook_get_preferred_height(GtkWidget *widget,
+				  gint *minimal_height,
+				  gint *natural_height)
+{
+  minimal_height[0] =
+    natural_height[0] = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
+}
+
+void
 ags_notebook_size_allocate(AgsNotebook *notebook,
 			   GtkAllocation *allocation)
 {
@@ -281,8 +304,6 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
   GList *list, *list_start;
 
   guint x;
-
-  GTK_WIDGET(notebook->navigation)->allocation = *allocation;
 
   if(allocation->width < (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH)){
     allocation->width = (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH);
@@ -413,35 +434,6 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
 }
 
 void
-ags_notebook_size_request(AgsNotebook *notebook,
-			  GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-  
-  GList *list, *list_start;
-  
-  requisition->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  requisition->width = -1;
-  
-  list_start =
-    list = gtk_container_get_children((GtkContainer *) notebook);
-  
-  while(list != NULL){
-    gtk_widget_size_request((GtkWidget *) list->data,
-			    &child_requisition);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  //FIXME:JK: ugh
-  if(GTK_WIDGET(notebook)->parent == NULL){
-    return;
-  }
-}
-
-void
 ags_notebook_scroll_prev_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
@@ -449,9 +441,9 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
     
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
 
-  if(adjustment->value - adjustment->step_increment > 0){
+  if(gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment) > 0){
     gtk_adjustment_set_value(adjustment,
-			     adjustment->value - adjustment->step_increment);
+			     gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment));
   }else{
     gtk_adjustment_set_value(adjustment,
 			     0.0);
@@ -468,12 +460,12 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
   
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
   
-  if(adjustment->value + adjustment->step_increment < adjustment->upper - adjustment->page_size){
+  if(gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment) < gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment)){
     gtk_adjustment_set_value(adjustment,
-			     adjustment->value + adjustment->step_increment);
+			     gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
   }else{
     gtk_adjustment_set_value(adjustment,
-			     adjustment->upper - adjustment->page_size);
+			     gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment));
   }
 
   gtk_widget_show_all((GtkWidget *) notebook->hbox);

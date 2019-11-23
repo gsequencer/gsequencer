@@ -38,7 +38,7 @@ ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_membe
 	       "adjustment", &adjustment,
 	       NULL);
 
-  value = gtk_adjustent_get_value(adjustment);
+  value = gtk_adjustment_get_value(adjustment);
   
   ags_line_member_change_port(line_member,
 			      (gpointer) &value);
@@ -54,7 +54,7 @@ ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_m
   
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
 
-  value = gtk_adjustent_get_value(adjustment);
+  value = gtk_adjustment_get_value(adjustment);
 
   ags_line_member_change_port(line_member,
 			      (gpointer) &value);
@@ -70,7 +70,7 @@ ags_line_member_hscale_changed_callback(GtkWidget *hscale, AgsLineMember *line_m
   
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
 
-  value = gtk_adjustent_get_value(adjustment);
+  value = gtk_adjustment_get_value(adjustment);
 
   ags_line_member_change_port(line_member,
 			      &value);
@@ -86,7 +86,7 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
   
   adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
 
-  value = gtk_adjustent_get_value(adjustment);
+  value = gtk_adjustment_get_value(adjustment);
 
   ags_line_member_change_port(line_member,
 			      &value);

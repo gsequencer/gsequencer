@@ -23,17 +23,19 @@ void ags_vindicator_class_init(AgsVIndicatorClass *indicator);
 void ags_vindicator_init(AgsVIndicator *indicator);
 void ags_vindicator_show(GtkWidget *widget);
 
-void ags_vindicator_size_request(GtkWidget *widget,
-				 GtkRequisition *requisition);
+void ags_vindicator_get_preferred_width(GtkWidget *widget,
+					gint *minimal_width,
+					gint *natural_width);
+void ags_vindicator_get_preferred_height(GtkWidget *widget,
+					 gint *minimal_height,
+					 gint *natural_height);
 void ags_vindicator_size_allocate(GtkWidget *widget,
 				  GtkAllocation *allocation);
 
-gboolean ags_vindicator_expose(GtkWidget *widget,
-			       GdkEventExpose *event);
 gboolean ags_vindicator_configure(GtkWidget *widget,
 				  GdkEventConfigure *event);
 
-void ags_vindicator_draw(AgsVIndicator *indicator);
+void ags_vindicator_draw(AgsVIndicator *indicator, cairo_t *cr);
 
 /**
  * SECTION:ags_vindicator
@@ -87,10 +89,11 @@ ags_vindicator_class_init(AgsVIndicatorClass *indicator)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) indicator;
 
-  widget->size_request = ags_vindicator_size_request;
+  widget->get_preferred_width = ags_vindicator_get_preferred_width;
+  widget->get_preferred_height = ags_vindicator_get_preferred_height;
   widget->size_allocate = ags_vindicator_size_allocate;
 
-  widget->expose_event = ags_vindicator_expose;
+  widget->draw = ags_vindicator_draw;
   widget->configure_event = ags_vindicator_configure;
 }
 
@@ -103,16 +106,31 @@ ags_vindicator_init(AgsVIndicator *indicator)
 	       NULL);
 }
 
+
 void
-ags_vindicator_size_request(GtkWidget *widget,
-			    GtkRequisition *requisition)
+ags_vindicator_get_preferred_width(GtkWidget *widget,
+				   gint *minimal_width,
+				   gint *natural_width)
 {
   AgsIndicator *indicator;
 
   indicator = AGS_INDICATOR(widget);
   
-  requisition->width = indicator->segment_width;
-  requisition->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
+  minimal_width[0] =
+    natural_width[0] = indicator->segment_width;
+}
+
+void
+ags_vindicator_get_preferred_height(GtkWidget *widget,
+				    gint *minimal_height,
+				    gint *natural_height)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(widget);
+  
+  minimal_height[0] =
+    natural_height[0] = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
 }
 
 void
@@ -122,11 +140,9 @@ ags_vindicator_size_allocate(GtkWidget *widget,
   AgsIndicator *indicator;
 
   indicator = AGS_INDICATOR(widget);
-  
-  widget->allocation = *allocation;
 
-  widget->allocation.width = indicator->segment_width;
-  widget->allocation.height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
+  allocation->width = indicator->segment_width;
+  allocation->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
 
   GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget, allocation);
 }
@@ -135,29 +151,26 @@ gboolean
 ags_vindicator_configure(GtkWidget *widget,
 			 GdkEventConfigure *event)
 {
-  ags_vindicator_draw((AgsVIndicator *) widget);
-
-  return(FALSE);
-}
-
-gboolean
-ags_vindicator_expose(GtkWidget *widget,
-		     GdkEventExpose *event)
-{
-  ags_vindicator_draw((AgsVIndicator *) widget);
+  gtk_widget_queue_draw(widget);
 
   return(FALSE);
 }
 
 void
-ags_vindicator_draw(AgsVIndicator *indicator)
+ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 {
   GtkWidget *widget;
   
   GtkAdjustment *adjustment;
-  GtkStyle *indicator_style;
-  cairo_t *cr;
   
+  GtkStyleContext *vindicator_style_context;
+
+  GtkAllocation allocation;
+  
+  GdkRGBA *fg_color;
+  GdkRGBA *bg_color;
+  GdkRGBA *border_color;
+
   gdouble value;
   guint width, height;
   guint padding_top, padding_left;
@@ -165,53 +178,76 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   guint padding;
   guint i;
 
-  static const gdouble white_gc = 65535.0;
-
-  widget = GTK_WIDGET(indicator);
-  indicator_style = gtk_widget_get_style(widget);
+  widget = GTK_WIDGET(vindicator);
   
-  adjustment = AGS_INDICATOR(indicator)->adjustment;
+  adjustment = AGS_INDICATOR(vindicator)->adjustment;
 
   if(adjustment == NULL){
     return;
   }
   
+  gtk_widget_get_allocation(GTK_WIDGET(vindicator),
+			    &allocation);
+
+  /* style context */
+  vindicator_style_context = gtk_widget_get_style_context(GTK_WIDGET(vindicator));
+
+  gtk_style_context_get_property(vindicator_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(vindicator_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+  
+  gtk_style_context_get_property(vindicator_style_context,
+				 "border-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  border_color = g_value_get_pointer(&value);
+  g_value_unset(&value);
+
   //  g_message("draw %f", adjustment->value);
-
-  cr = gdk_cairo_create(widget->window);
-
-  if(cr == NULL){
-    return;
-  }
   
-  width = AGS_INDICATOR(indicator)->segment_width;
-  height = (AGS_INDICATOR(indicator)->segment_count * AGS_INDICATOR(indicator)->segment_height) + ((AGS_INDICATOR(indicator)->segment_count - 1) * AGS_INDICATOR(indicator)->segment_padding);
+  width = AGS_INDICATOR(vindicator)->segment_width;
+  height = (AGS_INDICATOR(vindicator)->segment_count * AGS_INDICATOR(vindicator)->segment_height) + ((AGS_INDICATOR(vindicator)->segment_count - 1) * AGS_INDICATOR(vindicator)->segment_padding);
 
-  padding_top = (GTK_WIDGET(indicator)->allocation.height - height) / 2;
-  padding_left = (GTK_WIDGET(indicator)->allocation.width - width) / 2;
+  padding_top = (allocation.height - height) / 2;
+  padding_left = (allocation.width - width) / 2;
   
-  segment_width = AGS_INDICATOR(indicator)->segment_width;
-  segment_height = AGS_INDICATOR(indicator)->segment_height;
+  segment_width = AGS_INDICATOR(vindicator)->segment_width;
+  segment_height = AGS_INDICATOR(vindicator)->segment_height;
 
-  padding = AGS_INDICATOR(indicator)->segment_padding;
+  padding = AGS_INDICATOR(vindicator)->segment_padding;
 
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
-  for(i = 0; i < AGS_INDICATOR(indicator)->segment_count; i++){
-    if(adjustment->value > 0.0 &&
-       (1.0 / adjustment->value * i < AGS_INDICATOR(indicator)->segment_count)){
+  for(i = 0; i < AGS_INDICATOR(vindicator)->segment_count; i++){
+    if(gtk_adjustment_get_value(adjustment) > 0.0 &&
+       (1.0 / gtk_adjustment_get_value(adjustment) * i < AGS_INDICATOR(vindicator)->segment_count)){
       /* active */
-      cairo_set_source_rgb(cr,
-			   indicator_style->light[0].red / white_gc,
-			   indicator_style->light[0].green / white_gc,
-			   indicator_style->light[0].blue / white_gc);
+      cairo_set_source_rgba(cr,
+			    fg_color->red,
+			    fg_color->green,
+			    fg_color->blue,
+			    fg_color->alpha);
     }else{
       /* normal */
-      cairo_set_source_rgb(cr,
-			   indicator_style->dark[0].red / white_gc,
-			   indicator_style->dark[0].green / white_gc,
-			   indicator_style->dark[0].blue / white_gc);
+      cairo_set_source_rgba(cr,
+			    bg_color->red,
+			    bg_color->green,
+			    bg_color->blue,
+			    bg_color->alpha);
     }
 
     cairo_rectangle(cr,
@@ -220,10 +256,12 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     cairo_fill(cr);
 
     /* outline */
-    cairo_set_source_rgb(cr,
-			 indicator_style->fg[0].red / white_gc,
-			 indicator_style->fg[0].green / white_gc,
-			 indicator_style->fg[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  border_color->red,
+			  border_color->green,
+			  border_color->blue,
+			  border_color->alpha);
+
     cairo_rectangle(cr,
 		    padding_left, padding_top + (height - i * (segment_height + padding) - segment_height),
 		    segment_width, segment_height);
@@ -234,7 +272,6 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   cairo_paint(cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
 }
 
 /**

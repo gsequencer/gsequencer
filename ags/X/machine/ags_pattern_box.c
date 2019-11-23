@@ -321,7 +321,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
       str = g_strdup_printf("%d-%d",
 			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radion_button_get_group(radio_button),
+			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(radio_button),
 								       str),
 			 FALSE, FALSE,
 			 0);

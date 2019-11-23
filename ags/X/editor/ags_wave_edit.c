@@ -20,6 +20,7 @@
 #include <ags/X/editor/ags_wave_edit.h>
 #include <ags/X/editor/ags_wave_edit_callbacks.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_wave_window.h>
@@ -778,18 +779,18 @@ ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 }
 
 void
-ags_wave_edit_size_get_preferred_width(GtkWidget *widget,
-				       gint *minimal_width,
-				       gint *natural_width)
+ags_wave_edit_get_preferred_width(GtkWidget *widget,
+				  gint *minimal_width,
+				  gint *natural_width)
 {
   minimal_width[0] =
     natural_width[0] = -1;
 }
 
 void
-ags_wave_edit_size_get_preferred_height(GtkWidget *widget,
-					gint *minimal_height,
-					gint *natural_height)
+ags_wave_edit_get_preferred_height(GtkWidget *widget,
+				   gint *minimal_height,
+				   gint *natural_height)
 {  
   AgsApplicationContext *application_context;
   

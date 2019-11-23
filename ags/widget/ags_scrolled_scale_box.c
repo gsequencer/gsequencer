@@ -34,10 +34,14 @@ void ags_scrolled_scale_box_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_scrolled_scale_box_finalize(GObject *gobject);
 
+void ags_scrolled_scale_get_preferred_width(GtkWidget *widget,
+					    gint *minimal_width,
+					    gint *natural_width);
+void ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
+					     gint *minimal_height,
+					     gint *natural_height);
 void ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 					  GtkAllocation *allocation);
-void ags_scrolled_scale_box_size_request(GtkWidget *widget,
-					 GtkRequisition *requisition);
 
 /**
  * SECTION:ags_scrolled_scale_box
@@ -183,7 +187,8 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_scale_box;
 
-  widget->size_request = ags_scrolled_scale_box_size_request;
+  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
+  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
   widget->size_allocate = ags_scrolled_scale_box_size_allocate;
 }
 
@@ -304,6 +309,24 @@ ags_scrolled_scale_box_finalize(GObject *gobject)
 }
 
 void
+ags_scrolled_scale_get_preferred_width(GtkWidget *widget,
+				       gint *minimal_width,
+				       gint *natural_width)
+{
+  minimal_width[0] =
+    natural_width[0] = AGS_SCALE_DEFAULT_SCALE_WIDTH;
+}
+
+void
+ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
+					gint *minimal_height,
+					gint *natural_height)
+{
+  minimal_height[0] =
+    natural_height[0] = -1;
+}
+
+void
 ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 				     GtkAllocation *allocation)
 {
@@ -339,19 +362,6 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
 			   &child_allocation);
-}
-
-void
-ags_scrolled_scale_box_size_request(GtkWidget *widget,
-				    GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-
-  requisition->width = AGS_SCALE_DEFAULT_SCALE_WIDTH;
-  requisition->height = -1;
-  
-  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
-			  &child_requisition);
 }
 
 /**

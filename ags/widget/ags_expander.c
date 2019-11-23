@@ -498,7 +498,7 @@ ags_expander_add(AgsExpander *expander,
   ags_expander_insert_child(expander,
 			    child);
 
-  if(GTK_WIDGET_VISIBLE(expander)){
+  if(gtk_widget_is_visible(expander)){
     gtk_widget_show_all(child->child);
   }
 }
