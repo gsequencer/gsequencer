@@ -20,10 +20,6 @@
 #include <ags/X/editor/ags_automation_edit.h>
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_automation_editor.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -383,11 +379,11 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 {
   GtkAdjustment *adjustment;
 
-  AgsConfig *config;
-
-  gchar *str;
+  AgsApplicationContext *application_context;
   
   gdouble gui_scale_factor;
+
+  application_context = ags_application_context_get_instance();
 
   g_object_set(automation_edit,
 	       "can-focus", FALSE,
@@ -402,21 +398,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->button_mask = 0;
   automation_edit->key_mask = 0;
   
-  config = ags_config_get_instance();
-  
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   automation_edit->note_offset = 0;
   automation_edit->note_offset_absolute = 0;
@@ -1187,8 +1170,6 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
   GdkWindow *window;
 
   AgsApplicationContext *application_context;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
 
@@ -1453,8 +1434,6 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   GdkRGBA *bg_color;
   GdkRGBA *border_color;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   gdouble x_offset;
   gdouble translated_ground;
@@ -1497,7 +1476,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  /* dimension and offst */
+  /* dimension and offset */
   width = (gdouble) allocation.width;
   height = (gdouble) allocation.height;
 
@@ -1669,8 +1648,6 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 
   GdkRGBA *fg_color_active;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   double position;
   double x, y;
@@ -1751,8 +1728,6 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 
   GdkRGBA *fg_color_focused;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble val, step;
@@ -1998,12 +1973,10 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   GdkRGBA *fg_color;
   GdkRGBA *fg_color_selected;
 
-  gchar *str;
-  
   gdouble gui_scale_factor;
   double zoom_factor;
   double viewport_x, viewport_y;
-  gdouble value, step;
+  gdouble val, step;
   gdouble upper, lower, step_count;
   gdouble c_range;
   guint x, y;
@@ -2011,6 +1984,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gdouble a_y, b_y;
   double width, height;
 
+  GValue value = {0};
+  
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit) ||
      !AGS_IS_ACCELERATION(acceleration_a) ||
      cr == NULL){
@@ -2084,9 +2059,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
     step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
-    value = a_y;
+    val = a_y;
     
-    y = (step_count - 1.0) * log(value / lower) / log(upper / lower);
+    y = (step_count - 1.0) * log(val / lower) / log(upper / lower);
   }else{
     y = allocation.height - ((double) a_y / c_range) * allocation.height - viewport_y;
   }

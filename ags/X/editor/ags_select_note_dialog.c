@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -205,7 +202,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 	       NULL);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) select_note_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_note_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  

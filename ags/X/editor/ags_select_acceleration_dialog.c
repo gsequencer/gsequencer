@@ -207,7 +207,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 				  0);
-  gtk_box_pack_start((GtkBox *) select_acceleration_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(select_acceleration_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  

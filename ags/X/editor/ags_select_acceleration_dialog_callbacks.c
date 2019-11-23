@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_select_acceleration_dialog_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -316,7 +313,7 @@ void
 ags_select_acceleration_dialog_remove_callback(GtkWidget *button,
 					       AgsSelectAccelerationDialog *select_acceleration_dialog)
 {
-  gtk_widget_destroy(button->parent);
+  gtk_widget_destroy(gtk_widget_get_parent(button));
 }
 
 void

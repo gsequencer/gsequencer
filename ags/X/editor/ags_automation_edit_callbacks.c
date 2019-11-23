@@ -21,10 +21,6 @@
 
 #include <ags/X/ags_automation_editor.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <math.h>
 
 #include <gdk/gdkkeysyms.h>

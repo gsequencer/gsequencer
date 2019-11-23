@@ -20,13 +20,8 @@
 #include <ags/X/editor/ags_sheet_toolbar.h>
 #include <ags/X/editor/ags_sheet_toolbar_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
-
-#include <gtk/gtkstock.h>
 
 #include <ags/i18n.h>
 

@@ -104,7 +104,7 @@ ags_sheet_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *even
   gboolean retval;
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -198,7 +198,7 @@ ags_sheet_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *ev
   machine = sheet_editor->selected_machine;
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||

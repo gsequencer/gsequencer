@@ -145,20 +145,20 @@ GType ags_wave_edit_get_type(void);
 void ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit);
 void ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit);
 
-void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit);
-void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr);
+void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr);
 
-void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit);
-void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr);
+void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr);
 
 void ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			       AgsBuffer *buffer,
 			       cairo_t *cr,
 			       gdouble bpm,
-			       double r, double g, double b, double a);
-void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
+			       gdouble opacity);
+void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr);
 
-void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr);
 
 AgsWaveEdit* ags_wave_edit_new(guint line);
 
