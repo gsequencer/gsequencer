@@ -43,8 +43,6 @@ static void ags_machine_finalize(GObject *gobject);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
 
-void ags_machine_show(GtkWidget *widget);
-
 void ags_machine_real_resize_audio_channels(AgsMachine *machine,
 					    guint new_size, guint old_size);
 void ags_machine_real_resize_pads(AgsMachine *machine,
@@ -121,7 +119,7 @@ ags_machine_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
+    ags_type_machine = g_type_register_static(GTK_TYPE_BIN,
 					      "AgsMachine", &ags_machine_info,
 					      0);
     
@@ -241,8 +239,6 @@ ags_machine_class_init(AgsMachineClass *machine)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) machine;
-
-  widget->show = ags_machine_show;
 
   /* AgsMachineClass */
   machine->samplerate_changed = NULL;
@@ -1319,25 +1315,6 @@ ags_machine_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
   g_signal_handlers_disconnect_by_data(machine->audio,
 				       machine);
-}
-
-void
-ags_machine_show(GtkWidget *widget)
-{
-  AgsMachine *machine;
-  AgsWindow *window;
-  GtkFrame *frame;
-
-  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
-
-  machine = (AgsMachine *) widget;
-
-  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) widget);
-
-  frame = (GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data;
-  gtk_widget_show_all((GtkWidget *) frame);
 }
 
 /**

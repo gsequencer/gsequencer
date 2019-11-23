@@ -315,8 +315,8 @@ ags_scrolled_piano_get_preferred_width(GtkWidget *widget,
   scrolled_piano = AGS_SCROLLED_PIANO(widget);
 
   if(scrolled_piano->piano == NULL){
-    minimal_width[0] =
-      natural_width[0] = -1;
+    minimal_width =
+      natural_width = NULL;
 
     return;
   }
@@ -325,8 +325,8 @@ ags_scrolled_piano_get_preferred_width(GtkWidget *widget,
     minimal_width[0] =
       natural_width[0] = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
   }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    minimal_width[0] =
-      natural_width[0] = -1;
+    minimal_width =
+      natural_width = NULL;
   }
 }
 
@@ -340,15 +340,15 @@ ags_scrolled_piano_get_preferred_height(GtkWidget *widget,
   scrolled_piano = AGS_SCROLLED_PIANO(widget);
 
   if(scrolled_piano->piano == NULL){
-    minimal_height[0] =
-      natural_height[0] = -1;
+    minimal_height =
+      natural_height = NULL;
 
     return;
   }
   
   if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    minimal_height[0] =
-      natural_height[0] = -1;
+    minimal_height =
+      natural_height = NULL;
   }else if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
     minimal_height[0] =
       natural_height[0] = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);

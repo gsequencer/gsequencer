@@ -34,7 +34,6 @@ static void ags_panel_finalize(GObject *gobject);
 void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_disconnect(AgsConnectable *connectable);
 
-void ags_panel_show(GtkWidget *widget);
 void ags_panel_map_recall(AgsMachine *machine);
 
 void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
@@ -118,8 +117,6 @@ ags_panel_class_init(AgsPanelClass *panel)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) panel;
-
-  widget->show = ags_panel_show;
 
   /* AgsMachine */
   machine = (AgsMachineClass *) panel;
@@ -222,12 +219,6 @@ ags_panel_disconnect(AgsConnectable *connectable)
   ags_panel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
-}
-
-void
-ags_panel_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_panel_parent_class)->show(widget);
 }
 
 void

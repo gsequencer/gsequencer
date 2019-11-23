@@ -26,17 +26,6 @@
 #include <gdk/gdkkeysyms.h>
 
 gboolean
-ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNotationEdit *notation_edit)
-{
-  ags_notation_edit_reset_vscrollbar(notation_edit);
-  ags_notation_edit_reset_hscrollbar(notation_edit);
-  
-  gtk_widget_queue_draw(notation_edit);
-  
-  return(TRUE);
-}
-
-gboolean
 ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit)
 {
   ags_notation_edit_reset_vscrollbar(notation_edit);

@@ -36,7 +36,6 @@
 
 G_BEGIN_DECLS
 
-gboolean ags_wave_editor_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEditor *wave_editor);
 gboolean ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor);
 
 void ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor);

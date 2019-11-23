@@ -28,6 +28,7 @@
 
 #include <ags/X/file/ags_simple_file.h>
 
+#include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_input_pad.h>
 #include <ags/X/machine/ags_panel_input_line.h>
 #include <ags/X/machine/ags_mixer_input_pad.h>
@@ -2557,7 +2558,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   AgsXorgApplicationContext *xorg_application_context;
   GtkWidget *widget;
   AgsWindow *window;
-
+  
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
 

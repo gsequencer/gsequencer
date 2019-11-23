@@ -94,7 +94,7 @@ typedef enum{
 
 struct _AgsMachine
 {
-  GtkHandleBox handle_box;
+  GtkBin bin;
 
   guint flags;
   guint file_input_flags;
@@ -151,7 +151,7 @@ struct _AgsMachine
 
 struct _AgsMachineClass
 {
-  GtkHandleBoxClass handle_box;
+  GtkBinClass bin;
 
   void (*samplerate_changed)(AgsMachine *machine,
 			     guint samplerate, guint old_samplerate);

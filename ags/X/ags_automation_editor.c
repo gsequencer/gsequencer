@@ -625,9 +625,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
 
   /* audio */
-  g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_audio_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_audio_edit_configure_event), (gpointer) automation_editor);
 
@@ -638,9 +635,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_automation_editor_audio_hscrollbar_value_changed), (gpointer) automation_editor);
 
   /* output */
-  g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_output_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_output_edit_configure_event), (gpointer) automation_editor);
 
@@ -651,9 +645,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_automation_editor_output_hscrollbar_value_changed), (gpointer) automation_editor);
 
   /* input */
-  g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_input_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_input_edit_configure_event), (gpointer) automation_editor);
 
@@ -687,9 +678,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* audio */
   g_object_disconnect((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_audio_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_audio_edit_configure_event),
 		      automation_editor,
@@ -697,9 +685,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* output */
   g_object_disconnect((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_output_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_output_edit_configure_event),
 		      automation_editor,
@@ -707,9 +692,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* input */
   g_object_disconnect((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_input_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_input_edit_configure_event),
 		      automation_editor,

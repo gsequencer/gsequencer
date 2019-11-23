@@ -20,14 +20,6 @@
 #include <ags/X/ags_wave_editor_callbacks.h>
 
 gboolean
-ags_wave_editor_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEditor *wave_editor)
-{
-  ags_wave_editor_reset_scrollbar(wave_editor);
-
-  return(FALSE);
-}
-
-gboolean
 ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor)
 {
   ags_wave_editor_reset_scrollbar(wave_editor);

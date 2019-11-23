@@ -431,9 +431,6 @@ ags_wave_editor_connect(AgsConnectable *connectable)
   wave_editor->flags |= AGS_WAVE_EDITOR_CONNECTED;
 
   /* edit */
-  g_signal_connect_after((GObject *) wave_editor->scrolled_wave_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_wave_editor_edit_expose_event), (gpointer) wave_editor);
-
   g_signal_connect_after((GObject *) wave_editor->scrolled_wave_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_wave_editor_edit_configure_event), (gpointer) wave_editor);
 
@@ -467,9 +464,6 @@ ags_wave_editor_disconnect(AgsConnectable *connectable)
 
   /* edit */
   g_object_disconnect((GObject *) wave_editor->scrolled_wave_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_wave_editor_edit_expose_event),
-		      wave_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_wave_editor_edit_configure_event),
 		      wave_editor,

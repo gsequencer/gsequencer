@@ -20,14 +20,6 @@
 #include <ags/X/ags_automation_editor_callbacks.h>
 
 gboolean
-ags_automation_editor_audio_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
-{
-  ags_automation_editor_reset_audio_scrollbar(automation_editor);
-  
-  return(TRUE);
-}
-
-gboolean
 ags_automation_editor_audio_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
 {
   ags_automation_editor_reset_audio_scrollbar(automation_editor);
@@ -36,25 +28,9 @@ ags_automation_editor_audio_edit_configure_event(GtkWidget *widget, GdkEventConf
 }
 
 gboolean
-ags_automation_editor_output_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
-{
-  ags_automation_editor_reset_output_scrollbar(automation_editor);
-
-  return(TRUE);
-}
-
-gboolean
 ags_automation_editor_output_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
 {  
   ags_automation_editor_reset_output_scrollbar(automation_editor);
-
-  return(FALSE);
-}
-
-gboolean
-ags_automation_editor_input_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
-{
-  ags_automation_editor_reset_input_scrollbar(automation_editor);
 
   return(FALSE);
 }
