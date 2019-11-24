@@ -46,6 +46,7 @@ void ags_wave_edit_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+void ags_wave_edit_finalize(GObject *gobject);
 
 void ags_wave_edit_connect(AgsConnectable *connectable);
 void ags_wave_edit_disconnect(AgsConnectable *connectable);
@@ -194,6 +195,8 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
   gobject->set_property = ags_wave_edit_set_property;
   gobject->get_property = ags_wave_edit_get_property;
 
+  gobject->finalize = ags_wave_edit_finalize;
+
   /* properties */
   /**
    * AgsWaveEdit:line:
@@ -216,9 +219,10 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) wave_edit;
 
-  widget->get_preferred_width = ags_wave_edit_get_preferred_width;
-  widget->get_preferred_height = ags_wave_edit_get_preferred_height;
-  widget->size_allocate = ags_wave_edit_size_allocate;
+//  widget->get_preferred_width = ags_wave_edit_get_preferred_width;
+//  widget->get_preferred_height = ags_wave_edit_get_preferred_height;
+//  widget->size_allocate = ags_wave_edit_size_allocate;
+  widget->draw = ags_wave_edit_draw;
   widget->show = ags_wave_edit_show;
   widget->show_all = ags_wave_edit_show_all;
 }
@@ -432,6 +436,21 @@ ags_wave_edit_get_property(GObject *gobject,
 }
 
 void
+ags_wave_edit_finalize(GObject *gobject)
+{
+  AgsWaveEdit *wave_edit;
+  
+  wave_edit = AGS_WAVE_EDIT(gobject);
+  
+  /* remove auto scroll */
+  g_hash_table_remove(ags_wave_edit_auto_scroll,
+		      wave_edit);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_wave_edit_parent_class)->finalize(gobject);
+}
+
+void
 ags_wave_edit_connect(AgsConnectable *connectable)
 {
   AgsWaveEdit *wave_edit;
@@ -445,9 +464,6 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   wave_edit->flags |= AGS_WAVE_EDIT_CONNECTED;
 
   /* drawing area */
-  g_signal_connect_after((GObject *) wave_edit->drawing_area, "expose_event",
-			 G_CALLBACK(ags_wave_edit_drawing_area_expose_event), (gpointer) wave_edit);
-
   g_signal_connect_after((GObject *) wave_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_wave_edit_drawing_area_configure_event), (gpointer) wave_edit);
 
@@ -489,9 +505,6 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
 
   /* drawing area */
   g_object_disconnect((GObject *) wave_edit->drawing_area,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_wave_edit_drawing_area_expose_event),
-		      wave_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_wave_edit_drawing_area_configure_event),
 		      wave_edit,
@@ -783,8 +796,8 @@ ags_wave_edit_get_preferred_width(GtkWidget *widget,
 				  gint *minimal_width,
 				  gint *natural_width)
 {
-  minimal_width[0] =
-    natural_width[0] = -1;
+  minimal_width =
+    natural_width = NULL;
 }
 
 void
@@ -792,17 +805,8 @@ ags_wave_edit_get_preferred_height(GtkWidget *widget,
 				   gint *minimal_height,
 				   gint *natural_height)
 {  
-  AgsApplicationContext *application_context;
-  
-  gdouble gui_scale_factor;
-
-  application_context = ags_application_context_get_instance();
-  
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-  
-  minimal_height[0] =
-    natural_height[0] = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);  
+  minimal_height =
+    natural_height = NULL;
 }
 
 void
@@ -847,11 +851,18 @@ ags_wave_edit_show(GtkWidget *widget)
 {
   AgsWaveEdit *wave_edit;
 
+  GtkAllocation allocation;
+  
   wave_edit = AGS_WAVE_EDIT(widget);
 
   /* call parent */
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show(widget);
 
+  gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
+			    &allocation);
+
+  g_message("wave edit show %d|%d %d,%d", allocation.x, allocation.y, allocation.width, allocation.height);
+  
   gtk_widget_show((GtkWidget *) wave_edit->drawing_area);
   
   if((AGS_WAVE_EDIT_SHOW_RULER & (wave_edit->flags)) != 0){
@@ -876,6 +887,8 @@ ags_wave_edit_show_all(GtkWidget *widget)
 
   /* call parent */
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show_all(widget);
+
+  g_message("wave edit show all");
 
   gtk_widget_show_all((GtkWidget *) wave_edit->drawing_area);
 
@@ -1136,7 +1149,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1144,7 +1157,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1152,8 +1165,11 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
+
+  /* push group */
+  cairo_push_group(cr);
 
   /* background */
   cairo_set_source_rgba(cr,
@@ -1320,7 +1336,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_pointer(&value);
+  fg_color_active = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   /* get offset and dimensions */
@@ -1402,7 +1418,7 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_FOCUSED,
 				 &value);
 
-  fg_color_focused = g_value_get_pointer(&value);
+  fg_color_focused = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1479,7 +1495,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_PRELIGHT,
 				 &value);
 
-  fg_color_prelight = g_value_get_pointer(&value);
+  fg_color_prelight = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1619,7 +1635,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1627,7 +1643,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 				 GTK_STATE_FLAG_SELECTED,
 				 &value);
 
-  fg_color_selected = g_value_get_pointer(&value);
+  fg_color_selected = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1850,8 +1866,6 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 
   opacity = gtk_spin_button_get_value(wave_editor->wave_toolbar->opacity);
   
-  cairo_push_group(cr);
-  
   while(list_wave != NULL){
     AgsWave *wave;
 
@@ -1911,17 +1925,15 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 
   g_list_free_full(start_list_wave,
 		   g_object_unref);
-
-  /* complete */
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
-      
-  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 void
 ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
 {
+  g_message("wave edit draw");
+  
+  GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->draw(wave_edit, cr);
+
   /* segment */
   ags_wave_edit_draw_segment(wave_edit, cr);
 

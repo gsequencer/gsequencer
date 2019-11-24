@@ -171,13 +171,14 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
   GdkRGBA *bg_color;
   GdkRGBA *border_color;
 
-  gdouble value;
   guint width, height;
   guint padding_top, padding_left;
   guint segment_width, segment_height;
   guint padding;
   guint i;
 
+  GValue value = {0,};
+  
   widget = GTK_WIDGET(vindicator);
   
   adjustment = AGS_INDICATOR(vindicator)->adjustment;
@@ -197,7 +198,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(vindicator_style_context,
@@ -205,7 +206,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(vindicator_style_context,
@@ -213,7 +214,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   //  g_message("draw %f", adjustment->value);

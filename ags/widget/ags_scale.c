@@ -1242,9 +1242,7 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
   guint width, height;
   guint x_start, y_start;
 
-  if(!AGS_IS_SCALE(scale)){
-    return;
-  }
+  g_message("scale draw");
 
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
@@ -1264,7 +1262,9 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
 
   /* background */
   cairo_set_source_rgb(cr,
-		       0.0, 0.0, 0.0);
+		       0.0,
+		       0.0,
+		       0.0);
   cairo_rectangle(cr,
 		  (gdouble) x_start, (gdouble) y_start,
 		  (gdouble) width, (gdouble) height);
@@ -1300,7 +1300,9 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
 			   &logical_rect);
 
   cairo_set_source_rgb(cr,
-		       1.0, 1.0, 1.0);
+		       1.0,
+		       1.0,
+		       1.0);
 
   if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
     cairo_move_to(cr,

@@ -924,6 +924,9 @@ ags_piano_size_allocate(GtkWidget *widget,
     allocation->width = piano->key_count * piano->key_height;
     allocation->height = piano->key_width;
   }
+
+  gtk_widget_set_allocation(widget,
+			    allocation);
 }
 
 gboolean
@@ -1190,7 +1193,6 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
   gboolean current_is_active;
   guint i, j;
   
-  static const gdouble white_gc = 65535.0;
   static const guint bitmap = 0x52a52a;
 
   if(!AGS_IS_PIANO(piano)){
@@ -1298,6 +1300,12 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 		    (double) (control_x0 + small_control_width), (double) (control_y0 + small_control_height / 2));
       cairo_line_to(cr,
 		    (double) (control_x0 + big_control_width), (double) (control_y0 + small_control_height / 2));
+      cairo_stroke(cr);
+
+      cairo_move_to(cr,
+		    (double) (control_x0 + big_control_width), (double) control_y0);
+      cairo_line_to(cr,
+		    (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
       cairo_stroke(cr);
     }else{
       /* draw no semi tone key */

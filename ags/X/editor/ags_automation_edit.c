@@ -340,9 +340,9 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit;
 
-  widget->get_preferred_width = ags_automation_edit_get_preferred_width;
-  widget->get_preferred_height = ags_automation_edit_get_preferred_height;
-  widget->size_allocate = ags_automation_edit_size_allocate;
+//  widget->get_preferred_width = ags_automation_edit_get_preferred_width;
+//  widget->get_preferred_height = ags_automation_edit_get_preferred_height;
+//  widget->size_allocate = ags_automation_edit_size_allocate;
   widget->draw = ags_automation_edit_draw;
   widget->show = ags_automation_edit_show;
   widget->show_all = ags_automation_edit_show_all;
@@ -701,9 +701,6 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
 
   /* drawing area */
-  g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event",
-			 G_CALLBACK(ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
-
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
@@ -746,9 +743,6 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
   
   /* drawing area */
   g_object_disconnect((GObject *) automation_edit->drawing_area,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_edit_drawing_area_expose_event),
-		      automation_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_configure_event),
 		      automation_edit,
@@ -1138,8 +1132,8 @@ ags_automation_edit_get_preferred_width(GtkWidget *widget,
 					gint *minimal_width,
 					gint *natural_width)
 {
-  minimal_width[0] =
-    natural_width[0] = -1;
+  minimal_width =
+    natural_width = NULL;
 }
 
 void
@@ -1495,7 +1489,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -1503,7 +1497,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -1511,8 +1505,11 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
+
+  /* push group */
+  cairo_push_group(cr);
   
   /* background */
   cairo_set_source_rgba(cr,
@@ -1683,7 +1680,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_pointer(&value);
+  fg_color_active = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   /* get offset and dimensions */
@@ -1767,7 +1764,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_FOCUSED,
 				 &value);
 
-  fg_color_focused = g_value_get_pointer(&value);
+  fg_color_focused = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -1888,7 +1885,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 				 GTK_STATE_FLAG_PRELIGHT,
 				 &value);
 
-  fg_color_prelight = g_value_get_pointer(&value);
+  fg_color_prelight = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -2017,7 +2014,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -2025,7 +2022,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 				 GTK_STATE_FLAG_SELECTED,
 				 &value);
 
-  fg_color_selected = g_value_get_pointer(&value);
+  fg_color_selected = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -2318,17 +2315,15 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   g_list_free_full(start_list_automation,
 		   g_object_unref);
-
-  /* complete */
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
-      
-  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 void
 ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr)
 {
+  g_message("automation edit draw");
+  
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->draw(automation_edit, cr);
+  
   /* segment */
   ags_automation_edit_draw_segment(automation_edit, cr);
 

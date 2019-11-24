@@ -199,7 +199,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander, FALSE, FALSE, 2);
   gtk_container_add((GtkContainer *) navigation->expander,
 		    (GtkWidget *) gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE));
-
+  
   label = (GtkLabel *) gtk_label_new(i18n("bpm"));
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 

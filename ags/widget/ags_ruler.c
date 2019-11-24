@@ -39,8 +39,9 @@ void ags_ruler_get_property(GObject *gobject,
 			    GParamSpec *param_spec);
 void ags_ruler_show(GtkWidget *widget);
 
-void ags_ruler_map(GtkWidget *widget);
 void ags_ruler_realize(GtkWidget *widget);
+void ags_ruler_size_allocate(GtkWidget *widget,
+			     GtkAllocation *allocation);
 void ags_ruler_get_preferred_width(GtkWidget *widget,
 				   gint *minimal_width,
 				   gint *natural_width);
@@ -118,10 +119,10 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) ruler;
 
-  //  widget->map = ags_ruler_map;
   widget->realize = ags_ruler_realize;
   widget->get_preferred_width = ags_ruler_get_preferred_width;
   widget->get_preferred_height = ags_ruler_get_preferred_height;
+  widget->size_allocate = ags_ruler_size_allocate;
   widget->draw = ags_ruler_draw;
   widget->show = ags_ruler_show;
 
@@ -307,16 +308,6 @@ ags_ruler_get_property(GObject *gobject,
 }
 
 void
-ags_ruler_map(GtkWidget *widget)
-{
-  if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
-    GTK_WIDGET_CLASS (ags_ruler_parent_class)->map(widget);
-    
-    gdk_window_show(gtk_widget_get_window(widget));
-  }
-}
-
-void
 ags_ruler_realize(GtkWidget *widget)
 {
   AgsRuler *ruler;
@@ -329,11 +320,13 @@ ags_ruler_realize(GtkWidget *widget)
   gint attributes_mask;
   gint border_left, border_top;
 
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (AGS_IS_RULER (widget));
+  g_return_if_fail(widget != NULL);
+  g_return_if_fail(AGS_IS_RULER(widget));
 
   ruler = AGS_RULER(widget);
 
+//  GTK_WIDGET_CLASS(ags_ruler_parent_class)->realize(widget);
+  
   gtk_widget_set_realized(widget, TRUE);
 
   gtk_widget_get_allocation(widget,
@@ -349,8 +342,6 @@ ags_ruler_realize(GtkWidget *widget)
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
-  attributes.window_type = GDK_WINDOW_CHILD;
-
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.visual = gtk_widget_get_visual(widget);
   attributes.event_mask = gtk_widget_get_events(widget);
@@ -364,12 +355,12 @@ ags_ruler_realize(GtkWidget *widget)
                             GDK_ENTER_NOTIFY_MASK |
                             GDK_LEAVE_NOTIFY_MASK);
 
-  window = gdk_window_new(gtk_widget_get_parent_window (widget),
+  window = gdk_window_new(gtk_widget_get_parent_window(widget),
 			  &attributes, attributes_mask);
   gtk_widget_set_window(widget, window);
   gdk_window_set_user_data(window, ruler);
 
-  gtk_widget_queue_resize (widget);
+  gtk_widget_queue_resize(widget);
 }
 
 void
@@ -383,8 +374,8 @@ ags_ruler_get_preferred_width(GtkWidget *widget,
 			      gint *minimal_width,
 			      gint *natural_width)
 {
-  minimal_width[0] =
-    natural_width[0] = -1;
+  minimal_width =
+    natural_width = NULL;
 }
 
 void
@@ -394,6 +385,16 @@ ags_ruler_get_preferred_height(GtkWidget *widget,
 {
   minimal_height[0] =
     natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
+}
+
+void
+ags_ruler_size_allocate(GtkWidget *widget,
+			GtkAllocation *allocation)
+{
+  allocation->height = AGS_RULER_DEFAULT_HEIGHT;
+
+  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_allocate(widget,
+							  allocation);
 }
 
 /**
@@ -420,11 +421,9 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   guint z;
   guint i, i_stop;
   
-  if(!AGS_IS_RULER(ruler)){
-    return;
-  }
-
   widget = GTK_WIDGET(ruler);
+
+//  GTK_WIDGET_CLASS(ags_ruler_parent_class)->draw(widget, cr);
 
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
@@ -442,7 +441,11 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
   step = ruler->step * 0.25 * ruler->factor * ruler->precision;
 
   /* draw bg */
-  cairo_set_source_rgba(cr, 0.0, 0.0, 0.125, 1.0);
+  cairo_set_source_rgba(cr,
+			0.0,
+			0.0,
+			0.125,
+			1.0);
   cairo_rectangle(cr,
 		  0, 0,
 		  allocation.width, allocation.height);

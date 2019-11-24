@@ -186,9 +186,9 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_automation_edit_box;
 
-  widget->size_allocate = ags_scrolled_automation_edit_box_size_allocate;
-  widget->get_preferred_width = ags_scrolled_automation_edit_box_get_preferred_width;
-  widget->get_preferred_height = ags_scrolled_automation_edit_box_get_preferred_height;
+//  widget->size_allocate = ags_scrolled_automation_edit_box_size_allocate;
+//  widget->get_preferred_width = ags_scrolled_automation_edit_box_get_preferred_width;
+//  widget->get_preferred_height = ags_scrolled_automation_edit_box_get_preferred_height;
 }
 
 void
@@ -320,6 +320,9 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 
   application_context = ags_application_context_get_instance();
   
+  GTK_WIDGET_CLASS(ags_scrolled_automation_edit_box_parent_class)->size_allocate(widget,
+										 allocation);
+
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
@@ -357,17 +360,8 @@ ags_scrolled_automation_edit_box_get_preferred_width(GtkWidget *widget,
 						     gint *minimal_width,
 						     gint *natural_width)
 {
-  AgsApplicationContext *application_context;
-  
-  gdouble gui_scale_factor;
-
-  application_context = ags_application_context_get_instance();
-  
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  minimal_width[0] =
-    natural_width[0] = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH);
+  minimal_width =
+    natural_width = NULL;
 }
 
 void
@@ -375,17 +369,8 @@ ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
 						      gint *minimal_height,
 						      gint *natural_height)
 {
-  AgsApplicationContext *application_context;
-  
-  gdouble gui_scale_factor;
-
-  application_context = ags_application_context_get_instance();
-  
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
-
-  minimal_height[0] =
-    natural_height[0] = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
+  minimal_height =
+    natural_height = NULL;
 }
 
 /**

@@ -187,9 +187,9 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_scale_box;
 
-  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
-  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
-  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
+//  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
+//  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
+//  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
 }
 
 void
@@ -322,8 +322,8 @@ ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
 					gint *minimal_height,
 					gint *natural_height)
 {
-  minimal_height[0] =
-    natural_height[0] = -1;
+  minimal_height =
+    natural_height = NULL;
 }
 
 void

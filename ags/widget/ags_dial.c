@@ -855,12 +855,12 @@ ags_dial_realize(GtkWidget *widget)
   gint buttons_width;
   gint border_left, border_top;
 
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (AGS_IS_DIAL (widget));
+  g_return_if_fail(widget != NULL);
+  g_return_if_fail(AGS_IS_DIAL (widget));
 
   dial = AGS_DIAL(widget);
 
-  gtk_widget_set_realized (widget, TRUE);
+  gtk_widget_set_realized(widget, TRUE);
 
   /* calculate some display dependend fields */
   buttons_width = 0;
@@ -913,11 +913,9 @@ ags_dial_realize(GtkWidget *widget)
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
-  attributes.window_type = GDK_WINDOW_CHILD;
-
   attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.visual = gtk_widget_get_visual(widget);
+  attributes.event_mask = gtk_widget_get_events(widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
                             GDK_BUTTON_PRESS_MASK |
                             GDK_BUTTON_RELEASE_MASK |
@@ -1593,7 +1591,7 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(dial_style_context,
@@ -1601,7 +1599,7 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(dial_style_context,
@@ -1609,7 +1607,7 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(dial_style_context,
@@ -1617,9 +1615,10 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  font_color = g_value_get_pointer(&value);
+  font_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
+  /* dimension */
   button_width = dial->button_width;
   button_height = dial->button_height;
 
@@ -1635,6 +1634,10 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
   padding_top = (allocation.height - height) / 2;
   padding_left = (allocation.width - width) / 2;
   
+  /*  */
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+
   /* clear bg */
   cairo_set_source_rgba(cr,
 			bg_color->red,
@@ -1643,8 +1646,8 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 			bg_color->alpha);
 
   cairo_rectangle(cr,
-		  0, 0,
-		  allocation.width, allocation.height);
+		  0.0, 0.0,
+		  (gdouble) allocation.width, (gdouble) allocation.height);
   cairo_fill(cr);
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
@@ -1671,8 +1674,8 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
     cairo_set_line_width(cr, 2.0);
 
     cairo_rectangle(cr,
-		    padding_left + 1.0, padding_top + (2.0 * radius) - button_height + outline_strength,
-		    button_width, button_height);
+		    (gdouble) padding_left + 1.0, (gdouble) padding_top + (2.0 * radius) - button_height + outline_strength,
+		    (gdouble) button_width, (gdouble) button_height);
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
     cairo_stroke(cr);
 
@@ -1881,10 +1884,10 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 
   /* scale */
   cairo_set_source_rgba(cr,
-			font_color->red,
-			font_color->green,
-			font_color->blue,
-			font_color->alpha);
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
 
   cairo_set_line_width(cr, 3.0);
 
@@ -1920,10 +1923,10 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
     //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
     cairo_set_line_width(cr, 4.0);
     cairo_set_source_rgba(cr,
-			  font_color->red,
-			  font_color->green,
-			  font_color->blue,
-			  font_color->alpha);
+			  bg_color->red,
+			  bg_color->green,
+			  bg_color->blue,
+			  bg_color->alpha);
 
     cairo_arc(cr,
 	      padding_left + 1.0 + button_width + margin_left + radius,
@@ -1935,6 +1938,11 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
   }else{
     g_warning("ags_dial.c - invalid range");
   }
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**

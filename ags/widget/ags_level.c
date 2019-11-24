@@ -1175,10 +1175,8 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
   guint width, height;
   guint x_start, y_start;
 
-  if(!AGS_IS_LEVEL(level)){
-    return;
-  }
-
+  g_message("level draw");
+  
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);

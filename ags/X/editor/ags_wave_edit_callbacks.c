@@ -25,17 +25,6 @@
 #include <gdk/gdkkeysyms.h>
 
 gboolean
-ags_wave_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEdit *wave_edit)
-{
-  ags_wave_edit_reset_vscrollbar(wave_edit);
-  ags_wave_edit_reset_hscrollbar(wave_edit);
-  
-  gtk_widget_queue_draw(wave_edit);
-  
-  return(TRUE);
-}
-
-gboolean
 ags_wave_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEdit *wave_edit)
 {
   ags_wave_edit_reset_vscrollbar(wave_edit);

@@ -187,9 +187,9 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_level_box;
 
-  widget->get_preferred_width = ags_scrolled_level_get_preferred_width;
-  widget->get_preferred_height = ags_scrolled_level_get_preferred_height;
-  widget->size_allocate = ags_scrolled_level_box_size_allocate;
+//  widget->get_preferred_width = ags_scrolled_level_get_preferred_width;
+//  widget->get_preferred_height = ags_scrolled_level_get_preferred_height;
+//  widget->size_allocate = ags_scrolled_level_box_size_allocate;
 }
 
 void
@@ -323,8 +323,8 @@ ags_scrolled_level_get_preferred_height(GtkWidget *widget,
 					gint *minimal_height,
 					gint *natural_height)
 {
-  minimal_height[0] =
-    natural_height[0] = -1;
+  minimal_height =
+    natural_height = NULL;
 }
 
 void

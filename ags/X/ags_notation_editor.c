@@ -20,10 +20,6 @@
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_notation_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -324,7 +320,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
+  
   /* notation edit */
   notation_editor->notation_edit = ags_notation_edit_new();
   gtk_table_attach(table,
@@ -431,6 +427,7 @@ ags_notation_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) notation_editor->scrolled_piano->piano, "key-released",
 		   G_CALLBACK(ags_notation_editor_piano_key_released_callback), (gpointer) notation_editor);
+
   
   /* toolbar */
   ags_connectable_connect(AGS_CONNECTABLE(notation_editor->notation_toolbar));

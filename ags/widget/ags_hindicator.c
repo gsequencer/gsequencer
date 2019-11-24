@@ -200,7 +200,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(hindicator_style_context,
@@ -208,7 +208,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(hindicator_style_context,
@@ -216,7 +216,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   width = (AGS_INDICATOR(hindicator)->segment_count * AGS_INDICATOR(hindicator)->segment_width) + ((AGS_INDICATOR(hindicator)->segment_count - 1) * AGS_INDICATOR(hindicator)->segment_padding);

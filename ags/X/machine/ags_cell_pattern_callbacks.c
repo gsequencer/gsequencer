@@ -32,10 +32,18 @@ void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note
 void
 ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern)
 {
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+
   ags_cell_pattern_draw_gutter(cell_pattern, cr);
   ags_cell_pattern_draw_matrix(cell_pattern, cr);
 
   ags_cell_pattern_draw_cursor(cell_pattern, cr);
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 gboolean

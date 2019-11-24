@@ -26,17 +26,6 @@
 #include <gdk/gdkkeysyms.h>
 
 gboolean
-ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEdit *automation_edit)
-{
-  ags_automation_edit_reset_vscrollbar(automation_edit);
-  ags_automation_edit_reset_hscrollbar(automation_edit);
-  
-  gtk_widget_queue_draw(automation_edit);
-  
-  return(TRUE);
-}
-
-gboolean
 ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit)
 {
   ags_automation_edit_reset_vscrollbar(automation_edit);

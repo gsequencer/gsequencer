@@ -173,6 +173,7 @@ ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
 
   widget->show = ags_notation_edit_show;
   widget->show_all = ags_notation_edit_show_all;
+  widget->draw = ags_notation_edit_draw;
 }
 
 void
@@ -261,10 +262,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
-	       "no-show-all", TRUE,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) notation_edit->ruler,
-			      -1,
+			      780,
 			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->ruler,
@@ -795,7 +795,7 @@ ags_notation_edit_show(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show(widget);
 
-  if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){
+  if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){    
     gtk_widget_show((GtkWidget *) notation_edit->ruler);
   }
 
@@ -1082,7 +1082,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(notation_edit_style_context,
@@ -1090,7 +1090,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(notation_edit_style_context,
@@ -1098,7 +1098,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   /* get channel count */
@@ -1302,7 +1302,7 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_pointer(&value);
+  fg_color_active = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   /* get channel count */
@@ -1400,7 +1400,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_FOCUSED,
 				 &value);
 
-  fg_color_focused = g_value_get_pointer(&value);
+  fg_color_focused = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   /* zoom */
@@ -1492,7 +1492,7 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_PRELIGHT,
 				 &value);
 
-  fg_color_prelight = g_value_get_pointer(&value);
+  fg_color_prelight = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
@@ -1611,7 +1611,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(notation_edit_style_context,
@@ -1619,7 +1619,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 GTK_STATE_FLAG_SELECTED,
 				 &value);
 
-  fg_color_selected = g_value_get_pointer(&value);
+  fg_color_selected = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   /* get channel count */
@@ -1894,6 +1894,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 void
 ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr)
 {
+  GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->draw(notation_edit, cr);
+
   /* segment */
   ags_notation_edit_draw_segment(notation_edit, cr);
 

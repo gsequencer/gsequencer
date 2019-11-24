@@ -675,7 +675,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(cell_pattern_style_context,
@@ -683,7 +683,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
@@ -703,7 +703,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
 
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * cell_pattern->cell_height);
+		  (gdouble) cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, (gdouble) gutter * cell_pattern->cell_height);
 
   cairo_fill(cr);
 
@@ -738,12 +738,14 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
 			    fg_color->green,
 			    fg_color->blue,
 			    fg_color->alpha);
+      cairo_set_line_width(cr,
+			   1.0);
   
       cairo_rectangle(cr,
 		      (gdouble) j * (gdouble) cell_pattern->cell_width, (gdouble) i * (gdouble) cell_pattern->cell_height,
 		      (gdouble) cell_pattern->cell_width, (gdouble) cell_pattern->cell_height);
 
-      cairo_fill(cr);
+      cairo_stroke(cr);
 
       ags_cell_pattern_redraw_gutter_point(cell_pattern, cr,
 					   channel,
@@ -916,7 +918,7 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo_t *c
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   cairo_set_source_rgba(cr,
@@ -949,7 +951,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   cairo_set_source_rgba(cr,

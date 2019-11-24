@@ -709,7 +709,7 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 			 AGS_WAVE_EDIT_DEFAULT_PADDING);
 	
       gtk_widget_show(GTK_WIDGET(level));
-	  
+      
       /* wave edit */
       wave_edit = ags_wave_edit_new(i);
       gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_wave_edit_box->wave_edit_box),

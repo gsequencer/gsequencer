@@ -367,8 +367,7 @@ ags_scrolled_piano_size_allocate(GtkWidget *widget,
 
   gdouble upper;
 
-  scrolled_piano = AGS_SCROLLED_PIANO(widget);
-  
+  scrolled_piano = AGS_SCROLLED_PIANO(widget);  
 
   if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     allocation->width = scrolled_piano->piano->key_width + (scrolled_piano->margin_left + scrolled_piano->margin_right);
@@ -376,6 +375,9 @@ ags_scrolled_piano_size_allocate(GtkWidget *widget,
     allocation->height = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
   }
 
+  gtk_widget_set_allocation(widget,
+			    allocation);
+  
   /* viewport allocation */
   ags_scrolled_piano_allocate_viewport(widget);
 }

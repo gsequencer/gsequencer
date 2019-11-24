@@ -52,8 +52,6 @@ enum{
 
 static gpointer ags_led_array_parent_class = NULL;
 
-GtkStyle *led_array_style = NULL;
-
 GType
 ags_led_array_get_type(void)
 {
@@ -74,7 +72,7 @@ ags_led_array_get_type(void)
       (GInstanceInitFunc) ags_led_array_init,
     };
 
-    ags_type_led_array = g_type_register_static(GTK_TYPE_ALIGNMENT,
+    ags_type_led_array = g_type_register_static(GTK_TYPE_BIN,
 						"AgsLedArray",
 						&ags_led_array_info,
 						0);
@@ -267,13 +265,6 @@ ags_led_array_realize(GtkWidget *widget)
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_led_array_parent_class)->realize(widget);
-
-  if(led_array_style == NULL){
-    led_array_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) led_array));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) led_array,
-  		       led_array_style);
 }
 
 void
@@ -282,7 +273,7 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
 {
   guint i;
   
-  if(led_array == NULL ||
+  if(!AGS_IS_LED_ARRAY(led_array) ||
      led_array->led_count == led_count){
     return;
   }

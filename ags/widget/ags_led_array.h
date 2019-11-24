@@ -46,7 +46,7 @@ typedef enum{
 
 struct _AgsLedArray
 {
-  GtkAlignment alignment;
+  GtkBin bin;
 
   guint flags;
 
@@ -61,7 +61,7 @@ struct _AgsLedArray
 
 struct _AgsLedArrayClass
 {
-  GtkAlignmentClass alignment;
+  GtkBinClass bin;
 };
 
 GType ags_led_array_get_type(void);
