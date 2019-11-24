@@ -305,17 +305,14 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
 
   guint x;
 
-  GTK_WIDGET_CLASS(ags_notebook_parent_class)->size_allocate(notebook,
-							     allocation);
-
   if(allocation->width < (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH)){
     allocation->width = (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH);
   }
 
   allocation->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
 
-  gtk_widget_set_allocation(notebook,
-			    allocation);
+  GTK_WIDGET_CLASS(ags_notebook_parent_class)->size_allocate(notebook,
+							     allocation);
 
   /*  */
   gtk_widget_get_child_requisition((GtkWidget *) notebook->navigation,

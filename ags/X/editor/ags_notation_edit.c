@@ -173,7 +173,7 @@ ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
 
   widget->show = ags_notation_edit_show;
   widget->show_all = ags_notation_edit_show_all;
-  widget->draw = ags_notation_edit_draw;
+//  widget->draw = ags_notation_edit_draw;
 }
 
 void
@@ -263,9 +263,6 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
 	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       NULL);
-  gtk_widget_set_size_request((GtkWidget *) notation_edit->ruler,
-			      780,
-			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->ruler,
 		   0, 1,
@@ -274,6 +271,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   0, 0);
 
   notation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_has_window(notation_edit->drawing_area,
+			    TRUE);
   gtk_widget_set_events(GTK_WIDGET(notation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -382,6 +381,9 @@ ags_notation_edit_connect(AgsConnectable *connectable)
   notation_edit->flags |= AGS_NOTATION_EDIT_CONNECTED;
   
   /* drawing area */
+  g_signal_connect(G_OBJECT(notation_edit->drawing_area), "draw",
+		   G_CALLBACK(ags_notation_edit_draw_callback), (gpointer) notation_edit);
+
   g_signal_connect_after((GObject *) notation_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_notation_edit_drawing_area_configure_event), (gpointer) notation_edit);
 
@@ -423,6 +425,9 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
 
   /* drawing area */
   g_object_disconnect(notation_edit->drawing_area,
+		      "any_signal::draw",
+		      G_CALLBACK(ags_notation_edit_draw_callback),
+		      (gpointer) notation_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_configure_event),
 		      (gpointer) notation_edit,
@@ -1037,6 +1042,9 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   
   GtkStyleContext *notation_edit_style_context;
 
+  GtkAdjustment *vscrollbar_adjustment;
+  GtkAdjustment *hscrollbar_adjustment;
+
   GtkAllocation allocation;
 
   GdkRGBA *fg_color;
@@ -1073,7 +1081,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
-
+  
   /* style context */
   notation_edit_style_context = gtk_widget_get_style_context(GTK_WIDGET(notation_edit->drawing_area));
 
@@ -1100,6 +1108,10 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
 
   border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
+
+  /* adjustment */
+  vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->vscrollbar));
+  hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
   
   /* get channel count */
 #if 0
@@ -1144,16 +1156,16 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   if(width_fits){
     x0 = 0;
   }else{
-    x0 = notation_edit->control_width - ((guint) gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar))) % notation_edit->control_width;
+    x0 = notation_edit->control_width - ((guint) gtk_adjustment_get_value(hscrollbar_adjustment) % notation_edit->control_width);
   }
 
   if(height_fits){
     y0 = 0;
   }else{
-    y0 = notation_edit->control_height - ((guint) gtk_range_get_value(GTK_RANGE(notation_edit->vscrollbar))) % notation_edit->control_height;
+    y0 = notation_edit->control_height - ((guint) gtk_adjustment_get_value(vscrollbar_adjustment) % notation_edit->control_height);
   }
   
-  nth_x = (guint) floor(gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) / notation_edit->control_width);
+  nth_x = (guint) floor(gtk_adjustment_get_value(hscrollbar_adjustment) / notation_edit->control_width);
   nth_x += 1;
   
   /* push group */
@@ -1257,7 +1269,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr)
   /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
-      
+  
   cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
@@ -1548,7 +1560,7 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr)
 			fg_color_prelight->red,
 			fg_color_prelight->blue,
 			fg_color_prelight->green,
-			fg_color_prelight->alpha);
+			1.0 / 3.0);
 
   cairo_rectangle(cr,
 		  x, y,
@@ -1737,25 +1749,25 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 			  fg_color_selected->red,
 			  fg_color_selected->blue,
 			  fg_color_selected->green,
-			  opacity * fg_color_selected->alpha);
+			  1.0 / 3.0);
     
     cairo_rectangle(cr,
 		    selected_x, selected_y,
 		    selected_width, selected_height);
     cairo_fill(cr);
-  }else{
-    /* draw note */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  opacity * fg_color->alpha);
-
-    cairo_rectangle(cr,
-		    x, y,
-		    width, height);
-    cairo_fill(cr);
   }
+  
+  /* draw note */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->blue,
+			fg_color->green,
+			opacity * fg_color->alpha);
+  
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
 }
 
 void
@@ -1894,7 +1906,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 void
 ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr)
 {
-  GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->draw(notation_edit, cr);
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
 
   /* segment */
   ags_notation_edit_draw_segment(notation_edit, cr);

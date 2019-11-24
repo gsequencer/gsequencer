@@ -40,14 +40,12 @@ void ags_ruler_get_property(GObject *gobject,
 void ags_ruler_show(GtkWidget *widget);
 
 void ags_ruler_realize(GtkWidget *widget);
-void ags_ruler_size_allocate(GtkWidget *widget,
-			     GtkAllocation *allocation);
-void ags_ruler_get_preferred_width(GtkWidget *widget,
-				   gint *minimal_width,
-				   gint *natural_width);
+void ags_ruler_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
 void ags_ruler_get_preferred_height(GtkWidget *widget,
 				    gint *minimal_height,
 				    gint *natural_height);
+
+void ags_ruler_send_configure(AgsRuler *ruler);
 
 void ags_ruler_draw(AgsRuler *ruler, cairo_t *cr);
 
@@ -120,9 +118,8 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   widget = (GtkWidgetClass *) ruler;
 
   widget->realize = ags_ruler_realize;
-  widget->get_preferred_width = ags_ruler_get_preferred_width;
-  widget->get_preferred_height = ags_ruler_get_preferred_height;
   widget->size_allocate = ags_ruler_size_allocate;
+  widget->get_preferred_height = ags_ruler_get_preferred_height;
   widget->draw = ags_ruler_draw;
   widget->show = ags_ruler_show;
 
@@ -211,10 +208,6 @@ ags_ruler_init(AgsRuler *ruler)
   ruler->factor = 16.0;
   ruler->precision = 1.0;
   ruler->scale_precision = 1.0;
-
-  gtk_widget_set_size_request((GtkWidget *) ruler,
-			      20,
-			      AGS_RULER_DEFAULT_HEIGHT);
 }
 
 
@@ -357,10 +350,53 @@ ags_ruler_realize(GtkWidget *widget)
 
   window = gdk_window_new(gtk_widget_get_parent_window(widget),
 			  &attributes, attributes_mask);
-  gtk_widget_set_window(widget, window);
-  gdk_window_set_user_data(window, ruler);
 
-  gtk_widget_queue_resize(widget);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
+
+  ags_ruler_send_configure(ruler);
+}
+
+void
+ags_ruler_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
+{
+  AgsRuler *ruler;
+  
+  g_return_if_fail(AGS_IS_RULER(widget));
+  g_return_if_fail(allocation != NULL);
+
+  ruler = AGS_RULER(widget);
+  
+  gtk_widget_set_allocation (widget, allocation);
+
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_ruler_send_configure(ruler);
+  }
+}
+
+void
+ags_ruler_send_configure(AgsRuler *ruler)
+{
+  GtkAllocation allocation;
+  GtkWidget *widget;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
+
+  widget = GTK_WIDGET(ruler);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
 }
 
 void
@@ -370,31 +406,12 @@ ags_ruler_show(GtkWidget *widget)
 }
 
 void
-ags_ruler_get_preferred_width(GtkWidget *widget,
-			      gint *minimal_width,
-			      gint *natural_width)
-{
-  minimal_width =
-    natural_width = NULL;
-}
-
-void
 ags_ruler_get_preferred_height(GtkWidget *widget,
 			       gint *minimal_height,
 			       gint *natural_height)
 {
   minimal_height[0] =
     natural_height[0] = (gint) AGS_RULER_DEFAULT_HEIGHT;
-}
-
-void
-ags_ruler_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
-{
-  allocation->height = AGS_RULER_DEFAULT_HEIGHT;
-
-  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_allocate(widget,
-							  allocation);
 }
 
 /**
@@ -447,8 +464,8 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
 			0.125,
 			1.0);
   cairo_rectangle(cr,
-		  0, 0,
-		  allocation.width, allocation.height);
+		  0.0, 0.0,
+		  (double) allocation.width, (double) allocation.height);
   cairo_fill(cr);
 
   cairo_set_source_rgba(cr,

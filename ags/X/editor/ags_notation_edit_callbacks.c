@@ -25,6 +25,12 @@
 
 #include <gdk/gdkkeysyms.h>
 
+void
+ags_notation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsNotationEdit *notation_edit)
+{
+  ags_notation_edit_draw(notation_edit, cr);
+}
+
 gboolean
 ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit)
 {

@@ -370,7 +370,7 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
 
   g_object_disconnect(G_OBJECT(cell_pattern->drawing_area),
 		      "any_signal::draw",
-		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),
+		      G_CALLBACK(ags_cell_pattern_draw_callback),
 		      (gpointer) cell_pattern,
 		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),

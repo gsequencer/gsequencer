@@ -1592,10 +1592,10 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   }
 
   cairo_set_source_rgba(cr,
-			bg_color->red,
-			bg_color->green,
-			bg_color->blue,
-			bg_color->alpha);
+			fg_color->red,
+			fg_color->green,
+			fg_color->blue,
+			fg_color->alpha);
 
   /* middle */
   if(map_height * 0.5 < height){
