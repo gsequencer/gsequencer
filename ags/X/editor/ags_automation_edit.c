@@ -341,9 +341,9 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   widget = (GtkWidgetClass *) automation_edit;
 
 //  widget->get_preferred_width = ags_automation_edit_get_preferred_width;
-//  widget->get_preferred_height = ags_automation_edit_get_preferred_height;
+  widget->get_preferred_height = ags_automation_edit_get_preferred_height;
 //  widget->size_allocate = ags_automation_edit_size_allocate;
-  widget->draw = ags_automation_edit_draw;
+//  widget->draw = ags_automation_edit_draw;
   widget->show = ags_automation_edit_show;
   widget->show_all = ags_automation_edit_show_all;
 }
@@ -453,6 +453,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->default_value = AGS_AUTOMATION_EDIT_DEFAULT_VALUE;
 
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+  gtk_widget_set_has_window(automation_edit->drawing_area,
+			    TRUE);
   gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -465,13 +467,11 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
 
-  gtk_widget_set_size_request((GtkWidget *) automation_edit->drawing_area,
-			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT));
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* vscrollbar */
@@ -701,6 +701,9 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
 
   /* drawing area */
+  g_signal_connect(G_OBJECT(automation_edit->drawing_area), "draw",
+		   G_CALLBACK(ags_automation_edit_draw_callback), (gpointer) automation_edit);
+
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
@@ -743,6 +746,9 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
   
   /* drawing area */
   g_object_disconnect((GObject *) automation_edit->drawing_area,
+		      "any_signal::draw",
+		      G_CALLBACK(ags_automation_edit_draw_callback),
+		      (gpointer) automation_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_configure_event),
 		      automation_edit,
@@ -2319,10 +2325,9 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
 void
 ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr)
-{
-  g_message("automation edit draw");
-  
-  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->draw(automation_edit, cr);
+{  
+  ags_automation_edit_reset_vscrollbar(automation_edit);
+  ags_automation_edit_reset_hscrollbar(automation_edit);
   
   /* segment */
   ags_automation_edit_draw_segment(automation_edit, cr);

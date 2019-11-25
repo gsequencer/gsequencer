@@ -367,7 +367,7 @@ ags_ruler_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
 
   ruler = AGS_RULER(widget);
   
-  gtk_widget_set_allocation (widget, allocation);
+  gtk_widget_set_allocation(widget, allocation);
 
   if(gtk_widget_get_realized(widget)){
     gdk_window_move_resize(gtk_widget_get_window(widget),

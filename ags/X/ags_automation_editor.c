@@ -311,6 +311,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* audio - scale */
   automation_editor->audio_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->audio_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->audio_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -331,7 +332,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* audio - automation edit */
@@ -417,6 +418,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* output - scale */
   automation_editor->output_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->output_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->output_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -437,7 +439,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->output_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* output - automation edit */
@@ -523,6 +525,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->input_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->input_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -543,7 +546,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box));
   gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box->viewport));
@@ -1245,18 +1248,26 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->audio_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->output_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->input_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+	}
+
+	{
+	  GtkAllocation allocation;
+	  
+	  gtk_widget_get_allocation(scale, &allocation);
+
+	  g_message("%d|%d %d,%d", allocation.x, allocation.y, allocation.width, allocation.height);
 	}
 	
 	gtk_widget_show(GTK_WIDGET(scale));
@@ -1276,17 +1287,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}
 

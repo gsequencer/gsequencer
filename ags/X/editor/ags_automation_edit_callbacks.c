@@ -25,6 +25,12 @@
 
 #include <gdk/gdkkeysyms.h>
 
+void
+ags_automation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsAutomationEdit *automation_edit)
+{
+  ags_automation_edit_draw(automation_edit, cr);
+}
+
 gboolean
 ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit)
 {

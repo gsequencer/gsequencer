@@ -202,6 +202,8 @@ ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box)
   /* viewport */
   scrolled_wave_edit_box->viewport = (GtkViewport *) gtk_viewport_new(NULL,
 								      NULL);
+  gtk_widget_set_vexpand(scrolled_wave_edit_box->viewport, TRUE);
+  gtk_widget_set_hexpand(scrolled_wave_edit_box->viewport, TRUE);
   g_object_set(scrolled_wave_edit_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);

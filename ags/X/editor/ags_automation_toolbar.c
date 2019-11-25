@@ -310,9 +310,16 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			     FALSE);
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
 				 "text", 1,
-				 "text", 2,
 				 NULL);
 
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
+			     cell_renderer,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
+				 "text", 2,
+				 NULL);
+  
   gtk_box_pack_start(hbox,
 		     (GtkWidget *) automation_toolbar->port,
 		     FALSE, FALSE,

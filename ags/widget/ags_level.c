@@ -75,14 +75,14 @@ gchar* ags_accessible_level_get_localized_name(AtkAction *action,
 
 void ags_level_map(GtkWidget *widget);
 void ags_level_realize(GtkWidget *widget);
+void ags_level_size_allocate(GtkWidget *widget,
+			     GtkAllocation *allocation);
 void ags_level_get_preferred_width(GtkWidget *widget,
 				   gint *minimal_width,
 				   gint *natural_width);
 void ags_level_get_preferred_height(GtkWidget *widget,
 				    gint *minimal_height,
 				    gint *natural_height);
-void ags_level_size_allocate(GtkWidget *widget,
-			     GtkAllocation *allocation);
 gboolean ags_level_button_press(GtkWidget *widget,
 				GdkEventButton *event);
 gboolean ags_level_button_release(GtkWidget *widget,
@@ -93,6 +93,8 @@ gboolean ags_level_key_release(GtkWidget *widget,
 			       GdkEventKey *event);
 gboolean ags_level_motion_notify(GtkWidget *widget,
 				 GdkEventMotion *event);
+
+void ags_level_send_configure(AgsLevel *level);
 
 void ags_level_draw(AgsLevel *level, cairo_t *cr);
 
@@ -317,9 +319,9 @@ ags_level_class_init(AgsLevelClass *level)
   widget->get_accessible = ags_level_get_accessible;
   //  widget->map = ags_level_map;
   widget->realize = ags_level_realize;
+  widget->size_allocate = ags_level_size_allocate;
   widget->get_preferred_width = ags_level_get_preferred_width;
   widget->get_preferred_height = ags_level_get_preferred_height;
-  widget->size_allocate = ags_level_size_allocate;
   widget->button_press_event = ags_level_button_press;
   widget->button_release_event = ags_level_button_release;
   widget->key_press_event = ags_level_key_press;
@@ -792,38 +794,64 @@ ags_level_realize(GtkWidget *widget)
 
   window = gdk_window_new(gtk_widget_get_parent_window(widget),
 			  &attributes, attributes_mask);
+
+  gtk_widget_register_window(widget, window);
   gtk_widget_set_window(widget, window);
-  gdk_window_set_user_data(window, level);
 
-  gtk_widget_queue_resize(widget);
-}
-
-AtkObject*
-ags_level_get_accessible(GtkWidget *widget)
-{
-  AtkObject* accessible;
-
-  accessible = g_object_get_qdata(G_OBJECT(widget),
-				  quark_accessible_object);
-  
-  if(!accessible){
-    accessible = g_object_new(ags_accessible_level_get_type(),
-			      NULL);
-    
-    g_object_set_qdata(G_OBJECT(widget),
-		       quark_accessible_object,
-		       accessible);
-    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
-			      widget);
-  }
-  
-  return(accessible);
+  ags_level_send_configure(level);
 }
 
 void
-ags_level_show(GtkWidget *widget)
+ags_level_size_allocate(GtkWidget *widget,
+			GtkAllocation *allocation)
 {
-  GTK_WIDGET_CLASS(ags_level_parent_class)->show(widget);
+  AgsLevel *level;
+
+  GdkWindow *window;
+    
+  g_return_if_fail(AGS_IS_LEVEL(widget));
+  g_return_if_fail(allocation != NULL);
+
+  level = AGS_LEVEL(widget);
+  
+  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
+    allocation->height = level->level_height;
+    allocation->width = level->level_width;
+  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
+    allocation->width = level->level_height;
+    allocation->height = level->level_width;
+  }
+
+  gtk_widget_set_allocation(widget, allocation);
+  
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_level_send_configure(level);
+  }
+}
+
+void
+ags_level_send_configure(AgsLevel *level)
+{
+  GtkAllocation allocation;
+  GtkWidget *widget;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
+
+  widget = GTK_WIDGET(level);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
 }
 
 void
@@ -862,25 +890,32 @@ ags_level_get_preferred_height(GtkWidget *widget,
   }
 }
 
-void
-ags_level_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
+AtkObject*
+ags_level_get_accessible(GtkWidget *widget)
 {
-  AgsLevel *level;
+  AtkObject* accessible;
 
-  GdkWindow *window;
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				  quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_level_get_type(),
+			      NULL);
     
-  level = AGS_LEVEL(widget);
-    
-  window = gtk_widget_get_window(widget);
-  gdk_window_move(window,
-		  allocation->x, allocation->y);
-
-  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
-    allocation->height = level->level_height;
-  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
-    allocation->width = level->level_height;
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
+			      widget);
   }
+  
+  return(accessible);
+}
+
+void
+ags_level_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_level_parent_class)->show(widget);
 }
 
 gboolean

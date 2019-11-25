@@ -312,6 +312,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   /* level */
   wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
+  gtk_widget_set_vexpand(wave_editor->scrolled_level_box->viewport, TRUE);
   g_object_set(wave_editor->scrolled_level_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -332,7 +333,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		   (GtkWidget *) wave_editor->scrolled_level_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* wave edit */
@@ -705,11 +706,11 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 		   NULL);
       gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_level_box->level_box),
 			 GTK_WIDGET(level),
-			 FALSE, FALSE,
+			 FALSE, TRUE,
 			 AGS_WAVE_EDIT_DEFAULT_PADDING);
 	
       gtk_widget_show(GTK_WIDGET(level));
-      
+
       /* wave edit */
       wave_edit = ags_wave_edit_new(i);
       gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_wave_edit_box->wave_edit_box),
