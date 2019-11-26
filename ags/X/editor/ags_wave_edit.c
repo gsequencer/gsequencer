@@ -49,6 +49,7 @@ void ags_wave_edit_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+void ags_wave_edit_finalize(GObject *gobject);
 
 void ags_wave_edit_connect(AgsConnectable *connectable);
 void ags_wave_edit_disconnect(AgsConnectable *connectable);
@@ -195,6 +196,8 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
   gobject->set_property = ags_wave_edit_set_property;
   gobject->get_property = ags_wave_edit_get_property;
 
+  gobject->finalize = ags_wave_edit_finalize;
+  
   /* properties */
   /**
    * AgsWaveEdit:line:
@@ -446,6 +449,21 @@ ags_wave_edit_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_wave_edit_finalize(GObject *gobject)
+{
+  AgsWaveEdit *wave_edit;
+  
+  wave_edit = AGS_WAVE_EDIT(gobject);
+  
+  /* remove auto scroll */
+  g_hash_table_remove(ags_wave_edit_auto_scroll,
+		      wave_edit);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_wave_edit_parent_class)->finalize(gobject);
 }
 
 void
