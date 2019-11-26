@@ -230,7 +230,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(hindicator)->segment_padding;
 
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   for(i = 0; i < AGS_INDICATOR(hindicator)->segment_count; i++){
@@ -272,7 +272,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**

@@ -1223,7 +1223,7 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
   x_start = 0;
   y_start = 0;
 
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* background */
@@ -1291,7 +1291,7 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**

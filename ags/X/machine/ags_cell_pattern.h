@@ -102,7 +102,7 @@ struct _AgsCellPatternClass
 
 GType ags_cell_pattern_get_type(void);
 
-void ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr);
+void ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr);
 void ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern, cairo_t *cr);
 void ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern, cairo_t *cr);
 void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,

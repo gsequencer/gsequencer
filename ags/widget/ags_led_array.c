@@ -267,6 +267,15 @@ ags_led_array_realize(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_led_array_parent_class)->realize(widget);
 }
 
+/**
+ * ags_led_array_set_led_count:
+ * @led_array: the #AgsLedArray
+ * @led_count: the led count
+ * 
+ * Set led count of @led_array.
+ *
+ * Since: 3.0.0
+ */
 void
 ags_led_array_set_led_count(AgsLedArray *led_array,
 			    guint led_count)
@@ -314,12 +323,20 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
   led_array->led_count = led_count;
 }
 
+/**
+ * ags_led_array_unset_all:
+ * @led_array: the #AgsLedArray
+ * 
+ * Unset all led active.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_array_unset_all(AgsLedArray *led_array)
 {
   guint i;
 
-  if(led_array == NULL){
+  if(!AGS_IS_LED_ARRAY(led_array)){
     return;
   }
   
@@ -328,11 +345,20 @@ ags_led_array_unset_all(AgsLedArray *led_array)
   }
 }
 
+/**
+ * ags_led_array_set_nth:
+ * @led_array: the #AgsLedArray
+ * @nth: the nth led
+ * 
+ * Set @nth led active.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_array_set_nth(AgsLedArray *led_array,
 		      guint nth)
 {
-  if(led_array == NULL ||
+  if(!AGS_IS_LED_ARRAY(led_array) ||
      nth >= led_array->led_count){
     return;
   }

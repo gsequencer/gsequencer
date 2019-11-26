@@ -631,7 +631,7 @@ ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 }
 
 void
-ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
+ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
 {
   AgsMachine *machine;
   
@@ -730,27 +730,35 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern, cairo_t *cr)
   g_object_ref(channel);
   
   prev_pad = NULL;
+
+  /* the grid */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->green,
+			fg_color->blue,
+			fg_color->alpha);
+
+  cairo_set_line_width(cr,
+		       1.0);
+
+  for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
+    cairo_move_to(cr,
+		  (double) j * (double) cell_pattern->cell_width, 0.0);
+
+    cairo_line_to(cr,
+		  (double) j * (double) cell_pattern->cell_width, (double) gutter * (double) cell_pattern->cell_height);
+
+    cairo_stroke(cr);
+  }
   
   for (i = 0; channel != NULL && i < gutter; i++){
-    for (j = 0; j < 32; j++){
-      cairo_set_source_rgba(cr,
-			    fg_color->red,
-			    fg_color->green,
-			    fg_color->blue,
-			    fg_color->alpha);
-      cairo_set_line_width(cr,
-			   1.0);
-  
-      cairo_rectangle(cr,
-		      (gdouble) j * (gdouble) cell_pattern->cell_width, (gdouble) i * (gdouble) cell_pattern->cell_height,
-		      (gdouble) cell_pattern->cell_width, (gdouble) cell_pattern->cell_height);
+    cairo_move_to(cr,
+		  0.0, (double) i * (double) cell_pattern->cell_height);
 
-      cairo_stroke(cr);
+    cairo_line_to(cr,
+		  (double) AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY * (double) cell_pattern->cell_width, (double) i * (double) cell_pattern->cell_height);
 
-      ags_cell_pattern_redraw_gutter_point(cell_pattern, cr,
-					   channel,
-					   j, i);
-    }
+    cairo_stroke(cr);
 
     /* iterate */
     prev_pad = ags_channel_prev_pad(channel);

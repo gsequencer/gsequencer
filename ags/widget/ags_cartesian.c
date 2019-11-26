@@ -1597,7 +1597,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
     data_ptr[i] = clear_color;
   }
   
-  cairo_surface_flush(cartesian->surface);
+//  cairo_surface_flush(cartesian->surface);
 
   /* surface */
   cairo_set_source_surface(cr,
@@ -1724,7 +1724,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   /* paint */
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 AgsPlot*

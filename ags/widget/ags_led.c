@@ -241,7 +241,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   g_value_unset(&value);
 
   /*  */
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
@@ -282,27 +282,51 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
+/**
+ * ags_led_set_active:
+ * @led: the #AgsLed
+ * 
+ * Set @led to active state.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_set_active(AgsLed *led)
 {
-  led->flags |= AGS_LED_ACTIVE;
+  if(!AGS_IS_LED(led)){
+    return;
+  }
 
-  gtk_widget_queue_draw((GtkWidget *) led);
+  if((AGS_LED_ACTIVE & (led->flags)) == 0){
+    led->flags |= AGS_LED_ACTIVE;
 
-  //  ags_led_draw(led);
+    gtk_widget_queue_draw((GtkWidget *) led);
+  }
 }
 
+/**
+ * ags_led_unset_active:
+ * @led: the #AgsLed
+ * 
+ * Unset @led active state.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_unset_active(AgsLed *led)
 {
-  led->flags &= (~AGS_LED_ACTIVE);
+  if(!AGS_IS_LED(led)){
+    return;
+  }
 
-  gtk_widget_queue_draw((GtkWidget *) led);
-
-  //  ags_led_draw(led);
+  if((AGS_LED_ACTIVE & (led->flags)) != 0){
+    led->flags &= (~AGS_LED_ACTIVE);
+    
+    gtk_widget_queue_draw((GtkWidget *) led);
+  }
 }
 
 /**
