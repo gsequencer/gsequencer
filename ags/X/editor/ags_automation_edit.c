@@ -1497,7 +1497,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -1505,7 +1505,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -1513,7 +1513,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_boxed(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   /* push group */
@@ -1642,7 +1642,11 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
+  
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
 }
 
 void
@@ -1688,7 +1692,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_boxed(&value);
+  fg_color_active = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   /* get offset and dimensions */
@@ -1719,7 +1723,9 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_active);
 }
 
 void
@@ -1772,7 +1778,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_FOCUSED,
 				 &value);
 
-  fg_color_focused = g_value_get_boxed(&value);
+  fg_color_focused = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -1815,6 +1821,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 
     x = 0.0;
   }else if(x > allocation.width){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_focused);
+
     return;
   }
 
@@ -1827,6 +1835,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
 
     y = 0.0;
   }else if(y > allocation.height){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_focused);
+
     return;
   }
 
@@ -1860,7 +1870,9 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+  //cairo_surface_mark_dirty(cairo_get_target(cr));
+  
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_focused);
 }
 
 void
@@ -1893,7 +1905,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 				 GTK_STATE_FLAG_PRELIGHT,
 				 &value);
 
-  fg_color_prelight = g_value_get_boxed(&value);
+  fg_color_prelight = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -1922,6 +1934,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 
     x = 0.0;
   }else if(x > allocation.width){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
+
     return;
   }
 
@@ -1934,6 +1948,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 
     y = 0.0;
   }else if(y > allocation.height){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
+
     return;
   }
 
@@ -1960,7 +1976,9 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+  //cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
 }
 
 void
@@ -2022,7 +2040,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(automation_edit_style_context,
@@ -2030,7 +2048,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 				 GTK_STATE_FLAG_SELECTED,
 				 &value);
 
-  fg_color_selected = g_value_get_boxed(&value);
+  fg_color_selected = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
@@ -2103,12 +2121,18 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   /* clip */
   if(x < 0.0){
     if(x + width < 0.0){
+      g_boxed_free(GDK_TYPE_RGBA, fg_color);
+      g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
+
       return;
     }else{
       width += x;
       x = 0.0;
     }
   }else if(x > allocation.width){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color);
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
+
     return;
   }
 
@@ -2122,12 +2146,18 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   
   if(y < 0.0){
     if(y + height < 0.0){
+      g_boxed_free(GDK_TYPE_RGBA, fg_color);
+      g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
+
       return;
     }else{
       height += y;
       y = 0.0;
     }
   }else if(y > allocation.height){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color);
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
+
     return;
   }
 
@@ -2210,6 +2240,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 		    selected_width, selected_height);
     cairo_fill(cr);
   }
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
 }
 
 void

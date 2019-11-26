@@ -32,9 +32,6 @@ void ags_hindicator_get_preferred_height(GtkWidget *widget,
 void ags_hindicator_size_allocate(GtkWidget *widget,
 				  GtkAllocation *allocation);
 
-gboolean ags_hindicator_configure(GtkWidget *widget,
-				  GdkEventConfigure *event);
-
 void ags_hindicator_draw(AgsHIndicator *indicator, cairo_t *cr);
 
 /**
@@ -94,7 +91,6 @@ ags_hindicator_class_init(AgsHIndicatorClass *indicator)
   widget->size_allocate = ags_hindicator_size_allocate;
 
   widget->draw = ags_hindicator_draw;
-  widget->configure_event = ags_hindicator_configure;
 }
 
 void
@@ -149,15 +145,6 @@ ags_hindicator_size_allocate(GtkWidget *widget,
   GTK_WIDGET_CLASS(ags_hindicator_parent_class)->size_allocate(widget, allocation);
 }
 
-gboolean
-ags_hindicator_configure(GtkWidget *widget,
-			 GdkEventConfigure *event)
-{
-  gtk_widget_queue_draw(widget);
-
-  return(FALSE);
-}
-
 void
 ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 {
@@ -200,7 +187,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(hindicator_style_context,
@@ -208,7 +195,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(hindicator_style_context,
@@ -216,7 +203,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_boxed(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   width = (AGS_INDICATOR(hindicator)->segment_count * AGS_INDICATOR(hindicator)->segment_width) + ((AGS_INDICATOR(hindicator)->segment_count - 1) * AGS_INDICATOR(hindicator)->segment_padding);
@@ -271,6 +258,10 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }

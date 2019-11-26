@@ -1147,7 +1147,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1155,7 +1155,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1163,7 +1163,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_boxed(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   /* push group */
@@ -1289,6 +1289,10 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr)
   cairo_paint(cr);
       
   cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
 }
 
 void
@@ -1334,7 +1338,7 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_boxed(&value);
+  fg_color_active = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   /* get offset and dimensions */
@@ -1365,7 +1369,9 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_active);
 }
 
 void
@@ -1416,7 +1422,7 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_FOCUSED,
 				 &value);
 
-  fg_color_focused = g_value_get_boxed(&value);
+  fg_color_focused = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1452,6 +1458,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr)
   cairo_paint(cr);
       
   cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_focused);
 }
 
 void
@@ -1493,7 +1501,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 				 GTK_STATE_FLAG_PRELIGHT,
 				 &value);
 
-  fg_color_prelight = g_value_get_boxed(&value);
+  fg_color_prelight = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1526,6 +1534,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 
     x = 0.0;
   }else if(x > allocation.width){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
+    
     return;
   }
 
@@ -1538,6 +1548,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 
     y = 0.0;
   }else if(y > allocation.height){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
+
     return;
   }
 
@@ -1564,7 +1576,9 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+  //cairo_surface_mark_dirty(cairo_get_target(cr));
+  
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_prelight);
 }
 
 void
@@ -1633,7 +1647,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(wave_edit_style_context,
@@ -1641,7 +1655,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 				 GTK_STATE_FLAG_SELECTED,
 				 &value);
 
-  fg_color_selected = g_value_get_boxed(&value);
+  fg_color_selected = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
@@ -1681,6 +1695,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   if(((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut < 0.0 ||
      ((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > allocation.width){
+    g_boxed_free(GDK_TYPE_RGBA, fg_color);
+    g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
+
     return;
   }
   
@@ -1849,6 +1866,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   /* draw buffer */
   //  cairo_set_source_surface(cr, surface,
   //			   (bpm / (60.0 * (x / samplerate))) * AGS_WAVE_EDIT_X_RESOLUTION, 0.0);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_selected);
 }
 
 void

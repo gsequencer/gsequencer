@@ -1532,7 +1532,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(cartesian_style_context,
@@ -1540,7 +1540,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 				 GTK_STATE_FLAG_ACTIVE,
 				 &value);
 
-  fg_color_active = g_value_get_pointer(&value);
+  fg_color_active = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(cartesian_style_context,
@@ -1548,7 +1548,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(cartesian_style_context,
@@ -1556,7 +1556,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_pointer(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   g_object_get(gtk_settings_get_default(),
@@ -1723,6 +1723,11 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   
   /* paint */
   cairo_paint(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_active);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }

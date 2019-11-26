@@ -1366,6 +1366,9 @@ ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
 									   recall_id);
 
+      delay_audio = NULL;
+      sequencer_duration = NULL;
+      
       g_object_get(delay_audio_run,
 		   "recall-audio", &delay_audio,
 		   NULL);

@@ -675,7 +675,7 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(cell_pattern_style_context,
@@ -683,7 +683,7 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
@@ -723,6 +723,9 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
       g_object_unref(start_channel);
     }
     
+    g_boxed_free(GDK_TYPE_RGBA, fg_color);
+    g_boxed_free(GDK_TYPE_RGBA, bg_color);
+    
     return;
   }
 
@@ -739,7 +742,7 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
 			fg_color->alpha);
 
   cairo_set_line_width(cr,
-		       1.0);
+		       0.625);
 
   for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
     cairo_move_to(cr,
@@ -775,6 +778,9 @@ ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
   if(prev_pad != NULL){
     g_object_unref(prev_pad);
   }
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
 }
 
 void
@@ -926,7 +932,7 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo_t *c
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   cairo_set_source_rgba(cr,
@@ -940,6 +946,8 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo_t *c
 		  (gdouble) cell_pattern->cell_width - 1.0, (gdouble) cell_pattern->cell_height - 1.0);
 
   cairo_fill(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
 }
 
 void
@@ -959,7 +967,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   cairo_set_source_rgba(cr,
@@ -973,6 +981,8 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
 		  (gdouble) cell_pattern->cell_width - 1.0, (gdouble) cell_pattern->cell_height - 1.0);
 
   cairo_fill(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
 }
 
 /**

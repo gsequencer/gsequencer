@@ -252,7 +252,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(led_style_context,
@@ -260,7 +260,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(led_style_context,
@@ -268,7 +268,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_boxed(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   /*  */  
@@ -313,6 +313,10 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
+  
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 

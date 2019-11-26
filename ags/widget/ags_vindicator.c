@@ -32,9 +32,6 @@ void ags_vindicator_get_preferred_height(GtkWidget *widget,
 void ags_vindicator_size_allocate(GtkWidget *widget,
 				  GtkAllocation *allocation);
 
-gboolean ags_vindicator_configure(GtkWidget *widget,
-				  GdkEventConfigure *event);
-
 void ags_vindicator_draw(AgsVIndicator *indicator, cairo_t *cr);
 
 /**
@@ -94,7 +91,6 @@ ags_vindicator_class_init(AgsVIndicatorClass *indicator)
   widget->size_allocate = ags_vindicator_size_allocate;
 
   widget->draw = ags_vindicator_draw;
-  widget->configure_event = ags_vindicator_configure;
 }
 
 void
@@ -147,15 +143,6 @@ ags_vindicator_size_allocate(GtkWidget *widget,
   GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget, allocation);
 }
 
-gboolean
-ags_vindicator_configure(GtkWidget *widget,
-			 GdkEventConfigure *event)
-{
-  gtk_widget_queue_draw(widget);
-
-  return(FALSE);
-}
-
 void
 ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 {
@@ -198,7 +185,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_boxed(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(vindicator_style_context,
@@ -206,7 +193,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_boxed(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(vindicator_style_context,
@@ -214,7 +201,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  border_color = g_value_get_boxed(&value);
+  border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   //  g_message("draw %f", adjustment->value);
@@ -271,6 +258,10 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
