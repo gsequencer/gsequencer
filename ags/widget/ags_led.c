@@ -26,7 +26,7 @@ void ags_led_class_init(AgsLedClass *led);
 void ags_led_init(AgsLed *led);
 
 void ags_led_realize(GtkWidget *widget);
-void ags_led_size_allocate(AgsLed *led,
+void ags_led_size_allocate(GtkWidget *widget,
 			   GtkAllocation *allocation);
 void ags_led_get_preferred_width(GtkWidget *widget,
 				 gint *minimal_width,
@@ -34,6 +34,8 @@ void ags_led_get_preferred_width(GtkWidget *widget,
 void ags_led_get_preferred_height(GtkWidget *widget,
 				  gint *minimal_height,
 				  gint *natural_height);
+
+void ags_led_send_configure(AgsLed *led);
 
 void ags_led_draw(AgsLed *led, cairo_t *cr);
 
@@ -108,6 +110,8 @@ ags_led_init(AgsLed *led)
 void
 ags_led_realize(GtkWidget *widget)
 {
+  AgsLed *led;
+
   GdkWindow *window;
 
   GtkAllocation allocation;
@@ -117,6 +121,8 @@ ags_led_realize(GtkWidget *widget)
 
   g_return_if_fail(widget != NULL);
   g_return_if_fail(AGS_IS_LED(widget));
+
+  led = AGS_LED(widget);
 
   gtk_widget_set_realized(widget, TRUE);
 
@@ -145,21 +151,57 @@ ags_led_realize(GtkWidget *widget)
 
   window = gdk_window_new(gtk_widget_get_parent_window(widget),
 			  &attributes, attributes_mask);
-  gtk_widget_set_window(widget, window);
-  gdk_window_set_user_data(window, widget);
 
-  gtk_widget_queue_resize(widget);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
+
+  ags_led_send_configure(led);
 }
 
 void
-ags_led_size_allocate(AgsLed *led,
+ags_led_size_allocate(GtkWidget *widget,
 		      GtkAllocation *allocation)
 {
+  AgsLed *led;
+  
+  g_return_if_fail(AGS_IS_LED(widget));
+  g_return_if_fail(allocation != NULL);
+
+  led = AGS_LED(widget);  
+
   allocation->width = AGS_LED_DEFAULT_WIDTH;
   allocation->height = AGS_LED_DEFAULT_HEIGHT;
 
-  GTK_WIDGET_CLASS(ags_led_parent_class)->size_allocate(led,
-							allocation);
+  gtk_widget_set_allocation(widget, allocation);
+
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_led_send_configure(led);
+  }
+}
+
+void
+ags_led_send_configure(AgsLed *led)
+{
+  GtkAllocation allocation;
+  GtkWidget *widget;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
+
+  widget = GTK_WIDGET(led);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
 }
 
 void
