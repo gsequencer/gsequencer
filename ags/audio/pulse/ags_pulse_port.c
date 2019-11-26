@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -312,6 +312,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->sample_spec = NULL;
 #endif
 
+  word_size = 0;
+  
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
@@ -418,11 +420,7 @@ ags_pulse_port_set_property(GObject *gobject,
   pulse_port = AGS_PULSE_PORT(gobject);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   switch(prop_id){
   case PROP_PULSE_CLIENT:
@@ -550,11 +548,7 @@ ags_pulse_port_get_property(GObject *gobject,
   pulse_port = AGS_PULSE_PORT(gobject);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
   
   switch(prop_id){
   case PROP_PULSE_CLIENT:
@@ -686,11 +680,7 @@ ags_pulse_port_get_uuid(AgsConnectable *connectable)
   pulse_port = AGS_PULSE_PORT(connectable);
 
   /* get pulse port signal mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* get UUID */
   pthread_mutex_lock(pulse_port_mutex);
@@ -720,11 +710,7 @@ ags_pulse_port_is_ready(AgsConnectable *connectable)
   pulse_port = AGS_PULSE_PORT(connectable);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* check is added */
   pthread_mutex_lock(pulse_port_mutex);
@@ -807,11 +793,7 @@ ags_pulse_port_is_connected(AgsConnectable *connectable)
   pulse_port = AGS_PULSE_PORT(connectable);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* check is connected */
   pthread_mutex_lock(pulse_port_mutex);
@@ -890,11 +872,7 @@ ags_pulse_port_test_flags(AgsPulsePort *pulse_port, guint flags)
   }
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* test */
   pthread_mutex_lock(pulse_port_mutex);
@@ -925,11 +903,7 @@ ags_pulse_port_set_flags(AgsPulsePort *pulse_port, guint flags)
   }
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   //TODO:JK: add more?
 
@@ -960,11 +934,7 @@ ags_pulse_port_unset_flags(AgsPulsePort *pulse_port, guint flags)
   }
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   //TODO:JK: add more?
 
@@ -997,11 +967,7 @@ ags_pulse_port_find(GList *pulse_port,
 
   while(pulse_port != NULL){
     /* get pulse port mutex */
-    pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-    pulse_port_mutex = AGS_PULSE_PORT(pulse_port->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+    pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port->data);
 
     /* check port name */
     pthread_mutex_lock(pulse_port_mutex);
@@ -1094,11 +1060,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   }
 
   /* get pulse client mutex */
-  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-  pulse_client_mutex = pulse_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+  pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
 
   /* get context */
   pthread_mutex_lock(pulse_client_mutex);
@@ -1116,11 +1078,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   }
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* get port name */
   //FIXME:JK: memory leak?
@@ -1225,11 +1183,7 @@ ags_pulse_port_unregister(AgsPulsePort *pulse_port)
   }
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* get port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -1299,11 +1253,7 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
 		   (~(AGS_THREAD_TIMING)));
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /*  */
   pthread_mutex_lock(pulse_port_mutex);
@@ -1312,6 +1262,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   pulse_devin = (AgsPulseDevin *) pulse_port->pulse_devin;
 
   current_cache = pulse_port->current_cache;
+
+  word_size = 0;
   
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -1463,11 +1415,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }
   
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   if(g_atomic_int_get(&(pulse_port->queued)) > 0){
     g_warning("drop pulseaudio callback");
@@ -1539,17 +1487,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   
   /* get device mutex */
   if(AGS_IS_PULSE_DEVOUT(soundcard)){
-    pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-
-    device_mutex = AGS_PULSE_DEVOUT(soundcard)->obj_mutex;
-
-    pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+    device_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_PULSE_DEVIN(soundcard)){
-    pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
-
-    device_mutex = AGS_PULSE_DEVIN(soundcard)->obj_mutex;
-
-    pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+    device_mutex = AGS_PULSE_DEVIN_GET_OBJ_MUTEX(soundcard);
   }else{
     g_object_unref(audio_loop);
     g_object_unref(task_thread);
@@ -1573,6 +1513,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   /* check buffer flag */
   pthread_mutex_lock(pulse_port_mutex);
+
+  word_size = 0;
   
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -1642,6 +1584,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_lock(device_mutex);
 
   /* wait callback */
+  nth_buffer = 0;
+  
   no_event = TRUE;
 
   if(pulse_devout != NULL){
@@ -2028,11 +1972,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* polling thread */
   polling_thread = (AgsPollingThread *) ags_thread_find_type((AgsThread *) audio_loop,
@@ -2077,11 +2017,7 @@ ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
   pthread_mutex_t *pulse_devout_mutex;
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* get pulse devout */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2097,11 +2033,7 @@ ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
   pthread_mutex_unlock(pulse_port_mutex);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /*  */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2150,11 +2082,7 @@ ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
   fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
   
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2182,11 +2110,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
   
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2221,11 +2145,7 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
   fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
   
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2262,11 +2182,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
   fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
     
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2356,11 +2272,7 @@ ags_pulse_port_set_cache_buffer_size(AgsPulsePort *pulse_port,
   pthread_mutex_t *pulse_port_mutex;
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
     
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2425,15 +2337,13 @@ ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
   pthread_mutex_t *pulse_port_mutex;
 
   /* get pulse port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
     
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
 
+  latency = 0;
+  
 #ifdef AGS_WITH_PULSE
   if(pulse_port->use_cache){
     latency = (guint) floor((gdouble) NSEC_PER_SEC / (gdouble) pulse_port->sample_spec->rate * (gdouble) pulse_port->cache_buffer_size);

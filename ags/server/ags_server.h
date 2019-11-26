@@ -23,14 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifndef AGS_W32API
 #include <netinet/in.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#endif
 
 #include <ags/config.h>
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
 #include <xmlrpc-c/util.h>
 
 #include <xmlrpc-c/base.h>
@@ -86,7 +88,7 @@ typedef enum{
 
 struct _AgsServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -97,7 +99,7 @@ struct _AgsServer
 
   AgsServerInfo *server_info;
 
-#ifdef AGS_WITH_XMLRPC_C
+#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
   TServer *abyss_server;
   TSocket *socket;
 #else
@@ -114,9 +116,14 @@ struct _AgsServer
   int ip4_fd;
   int ip6_fd;
   
+#if defined AGS_W32API
+  gpointer ip4_address;
+  gpointer ip6_address;
+#else
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
-
+#endif
+  
   gchar *auth_module;
   
   GList *controller;
@@ -126,7 +133,7 @@ struct _AgsServer
 
 struct _AgsServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
   
   void (*start)(AgsServer *server);
   void (*stop)(AgsServer *server);

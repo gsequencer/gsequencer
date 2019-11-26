@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_cursor.h>
 
-void ags_cursor_class_init(AgsCursorInterface *interface);
+void ags_cursor_class_init(AgsCursorInterface *ginterface);
 
 /**
  * SECTION:ags_cursor
@@ -52,13 +52,13 @@ ags_cursor_get_type()
 }
 
 void
-ags_cursor_class_init(AgsCursorInterface *interface)
+ags_cursor_class_init(AgsCursorInterface *ginterface)
 {
   /* empty */
 }
 
 void
-ags_cursor_base_init(AgsCursorInterface *interface)
+ags_cursor_base_init(AgsCursorInterface *ginterface)
 {
   /* empty */
 }

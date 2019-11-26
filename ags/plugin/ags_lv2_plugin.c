@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,12 @@
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +51,7 @@
 
 #include <math.h>
 
+//#define _LIBINTL_H
 #include <ags/i18n.h>
 
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
@@ -402,11 +408,7 @@ ags_lv2_plugin_set_property(GObject *gobject,
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   switch(prop_id){
   case PROP_PNAME:
@@ -665,11 +667,7 @@ ags_lv2_plugin_get_property(GObject *gobject,
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   switch(prop_id){
   case PROP_PNAME:
@@ -882,6 +880,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   double rate;
   guint total_feature;
   guint nth;
+  guint i;
   gboolean initial_call;
   
   LV2_Handle (*instantiate)(const struct _LV2_Descriptor * descriptor,
@@ -892,13 +891,9 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
   
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);
-
+    
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   //  xmlSaveFormatFileEnc("-", lv2_plugin->turtle->doc, "UTF-8", 1);
 
@@ -907,30 +902,43 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   plugin_so = base_plugin->plugin_so;
 
-  if(plugin_so == NULL){
-    LV2_Descriptor_Function lv2_descriptor;
-    LV2_Descriptor *plugin_descriptor;
-
-    guint i;
+  if(plugin_so == NULL){    
+    gboolean success;
     
     g_message("open %s", base_plugin->filename);
     
+#ifdef AGS_W32API
+    plugin_so = LoadLibrary(base_plugin->filename);
+#else
     plugin_so = dlopen(base_plugin->filename,
 		       RTLD_NOW);
+#endif
     
     g_object_set(lv2_plugin,
 		 "plugin-so", plugin_so,
 		 NULL);
 
-    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor");
+    success = FALSE;    
+    
+#ifdef AGS_W32API
+    base_plugin->plugin_handle = 
+      lv2_descriptor = (LV2_Descriptor_Function) GetProcAddress(plugin_so,
+								"lv2_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
-      effect_index = 0;
-  
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
+    base_plugin->plugin_handle = 
+      lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						       "lv2_descriptor");
+
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
 	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 			       lv2_plugin->uri)){
+	  base_plugin->plugin_descriptor = plugin_descriptor;
 	  effect_index = i;
 
 	  g_object_set(lv2_plugin,
@@ -943,6 +951,9 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   }
   
+  lv2_descriptor = base_plugin->plugin_handle;
+  plugin_descriptor = base_plugin->plugin_descriptor;
+
   feature = lv2_plugin->feature;
 
   path = g_path_get_dirname(base_plugin->filename);
@@ -952,6 +963,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_unlock(base_plugin_mutex);
 
   if(plugin_so == NULL){
+    g_free(path);
+
     return(NULL);
   }
 
@@ -1001,18 +1014,22 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   
     /* log feature */
-    log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+#if 0
+    {
+      log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
   
-    log_feature->handle = NULL;
-    log_feature->printf = ags_lv2_log_manager_printf;
-    log_feature->vprintf = ags_lv2_log_manager_vprintf;
+      log_feature->handle = NULL;
+      log_feature->printf = ags_lv2_log_manager_printf;
+      log_feature->vprintf = ags_lv2_log_manager_vprintf;
 
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[nth]->URI = LV2_LOG__log;
-    feature[nth]->data = log_feature;
+      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth]->URI = LV2_LOG__log;
+      feature[nth]->data = log_feature;
 
-    nth++;
-  
+      nth++;
+    }
+#endif
+    
     /* event feature */
     event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
   
@@ -1070,12 +1087,27 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     
     pthread_mutex_unlock(base_plugin_mutex);
   }
+
+  instantiate = NULL;
   
   if(plugin_so != NULL){
+    gboolean success;
+    
+    success = FALSE;    
+    
+#ifdef AGS_W32API
+    lv2_descriptor = (LV2_Descriptor_Function) GetProcAddress(plugin_so,
+							      "lv2_descriptor");
+
+    success = (!lv2_descriptor) ? FALSE: TRUE;
+#else
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+
+    if(success && lv2_descriptor){
       pthread_mutex_lock(base_plugin_mutex);
       
       base_plugin->plugin_descriptor = 
@@ -1087,7 +1119,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   }
 
-  /* alloc handle and path */
+  /* alloc handle */
   lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
 
   /* instantiate */
@@ -1096,7 +1128,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 			      rate,
 			      path,
 			      feature);
-  
+
   if(initial_call){
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
@@ -1214,11 +1246,7 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1242,11 +1270,7 @@ ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1270,11 +1294,7 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1301,11 +1321,7 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1348,11 +1364,7 @@ ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* test flags */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1383,11 +1395,7 @@ ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* set flags */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1416,11 +1424,7 @@ ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* unset flags */
   pthread_mutex_lock(base_plugin_mutex);
@@ -2046,11 +2050,7 @@ ags_lv2_plugin_find_uri(GList *lv2_plugin,
 
   while(lv2_plugin != NULL){
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin->data);
 
     /* check uri */
     pthread_mutex_lock(base_plugin_mutex);
@@ -2096,11 +2096,7 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
 
   while(lv2_plugin != NULL){
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin->data);
 
     /* check pname */
     pthread_mutex_lock(base_plugin_mutex);

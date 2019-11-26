@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,7 +39,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,8 +63,6 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-
-  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -119,11 +116,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
       machine = machine_editor->machine;
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-      g_object_get(window,
-		   "application-context" , &application_context,
-		   NULL);
 
-      gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+      application_context = (AgsApplicationContext *) window->application_context;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
@@ -202,8 +196,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 (GObject *) add_effect);
+	    ags_xorg_application_context_schedule_task(application_context,
+						       (GObject *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -278,8 +272,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 (GObject *) add_effect);
+	    ags_xorg_application_context_schedule_task(application_context,
+						       (GObject *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -402,7 +396,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     AgsEffectLine *effect_line;
 	
     effect_bridge = AGS_EFFECT_BRIDGE(machine->bridge);
-	
+
+    effect_line = NULL;
+    
     /* retrieve effect line and effect pad */
     if(is_output){
       pad_start = 
@@ -438,7 +434,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(effect_line != NULL){
       for(nth = 0; line_member != NULL; nth++){
-
 	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
@@ -448,7 +443,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	  ags_effect_line_remove_effect(effect_line,
 					nth);
 	}
-      
+
+	g_list_free(children);
+	
 	line_member = line_member->next;
       }
     }

@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-void ags_countable_base_init(AgsCountableInterface *interface);
+void ags_countable_base_init(AgsCountableInterface *ginterface);
 
 /**
  * SECTION:ags_countable
@@ -60,7 +60,7 @@ ags_countable_get_type()
 }
 
 void
-ags_countable_base_init(AgsCountableInterface *interface)
+ags_countable_base_init(AgsCountableInterface *ginterface)
 {
   /* empty */
 }

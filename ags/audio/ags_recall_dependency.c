@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,11 +171,7 @@ ags_recall_dependency_set_property(GObject *gobject,
   recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
 
   /* get recall dependency mutex */
-  pthread_mutex_lock(ags_recall_dependency_get_class_mutex());
-  
-  recall_dependency_mutex = recall_dependency->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_dependency_get_class_mutex());
+  recall_dependency_mutex = AGS_RECALL_DEPENDENCY_GET_OBJ_MUTEX(recall_dependency);
   
   switch(prop_id){
   case PROP_DEPENDENCY:
@@ -224,11 +220,7 @@ ags_recall_dependency_get_property(GObject *gobject,
   recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
 
   /* get recall dependency mutex */
-  pthread_mutex_lock(ags_recall_dependency_get_class_mutex());
-  
-  recall_dependency_mutex = recall_dependency->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_dependency_get_class_mutex());
+  recall_dependency_mutex = AGS_RECALL_DEPENDENCY_GET_OBJ_MUTEX(recall_dependency);
 
   switch(prop_id){
   case PROP_DEPENDENCY:

@@ -245,7 +245,7 @@ ags_polling_thread_run(AgsThread *thread)
       }
     }else{
       if(thread->freq > AGS_THREAD_HERTZ_JIFFIE){
-	timeout.tv_nsec = (NSEC_PER_SEC / thread->freq + AGS_POLLING_THREAD_UNDERLOAD);
+	timeout.tv_nsec = (NSEC_PER_SEC / thread->max_precision + AGS_POLLING_THREAD_UNDERLOAD);
       }else{
 	timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
       }
@@ -268,22 +268,24 @@ ags_polling_thread_run(AgsThread *thread)
       }
 
       list = list->next;
-    }  
-
+    }
+    
     /* poll */	
     if(polling_thread->fds != NULL){
-#ifndef __APPLE__
+#if defined AGS_W32API
+      //TODO:JK: implement me
+#elif defined __APPLE__
+      poll(polling_thread->fds,
+	   g_list_length(polling_thread->poll_fd),
+	   timeout.tv_nsec / 1000);
+#else
       ppoll(polling_thread->fds,
 	    g_list_length(polling_thread->poll_fd),
 	    &timeout,
 	    &sigmask);
-#else
-      poll(polling_thread->fds,
-	   g_list_length(polling_thread->poll_fd),
-	   timeout.tv_nsec / 1000);
 #endif
     }
-
+    
     /* post flag */
     list = polling_thread->poll_fd;
 

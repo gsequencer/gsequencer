@@ -21,7 +21,7 @@
     <releaseinfo>
       for libags_gui.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/libags-gui/index.html">http://nongnu.org/gsequencer/api/libags-gui/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/&package_version;/api/libags-gui/index.html">http://nongnu.org/gsequencer/api/&package_version;/libags-gui/</ulink>.
     </releaseinfo>
   </bookinfo>
 

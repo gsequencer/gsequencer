@@ -28,7 +28,7 @@
 
 #include <math.h>
 
-void ags_sound_resource_base_init(AgsSoundResourceInterface *interface);
+void ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface);
 
 /**
  * SECTION:ags_sound_resource
@@ -67,7 +67,7 @@ ags_sound_resource_get_type()
 
 
 void
-ags_sound_resource_base_init(AgsSoundResourceInterface *interface)
+ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface)
 {
   /* empty */
 }
@@ -415,7 +415,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				 &audio_channels,
 				 &samplerate,
 				 &buffer_size,
-				 NULL);
+				 &format);
   
   g_object_get(G_OBJECT(sound_resource),
 	       "format", &format,
@@ -446,15 +446,23 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     i_start = audio_channel;
     i_stop = i_start + 1;
   }
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
 
   data = NULL;
 
   if(samplerate != target_samplerate){
+    buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
+    
+    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(sound_resource),
+				   audio_channels,
+				   samplerate,
+				   buffer_size,
+				   format);
+    
     data = ags_stream_alloc(buffer_size,
 			    format);
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-						    ags_audio_buffer_util_format_from_soundcard(format));
   }
     
   for(i = i_start; i < i_stop; i++){
@@ -478,7 +486,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil(frame_count / target_buffer_size) + 1);
     audio_signal->stream_current = audio_signal->stream;
-
+    
     start_list = g_list_prepend(start_list,
 				audio_signal);
 
@@ -589,7 +597,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 				 &audio_channels,
 				 &samplerate,
 				 &buffer_size,
-				 NULL);
+				 &format);
 
   g_object_get(G_OBJECT(sound_resource),
 	       "format", &format,
@@ -623,14 +631,22 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     i_stop = i_start + 1;
   }
 
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
   data = NULL;
 
   if(samplerate != target_samplerate){
+    buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
+    
+    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(sound_resource),
+				   audio_channels,
+				   samplerate,
+				   buffer_size,
+				   format);
+    
     data = ags_stream_alloc(buffer_size,
 			    format);
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-						    ags_audio_buffer_util_format_from_soundcard(format));
   }
   
   for(i = i_start; i < i_stop; i++){
@@ -712,7 +728,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 	free(target_data);
 
-	num_read = (guint) ceil(num_read / buffer_size * frame_count);
+	num_read = (guint) (ceil((double) num_read / (double) buffer_size * (double) frame_count));
       }else{
 	num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					   buffer->data, 1,

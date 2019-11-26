@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,9 +29,9 @@
 
 void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
 
-void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
-
 void ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth);
 void ags_synth_update_callback(GtkButton *button, AgsSynth *synth);
+
+void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
 
 #endif /*__AGS_SYNTH_CALLBACKS_H__ */

@@ -26,6 +26,7 @@ AgsCopyAudioSignal AgsConnectable AgsPlugin
 AgsEnvelopeAudioSignal AgsConnectable AgsPlugin
 AgsEq10AudioSignal AgsConnectable AgsPlugin
 AgsFeedAudioSignal AgsConnectable AgsPlugin
+AgsLfoAudioSignal AgsConnectable AgsPlugin
 AgsMuteAudioSignal AgsConnectable AgsPlugin
 AgsPeakAudioSignal AgsConnectable AgsPlugin
 AgsPlayAudioSignal AgsConnectable AgsPlugin
@@ -45,6 +46,7 @@ AgsCopyPatternChannel AgsConnectable AgsPlugin
 AgsEnvelopeChannel AgsConnectable AgsPlugin
 AgsEq10Channel AgsConnectable AgsPlugin
 AgsFeedChannel AgsConnectable AgsPlugin
+AgsLfoChannel AgsConnectable AgsPlugin
 AgsLoopChannel AgsConnectable AgsPlugin
 AgsMuteChannel AgsConnectable AgsPlugin AgsMutable
 AgsPeakChannel AgsConnectable AgsPlugin
@@ -67,6 +69,7 @@ AgsEnvelopeChannelRun AgsConnectable AgsPlugin
 AgsEq10ChannelRun AgsConnectable AgsPlugin
 AgsFeedChannelRun AgsConnectable AgsPlugin
 AgsGenericRecallChannelRun AgsConnectable AgsPlugin
+AgsLfoChannelRun AgsConnectable AgsPlugin
 AgsLoopChannelRun AgsConnectable AgsPlugin
 AgsMuteChannelRun AgsConnectable AgsPlugin
 AgsPeakChannelRun AgsConnectable AgsPlugin
@@ -85,6 +88,7 @@ AgsEnvelopeRecycling AgsConnectable AgsPlugin
 AgsEq10Recycling AgsConnectable AgsPlugin
 AgsFeedRecycling AgsConnectable AgsPlugin
 AgsGenericRecallRecycling AgsConnectable AgsPlugin
+AgsLfoRecycling AgsConnectable AgsPlugin
 AgsMuteRecycling AgsConnectable AgsPlugin
 AgsPeakRecycling AgsConnectable AgsPlugin
 AgsPlayRecycling AgsConnectable AgsPlugin
@@ -137,6 +141,11 @@ AgsTaskThread AgsConnectable AgsAsyncQueue
 AgsReturnableThread AgsConnectable
 AgsWorkerThread AgsConnectable
 AgsAudioSignal AgsConnectable
+AgsAudioUnitClient AgsConnectable
+AgsAudioUnitDevin AgsConnectable AgsSoundcard
+AgsAudioUnitDevout AgsConnectable AgsSoundcard
+AgsAudioUnitPort AgsConnectable
+AgsAudioUnitServer AgsConnectable AgsSoundServer
 AgsChannel AgsConnectable
 AgsInput AgsConnectable
 AgsOutput AgsConnectable
@@ -173,4 +182,10 @@ AgsPulseServer AgsConnectable AgsSoundServer
 AgsRecallContainer AgsConnectable
 AgsRecallFactory AgsConnectable
 AgsRecycling AgsConnectable
+AgsSFZFile AgsConnectable AgsSoundContainer
+AgsSFZGroup AgsConnectable
+AgsSFZRegion AgsConnectable
+AgsSFZSample AgsConnectable AgsSoundResource
 AgsSndfile AgsConnectable AgsSoundResource
+AgsWasapiDevin AgsConnectable AgsSoundcard
+AgsWasapiDevout AgsConnectable AgsSoundcard

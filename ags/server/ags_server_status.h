@@ -46,7 +46,7 @@ typedef enum{
 
 struct _AgsServerStatus
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -58,7 +58,7 @@ struct _AgsServerStatus
 
 struct _AgsServerStatusClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_server_status_get_type();

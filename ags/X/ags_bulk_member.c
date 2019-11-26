@@ -28,8 +28,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
@@ -78,8 +76,10 @@ enum{
   PROP_FILENAME,
   PROP_EFFECT,
   PROP_SPECIFIER,
+  PROP_PORT_INDEX,
   PROP_CONTROL_PORT,
-  PROP_STEPS,
+  PROP_SCALE_PRECISION,
+  PROP_STEP_COUNT,
   PROP_CONVERSION,
   PROP_TASK_TYPE,
   PROP_BULK_PORT,
@@ -244,6 +244,24 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  param_spec);
 
   /**
+   * AgsBulkMember:port-index:
+   *
+   * The port index.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_uint("port-index",
+				 i18n_pspec("port index"),
+				 i18n_pspec("The port's index"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_INDEX,
+				  param_spec);
+
+  /**
    * AgsBulkMember:control-port:
    *
    * The control port of the recall.
@@ -260,23 +278,41 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  param_spec);
 
   /**
-   * AgsBulkMember:steps:
+   * AgsBulkMember:scale-precision:
    *
    * If bulk member has integer ports, this is the number of steps.
    * 
-   * Since: 2.0.0
+   * Since: 2.2.8
    */
-  param_spec = g_param_spec_uint("steps",
-				 i18n_pspec("steps of bulk members port"),
-				 i18n_pspec("The steps this bulk members port has"),
+  param_spec = g_param_spec_uint("scale-precision",
+				 i18n_pspec("scale precision of bulk members port"),
+				 i18n_pspec("The scale precision this bulk members port has"),
 				 0,
 				 G_MAXUINT,
-				 AGS_DIAL_DEFAULT_PRECISION,
+				 (guint) AGS_DIAL_DEFAULT_PRECISION,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_STEPS,
+				  PROP_SCALE_PRECISION,
 				  param_spec);
 
+  /**
+   * AgsBulkMember:step-count:
+   *
+   * If bulk member has logarithmic ports, this is the number of step count.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("step-count",
+				   i18n_pspec("step count of bulk members port"),
+				   i18n_pspec("The step count this bulk members port has"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEP_COUNT,
+				  param_spec);
+  
   /**
    * AgsBulkMember:conversion:
    *
@@ -398,6 +434,10 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 {
   AgsDial *dial;
   
+  AgsConfig *config;
+
+  gchar *str;
+
   g_signal_connect_after((GObject *) bulk_member, "parent_set",
 			 G_CALLBACK(ags_bulk_member_parent_set_callback), (gpointer) bulk_member);
 
@@ -405,14 +445,33 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 			AGS_BULK_MEMBER_APPLY_RECALL);
   bulk_member->port_flags = 0;
   
+  config = ags_config_get_instance();
+
   bulk_member->widget_type = AGS_TYPE_DIAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
-  gtk_widget_set_size_request((GtkWidget *) dial,
-			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-			      2 * (dial->radius + dial->outline_strength + 1));
   
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gdouble gui_scale_factor;
+
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_object_set(dial,
+		 "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+		 "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
+		 "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
+		 "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
+		 NULL);
+
+    g_free(str);
+  }
+
   gtk_container_add(GTK_CONTAINER(bulk_member),
 		    (GtkWidget *) dial);
 
@@ -424,8 +483,11 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->effect = NULL;
   bulk_member->specifier = NULL;
 
+  bulk_member->port_index = 0;
   bulk_member->control_port = NULL;
-  bulk_member->steps = 0;
+
+  bulk_member->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+  bulk_member->step_count = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT;
 
   bulk_member->conversion = NULL;
   
@@ -449,7 +511,12 @@ ags_bulk_member_set_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       GtkWidget *child, *new_child;
+
+      AgsConfig *config;
+
       GType widget_type;
+
+      gchar *str;
 
       widget_type = g_value_get_ulong(value);
 
@@ -467,14 +534,49 @@ ags_bulk_member_set_property(GObject *gobject,
       new_child = (GtkWidget *) g_object_new(widget_type,
 					     NULL);
 
-      if(AGS_IS_DIAL(new_child)){
-	AgsDial *dial;
+      config = ags_config_get_instance();
+
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_GENERIC,
+				 "gui-scale");
+
+      if(str != NULL){
+	gdouble gui_scale_factor;
+	  
+	gui_scale_factor = g_ascii_strtod(str,
+					  NULL);
+
+	if(AGS_IS_DIAL(new_child)){
+	  g_object_set(new_child,
+		       "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+		       "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
+		       "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
+		       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
+		       NULL);
+	}else if(GTK_IS_VSCALE(new_child)){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else if(GTK_IS_HSCALE(new_child)){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}else if(AGS_IS_VINDICATOR(new_child)){
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}else if(AGS_IS_HINDICATOR(new_child)){
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}
 	
-	dial = (AgsDial *) new_child;
+	gtk_widget_queue_resize_no_redraw(new_child);
+	gtk_widget_queue_draw(new_child);
 	
-	gtk_widget_set_size_request((GtkWidget *) dial,
-				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-				    2 * (dial->radius + dial->outline_strength + 1));
+	g_free(str);
       }
 
       gtk_container_add(GTK_CONTAINER(bulk_member),
@@ -586,6 +688,15 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->specifier = g_strdup(specifier);
     }
     break;
+  case PROP_PORT_INDEX:
+    {
+      guint port_index;
+
+      port_index = g_value_get_uint(value);
+
+      bulk_member->port_index = port_index;
+    }
+    break;
   case PROP_CONTROL_PORT:
     {
       gchar *control_port;
@@ -599,27 +710,37 @@ ags_bulk_member_set_property(GObject *gobject,
       if(bulk_member->control_port != NULL){
 	g_free(bulk_member->control_port);
       }
-
       
       bulk_member->control_port = g_strdup(control_port);
     }
     break;
-  case PROP_STEPS:
+  case PROP_SCALE_PRECISION:
     {
       GtkWidget *child;
       
-      guint steps;
+      guint scale_precision;
 
-      steps = g_value_get_uint(value);
+      scale_precision = g_value_get_uint(value);
 
-      bulk_member->steps = steps;
+      bulk_member->scale_precision = scale_precision;
       child = gtk_bin_get_child(GTK_BIN(bulk_member));
 
       if(AGS_IS_DIAL(child)){
 	g_object_set(child,
-		     "scale-precision", steps,
+		     "scale-precision", scale_precision,
 		     NULL);
       }
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      GtkWidget *child;
+      
+      gdouble step_count;
+
+      step_count = g_value_get_double(value);
+
+      bulk_member->step_count = step_count;
     }
     break;
   case PROP_CONVERSION:
@@ -757,14 +878,24 @@ ags_bulk_member_get_property(GObject *gobject,
       g_value_set_string(value, bulk_member->specifier);
     }
     break;
+  case PROP_PORT_INDEX:
+    {
+      g_value_set_uint(value, bulk_member->port_index);
+    }
+    break;
   case PROP_CONTROL_PORT:
     {
       g_value_set_string(value, bulk_member->control_port);
     }
     break;
-  case PROP_STEPS:
+  case PROP_SCALE_PRECISION:
     {
-      g_value_set_uint(value, bulk_member->steps);
+      g_value_set_uint(value, bulk_member->scale_precision);
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      g_value_set_double(value, bulk_member->step_count);
     }
     break;
   case PROP_CONVERSION:
@@ -1068,8 +1199,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
   AgsWindow *window;
-
-  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -1114,7 +1243,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	  g_value_set_uint64(&value,
 			     ((guint *) port_data)[0]);
 	}else if(port->port_value_type == G_TYPE_FLOAT){
-	  gfloat val;
+	  gdouble val;
+	  gfloat port_val;
 	  
 	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
 	    if(((gboolean *) port_data)[0]){
@@ -1125,11 +1255,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	  }else{
 	    val = ((gdouble *) port_data)[0];
 	  }
+
+	  port_val = (gfloat) val;
 	  
 	  if(bulk_member->conversion != NULL){
-	    gfloat upper, lower, range, step;
-	    gfloat c_upper, c_lower, c_range;
-
 	    gboolean success;
 
 	    success = FALSE;
@@ -1139,32 +1268,15 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
 
-	      upper = dial->adjustment->upper;
-	      lower = dial->adjustment->lower;
-
 	      success = TRUE;
 	    }else{
 	      g_warning("unsupported child type in conversion");
 	    }
 
 	    if(success){
-	      range = upper - lower;
-	      step = range / val;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   val,
-					   FALSE);
-	      c_upper = ags_conversion_convert(bulk_member->conversion,
-					       upper,
-					       FALSE);
-	      c_lower = ags_conversion_convert(bulk_member->conversion,
-					       lower,
-					       FALSE);
-	      c_range = c_upper - c_lower;
-	    
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   c_lower + (c_range / step),
-					   TRUE);
+	      port_val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+							 val,
+							 FALSE);
 	    }
 	  }
 	  
@@ -1172,9 +1284,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 		       G_TYPE_FLOAT);
 
 	  g_value_set_float(&value,
-			    val);
+			    port_val);
 	}else if(port->port_value_type == G_TYPE_DOUBLE){
 	  gdouble val;
+	  gdouble port_val;
 	  
 	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
 	    if(((gboolean *) port_data)[0]){
@@ -1185,11 +1298,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	  }else{
 	    val = ((gdouble *) port_data)[0];
 	  }
+
+	  port_val = val;
 	  
 	  if(bulk_member->conversion != NULL){
-	    gdouble upper, lower, range, step;
-	    gdouble c_upper, c_lower, c_range;
-
 	    gboolean success;
 
 	    success = FALSE;
@@ -1199,32 +1311,15 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
 
-	      upper = dial->adjustment->upper;
-	      lower = dial->adjustment->lower;
-
 	      success = TRUE;
 	    }else{
 	      g_warning("unsupported child type in conversion");
 	    }
 
 	    if(success){
-	      range = upper - lower;
-	      step = range / val;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   val,
-					   FALSE);
-	      c_upper = ags_conversion_convert(bulk_member->conversion,
-					       upper,
-					       FALSE);
-	      c_lower = ags_conversion_convert(bulk_member->conversion,
-					       lower,
-					       FALSE);
-	      c_range = c_upper - c_lower;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   c_lower + (c_range / step),
-					   TRUE);
+	      port_val = ags_conversion_convert(bulk_member->conversion,
+						val,
+						TRUE);
 	    }
 	  }
 
@@ -1232,7 +1327,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 		       G_TYPE_DOUBLE);
 
 	  g_value_set_double(&value,
-			     ((gdouble *) port_data)[0]);
+			     port_val);
 	}
       }else{
 	if(port->port_value_type == G_TYPE_OBJECT){
@@ -1272,8 +1367,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
     ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
 
@@ -1293,8 +1386,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				    bulk_member->control_port, port_data,
 				    NULL);
 
-    ags_gui_thread_schedule_task(AGS_GUI_THREAD(gui_thread),
-				 G_OBJECT(task));
+    ags_xorg_application_context_schedule_task(application_context,
+					       G_OBJECT(task));
   }
 }
 

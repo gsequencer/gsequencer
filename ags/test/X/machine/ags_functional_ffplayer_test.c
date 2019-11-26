@@ -93,9 +93,9 @@ AgsTaskThread *task_thread;
 void ags_functional_ffplayer_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of AgsFFPlayer open sf2\0", ags_functional_ffplayer_test_open_sf2) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsFFPlayer resize pads\0", ags_functional_ffplayer_test_resize_pads) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsFFPlayer resize audio channels\0", ags_functional_ffplayer_test_resize_audio_channels) == NULL)){
+  if((CU_add_test(pSuite, "functional test of AgsFFPlayer open sf2", ags_functional_ffplayer_test_open_sf2) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsFFPlayer resize pads", ags_functional_ffplayer_test_resize_pads) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsFFPlayer resize audio channels", ags_functional_ffplayer_test_resize_audio_channels) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -380,7 +380,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalFFPlayerTest\0", ags_functional_ffplayer_test_init_suite, ags_functional_ffplayer_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalFFPlayerTest", ags_functional_ffplayer_test_init_suite, ags_functional_ffplayer_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

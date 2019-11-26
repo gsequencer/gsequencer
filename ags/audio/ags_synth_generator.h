@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,23 @@
 #define AGS_IS_SYNTH_GENERATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNTH_GENERATOR))
 #define AGS_SYNTH_GENERATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNTH_GENERATOR, AgsSynthGeneratorClass))
 
+#define AGS_SYNTH_GENERATOR_DEFAULT_SAMPLERATE ((guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
+#define AGS_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE (AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
+#define AGS_SYNTH_GENERATOR_DEFAULT_FORMAT (AGS_SOUNDCARD_DEFAULT_FORMAT)
+
+#define AGS_SYNTH_GENERATOR_DEFAULT_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
+
+#define AGS_SYNTH_GENERATOR_DEFAULT_FREQUENCY (440.0)
+#define AGS_SYNTH_GENERATOR_DEFAULT_PHASE (0.0)
+#define AGS_SYNTH_GENERATOR_DEFAULT_VOLUME (1.0)
+
+#define AGS_SYNTH_GENERATOR_DEFAULT_LFO_DEPTH (1.0)
+#define AGS_SYNTH_GENERATOR_DEFAULT_TUNING (0.0)
+
+#define AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_FREQUENCY (6.0)
+#define AGS_SYNTH_GENERATOR_DEFAULT_FM_LFO_DEPTH (1.0)
+#define AGS_SYNTH_GENERATOR_DEFAULT_FM_TUNING (0.0)
+
 typedef struct _AgsSynthGenerator AgsSynthGenerator;
 typedef struct _AgsSynthGeneratorClass AgsSynthGeneratorClass;
 
@@ -41,6 +58,7 @@ typedef struct _AgsSynthGeneratorClass AgsSynthGeneratorClass;
  * @AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH: sawtooth
  * @AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE: triangle
  * @AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE: square
+ * @AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE: impulse
  * 
  * Enum values to specify oscillator.
  */
@@ -49,6 +67,7 @@ typedef enum{
   AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH,
   AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE,
   AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE,
+  AGS_SYNTH_GENERATOR_OSCILLATOR_IMPULSE,
 }AgsSynthGeneratorOscillator;
 
 struct _AgsSynthGenerator
@@ -67,17 +86,32 @@ struct _AgsSynthGenerator
 
   gdouble delay;
   guint attack;
-  
+
+  gboolean do_lfo;  
+
   guint oscillator;
   
   gdouble frequency;
   gdouble phase;
   gdouble volume;
 
+  gdouble lfo_depth;
+
+  gdouble tuning;
+  
   gboolean sync_relative;
   AgsComplex **sync_point;
   guint sync_point_count;
 
+  gboolean do_fm_synth;
+  
+  guint fm_lfo_oscillator;
+  
+  gdouble fm_lfo_frequency;
+  gdouble fm_lfo_depth;
+
+  gdouble fm_tuning;
+  
   AgsComplex *damping;
   AgsComplex *vibration;
   

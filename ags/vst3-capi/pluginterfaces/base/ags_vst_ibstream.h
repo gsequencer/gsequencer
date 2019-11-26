@@ -20,7 +20,7 @@
 #ifndef __AGS_VST_IBSTREAM_H__
 #define __AGS_VST_IBSTREAM_H__
 
-#include <ags/vst3-capi/pluginterfaces/base/funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
 #define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid);
 #define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid());
@@ -38,29 +38,9 @@ extern "C" {
     AGS_VST_KIB_SEEK_END,
   };
 
-  AgsVstTUID ags_vst_ibstream_get_iid();
-  
-  gint32 ags_vst_ibstream_read(AgsVstIBStream *ibstream,
-			       void *buffer, gint32 num_bytes, gint32 *num_bytes_read);
-	
-  gint32 ags_vst_ibstream_write(AgsVstIBStream *ibstream,
-				void *buffer, gint32 num_bytes, gint32 *num_bytes_written);
-	
-  gint32 ags_vst_ibstream_seek(AgsVstIBStream *ibstream,
-			       gint64 pos, gint32 mode, gint64 *result);
-	
-  gint32 ags_vst_ibstream_tell(AgsVstIBStream *ibstream,
-			       gint64 *pos);
+  AgsVstTUID* ags_vst_ibstream_get_iid();
 
-  typedef struct AgsVstISizeableStream ISizeableStream;
-
-  AgsVstTUID ags_vst_isizeable_stream_get_iid();
-  
-  gint32 ags_vst_isizeable_stream_get_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 *size);
-  gint32 ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 size);
-  
+  typedef struct AgsVstISizeableStream ISizeableStream;  
 
 #ifdef __cplusplus
 }

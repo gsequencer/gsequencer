@@ -34,6 +34,8 @@
 #define AGS_IS_UI_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_UI_PROVIDER))
 #define AGS_UI_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_UI_PROVIDER, AgsUiProviderInterface))
 
+#define AGS_UI_PROVIDER_DEFAULT_TIMEOUT (1.0 / 30.0)
+  
 typedef struct _AgsUiProvider AgsUiProvider;
 typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 
@@ -56,6 +58,14 @@ struct _AgsUiProviderInterface
   gboolean (*get_gui_ready)(AgsUiProvider *ui_provider);
   void (*set_gui_ready)(AgsUiProvider *ui_provider,
 			gboolean is_gui_ready);  
+
+  GtkWidget* (*get_animation_window)(AgsUiProvider *ui_provider);
+  void (*set_animation_window)(AgsUiProvider *ui_provider,
+			       GtkWidget *animation_window);
+
+  GList* (*get_machine)(AgsUiProvider *ui_provider);
+  void (*set_machine)(AgsUiProvider *ui_provider,
+		      GList *machine);
 };
 
 GType ags_ui_provider_get_type();
@@ -75,5 +85,13 @@ void ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
 gboolean ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
 				   gboolean is_gui_ready);
+
+GtkWidget* ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
+					  GtkWidget *animation_window);
+
+GList* ags_ui_provider_get_machine(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
+				 GList *machine);
 
 #endif /*__AGS_UI_PROVIDER_H__*/

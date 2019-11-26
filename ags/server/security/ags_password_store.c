@@ -19,7 +19,7 @@
 
 #include <ags/server/security/ags_password_store.h>
 
-void ags_password_store_base_init(AgsPasswordStoreInterface *interface);
+void ags_password_store_base_init(AgsPasswordStoreInterface *ginterface);
 
 /**
  * SECTION:ags_password_store
@@ -56,7 +56,7 @@ ags_password_store_get_type()
 }
 
 void
-ags_password_store_base_init(AgsPasswordStoreInterface *interface)
+ags_password_store_base_init(AgsPasswordStoreInterface *ginterface)
 {
   /* empty */
 }

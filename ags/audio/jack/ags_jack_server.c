@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -378,11 +378,7 @@ ags_jack_server_set_property(GObject *gobject,
   jack_server = AGS_JACK_SERVER(gobject);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -557,11 +553,7 @@ ags_jack_server_get_property(GObject *gobject,
   jack_server = AGS_JACK_SERVER(gobject);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -742,11 +734,7 @@ ags_jack_server_get_uuid(AgsConnectable *connectable)
   jack_server = AGS_JACK_SERVER(connectable);
 
   /* get jack server signal mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get UUID */
   pthread_mutex_lock(jack_server_mutex);
@@ -776,11 +764,7 @@ ags_jack_server_is_ready(AgsConnectable *connectable)
   jack_server = AGS_JACK_SERVER(connectable);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* check is added */
   pthread_mutex_lock(jack_server_mutex);
@@ -863,11 +847,7 @@ ags_jack_server_is_connected(AgsConnectable *connectable)
   jack_server = AGS_JACK_SERVER(connectable);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* check is connected */
   pthread_mutex_lock(jack_server_mutex);
@@ -897,11 +877,7 @@ ags_jack_server_connect(AgsConnectable *connectable)
   ags_jack_server_set_flags(jack_server, AGS_JACK_SERVER_CONNECTED);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   list =
     list_start = g_list_copy(jack_server->client);
@@ -933,11 +909,7 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
   ags_jack_server_unset_flags(jack_server, AGS_JACK_SERVER_CONNECTED);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* client */
   list =
@@ -990,11 +962,7 @@ ags_jack_server_test_flags(AgsJackServer *jack_server, guint flags)
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* test */
   pthread_mutex_lock(jack_server_mutex);
@@ -1025,11 +993,7 @@ ags_jack_server_set_flags(AgsJackServer *jack_server, guint flags)
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   //TODO:JK: add more?
 
@@ -1060,11 +1024,7 @@ ags_jack_server_unset_flags(AgsJackServer *jack_server, guint flags)
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   //TODO:JK: add more?
 
@@ -1087,11 +1047,7 @@ ags_jack_server_set_url(AgsSoundServer *sound_server,
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* set URL */
   pthread_mutex_lock(jack_server_mutex);
@@ -1113,11 +1069,7 @@ ags_jack_server_get_url(AgsSoundServer *sound_server)
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* set URL */
   pthread_mutex_lock(jack_server_mutex);
@@ -1140,11 +1092,7 @@ ags_jack_server_set_ports(AgsSoundServer *sound_server,
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* set ports */
   pthread_mutex_lock(jack_server_mutex);
@@ -1168,11 +1116,7 @@ ags_jack_server_get_ports(AgsSoundServer *sound_server,
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get ports */
   pthread_mutex_lock(jack_server_mutex);
@@ -1368,11 +1312,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
   application_context = ags_application_context_get_instance();
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* the default client */
   initial_set = FALSE;
@@ -1407,11 +1347,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
   }
 
   /* get jack client mutex */
-  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-  jack_client_mutex = jack_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
 
   /* get client */
   pthread_mutex_lock(jack_client_mutex);
@@ -1601,11 +1537,7 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
   
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -1728,11 +1660,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
   application_context = ags_application_context_get_instance();
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -1764,11 +1692,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
   }
 
   /* get jack client mutex */
-  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-  jack_client_mutex = jack_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
 
   /* get client */
   pthread_mutex_lock(jack_client_mutex);
@@ -1846,11 +1770,7 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
   jack_server = AGS_JACK_SERVER(sound_server);
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
   
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -1960,11 +1880,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   application_context = ags_application_context_get_instance();
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -1989,11 +1905,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   }
 
   /* get jack client mutex */
-  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-  jack_client_mutex = default_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* get client */
   pthread_mutex_lock(jack_client_mutex);
@@ -2090,11 +2002,7 @@ ags_jack_server_find_url(GList *jack_server,
   
   while(jack_server != NULL){
     /* get jack server mutex */
-    pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-    jack_server_mutex = AGS_JACK_SERVER(jack_server->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+    jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server->data);
 
     /* check URL */
     pthread_mutex_lock(jack_server_mutex);
@@ -2143,11 +2051,7 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -2161,11 +2065,7 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
   
   while(list != NULL){
     /* get jack client mutex */
-    pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-    jack_client_mutex = AGS_JACK_CLIENT(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+    jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(list->data);
 
     /* check client UUID */
     pthread_mutex_lock(jack_client_mutex);
@@ -2226,11 +2126,7 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
     
     while(port != NULL){
       /* get jack port mutex */
-      pthread_mutex_lock(ags_jack_port_get_class_mutex());
-  
-      jack_port_mutex = AGS_JACK_PORT(port->data)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+      jack_port_mutex = AGS_JACK_PORT_GET_OBJ_MUTEX(port->data);
       
       /* check port UUID */
       pthread_mutex_lock(jack_port_mutex);
@@ -2287,11 +2183,7 @@ ags_jack_server_add_client(AgsJackServer *jack_server,
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
@@ -2326,11 +2218,7 @@ ags_jack_server_remove_client(AgsJackServer *jack_server,
   }
 
   /* get jack server mutex */
-  pthread_mutex_lock(ags_jack_server_get_class_mutex());
-  
-  jack_server_mutex = jack_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_server_get_class_mutex());
+  jack_server_mutex = AGS_JACK_SERVER_GET_OBJ_MUTEX(jack_server);
 
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);

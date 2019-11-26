@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 
-void ags_ui_provider_class_init(AgsUiProviderInterface *interface);
+void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
 
 /**
  * SECTION:ags_ui_provider
@@ -52,7 +52,7 @@ ags_ui_provider_get_type()
 }
 
 void
-ags_ui_provider_class_init(AgsUiProviderInterface *interface)
+ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 {
   /* empty */
 }
@@ -235,4 +235,94 @@ ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
 
   ui_provider_interface->set_gui_ready(ui_provider,
 				       is_gui_ready);
+}
+
+/**
+ * ags_ui_provider_get_animation_window:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get animation window.
+ * 
+ * Returns: the #GtkWidget
+ * 
+ * Since: 2.2.33
+ */
+GtkWidget*
+ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_animation_window, NULL);
+
+  return(ui_provider_interface->get_animation_window(ui_provider));
+}
+
+/**
+ * ags_ui_provider_get_animation_window:
+ * @ui_provider: the #AgsUiProvider
+ * @animation_window: the #GtkWidget
+ * 
+ * Set animation window.
+ * 
+ * Since: 2.2.33
+ */
+void
+ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
+				     GtkWidget *animation_window)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_animation_window);
+
+  ui_provider_interface->set_animation_window(ui_provider,
+					      animation_window);
+}
+
+/**
+ * ags_ui_provider_get_machine:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get machine.
+ * 
+ * Returns: the #GList-struct containing #AgsMachine
+ * 
+ * Since: 2.4.0
+ */
+GList*
+ags_ui_provider_get_machine(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_machine, NULL);
+
+  return(ui_provider_interface->get_machine(ui_provider));
+}
+
+/**
+ * ags_ui_provider_get_machine:
+ * @ui_provider: the #AgsUiProvider
+ * @machine: the #GList-struct containing #AgsMachine
+ * 
+ * Set machine.
+ * 
+ * Since: 2.4.0
+ */
+void
+ags_ui_provider_set_machine(AgsUiProvider *ui_provider,
+			    GList *machine)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_machine);
+
+  ui_provider_interface->set_machine(ui_provider,
+				     machine);
 }

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <alsa/asoundlib.h>
 
 #define AGS_TYPE_BUFFER                (ags_buffer_get_type())
@@ -31,6 +33,8 @@
 #define AGS_IS_BUFFER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_BUFFER))
 #define AGS_IS_BUFFER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_BUFFER))
 #define AGS_BUFFER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_BUFFER, AgsBufferClass))
+
+#define AGS_BUFFER_GET_OBJ_MUTEX(obj) (((AgsBuffer *) obj)->obj_mutex)
 
 #define AGS_BUFFER_DEFAULT_TICKS_PER_QUARTER_BUFFER (16.0)
 
@@ -50,7 +54,7 @@ typedef enum{
 
 struct _AgsBuffer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -71,7 +75,7 @@ struct _AgsBuffer
 
 struct _AgsBufferClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_buffer_get_type();

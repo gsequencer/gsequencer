@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,8 +32,8 @@
 #define AGS_IS_LEVEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LEVEL))
 #define AGS_LEVEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_LEVEL, AgsLevelClass))
 
-#define AGS_LEVEL_DEFAULT_WIDTH (60)
-#define AGS_LEVEL_DEFAULT_HEIGHT (256)
+#define AGS_LEVEL_DEFAULT_LEVEL_WIDTH (60)
+#define AGS_LEVEL_DEFAULT_LEVEL_HEIGHT (256)
 
 #define AGS_LEVEL_DEFAULT_LOWER (0.0)
 #define AGS_LEVEL_DEFAULT_UPPER (1.0)

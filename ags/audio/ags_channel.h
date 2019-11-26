@@ -43,6 +43,10 @@
 #define AGS_IS_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CHANNEL))
 #define AGS_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CHANNEL, AgsChannelClass))
 
+#define AGS_CHANNEL_GET_OBJ_MUTEX(obj) (((AgsChannel *) obj)->obj_mutex)
+#define AGS_CHANNEL_GET_PLAY_MUTEX(obj) (((AgsChannel *) obj)->play_mutex)
+#define AGS_CHANNEL_GET_RECALL_MUTEX(obj) (((AgsChannel *) obj)->recall_mutex)
+
 #define AGS_CHANNEL_MINIMUM_OCTAVE (0)
 #define AGS_CHANNEL_MAXIMUM_OCTAVE (10)
 #define AGS_CHANNEL_DEFAULT_OCTAVE (AGS_CHANNEL_MINIMUM_OCTAVE)
@@ -89,7 +93,7 @@ typedef enum{
 
 struct _AgsChannel
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   guint ability_flags;
@@ -161,7 +165,7 @@ struct _AgsChannel
 
 struct _AgsChannelClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,

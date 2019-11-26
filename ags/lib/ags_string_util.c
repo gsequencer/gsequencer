@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 /**
  * SECTION:ags_string_util
@@ -54,7 +55,7 @@ ags_string_util_escape_single_quote(gchar *str)
   iter = str;
   count = 0;
   
-  while((iter = index(iter, '\'')) != NULL){
+  while((iter = strchr(iter, '\'')) != NULL){
     count++;
     iter++;
   }
@@ -69,7 +70,7 @@ ags_string_util_escape_single_quote(gchar *str)
     prev = str;
     offset = 0;
     
-    while((iter = index(iter, '\'')) != NULL){
+    while((iter = strchr(iter, '\'')) != NULL){
       memcpy(&(retval[offset]), prev, (iter - prev) * sizeof(char));      
       retval[offset + (iter - prev)] = '&';
       retval[offset + (iter - prev + 1)] = 'a';
@@ -83,7 +84,7 @@ ags_string_util_escape_single_quote(gchar *str)
       prev = iter;
     }
 
-    memcpy(&(retval[offset]), prev, (index(str, '\0') - prev) * sizeof(char));
+    memcpy(&(retval[offset]), prev, (strchr(str, '\0') - prev) * sizeof(char));
   }else{
     retval = g_strdup(str);
   }
@@ -136,8 +137,10 @@ ags_strv_contains(gchar **str_array,
     return(FALSE);
   }
 
-  for(i = 0; *str_array != NULL; i++, str_array++){
-    if(*str_array == str){
+  for(i = 0; str_array[0] != NULL; i++, str_array++){
+    if(str_array[0] == str ||
+       !g_strcmp0(str_array[0],
+		  str)){
       return(TRUE);
     }
   }

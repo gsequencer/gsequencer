@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,9 @@
 
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 
-#include <ags/widget/ags_scale.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
@@ -304,14 +306,36 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
 
+  AgsConfig *config;
+
   GtkAllocation child_allocation;
   GtkRequisition child_requisition;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   
   scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(widget);
 
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   widget->allocation = *allocation;
 
-  widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  widget->allocation.height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
   
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_automation_edit_box->viewport,
@@ -346,10 +370,32 @@ ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
 {
   GtkRequisition child_requisition;
 
-  GtkOrientation orientation;
+  AgsConfig *config;
 
-  requisition->width = AGS_SCALE_DEFAULT_HEIGHT;
-  requisition->height = AGS_SCALE_DEFAULT_HEIGHT;
+  gchar *str;
+
+  GtkOrientation orientation;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  requisition->width = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH);
+  requisition->height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
   
   gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);

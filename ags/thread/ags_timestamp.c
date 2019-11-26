@@ -171,11 +171,7 @@ ags_timestamp_test_flags(AgsTimestamp *timestamp,
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* test flags */
   pthread_mutex_lock(timestamp_mutex);
@@ -207,11 +203,7 @@ ags_timestamp_set_flags(AgsTimestamp *timestamp,
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* set flags */
   pthread_mutex_lock(timestamp_mutex);
@@ -241,11 +233,7 @@ ags_timestamp_unset_flags(AgsTimestamp *timestamp,
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* unset flags */
   pthread_mutex_lock(timestamp_mutex);
@@ -277,11 +265,7 @@ ags_timestamp_get_unix_time(AgsTimestamp *timestamp)
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* get ags offset */
   pthread_mutex_lock(timestamp_mutex);
@@ -313,11 +297,7 @@ ags_timestamp_set_unix_time(AgsTimestamp *timestamp,
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* get ags offset */
   pthread_mutex_lock(timestamp_mutex);
@@ -349,11 +329,7 @@ ags_timestamp_get_ags_offset(AgsTimestamp *timestamp)
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* get ags offset */
   pthread_mutex_lock(timestamp_mutex);
@@ -385,11 +361,7 @@ ags_timestamp_set_ags_offset(AgsTimestamp *timestamp,
   }
   
   /* get timestamp mutex */
-  pthread_mutex_lock(ags_timestamp_get_class_mutex());
-  
-  timestamp_mutex = timestamp->obj_mutex;
-  
-  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+  timestamp_mutex = AGS_TIMESTAMP_GET_OBJ_MUTEX(timestamp);
 
   /* get ags offset */
   pthread_mutex_lock(timestamp_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_endian.h>
+#include <ags/lib/ags_complex.h>
 
 /* signed integers to char buffer */
 guchar* ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
@@ -40,6 +41,8 @@ guchar* ags_buffer_util_float_to_char_buffer(gfloat *buffer,
 					     guint buffer_length);
 guchar* ags_buffer_util_double_to_char_buffer(gdouble *buffer,
 					      guint buffer_length);
+guchar* ags_buffer_util_complex_to_char_buffer(AgsComplex *buffer,
+					       guint buffer_length);
 
 /* char buffer to signed integers */
 gint8* ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
@@ -56,6 +59,8 @@ gfloat* ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
 					     guint buffer_size);
 gdouble* ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
 					       guint buffer_size);
+AgsComplex* ags_buffer_util_char_buffer_to_complex(guchar *cbuffer,
+						   guint buffer_size);
 
 /* read integers */
 gint8 ags_buffer_util_char_buffer_read_s8(guchar *cbuffer,
@@ -72,6 +77,8 @@ gfloat ags_buffer_util_char_buffer_read_float(guchar *cbuffer,
 					      guint byte_order);
 gdouble ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
 						guint byte_order);
+AgsComplex* ags_buffer_util_char_buffer_read_complex(guchar *cbuffer,
+						     guint byte_order);
 
 /* write integers */
 void ags_buffer_util_char_buffer_write_s8(guchar *cbuffer,
@@ -95,6 +102,9 @@ void ags_buffer_util_char_buffer_write_float(guchar *cbuffer,
 void ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
 					      gdouble value,
 					      guint byte_order);
+void ags_buffer_util_char_buffer_write_complex(guchar *cbuffer,
+					       AgsComplex *value,
+					       guint byte_order);
 
 /* swap bytes */
 void ags_buffer_util_char_buffer_swap_bytes(guchar *cbuffer, guint word_size,

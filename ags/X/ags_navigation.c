@@ -27,8 +27,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
@@ -269,7 +267,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       "label", "0000:00.000",
 	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
@@ -545,8 +543,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   AgsSeekSoundcard *seek_soundcard;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
 
   GList *start_list, *list;
@@ -562,9 +558,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  /* get task thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   /* seek soundcard */
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
   
@@ -577,8 +570,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 					  new_offset,
 					  AGS_SEEK_SET);
   
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) seek_soundcard);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) seek_soundcard);
 
   /* soundcard - start offset */
   list = 

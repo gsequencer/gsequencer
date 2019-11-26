@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #define AGS_IS_AUDIO_CONTAINER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO_CONTAINER))
 #define AGS_AUDIO_CONTAINER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainerClass))
 
+#define AGS_AUDIO_CONTAINER_GET_OBJ_MUTEX(obj) (((AgsAudioContainer *) obj)->obj_mutex)
+
 typedef struct _AgsAudioContainer AgsAudioContainer;
 typedef struct _AgsAudioContainerClass AgsAudioContainerClass;
 
@@ -50,7 +52,7 @@ typedef enum{
 
 struct _AgsAudioContainer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -84,7 +86,7 @@ struct _AgsAudioContainer
 
 struct _AgsAudioContainerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_audio_container_get_type();

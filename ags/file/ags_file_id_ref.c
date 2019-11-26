@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   /**
    * AgsFileIdRef:node:
    *
-   * The assigned xmlNode being refered by this #AgsFileIdRef.
+   * The assigned xmlNode being referred by this #AgsFileIdRef.
    *
    * Since: 2.0.0
    */
@@ -146,7 +146,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   /**
    * AgsFileIdRef:reference:
    *
-   * The object refered by this #AgsFileIdRef.
+   * The object referred by this #AgsFileIdRef.
    *
    * Since: 2.0.0
    */
@@ -251,11 +251,7 @@ ags_file_id_ref_set_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
-  
-  file_id_ref_mutex = file_id_ref->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
+  file_id_ref_mutex = AGS_FILE_ID_REF_GET_OBJ_MUTEX(file_id_ref);
   
   switch(prop_id){
   case PROP_NODE:
@@ -362,11 +358,7 @@ ags_file_id_ref_get_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
-  
-  file_id_ref_mutex = file_id_ref->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
+  file_id_ref_mutex = AGS_FILE_ID_REF_GET_OBJ_MUTEX(file_id_ref);
   
   switch(prop_id){
   case PROP_NODE:

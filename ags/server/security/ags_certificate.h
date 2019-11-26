@@ -35,7 +35,7 @@ typedef struct _AgsCertificateInterface AgsCertificateInterface;
 
 struct _AgsCertificateInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   gboolean (*verify)(AgsCertificate *certificate,
 		     gchar *certs,

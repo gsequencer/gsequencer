@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -123,6 +123,8 @@ static pthread_key_t ags_thread_key;
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
 static pthread_mutex_t ags_thread_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static gboolean ags_thread_global_use_sync_counter = TRUE;
 
 GType
 ags_thread_get_type()
@@ -322,7 +324,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::timelock:
    * @thread: the #AgsThread
    *
-   * The ::timelock() signal is invoked as standard compution
+   * The ::timelock() signal is invoked as standard computation
    * time exceeded.
    * 
    * Since: 2.0.0
@@ -598,11 +600,7 @@ ags_thread_set_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   switch(prop_id){
   case PROP_FREQUENCY:
@@ -687,11 +685,7 @@ ags_thread_get_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   switch(prop_id){
   case PROP_FREQUENCY:
@@ -785,8 +779,10 @@ ags_thread_finalize(GObject *gobject)
   }
 
   /*  */
+#ifndef AGS_W32API
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
+#endif
   
   pthread_mutexattr_destroy(thread->mutexattr);
   free(thread->mutexattr);
@@ -844,9 +840,11 @@ ags_thread_finalize(GObject *gobject)
   //  free(*thread_ptr);
   free(thread_ptr);
 
+#ifndef AGS_W32API
   if(stackaddr != NULL){
     //   free(stackaddr);
   }
+#endif
   
   if(do_exit){
     pthread_exit(NULL);
@@ -865,11 +863,7 @@ ags_thread_get_uuid(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* get UUID */
   pthread_mutex_lock(thread_mutex);
@@ -899,11 +893,7 @@ ags_thread_is_ready(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* check is added */
   pthread_mutex_lock(thread_mutex);
@@ -982,11 +972,7 @@ ags_thread_is_connected(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* check is connected */
   pthread_mutex_lock(thread_mutex);
@@ -1055,6 +1041,29 @@ pthread_mutex_t*
 ags_thread_get_class_mutex()
 {
   return(&ags_thread_class_mutex);
+}
+
+/**
+ * ags_thread_global_get_use_sync_counter:
+ * 
+ * Get global config value use sync counter.
+ *
+ * Returns: if %TRUE use sync counter, else not
+ * 
+ * Since: 2.2.10
+ */
+gboolean
+ags_thread_global_get_use_sync_counter()
+{
+  gboolean use_sync_counter;
+
+//  pthread_mutex_lock(ags_thread_get_class_mutex());
+
+  use_sync_counter = ags_thread_global_use_sync_counter;
+
+//  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  
+  return(use_sync_counter);
 }
 
 /**
@@ -1186,6 +1195,7 @@ ags_thread_unset_sync_flags(AgsThread *thread, guint sync_flags)
 void
 ags_thread_resume_handler(int sig)
 {
+#ifndef AGS_W32API
   if(ags_thread_self() == NULL){
     return;
   }
@@ -1198,11 +1208,13 @@ ags_thread_resume_handler(int sig)
 		   (~AGS_THREAD_SUSPENDED));
 
   ags_thread_resume(ags_thread_self());
+#endif
 }
 
 void
 ags_thread_suspend_handler(int sig)
 {
+#ifndef AGS_W32API
 #ifdef AGS_DEBUG
   g_message("thread suspend");
 #endif
@@ -1219,6 +1231,7 @@ ags_thread_suspend_handler(int sig)
   ags_thread_suspend(ags_thread_self());
 
   do sigsuspend(&(ags_thread_self()->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self()->flags)))) != 0);
+#endif
 }
 
 /**
@@ -1265,6 +1278,8 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }
 
   /* get next tic and check waiting */
+  next_tic = 0;
+  
   switch(tic){
   case 0:
     {
@@ -1364,7 +1379,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     g_atomic_int_and(&(thread->flags),
 		    ~AGS_THREAD_IS_CHAOS_TREE);
 
-    if((AGS_THREAD_MARK_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+    if((AGS_THREAD_MARK_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){      
       g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_SYNCED);
     }
@@ -1504,11 +1519,7 @@ ags_thread_lock(AgsThread *thread)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* lock */
   pthread_mutex_lock(mutex);
@@ -1538,11 +1549,7 @@ ags_thread_trylock(AgsThread *thread)
   }
 
   /* lookup mutices */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* lock */
   if(pthread_mutex_trylock(mutex) != 0){      
@@ -1573,11 +1580,7 @@ ags_thread_unlock(AgsThread *thread)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* unlock */
   g_atomic_int_and(&(thread->flags),
@@ -2108,8 +2111,12 @@ ags_thread_is_tree_ready(AgsThread *thread,
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  retval = ags_thread_is_tree_ready_recursive(main_loop);
-
+  if(ags_thread_global_get_use_sync_counter()){    
+    retval = ags_main_loop_sync_counter_test(AGS_MAIN_LOOP(main_loop), tic);
+  }else{
+    retval = ags_thread_is_tree_ready_recursive(main_loop);
+  }
+  
   return(retval);
 }
 
@@ -2746,13 +2753,24 @@ ags_thread_real_clock(AgsThread *thread)
     
   void ags_thread_clock_sync(AgsThread *thread){
     guint next_tic, current_tic;
-
+    
+    guint sync_tic, next_sync_tic;
+    gboolean skip_sync_counter;
+    
     /* sync */
-    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+    skip_sync_counter = FALSE;
 
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if(thread != main_loop){
       g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_MARK_SYNCED);
+    }
+    
+    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+    
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+	skip_sync_counter = TRUE;
+      }
       
       thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
@@ -2797,8 +2815,24 @@ ags_thread_real_clock(AgsThread *thread)
 		       (~AGS_THREAD_INITIAL_RUN));
     }
 
+    sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
+    next_sync_tic = 0;
+
+    if(sync_tic == 5){
+      next_sync_tic = 0;
+    }else if(sync_tic == 0){
+      next_sync_tic = 1;
+    }else if(sync_tic == 1){
+      next_sync_tic = 2;
+    }else if(sync_tic == 2){
+      next_sync_tic = 3;
+    }else if(sync_tic == 4){
+      next_sync_tic = 5;
+    }
+
     /* thread tree */
     current_tic = thread->current_tic;
+    next_tic = 0;
     
     if(current_tic == 2){
       next_tic = 0;
@@ -2806,6 +2840,18 @@ ags_thread_real_clock(AgsThread *thread)
       next_tic = 1;
     }else if(current_tic == 1){
       next_tic = 2;
+    }
+
+    if(ags_thread_global_get_use_sync_counter()){
+      ags_main_loop_sync_counter_inc(AGS_MAIN_LOOP(main_loop),
+				     next_sync_tic);
+
+      if(!skip_sync_counter){
+	ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				       sync_tic);
+      }
+    }else{
+      sync_tic = current_tic;
     }
 
     switch(thread->current_tic){
@@ -2830,7 +2876,7 @@ ags_thread_real_clock(AgsThread *thread)
     }
     
     if(!ags_thread_is_tree_ready(thread,
-				 current_tic)){
+				 sync_tic)){
       //      ags_thread_hangcheck(main_loop);
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
       
@@ -2850,7 +2896,7 @@ ags_thread_real_clock(AgsThread *thread)
 
 	pthread_mutex_unlock(thread->mutex);
       }
-    }else{
+    }else{      
       /* async-queue */
       if(async_queue != NULL){
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0){
@@ -2865,13 +2911,14 @@ ags_thread_real_clock(AgsThread *thread)
       
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), thread->current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_main_loop_set_sync_tic(AGS_MAIN_LOOP(main_loop), next_sync_tic);
 
       ags_thread_set_sync_all(main_loop, thread->current_tic);
 
       ags_thread_reset_all(main_loop);
 
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
-    }  
+    }
   }
   
   void ags_thread_clock_wait_async(){
@@ -2915,6 +2962,19 @@ ags_thread_real_clock(AgsThread *thread)
 
   main_loop = ags_thread_get_toplevel(thread);
 
+  main_loop_mutex = NULL;
+  
+  if(!AGS_IS_MAIN_LOOP(main_loop)){
+    main_loop = NULL;
+  }
+
+  /* mutex */
+  if(main_loop != NULL){
+    main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
+  }
+  
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     if(thread->tic_delay == 0){
       if(thread->freq >= thread->max_precision){
@@ -2944,14 +3004,6 @@ ags_thread_real_clock(AgsThread *thread)
     async_queue = NULL;
   }
   
-  /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  main_loop_mutex = main_loop->obj_mutex;
-  mutex = thread->obj_mutex;
-
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
-
   /* calculate main loop delay */
   pthread_mutex_lock(main_loop_mutex);
   
@@ -3228,11 +3280,7 @@ ags_thread_add_start_queue(AgsThread *thread,
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add */
   pthread_mutex_lock(mutex);
@@ -3261,12 +3309,13 @@ ags_thread_add_start_queue_all(AgsThread *thread,
   
   pthread_mutex_t *mutex;
 
-  /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
+  if(!AGS_IS_THREAD(thread) ||
+     child == NULL){
+    return;
+  }
 
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  /* mutex */
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add all */
   pthread_mutex_lock(mutex);
@@ -3351,8 +3400,10 @@ ags_thread_loop(void *ptr)
   guint val, running, locked_greedy;
   guint i, i_stop;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
+  guint sync_tic, next_sync_tic;
+  gboolean skip_sync_counter;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *mutex, *main_loop_mutex;
   
   thread = (AgsThread *) ptr;
   g_object_ref(thread);
@@ -3361,24 +3412,29 @@ ags_thread_loop(void *ptr)
   pthread_setspecific(ags_thread_key, thread);
   
   main_loop = ags_thread_get_toplevel(thread);
-
+  main_loop_mutex = NULL;
+  
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     main_loop = NULL;
   }
 
-  /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
+  /* async queue and mutex */
+  async_queue = NULL;
   
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  if(main_loop != NULL){
+    main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
+
+    async_queue = (AgsThread *) ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+  }
+  
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
   
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
     
     thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
     
-    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));  
   }else{
     thread->current_tic = 0;
   }
@@ -3710,7 +3766,8 @@ ags_thread_loop(void *ptr)
     }
     
     /* yield */
-#ifndef __APPLE__
+#if defined __APPLE__ || AGS_W32API
+#else
     if(main_loop != NULL &&
        main_loop->tic_delay != main_loop->delay &&
        thread->cycle_iteration % (guint) floor(AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_YIELD_JIFFIE) == 0){
@@ -3724,12 +3781,20 @@ ags_thread_loop(void *ptr)
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
   }
+
+  skip_sync_counter = FALSE;  
+	
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+      skip_sync_counter = TRUE;
+    }
+  }
   
   if(main_loop != NULL &&
      (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0  ||
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
     AgsThread *chaos_tree;
-	
+    
     chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
 
     /* ordinary sync */
@@ -3764,6 +3829,29 @@ ags_thread_loop(void *ptr)
 
   }
 
+  sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
+
+  next_sync_tic = 0;
+
+  if(sync_tic == 5){
+    next_sync_tic = 0;
+  }else if(sync_tic == 0){
+    next_sync_tic = 1;
+  }else if(sync_tic == 1){
+    next_sync_tic = 2;
+  }else if(sync_tic == 2){
+    next_sync_tic = 3;
+  }else if(sync_tic == 4){
+    next_sync_tic = 5;
+  }
+
+  if(ags_thread_global_get_use_sync_counter()){
+    if(!skip_sync_counter){
+      ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				     sync_tic);
+    }
+  }
+
   switch(thread->current_tic){
   case 0:
     {
@@ -3784,14 +3872,16 @@ ags_thread_loop(void *ptr)
     }
     break;
   }
-
+    
   if(ags_thread_is_tree_ready(thread,
-			      thread->current_tic)){
+			      sync_tic)){
     guint next_tic, current_tic;
 
     current_tic = thread->current_tic;
     
     /* thread tree */
+    next_tic = 0;
+    
     if(current_tic == 2){
       next_tic = 0;
     }else if(current_tic == 0){
@@ -3809,11 +3899,12 @@ ags_thread_loop(void *ptr)
     if(main_loop != NULL){
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), thread->current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_main_loop_set_sync_tic(AGS_MAIN_LOOP(main_loop), next_sync_tic);
       
       ags_thread_set_sync_all(main_loop, thread->current_tic);
     }
   }
-
+  
   if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_remove_child(g_atomic_pointer_get(&(thread->parent)),
 			    thread);
@@ -3833,6 +3924,10 @@ ags_thread_loop(void *ptr)
   
   /* exit thread */
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif
 }
 
 /**

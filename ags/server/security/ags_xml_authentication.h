@@ -37,7 +37,7 @@ typedef struct _AgsXmlAuthenticationClass AgsXmlAuthenticationClass;
 
 struct _AgsXmlAuthentication
 {
-  GObject object;
+  GObject gobject;
 
   gchar *filename;
   gchar *encoding;
@@ -49,7 +49,7 @@ struct _AgsXmlAuthentication
 
 struct _AgsXmlAuthenticationClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_xml_authentication_get_type();

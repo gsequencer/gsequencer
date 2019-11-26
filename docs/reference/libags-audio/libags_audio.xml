@@ -21,7 +21,7 @@
     <releaseinfo>
       for libags_audio.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/libags-audio/index.html">http://nongnu.org/gsequencer/api/libags-audio/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/&package_version;/api/libags-audio/index.html">http://nongnu.org/gsequencer/api/&package_version;/libags-audio/</ulink>.
     </releaseinfo>
   </bookinfo>
 
@@ -102,25 +102,43 @@
       </para>
 
       <xi:include href="xml/ags_sound_enums.xml"/>
+      <xi:include href="xml/ags_synth_enums.xml"/>
       <xi:include href="xml/ags_soundcard_util.xml"/>
       <xi:include href="xml/ags_sequencer_util.xml"/>
       <xi:include href="xml/ags_char_buffer_util.xml"/>
+      <xi:include href="xml/ags_fourier_transform_util.xml"/>
       <xi:include href="xml/ags_audio_buffer_util.xml"/>
+      <xi:include href="xml/ags_filter_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
+      <xi:include href="xml/ags_fm_synth_util.xml"/>
+      <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_synth_generator.xml"/>
+    </chapter>
+
+    <chapter id="audio-freq">
+      <title>Frequency utils</title>
+      <para>
+	The frequency util objects.
+      </para>
+
+      <xi:include href="xml/ags_frequency_map_manager.xml"/>
+      <xi:include href="xml/ags_frequency_map.xml"/>
     </chapter>
     
     <chapter id="audio-io">
       <title>Audio sinks and sources</title>
       <para>
-	Here are objects listed to interact your sound devices using ALSA, JACK,
-	Pulseaudio or CoreAudio.
+	Here are objects listed to interact your sound devices using ALSA, WASAPI,
+	JACK, Pulseaudio or CoreAudio.
       </para>
 
       <xi:include href="xml/ags_devout.xml"/>
       <xi:include href="xml/ags_devin.xml"/>
       <xi:include href="xml/ags_midiin.xml"/>
       <xi:include href="xml/ags_fifoout.xml"/>
+
+      <xi:include href="xml/ags_wasapi_devout.xml"/>
+      <xi:include href="xml/ags_wasapi_devin.xml"/>
 
       <xi:include href="xml/ags_jack_server.xml"/>
       <xi:include href="xml/ags_jack_client.xml"/>
@@ -141,6 +159,12 @@
       <xi:include href="xml/ags_core_audio_devin.xml"/>
       <xi:include href="xml/ags_core_audio_devout.xml"/>
       <xi:include href="xml/ags_core_audio_midiin.xml"/>
+
+      <xi:include href="xml/ags_audio_unit_server.xml"/>
+      <xi:include href="xml/ags_audio_unit_client.xml"/>
+      <xi:include href="xml/ags_audio_unit_port.xml"/>
+      <xi:include href="xml/ags_audio_unit_devin.xml"/>
+      <xi:include href="xml/ags_audio_unit_devout.xml"/>
     </chapter>
     
     <chapter id="audio-tree">
@@ -217,6 +241,8 @@
       <xi:include href="xml/ags_export_thread.xml"/>
       <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
+      <xi:include href="xml/ags_sf2_loader.xml"/>
+      <xi:include href="xml/ags_sfz_loader.xml"/>
       <xi:include href="xml/ags_wave_loader.xml"/>
     </chapter>
     
@@ -294,6 +320,10 @@
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_sample.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
+      <xi:include href="xml/ags_sfz_file.xml"/>
+      <xi:include href="xml/ags_sfz_group.xml"/>
+      <xi:include href="xml/ags_sfz_region.xml"/>
+      <xi:include href="xml/ags_sfz_sample.xml"/>
       <xi:include href="xml/ags_sound_container.xml"/>
       <xi:include href="xml/ags_sound_resource.xml"/>
     </chapter>
@@ -386,6 +416,11 @@
       <xi:include href="xml/ags_eq10_channel.xml"/>
       <xi:include href="xml/ags_eq10_channel_run.xml"/>
       <xi:include href="xml/ags_eq10_recycling.xml"/>
+
+      <xi:include href="xml/ags_lfo_channel.xml"/>
+      <xi:include href="xml/ags_lfo_channel_run.xml"/>
+      <xi:include href="xml/ags_lfo_recycling.xml"/>
+      <xi:include href="xml/ags_lfo_audio_signal.xml"/>
     </chapter>
     
     <chapter id="audio-recall-meter">
@@ -491,6 +526,7 @@
       <xi:include href="xml/ags_remove_note.xml"/>
       <xi:include href="xml/ags_remove_soundcard.xml"/>
       <xi:include href="xml/ags_reset_amplitude.xml"/>
+      <xi:include href="xml/ags_reset_note.xml"/>
       <xi:include href="xml/ags_reset_peak.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
       <xi:include href="xml/ags_seek_soundcard.xml"/>

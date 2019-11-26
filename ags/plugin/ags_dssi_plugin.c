@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,12 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
+#if defined(AGS_W32API)
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -234,11 +239,7 @@ ags_dssi_plugin_set_property(GObject *gobject,
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
@@ -292,11 +293,7 @@ ags_dssi_plugin_get_property(GObject *gobject,
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
@@ -350,11 +347,7 @@ ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get instantiate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -385,11 +378,7 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get connect port */
   pthread_mutex_lock(base_plugin_mutex);
@@ -413,11 +402,7 @@ ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* activate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -440,11 +425,7 @@ ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* deactivate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -474,11 +455,7 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* run */
   pthread_mutex_lock(base_plugin_mutex);
@@ -518,40 +495,56 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long effect_index;
   unsigned long port_count;
   unsigned long i;
+  gboolean success;
   
   pthread_mutex_t *base_plugin_mutex;
   
   dssi_plugin = AGS_DSSI_PLUGIN(base_plugin);  
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* dlopen */
   pthread_mutex_lock(base_plugin_mutex);
 
+#ifdef AGS_W32API
+  base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
+#else
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
+#endif
   
   if(base_plugin->plugin_so == NULL){
     g_warning("ags_dssi_plugin.c - failed to load static object file");
     
+#ifndef AGS_W32API    
     dlerror();
-
+#endif
+    
     pthread_mutex_unlock(base_plugin_mutex);
 
     return;
   }
 
-  dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
-						     "dssi_descriptor");
+  success = FALSE;
+
+#ifdef AGS_W32API
+  base_plugin->plugin_handle = 
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(base_plugin->plugin_so,
+								"dssi_descriptor");
+    
+  success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
+  base_plugin->plugin_handle = 
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
+						       "dssi_descriptor");
+  
+  success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
   
   pthread_mutex_unlock(base_plugin_mutex);
 
-  if(dlerror() == NULL && dssi_descriptor){
+  if(success && dssi_descriptor){
     gpointer plugin_descriptor;
 
     guint unique_id;
@@ -740,11 +733,7 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   /* get change program */
   pthread_mutex_lock(base_plugin_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
+#ifndef AGS_W32API
 #include <netinet/in.h>
+#endif
 
 #define AGS_TYPE_OSC_CLIENT                (ags_osc_client_get_type ())
 #define AGS_OSC_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CLIENT, AgsOscClient))
@@ -31,6 +35,8 @@
 #define AGS_IS_OSC_CLIENT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_OSC_CLIENT))
 #define AGS_IS_OSC_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CLIENT))
 #define AGS_OSC_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CLIENT, AgsOscClientClass))
+
+#define AGS_OSC_CLIENT_GET_OBJ_MUTEX(obj) (((AgsOscClient *) obj)->obj_mutex)
 
 #define AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH (2048)
 
@@ -72,10 +78,15 @@ struct _AgsOscClient
   
   int ip4_fd;
   int ip6_fd;
-  
+
+#ifdef AGS_W32API
+  gpointer ip4_address;
+  gpointer ip6_address;
+#else
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
-
+#endif
+  
   guint max_retry_count;
 
   struct timespec *retry_delay;

@@ -53,7 +53,7 @@ typedef enum{
 
 struct _AgsSecurityContext
 {
-  GObject object;
+  GObject gobject;
 
   gchar *certs;
 
@@ -63,7 +63,7 @@ struct _AgsSecurityContext
 
 struct _AgsSecurityContextClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_security_context_get_type();

@@ -37,14 +37,14 @@ typedef struct _AgsPasswordStoreManagerClass AgsPasswordStoreManagerClass;
 
 struct _AgsPasswordStoreManager
 {
-  GObject object;
+  GObject gobject;
   
   GList *password_store;
 };
 
 struct _AgsPasswordStoreManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_password_store_manager_get_type(void);

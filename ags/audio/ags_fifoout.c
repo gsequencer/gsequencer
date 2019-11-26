@@ -31,8 +31,12 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#endif
+
 #include <errno.h>
 
 #include <poll.h>

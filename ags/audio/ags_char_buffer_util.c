@@ -156,7 +156,7 @@ ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, gu
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -296,7 +296,7 @@ ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, g
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -436,7 +436,7 @@ ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, g
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -576,7 +576,7 @@ ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, g
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -716,7 +716,7 @@ ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, g
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -860,7 +860,7 @@ ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size,
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -1004,7 +1004,7 @@ ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size
       break;
     }
     
-    destination += dchannels;
+    destination += (dchannels * word_size);
     source += schannels;
   }
 }
@@ -1139,7 +1139,7 @@ ags_char_buffer_util_copy_cbuffer_to_s8(gint8 *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1273,7 +1273,7 @@ ags_char_buffer_util_copy_cbuffer_to_s16(gint16 *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1407,7 +1407,7 @@ ags_char_buffer_util_copy_cbuffer_to_s24(gint32 *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1541,7 +1541,7 @@ ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1675,7 +1675,7 @@ ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1809,7 +1809,7 @@ ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 
@@ -1943,7 +1943,7 @@ ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels
     }
     
     destination += dchannels;
-    source += schannels;
+    source += (schannels * word_size);
   }
 }
 

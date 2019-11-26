@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_soundcard_class_init(AgsSoundcardInterface *interface);
+void ags_soundcard_class_init(AgsSoundcardInterface *ginterface);
 
 /**
  * SECTION:ags_soundcard
@@ -69,7 +69,7 @@ ags_soundcard_error_quark()
 }
 
 void
-ags_soundcard_class_init(AgsSoundcardInterface *interface)
+ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
 {
   /**
    * AgsSoundcard::tic:
@@ -82,7 +82,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[TIC] =
     g_signal_new("tic",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
 		 NULL, NULL,
@@ -101,7 +101,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[OFFSET_CHANGED] =
     g_signal_new("offset-changed",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
 		 NULL, NULL,
@@ -120,7 +120,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    */
   soundcard_signals[STOP] =
     g_signal_new("stop",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, stop),
 		 NULL, NULL,
@@ -1122,4 +1122,76 @@ ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
   g_return_val_if_fail(soundcard_interface->get_loop_offset, 0);
 
   return(soundcard_interface->get_loop_offset(soundcard));
+}
+
+/**
+ * ags_soundcard_get_sub_block_count:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get sub block count. 
+ *
+ * Returns: the sub block count
+ *
+ * Since: 2.2.26
+ */
+guint
+ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_sub_block_count, 0);
+
+  return(soundcard_interface->get_sub_block_count(soundcard));
+}
+
+/**
+ * ags_soundcard_trylock_sub_block:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to lock
+ * @sub_block: and its sub block
+ *
+ * Trylock sub block. 
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 2.2.26
+ */
+gboolean
+ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
+				void *buffer, guint sub_block)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), FALSE);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->trylock_sub_block, FALSE);
+
+  return(soundcard_interface->trylock_sub_block(soundcard,
+						buffer, sub_block));
+}
+
+/**
+ * ags_soundcard_trylock_sub_block:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to lock
+ * @sub_block: and its sub block
+ *
+ * Unlock sub block. 
+ *
+ * Since: 2.2.26
+ */
+void
+ags_soundcard_unlock_sub_block(AgsSoundcard *soundcard,
+			       void *buffer, guint sub_block)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->unlock_sub_block);
+
+  soundcard_interface->unlock_sub_block(soundcard,
+					buffer, sub_block);
 }

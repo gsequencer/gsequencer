@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,6 +54,9 @@ gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
 enum{
   PROP_0,
   PROP_SAMPLERATE,
+  PROP_LOWER,
+  PROP_UPPER,
+  PROP_STEP_COUNT,
 };
 
 static gpointer ags_ladspa_conversion_parent_class = NULL;
@@ -126,6 +129,60 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 				  PROP_SAMPLERATE,
 				  param_spec);
 
+  /**
+   * AgsLadspaConversion:lower:
+   *
+   * The lower to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("lower",
+				   i18n_pspec("using lower"),
+				   i18n_pspec("The lower to be used"),
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOWER,
+				  param_spec);
+
+  /**
+   * AgsLadspaConversion:upper:
+   *
+   * The upper to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("upper",
+				   i18n_pspec("using upper"),
+				   i18n_pspec("The upper to be used"),
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UPPER,
+				  param_spec);
+
+  /**
+   * AgsLadspaConversion:step-count:
+   *
+   * The step count to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("step-count",
+				   i18n_pspec("using step count"),
+				   i18n_pspec("The step count to be used"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEP_COUNT,
+				  param_spec);
+  
   /* AgsConversionClass */
   conversion = (AgsConversionClass *) ladspa_conversion;
     
@@ -142,6 +199,11 @@ ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
   config = ags_config_get_instance();
   
   ladspa_conversion->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+
+  ladspa_conversion->lower = AGS_LADSPA_CONVERSION_DEFAULT_LOWER;
+  ladspa_conversion->upper = AGS_LADSPA_CONVERSION_DEFAULT_UPPER;
+
+  ladspa_conversion->step_count = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT;
 }
 
 void
@@ -157,22 +219,57 @@ ags_ladspa_conversion_set_property(GObject *gobject,
   ladspa_conversion = AGS_LADSPA_CONVERSION(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(ladspa_conversion);
 
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      uint samplerate;
+      guint samplerate;
 
       samplerate = g_value_get_uint(value);
 
       pthread_mutex_lock(conversion_mutex);
 
       ladspa_conversion->samplerate = samplerate;
+      
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      gdouble lower;
+
+      lower = g_value_get_double(value);
+
+      pthread_mutex_lock(conversion_mutex);
+
+      ladspa_conversion->lower = lower;
+      
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      gdouble upper;
+
+      upper = g_value_get_double(value);
+
+      pthread_mutex_lock(conversion_mutex);
+
+      ladspa_conversion->upper = upper;
+      
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      gdouble step_count;
+
+      step_count = g_value_get_double(value);
+
+      pthread_mutex_lock(conversion_mutex);
+
+      ladspa_conversion->step_count = step_count;
       
       pthread_mutex_unlock(conversion_mutex);
     }
@@ -196,11 +293,7 @@ ags_ladspa_conversion_get_property(GObject *gobject,
   ladspa_conversion = AGS_LADSPA_CONVERSION(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(ladspa_conversion);
 
   switch(prop_id){
   case PROP_SAMPLERATE:
@@ -208,6 +301,33 @@ ags_ladspa_conversion_get_property(GObject *gobject,
       pthread_mutex_lock(conversion_mutex);
 
       g_value_set_uint(value, ladspa_conversion->samplerate);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_double(value, ladspa_conversion->lower);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_double(value, ladspa_conversion->upper);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_double(value, ladspa_conversion->step_count);
 
       pthread_mutex_unlock(conversion_mutex);
     }
@@ -248,11 +368,7 @@ ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint f
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(ladspa_conversion);
 
   /* test flags */
   pthread_mutex_lock(conversion_mutex);
@@ -283,11 +399,7 @@ ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint fl
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(ladspa_conversion);
 
   /* set flags */
   pthread_mutex_lock(conversion_mutex);
@@ -316,11 +428,7 @@ ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint 
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(ladspa_conversion);
 
   /* unset flags */
   pthread_mutex_lock(conversion_mutex);
@@ -332,13 +440,19 @@ ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint 
 
 gdouble
 ags_ladspa_conversion_convert(AgsConversion *conversion,
-			      gdouble value,
+			      gdouble x,
 			      gboolean reverse)
 {
   AgsLadspaConversion *ladspa_conversion;
 
+  gdouble value, step;
+  gdouble upper, lower, step_count;
+  gdouble retval;
+  
   ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
 
+  retval = x;
+  
   if(reverse){
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
       guint samplerate;
@@ -347,11 +461,19 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 		   "samplerate", &samplerate,
 		   NULL);
       
-      value /= samplerate;
+      retval = x / samplerate;
     }
 
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
-      value = log(value);
+      g_object_get(ladspa_conversion,
+		   "lower", &lower,
+		   "upper", &upper,
+		   "step_count", &step_count,
+		   NULL);      
+
+      value = x;
+      step =
+	retval = (step_count - 1) * log(value / lower) / log(upper / lower);
     }
   }else{
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
@@ -361,15 +483,23 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 		   "samplerate", &samplerate,
 		   NULL);
 
-      value *= samplerate;
+      value = x * samplerate;
     }
 
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
-      value = exp(value);
+      g_object_get(ladspa_conversion,
+		   "lower", &lower,
+		   "upper", &upper,
+		   "step_count", &step_count,
+		   NULL);      
+
+      step = x;
+      value = 
+	retval = lower * pow(upper / lower, step / (step_count - 1));
     }
   }
   
-  return(value);
+  return(retval);
 }
 
 /**

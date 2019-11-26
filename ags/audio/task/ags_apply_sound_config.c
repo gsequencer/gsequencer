@@ -58,6 +58,9 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
@@ -622,6 +625,10 @@ ags_apply_sound_config_launch(AgsTask *task)
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   while(soundcard_thread != NULL){
+    AgsThread *next;
+    
+    next = g_atomic_pointer_get(&(soundcard_thread->next));
+    
     if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
       ags_thread_remove_child(audio_loop,
 			      soundcard_thread);
@@ -635,13 +642,17 @@ ags_apply_sound_config_launch(AgsTask *task)
       }
     }
 
-    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    soundcard_thread = next;
   }
   
   export_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_EXPORT_THREAD);
     
   while(export_thread != NULL){
+    AgsThread *next;
+    
+    next = g_atomic_pointer_get(&(export_thread->next));
+    
     if(AGS_IS_EXPORT_THREAD(export_thread)){
       ags_thread_remove_child(audio_loop,
 			      export_thread);
@@ -649,14 +660,18 @@ ags_apply_sound_config_launch(AgsTask *task)
       g_object_run_dispose((GObject *) export_thread);
       g_object_unref((GObject *) export_thread);
     }
-    
-    export_thread = g_atomic_pointer_get(&(export_thread->next));
+
+    export_thread = next;
   }
 
   sequencer_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SEQUENCER_THREAD);
 
   while(sequencer_thread != NULL){
+    AgsThread *next;
+
+    next = g_atomic_pointer_get(&(sequencer_thread->next));    
+    
     if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
       ags_thread_remove_child(audio_loop,
 			      sequencer_thread);
@@ -665,7 +680,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       g_object_unref((GObject *) sequencer_thread);
     }
 
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
+    sequencer_thread = next;
   }
   
   /* unregister soundcard and sequencer */
@@ -736,8 +751,12 @@ ags_apply_sound_config_launch(AgsTask *task)
   while(orig_soundcard != NULL){
     AgsNotifySoundcard *notify_soundcard;
 
+    notify_soundcard = NULL;
+    
     if(AGS_IS_DEVOUT(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_DEVOUT(orig_soundcard->data)->notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVOUT(orig_soundcard->data)){
+      notify_soundcard = (AgsNotifySoundcard *) AGS_WASAPI_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(orig_soundcard->data)){
@@ -746,6 +765,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       notify_soundcard = (AgsNotifySoundcard *) AGS_CORE_AUDIO_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_DEVIN(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_DEVIN(orig_soundcard->data)->notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVIN(orig_soundcard->data)){
+      notify_soundcard = (AgsNotifySoundcard *) AGS_WASAPI_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(orig_soundcard->data)){
@@ -862,8 +883,76 @@ ags_apply_sound_config_launch(AgsTask *task)
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+										NULL,
+										10);
+	    
+	    g_free(str);
+	  }
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devin_set_flags(AGS_WASAPI_DEVIN(soundcard),
+				       AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devin_unset_flags(AGS_WASAPI_DEVIN(soundcard),
+					 AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+									       NULL,
+									       10);
+	    
+	    g_free(str);
+	  }
+	}
+      }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
+	gchar *str;
+	
 	if(is_output){
 	  soundcard = (GObject *) ags_devout_new((GObject *) application_context);
 	  
@@ -1216,6 +1305,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     
     if(AGS_IS_DEVOUT(list->data)){
       AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
+      AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
@@ -1224,6 +1315,8 @@ ags_apply_sound_config_launch(AgsTask *task)
       AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_DEVIN(list->data)){
       AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+    }else if(AGS_IS_WASAPI_DEVIN(list->data)){
+      AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(list->data)){
       AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(list->data)){
@@ -1237,6 +1330,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
+       AGS_IS_WASAPI_DEVOUT(list->data) ||
        AGS_IS_JACK_DEVOUT(list->data) ||
        AGS_IS_PULSE_DEVOUT(list->data) ||
        AGS_IS_CORE_AUDIO_DEVOUT(list->data)){

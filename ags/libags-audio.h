@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,8 +55,15 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
+#include <ags/audio/ags_diatonic_scale.h>
 #include <ags/audio/ags_fifoout.h>
+#include <ags/audio/ags_filter_util.h>
+#include <ags/audio/ags_fm_synth_util.h>
+#include <ags/audio/ags_fourier_transform_util.h>
+#include <ags/audio/ags_frequency_map_manager.h>
+#include <ags/audio/ags_frequency_map.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
@@ -91,6 +98,7 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_sequencer_util.h>
 #include <ags/audio/ags_soundcard_util.h>
+#include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_track.h>
@@ -103,6 +111,8 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_sf2_loader.h>
+#include <ags/audio/thread/ags_sfz_loader.h>
 #include <ags/audio/thread/ags_wave_loader.h>
 
 /* audio file */
@@ -117,6 +127,10 @@
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
 #endif
+#include <ags/audio/file/ags_sfz_file.h>
+#include <ags/audio/file/ags_sfz_group.h>
+#include <ags/audio/file/ags_sfz_region.h>
+#include <ags/audio/file/ags_sfz_sample.h>
 #include <ags/audio/file/ags_sndfile.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
@@ -149,6 +163,10 @@
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
+/* audio wasapi */
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 /* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
@@ -156,6 +174,13 @@
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_server.h>
+
+/* audio audio-unit */
+#include <ags/audio/audio-unit/ags_audio_unit_client.h>
+#include <ags/audio/audio-unit/ags_audio_unit_devout.h>
+#include <ags/audio/audio-unit/ags_audio_unit_devin.h>
+#include <ags/audio/audio-unit/ags_audio_unit_port.h>
+#include <ags/audio/audio-unit/ags_audio_unit_server.h>
 
 /* audio pulse */
 #include <ags/audio/pulse/ags_pulse_client.h>
@@ -209,6 +234,10 @@
 #include <ags/audio/recall/ags_feed_channel.h>
 #include <ags/audio/recall/ags_feed_channel_run.h>
 #include <ags/audio/recall/ags_feed_recycling.h>
+#include <ags/audio/recall/ags_lfo_audio_signal.h>
+#include <ags/audio/recall/ags_lfo_channel.h>
+#include <ags/audio/recall/ags_lfo_channel_run.h>
+#include <ags/audio/recall/ags_lfo_recycling.h>
 #include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_loop_channel_run.h>
 #include <ags/audio/recall/ags_mute_audio.h>
@@ -288,6 +317,7 @@
 #include <ags/audio/task/ags_remove_soundcard.h>
 #include <ags/audio/task/ags_resize_audio.h>
 #include <ags/audio/task/ags_reset_amplitude.h>
+#include <ags/audio/task/ags_reset_note.h>
 #include <ags/audio/task/ags_reset_peak.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>

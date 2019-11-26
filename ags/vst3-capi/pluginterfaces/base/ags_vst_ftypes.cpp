@@ -35,7 +35,7 @@ extern "C" {
     return(static_cast<gboolean>(str8Empty(reinterpret_cast<char8 *>(str))));
   }
   
-  gboolean ags_vst_str16_empty(gunichar2 *str)
+  gboolean ags_vst_str16_empty(char16_t *str)
   {
     return(static_cast<gboolean>(str16Empty(reinterpret_cast<char16 *>(str))));
   }

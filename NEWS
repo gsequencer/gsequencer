@@ -10,6 +10,30 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 2.3.0
+================================
+
+* Improved AgsSynthGenerator to support impulse and FM LFO oscillator.
+* Implemented new impulse oscillator in ags_synth_util.c 
+* Implemented ags_fm_synth_util.c to do frequency modulation oscillators.
+  Used by AgsSynthGenerator.
+* Implemented ags_lfo_synth_util.c to do amplification using LFO oscillator.
+* Added new machines AgsFMSynth, AgsFMSyncsynth and AgsPitchSampler.
+* Added support for complex data type.
+
+Overview of Changes in AGS 2.2.39
+================================
+
+* Added AgsComplex data type support in ags_audio_buffer_util.h and completed
+  Float32 support.
+
+Overview of Changes in AGS 2.2.38
+================================
+
+* Completed reworking unrolled loops to use vectorized builtin functions in
+  ags_audio_buffer_util.c. Improved the vector and audio buffer access using
+  incrementing indices.
+
 Overview of Changes in AGS 2.2.0
 ================================
 

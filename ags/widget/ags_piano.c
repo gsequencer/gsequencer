@@ -615,6 +615,8 @@ ags_accessible_piano_get_range(AtkValue *value)
   range = atk_range_new((gdouble) piano->base_key_code,
 			(gdouble) (piano->base_key_code + piano->key_count),
 			"Valid lower and upper input range of this piano");
+
+  return(range);
 }
 #endif
 
@@ -814,7 +816,17 @@ ags_piano_realize(GtkWidget *widget)
   attributes.visual = gtk_widget_get_visual (widget);
   attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK |
+                            GDK_BUTTON_PRESS_MASK |
+                            GDK_BUTTON_RELEASE_MASK |
+			    GDK_KEY_PRESS_MASK | 
+			    GDK_KEY_RELEASE_MASK |
+                            GDK_BUTTON1_MOTION_MASK |
+                            GDK_BUTTON3_MOTION_MASK |
+                            GDK_POINTER_MOTION_HINT_MASK |
+                            GDK_POINTER_MOTION_MASK |
+                            GDK_ENTER_NOTIFY_MASK |
+                            GDK_LEAVE_NOTIFY_MASK);
 
   widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
 				  &attributes, attributes_mask);
@@ -1094,6 +1106,8 @@ ags_piano_motion_notify(GtkWidget *widget,
   y_start = 0;
 
   if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
+    new_current_key = 0;
+    
     if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
       new_current_key = floor(event->y / piano->key_height);
     }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
@@ -1167,6 +1181,9 @@ ags_piano_draw(AgsPiano *piano)
     return;
   }
 
+  width  = 0;
+  height = 0;
+
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     width = GTK_WIDGET(piano)->allocation.width;
 
@@ -1201,6 +1218,12 @@ ags_piano_draw(AgsPiano *piano)
   /* draw */
   control_x0 = x_start;
   control_y0 = y_start;
+
+  big_control_width = 0;
+  big_control_height = 0;
+    
+  small_control_width = 0;
+  small_control_height = 0;
   
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     big_control_width = piano->key_width;
@@ -1321,7 +1344,7 @@ ags_piano_key_code_to_note(gint key_code)
   guint tic_count;
   guint i;
   
-  static const gchar **note_map = {
+  static const gchar* note_map[] = {
     AGS_PIANO_KEYS_OCTAVE_2_C,
     AGS_PIANO_KEYS_OCTAVE_2_CIS,
     AGS_PIANO_KEYS_OCTAVE_2_D,

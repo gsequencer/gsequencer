@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 
 #include <sys/types.h>
 #include <regex.h>
@@ -196,11 +197,7 @@ ags_turtle_set_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -258,11 +255,7 @@ ags_turtle_get_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -1042,7 +1035,8 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
       end++;
     }
 
-    if(end != NULL){
+    if(end != NULL &&
+       end > offset){
       str = g_strndup(offset,
 		      end - offset + 3);
     }
@@ -1080,7 +1074,8 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
       end++;
     }
 
-    if(end != NULL){
+    if(end != NULL &&
+       end > offset){
       str = g_strndup(offset,
 		      end - offset + 3);
     }
@@ -1170,7 +1165,7 @@ ags_turtle_read_echar(gchar *offset,
   str = NULL;
 
   if(*offset == '\\'){
-    if(index(echar,
+    if(strchr(echar,
 	     offset[1]) != NULL){
       str = g_strndup(offset,
 		      2);
@@ -1202,7 +1197,7 @@ ags_turtle_read_ws(gchar *offset,
   str = NULL;
 
   if(offset < end_ptr &&
-     index(ws, *offset) != NULL){
+     strchr(ws, *offset) != NULL){
     str = g_strndup(offset,
 		    1);
   }
@@ -1241,14 +1236,14 @@ ags_turtle_read_anon(gchar *offset,
   success = FALSE;
   
   if(*offset == '['){
-    tmp = index(offset + 1,
+    tmp = strchr(offset + 1,
 		']');
 
     if(tmp != NULL){
       success = TRUE;
       
       for(tmp_str = offset + 1; tmp_str < tmp; tmp_str++){
-	if(index(ws,
+	if(strchr(ws,
 		 *tmp_str) == NULL){
 	  success = FALSE;
 	  
@@ -1311,6 +1306,7 @@ gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
 {
+#if 0
   regmatch_t match_arr[1];
     
   gchar *str;
@@ -1346,6 +1342,103 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
+#else
+  gchar *str;
+  gchar *look_ahead;
+
+  gboolean success;
+
+  if(offset == NULL ||
+     offset >= end_ptr){
+    return(NULL);
+  }
+
+  look_ahead = offset;
+  str = NULL;
+
+  success = TRUE;
+  
+  while(success &&
+	look_ahead < end_ptr){
+    if((look_ahead[0] >= 'a' && look_ahead[0] <= 'z') ||
+       (look_ahead[0] >= 'A' && look_ahead[0] <= 'Z')){
+      look_ahead++;
+    }else if(look_ahead + 2 < end_ptr &&
+	     ((look_ahead[0] == '\xC3' &&
+	       ((look_ahead[1] >= '\x80' && look_ahead[1] <= '\x96') ||
+		(look_ahead[1] >= '\x98' && look_ahead[1] <= '\xB6') ||
+		(look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBF'))) ||
+	      ((look_ahead[0] >= '\xC3' && look_ahead[0] <= '\xCA') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
+	      (look_ahead[0] == '\xCB' &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')) ||
+	      (look_ahead[0] == '\xCD' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBD')) ||
+	      (look_ahead[0] == '\xCD' &&
+	       (look_ahead[1] >= '\xBF' && look_ahead[1] <= '\xDF')) ||
+	      ((look_ahead[0] >= '\xCE' && look_ahead[0] <= '\xDF') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF')))){
+      look_ahead += 2;
+    }else if(look_ahead + 3 < end_ptr &&
+	     (((look_ahead[0] >= '\xE0' && look_ahead[0] <= '\xE1') &&
+	       (look_ahead[1] >= '\x80' && look_ahead[1] <= '\xBF') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x80' &&
+	       (look_ahead[2] >= '\x8C' && look_ahead[2] <= '\x8D')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x81' &&
+	       (look_ahead[2] >= '\xB0' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       (look_ahead[1] >= '\x81' && look_ahead[1] <= '\x85') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\x86' &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBE') &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	      (look_ahead[0] == '\xE2' &&
+	       look_ahead[1] == '\xBF' &&
+	       (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xAF')) ||
+	      (look_ahead[0] == '\xE3' &&
+	       (look_ahead[1] >= '\xB0' && look_ahead[1] <= '\xBF') &&
+	       (look_ahead[2] >= '\x81' && look_ahead[2] <= '\xBF')) ||
+	      ((look_ahead[0] >= '\xE4') && look_ahead[0] <= '\xEC') &&
+	      (look_ahead[1] >= '\x80' && look_ahead[1] <= '\x9F') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      (look_ahead[1] >= '\xA4' && look_ahead[1] <= '\xB6') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xB7' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\x8F')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xB7' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      (look_ahead[1] >= '\xB8' && look_ahead[1] <= '\xBE') &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBF')) ||
+	     (look_ahead[0] == '\xEF' &&
+	      look_ahead[1] == '\xBF' &&
+	      (look_ahead[2] >= '\x80' && look_ahead[2] <= '\xBD'))){
+      look_ahead += 3;
+    }else if(look_ahead + 4 < end_ptr &&
+	     ((look_ahead[0] == '\xF0' && look_ahead[0] == '\xF3') &&
+	      (look_ahead[1] == '\x90' && look_ahead[1] == '\xAF') &&
+	      (look_ahead[2] == '\x80' && look_ahead[2] == '\xBF') &&
+	      (look_ahead[3] == '\x80' && look_ahead[3] == '\xBF'))){
+      look_ahead += 4;
+    }else{
+      success = FALSE;
+    }
+  }
+
+  if(look_ahead != offset){
+    str = g_strndup(offset,
+		    look_ahead - offset);
+  }
+#endif
   
   return(str);
 }
@@ -1717,7 +1810,7 @@ ags_turtle_read_pn_local_esc(gchar *offset,
   if(offset != NULL &&
      offset + 1 < end_ptr &&
      *offset == '\\' &&
-     (index(escapes,
+     (strchr(escapes,
 	    offset[1])) != NULL){
     str = g_strndup(offset,
 		    2);
@@ -1764,6 +1857,9 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
       }
     }
   }
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   list = g_list_reverse(list);
   
@@ -1819,6 +1915,9 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
       }
     }
   }
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   if(list != NULL){
     list = g_list_reverse(list);
@@ -1910,7 +2009,7 @@ ags_turtle_load(AgsTurtle *turtle,
       /* skip comments */
       if(buffer == look_ahead){
 	if(*buffer == '#'){
-	  next = index(look_ahead, '\n');
+	  next = strchr(look_ahead, '\n');
 
 	  if(next != NULL){
 	    look_ahead = next + 1;
@@ -1923,7 +2022,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
-	next = index(look_ahead, '\n');
+	next = strchr(look_ahead, '\n');
 
 	if(next != NULL){
 	  look_ahead = next + 1;
@@ -1975,6 +2074,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2006,8 +2106,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("anon - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2041,6 +2142,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);      
     }
     
     return(node);
@@ -2074,6 +2176,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);      
     }
     
     return(node);
@@ -2124,8 +2227,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("numeric - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2136,6 +2240,7 @@ ags_turtle_load(AgsTurtle *turtle,
 
     gchar *look_ahead;
     gchar *str;
+    gchar *encoded_str;  
     
     node = NULL;
     look_ahead = *iter;
@@ -2150,15 +2255,21 @@ ags_turtle_load(AgsTurtle *turtle,
     if(str != NULL){
       node = xmlNewNode(NULL,
 			"rdf-string");
+
+      encoded_str = xmlEncodeSpecialChars(doc,
+					  str);
+      
       xmlNodeSetContent(node,
-			xmlEncodeSpecialChars(doc,
-					      str));
+			encoded_str);
 
 #ifdef AGS_DEBUG
       g_message("string - %s", str);
 #endif
+
+      g_free(encoded_str);
       
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2190,8 +2301,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("langtag - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2584,6 +2696,8 @@ ags_turtle_load(AgsTurtle *turtle,
 			g_ascii_strdown(rdf_blank_node_label,
 					-1));
 
+      g_free(rdf_blank_node_label);
+      
       *iter = look_ahead;
     }else{
       rdf_anon_node = ags_turtle_load_read_anon(&look_ahead);
@@ -2623,7 +2737,7 @@ ags_turtle_load(AgsTurtle *turtle,
       g_message("====");
 #endif
       
-      next = index(look_ahead,
+      next = strchr(look_ahead,
 		   '.');
 
       if(next != NULL){
@@ -2646,7 +2760,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	g_message("-----");
 #endif
 	
-	next = index(look_ahead,
+	next = strchr(look_ahead,
 		     '.');
 
 	if(next != NULL){
@@ -3164,7 +3278,7 @@ ags_turtle_load(AgsTurtle *turtle,
 		    object_node);
       }
 
-      end_ptr = index(look_ahead,
+      end_ptr = strchr(look_ahead,
 		      ')');
 
       if(end_ptr != NULL){
@@ -3264,7 +3378,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    predicate_object_list_node);
 
-	end_ptr = index(look_ahead,
+	end_ptr = strchr(look_ahead,
 			']');
 
 	if(end_ptr != NULL){
@@ -3288,15 +3402,19 @@ ags_turtle_load(AgsTurtle *turtle,
        sb);
   file = fopen(turtle->filename,
 	       "r");
-
+  
   if(file == NULL ||
      sb->st_size <= 0){
+    free(sb);
+    
     return(NULL);
   }
 
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){
+    free(sb);
+
     return(NULL);
   }
   
@@ -3342,6 +3460,9 @@ ags_turtle_load(AgsTurtle *turtle,
   
   free(sb);
   free(buffer);
+
+//  xmlCleanupParser();
+//  xmlMemoryDump();
   
   return(doc);
 }

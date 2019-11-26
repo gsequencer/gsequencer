@@ -25,11 +25,22 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
 void ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 						  AgsNotationEditor *notation_editor);
+
+void ags_notation_editor_piano_key_pressed_callback(AgsPiano *piano,
+						    gchar *note, gint key_code,
+						    AgsNotationEditor *notation_editor);
+void ags_notation_editor_piano_key_released_callback(AgsPiano *piano,
+						     gchar *note, gint key_code,
+						     AgsNotationEditor *notation_editor);
 
 void ags_notation_editor_resize_audio_channels_callback(AgsMachine *machine, 
 							guint audio_channels, guint audio_channels_old,
@@ -37,7 +48,5 @@ void ags_notation_editor_resize_audio_channels_callback(AgsMachine *machine,
 void ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 					      guint pads, guint pads_old,
 					      AgsNotationEditor *notation_editor);
-
-void ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note);
 
 #endif /*__AGS_NOTATION_EDITOR_CALLBACKS_H__*/

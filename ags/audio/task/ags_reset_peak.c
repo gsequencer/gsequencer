@@ -1,6 +1,5 @@
-
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +36,7 @@ void ags_reset_peak_launch(AgsTask *task);
  * @short_description: reset peak internal
  * @title: AgsResetPeak
  * @section_id:
- * @include: ags/audio/task/recall/ags_reset_peak.h
+ * @include: ags/audio/task/ags_reset_peak.h
  *
  * The #AgsResetPeak task resets peak to recompute the peak during next run.
  */
@@ -45,7 +44,6 @@ void ags_reset_peak_launch(AgsTask *task);
 static gpointer ags_reset_peak_parent_class = NULL;
 
 AgsResetPeak *ags_reset_peak = NULL;
-static pthread_mutex_t peak_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_reset_peak_get_type()
@@ -153,10 +151,14 @@ ags_reset_peak_launch(AgsTask *task)
   GList *peak_channel;
 
   GValue value = {0,};
+
+  pthread_mutex_t *task_mutex;
   
   reset_peak = AGS_RESET_PEAK(task);
 
-  pthread_mutex_lock(&peak_channel_mutex);
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_peak);
+
+  pthread_mutex_lock(task_mutex);
 
   peak_channel = reset_peak->peak_channel;
 
@@ -172,7 +174,7 @@ ags_reset_peak_launch(AgsTask *task)
     peak_channel = peak_channel->next;
   }
 
-  pthread_mutex_unlock(&peak_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 
   g_value_unset(&value);
 }
@@ -190,17 +192,22 @@ void
 ags_reset_peak_add(AgsResetPeak *reset_peak,
 		   AgsPeakChannel *peak_channel)
 {
-  if(!AGS_IS_RESET_PEAK(reset_peak)){
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_RESET_PEAK(reset_peak) ||
+     !AGS_IS_PEAK_CHANNEL(peak_channel)){
     return;
   }
+
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_peak);
   
-  pthread_mutex_lock(&peak_channel_mutex);
+  pthread_mutex_lock(task_mutex);
 
   reset_peak->peak_channel = g_list_prepend(reset_peak->peak_channel,
 					    peak_channel);
   g_object_ref(peak_channel);
   
-  pthread_mutex_unlock(&peak_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 }
 
 /**
@@ -216,11 +223,16 @@ void
 ags_reset_peak_remove(AgsResetPeak *reset_peak,
 		      AgsPeakChannel *peak_channel)
 {
-  if(!AGS_IS_RESET_PEAK(reset_peak)){
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_RESET_PEAK(reset_peak) ||
+     !AGS_IS_PEAK_CHANNEL(peak_channel)){
     return;
   }
   
-  pthread_mutex_lock(&peak_channel_mutex);
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_peak);
+
+  pthread_mutex_lock(task_mutex);
 
   if(g_list_find(reset_peak->peak_channel,
 		 peak_channel) != NULL){
@@ -229,7 +241,7 @@ ags_reset_peak_remove(AgsResetPeak *reset_peak,
     g_object_unref(peak_channel);
   }
   
-  pthread_mutex_unlock(&peak_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 }
 
 /**
@@ -253,16 +265,14 @@ ags_reset_peak_get_instance()
     
     AgsApplicationContext *application_context;
 
-    gboolean no_soundcard;
-
     ags_reset_peak = ags_reset_peak_new();
     
+    pthread_mutex_unlock(&mutex);
+
+    /* add cyclic task */
     application_context = ags_application_context_get_instance();
 
     task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-
-    pthread_mutex_unlock(&mutex);
-
     ags_task_thread_append_cyclic_task(task_thread,
 				       (AgsTask *) ags_reset_peak);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -213,9 +213,9 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 
 void
 ags_mute_audio_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
 {
   AgsMuteAudio *mute_audio;
 
@@ -224,11 +224,7 @@ ags_mute_audio_set_property(GObject *gobject,
   mute_audio = AGS_MUTE_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(mute_audio);
 
   switch(prop_id){
   case PROP_MUTED:
@@ -266,9 +262,9 @@ ags_mute_audio_set_property(GObject *gobject,
 
 void
 ags_mute_audio_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
 {
   AgsMuteAudio *mute_audio;
 
@@ -277,11 +273,7 @@ ags_mute_audio_get_property(GObject *gobject,
   mute_audio = AGS_MUTE_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(mute_audio);
 
   switch(prop_id){
   case PROP_MUTED:

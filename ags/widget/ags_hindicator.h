@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@
 #define AGS_IS_HINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_HINDICATOR))
 #define AGS_IS_HINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_HINDICATOR))
 #define AGS_HINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_HINDICATOR, AgsHIndicatorClass))
+
+#define AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH (7)
+#define AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT (16)
 
 typedef struct _AgsHIndicator AgsHIndicator;
 typedef struct _AgsHIndicatorClass AgsHIndicatorClass;

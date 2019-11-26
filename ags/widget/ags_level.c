@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,6 +111,8 @@ enum{
 
 enum{
   PROP_0,
+  PROP_LEVEL_WIDTH,
+  PROP_LEVEL_HEIGHT,
   PROP_LOWER,
   PROP_UPPER,
   PROP_NORMALIZED_VOLUME,
@@ -217,6 +219,42 @@ ags_level_class_init(AgsLevelClass *level)
   gobject->finalize = ags_level_finalize;
 
   /* properties */
+  /**
+   * AgsLevel:level-width:
+   *
+   * The level width to use for drawing a level.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("level-width",
+				 "level width",
+				 "The level width to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_LEVEL_DEFAULT_LEVEL_WIDTH,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LEVEL_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsLevel:level-height:
+   *
+   * The level height to use for drawing a level.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("level-height",
+				 "level height",
+				 "The level height to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_LEVEL_DEFAULT_LEVEL_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LEVEL_HEIGHT,
+				  param_spec);
+
   /**
    * AgsLevel:lower:
    *
@@ -372,8 +410,8 @@ ags_level_init(AgsLevel *level)
 
   level->font_size = 11;
 
-  level->level_width = AGS_LEVEL_DEFAULT_WIDTH;
-  level->level_height = AGS_LEVEL_DEFAULT_HEIGHT;
+  level->level_width = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
+  level->level_height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
 
   level->lower = AGS_LEVEL_DEFAULT_LOWER;
   level->upper = AGS_LEVEL_DEFAULT_UPPER;
@@ -400,6 +438,16 @@ ags_level_set_property(GObject *gobject,
   level = AGS_LEVEL(gobject);
 
   switch(prop_id){
+  case PROP_LEVEL_WIDTH:
+    {
+      level->level_width = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LEVEL_HEIGHT:
+    {
+      level->level_height = g_value_get_uint(value);
+    }
+    break;
   case PROP_LOWER:
     {
       level->lower = g_value_get_double(value);
@@ -438,24 +486,36 @@ ags_level_get_property(GObject *gobject,
   level = AGS_LEVEL(gobject);
 
   switch(prop_id){
+  case PROP_LEVEL_WIDTH:
+  {
+    g_value_set_uint(value,
+		     level->level_width);
+  }
+  break;
+  case PROP_LEVEL_HEIGHT:
+  {
+    g_value_set_uint(value,
+		     level->level_height);
+  }
+  break;
   case PROP_LOWER:
-    {
-      g_value_set_double(value,
-			 level->lower);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->lower);
+  }
+  break;
   case PROP_UPPER:
-    {
-      g_value_set_double(value,
-			 level->upper);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->upper);
+  }
+  break;
   case PROP_NORMALIZED_VOLUME:
-    {
-      g_value_set_double(value,
-			 level->normalized_volume);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->normalized_volume);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -504,6 +564,8 @@ ags_accessible_level_get_range(AtkValue *value)
   range = atk_range_new(level->lower,
 			level->upper,
 			"Valid lower and upper input range of this level");
+
+  return(range);
 }
 #endif
 
@@ -710,8 +772,8 @@ ags_level_realize(GtkWidget *widget)
   
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
-  attributes.width = AGS_LEVEL_DEFAULT_WIDTH;
-  attributes.height = AGS_LEVEL_DEFAULT_HEIGHT;
+  attributes.width = level->level_width;
+  attributes.height = level->level_height;
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
@@ -845,6 +907,8 @@ ags_level_button_press(GtkWidget *widget,
       level->button_state |= AGS_LEVEL_BUTTON_1_PRESSED;
 
       c_range = level->upper - level->lower;
+
+      normalized_volume = 0.0;
       
       if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
 	normalized_volume = event->y / c_range;
@@ -882,6 +946,8 @@ ags_level_button_release(GtkWidget *widget,
 
       c_range = level->upper - level->lower;
       
+      normalized_volume = 0.0;
+
       if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
 	normalized_volume = event->y / c_range;
       }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
@@ -1058,7 +1124,9 @@ ags_level_motion_notify(GtkWidget *widget,
     level->button_state |= AGS_LEVEL_BUTTON_1_PRESSED;
 
     c_range = level->upper - level->lower;
-      
+
+    new_normalized_volume = 0.0;
+            
     if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
       new_normalized_volume = event->y / c_range;
     }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
@@ -1082,34 +1150,17 @@ ags_level_draw(AgsLevel *level)
 {
   cairo_t *cr;
 
-  gchar *str;
-  
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+    
+  gchar *font_name;
+  gchar *text;
+
   guint width, height;
   guint x_start, y_start;
 
-  auto void ags_level_draw_string(cairo_t *cr, gchar *str);
-  
-  void ags_level_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    level->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-#ifndef __APPLE__
-    //    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-#endif
-    g_object_unref(layout);
-  }
-  
   static const gdouble white_gc = 65535.0;
 
   if(!AGS_IS_LEVEL(level)){
@@ -1121,6 +1172,10 @@ ags_level_draw(AgsLevel *level)
   if(cr == NULL){
     return;
   }
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
   width = GTK_WIDGET(level)->allocation.width;
   height = GTK_WIDGET(level)->allocation.height;
@@ -1153,24 +1208,46 @@ ags_level_draw(AgsLevel *level)
   //TODO:JK: implement me
 
   /* show samplerate */
-  str = g_strdup_printf("%u [Hz]", level->samplerate);
+  text = g_strdup_printf("%u [Hz]", level->samplerate);
+
+  layout = pango_cairo_create_layout(cr);
+  pango_layout_set_text(layout,
+			text,
+			-1);
+  desc = pango_font_description_from_string(font_name);
+  pango_font_description_set_size(desc,
+				  level->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout,
+				    desc);
+  pango_font_description_free(desc);    
+
+  pango_layout_get_extents(layout,
+			   &ink_rect,
+			   &logical_rect);
   
   cairo_set_source_rgb(cr,
 		       1.0, 1.0, 1.0);
 
   if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
     cairo_move_to(cr,
-		  x_start + level->font_size, y_start + height - 1.0);
+		  x_start + (logical_rect.height / PANGO_SCALE) / 2.0,
+		  y_start + height - 1.0);
     cairo_rotate(cr,
 		 2 * M_PI * 0.75);
   }else{
     cairo_move_to(cr,
-		  x_start + level->font_size, y_start + 1.0);
+		  x_start,
+		  y_start + (logical_rect.height / PANGO_SCALE) / 2.0 + 1.0);
   }
-  
-  ags_level_draw_string(cr,
-			str);
 
+  pango_cairo_show_layout(cr,
+			  layout);
+
+  g_object_unref(layout);
+
+  g_free(font_name);
+  g_free(text);
+  
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 

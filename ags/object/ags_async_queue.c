@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-void ags_async_queue_base_init(AgsAsyncQueueInterface *interface);
+void ags_async_queue_base_init(AgsAsyncQueueInterface *ginterface);
 
 /**
  * SECTION:ags_async_queue
@@ -59,7 +59,7 @@ ags_async_queue_get_type()
 }
 
 void
-ags_async_queue_base_init(AgsAsyncQueueInterface *interface)
+ags_async_queue_base_init(AgsAsyncQueueInterface *ginterface)
 {
   /* empty */
 }

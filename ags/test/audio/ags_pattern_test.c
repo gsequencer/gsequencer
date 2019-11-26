@@ -204,6 +204,8 @@ ags_pattern_test_get_bit()
   }
   
   /* assert values to be present */
+  success = TRUE;
+  
   for(i = 0; i < AGS_PATTERN_TEST_GET_BIT_BANK_0 &&
 	success;
       i++){    

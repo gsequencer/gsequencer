@@ -178,11 +178,7 @@ ags_osc_action_controller_set_property(GObject *gobject,
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_action_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_action_controller);
   
   switch(prop_id){
   default:
@@ -204,11 +200,7 @@ ags_osc_action_controller_get_property(GObject *gobject,
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_action_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_action_controller);
   
   switch(prop_id){
   default:
@@ -371,7 +363,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -406,7 +398,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -459,7 +451,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	audio = g_list_nth_data(start_list,
 				nth_audio);
       
-	path_offset = index(path + path_offset, ']') - path + 1;
+	path_offset = strchr(path + path_offset, ']') - path + 1;
 	
 	g_list_free_full(start_list,
 			 g_object_unref);
@@ -469,7 +461,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 
 	guint length;
 
-	if((offset = index(path + path_offset + 2, '"')) == NULL){
+	if((offset = strchr(path + path_offset + 2, '"')) == NULL){
 	  osc_response = ags_osc_response_new();
 	  start_response = g_list_prepend(start_response,
 					  osc_response);
@@ -552,7 +544,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);

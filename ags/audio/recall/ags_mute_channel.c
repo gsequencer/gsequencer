@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -222,11 +222,7 @@ ags_mute_channel_set_property(GObject *gobject,
   mute_channel = AGS_MUTE_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(mute_channel);
 
   switch(prop_id){
   case PROP_MUTED:
@@ -275,11 +271,7 @@ ags_mute_channel_get_property(GObject *gobject,
   mute_channel = AGS_MUTE_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(mute_channel);
 
   switch(prop_id){
   case PROP_MUTED:
@@ -385,8 +377,8 @@ ags_mute_channel_get_muted_plugin_port()
     g_object_ref(plugin_port);
 
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			       AGS_PLUGIN_PORT_CONTROL |
-			       AGS_PLUGIN_PORT_TOGGLED);
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
 
     plugin_port->port_index = 0;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -96,6 +96,7 @@ gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 						  guint nth);
 
 gboolean ags_functional_test_util_button_click(GtkButton *button);
+gboolean ags_functional_test_util_tool_button_click(GtkToolButton *tool_button);
 
 /* generic dialog */
 gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);
@@ -128,21 +129,21 @@ gboolean ags_functional_test_util_save_as();
 
 gboolean ags_functional_test_util_export_open();
 gboolean ags_functional_test_util_export_close();
-gboolean ags_funcitonal_test_util_export_add();
-gboolean ags_funcitonal_test_util_export_tact(gdouble tact);
+gboolean ags_functional_test_util_export_add();
+gboolean ags_functional_test_util_export_tact(gdouble tact);
 
-gboolean ags_funcitonal_test_util_export_remove(guint nth);
-gboolean ags_funcitonal_test_util_export_set_backend(guint nth,
+gboolean ags_functional_test_util_export_remove(guint nth);
+gboolean ags_functional_test_util_export_set_backend(guint nth,
 						     gchar *backend);
-gboolean ags_funcitonal_test_util_export_set_device(guint nth,
+gboolean ags_functional_test_util_export_set_device(guint nth,
 						    gchar *device);
-gboolean ags_funcitonal_test_util_export_set_filename(guint nth,
+gboolean ags_functional_test_util_export_set_filename(guint nth,
 						      gchar *filename);
-gboolean ags_funcitonal_test_util_export_open(guint nth);
-gboolean ags_funcitonal_test_util_export_set_format(guint nth,
+gboolean ags_functional_test_util_export_nth(guint nth);
+gboolean ags_functional_test_util_export_set_format(guint nth,
 						    gchar *format);
 
-gboolean ags_funcitonal_test_util_export_do_export();
+gboolean ags_functional_test_util_export_do_export();
 
 gboolean ags_functional_test_util_quit();
 

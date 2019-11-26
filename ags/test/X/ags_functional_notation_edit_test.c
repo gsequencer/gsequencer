@@ -212,7 +212,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest", ags_functional_notation_edit_test_init_suite, ags_functional_notation_edit_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalNoteEditTest", ags_functional_notation_edit_test_init_suite, ags_functional_notation_edit_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

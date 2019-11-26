@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <math.h>
 #include <complex.h>
 
 #define AGS_TYPE_COMPLEX                (ags_complex_get_type())
+
+#define AGS_COMPLEX_M_E (M_E + I * 0.0)
+#define AGS_COMPLEX_M_PI (M_PI + I * 0.0)
 
 typedef long double AgsComplex[2];
 

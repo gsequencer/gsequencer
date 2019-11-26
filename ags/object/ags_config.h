@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_CONFIG                (ags_config_get_type ())
 #define AGS_CONFIG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONFIG, AgsConfig))
 #define AGS_CONFIG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CONFIG, AgsConfigClass))
 #define AGS_IS_CONFIG(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_CONFIG))
 #define AGS_IS_CONFIG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CONFIG))
 #define AGS_CONFIG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONFIG, AgsConfigClass))
+
+#define AGS_CONFIG_GET_OBJ_MUTEX(obj) (((AgsConfig *) obj)->obj_mutex)
 
 #define AGS_CONFIG_DEFAULT_VERSION "0.7.0"
 #define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 13-10-2015 01:19"
@@ -59,7 +63,7 @@ typedef enum{
 
 struct _AgsConfig
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -76,7 +80,7 @@ struct _AgsConfig
 
 struct _AgsConfigClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*load_defaults)(AgsConfig *config);
 

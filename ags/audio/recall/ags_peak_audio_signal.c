@@ -156,11 +156,7 @@ ags_peak_audio_signal_set_property(GObject *gobject,
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_audio_signal);
 
   switch(prop_id){
   case PROP_PEAK:
@@ -195,11 +191,7 @@ ags_peak_audio_signal_get_property(GObject *gobject,
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_audio_signal);
 
   switch(prop_id){
   case PROP_PEAK:
@@ -244,13 +236,14 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
   peak_audio_signal = (AgsPeakAudioSignal *) recall;
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_audio_signal);
 
-  recall_mutex = recall->obj_mutex;
-  
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+
   parent_class_run_inter = AGS_RECALL_CLASS(ags_peak_audio_signal_parent_class)->run_inter;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);

@@ -273,12 +273,8 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_notation_audio_run);
   
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
@@ -481,11 +477,7 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_notation_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -1075,6 +1067,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  /* lock and add */
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
+
 	  //g_object_unref(audio_signal);
 	}else{
 	  GList *start_list, *list;
@@ -1173,11 +1166,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	       NULL);
 
   /* audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get audio channel */
   pthread_mutex_lock(audio_mutex);

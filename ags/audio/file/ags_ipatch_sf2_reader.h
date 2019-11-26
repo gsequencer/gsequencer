@@ -40,6 +40,8 @@
 #define AGS_IS_IPATCH_SF2_READER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_IPATCH_SF2_READER))
 #define AGS_IPATCH_SF2_READER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_IPATCH_SF2_READER, AgsIpatchSF2ReaderClass))
 
+#define AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(obj) (((AgsIpatchSF2Reader *) obj)->obj_mutex)
+
 typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
 
@@ -74,7 +76,7 @@ typedef enum{
 
 struct _AgsIpatchSF2Reader
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -115,7 +117,7 @@ struct _AgsIpatchSF2Reader
 
 struct _AgsIpatchSF2ReaderClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ipatch_sf2_reader_get_type();

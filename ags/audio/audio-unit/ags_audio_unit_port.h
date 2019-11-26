@@ -44,6 +44,8 @@
 #define AGS_IS_AUDIO_UNIT_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_PORT))
 #define AGS_AUDIO_UNIT_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_PORT, AgsAudioUnitPortClass))
 
+#define AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(obj) (((AgsAudioUnitPort *) obj)->obj_mutex)
+
 #define AGS_AUDIO_UNIT_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
 typedef struct _AgsAudioUnitPort AgsAudioUnitPort;
@@ -74,7 +76,7 @@ typedef enum{
 
 struct _AgsAudioUnitPort
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -97,6 +99,8 @@ struct _AgsAudioUnitPort
   guint format;
 
 #ifdef AGS_WITH_AUDIO_UNIT
+  AudioStreamBasicDescription *data_format;
+  
   AUGraph *graph;
 
   AudioComponentDescription *description;
@@ -107,6 +111,8 @@ struct _AgsAudioUnitPort
 
   AURenderCallbackStruct *render_callback;
 #else
+  gpointer data_format;
+  
   gpointer graph;
 
   gpointer description;
@@ -128,7 +134,7 @@ struct _AgsAudioUnitPort
 
 struct _AgsAudioUnitPortClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_audio_unit_port_get_type();

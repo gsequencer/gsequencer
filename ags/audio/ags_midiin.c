@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,12 +28,18 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <fcntl.h>
 #include <sys/ioctl.h>
+
 #ifndef __APPLE__
 #include <sys/soundcard.h>
 #endif
+
 #include <sys/utsname.h>
+#endif
+
 #ifdef AGS_WITH_ALSA
 #include <alsa/rawmidi.h>
 #endif
@@ -592,11 +598,7 @@ ags_midiin_set_property(GObject *gobject,
   midiin = AGS_MIDIIN(gobject);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -705,11 +707,7 @@ ags_midiin_get_property(GObject *gobject,
   midiin = AGS_MIDIIN(gobject);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -841,11 +839,7 @@ ags_midiin_get_uuid(AgsConnectable *connectable)
   midiin = AGS_MIDIIN(connectable);
 
   /* get midiin signal mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get UUID */
   pthread_mutex_lock(midiin_mutex);
@@ -875,11 +869,7 @@ ags_midiin_is_ready(AgsConnectable *connectable)
   midiin = AGS_MIDIIN(connectable);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is added */
   pthread_mutex_lock(midiin_mutex);
@@ -962,11 +952,7 @@ ags_midiin_is_connected(AgsConnectable *connectable)
   midiin = AGS_MIDIIN(connectable);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is connected */
   pthread_mutex_lock(midiin_mutex);
@@ -1045,11 +1031,7 @@ ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
   }
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* test */
   pthread_mutex_lock(midiin_mutex);
@@ -1080,11 +1062,7 @@ ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
   }
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   //TODO:JK: add more?
 
@@ -1115,11 +1093,7 @@ ags_midiin_unset_flags(AgsMidiin *midiin, guint flags)
   }
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   //TODO:JK: add more?
 
@@ -1142,11 +1116,7 @@ ags_midiin_set_application_context(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set application context */
   pthread_mutex_lock(midiin_mutex);
@@ -1168,11 +1138,7 @@ ags_midiin_get_application_context(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get application context */
   pthread_mutex_lock(midiin_mutex);
@@ -1195,11 +1161,7 @@ ags_midiin_set_device(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set device */
   pthread_mutex_lock(midiin_mutex);
@@ -1225,11 +1187,7 @@ ags_midiin_get_device(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
   
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   device = NULL;
   
@@ -1257,11 +1215,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   if(card_id != NULL){
     *card_id = NULL;
@@ -1364,7 +1318,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     
     int mixerfd = -1;
 
-    int next, n;
+    int n;
     int i;
 
     if((mixer_device = getenv("OSS_MIXERDEV")) == NULL){
@@ -1432,10 +1386,6 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
 				      g_strdup(mi.name));
 	}
       }
-
-      if(next <= 0){
-	break;
-      }
     }
 #endif
   }
@@ -1463,11 +1413,7 @@ ags_midiin_is_starting(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is starting */
   pthread_mutex_lock(midiin_mutex);
@@ -1491,11 +1437,7 @@ ags_midiin_is_recording(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
   
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* check is starting */
   pthread_mutex_lock(midiin_mutex);
@@ -1569,14 +1511,14 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
 
   pthread_mutex_t *midiin_mutex;
 
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* prepare for playback */
   pthread_mutex_lock(midiin_mutex);
@@ -1656,11 +1598,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   application_context = ags_application_context_get_instance();
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* poll MIDI device */
   pthread_mutex_lock(midiin_mutex);
@@ -1676,6 +1614,9 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   device_fd = midiin->in.oss.device_fd;
 
   /* nth buffer */
+  nth_buffer = 0;
+  nth_ring_buffer = 1;
+  
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     nth_buffer = 1;
     nth_ring_buffer = 0;
@@ -1819,11 +1760,7 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   pthread_mutex_lock(midiin_mutex);  
 
@@ -1873,14 +1810,14 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   
   pthread_mutex_t *midiin_mutex;
   
+  if(ags_sequencer_is_recording(sequencer)){
+    return;
+  }
+
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /*  */
   pthread_mutex_lock(midiin_mutex);
@@ -1912,7 +1849,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 #endif
 
   midiin->tact_counter = 0.0;
-  midiin->delay_counter = 0.0;
+  midiin->delay_counter = floor(midiin->delay);
   midiin->tic_counter = 0;
 
 #ifdef AGS_WITH_ALSA
@@ -1959,11 +1896,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   application_context = ags_application_context_get_instance();
   
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* prepare poll */
   pthread_mutex_lock(midiin_mutex);
@@ -1979,6 +1912,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   device_handle = midiin->in.alsa.handle;
       
   /* nth buffer */
+  nth_buffer = 0;
+  nth_ring_buffer = 1;
+
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     nth_buffer = 1;
     nth_ring_buffer = 0;
@@ -2118,11 +2054,7 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /*  */
   pthread_mutex_lock(midiin_mutex);
@@ -2194,11 +2126,7 @@ ags_midiin_tic(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
   
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
   
   /* determine if attack should be switched */
   pthread_mutex_lock(midiin_mutex);
@@ -2210,7 +2138,7 @@ ags_midiin_tic(AgsSequencer *sequencer)
 
   pthread_mutex_unlock(midiin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
 				  note_offset + 1);
 
@@ -2221,7 +2149,7 @@ ags_midiin_tic(AgsSequencer *sequencer)
     /* reset - delay counter */
     pthread_mutex_lock(midiin_mutex);
 
-    midiin->delay_counter = 0.0;
+    midiin->delay_counter = delay_counter + 1.0 - delay;
     midiin->tact_counter += 1.0;
 
     pthread_mutex_unlock(midiin_mutex);
@@ -2245,11 +2173,7 @@ ags_midiin_offset_changed(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* offset changed */
   pthread_mutex_lock(midiin_mutex);
@@ -2275,11 +2199,7 @@ ags_midiin_set_bpm(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set bpm */
   pthread_mutex_lock(midiin_mutex);
@@ -2301,11 +2221,7 @@ ags_midiin_get_bpm(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get bpm */
   pthread_mutex_lock(midiin_mutex);
@@ -2328,11 +2244,7 @@ ags_midiin_set_delay_factor(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set delay factor */
   pthread_mutex_lock(midiin_mutex);
@@ -2354,11 +2266,7 @@ ags_midiin_get_delay_factor(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* get delay factor */
   pthread_mutex_lock(midiin_mutex);
@@ -2519,11 +2427,7 @@ ags_midiin_set_start_note_offset(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
   pthread_mutex_lock(midiin_mutex);
@@ -2545,11 +2449,7 @@ ags_midiin_get_start_note_offset(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
   pthread_mutex_lock(midiin_mutex);
@@ -2572,11 +2472,7 @@ ags_midiin_set_note_offset(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
   pthread_mutex_lock(midiin_mutex);
@@ -2598,11 +2494,7 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
   midiin = AGS_MIDIIN(sequencer);
 
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* set note offset */
   pthread_mutex_lock(midiin_mutex);
@@ -2632,11 +2524,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
   }
   
   /* get midiin mutex */
-  pthread_mutex_lock(ags_midiin_get_class_mutex());
-  
-  midiin_mutex = midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+  midiin_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(midiin);
 
   /* switch buffer flag */
   pthread_mutex_lock(midiin_mutex);

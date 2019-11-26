@@ -413,6 +413,8 @@ ags_registry_find_entry(AgsRegistry *registry,
 
     if(!ags_uuid_compare(entry->id,
 			 id)){
+      pthread_mutex_unlock(registry->mutex);
+      
       return(entry);
     }
 
@@ -421,7 +423,7 @@ ags_registry_find_entry(AgsRegistry *registry,
 
   pthread_mutex_unlock(registry->mutex);
 
-  return(entry);
+  return(NULL);
 }
 
 #ifdef AGS_WITH_XMLRPC_C

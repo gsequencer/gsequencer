@@ -132,11 +132,7 @@ ags_output_find_first_input_recycling(AgsOutput *output)
   }
   
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = AGS_CHANNEL(output)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(output);
 
   /* get some fields */
   pthread_mutex_lock(channel_mutex);
@@ -149,11 +145,7 @@ ags_output_find_first_input_recycling(AgsOutput *output)
   pthread_mutex_unlock(channel_mutex);
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = AGS_AUDIO(output)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -231,11 +223,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
   }
   
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = AGS_CHANNEL(output)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(output);
 
   /* get some fields */
   pthread_mutex_lock(channel_mutex);
@@ -248,11 +236,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
   pthread_mutex_unlock(channel_mutex);
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = AGS_AUDIO(output)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);

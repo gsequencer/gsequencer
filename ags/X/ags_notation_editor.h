@@ -71,6 +71,9 @@ struct _AgsNotationEditor
 
   guint chunk_duration;
 
+  gint *active_key;
+  guint active_key_count;
+
   GObject *soundcard;
   
   GtkHPaned *paned;
@@ -110,6 +113,11 @@ void ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 				       guint x1, guint y1);
 
 void ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor);
+
+void ags_notation_editor_start_play_key(AgsNotationEditor *notation_editor,
+					gint key_code);
+void ags_notation_editor_stop_play_key(AgsNotationEditor *notation_editor,
+				       gint key_code);
 
 void ags_notation_editor_select_all(AgsNotationEditor *notation_editor);
 

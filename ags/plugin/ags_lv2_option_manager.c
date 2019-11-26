@@ -331,11 +331,7 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
   }
 
   /* get lv2 option manager mutex */
-  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
-  
-  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+  lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
   pthread_mutex_lock(lv2_option_manager_mutex);
@@ -373,11 +369,7 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
   }
 
   /* get lv2 option manager mutex */
-  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
-  
-  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+  lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
   pthread_mutex_lock(lv2_option_manager_mutex);
@@ -418,11 +410,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   }
 
   /* get lv2 option manager mutex */
-  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
-  
-  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+  lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
   pthread_mutex_lock(lv2_option_manager_mutex);
@@ -492,11 +480,7 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   }
 
   /* get lv2 option manager mutex */
-  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
-  
-  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+  lv2_option_manager_mutex = AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(lv2_option_manager);
 
   /*  */
   pthread_mutex_lock(lv2_option_manager_mutex);

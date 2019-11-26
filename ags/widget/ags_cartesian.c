@@ -933,13 +933,13 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
   GtkStyle *cartesian_style;
   cairo_t *cr;
-
-  cairo_text_extents_t te_x_unit, te_y_unit;
-
+  
   GList *list;
   
   unsigned char *data;
   guint32 *data_ptr;
+
+  gchar *font_name;
   
   gdouble x, y;
   gdouble x_offset, y_offset;
@@ -1113,50 +1113,80 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
 
   void ags_cartesian_draw_x_label(){
-    cairo_text_extents_t te_x_label;
-
     guint i;
 
     for(i = 0; i < width / cartesian->x_label_step_width; i++){
+      PangoLayout *layout;
+      PangoFontDescription *desc;
+
+      PangoRectangle ink_rect, logical_rect;
+
       if(cartesian->x_label[i] == NULL){
 	break;
       }
       
-      cairo_text_extents(cr,
-			 cartesian->x_label[i],
-			 &te_x_label);
+      layout = pango_cairo_create_layout(cr);
+      pango_layout_set_text(layout,
+			    cartesian->x_label[i],
+			    -1);
+      desc = pango_font_description_from_string(font_name);
+      pango_font_description_set_size(desc,
+				      cartesian->font_size * PANGO_SCALE);
+      pango_layout_set_font_description(layout,
+					desc);
+      pango_font_description_free(desc);    
+
+      pango_layout_get_extents(layout,
+			       &ink_rect,
+			       &logical_rect);  
 
       cairo_move_to(cr,
 		    cartesian->x_margin + cartesian->x_label_start + (i * cartesian->x_label_step_width) + cartesian->font_size / 3.0,
-		    cartesian->y_margin + height + cartesian->y_start + cartesian->font_size + te_x_label.height);
+		    cartesian->y_margin + height + cartesian->y_start + cartesian->font_size + (logical_rect.height / PANGO_SCALE));
       
-      cairo_show_text(cr,
-		      cartesian->x_label[i]);
+      pango_cairo_show_layout(cr,
+			      layout);
+      
+      g_object_unref(layout);
     }
-
-    cairo_stroke(cr);
   }
 
   void ags_cartesian_draw_y_label(){
-    cairo_text_extents_t te_y_label;
-
     guint i;
 
     for(i = 0; i < height / cartesian->y_label_step_height; i++){
+      PangoLayout *layout;
+      PangoFontDescription *desc;
+
+      PangoRectangle ink_rect, logical_rect;
+
       if(cartesian->y_label[i] == NULL){
 	break;
       }
 
-      cairo_text_extents(cr,
-			 cartesian->y_label[i],
-			 &te_y_label);
+      layout = pango_cairo_create_layout(cr);
+      pango_layout_set_text(layout,
+			    cartesian->y_label[i],
+			    -1);
+      desc = pango_font_description_from_string(font_name);
+      pango_font_description_set_size(desc,
+				      cartesian->font_size * PANGO_SCALE);
+      pango_layout_set_font_description(layout,
+					desc);
+      pango_font_description_free(desc);    
+
+      pango_layout_get_extents(layout,
+			       &ink_rect,
+			       &logical_rect);  
 
       cairo_move_to(cr,
 		    cartesian->x_margin - cartesian->x_start + cartesian->font_size / 2.0,
 		    cartesian->y_margin + height - cartesian->y_label_start - (i * cartesian->y_label_step_height) - cartesian->font_size / 3.0);
+            
+      pango_cairo_show_layout(cr,
+			      layout);
       
-      cairo_show_text(cr,
-		      cartesian->y_label[i]);
+      g_object_unref(layout);
     }
 
     cairo_stroke(cr);
@@ -1464,6 +1494,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
   
   /* entry point */
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+  
   widget = GTK_WIDGET(cartesian);
   cartesian_style = gtk_widget_get_style(widget);
 
@@ -1472,6 +1506,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   if(cr == NULL){
     return;
   }
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
   /* clear bg */
   cairo_set_source_rgb(cr,
@@ -1567,36 +1605,70 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
   /* x unit */
   if((AGS_CARTESIAN_X_UNIT & (cartesian->flags)) != 0){
-    cairo_text_extents(cr,
-		       cartesian->x_unit,
-		       &te_x_unit);
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  cartesian->x_unit,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    cartesian->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);  
 
     cairo_move_to(cr,
-		  cartesian->x_margin - te_x_unit.width - 3.0,
+		  cartesian->x_margin - (logical_rect.width / PANGO_SCALE) - 3.0,
 		  cartesian->y_margin + height + cartesian->y_start);
       
-    cairo_show_text(cr,
-		    cartesian->x_unit);
-
-    cairo_stroke(cr);
+    pango_cairo_show_layout(cr,
+			    layout);
+      
+    g_object_unref(layout);
   }
   
   /* y unit */
   if((AGS_CARTESIAN_Y_UNIT & (cartesian->flags)) != 0){
-    cairo_text_extents(cr,
-		       cartesian->y_unit,
-		       &te_y_unit);
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  cartesian->y_unit,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    cartesian->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);  
 
     cairo_move_to(cr,
 		  cartesian->x_margin - cartesian->x_start,
-		  cartesian->y_margin + height + te_y_unit.height + 3.0);
+		  cartesian->y_margin + height + (logical_rect.height / PANGO_SCALE) + 3.0);
       
-    cairo_show_text(cr,
-		    cartesian->y_unit);
-
-    cairo_stroke(cr);
+    pango_cairo_show_layout(cr,
+			    layout);
+      
+    g_object_unref(layout);
   }
   
+  g_free(font_name);
+
   /* pop group */
   cairo_pop_group_to_source(cr);
   

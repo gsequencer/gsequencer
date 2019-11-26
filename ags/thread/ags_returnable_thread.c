@@ -310,38 +310,58 @@ ags_returnable_thread_start(AgsThread *thread)
 void
 ags_returnable_thread_run(AgsThread *thread)
 {
+  AgsThreadPool *thread_pool;
   AgsReturnableThread *returnable_thread;
+#if 0
   AgsTaskThread *task_thread;
-  GList *tmplist;
 
-  gboolean unref_thread;
+  AgsApplicationContext *application_context;
+#endif
+  
+  pthread_mutex_t *thread_mutex;
+  
   //  g_message("reset:0");
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
   
-  unref_thread = FALSE;
-  
   /* safe run */
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-
     ags_returnable_thread_safe_run(returnable_thread);
 
     if((AGS_RETURNABLE_THREAD_RUN_ONCE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
       g_atomic_int_and(&(returnable_thread->flags),
 		       (~AGS_RETURNABLE_THREAD_IN_USE));
+
+#if 0
       ags_thread_stop(thread);
+#else
+      /* return to thread pool */
+      thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
+
+      pthread_mutex_lock(thread_mutex);
+
+      thread_pool = returnable_thread->thread_pool;
       
-      unref_thread = TRUE;
+      pthread_mutex_unlock(thread_mutex);
+
+      /* give returnable thread back to thread pool */
+      g_atomic_pointer_set(&(returnable_thread->safe_data),
+			   NULL);
+      ags_returnable_thread_disconnect_safe_run(returnable_thread);
+
+      g_atomic_pointer_set(&(thread_pool->returnable_thread),
+			   g_list_prepend(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
+					  returnable_thread));      
+#endif
     }
 
-    task_thread = (AgsTaskThread *) ags_thread_find_type(ags_thread_get_toplevel(AGS_THREAD_POOL(returnable_thread->thread_pool)->parent),
-							 AGS_TYPE_TASK_THREAD);
+#if 0
+    application_context = ags_application_context_get_instance();
+    
+    task_thread = (AgsTaskThread *) ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
     ags_task_thread_clear_cache(task_thread);
-  }
-
-  if(unref_thread){
-    //    g_object_unref(thread);
+#endif
   }
 }
 

@@ -40,6 +40,8 @@
 #define AGS_IS_LV2UI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2UI_MANAGER))
 #define AGS_LV2UI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2UI_MANAGER, AgsLv2uiManagerClass))
 
+#define AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2uiManager *) obj)->obj_mutex)
+
 typedef struct _AgsLv2uiManager AgsLv2uiManager;
 typedef struct _AgsLv2uiManagerClass AgsLv2uiManagerClass;
 

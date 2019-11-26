@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -385,11 +385,7 @@ ags_thread_pool_creation_thread(void *ptr)
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(ags_thread_get_class_mutex());
-
-    parent_mutex = thread_pool->parent->obj_mutex;
-  
-    pthread_mutex_unlock(ags_thread_get_class_mutex());
+    parent_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread_pool->parent);
   }else{
     parent_mutex = NULL;
   }
@@ -482,7 +478,7 @@ ags_thread_pool_creation_thread(void *ptr)
       }
 
       pthread_mutex_unlock(returnable_thread->start_mutex);
-
+      
       //      start_queue = g_list_prepend(start_queue,
       //			   returnable_thread);
       
@@ -575,17 +571,19 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   pthread_mutex_unlock(&mutex);
   
   /* signal create threads */
-  pthread_mutex_lock(thread_pool->idle_mutex);
+  if(g_list_length(g_atomic_pointer_get(&(thread_pool->returnable_thread))) < g_atomic_int_get(&(thread_pool->max_unused_threads)) / 2){
+    pthread_mutex_lock(thread_pool->idle_mutex);
 
-  g_atomic_int_set(&(thread_pool->create_threads),
-		   TRUE);
+    g_atomic_int_set(&(thread_pool->create_threads),
+		     TRUE);
   
-  if(g_atomic_int_get(&(thread_pool->idle))){
-    pthread_cond_signal(thread_pool->idle_cond);
+    if(g_atomic_int_get(&(thread_pool->idle))){
+      pthread_cond_signal(thread_pool->idle_cond);
+    }
+  
+    pthread_mutex_unlock(thread_pool->idle_mutex);
   }
   
-  pthread_mutex_unlock(thread_pool->idle_mutex);
-
   return(AGS_THREAD(returnable_thread));
 }
 
@@ -602,11 +600,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(ags_thread_get_class_mutex());
-
-    parent_mutex = thread_pool->parent->obj_mutex;
-  
-    pthread_mutex_unlock(ags_thread_get_class_mutex());
+    parent_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread_pool->parent);
   }else{
     parent_mutex = NULL;
   }

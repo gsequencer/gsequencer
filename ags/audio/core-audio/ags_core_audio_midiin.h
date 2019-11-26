@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #define AGS_IS_CORE_AUDIO_MIDIIN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CORE_AUDIO_MIDIIN))
 #define AGS_IS_CORE_AUDIO_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_MIDIIN))
 #define AGS_CORE_AUDIO_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_MIDIIN, AgsCoreAudioMidiinClass))
+
+#define AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(obj) (((AgsCoreAudioMidiin *) obj)->obj_mutex)
 
 #define AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
@@ -107,7 +109,7 @@ typedef enum{
 
 struct _AgsCoreAudioMidiin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -152,7 +154,7 @@ struct _AgsCoreAudioMidiin
 
 struct _AgsCoreAudioMidiinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_core_audio_midiin_get_type();

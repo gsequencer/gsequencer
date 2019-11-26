@@ -168,11 +168,7 @@ ags_osc_info_controller_set_property(GObject *gobject,
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_info_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_info_controller);
   
   switch(prop_id){
   default:
@@ -194,11 +190,7 @@ ags_osc_info_controller_get_property(GObject *gobject,
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_info_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_info_controller);
   
   switch(prop_id){
   default:

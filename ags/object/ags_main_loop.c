@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-void ags_main_loop_class_init(AgsMainLoopInterface *interface);
+void ags_main_loop_class_init(AgsMainLoopInterface *ginterface);
 
 /**
  * SECTION:ags_main_loop
@@ -66,7 +66,7 @@ ags_main_loop_get_type()
 }
 
 void
-ags_main_loop_class_init(AgsMainLoopInterface *interface)
+ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
 {
   /**
    * AgsMainLoop::interrupt:
@@ -81,7 +81,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[INTERRUPT] = 
     g_signal_new("interrupt",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
 		 NULL, NULL,
@@ -103,7 +103,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[MONITOR] =
     g_signal_new("monitor",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
 		 NULL, NULL,
@@ -122,7 +122,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
-		 G_TYPE_FROM_INTERFACE(interface),
+		 G_TYPE_FROM_INTERFACE(ginterface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, change_frequency),
 		 NULL, NULL,
@@ -389,4 +389,112 @@ ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 		main_loop_signals[CHANGE_FREQUENCY],
 		0,
 		frequency);
+}
+
+/**
+ * ags_main_loop_sync_counter_inc:
+ * @main_loop: the #AgsMainLoop
+ * @tic: the current tic
+ *
+ * Increment sync counter.
+ *
+ * Since: 2.2.10
+ */
+void
+ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->sync_counter_inc);
+
+  main_loop_interface->sync_counter_inc(main_loop, tic);
+}
+
+/**
+ * ags_main_loop_sync_counter_dec:
+ * @main_loop: the #AgsMainLoop
+ * @tic: the current tic
+ *
+ * Decrement sync counter.
+ *
+ * Since: 2.2.10
+ */
+void
+ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->sync_counter_dec);
+
+  main_loop_interface->sync_counter_dec(main_loop, tic);
+}
+
+/**
+ * ags_main_loop_sync_counter_inc:
+ * @main_loop: the #AgsMainLoop
+ * @tic: the current tic
+ *
+ * test sync counter.
+ *
+ * Returns: %TRUE if synced, otherwise %FALSE
+ * 
+ * Since: 2.2.10
+ */
+gboolean
+ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->sync_counter_test, FALSE);
+
+  return(main_loop_interface->sync_counter_test(main_loop, tic));
+}
+
+/**
+ * ags_main_loop_set_sync_tic:
+ * @main_loop: the #AgsMainLoop
+ * @tic: the current sync tic
+ *
+ * Set current tic of sync counter.
+ *
+ * Since: 2.2.15
+ */
+void
+ags_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->set_sync_tic);
+
+  main_loop_interface->set_sync_tic(main_loop, sync_tic);
+}
+
+/**
+ * ags_main_loop_get_sync_tic:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve current tic of sync counter.
+ *
+ * Returns: current sync tic
+ *
+ * Since: 2.2.15
+ */
+guint
+ags_main_loop_get_sync_tic(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->get_sync_tic, G_MAXUINT);
+
+  return(main_loop_interface->get_sync_tic(main_loop));
 }

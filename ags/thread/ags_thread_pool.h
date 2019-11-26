@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,8 @@
 #define AGS_IS_THREAD_POOL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD_POOL))
 #define AGS_THREAD_POOL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD_POOL, AgsThreadPoolClass))
 
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 4
-#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS (8)
+#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS (1024)
 
 #ifndef AGS_THREAD_POOL_RT_PRIORITY
 #define AGS_THREAD_POOL_RT_PRIORITY (99)
@@ -63,7 +63,7 @@ typedef enum{
 
 struct _AgsThreadPool
 {
-  GObject object;
+  GObject gobject;
 
   volatile guint flags;
 
@@ -92,7 +92,7 @@ struct _AgsThreadPool
 
 struct _AgsThreadPoolClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*start)(AgsThreadPool *thread_pool);
 };

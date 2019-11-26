@@ -30,6 +30,9 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_devin.h>
 
@@ -265,6 +268,9 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	if(AGS_IS_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
@@ -276,6 +282,9 @@ ags_soundcard_thread_set_property(GObject *gobject,
 
 	/* capture */
 	if(AGS_IS_DEVIN(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}else if(AGS_IS_WASAPI_DEVIN(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
 	}else if(AGS_IS_JACK_DEVIN(soundcard) ||
@@ -544,13 +553,57 @@ ags_soundcard_thread_stop(AgsThread *thread)
   main_loop = ags_thread_get_toplevel(thread);
 
   soundcard = soundcard_thread->soundcard;
-
+  
   /* stop thread and soundcard */
-  AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
+  if(AGS_IS_WASAPI_DEVOUT(soundcard)){
+    if((AGS_WASAPI_DEVOUT_SHUTDOWN & (AGS_WASAPI_DEVOUT(soundcard)->flags)) == 0){
+      ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+    }else{
+      /* reset flags */
+      AGS_WASAPI_DEVOUT(soundcard)->flags &= (~(AGS_WASAPI_DEVOUT_BUFFER0 |
+						AGS_WASAPI_DEVOUT_BUFFER1 |
+						AGS_WASAPI_DEVOUT_BUFFER2 |
+						AGS_WASAPI_DEVOUT_BUFFER3 |
+						AGS_WASAPI_DEVOUT_BUFFER4 |
+						AGS_WASAPI_DEVOUT_BUFFER5 |
+						AGS_WASAPI_DEVOUT_BUFFER6 |
+						AGS_WASAPI_DEVOUT_BUFFER7 |
+						AGS_WASAPI_DEVOUT_PLAY |
+						AGS_WASAPI_DEVOUT_INITIALIZED |
+						AGS_WASAPI_DEVOUT_SHUTDOWN));
+      
+      AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
 
-  //FIXME:JK: is this safe?
-  ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+      g_message("WASAPI thread stopped");
+    }
+  }else if(AGS_IS_WASAPI_DEVIN(soundcard)){
+    if((AGS_WASAPI_DEVIN_SHUTDOWN & (AGS_WASAPI_DEVIN(soundcard)->flags)) == 0){
+      ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+    }else{
+      /* reset flags */
+      AGS_WASAPI_DEVIN(soundcard)->flags &= (~(AGS_WASAPI_DEVIN_BUFFER0 |
+					       AGS_WASAPI_DEVIN_BUFFER1 |
+					       AGS_WASAPI_DEVIN_BUFFER2 |
+					       AGS_WASAPI_DEVIN_BUFFER3 |
+					       AGS_WASAPI_DEVIN_BUFFER4 |
+					       AGS_WASAPI_DEVIN_BUFFER5 |
+					       AGS_WASAPI_DEVIN_BUFFER6 |
+					       AGS_WASAPI_DEVIN_BUFFER7 |
+					       AGS_WASAPI_DEVIN_RECORD |
+					       AGS_WASAPI_DEVIN_INITIALIZED |
+					       AGS_WASAPI_DEVIN_SHUTDOWN));
+      
+      AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
 
+      g_message("WASAPI thread stopped");
+    }
+  }else{
+    AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
+  
+    //FIXME:JK: is this safe?
+    ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+  }  
+  
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_TIMING);
 
@@ -616,7 +669,7 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 
 void
 ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
-				   AgsSoundcardThread *soundcard_thread)
+					  AgsSoundcardThread *soundcard_thread)
 {
   AgsSoundcard *soundcard;
   

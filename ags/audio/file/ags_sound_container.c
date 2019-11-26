@@ -21,7 +21,7 @@
 
 #include <ags/libags.h>
 
-void ags_sound_container_base_init(AgsSoundContainerInterface *interface);
+void ags_sound_container_base_init(AgsSoundContainerInterface *ginterface);
 
 /**
  * SECTION:ags_sound_container
@@ -60,7 +60,7 @@ ags_sound_container_get_type()
 
 
 void
-ags_sound_container_base_init(AgsSoundContainerInterface *interface)
+ags_sound_container_base_init(AgsSoundContainerInterface *ginterface)
 {
   /* empty */
 }

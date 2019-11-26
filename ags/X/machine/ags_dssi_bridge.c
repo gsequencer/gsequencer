@@ -24,12 +24,18 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#if defined AGS_W32API
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -372,7 +378,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		      dssi_bridge,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) dssi_bridge);
 
@@ -381,7 +387,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		      dssi_bridge,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) dssi_bridge);
 }
@@ -1388,8 +1394,11 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
   AgsChannel *start_input;
   AgsChannel *current, *next_pad, *next_current, *nth_current;
 
+  GList *start_play, *play;
+
   guint input_pads;
   guint audio_channels;
+  guint i, j;
 
   if(dssi_bridge->mapped_input_pad > input_pad_start){
     return;
@@ -1506,53 +1515,85 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 			      0);
   }
   
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play",
-			    audio_channel_start, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  for(i = input_pad_start; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayChannelRun *play_channel_run;
+      AgsStreamChannelRun *stream_channel_run;
 
-  /* ags-feed */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-feed",
-			    audio_channel_start, audio_channels,
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+      current = ags_channel_nth(start_input,
+				i * audio_channels + j);
 
-  /* ags-stream */
-  if(!(ags_recall_global_get_rt_safe() ||
-       ags_recall_global_get_performance_mode())){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      audio_channel_start, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }else{
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      audio_channel_start, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-feed */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-feed",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-stream */
+      if(!(ags_recall_global_get_rt_safe() ||
+	   ags_recall_global_get_performance_mode())){
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* set up dependencies */
+	g_object_get(current,
+		     "play", &start_play,
+		     NULL);
+    
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_PLAY_CHANNEL_RUN);
+	play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_STREAM_CHANNEL_RUN);
+	stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	g_object_set(G_OBJECT(play_channel_run),
+		     "stream-channel-run", stream_channel_run,
+		     NULL);
+
+	g_list_free_full(start_play,
+			 g_object_unref);
+      }else{
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-rt-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+
+      g_object_unref(current);
+    }
   }
   
   if(start_input != NULL){
@@ -1680,10 +1721,23 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
   if(effect_index != -1 &&
      plugin_so){
+    gboolean success;
+
+    success = FALSE;
+    
+#ifdef AGS_W32API
+    dssi_descriptor = (DSSI_Descriptor_Function) GetProcAddress(plugin_so,
+								"dssi_descriptor");
+
+    success = (!dssi_descriptor) ? FALSE: TRUE;
+#else
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor");
 
-    if(dlerror() == NULL && dssi_descriptor){
+    success = (dlerror() == NULL) ? TRUE: FALSE;
+#endif
+    
+    if(success && dssi_descriptor){
       dssi_bridge->dssi_descriptor = 
 	plugin_descriptor = dssi_descriptor(effect_index);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_OSC_RESPONSE                (ags_osc_response_get_type ())
 #define AGS_OSC_RESPONSE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponse))
 #define AGS_OSC_RESPONSE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))
@@ -30,10 +32,12 @@
 #define AGS_IS_OSC_RESPONSE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_RESPONSE))
 #define AGS_OSC_RESPONSE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))
 
+#define AGS_OSC_RESPONSE_GET_OBJ_MUTEX(obj) (((AgsOscResponse *) obj)->obj_mutex)
+
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE "server failure"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST "malformed request"
-#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH "unknow path"
-#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT "unknown argument"
+#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH "unknown path"
+#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT "unknown argument"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX "missing index"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED "chunk size exceeded"
 

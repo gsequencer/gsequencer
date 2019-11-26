@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_oscillator.h>
 
 void ags_synth_input_line_samplerate_changed_callback(AgsLine *line,
 						      guint samplerate, guint old_samplerate,

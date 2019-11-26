@@ -218,11 +218,7 @@ ags_recall_channel_set_property(GObject *gobject,
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO:
@@ -327,11 +323,7 @@ ags_recall_channel_get_property(GObject *gobject,
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO:
@@ -426,11 +418,7 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -546,11 +534,7 @@ ags_recall_channel_automate(AgsRecall *recall)
       current_automation = automation->data;
 
       /* get automation mutex */
-      pthread_mutex_lock(ags_automation_get_class_mutex());
-
-      automation_mutex = current_automation->obj_mutex;
-      
-      pthread_mutex_unlock(ags_automation_get_class_mutex());
+      automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
       /* get some fields */
       pthread_mutex_lock(automation_mutex);

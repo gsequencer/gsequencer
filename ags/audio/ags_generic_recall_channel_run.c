@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -215,11 +215,7 @@ ags_generic_recall_channel_run_set_property(GObject *gobject,
   generic_recall_channel_run = AGS_GENERIC_RECALL_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(generic_recall_channel_run);
 
   switch(prop_id){
   case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
@@ -250,11 +246,7 @@ ags_generic_recall_channel_run_get_property(GObject *gobject,
   generic_recall_channel_run = AGS_GENERIC_RECALL_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(generic_recall_channel_run);
 
   switch(prop_id){
   case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
@@ -319,11 +311,7 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
   generic_recall_channel_run = (AgsGenericRecallChannelRun *) recall;  
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(generic_recall_channel_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);

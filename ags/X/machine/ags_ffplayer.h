@@ -22,12 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <pango/pango.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_machine.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/file/ags_ipatch.h>
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_FFPLAYER                (ags_ffplayer_get_type())
 #define AGS_FFPLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER, AgsFFPlayer))
@@ -35,6 +35,9 @@
 #define AGS_IS_FFPLAYER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_FFPLAYER))
 #define AGS_IS_FFPLAYER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FFPLAYER))
 #define AGS_FFPLAYER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FFPLAYER, AgsFFPlayerClass))
+
+#define AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH (12)
+#define AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT (40)
 
 typedef struct _AgsFFPlayer AgsFFPlayer;
 typedef struct _AgsFFPlayerClass AgsFFPlayerClass;
@@ -55,9 +58,16 @@ struct _AgsFFPlayer
   gchar *name;
   gchar *xml_type;
 
+  AgsAudioContainer *audio_container;
+
+  GtkEntry *filename;
   GtkButton *open;
-  GtkWidget *open_dialog;
   
+  AgsSF2Loader *sf2_loader;
+
+  gint position;
+  GtkLabel *loading;
+
   guint control_width;
   guint control_height;
   
@@ -65,9 +75,10 @@ struct _AgsFFPlayer
   GtkHScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
-  AgsAudioContainer *audio_container;
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
+
+  GtkWidget *open_dialog;
 };
 
 struct _AgsFFPlayerClass
@@ -85,6 +96,8 @@ void ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 
 void ags_ffplayer_load_preset(AgsFFPlayer *ffplayer);
 void ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer);
+
+gboolean ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer);
 
 AgsFFPlayer* ags_ffplayer_new(GObject *soundcard);
 

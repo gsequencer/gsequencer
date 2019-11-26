@@ -26,8 +26,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <gdk/gdkkeysyms.h>
 
 #include <math.h>
@@ -199,8 +197,6 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
   void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel){
-    AgsThread *gui_thread;
-    
     AgsAudio *audio;
     
     AgsStartSoundcard *start_soundcard;
@@ -214,8 +210,6 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     application_context = (AgsApplicationContext *) window->application_context;
     
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
     /* get soundcard */
     g_object_get(channel,
 		 "output-soundcard", &soundcard,
@@ -241,7 +235,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     /* perform playback */
     task = g_list_reverse(task);
-    ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+    ags_xorg_application_context_schedule_task_list(application_context,
 				      task);
 
     g_object_unref(soundcard);

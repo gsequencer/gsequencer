@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -224,14 +224,15 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
   
   capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(recall);
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_capture_wave_audio_run_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
+
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get some fields */
   g_object_get(capture_wave_audio_run,
@@ -397,14 +398,15 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
 
   capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(recall);
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_done = AGS_RECALL_CLASS(ags_capture_wave_audio_run_parent_class)->done;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
+
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get some fields */
   g_object_get(capture_wave_audio_run,

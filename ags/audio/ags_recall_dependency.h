@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,12 +34,14 @@
 #define AGS_IS_RECALL_DEPENDENCY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL_DEPENDENCY))
 #define AGS_RECALL_DEPENDENCY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
 
+#define AGS_RECALL_DEPENDENCY_GET_OBJ_MUTEX(obj) (((AgsRecallDependency *) obj)->obj_mutex)
+
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
 struct _AgsRecallDependency
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -51,7 +53,7 @@ struct _AgsRecallDependency
 
 struct _AgsRecallDependencyClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_recall_dependency_get_type(void);

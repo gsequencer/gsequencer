@@ -24,6 +24,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
+
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
@@ -78,7 +80,9 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
+GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
 extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GtkStyle *ffplayer_style = NULL;
 
@@ -186,6 +190,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkAlignment *alignment;
   GtkTable *table;
   GtkHBox *hbox;
+  GtkHBox *filename_hbox;
   GtkVBox *piano_vbox;
   GtkLabel *label;
   
@@ -194,6 +199,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   AgsAudio *audio;
   
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   g_signal_connect_after((GObject *) ffplayer, "parent_set",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
@@ -207,6 +218,23 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "min-output-pads", 1,
@@ -253,6 +281,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->name = NULL;
   ffplayer->xml_type = "ags-ffplayer";
 
+  /* audio container */
+  ffplayer->audio_container = NULL;
+
   /* create widgets */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
@@ -269,9 +300,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
-
-  /* audio container */
-  ffplayer->audio_container = NULL;
   
   /* preset and instrument */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -312,16 +340,44 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     TRUE, FALSE,
 		     0);
 
-  ffplayer->open = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					      "label", GTK_STOCK_OPEN,
-					      "use-stock", TRUE,
-					      NULL);
+  /* filename */
+  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					   0);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(ffplayer->open),
+		     GTK_WIDGET(filename_hbox),
 		     FALSE, FALSE,
 		     0);
-  ffplayer->open_dialog = NULL;
+
+#if 0
+  ffplayer->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->filename,
+		     FALSE, FALSE,
+		     0);
+#else
+  ffplayer->filename = NULL;
+#endif
   
+  ffplayer->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->open,
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->sf2_loader = NULL;
+
+  ffplayer->position = -1;
+
+  ffplayer->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) ffplayer->loading,
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_set_no_show_all((GtkWidget *) ffplayer->loading,
+			     TRUE);
+  gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+  /* piano */
   piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
   gtk_table_attach(table, (GtkWidget *) piano_vbox,
 		   1, 2,
@@ -329,8 +385,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  ffplayer->control_width = 12;
-  ffplayer->control_height = 40;
+  ffplayer->control_width = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH);
+  ffplayer->control_height = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT);
 
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
@@ -366,13 +422,36 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
 
+  /* dialog */
+  ffplayer->open_dialog = NULL;
+
+  /* SF2 loader */
+  if(ags_ffplayer_sf2_loader_completed == NULL){
+    ags_ffplayer_sf2_loader_completed = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							      NULL,
+							      NULL);
+  }
+
+  g_hash_table_insert(ags_ffplayer_sf2_loader_completed,
+		      ffplayer, ags_ffplayer_sf2_loader_completed_timeout);
+  g_timeout_add(1000 / 4, (GSourceFunc) ags_ffplayer_sf2_loader_completed_timeout, (gpointer) ffplayer);
+
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
 		      ffplayer,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) ffplayer);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      ffplayer,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) ffplayer);
 }
 
@@ -502,10 +581,10 @@ ags_ffplayer_realize(GtkWidget *widget)
   }
   
   gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
-		       ffplayer_style);
+		       NULL);
 
   gtk_widget_set_style((GtkWidget *) ffplayer->hscrollbar,
-		       ffplayer_style);
+		       NULL);
 }
 
 gchar*
@@ -794,7 +873,10 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
   AgsChannel *start_output, *start_input;
   AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
   
+  GList *start_play, *play;
+
   guint output_pads, input_pads;
+  guint i, j;
 
   audio = machine->audio;
 
@@ -1003,41 +1085,73 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				0);
     }
     
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play",
-			      audio_channels_old, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+    for(i = 0; i < input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	AgsPlayChannelRun *play_channel_run;
+	AgsStreamChannelRun *stream_channel_run;
 
-    /* ags-stream */
-    if(!(ags_recall_global_get_rt_safe() ||
-	 ags_recall_global_get_performance_mode())){
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-    }else{
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-rt-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
+	channel = ags_channel_nth(start_input,
+				  i * audio_channels + j);
+	
+	/* ags-play */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-play",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* ags-stream */
+	if(!(ags_recall_global_get_rt_safe() ||
+	     ags_recall_global_get_performance_mode())){
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-stream",
+				    j, j + 1, 
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+
+	  /* set up dependencies */
+	  g_object_get(channel,
+		       "play", &start_play,
+		       NULL);
+    
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_PLAY_CHANNEL_RUN);
+	  play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_STREAM_CHANNEL_RUN);
+	  stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	  g_object_set(G_OBJECT(play_channel_run),
+		       "stream-channel-run", stream_channel_run,
+		       NULL);
+
+	  g_list_free_full(start_play,
+			   g_object_unref);
+	}else{
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-rt-stream",
+				    j, j + 1, 
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+	}
+
+	g_object_unref(channel);
+      }
     }
     
     /* AgsOutput */
@@ -1376,8 +1490,11 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel, *nth_channel;
 
+  GList *start_play, *play;
+
   guint input_pads;
   guint audio_channels;
+  guint i, j;
 
   if(ffplayer->mapped_input_pad > input_pad_start){
     return;
@@ -1508,53 +1625,84 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			      0);
   }
   
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play",
-			    0, audio_channels,
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  for(i = input_pad_start; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayChannelRun *play_channel_run;
+      AgsStreamChannelRun *stream_channel_run;
 
-  /* ags-feed */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-feed",
-			    0, audio_channels,
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+      channel = ags_channel_nth(start_input,
+				i * audio_channels + j);
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
 
-  /* ags-stream */
-  if(!(ags_recall_global_get_rt_safe() ||
-       ags_recall_global_get_performance_mode())){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      0, audio_channels,
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }else{
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      0, audio_channels,
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+      /* ags-feed */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-feed",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-stream */
+      if(!(ags_recall_global_get_rt_safe() ||
+	   ags_recall_global_get_performance_mode())){
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* set up dependencies */
+	g_object_get(channel,
+		     "play", &start_play,
+		     NULL);
+    
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_PLAY_CHANNEL_RUN);
+	play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_STREAM_CHANNEL_RUN);
+	stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	g_object_set(G_OBJECT(play_channel_run),
+		     "stream-channel-run", stream_channel_run,
+		     NULL);
+
+	g_list_free_full(start_play,
+			 g_object_unref);
+      }else{
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-rt-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+
+      g_object_unref(channel);
+    }
   }
   
   ffplayer->mapped_input_pad = input_pads;
@@ -1772,41 +1920,20 @@ void
 ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
+  AgsSF2Loader *sf2_loader;
+
   if(!AGS_IS_FFPLAYER(ffplayer) ||
      filename == NULL){
     return;
   }
   
-  if(g_str_has_suffix(filename, ".sf2")){
-    AgsWindow *window;
-    
-    AgsAudioContainer *audio_container;
+  ffplayer->sf2_loader = 
+    sf2_loader = ags_sf2_loader_new(AGS_MACHINE(ffplayer)->audio,
+				    filename,
+				    NULL,
+				    NULL);
 
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
-    
-    /* clear preset and instrument */
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
-
-    /* Ipatch related */
-    ffplayer->audio_container = 
-      audio_container = ags_audio_container_new(filename,
-						NULL,
-						NULL,
-						NULL,
-						window->soundcard,
-						-1);
-    ags_audio_container_open(audio_container);
-
-    if(audio_container->sound_container == NULL){
-      return;
-    }
-    
-    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container), 0);
-    AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
-    
-    ags_ffplayer_load_preset(ffplayer);
-  }
+  ags_sf2_loader_start(sf2_loader);
 }
 
 void
@@ -1872,6 +1999,90 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 				   instrument[0]);
 
     instrument++;
+  }
+}
+
+/**
+ * ags_ffplayer_sf2_loader_completed_timeout:
+ * @widget: the widget
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed poll completed, otherwise %FALSE
+ *
+ * Since: 2.4.0
+ */
+gboolean
+ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
+{
+  if(g_hash_table_lookup(ags_ffplayer_sf2_loader_completed,
+			 ffplayer) != NULL){
+    if(ffplayer->sf2_loader != NULL){
+      if(ags_sf2_loader_test_flags(ffplayer->sf2_loader, AGS_SF2_LOADER_HAS_COMPLETED)){
+	/* reassign audio container */
+	ffplayer->audio_container = ffplayer->sf2_loader->audio_container;
+	ffplayer->sf2_loader->audio_container = NULL;
+
+	/* clear preset and instrument */
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
+
+	/* level select */
+	if(ffplayer->audio_container->sound_container != NULL){
+	  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(ffplayer->audio_container->sound_container), 0);
+	  AGS_IPATCH(ffplayer->audio_container->sound_container)->nesting_level += 1;
+    
+	  ags_ffplayer_load_preset(ffplayer);
+	}
+
+	/* cleanup */	
+	g_object_run_dispose((GObject *) ffplayer->sf2_loader);
+	g_object_unref(ffplayer->sf2_loader);
+
+	ffplayer->sf2_loader = NULL;
+
+	ffplayer->position = -1;
+	gtk_widget_hide((GtkWidget *) ffplayer->loading);
+
+      }else{
+	if(ffplayer->position == -1){
+	  ffplayer->position = 0;
+
+	  gtk_widget_show((GtkWidget *) ffplayer->loading);
+	}
+
+	switch(ffplayer->position){
+	case 0:
+	  {
+	    ffplayer->position = 1;
+	    
+	    gtk_label_set_label(ffplayer->loading,
+				"loading ...  ");
+	  }
+	  break;
+	case 1:
+	  {
+	    ffplayer->position = 2;
+
+	    gtk_label_set_label(ffplayer->loading,
+				"loading  ... ");
+	  }
+	  break;
+	case 2:
+	  {
+	    ffplayer->position = 0;
+
+	    gtk_label_set_label(ffplayer->loading,
+				"loading   ...");
+	  }
+	  break;
+	}
+      }
+    }
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
   }
 }
 

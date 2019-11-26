@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,8 @@
 #define AGS_IS_DEVIN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVIN))
 #define AGS_IS_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVIN))
 #define AGS_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVIN, AgsDevinClass))
+
+#define AGS_DEVIN_GET_OBJ_MUTEX(obj) (((AgsDevin *) obj)->obj_mutex)
 
 #define AGS_DEVIN_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_DEVIN_DEFAULT_OSS_DEVICE "/dev/dsp"
@@ -111,7 +113,7 @@ typedef enum{
 
 struct _AgsDevin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -190,7 +192,7 @@ struct _AgsDevin
 
 struct _AgsDevinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_devin_get_type();

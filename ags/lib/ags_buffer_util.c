@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -495,6 +495,31 @@ ags_buffer_util_double_to_char_buffer(gdouble *buffer,
 }
 
 /**
+ * ags_buffer_util_complex_to_char_buffer:
+ * @buffer: the #AgsComplex buffer
+ * @buffer_length: the buffer length
+ * 
+ * Pack @buffer into an guchar buffer.
+ * 
+ * Returns: the guchar buffer
+ * 
+ * Since: 2.3.0
+ */
+guchar*
+ags_buffer_util_complex_to_char_buffer(AgsComplex *buffer,
+				       guint buffer_length)
+{
+  guchar *cbuffer, *start_cbuffer;
+
+  start_cbuffer = 
+    cbuffer = (guchar *) malloc((buffer_length * sizeof(AgsComplex)) * sizeof(guchar));
+
+  memcpy(cbuffer, buffer, buffer_length * sizeof(AgsComplex));
+
+  return(start_cbuffer);
+}
+
+/**
  * ags_buffer_util_char_buffer_to_s8:
  * @cbuffer: the guchar buffer
  * @buffer_size: the buffer size
@@ -972,6 +997,33 @@ ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
 }
 
 /**
+ * ags_buffer_util_char_buffer_to_complex:
+ * @cbuffer: the guchar buffer
+ * @buffer_size: the buffer size
+ *
+ * Unpack @cbuffer to a #AgsComplex buffer
+ *
+ * Returns: the #AgsComplex buffer
+ * 
+ * Since: 2.3.0
+ */
+AgsComplex*
+ags_buffer_util_char_buffer_to_complex(guchar *cbuffer,
+				       guint buffer_size)
+{
+  AgsComplex *buffer, *start_buffer;
+  
+  start_buffer = 
+    buffer = (AgsComplex *) malloc((buffer_size / sizeof(AgsComplex)) * sizeof(AgsComplex));
+
+  buffer_size = (guint) (sizeof(AgsComplex) * floor(buffer_size / sizeof(AgsComplex))); 
+
+  memcpy(buffer, cbuffer, buffer_size * sizeof(guchar));
+
+  return(start_buffer);
+}
+
+/**
  * ags_buffer_util_char_buffer_read_s8:
  * @cbuffer: the character buffer
  * @byte_order: reverse order, ignored here
@@ -1215,6 +1267,39 @@ ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
 }
 
 /**
+ * ags_buffer_util_char_buffer_read_complex:
+ * @cbuffer: the character buffer
+ * @byte_order: reverse order
+ * 
+ * Read a #AgsComplex quantity of @cbuffer.
+ * 
+ * Returns: the #AgsComplex value
+ * 
+ * Since: 2.3.0
+ */
+AgsComplex*
+ags_buffer_util_char_buffer_read_complex(guchar *cbuffer,
+					 guint byte_order)
+{
+  union{
+    guchar val[sizeof(AgsComplex)];
+    AgsComplex c_val;
+  }data;
+
+  guint i;
+  
+  for(i = 0; i < sizeof(AgsComplex); i++){
+    if(byte_order == AGS_BYTE_ORDER_BE){
+      data.val[i] = cbuffer[i];
+    }else{
+      data.val[i] = cbuffer[sizeof(AgsComplex) - i - 1];
+    }
+  }
+  
+  return(ags_complex_copy(&(data.c_val)));
+}
+
+/**
  * ags_buffer_util_char_buffer_write_s8:
  * @cbuffer: the character buffer
  * @value: the gint8 value
@@ -1423,6 +1508,41 @@ ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
     cbuffer[7] = (0xff & data.val);
   }
 }
+
+/**
+ * ags_buffer_util_char_buffer_write_complex:
+ * @cbuffer: the character buffer
+ * @value: the #AgsComplex value
+ * @byte_order: reverse order
+ * 
+ * Write a #AgsComplex quantity to @cbuffer.
+ * 
+ * Since: 2.3.0
+ */
+void
+ags_buffer_util_char_buffer_write_complex(guchar *cbuffer,
+					  AgsComplex *value,
+					  guint byte_order)
+{
+  union{
+    guchar val[sizeof(AgsComplex)];
+    AgsComplex c_val;
+  }data;
+
+  guint i;
+
+  ags_complex_set(&(data.c_val),
+		  ags_complex_get(value));
+
+  for(i = 0; i < sizeof(AgsComplex); i++){
+    if(byte_order == AGS_BYTE_ORDER_BE){
+      cbuffer[i] = data.val[i];
+    }else{
+      cbuffer[i] = data.val[sizeof(AgsComplex) - i - 1];
+    }
+  }
+}
+
 
 /**
  * ags_buffer_util_char_buffer_swap_bytes:

@@ -30,8 +30,6 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
 void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -238,8 +236,6 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     GObject *output_soundcard;
 
-    AgsThread *gui_thread;
-
     AgsApplicationContext *application_context;
     
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
@@ -264,9 +260,6 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     /* application context */  
     application_context = (AgsApplicationContext *) window->application_context;
-
-    /* get task thread */
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
     /* get model */
     model = gtk_combo_box_get_model(link_editor->combo);
@@ -296,8 +289,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 						      filename,
 						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button));
 	  /* append AgsLinkChannel */
-	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				       (GObject *) open_single_file);
+	  ags_xorg_application_context_schedule_task(application_context,
+						     (GObject *) open_single_file);
 	}
       }else{
 	/* create task */
@@ -305,8 +298,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 					    NULL);
 	
 	/* append AgsLinkChannel */
-	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				     (GObject *) link_channel);
+	ags_xorg_application_context_schedule_task(application_context,
+						   (GObject *) link_channel);
       }
     }else{
       guint link_line;
@@ -345,8 +338,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       }
       
       /* append AgsLinkChannel */
-      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   (GObject *) link_channel);
+      ags_xorg_application_context_schedule_task(application_context,
+						 (GObject *) link_channel);
     }
 
     g_object_unref(audio);

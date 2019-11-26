@@ -77,30 +77,34 @@ struct _AgsLv2Bridge
   guint uri_index;
   
   gboolean has_midi;
+
+  AgsLv2Plugin *lv2_plugin;
   
+  LV2_Descriptor *lv2_descriptor;
+  LV2_Handle *lv2_handle;
+  float *port_value;
+
   gboolean has_gui;
   gchar *gui_filename;
   gchar *gui_uri;
 
-  GtkVBox *vbox;
+  AgsLv2uiPlugin *lv2ui_plugin;
+  
+  LV2UI_Descriptor *ui_descriptor;
+  LV2_Feature **ui_feature;
+  LV2UI_Handle *ui_handle;
 
-  LV2_Descriptor *lv2_descriptor;
-  LV2_Handle *lv2_handle;
-  float *port_value;
+  GtkVBox *vbox;
   
   GtkComboBoxText *program;
   GtkComboBoxText *preset;
-
-  LV2UI_Descriptor *ui_descriptor;
-  LV2_Feature **ui_feature;
-  LV2UI_Handle ui_handle;
+  
+  GtkMenu *lv2_menu;
 
   GtkWidget *lv2_gui;
   GtkWidget *ui_widget;
 
   GtkWidget *lv2_window;
-  
-  GtkMenu *lv2_menu;
 };
 
 struct _AgsLv2BridgeClass

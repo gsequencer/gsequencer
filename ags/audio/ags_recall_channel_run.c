@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -288,11 +288,7 @@ ags_recall_channel_run_set_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO:
@@ -468,11 +464,7 @@ ags_recall_channel_run_get_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO:
@@ -622,11 +614,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -738,11 +726,7 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
   
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -783,11 +767,7 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
   
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -836,11 +816,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -891,12 +867,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     pthread_mutex_t *channel_mutex;
 
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-    channel_mutex = destination->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
-
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(destination);
+    
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
     
@@ -914,11 +886,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     pthread_mutex_t *channel_mutex;
 
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-    channel_mutex = source->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(source);
 
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
@@ -964,11 +932,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -1033,11 +997,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
     pthread_mutex_unlock(recall_mutex);    
     
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    source_recycling_mutex = source_last_recycling->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_last_recycling);
 
     /* get end recycling */
     pthread_mutex_lock(source_recycling_mutex);
@@ -1055,22 +1015,14 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 #endif
       
       /* get recycling mutex */
-      pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-      source_recycling_mutex = source_recycling->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+      source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_recycling);
 
       /*  */
       destination_recycling = destination_first_recycling;
 
       if(destination_first_recycling != NULL){
 	/* get recycling mutex */
-	pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-	destination_recycling_mutex = destination_last_recycling->obj_mutex;
-  
-	pthread_mutex_unlock(ags_recycling_get_class_mutex());
+	destination_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(destination_last_recycling);
 
 	/* get end recycling */
 	pthread_mutex_lock(destination_recycling_mutex);
@@ -1111,11 +1063,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 	
 	if(destination_recycling != NULL){
 	  /* get recycling mutex */
-	  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-	  destination_recycling_mutex = destination_recycling->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+	  destination_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(destination_recycling);
 
 	  /* iterate */
 	  pthread_mutex_lock(destination_recycling_mutex);
@@ -1162,11 +1110,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -1192,11 +1136,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     pthread_mutex_t *source_recycling_mutex;
 
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    source_recycling_mutex = old_end_changed_region->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(old_end_changed_region);
 
     /* get end recycling */
     pthread_mutex_lock(source_recycling_mutex);
@@ -1209,12 +1149,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = old_start_changed_region;
     
     while(source_recycling != source_end_recycling){
-      /* get recycling mutex */
-      pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-      source_recycling_mutex = source_recycling->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+      /* get recycling mutex */  
+      source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_recycling);
 
       /* get children */
       g_object_get(recall_channel_run,
@@ -1288,12 +1224,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     }
 
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    source_recycling_mutex = new_end_changed_region->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
-
+    source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(new_end_changed_region);
+    
     /* get end recycling */
     pthread_mutex_lock(source_recycling_mutex);
 
@@ -1363,11 +1295,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -1392,12 +1320,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     pthread_mutex_t *destination_recycling_mutex;
     pthread_mutex_t *source_recycling_mutex;
 
-    /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    destination_recycling_mutex = old_end_changed_region->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    /* get recycling mutex */  
+    destination_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(old_end_changed_region);
 
     /* get end recycling */
     pthread_mutex_lock(destination_recycling_mutex);
@@ -1487,11 +1411,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     pthread_mutex_unlock(recall_mutex);    
 
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    destination_recycling_mutex = new_end_changed_region->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    destination_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(new_end_changed_region);
 
     /* get end recycling */
     pthread_mutex_lock(destination_recycling_mutex);
@@ -1504,19 +1424,11 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     destination_recycling = new_start_changed_region;
       
     while(destination_recycling != destination_end_recycling){
-      /* get recycling mutex */
-      pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-      destination_recycling_mutex = destination_recycling->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+      /* get recycling mutex */  
+      destination_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(destination_recycling);
 
       /* get recycling mutex */
-      pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-      source_recycling_mutex = source_last_recycling->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+      source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_last_recycling);
 
       /* get end recycling */
       pthread_mutex_lock(source_recycling_mutex);
@@ -1532,11 +1444,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	AgsRecallRecycling *recall_recycling;
 	
 	/* get recycling mutex */
-	pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-	source_recycling_mutex = source_recycling->obj_mutex;
-  
-	pthread_mutex_unlock(ags_recycling_get_class_mutex());
+	source_recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(source_recycling);
 	
 	recall_recycling = g_object_new(child_type,
 					"recall-id", recall_id,

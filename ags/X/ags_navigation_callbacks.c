@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,8 +24,6 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
@@ -75,8 +73,6 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
@@ -84,14 +80,12 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = (AgsThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   /* get task thread */
   apply_bpm = ags_apply_bpm_new(window->application_context,
 				navigation->bpm->adjustment->value);
   
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) apply_bpm);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) apply_bpm);
 }
 
 void

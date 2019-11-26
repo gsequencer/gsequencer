@@ -180,8 +180,10 @@ ags_worker_thread_finalize(GObject *gobject)
   running = ((AGS_WORKER_THREAD_RUNNING & (g_atomic_int_get(&(worker_thread->flags)))) != 0) ? TRUE: FALSE;
 
   /*  */
+#ifndef AGS_W32API
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
+#endif
   
   /* run mutex and condition */
   pthread_mutex_destroy(worker_thread->run_mutex);
@@ -203,9 +205,11 @@ ags_worker_thread_finalize(GObject *gobject)
   //  free(*thread_ptr);
   free(thread_ptr);
 
+#ifndef AGS_W32API
   if(stackaddr != NULL){
-    free(stackaddr);
+    //    free(stackaddr);
   }
+#endif
   
   if(do_exit){
     pthread_exit(NULL);
@@ -295,6 +299,10 @@ ags_woker_thread_do_poll_loop(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 /**

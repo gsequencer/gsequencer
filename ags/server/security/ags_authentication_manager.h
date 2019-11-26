@@ -37,14 +37,14 @@ typedef struct _AgsAuthenticationManagerClass AgsAuthenticationManagerClass;
 
 struct _AgsAuthenticationManager
 {
-  GObject object;
+  GObject gobject;
   
   GList *authentication;
 };
 
 struct _AgsAuthenticationManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_authentication_manager_get_type(void);

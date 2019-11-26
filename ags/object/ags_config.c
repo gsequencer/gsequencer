@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <ags/config.h>
 #include <ags/i18n.h>
@@ -259,11 +262,7 @@ ags_config_set_property(GObject *gobject,
   config = AGS_CONFIG(gobject);
 
   /* get config mutex */
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -312,11 +311,7 @@ ags_config_get_property(GObject *gobject,
   config = AGS_CONFIG(gobject);
 
   /* get config mutex */
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -394,11 +389,7 @@ ags_config_get_version(AgsConfig *config)
     return(NULL);
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get version */
   pthread_mutex_lock(config_mutex);
@@ -419,11 +410,7 @@ ags_config_set_version(AgsConfig *config, gchar *version)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set version */
   pthread_mutex_lock(config_mutex);
@@ -444,11 +431,7 @@ ags_config_get_build_id(AgsConfig *config)
     return(NULL);
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get build id */
   pthread_mutex_lock(config_mutex);
@@ -469,11 +452,7 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set version */
   pthread_mutex_lock(config_mutex);
@@ -504,11 +483,7 @@ ags_config_real_load_defaults(AgsConfig *config)
 
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load defaults */
   pthread_mutex_lock(config_mutex);
@@ -517,6 +492,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file", "true");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature", "experimental");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "engine-mode", "performance");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "gui-scale", "1.0");
 
   ags_config_set_value(config, AGS_CONFIG_THREAD, "model", "super-threaded");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope", "audio");
@@ -524,21 +500,41 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "max-precision", "250");
 
-#ifdef AGS_WITH_CORE_AUDIO
+#if defined(AGS_WITH_WASAPI)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "wasapi");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", NULL);
+#elif defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
-#else
+#elif defined(AGS_WITH_PULSE)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
+#elif defined(AGS_WITH_ALSA)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "alsa");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
+#elif defined(AGS_WITH_OSS)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "oss");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
 #endif
   
+#if defined(AGS_WITH_WASAPI)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "2048");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
+#else
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
-
+#endif
+  
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
@@ -586,11 +582,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   file = g_file_new_for_path(filename);
 
@@ -683,11 +675,7 @@ ags_config_load_from_data(AgsConfig *config,
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load from data */
   //#ifdef AGS_DEBUG
@@ -783,11 +771,7 @@ ags_config_to_data(AgsConfig *config,
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* to data */
   pthread_mutex_lock(config_mutex);
@@ -825,11 +809,20 @@ ags_config_to_data(AgsConfig *config,
 void
 ags_config_save(AgsConfig *config)
 {
+#ifdef AGS_W32API
+  AgsApplicationContext *application_context;
+#else
   struct passwd *pw;
 
   uid_t uid;
+#endif
+  
   gchar *path, *filename;
   gchar *content;
+#if defined(AGS_W32API)
+  gchar *app_dir;
+#endif
+
   gsize length;
 
   GError *error;
@@ -840,29 +833,60 @@ ags_config_save(AgsConfig *config)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* save */
   pthread_mutex_lock(config_mutex);
 
+  /* open conf dir */
+#ifdef AGS_W32API
+  app_dir = NULL;
+
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+  }
+  
+  path = g_strdup_printf("%s\\etc\\gsequencer",
+			 g_get_current_dir());
+    
+  if(!g_file_test(path,
+		  G_FILE_TEST_IS_DIR)){
+    g_free(path);
+
+    if(g_path_is_absolute(app_dir)){
+      path = g_strdup_printf("%s\\%s",
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }else{
+      path = g_strdup_printf("%s\\%s\\%s",
+			     g_get_current_dir(),
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }
+  }
+
+  g_free(app_dir);
+
+  filename = g_strdup_printf("%s\\%s",
+			     path,
+			     AGS_DEFAULT_CONFIG);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
-  /* open conf dir */
   path = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 
+  filename = g_strdup_printf("%s/%s",
+			     path,
+			     AGS_DEFAULT_CONFIG);
+#endif    
   if(!g_mkdir_with_parents(path,
 			   0755)){
-    filename = g_strdup_printf("%s/%s",
-			       path,
-			       AGS_DEFAULT_CONFIG);
-
     /* get content */
     error = NULL;
 
@@ -892,11 +916,10 @@ ags_config_save(AgsConfig *config)
 
       g_error_free(error);
     }
-    
-  ags_config_save_END:
-    g_free(filename);
   }
-
+    
+ags_config_save_END:
+  g_free(filename);
   g_free(path);
 
   pthread_mutex_unlock(config_mutex);
@@ -907,11 +930,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
 {
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set value */
   pthread_mutex_lock(config_mutex);
@@ -952,11 +971,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
   
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get value */
   pthread_mutex_lock(config_mutex);
@@ -1027,11 +1042,7 @@ ags_config_clear(AgsConfig *config)
     return;
   }
     
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
   
   /* clear */
   pthread_mutex_lock(config_mutex);

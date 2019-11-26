@@ -60,7 +60,7 @@ typedef enum{
 
 struct _AgsSimpleFile
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -86,7 +86,7 @@ struct _AgsSimpleFile
 
 struct _AgsSimpleFileClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*open)(AgsSimpleFile *simple_file,
 	       GError **error);

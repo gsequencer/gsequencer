@@ -384,11 +384,7 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
   ags_copy_pattern_channel_run_parent_connectable_interface->connect(connectable);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(copy_pattern_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(copy_pattern_channel_run);
 
   /* connection */
   g_object_get(copy_pattern_channel_run,
@@ -429,11 +425,7 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
   ags_copy_pattern_channel_run_parent_connectable_interface->disconnect(connectable);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(copy_pattern_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(copy_pattern_channel_run);
 
   /* connection */
   g_object_get(copy_pattern_channel_run,
@@ -548,13 +540,14 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  recall_mutex = recall->obj_mutex;
-
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -586,11 +579,7 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 	       NULL);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-
-  pattern_mutex = pattern->obj_mutex;
-
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* i stop */  
   pthread_mutex_lock(pattern_mutex);
@@ -634,14 +623,15 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  recall_mutex = recall->obj_mutex;
-
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_done = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* get AgsCopyPatternAudioRun */
   g_object_get(recall,
 	       "recall-audio-run", &copy_pattern_audio_run,
@@ -747,11 +737,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   g_object_unref(port);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
   
   /* write pattern port - current offset */
   g_object_set(pattern,

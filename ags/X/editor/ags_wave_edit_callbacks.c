@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -487,9 +487,30 @@ ags_wave_edit_vscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
 void
 ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
 {
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   gdouble value;
 
-  value = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value / 64.0;
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  value = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value / (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(wave_edit->ruler->adjustment,
 			   value);
   gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);

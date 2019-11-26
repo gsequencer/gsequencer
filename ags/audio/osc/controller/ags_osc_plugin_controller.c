@@ -19,7 +19,7 @@
 
 #include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
 
-void ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *interface);
+void ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *ginterface);
 
 /**
  * SECTION:ags_osc_plugin_controller
@@ -52,7 +52,7 @@ ags_osc_plugin_controller_get_type()
 }
 
 void
-ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *interface)
+ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *ginterface)
 {
   /* empty */
 }

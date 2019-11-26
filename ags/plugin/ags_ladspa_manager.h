@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,12 +34,14 @@
 #define AGS_IS_LADSPA_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LADSPA_MANAGER))
 #define AGS_LADSPA_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LADSPA_MANAGER, AgsLadspaManagerClass))
 
+#define AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLadspaManager *) obj)->obj_mutex)
+
 typedef struct _AgsLadspaManager AgsLadspaManager;
 typedef struct _AgsLadspaManagerClass AgsLadspaManagerClass;
 
 struct _AgsLadspaManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -50,7 +52,7 @@ struct _AgsLadspaManager
 
 struct _AgsLadspaManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ladspa_manager_get_type(void);

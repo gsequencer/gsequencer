@@ -26,7 +26,7 @@
 
 #include <unistd.h>
 
-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
 #define __USE_GNU
 #define _GNU_SOURCE
 #include <crypt.h>
@@ -223,13 +223,13 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					gchar *salt,
 					GError **error)
 {
-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
   struct crypt_data *data;
 #endif
 
   gchar *password_hash;
   
-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 

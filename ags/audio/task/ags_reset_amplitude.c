@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,7 +35,7 @@ void ags_reset_amplitude_launch(AgsTask *task);
  * @short_description: reset amplitude internal
  * @title: AgsResetAmplitude
  * @section_id:
- * @include: ags/audio/task/recall/ags_reset_amplitude.h
+ * @include: ags/audio/task/ags_reset_amplitude.h
  *
  * The #AgsResetAmplitude task resets amplitude to recompute the amplitude during next run.
  */
@@ -43,7 +43,6 @@ void ags_reset_amplitude_launch(AgsTask *task);
 static gpointer ags_reset_amplitude_parent_class = NULL;
 
 AgsResetAmplitude *ags_reset_amplitude = NULL;
-static pthread_mutex_t analyse_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_reset_amplitude_get_type()
@@ -151,10 +150,14 @@ ags_reset_amplitude_launch(AgsTask *task)
   GList *analyse_channel;
 
   GValue value = {0,};
+
+  pthread_mutex_t *task_mutex;
   
   reset_amplitude = AGS_RESET_AMPLITUDE(task);
 
-  pthread_mutex_lock(&analyse_channel_mutex);
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
+  
+  pthread_mutex_lock(task_mutex);
 
   analyse_channel = reset_amplitude->analyse_channel;
 
@@ -170,7 +173,7 @@ ags_reset_amplitude_launch(AgsTask *task)
     analyse_channel = analyse_channel->next;
   }
 
-  pthread_mutex_unlock(&analyse_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 
   g_value_unset(&value);
 }
@@ -188,13 +191,22 @@ void
 ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
 			AgsAnalyseChannel *analyse_channel)
 {
-  pthread_mutex_lock(&analyse_channel_mutex);
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_RESET_AMPLITUDE(reset_amplitude) ||
+     !AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
+    return;
+  }
+
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
+
+  pthread_mutex_lock(task_mutex);
 
   reset_amplitude->analyse_channel = g_list_prepend(reset_amplitude->analyse_channel,
 						    analyse_channel);
   g_object_ref(analyse_channel);
   
-  pthread_mutex_unlock(&analyse_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 }
 
 /**
@@ -210,7 +222,16 @@ void
 ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
 			   AgsAnalyseChannel *analyse_channel)
 {
-  pthread_mutex_lock(&analyse_channel_mutex);
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_RESET_AMPLITUDE(reset_amplitude) ||
+     !AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
+    return;
+  }
+
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
+
+  pthread_mutex_lock(task_mutex);
 
   if(g_list_find(reset_amplitude->analyse_channel,
 		 analyse_channel) != NULL){
@@ -219,7 +240,7 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
     g_object_unref(analyse_channel);
   }
   
-  pthread_mutex_unlock(&analyse_channel_mutex);
+  pthread_mutex_unlock(task_mutex);
 }
 
 /**
@@ -239,28 +260,23 @@ ags_reset_amplitude_get_instance()
   pthread_mutex_lock(&mutex);
 
   if(ags_reset_amplitude == NULL){
-    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     
     AgsApplicationContext *application_context;
-
-    gboolean no_soundcard;
-
-    application_context = ags_application_context_get_instance();
-
-    main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
     /* reset amplitude */
     ags_reset_amplitude = ags_reset_amplitude_new();
 
     pthread_mutex_unlock(&mutex);
 
+    /* add cyclic task */
+    application_context = ags_application_context_get_instance();
+
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
     ags_task_thread_append_cyclic_task(task_thread,
 				       (AgsTask *) ags_reset_amplitude);
 
     /* unref */
-    g_object_unref(main_loop);
     g_object_unref(task_thread);
   }else{
     pthread_mutex_unlock(&mutex);

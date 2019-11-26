@@ -158,6 +158,13 @@ void ags_pulse_devout_get_loop(AgsSoundcard *soundcard,
 
 guint ags_pulse_devout_get_loop_offset(AgsSoundcard *soundcard);
 
+guint ags_pulse_devout_get_sub_block_count(AgsSoundcard *soundcard);
+
+gboolean ags_pulse_devout_trylock_sub_block(AgsSoundcard *soundcard,
+					    void *buffer, guint sub_block);
+void ags_pulse_devout_unlock_sub_block(AgsSoundcard *soundcard,
+				       void *buffer, guint sub_block);
+
 /**
  * SECTION:ags_pulse_devout
  * @short_description: Output to soundcard
@@ -577,6 +584,11 @@ ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_pulse_devout_get_loop;
 
   soundcard->get_loop_offset = ags_pulse_devout_get_loop_offset;
+
+  soundcard->get_sub_block_count = ags_pulse_devout_get_sub_block_count;
+
+  soundcard->trylock_sub_block = ags_pulse_devout_trylock_sub_block;
+  soundcard->unlock_sub_block = ags_pulse_devout_unlock_sub_block;
 }
 
 void
@@ -641,6 +653,16 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
     pulse_devout->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
     pthread_mutex_init(pulse_devout->buffer_mutex[i],
+		       NULL);
+  }
+
+  pulse_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
+  pulse_devout->sub_block_mutex = (pthread_mutex_t **) malloc(8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
+    pulse_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(pulse_devout->sub_block_mutex[i],
 		       NULL);
   }
 
@@ -736,11 +758,7 @@ ags_pulse_devout_set_property(GObject *gobject,
   pulse_devout = AGS_PULSE_DEVOUT(gobject);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -804,7 +822,8 @@ ags_pulse_devout_set_property(GObject *gobject,
     break;
   case PROP_PCM_CHANNELS:
     {
-      guint pcm_channels;
+      guint pcm_channels, old_pcm_channels;
+      guint i;
 
       pcm_channels = g_value_get_uint(value);
 
@@ -814,6 +833,26 @@ ags_pulse_devout_set_property(GObject *gobject,
 	pthread_mutex_unlock(pulse_devout_mutex);
 
 	return;
+      }
+
+      old_pcm_channels = pulse_devout->pcm_channels;
+
+      /* destroy if less pcm-channels */
+      for(i = 8 * pulse_devout->sub_block_count * pcm_channels; i < 8 * pulse_devout->sub_block_count * old_pcm_channels; i++){
+	pthread_mutex_destroy(pulse_devout->sub_block_mutex[i]);
+
+	free(pulse_devout->sub_block_mutex[i]);
+      }
+
+      pulse_devout->sub_block_mutex = (pthread_mutex_t **) realloc(pulse_devout->sub_block_mutex,
+								   8 * pulse_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+
+      /* create if more pcm-channels */
+      for(i = 8 * pulse_devout->sub_block_count * old_pcm_channels; i < 8 * pulse_devout->sub_block_count * pcm_channels; i++){
+	pulse_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+	pthread_mutex_init(pulse_devout->sub_block_mutex[i],
+			   NULL);
       }
 
       pulse_devout->pcm_channels = pcm_channels;
@@ -997,11 +1036,7 @@ ags_pulse_devout_get_property(GObject *gobject,
   pulse_devout = AGS_PULSE_DEVOUT(gobject);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -1252,11 +1287,7 @@ ags_pulse_devout_get_uuid(AgsConnectable *connectable)
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
   /* get pulse devout signal mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get UUID */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1286,11 +1317,7 @@ ags_pulse_devout_is_ready(AgsConnectable *connectable)
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* check is added */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1373,11 +1400,7 @@ ags_pulse_devout_is_connected(AgsConnectable *connectable)
   pulse_devout = AGS_PULSE_DEVOUT(connectable);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* check is connected */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1456,11 +1479,7 @@ ags_pulse_devout_test_flags(AgsPulseDevout *pulse_devout, guint flags)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* test */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1491,11 +1510,7 @@ ags_pulse_devout_set_flags(AgsPulseDevout *pulse_devout, guint flags)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   //TODO:JK: add more?
 
@@ -1526,11 +1541,7 @@ ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, guint flags)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   //TODO:JK: add more?
 
@@ -1553,11 +1564,7 @@ ags_pulse_devout_set_application_context(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set application context */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1579,11 +1586,7 @@ ags_pulse_devout_get_application_context(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get application context */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1615,11 +1618,7 @@ ags_pulse_devout_set_device(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* check device */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1692,11 +1691,7 @@ ags_pulse_devout_get_device(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   device = NULL;
 
@@ -1743,11 +1738,7 @@ ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get presets */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1906,11 +1897,7 @@ ags_pulse_devout_is_starting(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* check is starting */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -1934,11 +1921,7 @@ ags_pulse_devout_is_playing(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* check is starting */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2002,15 +1985,15 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   
   pthread_mutex_t *pulse_port_mutex;
   pthread_mutex_t *pulse_devout_mutex;
+
+  if(ags_soundcard_is_playing(soundcard)){
+    return;
+  }
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* port */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2020,11 +2003,7 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   pthread_mutex_unlock(pulse_devout_mutex);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* check use cache */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2095,7 +2074,7 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
 
   /*  */
   pulse_devout->tact_counter = 0.0;
-  pulse_devout->delay_counter = 0.0;
+  pulse_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(pulse_devout)));
   pulse_devout->tic_counter = 0;
 
   pulse_devout->flags |= (AGS_PULSE_DEVOUT_INITIALIZED |
@@ -2144,11 +2123,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   application_context = ags_application_context_get_instance();
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* client */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2197,11 +2172,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(pulse_devout_mutex);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* check use cache */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2335,11 +2306,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     }
   }else{
     /* get client mutex */
-    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-    pulse_client_mutex = pulse_client->obj_mutex;
-  
-    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+    pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(pulse_client);
 
     /* get activated */
     pthread_mutex_lock(pulse_client_mutex);
@@ -2451,11 +2418,7 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* port */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2466,11 +2429,7 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(pulse_devout_mutex);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
-  
-  pulse_port_mutex = pulse_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+  pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(pulse_port);
 
   /* check use cache */
   pthread_mutex_lock(pulse_port_mutex);
@@ -2672,11 +2631,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   /* determine if attack should be switched */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2694,7 +2649,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
 
   pthread_mutex_unlock(pulse_devout_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     if(do_loop &&
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
@@ -2714,7 +2669,7 @@ ags_pulse_devout_tic(AgsSoundcard *soundcard)
     /* reset - delay counter */
     pthread_mutex_lock(pulse_devout_mutex);
     
-    pulse_devout->delay_counter = 0.0;
+    pulse_devout->delay_counter = delay_counter + 1.0 - delay;
     pulse_devout->tact_counter += 1.0;
 
     pthread_mutex_unlock(pulse_devout_mutex);
@@ -2738,11 +2693,7 @@ ags_pulse_devout_offset_changed(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* offset changed */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2768,11 +2719,7 @@ ags_pulse_devout_set_bpm(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set bpm */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2796,11 +2743,7 @@ ags_pulse_devout_get_bpm(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get bpm */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2823,11 +2766,7 @@ ags_pulse_devout_set_delay_factor(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set delay factor */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2851,11 +2790,7 @@ ags_pulse_devout_get_delay_factor(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get delay factor */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2880,11 +2815,7 @@ ags_pulse_devout_get_delay(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get delay */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2910,11 +2841,7 @@ ags_pulse_devout_get_absolute_delay(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get absolute delay */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -2939,11 +2866,7 @@ ags_pulse_devout_get_attack(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get attack */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3139,11 +3062,7 @@ ags_pulse_devout_get_delay_counter(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
   
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* delay counter */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3166,11 +3085,7 @@ ags_pulse_devout_set_start_note_offset(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3192,11 +3107,7 @@ ags_pulse_devout_get_start_note_offset(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3219,11 +3130,7 @@ ags_pulse_devout_set_note_offset(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3245,11 +3152,7 @@ ags_pulse_devout_get_note_offset(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3272,11 +3175,7 @@ ags_pulse_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3298,11 +3197,7 @@ ags_pulse_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set note offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3326,11 +3221,7 @@ ags_pulse_devout_set_loop(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* set loop */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3358,11 +3249,7 @@ ags_pulse_devout_get_loop(AgsSoundcard *soundcard,
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get loop */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3394,11 +3281,7 @@ ags_pulse_devout_get_loop_offset(AgsSoundcard *soundcard)
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get loop offset */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3408,6 +3291,141 @@ ags_pulse_devout_get_loop_offset(AgsSoundcard *soundcard)
   pthread_mutex_unlock(pulse_devout_mutex);
 
   return(loop_offset);
+}
+
+guint
+ags_pulse_devout_get_sub_block_count(AgsSoundcard *soundcard)
+{
+  AgsPulseDevout *pulse_devout;
+
+  guint sub_block_count;
+  
+  pthread_mutex_t *pulse_devout_mutex;  
+
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  /* get loop offset */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  sub_block_count = pulse_devout->sub_block_count;
+  
+  pthread_mutex_unlock(pulse_devout_mutex);
+
+  return(sub_block_count);
+}
+
+gboolean
+ags_pulse_devout_trylock_sub_block(AgsSoundcard *soundcard,
+				   void *buffer, guint sub_block)
+{
+  AgsPulseDevout *pulse_devout;
+
+  guint pcm_channels;
+  guint sub_block_count;
+  gboolean success;
+  
+  pthread_mutex_t *pulse_devout_mutex;  
+  pthread_mutex_t *sub_block_mutex;
+
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  /* get loop offset */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  pcm_channels = pulse_devout->pcm_channels;
+  sub_block_count = pulse_devout->sub_block_count;
+  
+  pthread_mutex_unlock(pulse_devout_mutex);
+  
+  sub_block_mutex = NULL;
+
+  success = FALSE;
+  
+  if(pulse_devout->buffer != NULL){
+    if(buffer == pulse_devout->buffer[0]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[sub_block];
+    }else if(buffer == pulse_devout->buffer[1]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[2]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[3]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[4]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[5]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[6]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[7]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
+    }
+  }
+
+  if(sub_block_mutex != NULL){
+    if(pthread_mutex_trylock(sub_block_mutex) == 0){
+      success = TRUE;
+    }
+  }
+
+  return(success);
+}
+
+void
+ags_pulse_devout_unlock_sub_block(AgsSoundcard *soundcard,
+				  void *buffer, guint sub_block)
+{
+  AgsPulseDevout *pulse_devout;
+
+  guint pcm_channels;
+  guint sub_block_count;
+  
+  pthread_mutex_t *pulse_devout_mutex;  
+  pthread_mutex_t *sub_block_mutex;
+
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  /* get pulse devout mutex */
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
+
+  /* get loop offset */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  pcm_channels = pulse_devout->pcm_channels;
+  sub_block_count = pulse_devout->sub_block_count;
+  
+  pthread_mutex_unlock(pulse_devout_mutex);
+  
+  sub_block_mutex = NULL;
+  
+  if(pulse_devout->buffer != NULL){
+    if(buffer == pulse_devout->buffer[0]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[sub_block];
+    }else if(buffer == pulse_devout->buffer[1]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[2]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[3]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[4]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[5]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[6]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[7]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
+    }
+  }
+
+  if(sub_block_mutex != NULL){
+    pthread_mutex_unlock(sub_block_mutex);
+  }
 }
 
 /**
@@ -3428,11 +3446,7 @@ ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* switch buffer flag */
   pthread_mutex_lock(pulse_devout_mutex);
@@ -3491,11 +3505,7 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
   
   /* get some initial values */
   delay = ags_pulse_devout_get_absolute_delay(AGS_SOUNDCARD(pulse_devout));
@@ -3616,11 +3626,7 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
   }
 
   /* get pulse devout mutex */
-  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
-  
-  pulse_devout_mutex = pulse_devout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+  pulse_devout_mutex = AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(pulse_devout);
 
   /* get word size */  
   pthread_mutex_lock(pulse_devout_mutex);

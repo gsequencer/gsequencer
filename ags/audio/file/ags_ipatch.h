@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@
 #define AGS_IS_IPATCH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_IPATCH))
 #define AGS_IPATCH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_IPATCH, AgsIpatchClass))
 
+#define AGS_IPATCH_GET_OBJ_MUTEX(obj) (((AgsIpatch *) obj)->obj_mutex)
+
 #define AGS_IPATCH_DEFAULT_CHANNELS (2)
 
 #define AGS_IPATCH_READ "r"
@@ -65,7 +67,7 @@ typedef enum{
 
 struct _AgsIpatch
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -100,7 +102,7 @@ struct _AgsIpatch
 
 struct _AgsIpatchClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ipatch_get_type();

@@ -25,21 +25,16 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_oscillator.h>
-
-#include <ags/X/ags_window.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <math.h>
 
@@ -50,8 +45,10 @@ void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_init(AgsSynth *synth);
 void ags_synth_finalize(GObject *gobject);
+
 void ags_synth_connect(AgsConnectable *connectable);
 void ags_synth_disconnect(AgsConnectable *connectable);
+
 void ags_synth_show(GtkWidget *widget);
 void ags_synth_map_recall(AgsMachine *machine);
 gchar* ags_synth_get_name(AgsPlugin *plugin);
@@ -250,6 +247,8 @@ ags_synth_init(AgsSynth *synth)
   synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNTH_BASE_NOTE_MIN,
 								  AGS_SYNTH_BASE_NOTE_MAX,
 								  1.0);
+  gtk_spin_button_set_digits(synth->lower,
+			     2);
   synth->lower->adjustment->value = -48.0;
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
@@ -258,52 +257,12 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* loop start */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("loop start"),
-				    "xalign", 0.0,
-				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  synth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(synth->loop_start),
-		   1, 2,
-		   1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  /* loop end */
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", i18n("loop end"),
-				    "xalign", 0.0,
-				    NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  synth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(synth->loop_end),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
 		      synth,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) synth);
 }
@@ -549,8 +508,6 @@ ags_synth_update(AgsSynth *synth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *input_pad, *input_pad_start;
@@ -570,7 +527,6 @@ ags_synth_update(AgsSynth *synth)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
 
   application_context = (AgsApplicationContext *) window->application_context;
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(synth)->audio;
 
@@ -741,8 +697,8 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
   
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    g_list_reverse(task));
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  g_list_reverse(task));
 }
 
 /**

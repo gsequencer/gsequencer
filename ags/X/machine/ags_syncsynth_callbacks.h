@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,13 +33,17 @@ void ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 					       guint samplerate, guint old_samplerate,
 					       gpointer user_data);
 
-void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
-void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+void ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
+						       AgsSyncsynth *syncsynth);
 
 void ags_syncsynth_add_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_remove_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 
-void ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
-						       AgsSyncsynth *syncsynth);
+void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
+void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+
+void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
+void ags_syncsynth_loop_start_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
+void ags_syncsynth_loop_end_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
 
 #endif /*__AGS_SYNCSYNTH_CALLBACKS_H__ */

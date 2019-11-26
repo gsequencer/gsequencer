@@ -58,7 +58,7 @@ typedef enum{
 
 struct _AgsRegistry
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -80,7 +80,7 @@ struct _AgsRegistry
 
 struct _AgsRegistryClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 /**

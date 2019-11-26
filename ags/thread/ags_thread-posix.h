@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/lib/ags_uuid.h>
 #include <ags/lib/ags_time.h>
 
+#include <sys/types.h>
+
 #define _GNU_SOURCE
 #include <signal.h>
 
@@ -41,8 +43,15 @@
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 
+#define AGS_THREAD_GET_OBJ_MUTEX(obj) (((AgsThread *) obj)->obj_mutex)
+
+#ifdef AGS_W32API
+#define AGS_THREAD_RESUME_SIG SIG_IGN
+#define AGS_THREAD_SUSPEND_SIG SIG_IGN
+#else
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
+#endif
 
 #ifndef AGS_RT_PRIORITY
 #define AGS_RT_PRIORITY (45)
@@ -189,7 +198,7 @@ typedef enum{
 
 struct _AgsThread
 {
-  GObject object;
+  GObject gobject;
 
   volatile guint flags;
   volatile guint sync_flags;
@@ -269,7 +278,7 @@ struct _AgsThread
 
 struct _AgsThreadClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   guint (*clock)(AgsThread *thread);
   
@@ -288,6 +297,8 @@ struct _AgsThreadClass
 GType ags_thread_get_type();
 
 pthread_mutex_t* ags_thread_get_class_mutex();
+
+gboolean ags_thread_global_get_use_sync_counter();
 
 gboolean ags_thread_test_flags(AgsThread *thread, guint flags);
 void ags_thread_set_flags(AgsThread *thread, guint flags);

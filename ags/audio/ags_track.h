@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_TRACK                (ags_track_get_type())
 #define AGS_TRACK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK, AgsTrack))
 #define AGS_TRACK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK, AgsTrackClass))
 #define AGS_IS_TRACK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_TRACK))
 #define AGS_IS_TRACK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_TRACK))
 #define AGS_TRACK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK, AgsTrackClass))
+
+#define AGS_TRACK_GET_OBJ_MUTEX(obj) (((AgsTrack *) obj)->obj_mutex)
 
 #define AGS_TRACK_DEFAULT_TICKS_PER_QUARTER_TRACK (16.0)
 
@@ -48,7 +52,7 @@ typedef enum{
 
 struct _AgsTrack
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -63,7 +67,7 @@ struct _AgsTrack
 
 struct _AgsTrackClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_track_get_type();

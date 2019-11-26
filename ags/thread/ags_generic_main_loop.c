@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,9 @@ void ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_generic_main_loop_get_tic(AgsMainLoop *main_loop);
 void ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop);
+void ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
+void ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
+gboolean ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
 
 void ags_generic_main_loop_start(AgsThread *thread);
 
@@ -91,9 +94,9 @@ ags_generic_main_loop_get_type()
     };
 
     ags_type_generic_main_loop = g_type_register_static(AGS_TYPE_THREAD,
-						 "AgsGenericMainLoop",
-						 &ags_generic_main_loop_info,
-						 0);
+							"AgsGenericMainLoop",
+							&ags_generic_main_loop_info,
+							0);
     
     g_type_add_interface_static(ags_type_generic_main_loop,
 				AGS_TYPE_MAIN_LOOP,
@@ -153,12 +156,19 @@ void
 ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_generic_main_loop_get_tree_lock;
+
   main_loop->set_async_queue = ags_generic_main_loop_set_async_queue;
   main_loop->get_async_queue = ags_generic_main_loop_get_async_queue;
+
   main_loop->set_tic = ags_generic_main_loop_set_tic;
   main_loop->get_tic = ags_generic_main_loop_get_tic;
+
   main_loop->set_last_sync = ags_generic_main_loop_set_last_sync;
   main_loop->get_last_sync = ags_generic_main_loop_get_last_sync;
+
+  main_loop->sync_counter_inc = ags_generic_main_loop_sync_counter_inc;
+  main_loop->sync_counter_dec = ags_generic_main_loop_sync_counter_dec;
+  main_loop->sync_counter_test = ags_generic_main_loop_sync_counter_test;
 }
 
 void
@@ -197,11 +207,7 @@ ags_generic_main_loop_set_property(GObject *gobject,
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -250,11 +256,7 @@ ags_generic_main_loop_get_property(GObject *gobject,
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -325,6 +327,88 @@ ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
   val = g_atomic_int_get(&(AGS_GENERIC_MAIN_LOOP(main_loop)->last_sync));
 
   return(val);
+}
+
+void
+ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 3){
+    return;
+  }
+  
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* increment */
+  pthread_mutex_lock(thread_mutex);
+  
+  generic_main_loop->sync_counter[tic] += 1;
+
+  pthread_mutex_unlock(thread_mutex);
+}
+
+void
+ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 3){
+    return;
+  }
+  
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* increment */
+  pthread_mutex_lock(thread_mutex);
+
+  if(generic_main_loop->sync_counter[tic] > 0){
+    generic_main_loop->sync_counter[tic] -= 1;
+  }
+  
+  pthread_mutex_unlock(thread_mutex);
+}
+
+gboolean
+ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  gboolean success;
+  
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 3){
+    return(FALSE);
+  }
+  
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* get thread mutex */
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+
+  /* test */
+  success = FALSE;
+  
+  pthread_mutex_lock(thread_mutex);
+
+  if(generic_main_loop->sync_counter[tic] == 0){
+    success = TRUE;
+  }
+  
+  pthread_mutex_unlock(thread_mutex);
+
+  return(success);
 }
 
 void

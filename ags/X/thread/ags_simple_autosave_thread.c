@@ -23,8 +23,6 @@
 
 #include <ags/X/ags_ui_provider.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/task/ags_simple_file_write.h>
@@ -33,7 +31,10 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 void ags_simple_autosave_thread_class_init(AgsSimpleAutosaveThreadClass *simple_autosave_thread);
 void ags_simple_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -160,10 +161,19 @@ ags_simple_autosave_thread_init(AgsSimpleAutosaveThread *simple_autosave_thread)
 {
   AgsThread *thread;
 
+#if defined AGS_W32API
+  AgsApplicationContext *application_context;
+#endif
+  
   gchar *filename, *offset;
-
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
+  
+#ifndef AGS_W32API
   struct passwd *pw;
   uid_t uid;
+#endif
   
   thread = AGS_THREAD(simple_autosave_thread);
 
@@ -174,6 +184,23 @@ ags_simple_autosave_thread_init(AgsSimpleAutosaveThread *simple_autosave_thread)
   simple_autosave_thread->delay = AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_DELAY;
   simple_autosave_thread->counter = 0;
 
+#if defined AGS_W32API
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+  }else{
+    app_dir = NULL;
+  }
+  
+  filename = g_strdup_printf("%s/%s/%s",
+			     g_get_current_dir(),
+			     app_dir,
+			     AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+
+  g_free(app_dir);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
@@ -181,7 +208,8 @@ ags_simple_autosave_thread_init(AgsSimpleAutosaveThread *simple_autosave_thread)
 			     pw->pw_dir,
 			     AGS_DEFAULT_DIRECTORY,
 			     AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-
+#endif
+  
   if((offset = strstr(filename,
 		      "{PID}")) != NULL){
     gchar *tmp0, *tmp1;
@@ -298,10 +326,7 @@ ags_simple_autosave_thread_run(AgsThread *thread)
 {
   AgsSimpleAutosaveThread *simple_autosave_thread;
 
-  AgsThread *gui_thread;
-  
   simple_autosave_thread = AGS_SIMPLE_AUTOSAVE_THREAD(thread);
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(simple_autosave_thread->application_context));
 
   if(simple_autosave_thread->counter != simple_autosave_thread->delay){
     simple_autosave_thread->counter += 1;
@@ -319,8 +344,8 @@ ags_simple_autosave_thread_run(AgsThread *thread)
     simple_file_write = ags_simple_file_write_new((AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 										 "filename", simple_autosave_thread->filename,
 										 NULL));
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 (GObject *) simple_file_write);
+    ags_xorg_application_context_schedule_task(simple_autosave_thread->application_context,
+					       (GObject *) simple_file_write);
 
     g_object_unref(simple_file);
   }

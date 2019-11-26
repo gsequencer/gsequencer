@@ -55,7 +55,7 @@ ags_vled_array_get_type(void)
     };
 
     ags_type_vled_array = g_type_register_static(AGS_TYPE_LED_ARRAY,
-						 "AgsVLedArray\0",
+						 "AgsVLedArray",
 						 &ags_vled_array_info,
 						 0);
 

@@ -36,6 +36,8 @@
 #define AGS_IS_RECYCLING_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING))
 #define AGS_RECYCLING_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECYCLING, AgsRecyclingClass))
 
+#define AGS_RECYCLING_GET_OBJ_MUTEX(obj) (((AgsRecycling *) obj)->obj_mutex)
+
 typedef struct _AgsRecycling AgsRecycling;
 typedef struct _AgsRecyclingClass AgsRecyclingClass;
 
@@ -56,7 +58,7 @@ typedef enum{
 
 struct _AgsRecycling
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -87,7 +89,7 @@ struct _AgsRecycling
 
 struct _AgsRecyclingClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*add_audio_signal)(AgsRecycling *recycling,
 			   AgsAudioSignal *audio_signal);

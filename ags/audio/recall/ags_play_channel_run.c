@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -187,11 +187,7 @@ ags_play_channel_run_set_property(GObject *gobject,
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
@@ -277,11 +273,7 @@ ags_play_channel_run_get_property(GObject *gobject,
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
@@ -342,13 +334,13 @@ ags_play_channel_run_run_init_inter(AgsRecall *recall)
 
   play_channel_run = (AgsPlayChannelRun *) recall;
   
-  /* get parent class and mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_init_inter = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_init_inter;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* set flags */
   ags_play_channel_run_set_flags(play_channel_run,
 				 AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
@@ -380,13 +372,14 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   play_channel_run = (AgsPlayChannelRun *) recall;
   
   /* get parent class and mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_post = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post;
 
-  recall_mutex = recall->obj_mutex;
+  AGS_RECALL_UNLOCK_CLASS();
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_post(recall);
@@ -560,6 +553,8 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
 		   g_object_unref);
   
   /* check recall dependency */
+  list_start = NULL;
+  
   g_object_get(template,
 	       "recall-dependency", &list_start,
 	       NULL);
@@ -625,11 +620,7 @@ ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* test */
   pthread_mutex_lock(recall_mutex);
@@ -660,11 +651,7 @@ ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* set flags */
   pthread_mutex_lock(recall_mutex);
@@ -693,11 +680,7 @@ ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flag
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run);
 
   /* set flags */
   pthread_mutex_lock(recall_mutex);

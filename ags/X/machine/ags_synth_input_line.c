@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,7 @@
 #include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_oscillator.h>
 
 void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
 void ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -393,4 +394,3 @@ ags_synth_input_line_new(AgsChannel *channel)
 
   return(synth_input_line);
 }
-

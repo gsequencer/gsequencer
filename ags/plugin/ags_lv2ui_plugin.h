@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@
 #define AGS_IS_LV2UI_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2UI_PLUGIN))
 #define AGS_LV2UI_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2UI_PLUGIN, AgsLv2uiPluginClass))
 
+#define AGS_LV2UI_PLUGIN_DESCRIPTOR(ptr) ((LV2UI_Descriptor *)(ptr))
+
 typedef struct _AgsLv2uiPlugin AgsLv2uiPlugin;
 typedef struct _AgsLv2uiPluginClass AgsLv2uiPluginClass;
 
@@ -70,6 +72,8 @@ struct _AgsLv2uiPlugin
   AgsTurtle *gui_turtle;
 
   GObject *lv2_plugin;
+
+  LV2_Feature **feature;
 };
 
 struct _AgsLv2uiPluginClass
@@ -78,6 +82,10 @@ struct _AgsLv2uiPluginClass
 };
 
 GType ags_lv2ui_plugin_get_type(void);
+
+gboolean ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags);
+void ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags);
+void ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags);
 
 GList* ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
 				     gchar *gui_uri);

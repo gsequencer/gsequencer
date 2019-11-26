@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,6 +69,12 @@ struct _AgsSoundcardEditor
 
   GtkCheckButton *use_cache;
   GtkSpinButton *cache_buffer_size;
+
+  GtkLabel *wasapi_share_mode_label;
+  GtkComboBoxText *wasapi_share_mode;
+
+  GtkLabel *wasapi_buffer_size_label;
+  GtkSpinButton *wasapi_buffer_size;
   
   GtkButton *remove;
 };
@@ -93,8 +99,12 @@ void ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 void ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor);
+
+void ags_soundcard_editor_show_wasapi_control(AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_hide_wasapi_control(AgsSoundcardEditor *soundcard_editor);
 
 AgsSoundcardEditor* ags_soundcard_editor_new();
 

@@ -40,17 +40,19 @@
 #define _GNU_SOURCE
 #include <locale.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
+#include <stdlib.h>
+
+#ifndef AGS_W32API
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
 
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include "gsequencer_main.h"
-
 #include "config.h"
+#include "gsequencer_main.h"
 
 #include <ags/i18n.h>
 
@@ -201,6 +203,8 @@ ags_setup_thread(void *ptr)
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
   pthread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -237,6 +241,10 @@ main(int argc, char **argv)
   AgsConfig *config;
 
   gchar *filename;
+#if defined AGS_W32API
+  gchar *app_dir;
+  gchar *path;
+#endif
 
   gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
@@ -246,23 +254,31 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
 #endif
+
+#ifndef AGS_W32API
   struct passwd *pw;
 
+  uid_t uid;
+#endif
+  
   gchar *wdir, *config_file;
   gchar *rc_filename;
 
   gboolean has_file;
-  uid_t uid;
   int result;
 
+#ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
+#endif
+  
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
   
   single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
+
+  config = NULL;
   
   //  mtrace();
 
@@ -333,9 +349,47 @@ main(int argc, char **argv)
     }
   }
 
+#ifdef AGS_W32API
+  if(!builtin_theme_disabled){
+    app_dir = NULL;
+    
+    if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(argv[0],
+			  strlen(argv[0]) - strlen("\\gsequencer.exe"));
+    }
+    
+    if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
+      rc_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.rc",
+				    g_get_current_dir());
+    
+      if(!g_file_test(rc_filename,
+		      G_FILE_TEST_IS_REGULAR)){
+	g_free(rc_filename);
+
+	if(g_path_is_absolute(app_dir)){
+	  rc_filename = g_strdup_printf("%s\\%s",
+					app_dir,
+					"\\share\\gsequencer\\styles\\ags.rc");
+	}else{
+	  rc_filename = g_strdup_printf("%s\\%s\\%s",
+					g_get_current_dir(),
+					app_dir,
+					"\\share\\gsequencer\\styles\\ags.rc");
+	}
+      }
+    }else{
+      rc_filename = g_strdup(rc_filename);
+    }
+  
+    gtk_rc_parse(rc_filename);
+    
+    g_free(rc_filename);
+    g_free(app_dir);
+  }
+#else
   uid = getuid();
   pw = getpwuid(uid);
-    
+  
   /* parse rc file */
   if(!builtin_theme_disabled){
     rc_filename = g_strdup_printf("%s/%s/ags.rc",
@@ -362,17 +416,19 @@ main(int argc, char **argv)
     gtk_rc_parse(rc_filename);
     g_free(rc_filename);
   }
+#endif
   
   /**/
   LIBXML_TEST_VERSION;
-
+  xmlInitParser();
+  
   //ao_initialize();
 
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-  
+
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
@@ -414,23 +470,64 @@ main(int argc, char **argv)
   
   /* setup */
   if(!has_file){
-    wdir = g_strdup_printf("%s/%s",
-			   pw->pw_dir,
-			   AGS_DEFAULT_DIRECTORY);
+#ifdef AGS_W32API
+  app_dir = NULL;
 
-    config_file = g_strdup_printf("%s/%s",
-				  wdir,
-				  AGS_DEFAULT_CONFIG);
+  if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
+    app_dir = g_strndup(argv[0],
+			strlen(argv[0]) - strlen("\\gsequencer.exe"));
+  }
+  
+  path = g_strdup_printf("%s\\etc\\gsequencer",
+			 g_get_current_dir());
+    
+  if(!g_file_test(path,
+		  G_FILE_TEST_IS_DIR)){
+    g_free(path);
+
+    if(g_path_is_absolute(app_dir)){
+      path = g_strdup_printf("%s\\%s",
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }else{
+      path = g_strdup_printf("%s\\%s\\%s",
+			     g_get_current_dir(),
+			     app_dir,
+			     "\\etc\\gsequencer");
+    }
+  }
+    
+  config_file = g_strdup_printf("%s\\%s",
+				path,
+				AGS_DEFAULT_CONFIG);
+
+  g_free(path);
+#else
+  wdir = g_strdup_printf("%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+    
+  config_file = g_strdup_printf("%s/%s",
+				wdir,
+				AGS_DEFAULT_CONFIG);
+
+  g_free(wdir);
+#endif
 
     config = ags_config_get_instance();
 
     ags_config_load_from_file(config,
 			      config_file);
 
-    g_free(wdir);
     g_free(config_file);
   }
-  
+
+  /* some GUI scaling */
+  if(!builtin_theme_disabled &&
+     !has_file){
+    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+  }
+
   ags_setup(argc, argv);
     
   //  muntrace();

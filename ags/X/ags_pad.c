@@ -24,10 +24,9 @@
 #include <ags/libags-audio.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -1088,50 +1087,27 @@ ags_pad_find_port(AgsPad *pad)
 void
 ags_pad_play(AgsPad *pad)
 {
-  AgsWindow *window;
   AgsMachine *machine;
 
-  AgsChannel *channel, *next_channel, *next_pad;
-
-  AgsStartSoundcard *start_soundcard;
-  AgsStartChannel *start_channel;
-
-  AgsThread *gui_thread;
-
-  AgsApplicationContext *application_context;
+  AgsChannel *channel;
+  AgsChannel *next_pad, *next_channel;
+  AgsPlayback *playback;
   
-  GList *start_task;
-  GList *start_list;
-  
-  gboolean no_soundcard;
+  GList *start_list, *list;
+
   gboolean play_all;
+
+  if(!AGS_IS_PAD(pad)){
+    return;
+  }
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  no_soundcard = FALSE;
-  
-  if((start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context))) == NULL){
-    no_soundcard = TRUE;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
-
-  if(no_soundcard){
-    g_message("No soundcard available");
-    
-    return;
-  }
+  list = 
+    start_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
   /*  */
-  start_task = NULL;
-
   play_all = gtk_toggle_button_get_active(pad->group);
   
   if(gtk_toggle_button_get_active(pad->play)){
@@ -1143,96 +1119,28 @@ ags_pad_play(AgsPad *pad)
       }
 
       next_pad = ags_channel_next_pad(channel);
-
-      while(channel != next_pad){
-	/* start channel for playback */
-	start_channel = ags_start_channel_new(channel,
-					      AGS_SOUND_SCOPE_PLAYBACK);
-    
-	g_signal_connect_after(G_OBJECT(start_channel), "launch",
-			       G_CALLBACK(ags_pad_start_channel_launch_callback), pad);
-	start_task = g_list_prepend(start_task,
-				    start_channel);
-
-	/* iterate */
-	next_channel = ags_channel_next(channel);
-
-	g_object_unref(channel);
-
-	channel = next_channel;
-      }
-
-      /* unref */
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      next_channel = NULL;
       
-      if(next_channel != NULL){
-	g_object_unref(next_channel);
-      }      
-    }else{
-      GList *list;
-
-      list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
-
-      channel = pad->channel;
-      
-      /* start channel for playback */
-      start_channel = ags_start_channel_new(channel,
-					    AGS_SOUND_SCOPE_PLAYBACK);
-    
-      g_signal_connect_after(G_OBJECT(start_channel), "launch",
-			     G_CALLBACK(ags_pad_start_channel_launch_callback), pad);
-      start_task = g_list_prepend(start_task,
-				  start_channel);
-
-      g_list_free(list);
-    }
-
-    /* create start task */
-    if(start_task != NULL){
-      start_soundcard = ags_start_soundcard_new(application_context);
-      start_task = g_list_prepend(start_task,
-				  start_soundcard);
-
-      /* append AgsStartSoundcard */
-      start_task = g_list_reverse(start_task);
-
-      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					start_task);
-    }
-  }else{
-    AgsPlayback *playback;
-    AgsRecallID *recall_id;
-    
-    AgsCancelChannel *cancel_channel;
-
-    if(play_all){
-      channel = pad->channel;
-
-      if(channel != NULL){
-	g_object_ref(channel);
-      }
-
-      next_pad = ags_channel_next_pad(channel);
-
-      /* cancel request */
       while(channel != next_pad){
+	AgsNote *play_note;
+	
 	g_object_get(channel,
 		     "playback", &playback,
 		     NULL);
+
+	g_object_get(playback,
+		     "play-note", &play_note,
+		     NULL);
+
+	g_object_set(play_note,
+		     "x0", 0,
+		     "x1", 1,
+		     NULL);
+
+	ags_machine_playback_set_active(machine,
+					playback,
+					TRUE);
 	
-	recall_id = ags_playback_get_recall_id(playback,
-					       AGS_SOUND_SCOPE_PLAYBACK);
-
-	if(recall_id != NULL){
-	  cancel_channel = ags_cancel_channel_new(channel,
-						  AGS_SOUND_SCOPE_PLAYBACK);
-
-	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				       (GObject *) cancel_channel);
-	}
-
 	g_object_unref(playback);
 	
 	/* iterate */
@@ -1252,46 +1160,90 @@ ags_pad_play(AgsPad *pad)
 	g_object_unref(next_channel);
       }      
     }else{
-      AgsLine *line;
-      
-      GList *start_list, *list;
-
-      start_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
-
-      list = ags_line_find_next_grouped(start_list);
-
-      if(list == NULL){	
-	g_list_free(start_list);
+      while((list = ags_line_find_next_grouped(list)) != NULL){
+	AgsLine *line;
 	
-	return;
-      }else{
 	line = AGS_LINE(list->data);
+
+	channel = line->channel;
 	
-	g_list_free(start_list);
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	ags_machine_playback_set_active(machine,
+					playback,
+					TRUE);
+	
+	g_object_unref(playback);
+
+	/* iterate */
+	list = list->next;
+      }
+    }
+  }else{
+    if(play_all){
+      channel = pad->channel;
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      next_pad = ags_channel_next_pad(channel);
+      next_channel = NULL;
+      
+      while(channel != next_pad){
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
+
+	ags_machine_playback_set_active(machine,
+					playback,
+					FALSE);
+	
+	g_object_unref(playback);
+	
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      /* unref */
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
       }
       
-      /*  */
-      channel = line->channel;
-      
-      g_object_get(channel,
-		   "playback", &playback,
-		   NULL);
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }      
+    }else{
+      while((list = ags_line_find_next_grouped(list)) != NULL){
+	AgsLine *line;
 	
-      recall_id = ags_playback_get_recall_id(playback,
-					     AGS_SOUND_SCOPE_PLAYBACK);
+	line = AGS_LINE(list->data);
 
-      if(recall_id != NULL){
-	/* cancel request */
-	cancel_channel = ags_cancel_channel_new(channel,
-						AGS_SOUND_SCOPE_PLAYBACK);
+	channel = line->channel;
+	
+	g_object_get(channel,
+		     "playback", &playback,
+		     NULL);
 
-	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				     (GObject *) cancel_channel);
+	ags_machine_playback_set_active(machine,
+					playback,
+					FALSE);
+	
+	g_object_unref(playback);
+
+	/* iterate */
+	list = list->next;
       }
-
-      g_object_unref(playback);
     }
   }
+  
+  g_list_free(start_list);
 }
   
 /**

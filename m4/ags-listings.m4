@@ -39,6 +39,7 @@ AC_DEFUN([AGS_DEVELOPER_BOOK_LISTINGS],
   `tail -n +10 $srcdir/docs/listings/linking_prerequisites.c.in > docs/listings/linking_prerequisites.c`
   `tail -n +10 $srcdir/docs/listings/linking_safe.c.in > docs/listings/linking_safe.c`
   `tail -n +10 $srcdir/docs/listings/linking_unsafe.c.in > docs/listings/linking_unsafe.c`
+  `tail -n +10 $srcdir/docs/listings/notation_clipboard.c.in > docs/listings/notation_clipboard.c`
   `tail -n +10 $srcdir/docs/listings/pcm_info.c.in > docs/listings/pcm_info.c`
   `tail -n +10 $srcdir/docs/listings/port.c.in > docs/listings/port.c`
   `tail -n +10 $srcdir/docs/listings/pull_thread.c.in > docs/listings/pull_thread.c`

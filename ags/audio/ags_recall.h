@@ -41,6 +41,11 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
+#define AGS_RECALL_GET_OBJ_MUTEX(obj) (((AgsRecall *) obj)->obj_mutex)
+
+#define AGS_RECALL_LOCK_CLASS()
+#define AGS_RECALL_UNLOCK_CLASS()
+
 #define AGS_RECALL_DEFAULT_VERSION "2.0.0"
 #define AGS_RECALL_DEFAULT_BUILD_ID "Tue Feb  6 14:27:35 UTC 2018"
 
@@ -93,7 +98,7 @@ typedef enum{
 
 struct _AgsRecall
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   guint ability_flags;
@@ -158,7 +163,7 @@ struct _AgsRecall
 
 struct _AgsRecallClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolve_dependency)(AgsRecall *recall);
   void (*check_rt_data)(AgsRecall *recall);

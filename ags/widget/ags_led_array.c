@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
 				 "The width of one led",
 				 0,
 				 G_MAXUINT,
-				 0,
+				 AGS_LED_ARRAY_DEFAULT_LED_WIDTH,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LED_WIDTH,
@@ -133,7 +133,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
 				 "The height of one led",
 				 0,
 				 G_MAXUINT,
-				 0,
+				 AGS_LED_ARRAY_DEFAULT_LED_HEIGHT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LED_HEIGHT,
@@ -166,8 +166,8 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
 void
 ags_led_array_init(AgsLedArray *led_array)
 {
-  led_array->led_width = 12;
-  led_array->led_height = 10;
+  led_array->led_width = AGS_LED_ARRAY_DEFAULT_LED_WIDTH;
+  led_array->led_height = AGS_LED_ARRAY_DEFAULT_LED_HEIGHT;
   
   led_array->led = NULL;
   led_array->led_count = 0;
@@ -197,15 +197,27 @@ ags_led_array_set_property(GObject *gobject,
   case PROP_LED_WIDTH:
     {
       guint led_width;
+      guint i;
       
       led_array->led_width = g_value_get_uint(value);
+
+      for(i = 0; i < led_array->led_count; i++){
+	gtk_widget_set_size_request((GtkWidget *) led_array->led[i],
+				    led_array->led_width, led_array->led_height);
+      }
     }
     break;
   case PROP_LED_HEIGHT:
     {
       guint led_height;
+      guint i;
       
       led_array->led_height = g_value_get_uint(value);
+
+      for(i = 0; i < led_array->led_count; i++){
+	gtk_widget_set_size_request((GtkWidget *) led_array->led[i],
+				    led_array->led_width, led_array->led_height);
+      }
     }
     break;
   default:

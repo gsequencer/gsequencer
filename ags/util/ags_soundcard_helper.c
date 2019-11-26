@@ -67,7 +67,7 @@ ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
     dsp_channels = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-    free(str);
+    g_free(str);
   }else{
     dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
   }
@@ -111,7 +111,7 @@ ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config)
     pcm_channels = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-    free(str);
+    g_free(str);
   }else{
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
   }
@@ -154,7 +154,7 @@ ags_soundcard_helper_config_get_samplerate(AgsConfig *config)
   if(str != NULL){
     samplerate = g_ascii_strtod(str,
 				NULL);
-    free(str);
+    g_free(str);
   }else{
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
@@ -198,7 +198,7 @@ ags_soundcard_helper_config_get_buffer_size(AgsConfig *config)
     buffer_size = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-    free(str);
+    g_free(str);
   }else{
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
@@ -242,7 +242,7 @@ ags_soundcard_helper_config_get_format(AgsConfig *config)
     format = g_ascii_strtoull(str,
 			      NULL,
 			      10);
-    free(str);
+    g_free(str);
   }else{
     format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   }

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_CONDITION_MANAGER                (ags_condition_manager_get_type())
 #define AGS_CONDITION_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONDITION_MANAGER, AgsConditionManager))
 #define AGS_CONDITION_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CONDITION_MANAGER, AgsConditionManagerClass))
@@ -35,14 +37,14 @@ typedef struct _AgsConditionManagerClass AgsConditionManagerClass;
 
 struct _AgsConditionManager
 {
-  GObject object;
+  GObject gobject;
 
   GHashTable *lock_object;
 };
 
 struct _AgsConditionManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_condition_manager_get_type();

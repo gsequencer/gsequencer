@@ -8,17 +8,23 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.2.6],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.4.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_HEADERS([ags/ags_config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_USE_SYSTEM_EXTENSIONS([_GNU_SOURCE])
 
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_ENABLE(gnulib, [AS_HELP_STRING([--enable-gnulib],
+				      [gnulib builtin functions (default is no)])],
+	      [],			       
+	      [enable_gnulib=no])
+
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -28,6 +34,16 @@ AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
 			          [enable rt (default is yes)])],
 	      [],
 	      [enable_rt=yes])
+
+AC_ARG_ENABLE(w32api, [AS_HELP_STRING([--enable-w32api],
+		      		      [enable w32 API (default is no)])],
+	      [],
+	      [enable_w32api=no])
+
+AC_ARG_ENABLE(osxapi, [AS_HELP_STRING([--enable-osxapi],
+		      		      [enable OS X API (default is no)])],
+	      [],
+	      [enable_osxapi=no])
 
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
@@ -54,15 +70,25 @@ AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
 	      [],
 	      [enable_core_audio=no])
 
+AC_ARG_ENABLE(audio-unit, [AS_HELP_STRING([--enable-audio-unit],
+					  [enable audio unit (default is no)])],
+	      [],
+	      [enable_audio_unit=no])
+
+AC_ARG_ENABLE(wasapi, [AS_HELP_STRING([--enable-wasapi],
+				      [enable WASAPI (default is no)])],
+	      [],
+	      [enable_wasapi=no])
+
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
 					    [enable libinstpatch (default is yes)])],
 	      [],
 	      [enable_libinstpatch=yes])
 
-AC_ARG_ENABLE(vst, [AS_HELP_STRING([--enable-vst],
-				    [enable vst (default is no)])],
+AC_ARG_ENABLE(vst3, [AS_HELP_STRING([--enable-vst3],
+				    [enable vst3 (default is no)])],
 	      [],
-	      [enable_vst=no])
+	      [enable_vst3=no])
 
 AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
 				     [enable pulse (default is yes)])],
@@ -73,6 +99,11 @@ AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
 	      [],
 	      [enable_xmlrpc=no])
+
+AC_ARG_ENABLE(x11, [AS_HELP_STRING([--enable-x11],
+				   [enable X11 (default is yes)])],
+	      [],
+	      [enable_x11=yes])
 
 AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
 				      [enable quartz (default is no)])],
@@ -101,6 +132,7 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 
 # Checks for programs.
 AC_PROG_CC
+gl_EARLY
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -110,6 +142,8 @@ LT_PREREQ([2.4.2])
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
+
+AM_CONDITIONAL([WITH_GNULIB], [test "x$enable_gnulib" == xyes])
 
 AC_SUBST([GSEQUENCER_CFLAGS])
 AC_SUBST([GSEQUENCER_LDFLAGS])
@@ -123,19 +157,22 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
+AS_IF([test "x$enable_x11" != xno],
+      [AC_DEFINE([AGS_WITH_X11], [1], [X11 enabled])
+       AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
+       X11_LIBS="-lX11"],
+      [AC_MSG_NOTICE([X11 disabled])])
+
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
        PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk2 >= 2.0.7])
        AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
        AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],
-      [AC_MSG_NOTICE([quartz disabled])
-       AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
-       X11_LIBS="-lX11"
-       ])
+      [AC_MSG_NOTICE([quartz disabled])])
 
 # FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
+# AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
@@ -158,7 +195,7 @@ AS_IF([test "x$enable_rt" != xno],
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
+# AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -171,7 +208,23 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
 
-PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
+AS_IF([test "x$enable_w32api" != xno],
+      [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
+      W32API_CFLAGS="-nostdinc -I./lib -I/usr/lib/gcc/x86_64-w64-mingw32/7.4.0/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/dssi -include ags/config.h "
+      W32API_LIBS="-L./lib -lgnu"
+      AC_MSG_NOTICE([w32api enabled])],
+      AC_MSG_NOTICE([w32api disabled]))
+AM_CONDITIONAL([WITH_W32API], [test "x$enable_w32api" == xyes])
+
+AS_IF([test "x$enable_osxapi" != xno],
+      [AC_DEFINE([AGS_OSXAPI], [1], [OS X api enabled])
+      OSXAPI_CFLAGS=""
+      OSXAPI_LIBS=""
+      AC_MSG_NOTICE([OS X api enabled])],
+      AC_MSG_NOTICE([OS X api disabled]))
+AM_CONDITIONAL([WITH_OSXAPI], [test "x$enable_osxapi" == xyes])
+
+PKG_CHECK_MODULES([UUID], [uuid >= 1.0.1])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
@@ -203,12 +256,33 @@ AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
 
       CORE_AUDIO_CFLAGS= 
-      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework CoreMIDI"
+      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
       AC_SUBST(CORE_AUDIO_CFLAGS)
       AC_SUBST(CORE_AUDIO_LIBS)
 
       AC_MSG_NOTICE([core audio enabled])],
       AC_MSG_NOTICE([core audio disabled]))
+
+AS_IF([test "x$enable_audio_unit" != xno],
+      [AC_DEFINE([AGS_WITH_AUDIO_UNIT], [1], [core-audio enabled])
+
+      AUDIO_UNIT_CFLAGS= 
+      AUDIO_UNIT_LIBS="-framework AudioUnit -framework AudioToolbox"
+      AC_SUBST(AUDIO_UNIT_CFLAGS)
+      AC_SUBST(AUDIO_UNIT_LIBS)
+
+      AC_MSG_NOTICE([core audio enabled])],
+      AC_MSG_NOTICE([core audio disabled]))
+
+AS_IF([test "x$enable_wasapi" != xno],
+      [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled])
+      WASAPI_CFLAGS=""
+      WASAPI_LIBS="-lwinmm -ldsound -lsetupapi -lole32"
+      AC_SUBST(WASAPI_CFLAGS)
+      AC_SUBST(WASAPI_LIBS)
+
+      AC_MSG_NOTICE([wasapi enabled])],
+      AC_MSG_NOTICE([wasapi disabled]))
 
 AS_IF([test "x$enable_jack" != xno],
       [AC_DEFINE([AGS_WITH_JACK], [1], [JACK enabled])
@@ -244,7 +318,7 @@ PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.5])
+PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.4])
 AC_SUBST(FFTW_CFLAGS)
 AC_SUBST(FFTW_LIBS)
 
@@ -279,14 +353,14 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       AC_MSG_NOTICE([libinstpatch disabled]))
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
-AS_IF([test "x$enable_vst" != xno],
-      [AC_DEFINE([AGS_WITH_VST], [1], [VST enabled])
+AS_IF([test "x$enable_vst3" != xno],
+      [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
 
-      AC_SUBST(VST_CXXFLAGS)
-      AC_SUBST(VST_LIBS)
+      AC_SUBST(VST3_CXXFLAGS)
+      AC_SUBST(VST3_LIBS)
       
-      AC_MSG_NOTICE([VST enabled])],
-      AC_MSG_NOTICE([VST disabled]))
+      AC_MSG_NOTICE([VST3 enabled])],
+      AC_MSG_NOTICE([VST3 disabled]))
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
@@ -344,6 +418,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
 AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
+AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 LIBAGS_SYMBOLS([])
@@ -359,9 +434,12 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
 
+gl_INIT
+
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+lib/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile

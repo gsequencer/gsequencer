@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -162,12 +162,12 @@ ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
   void (*parent_class_run_init_pre)(AgsRecall *recall);
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* call parent */
   parent_class_run_init_pre(recall);
   
@@ -188,11 +188,11 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   stream_audio_signal = (AgsStreamAudioSignal *) recall;
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_post = AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(stream_audio_signal,
 	       "parent", &stream_recycling,

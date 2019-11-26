@@ -27,6 +27,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_FILE_LOOKUP                (ags_file_lookup_get_type())
 #define AGS_FILE_LOOKUP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LOOKUP, AgsFileLookup))
 #define AGS_FILE_LOOKUP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE_LOOKUP, AgsFileLookupClass))
@@ -34,12 +36,14 @@
 #define AGS_IS_FILE_LOOKUP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LOOKUP))
 #define AGS_FILE_LOOKUP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_LOOKUP, AgsFileLookupClass))
 
+#define AGS_FILE_LOOKUP_GET_OBJ_MUTEX(obj) (((AgsFileLookup *) obj)->obj_mutex)
+
 typedef struct _AgsFileLookup AgsFileLookup;
 typedef struct _AgsFileLookupClass AgsFileLookupClass;
 
 struct _AgsFileLookup
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -52,7 +56,7 @@ struct _AgsFileLookup
 
 struct _AgsFileLookupClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolve)(AgsFileLookup *lookup);
 };

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -301,10 +301,12 @@ ags_message_envelope_alloc(GObject *sender,
 void
 ags_message_envelope_free(AgsMessageEnvelope *message)
 {
+  guint i;
+  
   if(message == NULL){
     return;
   }
-
+  
   if(message->sender != NULL){
     g_object_unref(message->sender);
   }
@@ -318,6 +320,11 @@ ags_message_envelope_free(AgsMessageEnvelope *message)
   }
   
   g_free(message->parameter_name);
+
+  for(i = 0; i < message->n_params; i++){
+    g_value_unset(&(message->value[i]));
+  }
+  
   g_free(message->value);
   
   g_free(message);

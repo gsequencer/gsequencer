@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,14 +35,17 @@
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
+#include <unistd.h>
+
+#ifndef AGS_W32API
+#include <fcntl.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
+
 #include <netinet/in.h>
-
 #include <arpa/inet.h>
-
-#include <unistd.h>
-#include <fcntl.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -371,13 +374,18 @@ ags_osc_server_init(AgsOscServer *osc_server)
   
   osc_server->ip4_fd = -1;
   osc_server->ip6_fd = -1;
-  
+
+#ifdef AGS_W32API
+  osc_server->ip4_address = NULL;
+  osc_server->ip6_address = NULL;
+#else
   osc_server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(osc_server->ip4_address, 0, sizeof(struct sockaddr_in));
   
   osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
-
+#endif
+  
   osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->accept_delay->tv_sec = 0;
@@ -411,11 +419,7 @@ ags_osc_server_set_property(GObject *gobject,
   osc_server = AGS_OSC_SERVER(gobject);
 
   /* get osc server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -580,11 +584,7 @@ ags_osc_server_get_property(GObject *gobject,
   osc_server = AGS_OSC_SERVER(gobject);
 
   /* get osc server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -766,11 +766,7 @@ ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* test */
   pthread_mutex_lock(osc_server_mutex);
@@ -801,11 +797,7 @@ ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
@@ -834,11 +826,7 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
@@ -1066,6 +1054,8 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 void
 ags_osc_server_real_start(AgsOscServer *osc_server)
 {
+#ifdef AGS_W32API
+#else
   AgsOscFrontController *osc_front_controller;
   
   GList *start_controller, *controller;
@@ -1084,11 +1074,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   any_address = ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_ANY_ADDRESS);
   
@@ -1264,6 +1250,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   
   g_list_free_full(start_controller,
 		   g_object_unref);
+#endif
 }
 
 /**
@@ -1299,11 +1286,7 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   }
   
   /* get OSC server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* stop */
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_TERMINATING);
@@ -1374,6 +1357,9 @@ ags_osc_server_stop(AgsOscServer *osc_server)
 gboolean
 ags_osc_server_real_listen(AgsOscServer *osc_server)
 {
+#ifdef AGS_W32API
+  return(FALSE);
+#else
   gboolean created_connection;
   
   if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
@@ -1451,6 +1437,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
   }
 
   return(created_connection);
+#endif
 }
 
 /**
@@ -1504,11 +1491,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     pthread_mutex_t *osc_connection_mutex;
 
     /* get osc_connection mutex */
-    pthread_mutex_lock(ags_osc_connection_get_class_mutex());
-  
-    osc_connection_mutex = AGS_OSC_CONNECTION(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+    osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(list->data);
     
     /* get fd */
     pthread_mutex_lock(osc_connection_mutex);
@@ -1608,6 +1591,10 @@ ags_osc_server_listen_thread(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif   
 }
 
 void*
@@ -1624,6 +1611,10 @@ ags_osc_server_dispatch_thread(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 /**

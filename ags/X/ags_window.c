@@ -32,11 +32,15 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_fm_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
+#include <ags/X/machine/ags_fm_syncsynth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
 #endif
+
+#include <ags/X/machine/ags_pitch_sampler.h>
 
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
@@ -50,7 +54,7 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include <stdlib.h>
@@ -345,7 +349,7 @@ ags_window_init(AgsWindow *window)
   g_hash_table_insert(ags_window_load_file,
 		      window, ags_window_load_file_timeout);
 
-  g_timeout_add(1000, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
 }
 
 void
@@ -646,13 +650,23 @@ ags_window_standard_machine_counter_alloc()
 							     AGS_TYPE_SYNTH, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_FM_SYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_SYNCSYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_FM_SYNCSYNTH, 0));
 
 #ifdef AGS_WITH_LIBINSTPATCH
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
 #endif
+
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_PITCH_SAMPLER, 0));
   
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,

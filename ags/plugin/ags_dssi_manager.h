@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,12 +34,14 @@
 #define AGS_IS_DSSI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DSSI_MANAGER))
 #define AGS_DSSI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_DSSI_MANAGER, AgsDssiManagerClass))
 
+#define AGS_DSSI_MANAGER_GET_OBJ_MUTEX(obj) (((AgsDssiManager *) obj)->obj_mutex)
+
 typedef struct _AgsDssiManager AgsDssiManager;
 typedef struct _AgsDssiManagerClass AgsDssiManagerClass;
 
 struct _AgsDssiManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -50,7 +52,7 @@ struct _AgsDssiManager
 
 struct _AgsDssiManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_dssi_manager_get_type(void);

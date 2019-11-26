@@ -66,12 +66,14 @@
 #endif
 
 #include <sys/types.h>
-#include <pwd.h>
 
-#include <sys/mman.h>
+#ifndef AGS_W32API
+#include <pwd.h>
+#endif
 
 #include <stdbool.h>
 
+#include <sys/types.h>
 #include <signal.h>
 
 #include <math.h>
@@ -140,6 +142,9 @@ void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
 gboolean ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
 						gboolean is_gui_ready);
+GtkWidget* ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
+						       GtkWidget *widget);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
 
@@ -416,6 +421,9 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
 
   ui_provider->get_gui_ready = ags_xorg_application_context_get_gui_ready;
   ui_provider->set_gui_ready = ags_xorg_application_context_set_gui_ready;
+
+  ui_provider->get_animation_window = ags_xorg_application_context_get_animation_window;
+  ui_provider->set_animation_window = ags_xorg_application_context_set_animation_window;
 }
 
 void
@@ -448,6 +456,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_atomic_int_set(&(xorg_application_context->file_ready),
 		   FALSE);
 
+  xorg_application_context->collected_task = NULL;
+  xorg_application_context->task_completion = NULL;
+  
   xorg_application_context->thread_pool = NULL;
 
   xorg_application_context->polling_thread = NULL;
@@ -475,6 +486,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->osc_server = NULL;
 
   xorg_application_context->window = NULL;
+
+  xorg_application_context->animation_window = NULL;
 }
 
 void
@@ -781,12 +794,8 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
 
   /* get application context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(xorg_application_context)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
-  
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+    
   /* soundcard */
   pthread_mutex_lock(application_context_mutex);
 
@@ -842,11 +851,7 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
   ags_xorg_application_context_parent_connectable_interface->disconnect(connectable);
 
   /* get application context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(xorg_application_context)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
   
   /* soundcard */
   pthread_mutex_lock(application_context_mutex);
@@ -888,20 +893,20 @@ AgsThread*
 ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
   AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
   
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get main loop */
   pthread_mutex_lock(application_context_mutex);
 
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   if(main_loop != NULL){
     g_object_ref(main_loop);
@@ -917,19 +922,19 @@ ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency
 {
   AgsThread *task_thread;
   
+  AgsApplicationContext *application_context;
+  
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get task thread */
   pthread_mutex_lock(application_context_mutex);
 
-  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread;
+  task_thread = (AgsThread *) application_context->task_thread;
 
   if(task_thread != NULL){
     g_object_ref(task_thread);
@@ -945,19 +950,19 @@ ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency
 {
   AgsThreadPool *thread_pool;
   
+  AgsApplicationContext *application_context;
+  
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get thread pool */
   pthread_mutex_lock(application_context_mutex);
 
-  thread_pool = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool;
+  thread_pool = AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool;
 
   if(thread_pool != NULL){
     g_object_ref(thread_pool);
@@ -971,21 +976,21 @@ ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency
 GList*
 ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
 {
+  AgsApplicationContext *application_context;
+  
   GList *worker;
   
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get worker */
   pthread_mutex_lock(application_context_mutex);
 
-  worker = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker,
+  worker = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->worker,
 			    (GCopyFunc) g_object_ref,
 			    NULL);
   
@@ -998,25 +1003,25 @@ void
 ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
 					GList *worker)
 {
+  AgsApplicationContext *application_context;
+  
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set worker */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker == worker){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->worker == worker){
     pthread_mutex_unlock(application_context_mutex);
     
     return;
   }
 
-  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker,
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(application_context)->worker,
 		   g_object_unref);
   
   AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
@@ -1029,7 +1034,14 @@ ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *soun
 {
   GObject *soundcard_thread;
   
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get mutex */
   pthread_mutex_lock(ags_application_context_get_class_mutex());
@@ -1059,33 +1071,33 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set default soundcard */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard == soundcard){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard == soundcard){
     pthread_mutex_unlock(application_context_mutex);
 
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard != NULL){
-    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard != NULL){
+    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard);
   }
   
   if(soundcard != NULL){
     g_object_ref(soundcard);
   }
   
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard = (GObject *) soundcard;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard = (GObject *) soundcard;
 
   pthread_mutex_unlock(application_context_mutex);
 
@@ -1147,19 +1159,19 @@ ags_xorg_application_context_get_default_soundcard(AgsSoundProvider *sound_provi
 {
   GObject *soundcard;
   
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get default soundcard */
   pthread_mutex_lock(application_context_mutex);
 
-  soundcard = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard;
+  soundcard = (GObject *) AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard;
 
   if(soundcard != NULL){
     g_object_ref(soundcard);
@@ -1174,33 +1186,33 @@ void
 ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 							  GObject *soundcard_thread)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set default soundcard thread */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread == (AgsThread *) soundcard_thread){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard_thread == (AgsThread *) soundcard_thread){
     pthread_mutex_unlock(application_context_mutex);
   
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread != NULL){
-    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard_thread != NULL){
+    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard_thread);
   }
   
   if(soundcard_thread != NULL){
     g_object_ref(soundcard_thread);
   }
   
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread = (AgsThread *) soundcard_thread;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->default_soundcard_thread = (AgsThread *) soundcard_thread;
 
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1208,21 +1220,21 @@ ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *soun
 GList*
 ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *soundcard;
 
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get soundcard */
   pthread_mutex_lock(application_context_mutex);
   
-  soundcard = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard,
+  soundcard = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
 			       (GCopyFunc) g_object_ref,
 			       NULL);
 
@@ -1235,29 +1247,29 @@ void
 ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 					   GList *soundcard)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set soundcard */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard == soundcard){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard == soundcard){
     pthread_mutex_unlock(application_context_mutex);
 
     return;
   }
   
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
+    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard);
   }
 
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard = soundcard;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = soundcard;
 
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1265,21 +1277,21 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 GList*
 ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *sequencer;
 
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get sequencer */
   pthread_mutex_lock(application_context_mutex);
   
-  sequencer = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer,
+  sequencer = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer,
 			       (GCopyFunc) g_object_ref,
 				NULL);
 
@@ -1292,29 +1304,29 @@ void
 ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 					   GList *sequencer)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set sequencer */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer == sequencer){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer == sequencer){
     pthread_mutex_unlock(application_context_mutex);
 
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer != NULL){
+    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer);
   }
   
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer = sequencer;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->sequencer = sequencer;
 
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1322,21 +1334,21 @@ ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 GList*
 ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *sound_server;
 
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get sound server */
   pthread_mutex_lock(application_context_mutex);
   
-  sound_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sound_server,
+  sound_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->sound_server,
 				  (GCopyFunc) g_object_ref,
 				  NULL);
 
@@ -1348,21 +1360,21 @@ ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider)
 GList*
 ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *audio;
 
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get audio */
   pthread_mutex_lock(application_context_mutex);
   
-  audio = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio,
+  audio = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio,
 			   (GCopyFunc) g_object_ref,
 			   NULL);
 
@@ -1375,29 +1387,29 @@ void
 ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
 				       GList *audio)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set audio */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio == audio){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio == audio){
     pthread_mutex_unlock(application_context_mutex);
 
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio != NULL){
+    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->audio);
   }
 
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio = audio;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->audio = audio;
 
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1405,21 +1417,21 @@ ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
 GList*
 ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *osc_server;
 
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get osc_server */
   pthread_mutex_lock(application_context_mutex);
   
-  osc_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server,
+  osc_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server,
 				(GCopyFunc) g_object_ref,
 				NULL);
 
@@ -1432,29 +1444,29 @@ void
 ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 					    GList *osc_server)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(sound_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set osc_server */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server == osc_server){
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server == osc_server){
     pthread_mutex_unlock(application_context_mutex);
 
     return;
   }
 
-  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server != NULL){
-    g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server);
+  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server != NULL){
+    g_list_free(AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server);
   }
 
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server = osc_server;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->osc_server = osc_server;
 
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1464,19 +1476,19 @@ ags_xorg_application_context_get_window(AgsUiProvider *ui_provider)
 {
   GtkWidget *window;
   
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get window */
   pthread_mutex_lock(application_context_mutex);
 
-  window = AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window;
+  window = AGS_XORG_APPLICATION_CONTEXT(application_context)->window;
   
   pthread_mutex_unlock(application_context_mutex);
 
@@ -1487,19 +1499,64 @@ void
 ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
 					GtkWidget *widget)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set window */
   pthread_mutex_lock(application_context_mutex);
 
-  AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window = (AgsWindow *) widget;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->window = (AgsWindow *) widget;
+   
+  pthread_mutex_unlock(application_context_mutex);
+}
+
+GtkWidget*
+ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *animation_window;
+  
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get animation window */
+  pthread_mutex_lock(application_context_mutex);
+
+  animation_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(animation_window);
+}
+
+void
+ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
+						  GtkWidget *widget)
+{
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* set animation_window */
+  pthread_mutex_lock(application_context_mutex);
+
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window = (GtkWindow *) widget;
    
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1509,19 +1566,19 @@ ags_xorg_application_context_get_gui_thread(AgsUiProvider *ui_provider)
 {
   AgsThread *gui_thread;
   
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get gui thread */
   pthread_mutex_lock(application_context_mutex);
 
-  gui_thread = AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread;
+  gui_thread = AGS_XORG_APPLICATION_CONTEXT(application_context)->gui_thread;
   
   pthread_mutex_unlock(application_context_mutex);
 
@@ -1532,19 +1589,19 @@ void
 ags_xorg_application_context_set_gui_thread(AgsUiProvider *ui_provider,
 					    AgsThread *gui_thread)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
   
-  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
-
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set gui thread */
   pthread_mutex_lock(application_context_mutex);
 
-  AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread = gui_thread;
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->gui_thread = gui_thread;
    
   pthread_mutex_unlock(application_context_mutex);
 }
@@ -1608,33 +1665,22 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsAudioLoop */
   application_context->main_loop = (GObject *) ags_audio_loop_new((GObject *) NULL,
 								  (GObject *) xorg_application_context);
-  g_object_ref(application_context->main_loop);
   
   audio_loop = (AgsThread *) application_context->main_loop;
-  
-  g_object_set(xorg_application_context,
-	       "main-loop", audio_loop,
-	       NULL);
-
-  g_object_ref(audio_loop);
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
   /* AgsPollingThread */
   xorg_application_context->polling_thread = (AgsPollingThread *) ags_polling_thread_new();
+
   polling_thread = (AgsThread *) xorg_application_context->polling_thread;
-  g_object_ref(xorg_application_context->polling_thread);
-  
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) polling_thread,
 				TRUE, TRUE);
   
   /* AgsTaskThread */
   application_context->task_thread = (GObject *) ags_task_thread_new();
-  g_object_ref(application_context->task_thread);
   
   task_thread = (AgsThread *) application_context->task_thread;
-  
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				(GObject *) task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -1643,11 +1689,11 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_signal_connect(application_context->task_thread, "clear-cache",
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
   
+  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
+  
   /* AgsGuiThread */
   gui_thread = 
     xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
-  g_object_ref(gui_thread);
-
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
   				(AgsThread *) gui_thread,
   				TRUE, TRUE);
@@ -1656,16 +1702,20 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   pthread_mutex_lock(audio_loop->start_mutex);
   
   start_queue = NULL;
+
   start_queue = g_list_prepend(start_queue,
 			       polling_thread);
+  
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
-
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
   
   pthread_mutex_unlock(audio_loop->start_mutex);
 
+  ags_thread_add_start_queue_all(audio_loop,
+				 start_queue);
+  
+  g_list_free(start_queue);
+  
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);
   
@@ -1688,10 +1738,14 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   pthread_mutex_unlock(audio_loop->start_mutex);
 
   /* start gui thread */
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
 		(gpointer) xorg_application_context);
   
+  g_timeout_add(1000.0,
+		(GSourceFunc) ags_xorg_application_context_task_timeout,
+		(gpointer) xorg_application_context);
+
   ags_gui_thread_do_run((AgsGuiThread *) gui_thread);
 }
 
@@ -1733,12 +1787,17 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   GList *list;  
   
+#ifndef AGS_W32API
   struct passwd *pw;
-
+  
+  uid_t uid;
+#endif
+  
 #ifdef AGS_USE_TIMER
   timer_t *timer_id;
 #endif
 
+  gchar *blacklist_path;
   gchar *blacklist_filename;
   gchar *filename;
   gchar *soundcard_group;
@@ -1746,8 +1805,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *osc_server_group;
   gchar *str;
   gchar *capability;
-  
-  uid_t uid;
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
   
   guint i, j;
   gboolean single_thread_enabled;
@@ -1772,6 +1832,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   atexit(ags_xorg_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
+#ifndef AGS_W32API
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -1780,12 +1841,13 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGCHLD, SIG_IGN);
   signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
   signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
+  
   ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #else
   timer_id = (timer_t *) malloc(sizeof(timer_t));
   
@@ -1913,10 +1975,43 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
   }
 
+  /* message delivery */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_queue_new("libags");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) message_queue);
+
+  audio_message_queue = ags_message_queue_new("libags-audio");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) audio_message_queue);
+
+
   /* get user information */
+#if defined AGS_W32API
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+  }else{
+    app_dir = NULL;
+  }
+  
+  blacklist_path = g_strdup_printf("%s\\%s",
+				   g_get_current_dir(),
+				   app_dir);
+
+  g_free(app_dir);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
+  blacklist_path = g_strdup_printf("%s/%s",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
+#endif
+  
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -1931,9 +2026,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "ladspa_plugin.blacklist");
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -1945,9 +2041,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "dssi_plugin.blacklist");
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -1960,9 +2057,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "lv2_plugin.blacklist");
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
@@ -1971,12 +2069,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_lv2_manager_load_default_directory(lv2_manager);
 
+
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/lv2ui_plugin.blacklist",
+				       blacklist_path);
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
   
@@ -2130,6 +2228,74 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	  
 	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
 	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	}
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	gchar *str;
+	
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) xorg_application_context);	  
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+										NULL,
+										10);
+	    
+	    g_free(str);
+	  }
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) xorg_application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devin_set_flags(AGS_WASAPI_DEVIN(soundcard),
+				       AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devin_unset_flags(AGS_WASAPI_DEVIN(soundcard),
+					 AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+									       NULL,
+									       10);
+	    
+	    g_free(str);
+	  }
 	}
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
@@ -2494,7 +2660,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
     //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-      g_object_ref(notify_soundcard);
 
       g_object_set(notify_soundcard,
 		   "task-thread", application_context->task_thread,
@@ -2502,6 +2667,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
       if(AGS_IS_DEVOUT(list->data)){
 	AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+      }else if(AGS_IS_WASAPI_DEVOUT(list->data)){
+	AGS_WASAPI_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_JACK_DEVOUT(list->data)){
 	AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_PULSE_DEVOUT(list->data)){
@@ -2510,6 +2677,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_DEVIN(list->data)){
 	AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
+      }else if(AGS_IS_WASAPI_DEVIN(list->data)){
+	AGS_WASAPI_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_JACK_DEVIN(list->data)){
 	AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
       }else if(AGS_IS_PULSE_DEVIN(list->data)){
@@ -2523,6 +2692,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       /* export thread */
       if(AGS_IS_DEVOUT(list->data) ||
+	 AGS_IS_WASAPI_DEVOUT(list->data) ||
 	 AGS_IS_JACK_DEVOUT(list->data) ||
 	 AGS_IS_PULSE_DEVOUT(list->data) ||
 	 AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
@@ -2540,10 +2710,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }
 
       /* default export thread */
-      if(export_thread != NULL &&
-	 xorg_application_context->default_export_thread == NULL){
-	xorg_application_context->default_export_thread = export_thread;
-	g_object_ref(export_thread);
+      if(export_thread != NULL){
+	if(xorg_application_context->default_export_thread == NULL){
+	  xorg_application_context->default_export_thread = export_thread;
+	}else{
+	  g_object_unref(export_thread);
+	}
       }
 
       /* iterate */
@@ -2755,7 +2927,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   /* AgsDestroyWorker */
   destroy_worker = ags_destroy_worker_get_instance();
-  g_object_ref(destroy_worker);
   ags_thread_add_child_extended(main_loop,
 				(AgsThread *) destroy_worker,
 				TRUE, TRUE);
@@ -2788,9 +2959,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     window->filename = filename;
   }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
-
-  /* unref */
-  g_object_unref(main_loop);
 }
 
 void
@@ -2981,15 +3149,20 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
   if(autosave_thread_enabled){
     GFile *autosave_file;
 
+#ifndef AGS_W32API
     struct passwd *pw;
 
+    uid_t uid;
+#endif
+    
     gchar *autosave_filename;
 
-    uid_t uid;
-    
+#ifdef AGS_W32API
+#else 
     uid = getuid();
     pw = getpwuid(uid);
-
+#endif
+    
     autosave_filename = NULL;
     
     if(g_strcmp0(ags_config_get_value(config,
@@ -2999,11 +3172,17 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
       gchar *filename, *offset;
     
+#ifdef AGS_W32API
+      filename = g_strdup_printf("%s/var/run/%s",
+				 DESTDIR,
+				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#else 
       filename = g_strdup_printf("%s/%s/%s",
 				 pw->pw_dir,
 				 AGS_DEFAULT_DIRECTORY,
 				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-
+#endif
+      
       if((offset = strstr(filename,
 			  "{PID}")) != NULL){
 	gchar *tmp;
@@ -3019,11 +3198,18 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 	g_free(filename);
       }
     }else{
+#ifdef AGS_W32API
+      autosave_filename = g_strdup_printf("%s/var/run/%d-%s",
+					  DESTDIR,
+					  getpid(),
+					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#else
       autosave_filename = g_strdup_printf("%s/%s/%d-%s",
 					  pw->pw_dir,
 					  AGS_DEFAULT_DIRECTORY,
 					  getpid(),
 					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+#endif
     }
 
     autosave_file = g_file_new_for_path(autosave_filename);
@@ -3302,6 +3488,197 @@ ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
   //  FcFini();
 }
 
+void
+ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context)
+{
+  AgsConfig *config;
+  
+  GParamSpec *param_spec;
+
+  char **argv;
+  gchar *str;
+
+  int argc;    
+  gdouble gui_scale_factor;
+  gint default_slider_width;
+  gint default_stepper_size;
+  guint i;
+  
+  GValue *value;
+
+  argc = AGS_APPLICATION_CONTEXT(xorg_application_context)->argc;
+  argv = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv;
+
+  for(i = 0; i < argc; i++){
+    if(!strncmp(argv[i], "--no-builtin-theme", 19)){
+      return;
+    }
+  }
+  
+  config = ags_config_get_instance();
+  
+  gui_scale_factor = 1.0;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+    
+  /* horizontal scrollbar */
+  default_slider_width = 14;
+  default_stepper_size = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						    "stepper-size");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_stepper_size = g_value_get_int(value);
+  }
+    
+  str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkVScrollbar*\" style \"ags-default-vscrollbar-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width),
+			(gint) (gui_scale_factor * default_stepper_size));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* vertical scrollbar */
+  default_slider_width = 14;
+  default_stepper_size = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						    "stepper-size");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_stepper_size = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkHScrollbar*\" style \"ags-default-hscrollbar-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width),
+			(gint) (gui_scale_factor * default_stepper_size));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* horizontal scale */
+  default_slider_width = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCALE),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width));
+  gtk_rc_parse_string(str);
+  g_free(str);
+
+  /* vertical scale */
+  default_slider_width = 14;
+
+  param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCALE),
+						    "slider-width");
+  value = g_param_spec_get_default_value(param_spec);
+
+  if(value != NULL){
+    default_slider_width = g_value_get_int(value);
+  }
+
+  str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
+			(gint) (gui_scale_factor * default_slider_width));
+  gtk_rc_parse_string(str);
+  g_free(str);
+}
+
+void
+ags_xorg_application_context_schedule_task(AgsXorgApplicationContext *xorg_application_context,
+					   GObject *task)
+{
+  AgsThread *task_thread;
+
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_XORG_APPLICATION_CONTEXT(xorg_application_context) ||
+     !AGS_IS_TASK(task)){
+    return;
+  }
+
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_thread == NULL){
+    return;
+  }
+  
+  pthread_mutex_lock(application_context_mutex);
+
+  xorg_application_context->collected_task = g_list_prepend(xorg_application_context->collected_task,
+							    task);
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
+}
+
+void
+ags_xorg_application_context_schedule_task_list(AgsXorgApplicationContext *xorg_application_context,
+						GList *task)
+{
+  AgsThread *task_thread;
+
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_XORG_APPLICATION_CONTEXT(xorg_application_context) ||
+     task == NULL){
+    return;
+  }
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_thread == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(application_context_mutex);
+
+  xorg_application_context->collected_task = g_list_concat(g_list_reverse(task),
+							   xorg_application_context->collected_task);
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
+}
+
 gboolean
 ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context)
 {
@@ -3355,6 +3732,51 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
 
   g_list_free_full(message_start,
 		   (GDestroyNotify) ags_message_envelope_free);
+
+  return(TRUE);
+}
+
+gboolean
+ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context)
+{
+  AgsThread *task_thread;
+
+  GList *list, *list_next, *list_start;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       g_list_reverse(xorg_application_context->collected_task));
+  
+  xorg_application_context->collected_task = NULL;
+  
+  g_object_unref(task_thread);
+
+  /* complete task */
+  pthread_mutex_lock(application_context_mutex);
+  
+  list =
+    list_start = xorg_application_context->task_completion;
+
+  xorg_application_context->task_completion = NULL;
+    
+  pthread_mutex_unlock(application_context_mutex);
+    
+  while(list != NULL){
+    list_next = list->next;
+      
+    if((AGS_TASK_COMPLETION_READY & (g_atomic_int_get(&(AGS_TASK_COMPLETION(list->data)->flags)))) != 0){
+      ags_task_completion_complete(AGS_TASK_COMPLETION(list->data));
+    }
+
+    list = list_next;
+  }
+
+  g_list_free(list_start);
 
   return(TRUE);
 }

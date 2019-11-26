@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_animation_window.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/file/ags_simple_file.h>
@@ -430,6 +431,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
   g_main_context_release(main_context);
 
   /* animation functions */
+#if 0
   animation_funcs.prepare = ags_gui_thread_animation_prepare;
   animation_funcs.check = ags_gui_thread_animation_check;
   animation_funcs.dispatch = ags_gui_thread_animation_dispatch;
@@ -438,7 +440,8 @@ ags_gui_thread_do_poll_loop(void *ptr)
 					      sizeof(GSource));
   g_source_attach(gui_thread->animation_source,
 		  main_context);
-
+#endif
+  
   /* sync functions */
 #if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
@@ -452,6 +455,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 #endif
   
   /* task functions */
+#if 0
   task_funcs.prepare = ags_gui_thread_task_prepare;
   task_funcs.check = ags_gui_thread_task_check;
   task_funcs.dispatch = ags_gui_thread_task_dispatch;
@@ -460,7 +464,8 @@ ags_gui_thread_do_poll_loop(void *ptr)
 					 sizeof(GSource));
   g_source_attach(gui_thread->task_source,
 		  main_context);
-
+#endif
+  
   /* wait for audio loop */
   while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
     usleep(500000);
@@ -488,6 +493,10 @@ ags_gui_thread_do_poll_loop(void *ptr)
   }
   
   pthread_exit(NULL);
+
+#ifdef AGS_W32API
+  return(NULL);
+#endif  
 }
 
 void
@@ -544,7 +553,9 @@ ags_gui_thread_run(AgsThread *thread)
     sigemptyset(&ags_gui_thread_get_sigact()->sa_mask);
     ags_gui_thread_get_sigact()->sa_flags = 0;
 
-    sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);    
+#ifndef AGS_W32API    
+    sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);
+#endif
   }
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -685,9 +696,11 @@ ags_gui_thread_interrupted(AgsThread *thread,
     		    AGS_THREAD_INTERRUPTED);
     
     if(g_atomic_int_get(&(gui_thread->dispatching))){      
+#ifndef AGS_W32API    
       pthread_kill(*(thread->thread),
 		   SIGIO);
-
+#endif
+      
 #ifdef AGS_PTHREAD_SUSPEND
       pthread_suspend(thread->thread);
 #else
@@ -1735,7 +1748,8 @@ void
 ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 {
   AgsApplicationContext *application_context;
-
+  GtkWidget *widget;
+  
   AgsThread *thread;
   
   GMainContext *main_context;
@@ -1759,7 +1773,9 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   sigemptyset(&(ags_gui_thread_get_sigact()->sa_mask));
   ags_gui_thread_get_sigact()->sa_flags = 0;
 
+#ifndef AGS_W32API    
   sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);
+#endif
   
   /* notify start */
   pthread_mutex_lock(thread->start_mutex);
@@ -1790,7 +1806,8 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   }
     
   g_main_context_push_thread_default(main_context);
-  
+
+#if 0
   /* animation functions */
   animation_funcs.prepare = ags_gui_thread_animation_prepare;
   animation_funcs.check = ags_gui_thread_animation_check;
@@ -1801,8 +1818,10 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 					      sizeof(GSource));
   g_source_attach(gui_thread->animation_source,
   		  main_context);
-
+#endif
+  
   /* task functions */
+#if 0
   task_funcs.prepare = ags_gui_thread_task_prepare;
   task_funcs.check = ags_gui_thread_task_check;
   task_funcs.dispatch = ags_gui_thread_task_dispatch;
@@ -1812,7 +1831,8 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 					 sizeof(GSource));
   g_source_attach(gui_thread->task_source,
   		  main_context);
-
+#endif
+  
   /* sync functions */
 #if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
@@ -1829,6 +1849,12 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   /* show animation */
   ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(application_context),
 				TRUE);
+
+  widget = ags_animation_window_new();
+  ags_ui_provider_set_animation_window(AGS_UI_PROVIDER(application_context),
+				       widget);
+  
+  gtk_widget_show(widget);
 
   /* gtk+-2.0 main */    
   gtk_main();

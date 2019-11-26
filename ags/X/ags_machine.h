@@ -66,6 +66,7 @@ typedef enum{
   AGS_MACHINE_ACCEPT_WAV          = 1,
   AGS_MACHINE_ACCEPT_OGG          = 1 <<  1,
   AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 <<  2,
+  AGS_MACHINE_ACCEPT_SFZ          = 1 <<  3,
 }AgsMachineFileInputFlags;
 
 typedef enum{
@@ -112,6 +113,8 @@ struct _AgsMachine
 
   AgsAudio *audio;
 
+  GList *active_playback;
+  
   GtkToggleButton *play;
 
   GType output_pad_type;
@@ -206,6 +209,10 @@ void ags_machine_stop(AgsMachine *machine,
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
+
+void ags_machine_playback_set_active(AgsMachine *machine,
+				     AgsPlayback *playback,
+				     gboolean is_active);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);

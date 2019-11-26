@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_mutable.h>
 
-void ags_mutable_base_init(AgsMutableInterface *interface);
+void ags_mutable_base_init(AgsMutableInterface *ginterface);
 
 /**
  * SECTION:ags_mutable
@@ -57,7 +57,7 @@ ags_mutable_get_type()
 }
 
 void
-ags_mutable_base_init(AgsMutableInterface *interface)
+ags_mutable_base_init(AgsMutableInterface *ginterface)
 {
   /* empty */
 }

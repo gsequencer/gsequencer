@@ -105,11 +105,11 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   
   if(card != NULL &&
      use_alsa){
-    if(index(card,
-	     ',') != NULL){
+    if(strchr(card,
+	      ',') != NULL){
       str = g_strndup(card,
-		      index(card,
-			    ',') - card);
+		      strchr(card,
+			     ',') - card);
 
       g_free(card);      
       card = str;

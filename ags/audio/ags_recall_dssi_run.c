@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,6 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -245,11 +244,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi_run);
 
   switch(prop_id){
   case PROP_ROUTE_DSSI_AUDIO_RUN:
@@ -320,11 +315,7 @@ ags_recall_dssi_run_get_property(GObject *gobject,
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi_run);
 
   switch(prop_id){
   case PROP_ROUTE_DSSI_AUDIO_RUN:
@@ -423,12 +414,12 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_t *recall_dssi_mutex;
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_init_pre;
+  AGS_RECALL_LOCK_CLASS();
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_init_pre;
 
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* call parent */
   parent_class_run_init_pre(recall);
 
@@ -457,11 +448,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 	       NULL);
 
   /* get recall dssi mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_dssi_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_dssi_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
   pthread_mutex_lock(recall_dssi_mutex);
@@ -612,11 +599,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *port_mutex;
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -680,8 +667,10 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
     g_object_unref(recycling_context);
 
-    g_object_unref(parent_recycling_context);
-
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+    
     g_object_unref(recall_recycling);
     
     g_object_unref(recall_channel_run);
@@ -692,11 +681,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }
 
   /* get recall dssi mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_dssi_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_dssi_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   g_object_get(route_dssi_audio_run,
 	       "count-beats-audio-run", &count_beats_audio_run,
@@ -849,11 +834,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       current_port = list->data;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-
-      port_mutex = current_port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
       /* check specifier */
       pthread_mutex_lock(port_mutex);
@@ -919,11 +900,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       current_port = list->data;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-
-      port_mutex = current_port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
       /* check specifier */
       pthread_mutex_lock(port_mutex);
@@ -1089,11 +1066,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 	       NULL);
   
   /* get recall dssi mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_dssi_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_dssi_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
   pthread_mutex_lock(recall_dssi_mutex);
@@ -1110,11 +1083,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   pthread_mutex_unlock(recall_dssi_mutex);
 
   /* base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
@@ -1158,11 +1127,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 	  current_port = list->data;
 	  
 	  /* get port mutex */
-	  pthread_mutex_lock(ags_port_get_class_mutex());
-
-	  port_mutex = current_port->obj_mutex;
-      
-	  pthread_mutex_unlock(ags_port_get_class_mutex());
+	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
 	  /* get port pointer */
 	  pthread_mutex_lock(port_mutex);

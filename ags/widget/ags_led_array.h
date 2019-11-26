@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@
 #define AGS_IS_LED_ARRAY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_LED_ARRAY))
 #define AGS_IS_LED_ARRAY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_LED_ARRAY))
 #define AGS_LED_ARRAY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LED_ARRAY, AgsLedArrayClass))
+
+#define AGS_LED_ARRAY_DEFAULT_LED_WIDTH (10)
+#define AGS_LED_ARRAY_DEFAULT_LED_HEIGHT (10)
 
 typedef struct _AgsLedArray AgsLedArray;
 typedef struct _AgsLedArrayClass AgsLedArrayClass;

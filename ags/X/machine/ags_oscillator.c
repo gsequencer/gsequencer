@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,6 +196,11 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
 		     0, i18n("triangle"),
+		     -1);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, i18n("impulse"),
 		     -1);
 
   gtk_combo_box_set_model(oscillator->wave, GTK_TREE_MODEL(model));
@@ -540,7 +545,8 @@ ags_oscillator_new()
 {
   AgsOscillator *oscillator;
 
-  oscillator = (AgsOscillator *) g_object_new(AGS_TYPE_OSCILLATOR, NULL);
+  oscillator = (AgsOscillator *) g_object_new(AGS_TYPE_OSCILLATOR,
+					      NULL);
 
   return(oscillator);
 }

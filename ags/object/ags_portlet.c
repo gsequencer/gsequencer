@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-void ags_portlet_base_init(AgsPortletInterface *interface);
+void ags_portlet_base_init(AgsPortletInterface *ginterface);
 
 /**
  * SECTION:ags_portlet
@@ -59,7 +59,7 @@ ags_portlet_get_type()
 }
 
 void
-ags_portlet_base_init(AgsPortletInterface *interface)
+ags_portlet_base_init(AgsPortletInterface *ginterface)
 {
   /* empty */
 }

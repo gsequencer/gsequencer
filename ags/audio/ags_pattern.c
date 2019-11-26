@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -335,11 +335,7 @@ ags_pattern_set_property(GObject *gobject,
   pattern = AGS_PATTERN(gobject);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   switch(prop_id){
   case PROP_FIRST_INDEX:
@@ -427,11 +423,7 @@ ags_pattern_get_property(GObject *gobject,
   pattern = AGS_PATTERN(gobject);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   switch(prop_id){
   case PROP_PORT:
@@ -588,11 +580,7 @@ ags_pattern_get_uuid(AgsConnectable *connectable)
   pattern = AGS_PATTERN(connectable);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* get UUID */
   pthread_mutex_lock(pattern_mutex);
@@ -622,11 +610,7 @@ ags_pattern_is_ready(AgsConnectable *connectable)
   pattern = AGS_PATTERN(connectable);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* check is added */
   pthread_mutex_lock(pattern_mutex);
@@ -726,11 +710,7 @@ ags_pattern_is_connected(AgsConnectable *connectable)
   pattern = AGS_PATTERN(connectable);
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* check is connected */
   pthread_mutex_lock(pattern_mutex);
@@ -816,11 +796,7 @@ ags_pattern_test_flags(AgsPattern *pattern, guint flags)
   }
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* test */
   pthread_mutex_lock(pattern_mutex);
@@ -851,11 +827,7 @@ ags_pattern_set_flags(AgsPattern *pattern, guint flags)
   }
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* set flags */
   pthread_mutex_lock(pattern_mutex);
@@ -884,11 +856,7 @@ ags_pattern_unset_flags(AgsPattern *pattern, guint flags)
   }
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* set flags */
   pthread_mutex_lock(pattern_mutex);
@@ -1144,11 +1112,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   }
   
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* set dim*/
   pthread_mutex_lock(pattern_mutex);
@@ -1328,11 +1292,7 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
   }
   
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* check */
   pthread_mutex_lock(pattern_mutex);
@@ -1377,11 +1337,7 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   }
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* get bit */
   pthread_mutex_lock(pattern_mutex);
@@ -1429,11 +1385,7 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   }
 
   /* get pattern mutex */
-  pthread_mutex_lock(ags_pattern_get_class_mutex());
-  
-  pattern_mutex = pattern->obj_mutex;
-  
-  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* toggle */
   pthread_mutex_lock(pattern_mutex);

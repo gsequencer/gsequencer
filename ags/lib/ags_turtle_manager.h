@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_TURTLE_MANAGER                (ags_turtle_manager_get_type())
 #define AGS_TURTLE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManager))
 #define AGS_TURTLE_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManagerClass))
@@ -30,12 +32,14 @@
 #define AGS_IS_TURTLE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TURTLE_MANAGER))
 #define AGS_TURTLE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManagerClass))
 
+#define AGS_TURTLE_MANAGER_GET_OBJ_MUTEX(obj) (((AgsTurtleManager *) obj)->obj_mutex)
+
 typedef struct _AgsTurtleManager AgsTurtleManager;
 typedef struct _AgsTurtleManagerClass AgsTurtleManagerClass;
 
 struct _AgsTurtleManager
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -45,7 +49,7 @@ struct _AgsTurtleManager
 
 struct _AgsTurtleManagerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_turtle_manager_get_type(void);

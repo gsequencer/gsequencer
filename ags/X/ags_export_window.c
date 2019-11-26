@@ -636,7 +636,9 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
       /* set backend */
       backend = NULL;
 
-      if(AGS_IS_DEVOUT(list->data)){
+      if(AGS_IS_WASAPI_DEVOUT(list->data)){
+	backend = "wasapi";
+      }else if(AGS_IS_DEVOUT(list->data)){
 	if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_ALSA)){
 	  backend = "alsa";
 	}else if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_OSS)){

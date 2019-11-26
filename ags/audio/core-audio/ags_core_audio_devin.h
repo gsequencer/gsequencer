@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #define AGS_IS_CORE_AUDIO_DEVIN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CORE_AUDIO_DEVIN))
 #define AGS_IS_CORE_AUDIO_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_DEVIN))
 #define AGS_CORE_AUDIO_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_DEVIN, AgsCoreAudioDevinClass))
+
+#define AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(obj) (((AgsCoreAudioDevin *) obj)->obj_mutex)
 
 typedef struct _AgsCoreAudioDevin AgsCoreAudioDevin;
 typedef struct _AgsCoreAudioDevinClass AgsCoreAudioDevinClass;
@@ -110,7 +112,7 @@ typedef enum{
 
 struct _AgsCoreAudioDevin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -168,7 +170,7 @@ struct _AgsCoreAudioDevin
 
 struct _AgsCoreAudioDevinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_core_audio_devin_get_type();

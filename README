@@ -57,6 +57,22 @@ you should be able to control the entire application by keyboard. Likewise it im
 requires to add machines by menubar and link them appropriately with properties dialog. It is available of the context menu. Note you can't
 create any loops within the tree.
 
+Build using mingw
+====
+
+The commands below might compile a native build of gsequencer on x86_64-mingw32 architecture using MinGW compiler assuming installing to
+home directory. To perform a parallel build using 8 threads, invoke following commands in shell:
+
+$ ./gnulib/gnulib-tool --import langinfo regex poll-h signal-h netinet_in sigaction strings sys_types
+
+Follow the instructions on screen, edit configure.ac and Makefile.am or apply win32.patch.
+
+$ patch -p1 < win32.patch
+$ autoreconf -fi
+$ ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes ./configure --host=x86_64-w64-mingw32 --prefix=${HOME}/mingw64/target --enable-gnulib --disable-rt --enable-w32api --disable-alsa --disable-pulse --disable-jack --enable-wasapi --disable-x11
+$ make -j8
+$ make install
+
 General Notes on Licensing
 ====
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,8 @@ struct _AgsGenericMainLoop
 
   volatile guint tic;
   volatile guint last_sync;
+
+  guint sync_counter[3];
 
   GObject *application_context;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,8 @@
 #define AGS_IS_IPATCH_SAMPLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_IPATCH_SAMPLE))
 #define AGS_IPATCH_SAMPLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_IPATCH_SAMPLE, AgsIpatchSampleClass))
 
+#define AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(obj) (((AgsIpatchSample *) obj)->obj_mutex)
+
 typedef struct _AgsIpatchSample AgsIpatchSample;
 typedef struct _AgsIpatchSampleClass AgsIpatchSampleClass;
 
@@ -56,7 +58,7 @@ typedef enum{
 
 struct _AgsIpatchSample
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -90,7 +92,7 @@ struct _AgsIpatchSample
 
 struct _AgsIpatchSampleClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_ipatch_sample_get_type();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -740,7 +740,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	gdouble y0_offset;
       
 	if(notation_edit->cursor_position_y > 0){
-	  notation_edit->cursor_position_y -= 1;
+	  notation_edit->cursor_position_y += 1;
 	
 	  do_feedback = TRUE;
 	}
@@ -806,12 +806,14 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								  AGS_TYPE_NOTATION_EDITOR);
 
+
   g_object_get(notation_editor->scrolled_piano->viewport,
 	       "vadjustment", &piano_adjustment,
 	       NULL);
+
   gtk_adjustment_set_value(piano_adjustment,
 			   range->adjustment->value);
-  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
 
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
@@ -820,9 +822,30 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 void
 ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
 {
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   gdouble value;
 
-  value = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / 64.0;
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  value = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / (guint) (gui_scale_factor * 64.0);
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
 			   value);
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);

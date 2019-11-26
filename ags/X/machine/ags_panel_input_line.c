@@ -349,7 +349,6 @@ ags_panel_input_line_map_recall(AgsLine *line,
 	       "audio", &audio,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
-	       "play", &start_play,
 	       NULL);
 
   /* ags-play */
@@ -362,6 +361,11 @@ ags_panel_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  /* get some fields */
+  g_object_get(source,
+	       "play", &start_play,
+	       NULL);
 
   /* set audio channel */
   play = start_play;

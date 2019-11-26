@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,9 @@
 #define AGS_IS_VINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_VINDICATOR))
 #define AGS_IS_VINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_VINDICATOR))
 #define AGS_VINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_VINDICATOR, AgsVIndicatorClass))
+
+#define AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH (16)
+#define AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT (7)
 
 typedef struct _AgsVIndicator AgsVIndicator;
 typedef struct _AgsVIndicatorClass AgsVIndicatorClass;

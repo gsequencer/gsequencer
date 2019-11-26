@@ -30,6 +30,9 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
@@ -259,6 +262,10 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_pulse_devout_switch_buffer_flag((AgsPulseDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_PULSE_DEVIN(switch_buffer_flag->device)){
     ags_pulse_devin_switch_buffer_flag((AgsPulseDevin *) switch_buffer_flag->device);
+  }else if(AGS_IS_WASAPI_DEVOUT(switch_buffer_flag->device)){
+    ags_wasapi_devout_switch_buffer_flag((AgsWasapiDevout *) switch_buffer_flag->device);
+  }else if(AGS_IS_WASAPI_DEVIN(switch_buffer_flag->device)){
+    ags_wasapi_devin_switch_buffer_flag((AgsWasapiDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
     ags_core_audio_devout_switch_buffer_flag((AgsCoreAudioDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVIN(switch_buffer_flag->device)){

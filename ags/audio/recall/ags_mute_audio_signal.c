@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,12 +145,12 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   mute_audio_signal = AGS_MUTE_AUDIO_SIGNAL(recall);
 
   /* get parent class and mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_inter = AGS_RECALL_CLASS(ags_mute_audio_signal_parent_class)->run_inter;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* call parent */
   parent_class_run_inter(recall);
 

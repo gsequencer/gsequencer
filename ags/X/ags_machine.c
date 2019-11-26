@@ -502,7 +502,7 @@ ags_machine_init(AgsMachine *machine)
 		      machine,
 		      ags_machine_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_message_monitor_timeout,
 		(gpointer) machine);
 
@@ -539,6 +539,8 @@ ags_machine_init(AgsMachine *machine)
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine_widget = (GObject *) machine;
 
+  machine->active_playback = NULL;
+  
   /* AgsAudio related forwarded signals */
   g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
 			 G_CALLBACK(ags_machine_resize_audio_channels_callback), NULL);
@@ -1568,6 +1570,12 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   guint i, j;
 
   audio = machine->audio;
+
+  list_output_pad =
+    list_output_pad_start = NULL;
+
+  list_input_pad =
+    list_input_pad_start = NULL;
   
   if(audio_channels > audio_channels_old){
     /* grow lines */
@@ -1585,15 +1593,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->input != NULL){
       list_input_pad_start = 
 	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
-    }else{
-      list_input_pad_start = NULL;
     }
 
     if(machine->output != NULL){
       list_output_pad_start = 
 	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
-    }else{
-      list_output_pad_start = NULL;
     }
     
     /* AgsInput */
@@ -1704,15 +1708,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       if(machine->input != NULL){
 	list_input_pad_start = 
 	  list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
-      }else{
-	list_input_pad_start = NULL;
       }
 
       if(machine->output != NULL){
 	list_output_pad_start = 
 	  list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
-      }else{
-	list_output_pad_start = NULL;
       }
     }
     
@@ -1794,15 +1794,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->output != NULL){
       list_output_pad_start = 
 	list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
-    }else{
-      list_output_pad_start = NULL;
     }
 
     if(machine->input != NULL){
       list_input_pad_start = 
 	list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
-    }else{
-      list_input_pad_start = NULL;
     }
 	
     if(audio_channels == 0){
@@ -2251,6 +2247,132 @@ ags_machine_find_by_name(GList *list, char *name)
 }
 
 /**
+ * ags_machine_playback_set_active:
+ * @machine: the #AgsMachine
+ * @playback: the #AgsPlayback
+ * @is_active: if %TRUE playback is started, otherwise stopped
+ *
+ * Start/stop @playback of @machine.
+ *
+ * Since: 2.4.0
+ */
+void
+ags_machine_playback_set_active(AgsMachine *machine,
+				AgsPlayback *playback,
+				gboolean is_active)
+{
+  AgsChannel *channel;
+  AgsNote *play_note;
+
+  AgsStartSoundcard *start_soundcard;
+  AgsStartChannel *start_channel;
+  AgsCancelChannel *cancel_channel;
+  AgsResetNote *reset_note;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_task;
+  
+  if(!AGS_IS_MACHINE(machine) ||
+     !AGS_IS_PLAYBACK(playback)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  start_task = NULL;
+  
+  if(is_active){
+    if(g_list_find(machine->active_playback, playback) != NULL){
+      return;
+    }
+    
+    machine->active_playback = g_list_prepend(machine->active_playback,
+					      playback);
+    g_object_ref(playback);
+
+    /* start playback of channel */
+    g_object_get(playback,
+		 "channel", &channel,
+		 NULL);
+
+    start_channel = ags_start_channel_new(channel,
+					  AGS_SOUND_SCOPE_PLAYBACK);
+    g_signal_connect_after(G_OBJECT(start_channel), "launch",
+			   G_CALLBACK(ags_machine_active_playback_start_channel_launch_callback), playback);
+    start_task = g_list_prepend(start_task,
+				start_channel);
+
+    /* start soundcard */
+    start_soundcard = ags_start_soundcard_new(application_context);
+    start_task = g_list_prepend(start_task,
+				start_soundcard);
+
+    /* launch task */
+    start_task = g_list_reverse(start_task);
+
+    ags_xorg_application_context_schedule_task_list(application_context,
+						    start_task);
+
+    /* feed note */
+    g_object_get(playback,
+		 "play-note", &play_note,
+		 NULL);
+
+    if(ags_note_test_flags(play_note, AGS_NOTE_FEED)){
+      reset_note = ags_reset_note_get_instance();
+      ags_reset_note_add(reset_note,
+			 play_note);
+    }
+
+    /* unref */
+    g_object_unref(channel);
+
+    g_object_unref(play_note);
+  }else{
+    if(g_list_find(machine->active_playback, playback) == NULL){
+      return;
+    }
+
+    machine->active_playback = g_list_remove(machine->active_playback,
+					     playback);
+    g_object_unref(playback);
+
+    /* cancel playback of channel */
+    g_object_get(playback,
+		 "channel", &channel,
+		 NULL);
+    
+    cancel_channel = ags_cancel_channel_new(channel,
+					    AGS_SOUND_SCOPE_PLAYBACK);
+    start_task = g_list_prepend(start_task,
+				cancel_channel);
+
+    /* launch task */
+    start_task = g_list_reverse(start_task);
+
+    ags_xorg_application_context_schedule_task_list(application_context,
+						    start_task);
+    
+    /* feed note */
+    g_object_get(playback,
+		 "play-note", &play_note,
+		 NULL);
+
+    if(ags_note_test_flags(play_note, AGS_NOTE_FEED)){
+      reset_note = ags_reset_note_get_instance();
+      ags_reset_note_remove(reset_note,
+			    play_note);      
+    }
+
+    /* unref */
+    g_object_unref(channel);
+
+    g_object_unref(play_note);
+  }
+}
+
+/**
  * ags_machine_set_run:
  * @machine: the #AgsMachine
  * @run: if %TRUE playback is started, otherwise stopped
@@ -2288,14 +2410,16 @@ ags_machine_set_run_extended(AgsMachine *machine,
 {
   AgsWindow *window;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
 
   GList *start_list;
   
   gboolean no_soundcard;
 
+  if(!AGS_IS_MACHINE(machine)){
+    return;
+  }
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -2314,14 +2438,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
     return;
   }
-  
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   if(run){
     AgsStartAudio *start_audio;
     AgsStartSoundcard *start_soundcard;
     AgsStartSequencer *start_sequencer;
+
     GList *list;
 
     list = NULL;
@@ -2373,8 +2495,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
       
-      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					list);
+      ags_xorg_application_context_schedule_task_list(application_context,
+						      list);
     }
   }else{
     AgsCancelAudio *cancel_audio;
@@ -2385,8 +2507,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_SEQUENCER);
     
       /* append AgsCancelAudio */
-      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   (GObject *) cancel_audio);
+      ags_xorg_application_context_schedule_task(application_context,
+						 (GObject *) cancel_audio);
     }
 
     if(notation){
@@ -2395,8 +2517,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_NOTATION);
     
       /* append AgsCancelAudio */
-      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   (GObject *) cancel_audio);
+      ags_xorg_application_context_schedule_task(application_context,
+						 (GObject *) cancel_audio);
     }
 
     if(wave){
@@ -2405,8 +2527,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_WAVE);
     
       /* append AgsCancelAudio */
-      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   (GObject *) cancel_audio);
+      ags_xorg_application_context_schedule_task(application_context,
+						 (GObject *) cancel_audio);
     }
 
     if(midi){
@@ -2415,8 +2537,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_MIDI);
     
       /* append AgsCancelAudio */
-      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   (GObject *) cancel_audio);
+      ags_xorg_application_context_schedule_task(application_context,
+						 (GObject *) cancel_audio);
     }
   }
 }
@@ -2668,16 +2790,11 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsOpenFile *open_file;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
@@ -2685,8 +2802,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) open_file);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) open_file);
 }
 
 void
@@ -2902,6 +3019,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     AgsMessageDelivery *message_delivery;
 
     GList *message_start, *message;
+    GList *active_playback;
     
     /* retrieve message */
     message_delivery = ags_message_delivery_get_instance();
@@ -3036,9 +3154,52 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 
       message = message->next;
     }
-    
+      
     g_list_free_full(message_start,
 		     (GDestroyNotify) ags_message_envelope_free);
+
+    /*  */
+    active_playback = machine->active_playback;
+
+    while(active_playback != NULL){
+      AgsChannel *channel;
+
+      g_object_get(active_playback->data,
+		   "channel", &channel,
+		   NULL);
+      
+      message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags-audio",
+						   (GObject *) channel);
+
+      while(message != NULL){
+	xmlNode *root_node;
+
+	root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+	if(!xmlStrncmp(root_node->name,
+		       "ags-command",
+		       12)){
+	  if(!xmlStrncmp(xmlGetProp(root_node,
+				    "method"),
+			 "AgsChannel::stop",
+			 18)){
+	    ags_machine_playback_set_active(machine,
+					    active_playback->data,
+					    FALSE);
+	  }
+	}
+	
+	message = message->next;
+      }
+      
+      g_list_free(message_start);
+
+      g_object_unref(channel);
+      
+      active_playback = active_playback->next;
+    }
 
     return(TRUE);
   }else{

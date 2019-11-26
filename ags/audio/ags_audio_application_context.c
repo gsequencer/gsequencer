@@ -58,6 +58,11 @@
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+#include <ags/audio/wasapi/ags_wasapi_devin.h>
+
+#include <ags/audio/osc/ags_osc_server.h>
+
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -95,7 +100,10 @@
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <sys/types.h>
+
+#ifndef AGS_W32API
 #include <pwd.h>
+#endif
 
 #include <stdbool.h>
 
@@ -1350,17 +1358,12 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   /* AgsAudioLoop */
   application_context->main_loop = (GObject *) ags_audio_loop_new((GObject *) NULL,
 								  (GObject *) audio_application_context);
-  g_object_ref(application_context->main_loop);
-  audio_loop = (AgsThread *) application_context->main_loop;
-  g_object_set(audio_application_context,
-	       "main-loop", audio_loop,
-	       NULL);
 
+  audio_loop = (AgsThread *) application_context->main_loop;
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
   /* AgsPollingThread */
   audio_application_context->polling_thread = (AgsThread *) ags_polling_thread_new();
-  g_object_ref(audio_application_context->polling_thread);
   
   polling_thread = (AgsPollingThread *) audio_application_context->polling_thread;
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -1369,16 +1372,15 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   
   /* AgsTaskThread */
   application_context->task_thread = (GObject *) ags_task_thread_new();
-  g_object_ref(application_context->task_thread);
-  
+
   task_thread = (AgsThread *) application_context->task_thread;
-  
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				(GObject *) task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) task_thread,
 				TRUE, TRUE);
+
+  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   /* start engine */
   pthread_mutex_lock(audio_loop->start_mutex);
@@ -1388,11 +1390,13 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
-
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
   
   pthread_mutex_unlock(audio_loop->start_mutex);
+
+  ags_thread_add_start_queue_all(audio_loop,
+				 start_queue);
+  
+  g_list_free(start_queue);
 
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);
@@ -1435,6 +1439,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
 
+  AgsOscServer *osc_server;
+  
   AgsLadspaManager *ladspa_manager;
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
@@ -1454,20 +1460,27 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   GList *list;  
   
-  struct passwd *pw;
-
 #ifdef AGS_USE_TIMER
   timer_t *timer_id;
 #endif
 
+  gchar *blacklist_path;
   gchar *blacklist_filename;
   gchar *filename;
   gchar *soundcard_group;
   gchar *sequencer_group;
+  gchar *osc_server_group;
   gchar *str;
   gchar *capability;
+#if defined AGS_W32API
+  gchar *app_dir;
+#endif
   
+#ifndef AGS_W32API
+  struct passwd *pw;
+
   uid_t uid;
+#endif
   
   guint i;
   gboolean single_thread_enabled;
@@ -1477,8 +1490,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   gboolean is_output;
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop;
 
   config = ags_config_get_instance();
 
@@ -1493,6 +1504,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   atexit(ags_audio_application_context_signal_cleanup);
 
   /* Ignore interactive and job-control signals.  */
+#ifndef AGS_W32API
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -1507,6 +1519,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #else
   timer_id = (timer_t *) malloc(sizeof(timer_t));
   
@@ -1552,9 +1565,30 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   }
 
   /* get user information */
+#if defined AGS_W32API
+  application_context = ags_application_context_get_instance();
+
+  if(strlen(application_context->argv[0]) > strlen("gsequencer.exe")){
+    app_dir = g_strndup(application_context->argv[0],
+			strlen(application_context->argv[0]) - strlen("gsequencer.exe"));
+  }else{
+    app_dir = NULL;
+  }
+  
+  blacklist_path = g_strdup_printf("%s/%s",
+				   g_get_current_dir(),
+				   app_dir);
+
+  g_free(app_dir);
+#else
   uid = getuid();
   pw = getpwuid(uid);
 
+  blacklist_path = g_strdup_printf("%s/%s",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
+#endif
+  
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -1569,9 +1603,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/ladspa_plugin.blacklist",
+				       blacklist_path);
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -1583,9 +1616,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/dssi_plugin.blacklist",
+				       blacklist_path);
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -1598,9 +1630,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = g_strdup_printf("%s/lv2_plugin.blacklist",
+				       blacklist_path);
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
@@ -1656,6 +1687,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
+    guint cache_buffer_size;
+    gboolean use_cache;
 
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
@@ -1711,6 +1744,74 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 							is_output);
 
 	has_jack = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "wasapi",
+				    7)){
+	gchar *str;
+	
+	if(is_output){
+	  soundcard = (GObject *) ags_wasapi_devout_new((GObject *) audio_application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devout_set_flags(AGS_WASAPI_DEVOUT(soundcard),
+					AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devout_unset_flags(AGS_WASAPI_DEVOUT(soundcard),
+					  AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVOUT(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+										NULL,
+										10);
+	    
+	    g_free(str);
+	  }
+	}else{
+	  soundcard = (GObject *) ags_wasapi_devin_new((GObject *) audio_application_context);
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-share-mode");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "exclusive",
+				  10)){
+	    ags_wasapi_devin_set_flags(AGS_WASAPI_DEVIN(soundcard),
+				       AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }else{
+	    ags_wasapi_devin_unset_flags(AGS_WASAPI_DEVIN(soundcard),
+					 AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE);
+	  }
+
+	  g_free(str);
+	  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "wasapi-buffer-size");
+
+	  if(str != NULL){
+	    AGS_WASAPI_DEVIN(soundcard)->wasapi_buffer_size = g_ascii_strtoull(str,
+									       NULL,
+									       10);
+	    
+	    g_free(str);
+	  }
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
@@ -1768,7 +1869,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     
     audio_application_context->soundcard = g_list_append(audio_application_context->soundcard,
 							soundcard);
-    g_object_ref(soundcard);
 
     /* device */
     str = ags_config_get_value(config,
@@ -1837,6 +1937,83 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 			      buffer_size,
 			      format);
 
+    use_cache = TRUE;
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "use-cache");
+
+    if(str != NULL &&
+       !g_strncasecmp(str,
+		      "false",
+		      5)){
+      use_cache = FALSE;
+    }
+
+    cache_buffer_size = 4096;
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "cache-buffer-size");
+
+    if(str != NULL){
+      cache_buffer_size = g_ascii_strtoull(str,
+					   NULL,
+					   10);
+    }
+
+    if(AGS_IS_PULSE_DEVOUT(soundcard)){
+      GList *start_port, *port;
+
+      g_object_get(soundcard,
+		   "pulse-port", &start_port,
+		   NULL);
+
+      port = start_port;
+
+      while(port != NULL){
+	ags_pulse_port_set_samplerate(port->data,
+				      samplerate);
+	ags_pulse_port_set_pcm_channels(port->data,
+					pcm_channels);
+	ags_pulse_port_set_buffer_size(port->data,
+				       buffer_size);
+	ags_pulse_port_set_format(port->data,
+				  format);
+	ags_pulse_port_set_cache_buffer_size(port->data,
+					     buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	port = port->next;
+      }
+
+      g_list_free_full(start_port,
+		       g_object_unref);
+    }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+      GList *start_port, *port;
+
+      g_object_get(soundcard,
+		   "core_audio-port", &start_port,
+		   NULL);
+
+      port = start_port;
+
+      while(port != NULL){
+	ags_core_audio_port_set_samplerate(port->data,
+					   samplerate);
+	ags_core_audio_port_set_pcm_channels(port->data,
+					     pcm_channels);
+	ags_core_audio_port_set_buffer_size(port->data,
+					    buffer_size);
+	ags_core_audio_port_set_format(port->data,
+				       format);
+	ags_core_audio_port_set_cache_buffer_size(port->data,
+						  buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	port = port->next;
+      }
+
+      g_list_free_full(start_port,
+		       g_object_unref);
+    }
+
     g_free(soundcard_group);    
     soundcard_group = g_strdup_printf("%s-%d",
 				      AGS_CONFIG_SOUNDCARD,
@@ -1884,8 +2061,28 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
       if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
+	AgsJackClient *input_client;
+
+	g_object_get(jack_server,
+		     "input-jack-client", &input_client,
+		     NULL);
+
+	if(input_client == NULL){
+	  input_client = ags_jack_client_new((GObject *) jack_server);
+	  g_object_set(jack_server,
+		       "input-jack-client", input_client,
+		       NULL);
+	  ags_jack_server_add_client(jack_server,
+				     (GObject *) input_client);
+    
+	  ags_jack_client_open((AgsJackClient *) input_client,
+			       "ags-input-client");	    
+	}else{
+	  g_object_unref(input_client);
+	}
+
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
-							       FALSE);
+							FALSE);
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
@@ -1923,7 +2120,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     
     audio_application_context->sequencer = g_list_append(audio_application_context->sequencer,
 							sequencer);
-    g_object_ref(sequencer);
 
     /* device */
     str = ags_config_get_value(config,
@@ -1969,7 +2165,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     
     //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-      g_object_ref(notify_soundcard);
 
       g_object_set(notify_soundcard,
 		   "task-thread", application_context->task_thread,
@@ -2055,12 +2250,167 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     }
   }
 
+  /* AgsOscServer */
+  audio_application_context->osc_server = NULL;
+  osc_server = NULL;
+
+  osc_server_group = g_strdup("osc-server");
+  
+  for(i = 0; ; i++){
+    gchar *ip4, *ip6;
+
+    guint server_port;
+    gboolean auto_start;
+    gboolean any_address;
+    gboolean enable_ip4, enable_ip6;
+    
+    if(!g_key_file_has_group(config->key_file,
+			     osc_server_group)){
+      if(i == 0){
+	g_free(osc_server_group);    
+	osc_server_group = g_strdup_printf("%s-%d",
+					   AGS_CONFIG_OSC_SERVER,
+					   i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+
+    osc_server = ags_osc_server_new();
+    ags_osc_server_set_flags(osc_server,
+			     (AGS_OSC_SERVER_TCP));
+
+    audio_application_context->osc_server = g_list_append(audio_application_context->osc_server,
+							 osc_server);
+
+    /* any address */
+    any_address = FALSE;
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "any-address");
+    
+    if(str != NULL){
+      any_address = (!g_ascii_strncasecmp(str,
+					  "true",
+					  5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(any_address){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_ANY_ADDRESS));
+    }
+
+    /* enable ip4 and ip6 */
+    enable_ip4 = FALSE;
+    enable_ip6 = FALSE;
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "enable-ip4");
+    
+    if(str != NULL){
+      enable_ip4 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "enable-ip6");
+
+    if(str != NULL){
+      enable_ip6 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(enable_ip4){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_INET4));
+    }
+
+    if(enable_ip6){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_INET6));
+    }
+    
+    ags_osc_server_add_default_controller(osc_server);
+
+    /* ip4 and ip6 address */
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "ip4-address");
+
+    if(str != NULL){
+      g_object_set(osc_server,
+		   "ip4", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "ip6-address");
+
+    if(str != NULL){
+      g_object_set(osc_server,
+		   "ip6", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    /* server port */
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "server-port");
+
+    if(str != NULL){
+      server_port = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+      g_object_set(osc_server,
+		   "server-port", server_port,
+		   NULL);
+    }
+    
+    /* auto-start */
+    auto_start = FALSE;
+    
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "auto-start");
+
+    if(str != NULL){
+      auto_start = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(auto_start){
+      ags_osc_server_start(osc_server);
+    }
+
+    g_free(osc_server_group);    
+    osc_server_group = g_strdup_printf("%s-%d",
+				       AGS_CONFIG_OSC_SERVER,
+				       i);
+  }
+
   /* AgsWorkerThread */
   audio_application_context->worker = NULL;
 
   /* AgsDestroyWorker */
   destroy_worker = ags_destroy_worker_new();
-  g_object_ref(destroy_worker);
   ags_thread_add_child_extended(AGS_THREAD(main_loop),
 				(AgsThread *) destroy_worker,
 				TRUE, TRUE);
@@ -2085,9 +2435,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
   }
-
-  /* unref */
-  g_object_unref(main_loop);
 }
 
 void

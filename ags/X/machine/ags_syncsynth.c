@@ -30,8 +30,6 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
@@ -307,7 +305,11 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   syncsynth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNCSYNTH_BASE_NOTE_MIN,
 								      AGS_SYNCSYNTH_BASE_NOTE_MAX,
 								      1.0);
+  gtk_spin_button_set_digits(syncsynth->lower,
+			     2);
   syncsynth->lower->adjustment->value = -48.0;
+  gtk_spin_button_set_digits(syncsynth->lower,
+			     2);
   gtk_table_attach(table,
 		   GTK_WIDGET(syncsynth->lower),
 		   1, 2,
@@ -360,7 +362,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 		      syncsynth,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) syncsynth);
 
@@ -369,7 +371,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 		      syncsynth,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) syncsynth);
 }
@@ -834,7 +836,10 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
   AgsChannel *start_output, *start_input;
   AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
 
+  GList *start_play, *play;
+
   guint output_pads, input_pads;
+  guint i, j;
   
   audio = machine->audio;
 
@@ -1048,40 +1053,72 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 				0);
     }
     
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play",
-			      audio_channels_old, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+    for(i = 0; i < input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	AgsPlayChannelRun *play_channel_run;
+	AgsStreamChannelRun *stream_channel_run;
 
-    /* ags-stream */
-    if(!ags_recall_global_get_rt_safe()){
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-    }else{
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-rt-stream",
-				audio_channels_old, audio_channels, 
-				0, input_pads,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
+	channel = ags_channel_nth(start_input,
+				  i * audio_channels + j);
+
+	/* ags-play */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-play",
+				  j, j + 1,
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* ags-stream */
+	if(!ags_recall_global_get_rt_safe()){
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-stream",
+				    j, j + 1,
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+
+	  /* set up dependencies */
+	  g_object_get(channel,
+		       "play", &start_play,
+		       NULL);
+    
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_PLAY_CHANNEL_RUN);
+	  play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	  play = ags_recall_find_type(start_play,
+				      AGS_TYPE_STREAM_CHANNEL_RUN);
+	  stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	  g_object_set(G_OBJECT(play_channel_run),
+		       "stream-channel-run", stream_channel_run,
+		       NULL);
+
+	  g_list_free_full(start_play,
+			   g_object_unref);
+	}else{
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-rt-stream",
+				    j, j + 1,
+				    i, i + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_PLAY |
+				     AGS_RECALL_FACTORY_RECALL | 
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+	}
+
+	g_object_unref(channel);
+      }
     }
     
     /* AgsOutput */
@@ -1228,8 +1265,11 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
   AgsChannel *start_input;
   AgsChannel *channel, *next_channel;
 
+  GList *start_play, *play;
+
   guint input_pads;
   guint audio_channels;
+  guint i, j;
 
   if(syncsynth->mapped_input_pad > input_pad_start){
     return;
@@ -1352,53 +1392,85 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 			      0);
   }
   
-  /* ags-play */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  for(i = input_pad_start; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      AgsPlayChannelRun *play_channel_run;
+      AgsStreamChannelRun *stream_channel_run;
 
-  /* ags-feed */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-feed",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+      channel = ags_channel_nth(start_input,
+				i * audio_channels + j);
+
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-feed */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-feed",
+				j, j + 1, 
+				i, i + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
   
-  /* ags-stream */
-  if(!(ags_recall_global_get_rt_safe() ||
-       ags_recall_global_get_performance_mode())){
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      0, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }else{
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      0, audio_channels, 
-			      input_pad_start, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+      /* ags-stream */
+      if(!(ags_recall_global_get_rt_safe() ||
+	   ags_recall_global_get_performance_mode())){
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	/* set up dependencies */
+	g_object_get(channel,
+		     "play", &start_play,
+		     NULL);
+    
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_PLAY_CHANNEL_RUN);
+	play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
+
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_STREAM_CHANNEL_RUN);
+	stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
+
+	g_object_set(G_OBJECT(play_channel_run),
+		     "stream-channel-run", stream_channel_run,
+		     NULL);
+
+	g_list_free_full(start_play,
+			 g_object_unref);
+      }else{
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-rt-stream",
+				  j, j + 1, 
+				  i, i + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+
+      g_object_unref(channel);
+    }
   }
   
   syncsynth->mapped_input_pad = input_pads;
@@ -1475,10 +1547,10 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 
 /**
  * ags_syncsynth_add_oscillator:
- * @syncsynth: the #AgsSynthsync
+ * @syncsynth: the #AgsSyncsynth
  * @oscillator: the #AgsOscillator
  * 
- * Add @oscillator to @synthsync.
+ * Add @oscillator to @syncsynth.
  * 
  * Since: 2.0.0
  */
@@ -1521,7 +1593,7 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 
 /**
  * ags_syncsynth_remove_oscillator:
- * @syncsynth: the #AgsSynthsync
+ * @syncsynth: the #AgsSyncsynth
  * @nth: the nth #AgsOscillator
  * 
  * Remove nth oscillator.
@@ -1627,8 +1699,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *list, *list_start;
@@ -1650,7 +1720,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) syncsynth);
 
   application_context = (AgsApplicationContext *) window->application_context;
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(syncsynth)->audio;
 
@@ -1819,8 +1888,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   
   g_list_free(list_start);
 
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    g_list_reverse(task));
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  g_list_reverse(task));
 }
 
 /**

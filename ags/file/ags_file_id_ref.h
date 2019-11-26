@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_FILE_ID_REF                (ags_file_id_ref_get_type())
 #define AGS_FILE_ID_REF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
 #define AGS_FILE_ID_REF_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
@@ -32,10 +34,12 @@
 #define AGS_IS_FILE_ID_REF_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_ID_REF))
 #define AGS_FILE_ID_REF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_ID_REF, AgsFileIdRefClass))
 
+#define AGS_FILE_ID_REF_GET_OBJ_MUTEX(obj) (((AgsFileIdRef *) obj)->obj_mutex)
+
 #define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
 
-#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
-#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data"
+#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data"
 
 typedef struct _AgsFileIdRef AgsFileIdRef;
 typedef struct _AgsFileIdRefClass AgsFileIdRefClass;
@@ -44,7 +48,7 @@ typedef void (*AgsFileResolve)(void);
 
 struct _AgsFileIdRef
 {
-  GObject object;
+  GObject gobject;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -59,7 +63,7 @@ struct _AgsFileIdRef
 
 struct _AgsFileIdRefClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   void (*resolved)(AgsFileIdRef *file_id_ref);
 };

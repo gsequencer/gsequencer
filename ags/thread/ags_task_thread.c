@@ -344,11 +344,7 @@ ags_task_thread_set_property(GObject *gobject,
   task_thread = AGS_TASK_THREAD(gobject);
 
   /* get task_thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(task_thread)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(task_thread);
 
   switch(prop_id){
   case PROP_THREAD_POOL:
@@ -397,11 +393,7 @@ ags_task_thread_get_property(GObject *gobject,
   task_thread = AGS_TASK_THREAD(gobject);
 
   /* get task_thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(task_thread)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(task_thread);
 
   switch(prop_id){
   case PROP_THREAD_POOL:
@@ -751,6 +743,10 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
+  if(append == NULL){
+    return;
+  }
+
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   task = AGS_TASK(g_atomic_pointer_get(&(append->data)));
 
@@ -771,8 +767,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   pthread_mutex_unlock(task_thread->read_mutex);
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d", devout->append_task_suspend);
-
-  g_object_unref(returnable_thread);
 }
 
 /**
@@ -832,6 +826,10 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
+  if(append == NULL){
+    return;
+  }
+  
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   list = (GList *) g_atomic_pointer_get(&(append->data));
 
@@ -850,8 +848,6 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
   /*  */
   pthread_mutex_unlock(task_thread->read_mutex);
-
-  g_object_unref(returnable_thread);
 }
 
 /**
