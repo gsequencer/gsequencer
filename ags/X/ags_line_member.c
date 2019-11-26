@@ -1217,8 +1217,7 @@ ags_line_member_set_label(AgsLineMember *line_member,
   }else{
     gtk_frame_set_label_widget((GtkFrame *) line_member,
 			       g_object_new(GTK_TYPE_LABEL,
-					    "wrap", TRUE,
-					    "wrap-mode", PANGO_WRAP_CHAR,
+					    "wrap", FALSE,
 					    "use-markup", TRUE,
 					    "label", g_markup_printf_escaped("<small>%s</small>", label),
 					    NULL));

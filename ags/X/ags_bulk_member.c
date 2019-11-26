@@ -1183,8 +1183,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
   }else{
     gtk_frame_set_label_widget((GtkFrame *) bulk_member,
 			       (GtkWidget *) g_object_new(GTK_TYPE_LABEL,
-							  "wrap", TRUE,
-							  "wrap-mode", PANGO_WRAP_CHAR,
+							  "wrap", FALSE,
 							  "use-markup", TRUE,
 							  "label", g_markup_printf_escaped("<small>%s</small>", label),
 							  NULL));

@@ -216,34 +216,6 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Audiorec"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
   
-  /* bridge */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
-
-  /* live */
-  context_menu->live = (GtkMenu *) gtk_menu_new();
-  
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) context_menu->live);
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
-  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
-
   /* automation */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Automation"));
   //  gtk_widget_set_sensitive(item,

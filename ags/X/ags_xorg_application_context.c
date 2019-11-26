@@ -901,9 +901,6 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 
   g_list_free_full(start_sequencer,
 		   g_object_unref);
-
-  /* window */
-  ags_connectable_connect(AGS_CONNECTABLE(xorg_application_context->window));
 }
 
 void
@@ -2693,8 +2690,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 						    NULL);
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-  ags_connectable_connect(AGS_CONNECTABLE(window));
   
   if(filename != NULL){
     window->filename = filename;
@@ -3499,9 +3494,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   g_free(sequencer_group);
   
-  /* stop animation */
-  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
-
   /* AgsServer */
   xorg_application_context->server = g_list_append(xorg_application_context->server,
 						   ags_server_new());
@@ -3767,6 +3759,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
   }
+
+  /* stop animation */
+  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context), FALSE);
 
   /* unref */
   g_object_unref(main_loop);

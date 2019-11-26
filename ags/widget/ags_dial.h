@@ -57,6 +57,7 @@ typedef enum{
   AGS_DIAL_MOTION_CAPTURING_INIT  = 1 <<  4,
   AGS_DIAL_MOTION_CAPTURING       = 1 <<  5,
   AGS_DIAL_SEEMLESS_MODE          = 1 <<  6,
+  AGS_DIAL_INVERSE_LIGHT          = 1 <<  7,
 }AgsDialFlags;
 
 typedef enum{

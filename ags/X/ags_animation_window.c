@@ -22,9 +22,14 @@
 #include <ags/libags.h>
 
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_context_menu.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+#include <ags/i18n.h>
 
 void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
@@ -332,8 +337,78 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
 
     return(TRUE);
   }else{
+    AgsWindow *window;
+    AgsMenuBar *menu_bar;
+    AgsContextMenu *context_menu;
+    
+    GtkImageMenuItem *item;
+    
     gtk_widget_hide(animation_window);
-    gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));    
+
+    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    menu_bar = window->menu_bar;
+    context_menu = window->context_menu;
+    
+    /* menu - bridge */
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    /* menu - live */
+    menu_bar->live = (GtkMenu *) gtk_menu_new();
+  
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget *) menu_bar->live);
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
+
+    /* context menu - bridge */
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    /* context menu - live */
+    context_menu->live = (GtkMenu *) gtk_menu_new();
+  
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) context_menu->live);
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
+
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
+
+    /* connect and show window */
+    ags_connectable_connect(AGS_CONNECTABLE(window));
+    gtk_widget_show_all(window);    
 
     return(FALSE);
   }
