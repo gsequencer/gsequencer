@@ -418,6 +418,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->cursor_position_x = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   automation_edit->cursor_position_y = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
+  automation_edit->selected_acceleration_border = AGS_AUTOMATION_EDIT_DEFAULT_SELECTED_ACCELERATION_BORDER;
+
   automation_edit->selection_x0 = 0;
   automation_edit->selection_x1 = 0;
   automation_edit->selection_y0 = 0;
@@ -1947,7 +1949,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 			fg_color_prelight->red,
 			fg_color_prelight->blue,
 			fg_color_prelight->green,
-			fg_color_prelight->alpha);
+			1.0 / 3.0);
 
   cairo_rectangle(cr,
 		  x, y,
@@ -2133,40 +2135,22 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     height = ((double) allocation.height) - y;
   }
 
-  /* draw point */
-  if(ags_acceleration_test_flags(acceleration_a, AGS_ACCELERATION_IS_SELECTED)){
-    /* draw selected acceleration */
-    cairo_set_source_rgba(cr,
-			  fg_color_selected->red,
-			  fg_color_selected->blue,
-			  fg_color_selected->green,
-			  opacity * fg_color_selected->alpha);
-    
-    cairo_arc(cr,
-	      x, y,
-	      automation_edit->point_radius,
-	      0.0,
-	      2.0 * M_PI);
-
-    cairo_stroke(cr);
-  }else{
-    /* draw acceleration */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  opacity * fg_color->alpha);
-    
-    cairo_arc(cr,
-	      x, y,
-	      automation_edit->point_radius,
-	      0.0,
-	      2.0 * M_PI);
-    
-    cairo_stroke(cr);
-  }
+  /* draw acceleration - dot */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->blue,
+			fg_color->green,
+			opacity * fg_color->alpha);
   
-  /* draw acceleration */
+  cairo_arc(cr,
+	    x, y,
+	    automation_edit->point_radius,
+	    0.0,
+	    2.0 * M_PI);
+  
+  cairo_stroke(cr);
+  
+  /* draw acceleration - area */
   cairo_set_source_rgba(cr,
 			fg_color->red,
 			fg_color->blue,
@@ -2176,6 +2160,56 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 		  x, y,
 		  width, height);
   cairo_fill(cr);
+
+  /* check acceleration selected */
+  if(ags_acceleration_test_flags(acceleration_a, AGS_ACCELERATION_IS_SELECTED)){
+    double selected_x, selected_y;
+    double selected_width, selected_height;
+
+    selected_x = x - automation_edit->selected_acceleration_border;
+    selected_y = y - automation_edit->selected_acceleration_border;
+
+    selected_width = width + (2.0 * (double) automation_edit->selected_acceleration_border);
+    selected_height = height + (2.0 * (double) automation_edit->selected_acceleration_border);
+
+    /* clip */
+    if(selected_x < 0.0){
+      selected_x = 0.0;
+    }
+    
+    if(selected_x + selected_width > allocation.width){
+      selected_width = ((double) allocation.width) - selected_x;
+    }
+  
+    if(selected_y < 0.0){
+      selected_y = 0.0;
+    }
+
+    if(selected_y + selected_height > allocation.height){
+      selected_height = ((double) allocation.height) - selected_y;
+    }
+
+    /* draw selected acceleration - dot */
+    cairo_set_source_rgba(cr,
+			  fg_color_selected->red,
+			  fg_color_selected->blue,
+			  fg_color_selected->green,
+			  opacity / 3.0);
+    
+    cairo_arc(cr,
+	      selected_x, selected_y,
+	      automation_edit->point_radius + (2.0 * (double) automation_edit->selected_acceleration_border),
+	      0.0,
+	      2.0 * M_PI);
+
+    cairo_stroke(cr);
+
+    /* draw selected acceleration - area */
+    cairo_rectangle(cr,
+		    selected_x, selected_y,
+		    selected_width, selected_height);
+    cairo_fill(cr);
+  }
 }
 
 void

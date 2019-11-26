@@ -250,6 +250,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->cursor_position_x = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   notation_edit->cursor_position_y = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
+  notation_edit->selected_note_border = AGS_NOTATION_EDIT_DEFAULT_SELECTED_NOTE_BORDER;
+
   notation_edit->selection_x0 = 0;
   notation_edit->selection_x1 = 0;
   notation_edit->selection_y0 = 0;
@@ -1715,17 +1717,29 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   if(y + height > allocation.height){
     height = ((double) allocation.height) - y;
   }
+  
+  /* draw note */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->blue,
+			fg_color->green,
+			opacity * fg_color->alpha);
+  
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
 
   /* check note selected */
   if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
     double selected_x, selected_y;
     double selected_width, selected_height;
 
-    selected_x = x - notation_edit->control_margin_x;
-    selected_y = y - notation_edit->control_margin_y;
+    selected_x = x - notation_edit->selected_note_border;
+    selected_y = y - notation_edit->selected_note_border;
 
-    selected_width = width + (2.0 * (double) notation_edit->control_margin_x);
-    selected_height = height + (2.0 * (double) notation_edit->control_margin_y);
+    selected_width = width + (2.0 * (double) notation_edit->selected_note_border);
+    selected_height = height + (2.0 * (double) notation_edit->selected_note_border);
 
     /* clip */
     if(selected_x < 0.0){
@@ -1749,25 +1763,13 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 			  fg_color_selected->red,
 			  fg_color_selected->blue,
 			  fg_color_selected->green,
-			  1.0 / 3.0);
+			  opacity / 3.0);
     
     cairo_rectangle(cr,
 		    selected_x, selected_y,
 		    selected_width, selected_height);
     cairo_fill(cr);
   }
-  
-  /* draw note */
-  cairo_set_source_rgba(cr,
-			fg_color->red,
-			fg_color->blue,
-			fg_color->green,
-			opacity * fg_color->alpha);
-  
-  cairo_rectangle(cr,
-		  x, y,
-		  width, height);
-  cairo_fill(cr);
 }
 
 void

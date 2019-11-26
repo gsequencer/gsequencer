@@ -54,6 +54,8 @@ G_BEGIN_DECLS
 #define AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0.0)
 
+#define AGS_AUTOMATION_EDIT_DEFAULT_SELECTED_ACCELERATION_BORDER (2)
+
 #define AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH (3)
 
 #define AGS_AUTOMATION_EDIT_CURSOR_WIDTH (5)
@@ -124,6 +126,8 @@ struct _AgsAutomationEdit
   
   guint cursor_position_x;
   gdouble cursor_position_y;
+
+  guint selected_acceleration_border;
 
   guint selection_x0;
   guint selection_x1;

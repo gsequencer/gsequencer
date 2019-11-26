@@ -47,6 +47,8 @@ G_BEGIN_DECLS
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
 
+#define AGS_NOTATION_EDIT_DEFAULT_SELECTED_NOTE_BORDER (2)
+
 #define AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH (3)
 
 #define AGS_NOTATION_EDIT_MIN_ZOOM (1.0 / 16.0)
@@ -105,6 +107,8 @@ struct _AgsNotationEdit
   guint cursor_position_x;
   guint cursor_position_y;
 
+  guint selected_note_border;
+  
   guint selection_x0;
   guint selection_x1;
   guint selection_y0;

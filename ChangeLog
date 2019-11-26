@@ -1,7 +1,7 @@
 ags (3.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: migrated to Gtk3
+	* migrated to Gtk3
 	* TODO:JK: migrated AgsOscServer to GIO sockets
 	* TODO:JK: migrated AgsBasePlugin to GModule
 	* TODO:JK: migrated AgsServer to Libsoup XMLRPC

@@ -292,6 +292,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->cursor_position_x = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X;
   wave_edit->cursor_position_y = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
+  wave_edit->selected_buffer_border = AGS_WAVE_EDIT_DEFAULT_SELECTED_BUFFER_BORDER;
+  
   wave_edit->selection_x0 = 0;
   wave_edit->selection_x1 = 0;
   wave_edit->selection_y0 = 0;
@@ -860,8 +862,6 @@ ags_wave_edit_show(GtkWidget *widget)
 
   gtk_widget_get_allocation(GTK_WIDGET(wave_edit->drawing_area),
 			    &allocation);
-
-  g_message("wave edit show %d|%d %d,%d", allocation.x, allocation.y, allocation.width, allocation.height);
   
   gtk_widget_show((GtkWidget *) wave_edit->drawing_area);
   
@@ -887,8 +887,6 @@ ags_wave_edit_show_all(GtkWidget *widget)
 
   /* call parent */
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show_all(widget);
-
-  g_message("wave edit show all");
 
   gtk_widget_show_all((GtkWidget *) wave_edit->drawing_area);
 
@@ -1555,7 +1553,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr)
 			fg_color_prelight->red,
 			fg_color_prelight->blue,
 			fg_color_prelight->green,
-			fg_color_prelight->alpha);
+			1.0 / 3.0);
 
   cairo_rectangle(cr,
 		  x, y,
@@ -1706,23 +1704,16 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   i_cr = cairo_create(surface);
   */
+
+  /* draw buffer */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->blue,
+			fg_color->green,
+			opacity * fg_color->alpha);
   
-  if(ags_buffer_test_flags(buffer, AGS_BUFFER_IS_SELECTED)){
-    /* draw selected buffer */
-    cairo_set_source_rgba(cr,
-			  fg_color_selected->red,
-			  fg_color_selected->blue,
-			  fg_color_selected->green,
-			  opacity * fg_color_selected->alpha);
-  }else{
-    /* draw buffer */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  opacity * fg_color->alpha);
-  }
-  
+  cairo_set_line_width(cr, 1.0);
+
   //  cairo_scale(cr,
   //	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
   
@@ -1736,40 +1727,40 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	y1 = (double) ((gint8 *) buffer->data)[i] / exp2(7.0);
-      }
-      break;
+    {
+      y1 = (double) ((gint8 *) buffer->data)[i] / exp2(7.0);
+    }
+    break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	y1 = (double) ((gint16 *) buffer->data)[i] / exp2(15.0);
-      }
-      break;
+    {
+      y1 = (double) ((gint16 *) buffer->data)[i] / exp2(15.0);
+    }
+    break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(23.0);
-      }
-      break;
+    {
+      y1 = (double) ((gint32 *) buffer->data)[i] / exp2(23.0);
+    }
+    break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(31.0);
-      }
-      break;
+    {
+      y1 = (double) ((gint32 *) buffer->data)[i] / exp2(31.0);
+    }
+    break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	y1 = (double) ((gint64 *) buffer->data)[i] / exp2(63.0);
-      }
-      break;
+    {
+      y1 = (double) ((gint64 *) buffer->data)[i] / exp2(63.0);
+    }
+    break;
     case AGS_SOUNDCARD_FLOAT:
-      {
-	y1 = (double) ((gfloat *) buffer->data)[i];
-      }
-      break;
+    {
+      y1 = (double) ((gfloat *) buffer->data)[i];
+    }
+    break;
     case AGS_SOUNDCARD_DOUBLE:
-      {
-	y1 = (double) ((gdouble *) buffer->data)[i];
-      }
-      break;
+    {
+      y1 = (double) ((gdouble *) buffer->data)[i];
+    }
+    break;
     }
 
     g_rec_mutex_unlock(buffer_mutex);
@@ -1782,6 +1773,76 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     cairo_line_to(cr,
 		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y1);
     cairo_stroke(cr);
+  }  
+  
+  /* check buffer selected */
+  if(ags_buffer_test_flags(buffer, AGS_BUFFER_IS_SELECTED)){
+    /* draw selected buffer */
+    cairo_set_source_rgba(cr,
+			  fg_color_selected->red,
+			  fg_color_selected->blue,
+			  fg_color_selected->green,
+			  opacity / 3.0);
+
+    cairo_set_line_width(cr, 1.0 + (double) wave_edit->selected_buffer_border);
+
+    for(i = 0; i < buffer_size; i += (zoom_factor * 16)){
+      double y0, y1;
+
+      y0 = 0.0;
+      y1 = 0.0;
+
+      g_rec_mutex_lock(buffer_mutex);
+
+      switch(format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	y1 = (double) ((gint8 *) buffer->data)[i] / exp2(7.0);
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	y1 = (double) ((gint16 *) buffer->data)[i] / exp2(15.0);
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(23.0);
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(31.0);
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	y1 = (double) ((gint64 *) buffer->data)[i] / exp2(63.0);
+      }
+      break;
+      case AGS_SOUNDCARD_FLOAT:
+      {
+	y1 = (double) ((gfloat *) buffer->data)[i];
+      }
+      break;
+      case AGS_SOUNDCARD_DOUBLE:
+      {
+	y1 = (double) ((gdouble *) buffer->data)[i];
+      }
+      break;
+      }
+
+      g_rec_mutex_unlock(buffer_mutex);
+
+      y0 = 0.5 * height;
+      y1 = (((y1 + 1.0) * height) / 2.0);
+    
+      cairo_move_to(cr,
+		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y0);
+      cairo_line_to(cr,
+		    ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut, y1);
+      cairo_stroke(cr);
+    }  
   }
   
 
@@ -1930,8 +1991,6 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 void
 ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
 {
-  g_message("wave edit draw");
-  
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->draw(wave_edit, cr);
 
   /* segment */
