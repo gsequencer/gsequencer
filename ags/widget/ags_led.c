@@ -226,15 +226,12 @@ void
 ags_led_draw(AgsLed *led, cairo_t *cr)
 {
   GtkWidget *widget;
-
-  GdkWindow *window;
-
+  
   GtkStyleContext *led_style_context;
 
   GtkAllocation allocation;
 
   GdkRGBA *fg_color;
-  GdkRGBA *fg_active_color;
   GdkRGBA *bg_color;
   GdkRGBA *border_color;
   
@@ -244,7 +241,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 
   gtk_widget_get_allocation(widget,
 			    &allocation);
-
+  
 //  g_message("led %d|%d %d|%d", allocation.x, allocation.y, allocation.width, allocation.height);
 
   /* style context */
@@ -256,14 +253,6 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
 				 &value);
 
   fg_color = g_value_get_boxed(&value);
-  g_value_unset(&value);
-
-  gtk_style_context_get_property(led_style_context,
-				 "color",
-				 GTK_STATE_FLAG_ACTIVE,
-				 &value);
-
-  fg_active_color = g_value_get_boxed(&value);
   g_value_unset(&value);
   
   gtk_style_context_get_property(led_style_context,
@@ -282,7 +271,7 @@ ags_led_draw(AgsLed *led, cairo_t *cr)
   border_color = g_value_get_boxed(&value);
   g_value_unset(&value);
 
-  /*  */
+  /*  */  
 //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
