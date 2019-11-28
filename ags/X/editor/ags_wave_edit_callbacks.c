@@ -24,6 +24,12 @@
 #include <math.h>
 #include <gdk/gdkkeysyms.h>
 
+void
+ags_wave_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsWaveEdit *wave_edit)
+{
+  ags_wave_edit_draw(wave_edit, cr);
+}
+
 gboolean
 ags_wave_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEdit *wave_edit)
 {

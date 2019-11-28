@@ -1850,9 +1850,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
   x0 = (zoom_factor * gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar))) / notation_edit->control_width;
   x1 = ((zoom_factor * gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar))) / notation_edit->control_width) + (allocation.width * zoom);
   
-  /* push group */
-  cairo_push_group(cr);
-
   /* draw notation */
   timestamp = ags_timestamp_new();
 
@@ -1930,12 +1927,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 		   g_object_unref);
 
   g_object_unref(timestamp);
-
-  /* complete */
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
-      
-  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 void

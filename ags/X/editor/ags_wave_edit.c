@@ -222,7 +222,7 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
 //  widget->get_preferred_width = ags_wave_edit_get_preferred_width;
 //  widget->get_preferred_height = ags_wave_edit_get_preferred_height;
 //  widget->size_allocate = ags_wave_edit_size_allocate;
-  widget->draw = ags_wave_edit_draw;
+//  widget->draw = ags_wave_edit_draw;
   widget->show = ags_wave_edit_show;
   widget->show_all = ags_wave_edit_show_all;
 }
@@ -466,6 +466,9 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   wave_edit->flags |= AGS_WAVE_EDIT_CONNECTED;
 
   /* drawing area */
+  g_signal_connect(G_OBJECT(wave_edit->drawing_area), "draw",
+		   G_CALLBACK(ags_wave_edit_draw_callback), (gpointer) wave_edit);
+
   g_signal_connect_after((GObject *) wave_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_wave_edit_drawing_area_configure_event), (gpointer) wave_edit);
 
@@ -507,6 +510,9 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
 
   /* drawing area */
   g_object_disconnect((GObject *) wave_edit->drawing_area,
+		      "any_signal::draw",
+		      G_CALLBACK(ags_wave_edit_draw_callback),
+		      (gpointer) wave_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_wave_edit_drawing_area_configure_event),
 		      wave_edit,
@@ -2011,7 +2017,15 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 void
 ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
 {
-  GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->draw(wave_edit, cr);
+  AgsWaveEditor *wave_editor;
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
+  
+  ags_wave_editor_reset_scrollbar(wave_editor);
+  
+  ags_wave_edit_reset_vscrollbar(wave_edit);
+  ags_wave_edit_reset_hscrollbar(wave_edit);
 
   /* segment */
   ags_wave_edit_draw_segment(wave_edit, cr);

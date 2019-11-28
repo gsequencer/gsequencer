@@ -2393,6 +2393,15 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 void
 ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr)
 {  
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+  
+  ags_automation_editor_reset_audio_scrollbar(automation_editor);
+  ags_automation_editor_reset_output_scrollbar(automation_editor);
+  ags_automation_editor_reset_input_scrollbar(automation_editor);
+
   ags_automation_edit_reset_vscrollbar(automation_edit);
   ags_automation_edit_reset_hscrollbar(automation_edit);
   
