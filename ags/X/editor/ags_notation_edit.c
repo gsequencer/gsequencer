@@ -813,6 +813,9 @@ ags_notation_edit_show(GtkWidget *widget)
   if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
     gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
   }
+
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
 }
 
 void
@@ -836,6 +839,9 @@ ags_notation_edit_show_all(GtkWidget *widget)
   if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
     gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
   }
+
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
 }
 
 gboolean
@@ -909,10 +915,18 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
 								  AGS_TYPE_NOTATION_EDITOR);
 
+  /* fix margin-bottom */
+  gtk_widget_get_allocation(notation_editor->notation_edit->hscrollbar, &allocation);
+  
+  g_object_set(notation_editor->scrolled_piano,
+	       "margin-bottom", (gint) allocation.height,
+	       NULL);
+
   if(notation_editor->selected_machine == NULL){
     return;
   }
-
+  
+  /* */
   gtk_widget_get_allocation(GTK_WIDGET(notation_edit->drawing_area),
 			    &allocation);
   
@@ -955,8 +969,16 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 			   upper);
 
   /* piano - upper */
+  gtk_adjustment_set_lower(piano_adjustment,
+			   gtk_adjustment_get_lower(adjustment));
+  gtk_adjustment_set_step_increment(piano_adjustment,
+				    gtk_adjustment_get_step_increment(adjustment));
+  gtk_adjustment_set_page_increment(piano_adjustment,
+				    gtk_adjustment_get_page_increment(adjustment));
+  gtk_adjustment_set_page_size(piano_adjustment,
+			       gtk_adjustment_get_page_size(adjustment));
   gtk_adjustment_set_upper(piano_adjustment,
-			   upper);
+			   gtk_adjustment_get_upper(adjustment));
 
   /* reset value */
   if(old_upper != 0.0){
@@ -1932,9 +1954,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 void
 ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr)
 {
-  ags_notation_edit_reset_vscrollbar(notation_edit);
-  ags_notation_edit_reset_hscrollbar(notation_edit);
-
   /* segment */
   ags_notation_edit_draw_segment(notation_edit, cr);
 

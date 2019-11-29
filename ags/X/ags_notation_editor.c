@@ -189,7 +189,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   GtkViewport *viewport;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
-  
+
   AgsConfig *config;
 
   gchar *str;
