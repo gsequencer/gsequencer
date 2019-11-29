@@ -33,18 +33,6 @@
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
-#include <unistd.h>
-
-#ifndef AGS_W32API
-#include <fcntl.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#endif
-
 #include <ags/i18n.h>
 
 void ags_osc_server_class_init(AgsOscServerClass *osc_server);
@@ -359,17 +347,9 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->ip4_fd = -1;
   osc_server->ip6_fd = -1;
 
-#ifdef AGS_W32API
   osc_server->ip4_address = NULL;
   osc_server->ip6_address = NULL;
-#else
-  osc_server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
-  memset(osc_server->ip4_address, 0, sizeof(struct sockaddr_in));
-  
-  osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
-  memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
-#endif
-  
+
   osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->accept_delay->tv_sec = 0;
@@ -1014,8 +994,6 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 void
 ags_osc_server_real_start(AgsOscServer *osc_server)
 {
-#ifdef AGS_W32API
-#else
   AgsOscFrontController *osc_front_controller;
   
   GList *start_controller, *controller;
@@ -1025,6 +1003,8 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   gboolean ip4_udp_success, ip4_tcp_success;
   gboolean ip6_udp_success, ip6_tcp_success;
 
+  GError *error;
+  
   GRecMutex *osc_server_mutex;
 
   if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
@@ -1056,18 +1036,40 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
       /* create socket */
       g_rec_mutex_lock(osc_server_mutex);
       
-      osc_server->ip4_fd = socket(AF_INET, SOCK_DGRAM, 0);
+      error = NULL;      
+      osc_server->ip4_socket = g_socket_new(G_SOCKET_FAMILY_IPV4,
+					    G_SOCKET_TYPE_DATAGRAM,
+					    G_SOCKET_PROTOCOL_UDP,
+					    &error);
+      osc_server->ip4_fd = g_socket_get_fd(osc_server->ip4_socket);
       
       g_rec_mutex_unlock(osc_server_mutex);
+
+      if(error != NULL){
+	g_critical("AgsOscServer - %s", error->message);
+
+	g_error_free(error);
+      }
     }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_TCP)){
       ip4_tcp_success = TRUE;
 
       /* create socket */
       g_rec_mutex_lock(osc_server_mutex);
       
-      osc_server->ip4_fd = socket(AF_INET, SOCK_STREAM, 0);
-
+      error = NULL;      
+      osc_server->ip4_socket = g_socket_new(G_SOCKET_FAMILY_IPV4,
+					    G_SOCKET_TYPE_STREAM,
+					    G_SOCKET_PROTOCOL_TCP,
+					    &error);
+      osc_server->ip4_fd = g_socket_get_fd(osc_server->ip4_socket);
+      
       g_rec_mutex_unlock(osc_server_mutex);
+
+      if(error != NULL){
+	g_critical("AgsOscServer - %s", error->message);
+
+	g_error_free(error);
+      }
     }else{
       g_critical("no flow control type");
     }
@@ -1076,17 +1078,13 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       g_rec_mutex_lock(osc_server_mutex);  
 
-      osc_server->ip4_address->sin_family = AF_INET;
-      osc_server->ip4_address->sin_addr.s_addr = htonl(INADDR_ANY);
-      osc_server->ip4_address->sin_port = htons(osc_server->server_port);
+      osc_server->ip4_address = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
 
       g_rec_mutex_unlock(osc_server_mutex);  
     }else{
       g_rec_mutex_lock(osc_server_mutex);  
 
-      osc_server->ip4_address->sin_family = AF_INET;
-      inet_pton(AF_INET, osc_server->ip4, &(osc_server->ip4_address->sin_addr.s_addr));
-      osc_server->ip4_address->sin_port = htons(osc_server->server_port);
+      osc_server->ip4_address = g_inet_address_new_from_string(osc_server->ip4);
 
       g_rec_mutex_unlock(osc_server_mutex);
     }
@@ -1101,18 +1099,40 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
       /* create socket */
       g_rec_mutex_lock(osc_server_mutex);
       
-      osc_server->ip6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
+      error = NULL;      
+      osc_server->ip6_socket = g_socket_new(G_SOCKET_FAMILY_IPV6,
+					    G_SOCKET_TYPE_DATAGRAM,
+					    G_SOCKET_PROTOCOL_UDP,
+					    &error);
+      osc_server->ip6_fd = g_socket_get_fd(osc_server->ip6_socket);
 
       g_rec_mutex_unlock(osc_server_mutex);
+
+      if(error != NULL){
+	g_critical("AgsOscServer - %s", error->message);
+
+	g_error_free(error);
+      }
     }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_TCP)){
       ip6_tcp_success = TRUE;
 
       /* create socket */
       g_rec_mutex_lock(osc_server_mutex);
       
-      osc_server->ip6_fd = socket(AF_INET6, SOCK_STREAM, 0);
+      error = NULL;      
+      osc_server->ip6_socket = g_socket_new(G_SOCKET_FAMILY_IPV6,
+					    G_SOCKET_TYPE_STREAM,
+					    G_SOCKET_PROTOCOL_TCP,
+					    &error);
+      osc_server->ip6_fd = g_socket_get_fd(osc_server->ip6_socket);
 
       g_rec_mutex_unlock(osc_server_mutex);
+
+      if(error != NULL){
+	g_critical("AgsOscServer - %s", error->message);
+
+	g_error_free(error);
+      }
     }else{
       g_critical("no flow control type");
     }
@@ -1121,17 +1141,13 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       g_rec_mutex_lock(osc_server_mutex);
 
-      osc_server->ip6_address->sin6_family = AF_INET6;
-      memcpy(&(osc_server->ip6_address->sin6_addr.s6_addr), &in6addr_any, sizeof(struct in6_addr));
-      osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
+      osc_server->ip6_address = g_inet_address_new_any(G_SOCKET_FAMILY_IPV6);
       
       g_rec_mutex_unlock(osc_server_mutex);
     }else{
       g_rec_mutex_lock(osc_server_mutex);
 
-      osc_server->ip6_address->sin6_family = AF_INET6;
-      inet_pton(AF_INET6, osc_server->ip6, &(osc_server->ip6_address->sin6_addr.s6_addr));
-      osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
+      osc_server->ip6_address = g_inet_address_new_from_string(osc_server->ip6);
 
       g_rec_mutex_unlock(osc_server_mutex);
     }
@@ -1144,37 +1160,59 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   }
 
   if(ip4_success){
-    int rc;
-    
-    rc = bind(osc_server->ip4_fd, (struct sockaddr *) osc_server->ip4_address, sizeof(struct sockaddr_in));
+    error = NULL;
+    g_socket_bind(osc_server->ip4_socket,
+		  osc_server->ip4_address,
+		  TRUE,
+		  &error);
 
-    if(rc == -1){
-      g_critical("bind IPv4 failed");
+    if(error != NULL){
+      g_critical("AgsOscServer - %s", error->message);
+
+      g_error_free(error);
     }
   }
   
   if(ip6_success){
-    int rc;
-    
-    rc = bind(osc_server->ip6_fd, (struct sockaddr *) osc_server->ip6_address, sizeof(struct sockaddr_in6));
+    error = NULL;
+    g_socket_bind(osc_server->ip6_socket,
+		  osc_server->ip6_address,
+		  TRUE,
+		  &error);
 
-    if(rc == -1){
-      g_critical("bind IPv6 failed");
+    if(error != NULL){
+      g_critical("AgsOscServer - %s", error->message);
+
+      g_error_free(error);
     }
   }
 
   if(osc_server->ip4_fd != -1){
+    //TODO:JK: check remove
+#if 0
     int flags;
 
     flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
     fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
+#else
+    g_object_set(osc_server->ip4_socket,
+		 "blocking", FALSE,
+		 NULL);
+#endif
   }
 
   if(osc_server->ip6_fd != -1){
+    //TODO:JK: check remove
+#if 0
     int flags;
 
     flags = fcntl(osc_server->ip6_fd, F_GETFL, 0);
     fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
+#else
+    g_object_set(osc_server->ip6_socket,
+		 "blocking", FALSE,
+		 NULL);
+#endif
   }
 
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_RUNNING);
@@ -1212,7 +1250,6 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   
   g_list_free_full(start_controller,
 		   g_object_unref);
-#endif
 }
 
 /**
@@ -1319,87 +1356,152 @@ ags_osc_server_stop(AgsOscServer *osc_server)
 gboolean
 ags_osc_server_real_listen(AgsOscServer *osc_server)
 {
-#ifdef AGS_W32API
-  return(FALSE);
-#else
   gboolean created_connection;
+
+  GError *error;
+
+  GRecMutex *osc_server_mutex;
   
   if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
     return(FALSE);
   }
+  
+  /* get OSC server mutex */
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   if(osc_server->ip4_fd != -1){
-    listen(osc_server->ip4_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+    g_rec_mutex_lock(osc_server_mutex);
+
+    g_socket_set_listen_backlog(osc_server->ip4_socket,
+				AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
+    error = NULL;
+    g_socket_listen(osc_server->ip4_socket,
+		    &error);
+    
+    g_rec_mutex_unlock(osc_server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsOscServer - %s", error->message);
+
+      g_error_free(error);
+    }
   }
 
   if(osc_server->ip6_fd != -1){
-    listen(osc_server->ip6_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+    g_rec_mutex_lock(osc_server_mutex);
+
+    g_socket_set_listen_backlog(osc_server->ip6_socket,
+				AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
+    error = NULL;
+    g_socket_listen(osc_server->ip6_socket,
+		    &error);
+    
+    g_rec_mutex_unlock(osc_server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsOscServer - %s", error->message);
+
+      g_error_free(error);
+    }
   }  
   
   created_connection = FALSE;
-    
+  
   if(osc_server->ip4_fd != -1){
-    int connection_fd;
-    socklen_t address_length;
+    GSocket *connection_socket;
+    
+    g_rec_mutex_lock(osc_server_mutex);
 
-    address_length = sizeof(struct sockaddr_in);
-    connection_fd = accept(osc_server->ip4_fd,  (struct sockaddr *) osc_server->ip4_address, &address_length);
+    error = NULL;
+    connection_socket = g_socket_accept(osc_server->ip4_socket,
+					NULL,
+					&error);
 
-    if(connection_fd != -1){
+    g_rec_mutex_unlock(osc_server_mutex);
+
+    if(error != NULL){
+      if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
+	g_warning("AgsOscServer - %s", error->message);
+      }
+
+      g_error_free(error);
+    }
+
+    if(connection_socket != NULL){
       AgsOscConnection *osc_connection;
-	
-      int flags;
-	
+
       created_connection = TRUE;
 
       osc_connection = ags_osc_connection_new((GObject *) osc_server);
 
-      //      flags = fcntl(connection_fd, F_GETFL, 0);
-      //      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+      osc_connection->socket = connection_socket;
+      osc_connection->fd = g_socket_get_fd(connection_socket);
 
-      osc_connection->fd = connection_fd;
-	
+      //TODO:JK: check adding
+#if 0
+      g_object_set(connection_socket,
+		   "blocking", FALSE,
+		   NULL);
+#endif
+      
       ags_osc_connection_set_flags(osc_connection,
 				   (AGS_OSC_CONNECTION_ACTIVE |
 				    AGS_OSC_CONNECTION_INET4));
-	
+      
       ags_osc_server_add_connection(osc_server,
 				    (GObject *) osc_connection);
     }
   }
     
   if(osc_server->ip6_fd != -1){
-    int connection_fd;
-    socklen_t address_length;
+    GSocket *connection_socket;
+    
+    g_rec_mutex_lock(osc_server_mutex);
 
-    address_length = sizeof(struct sockaddr_in);
-    connection_fd = accept(osc_server->ip6_fd,  (struct sockaddr *) osc_server->ip6_address, &address_length);
+    error = NULL;
+    connection_socket = g_socket_accept(osc_server->ip6_socket,
+					NULL,
+					&error);
 
-    if(connection_fd != 0){
+    g_rec_mutex_unlock(osc_server_mutex);
+
+    if(error != NULL){
+      if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
+	g_warning("AgsOscServer - %s", error->message);
+      }
+
+      g_error_free(error);
+    }
+
+    if(connection_socket != NULL){
       AgsOscConnection *osc_connection;
 
-      int flags;
-	
       created_connection = TRUE;
 
       osc_connection = ags_osc_connection_new((GObject *) osc_server);
 
-      flags = fcntl(connection_fd, F_GETFL, 0);
-      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+      osc_connection->socket = connection_socket;
+      osc_connection->fd = g_socket_get_fd(connection_socket);
 
-      osc_connection->fd = connection_fd;
-	
+      //TODO:JK: check adding
+#if 0
+      g_object_set(connection_socket,
+		   "blocking", FALSE,
+		   NULL);
+#endif
+      
       ags_osc_connection_set_flags(osc_connection,
 				   (AGS_OSC_CONNECTION_ACTIVE |
 				    AGS_OSC_CONNECTION_INET6));
-	
+      
       ags_osc_server_add_connection(osc_server,
 				    (GObject *) osc_connection);
     }
   }
 
   return(created_connection);
-#endif
 }
 
 /**

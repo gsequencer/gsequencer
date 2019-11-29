@@ -23,11 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/libags.h>
+#include <gio/gio.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
-#endif
+#include <ags/libags.h>
 
 G_BEGIN_DECLS
 
@@ -69,6 +67,8 @@ struct _AgsOscConnection
   gchar *ip6;
   
   int fd;
+
+  GSocket *socket;
 
   struct timespec *start_time;
 

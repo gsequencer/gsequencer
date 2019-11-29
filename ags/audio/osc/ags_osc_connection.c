@@ -262,6 +262,10 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->ip4 = NULL;
   osc_connection->ip6 = NULL;
 
+  osc_connection->fd = -1;
+
+  osc_connection->socket = NULL;
+  
   osc_connection->start_time = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_connection->start_time->tv_sec = 0;
