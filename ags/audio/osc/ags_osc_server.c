@@ -1277,6 +1277,8 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   AgsOscFrontController *osc_front_controller;
   
   GList *start_controller, *controller;
+
+  GError *error;
   
   GRecMutex *osc_server_mutex;
 
@@ -1298,11 +1300,23 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   g_rec_mutex_lock(osc_server_mutex);
 
   if(osc_server->ip4_fd != -1){
-    close(osc_server->ip4_fd);
+    error = NULL;
+    g_socket_close(osc_server->ip4_socket,
+		   &error);
+    g_object_unref(osc_server->ip4_socket);
+
+    osc_server->ip4_socket = NULL;
+    osc_server->ip4_fd = -1;
   }
 
   if(osc_server->ip6_fd != -1){
-    close(osc_server->ip6_fd);
+    error = NULL;
+    g_socket_close(osc_server->ip6_socket,
+		   &error);
+    g_object_unref(osc_server->ip6_socket);
+
+    osc_server->ip6_socket = NULL;
+    osc_server->ip6_fd = -1;
   }
 
   g_rec_mutex_unlock(osc_server_mutex);
@@ -1423,7 +1437,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 
     if(error != NULL){
       if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
-	g_warning("AgsOscServer - %s", error->message);
+	g_critical("AgsOscServer - %s", error->message);
       }
 
       g_error_free(error);
@@ -1469,7 +1483,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 
     if(error != NULL){
       if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
-	g_warning("AgsOscServer - %s", error->message);
+	g_critical("AgsOscServer - %s", error->message);
       }
 
       g_error_free(error);

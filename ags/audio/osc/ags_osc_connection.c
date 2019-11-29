@@ -667,6 +667,8 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   mach_timespec_t mts;
 #endif
 
+  GError *error;
+  
   GRecMutex *osc_connection_mutex;
 
   /* get osc_connection mutex */
@@ -725,11 +727,23 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 
     retval = 0;
     
+    g_rec_mutex_lock(osc_connection_mutex);
+    
     if(osc_connection->cache_data_length < AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH){
+      error = NULL;
+      retval = g_socket_receive(osc_connection->socket,
+				data + osc_connection->cache_data_length,
+				AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH - osc_connection->cache_data_length,
+				NULL,
+				&error);
+      
+      //TODO:JK: check remove
+#if 0
       retval = read(fd,
 		    data + osc_connection->cache_data_length,
 		    AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH - osc_connection->cache_data_length);
-
+#endif
+      
       if(retval > 0){
 	available_data_length += retval;
       }
@@ -737,29 +751,35 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 
     osc_connection->cache_data_length = 0;
     
-    if(retval == -1){
-      if(errno == EAGAIN ||
-	 errno == EWOULDBLOCK){
+    g_rec_mutex_unlock(osc_connection_mutex);
+    
+    if(error != NULL){
+      if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
+	g_critical("AgsOscConnection - %s", error->message);
+      }
+
+      g_error_free(error);
+
+      if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
 	if(available_data_length == 0){
 	  continue;
 	}
       }else{
-	g_message("error during reading data from socket");
-      
-	if(
-#ifdef EBADFD
-	   errno == EBADFD ||
-#endif
-	   errno == ECONNRESET ||
-	   errno == ENETRESET){
+	if(g_error_matches(error, G_IO_ERROR, G_IO_ERROR_CONNECTION_CLOSED)){
 	  g_rec_mutex_lock(osc_connection_mutex);
 
+	  error = NULL;
+	  g_socket_close(osc_connection->socket,
+			 &error);
+	  g_object_unref(osc_connection->socket);
+
+	  osc_connection->socket = NULL;
 	  osc_connection->fd = -1;
 	
 	  g_rec_mutex_unlock(osc_connection_mutex);
-	}
       
-	break;      
+	  break;
+	}
       }
     }
     
@@ -972,6 +992,8 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   guint slip_buffer_length;
   gint64 num_write;
 
+  GError *error;
+  
   GRecMutex *osc_connection_mutex;
   GRecMutex *osc_response_mutex;
 
@@ -999,10 +1021,26 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 					 AGS_OSC_RESPONSE(osc_response)->packet_size,
 					 &slip_buffer_length);
 
-  g_rec_mutex_unlock(osc_response_mutex);
+  error = NULL;
+  num_write = g_socket_send(osc_connection->socket,
+			    slip_buffer,
+			    slip_buffer_length * sizeof(unsigned char),
+			    NULL,
+			    &error);
   
-  num_write = write(fd, slip_buffer, slip_buffer_length * sizeof(unsigned char));
+  g_rec_mutex_unlock(osc_response_mutex);
 
+  if(error != NULL){
+    g_critical("AgsOscConnection - %s", error->message);
+
+    g_error_free(error);
+  }
+  
+  //TODO:JK: check remove
+#if 0  
+  num_write = write(fd, slip_buffer, slip_buffer_length * sizeof(unsigned char));
+#endif
+  
   if(slip_buffer != NULL){
     free(slip_buffer);
   }
@@ -1042,19 +1080,32 @@ ags_osc_connection_write_response(AgsOscConnection *osc_connection,
 void
 ags_osc_connection_real_close(AgsOscConnection *osc_connection)
 {
+  GError *error;
+  
   GRecMutex *osc_connection_mutex;
-
+  
   /* get osc_connection mutex */
   osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(osc_connection);
 
   /* set flags */
   g_rec_mutex_lock(osc_connection_mutex);
 
-  close(osc_connection->fd);
+  error = NULL;
+  g_socket_close(osc_connection->socket,
+		 &error);
+  g_object_unref(osc_connection->socket);
+
+  osc_connection->socket = NULL;
   osc_connection->fd = -1;
   
   g_rec_mutex_unlock(osc_connection_mutex);
 
+  if(error != NULL){
+    g_critical("AgsOscConnection - %s", error->message);
+
+    g_error_free(error);
+  }
+  
   ags_osc_connection_unset_flags(osc_connection,
 				 AGS_OSC_CONNECTION_ACTIVE);
 }
