@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
-#endif
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -78,13 +76,11 @@ struct _AgsOscClient
   int ip4_fd;
   int ip6_fd;
 
-#ifdef AGS_W32API
-  gpointer ip4_address;
-  gpointer ip6_address;
-#else
-  struct sockaddr_in *ip4_address;
-  struct sockaddr_in6 *ip6_address;
-#endif
+  GSocket *ip4_socket;
+  GSocket *ip6_socket;
+
+  GSocketAddress *ip4_address;
+  GSocketAddress *ip6_address;
   
   guint max_retry_count;
 

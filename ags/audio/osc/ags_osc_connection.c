@@ -1020,6 +1020,10 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   slip_buffer = ags_osc_util_slip_encode(AGS_OSC_RESPONSE(osc_response)->packet,
 					 AGS_OSC_RESPONSE(osc_response)->packet_size,
 					 &slip_buffer_length);
+  
+  g_rec_mutex_unlock(osc_response_mutex);
+
+  g_rec_mutex_lock(osc_connection_mutex);
 
   error = NULL;
   num_write = g_socket_send(osc_connection->socket,
@@ -1027,9 +1031,9 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 			    slip_buffer_length * sizeof(unsigned char),
 			    NULL,
 			    &error);
-  
-  g_rec_mutex_unlock(osc_response_mutex);
 
+  g_rec_mutex_unlock(osc_connection_mutex);
+  
   if(error != NULL){
     g_critical("AgsOscConnection - %s", error->message);
 

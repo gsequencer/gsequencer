@@ -347,6 +347,9 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->ip4_fd = -1;
   osc_server->ip6_fd = -1;
 
+  osc_server->ip4_socket = NULL;
+  osc_server->ip6_socket = NULL;
+
   osc_server->ip4_address = NULL;
   osc_server->ip6_address = NULL;
 
@@ -1078,13 +1081,15 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       g_rec_mutex_lock(osc_server_mutex);  
 
-      osc_server->ip4_address = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
+      osc_server->ip4_address = g_inet_socket_address_new(g_inet_address_new_any(G_SOCKET_FAMILY_IPV4),
+							  osc_server->server_port);
 
       g_rec_mutex_unlock(osc_server_mutex);  
     }else{
       g_rec_mutex_lock(osc_server_mutex);  
 
-      osc_server->ip4_address = g_inet_address_new_from_string(osc_server->ip4);
+      osc_server->ip4_address = g_inet_socket_address_new(g_inet_address_new_from_string(osc_server->ip4),
+							  osc_server->server_port);
 
       g_rec_mutex_unlock(osc_server_mutex);
     }
@@ -1141,13 +1146,15 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       g_rec_mutex_lock(osc_server_mutex);
 
-      osc_server->ip6_address = g_inet_address_new_any(G_SOCKET_FAMILY_IPV6);
+      osc_server->ip6_address = g_inet_socket_address_new(g_inet_address_new_any(G_SOCKET_FAMILY_IPV6),
+							  osc_server->server_port);
       
       g_rec_mutex_unlock(osc_server_mutex);
     }else{
       g_rec_mutex_lock(osc_server_mutex);
 
-      osc_server->ip6_address = g_inet_address_new_from_string(osc_server->ip6);
+      osc_server->ip6_address = g_inet_socket_address_new(g_inet_address_new_from_string(osc_server->ip6),
+							  osc_server->server_port);
 
       g_rec_mutex_unlock(osc_server_mutex);
     }
@@ -1165,7 +1172,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 		  osc_server->ip4_address,
 		  TRUE,
 		  &error);
-
+    
     if(error != NULL){
       g_critical("AgsOscServer - %s", error->message);
 
