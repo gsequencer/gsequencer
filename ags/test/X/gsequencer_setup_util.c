@@ -29,13 +29,11 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/file/ags_simple_file.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
-#include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <ags/X/task/ags_simple_file_read.h>
 
@@ -78,8 +76,6 @@ static GRecMutex ags_test_driver_mutex;
 struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
-
-extern volatile gboolean ags_show_start_animation;
 
 void
 ags_test_enter()
@@ -283,8 +279,6 @@ ags_test_init(int *argc, char ***argv,
   /**/
   LIBXML_TEST_VERSION;
 
-  ags_gui_init(argc, argv);
-  
   gtk_init(argc, argv);
 
   if(!builtin_theme_disabled){
@@ -334,8 +328,6 @@ ags_test_quit()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  
-  AgsGuiThread *gui_thread;
 
   xorg_application_context = ags_application_context_get_instance();
 
@@ -343,8 +335,6 @@ ags_test_quit()
   
   window = xorg_application_context->window;
   
-  gui_thread = xorg_application_context->gui_thread;
-
   window->flags |= AGS_WINDOW_TERMINATING;
 
   ags_test_leave();
@@ -538,142 +528,7 @@ ags_test_setup(int argc, char **argv)
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
 
-  g_atomic_int_set(&(ags_show_start_animation),
-		   FALSE);
-}
-
-void
-ags_test_start_animation(GThread *thread)
-{
-  GtkWindow *window;
-
-  GdkWindowAttr *attr;
-
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_object_set(window,
-	       "decorated\0", FALSE,
-	       0);
-  gtk_widget_set_size_request(window,
-			      800, 450);
-  gtk_widget_show_all(window);
-
-  thread = g_thread_new("libgsequencer.so - functional test animation",
-			ags_test_start_animation_thread,
-			window);
-}
-void*
-ags_test_start_animation_thread(void *ptr)
-{
-  GtkWidget *window;
-  GdkRectangle rectangle;
-
-  cairo_t *gdk_cr, *cr;
-  cairo_surface_t *surface;
-
-  AgsLog *log;
-
-  gchar *filename;
-  unsigned char *bg_data, *image_data;
-  
-  /* create a buffer suitable to image size */
-  GList *list, *start;
-
-  guint image_size;
-  gdouble x0, y0;
-  guint i, nth;
-  
-  gdk_threads_enter();
-  
-  window = (GtkWidget *) ptr;
-
-  rectangle.x = 0;
-  rectangle.y = 0;
-  rectangle.width = 800;
-  rectangle.height = 450;
-
-  image_size = 4 * 800 * 450;
-  
-  gdk_cr = gdk_cairo_create(window->window);
-  
-  filename = g_strdup_printf("%s/%s\0",
-			     SRCDIR,
-			     "gsequencer.share/images/ags_supermoon-800x450.png\0");
-
-  surface = cairo_image_surface_create_from_png(filename);
-  image_data = cairo_image_surface_get_data(surface);
-  
-  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
-
-  if(image_data != NULL){
-    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
-  }
-  
-  cr = cairo_create(surface);
-  
-  cairo_select_font_face(cr, "Georgia\0",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, (gdouble) 11.0);
-  
-  gdk_window_show(window->window);
-  
-  gdk_threads_leave();
-
-  log = ags_log_get_instance();  
-  nth = 0;
-  
-  while(g_atomic_int_get(&(ags_show_start_animation))){
-    start = 
-      list = ags_log_get_messages(log);
-
-    i = g_list_length(start);
-
-    if(i > nth){
-      if(image_data != NULL){
-	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
-      }
-      
-      cairo_set_source_surface(cr, surface, 0, 0);
-      cairo_paint(cr);
-      cairo_surface_flush(surface);
-    
-      x0 = 4.0;
-      y0 = 4.0 + (i * 12.0);
-
-      while(y0 > 4.0 && list != NULL){
-	cairo_set_source_rgb(cr,
-			     1.0,
-			     0.0,
-			     1.0);
-	
-	cairo_move_to(cr,
-		      x0, y0);
-
-	cairo_show_text(cr, list->data);
-
-	list = list->next;
-	y0 -= 12.0;
-      }
-
-      cairo_move_to(cr,
-		    x0, 4.0 + (i + 1) * 12.0);
-      cairo_show_text(cr, "...\0");
-      
-      nth = g_list_length(start);
-    }
-
-    cairo_set_source_surface(gdk_cr, surface, 0, 0);
-    cairo_paint(gdk_cr);
-    cairo_surface_flush(surface);
-    gdk_flush();
-  }
-
-  free(bg_data);
-  
-  gdk_threads_enter();
-
-  gtk_widget_destroy(window);
-  
-  gdk_threads_leave();
+  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(ags_application_context), FALSE);
 }
 
 void
@@ -684,37 +539,25 @@ ags_test_launch()
 
   AgsConfig *config;
 
-  GList *start_queue;  
-
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context));
-  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(ags_application_context));
-
-  /* start engine */
-  g_mutex_lock(&(audio_loop->start_mutex));
-  
-  start_queue = NULL;
-  
-  g_mutex_unlock(&(audio_loop->start_mutex));
 
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);
-  
-  ags_thread_pool_start(thread_pool);
 
   /* wait for audio loop */
-  g_mutex_lock(&(audio_loop->start_mutex));
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
     ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-    while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-      g_cond_wait(&(audio_loop->start_cond),
-		  &(audio_loop->start_mutex));
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
-    
-  g_mutex_unlock(&(audio_loop->start_mutex));
+
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(ags_application_context),
 				TRUE);

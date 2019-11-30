@@ -95,9 +95,6 @@ extern AgsApplicationContext *ags_application_context;
 
 AgsXorgApplicationContext *xorg_application_context;
 
-AgsGuiThread *gui_thread;
-AgsTaskThread *task_thread;
-
 AgsMachine *panel;
 AgsMachine *master_mixer;
 AgsMachine *slave_mixer;
@@ -153,10 +150,6 @@ ags_functional_machine_link_test_init_suite()
 
   guint nth_machine;
 
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
   /* add panel */
   ags_functional_test_util_add_machine(NULL,
 				       "Panel");
@@ -169,7 +162,7 @@ ags_functional_machine_link_test_init_suite()
   /* retrieve panel */
   nth_machine = 0;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -223,7 +216,7 @@ ags_functional_machine_link_test_master_mixer()
   /* retrieve master mixer */
   nth_machine = 1;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -363,7 +356,7 @@ ags_functional_machine_link_test_slave_mixer()
   /* retrieve master mixer */
   nth_machine = 2;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -466,7 +459,7 @@ ags_functional_machine_link_test_drum()
   nth_parent_machine = 2;
   nth_machine = 3;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -569,7 +562,7 @@ ags_functional_machine_link_test_matrix()
   nth_parent_machine = 2;
   nth_machine = 4;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -711,7 +704,7 @@ ags_functional_machine_link_test_synth()
   nth_parent_machine = 4;
   nth_machine = 5;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -821,7 +814,7 @@ ags_functional_machine_link_test_ffplayer_0()
   nth_parent_machine = 2;
   nth_machine = 6;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -924,7 +917,7 @@ ags_functional_machine_link_test_ffplayer_1()
   nth_parent_machine = 2;
   nth_machine = 7;
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

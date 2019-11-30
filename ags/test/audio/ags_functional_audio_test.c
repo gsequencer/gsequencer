@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_functional_audio_test_playback()
   AgsAudio **audio;
   AgsChannel *channel, *link, *current;
 
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   AgsThread *audio_loop, *soundcard_thread;
   
@@ -521,8 +521,8 @@ ags_functional_audio_test_playback()
     task = g_list_prepend(task,
 			  start_soundcard);
     
-    ags_task_thread_append_tasks(task_thread,
-				 task);
+    ags_task_launcher_add_task_all(task_launcher,
+				   task);
   }
   
   void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio){
@@ -546,8 +546,8 @@ ags_functional_audio_test_playback()
 					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) cancel_audio);
+    ags_task_launcher_add_task(task_launcher,
+			       (AgsTask *) cancel_audio);
   }
 
   /*
@@ -803,26 +803,24 @@ ags_functional_audio_test_playback()
    * Start threads and enable playback
    */
   audio_loop = AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop;
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* wait for audio loop */
-  g_mutex_lock(&(audio_loop->start_mutex));
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-    g_atomic_int_set(&(audio_loop->start_done),
-		     FALSE);
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-    while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-      g_cond_wait(&(audio_loop->start_cond),
-		  &(audio_loop->start_mutex));
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
   }
-  
-  g_mutex_unlock(&(audio_loop->start_mutex));
+
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   /* start playback */
   g_message("start playback");

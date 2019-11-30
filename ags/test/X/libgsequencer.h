@@ -197,7 +197,6 @@
 #include <ags/X/export/ags_midi_export_wizard.h>
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
-#include <ags/X/file/ags_gui_file_xml.h>
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
@@ -280,8 +279,5 @@
 
 #include <ags/X/task/ags_simple_file_read.h>
 #include <ags/X/task/ags_simple_file_write.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
-#include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #endif /*__LIBGSEQUENCER_H__*/

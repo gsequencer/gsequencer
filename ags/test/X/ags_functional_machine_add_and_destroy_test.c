@@ -82,7 +82,6 @@ CU_pSuite pSuite = NULL;
 volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
-AgsGuiThread *gui_thread;
 
 void
 ags_functional_machine_add_and_destroy_test_add_test()
@@ -125,11 +124,7 @@ ags_functional_machine_add_and_destroy_test_add_test()
  */
 int
 ags_functional_machine_add_and_destroy_test_init_suite()
-{
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-    
+{    
   return(0);
 }
 

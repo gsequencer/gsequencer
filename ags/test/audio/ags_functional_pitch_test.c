@@ -305,7 +305,7 @@ ags_functional_pitch_test_alloc(GList *template_wave)
 void
 ags_functional_pitch_test_pitch_up()
 {
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   GList *start_wave, *wave;
   GList *start_list, *list;
@@ -394,7 +394,7 @@ ags_functional_pitch_test_pitch_up()
 
   start_list = g_list_reverse(start_list);
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
 
   list = start_list;
   success = TRUE;
@@ -425,8 +425,8 @@ ags_functional_pitch_test_pitch_up()
     task = g_list_prepend(task,
 			  start_soundcard);
     
-    ags_task_thread_append_tasks(task_thread,
-				 task);
+    ags_task_launcher_add_task_all(task_launcher,
+				   task);
 
     /* delay */
     usleep(AGS_FUNCTIONAL_PITCH_TEST_DELAY);
@@ -436,8 +436,8 @@ ags_functional_pitch_test_pitch_up()
 					AGS_SOUND_SCOPE_WAVE);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) cancel_audio);
+    ags_task_launcher_add_task(task_launcher,
+			       (AgsTask *) cancel_audio);
 
     usleep(1500000);
     
@@ -451,7 +451,7 @@ ags_functional_pitch_test_pitch_up()
 void
 ags_functional_pitch_test_pitch_down()
 {
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
 
   GList *start_wave, *wave;
   GList *start_list, *list;
@@ -540,7 +540,7 @@ ags_functional_pitch_test_pitch_down()
 
   start_list = g_list_reverse(start_list);
   
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
 
   list = start_list;
   success = TRUE;
@@ -571,8 +571,8 @@ ags_functional_pitch_test_pitch_down()
     task = g_list_prepend(task,
 			  start_soundcard);
     
-    ags_task_thread_append_tasks(task_thread,
-				 task);
+    ags_task_launcher_add_task_all(task_launcher,
+				   task);
 
     /* delay */
     usleep(AGS_FUNCTIONAL_PITCH_TEST_DELAY);
@@ -582,8 +582,8 @@ ags_functional_pitch_test_pitch_down()
 					AGS_SOUND_SCOPE_WAVE);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) cancel_audio);
+    ags_task_launcher_add_task(task_launcher,
+			       (AgsTask *) cancel_audio);
 
     usleep(1500000);
 

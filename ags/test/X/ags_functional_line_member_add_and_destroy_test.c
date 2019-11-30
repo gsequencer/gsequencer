@@ -90,9 +90,6 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
-AgsGuiThread *gui_thread;
-AgsTaskThread *task_thread;
-
 void
 ags_functional_line_member_add_and_destroy_test_add_test()
 {
@@ -130,14 +127,6 @@ ags_functional_line_member_add_and_destroy_test_add_test()
 int
 ags_functional_line_member_add_and_destroy_test_init_suite()
 {
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* get task thread */
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
   return(0);
 }
 
@@ -179,7 +168,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -456,7 +445,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -733,7 +722,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1006,7 +995,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1054,7 +1043,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1107,7 +1096,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

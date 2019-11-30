@@ -228,7 +228,7 @@ ags_functional_fourier_transform_test_s16()
   AgsStartSoundcard *start_soundcard;
   AgsCancelAudio *cancel_audio;
 
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   GList *start_wave, *wave;
   GList *start_buffer, *buffer;
@@ -288,7 +288,7 @@ ags_functional_fourier_transform_test_s16()
   
   g_message("playing frequency = %f", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BASE_FREQ);
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
 
   /* start audio and soundcard task */
   task = NULL;    
@@ -301,8 +301,8 @@ ags_functional_fourier_transform_test_s16()
   task = g_list_prepend(task,
 			start_soundcard);
     
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* delay */
   usleep(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_DELAY);
@@ -312,8 +312,8 @@ ags_functional_fourier_transform_test_s16()
 				      AGS_SOUND_SCOPE_WAVE);
     
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_audio);
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);
 
   /*  */
   success = TRUE;
@@ -370,8 +370,8 @@ ags_functional_fourier_transform_test_s16()
   task = g_list_prepend(task,
 			start_soundcard);
     
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* delay */
   usleep(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_DELAY);
@@ -381,8 +381,8 @@ ags_functional_fourier_transform_test_s16()
 				      AGS_SOUND_SCOPE_WAVE);
     
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_audio);
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);
 
   CU_ASSERT(success == TRUE);
 }
