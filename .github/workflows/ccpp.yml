@@ -12,7 +12,7 @@ jobs:
     - name: Set and install dependencies
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -qq make gcc gettext autoconf automake autopoint autotools-dev pkg-config libgtk2.0-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev uuid-dev libcunit1-dev
+        sudo apt-get install -qq make gcc gettext autoconf automake autopoint autotools-dev pkg-config libgtk2.0-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev uuid-dev xvfb libcunit1-dev
     - name: autoreconf
       run: autoreconf -fi
     - name: configure
@@ -20,6 +20,6 @@ jobs:
     - name: make
       run: make
     - name: make check
-      run: make check
+      run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make check
     - name: make distcheck
-      run: make distcheck
+      run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make distcheck
