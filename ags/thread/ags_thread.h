@@ -129,27 +129,27 @@ typedef enum{
 
 /**
  * AgsThreadSyncTicFlags:
- * @AGS_THREAD_STATUS_WAIT_0: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_0: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_1: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_1: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_2: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_2: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_3: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_3: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_4: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_4: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_5: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_5: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_6: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_6: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_7: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_7: done tree to be synced
- * @AGS_THREAD_STATUS_WAIT_8: wait tree to be synced
- * @AGS_THREAD_STATUS_DONE_8: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_0: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_0: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_1: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_1: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_2: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_2: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_3: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_3: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_4: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_4: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_5: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_5: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_6: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_6: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_7: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_7: done tree to be synced
+ * @AGS_THREAD_SYNC_TIC_WAIT_8: wait tree to be synced
+ * @AGS_THREAD_SYNC_TIC_DONE_8: done tree to be synced
  *
  * Enum values to control the behavior or indicate internal state of #AgsThread by
- * enable/disable as status flags.
+ * enable/disable as sync tic flags.
  */
 typedef enum{
   AGS_THREAD_SYNC_TIC_WAIT_0                  = 1,

@@ -111,10 +111,6 @@ ags_osc_client_test_write_bytes()
   ags_osc_client_set_flags(osc_client,
 			   AGS_OSC_CLIENT_INET4);
 
-  osc_client->ip4_fd = open("/dev/null", O_RDWR, 0);
-
-  CU_ASSERT(osc_client->ip4_fd != -1);
-
   retval = ags_osc_client_write_bytes(osc_client,
 				      status_message, status_message_size);
 

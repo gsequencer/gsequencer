@@ -488,6 +488,14 @@ ags_audio_application_context_dispose(GObject *gobject)
 
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
 
+  if(AGS_IS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)){
+    ags_thread_stop(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop);
+
+    if(AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->thread != NULL){
+      g_thread_join(AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->thread);
+    }
+  }
+  
   /* get application context mutex */
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
 

@@ -1390,27 +1390,33 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
   /* get osc client mutex */
   osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
+  /* initialize success */
+  success = TRUE;
+
   /* get fd */
   g_rec_mutex_lock(osc_client_mutex);
   
   ip4_fd = osc_client->ip4_fd;
   ip6_fd = osc_client->ip6_fd;
-
+  
   g_rec_mutex_unlock(osc_client_mutex);
-
-  /* initialize success */
-  success = TRUE;
-
+  
   /* write on IPv4 socket */
   if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET4)){
     g_rec_mutex_lock(osc_client_mutex);
-    
-    num_write = g_socket_send(osc_client->ip4_socket,
-			      data,
-			      data_length,
-			      NULL,
-			      &error);
 
+    num_write = 0;
+
+    error = NULL;
+    
+    if(osc_client->ip4_socket != NULL){
+      num_write = g_socket_send(osc_client->ip4_socket,
+				data,
+				data_length,
+				NULL,
+				&error);
+    }
+    
     g_rec_mutex_unlock(osc_client_mutex);
 
     if(num_write != data_length){
@@ -1426,14 +1432,30 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
 
   /* write on IPv6 socket */
   if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
-    num_write = g_socket_send(osc_client->ip6_socket,
-			      data,
-			      data_length,
-			      NULL,
-			      &error);
+    g_rec_mutex_lock(osc_client_mutex);
+
+    num_write = 0;
+
+    error = NULL;
+    
+    if(osc_client->ip6_socket != NULL){
+      num_write = g_socket_send(osc_client->ip6_socket,
+				data,
+				data_length,
+				NULL,
+				&error);
+    }
+    
+    g_rec_mutex_unlock(osc_client_mutex);
 
     if(num_write != data_length){
       success = FALSE;
+    }
+
+    if(error != NULL){
+      g_critical("AgsOscClient - %s", error->message);
+
+      g_error_free(error);
     }
   }
   

@@ -29,7 +29,6 @@
 int ags_thread_test_init_suite();
 int ags_thread_test_clean_suite();
 
-void ags_thread_test_sync();
 void ags_thread_test_lock();
 void ags_thread_test_trylock();
 void ags_thread_test_get_toplevel();
@@ -38,10 +37,7 @@ void ags_thread_test_last();
 void ags_thread_test_remove_child();
 void ags_thread_test_add_child();
 void ags_thread_test_is_current_ready();
-void ags_thread_test_is_tree_ready();
 void ags_thread_test_stop();
-
-#define AGS_THREAD_TEST_SYNC_N_THREADS (16)
 
 #define AGS_THREAD_TEST_LOCK_N_THREADS (4)
 
@@ -92,147 +88,6 @@ ags_thread_test_clean_suite()
   g_object_unref(application_context);
   
   return(0);
-}
-
-void
-ags_thread_test_sync()
-{
-  AgsThread *main_loop;
-  AgsThread **thread;
-
-  volatile guint n_waiting;
-  guint i;
-
-  auto void* ags_thread_test_sync_waiter_thread(void *ptr);
-
-  void* ags_thread_test_sync_waiter_thread(void *ptr){
-    AgsThread *thread;
-
-    thread = (AgsThread *) ptr;
-
-    g_mutex_lock(&(thread->wait_mutex));
-
-    g_atomic_int_inc(&n_waiting);
-    
-    while(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_WAIT_0) ||
-	  ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_WAIT_1) ||
-	  ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_WAIT_2)){
-      g_cond_wait(&(thread->wait_cond),
-		  &(thread->wait_mutex));
-    }
-    
-    g_mutex_unlock(&(thread->wait_mutex));
-
-    g_thread_exit(NULL);
-
-    return(NULL);
-  }
-  
-  main_loop = ags_generic_main_loop_new(application_context);
-  g_atomic_int_set(&n_waiting,
-		   0);
-  
-  thread = (AgsThread **) malloc(AGS_THREAD_TEST_SYNC_N_THREADS * sizeof(AgsThread*));
-  
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    thread[i] = ags_thread_new(NULL);
-    ags_thread_add_child_extended(main_loop,
-				  thread[i],
-				  TRUE, TRUE);
-  }
-  
-  /* check AGS_THREAD_WAIT_0 - setup */
-  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_0);
-  main_loop->thread = g_thread_new("libags.so - unit test",
-				   ags_thread_test_sync_waiter_thread,
-				   main_loop);
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_0);
-
-    /* since signal expects a thread waiting we do one */
-    thread[i]->thread = g_thread_new("libags.so - unit test",
-				     ags_thread_test_sync_waiter_thread,
-				     thread[i]);
-  }
-
-  /* wait until all waiting */
-  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
-    usleep(4);
-  }
-
-  /* call sync all */
-  ags_thread_set_sync_all(main_loop,
-			  0);
-
-  /* assert flag not set anymore */
-  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_0));
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_0));
-  }
-  
-  /* check AGS_THREAD_WAIT_1 - setup */
-  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_1);
-  main_loop->thread = g_thread_new("libags.so - unit test",
-				   ags_thread_test_sync_waiter_thread,
-				   main_loop);
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_1);
-
-    /* since signal expects a thread waiting we do one */
-    thread[i]->thread = g_thread_new("libags.so - unit test",
-				     ags_thread_test_sync_waiter_thread,
-				     thread[i]);
-  }
-
-  /* wait until all waiting */
-  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
-    usleep(4);
-  }
-
-  /* call sync all */
-  ags_thread_set_sync_all(main_loop,
-			  1);
-
-  /* assert flag not set anymore */
-  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_1));
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_1));
-  }
-
-  /* check AGS_THREAD_WAIT_2 - setup */
-  ags_thread_set_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_2);
-  main_loop->thread = g_thread_new("libags.so - unit test",
-				   ags_thread_test_sync_waiter_thread,
-				   main_loop);
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    ags_thread_set_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_2);
-
-    /* since signal expects a thread waiting we do one */
-    thread[i]->thread = g_thread_new("libags.so - unit test",
-				     ags_thread_test_sync_waiter_thread,
-				     thread[i]);
-  }
-
-  /* wait until all waiting */
-  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
-    usleep(4);
-  }
-
-  /* call sync all */
-  ags_thread_set_sync_all(main_loop,
-			  2);
-
-  /* assert flag not set anymore */
-  CU_ASSERT(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_WAIT_2));
-
-  for(i = 0; i < AGS_THREAD_TEST_SYNC_N_THREADS; i++){
-    CU_ASSERT(!ags_thread_test_status_flags(thread[i], AGS_THREAD_STATUS_WAIT_2));
-  }
 }
 
 void
@@ -496,82 +351,34 @@ ags_thread_test_is_current_ready()
   CU_ASSERT(ags_thread_is_current_ready(thread, 2) == TRUE);
 
   /* wait 0 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_0);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_0);
+  ags_thread_set_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_0);
+  ags_thread_set_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_0);
 
   CU_ASSERT(ags_thread_is_current_ready(parent, 0) == TRUE);
   CU_ASSERT(ags_thread_is_current_ready(thread, 0) == TRUE);
 
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_0);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_0);
+  ags_thread_unset_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_0);
+  ags_thread_unset_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_0);
 
   /* wait 1 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_1);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_1);
+  ags_thread_set_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_1);
+  ags_thread_set_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_1);
 
   CU_ASSERT(ags_thread_is_current_ready(parent, 1) == TRUE);
   CU_ASSERT(ags_thread_is_current_ready(thread, 1) == TRUE);
 
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_1);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_1);
+  ags_thread_unset_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_1);
+  ags_thread_unset_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_1);
 
   /* wait 2 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_2);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_2);
+  ags_thread_set_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_2);
+  ags_thread_set_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_2);
 
   CU_ASSERT(ags_thread_is_current_ready(parent, 2) == TRUE);
   CU_ASSERT(ags_thread_is_current_ready(thread, 2) == TRUE);
 
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_2);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_2);
-}
-
-void
-ags_thread_test_is_tree_ready()
-{
-  AgsThread *parent;
-  AgsThread *thread;
-
-  parent = ags_thread_new(NULL);
-  
-  thread = ags_thread_new(NULL);
-  ags_thread_add_child_extended(parent,
-				thread,
-				TRUE, TRUE);
-
-  /* not ready at all */
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 0) == TRUE);
-
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 1) == TRUE);
-
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 2) == TRUE);
-
-  /* wait 0 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_0);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_0);
-
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 0) == TRUE);
-
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_0);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_0);
-
-  /* wait 1 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_1);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_1);
-
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 1) == TRUE);
-
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_1);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_1);
-
-  /* wait 2 ready */
-  ags_thread_set_status_flags(parent, AGS_THREAD_STATUS_WAIT_2);
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAIT_2);
-
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 2) == TRUE);
-
-  ags_thread_unset_status_flags(parent, AGS_THREAD_STATUS_WAIT_2);
-  ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAIT_2);
+  ags_thread_unset_sync_tic_flags(parent, AGS_THREAD_SYNC_TIC_WAIT_2);
+  ags_thread_unset_sync_tic_flags(thread, AGS_THREAD_SYNC_TIC_WAIT_2);
 }
 
 void
@@ -603,8 +410,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if(/* (CU_add_test(pSuite, "test of AgsThread sync", ags_thread_test_sync) == NULL) || - needs fix because of a race-condition */
-     (CU_add_test(pSuite, "test of AgsThread lock", ags_thread_test_lock) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsThread lock", ags_thread_test_lock) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread trylock", ags_thread_test_trylock) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread get toplevel", ags_thread_test_get_toplevel) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread first", ags_thread_test_first) == NULL) ||
@@ -612,7 +418,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsThread remove child", ags_thread_test_remove_child) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread add child", ags_thread_test_add_child) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread is current ready", ags_thread_test_is_current_ready) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsThread is tree ready", ags_thread_test_is_tree_ready) == NULL) ||
      (CU_add_test(pSuite, "test of AgsThread stop", ags_thread_test_stop) == NULL)){
     CU_cleanup_registry();
       

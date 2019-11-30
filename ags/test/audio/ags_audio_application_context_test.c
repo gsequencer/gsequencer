@@ -72,6 +72,8 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
 
 gboolean audio_application_context_test_finalized;
 
+extern AgsApplicationContext *ags_application_context;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -124,6 +126,8 @@ ags_audio_application_context_test_dispose()
   CU_ASSERT(audio_application_context->soundcard == NULL);
   CU_ASSERT(audio_application_context->sequencer == NULL);
   CU_ASSERT(audio_application_context->sound_server == NULL);
+
+  ags_application_context = NULL;
 }
 
 void
@@ -141,6 +145,9 @@ ags_audio_application_context_test_finalize()
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
 
+  ags_application_context_prepare(audio_application_context);
+  ags_application_context_setup(audio_application_context);
+
   /* run dispose */
   g_object_run_dispose(audio_application_context);
 
@@ -152,6 +159,8 @@ ags_audio_application_context_test_finalize()
   g_object_unref(audio_application_context);
   
   CU_ASSERT(audio_application_context_test_finalized == TRUE);
+
+  ags_application_context = NULL;
 }
 
 void

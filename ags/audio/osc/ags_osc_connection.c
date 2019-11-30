@@ -1025,13 +1025,18 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 
   g_rec_mutex_lock(osc_connection_mutex);
 
-  error = NULL;
-  num_write = g_socket_send(osc_connection->socket,
-			    slip_buffer,
-			    slip_buffer_length * sizeof(unsigned char),
-			    NULL,
-			    &error);
+  num_write = 0;
 
+  error = NULL;
+  
+  if(osc_connection->socket != NULL){
+    num_write = g_socket_send(osc_connection->socket,
+			      slip_buffer,
+			      slip_buffer_length * sizeof(unsigned char),
+			      NULL,
+			      &error);
+  }
+  
   g_rec_mutex_unlock(osc_connection_mutex);
   
   if(error != NULL){
