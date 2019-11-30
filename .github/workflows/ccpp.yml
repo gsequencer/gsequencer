@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Set and install dependencies
+      run: |
+      	   sudo apt-get update -qq
+	   sudo apt-get install -qq make gcc gettext autoconf automake autopoint pkg-config libgtk2.0-dev libinstpatch-dev libsndfile-dev libsamplerate-dev libxml2-dev ladspa-sdk dssi-dev lv2-dev fftw3-dev libasound2-dev libjack-jackd2-dev libpulse-dev uuid-dev libcunit1-dev
     - uses: actions/checkout@v1
     - name: configure
       run: ./configure
