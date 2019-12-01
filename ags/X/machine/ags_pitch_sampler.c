@@ -408,6 +408,9 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 void
 ags_pitch_sampler_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_pitch_sampler_sfz_loader_completed,
+		      gobject);
+
   g_hash_table_remove(ags_machine_generic_output_message_monitor,
 		      gobject);
 
