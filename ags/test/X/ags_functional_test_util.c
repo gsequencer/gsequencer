@@ -994,7 +994,8 @@ gboolean
 ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 {
   GtkWidget *widget;
-  GtkWidget *arrow_button = NULL;
+  GtkWidget *arrow_box;
+  GtkWidget *arrow_button;
 
   GtkAllocation allocation;
   
@@ -1010,10 +1011,9 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   ags_test_enter();
 
-  if(arrow_button == NULL){
-    arrow_button = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
-  }
-
+  arrow_box = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
+  arrow_button = gtk_container_get_children(arrow_box)->data;
+  
   ags_test_leave();
 
   widget = arrow_button;
@@ -1041,10 +1041,10 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   ags_test_leave();
 
   ags_functional_test_util_reaction_time();
-	
+
   gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
+			   x,
+			   y,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_PRESS);
@@ -1053,8 +1053,8 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
+			   x,
+			   y,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_RELEASE);
@@ -1074,11 +1074,10 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 
   ags_functional_test_util_reaction_time_long();
 
-#if 0
   /*  */
   ags_test_enter();
 
-  gtk_menu_popup(gtk_menu_tool_button_get_menu(widget),
+  gtk_menu_popup(gtk_menu_tool_button_get_menu(button),
 		 NULL,
 		 NULL,
 		 NULL,
@@ -1089,7 +1088,6 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
-#endif
   
   return(TRUE);
 }

@@ -87,8 +87,6 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
   guint i, i_stop, j, j0;
   
   GValue value = {0,};
-
-  static const gdouble white_gc = 65535.0;
     
   widget = (GtkWidget *) ffplayer->drawing_area;
 
@@ -102,7 +100,7 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  fg_color = g_value_get_pointer(&value);
+  fg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
   gtk_style_context_get_property(ffplayer_style_context,
@@ -110,7 +108,7 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
 				 GTK_STATE_FLAG_NORMAL,
 				 &value);
 
-  bg_color = g_value_get_pointer(&value);
+  bg_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
   
   semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
@@ -229,8 +227,10 @@ ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
       cairo_stroke(cr);
     }
   }
-  
-  cairo_surface_mark_dirty(cairo_get_target(cr));
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 void

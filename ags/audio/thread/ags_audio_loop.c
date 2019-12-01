@@ -710,6 +710,8 @@ ags_audio_loop_run(AgsThread *thread)
     AgsThread *sequencer_thread, *next_sequencer_thread;
     AgsThread *export_thread, *next_export_thread;
 
+    gdouble frequency;
+
     /* soundcard thread */
     soundcard_thread = ags_thread_find_type(thread,
 					    AGS_TYPE_SOUNDCARD_THREAD);
@@ -766,6 +768,12 @@ ags_audio_loop_run(AgsThread *thread)
 
       export_thread = next_export_thread;
     }
+
+    g_object_get(audio_loop,
+		 "frequency", &frequency,
+		 NULL);
+
+    g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
   }
 }
 

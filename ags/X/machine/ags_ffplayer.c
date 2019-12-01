@@ -424,7 +424,13 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_ffplayer_sf2_loader_completed,
+		      gobject);
+
   g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
 		      gobject);
 
   /* call parent */
