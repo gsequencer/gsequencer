@@ -1100,8 +1100,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  g_message("remove %d", current_note->y);
 #endif
 		}else{
-		  pthread_mutex_lock(audio_mutex);
-
 		  g_object_set(current_note,
 			       "x1", notation_counter + 1,
 			       NULL);

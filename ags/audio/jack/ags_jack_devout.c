@@ -1141,8 +1141,9 @@ ags_jack_devout_get_property(GObject *gobject,
     {
       pthread_mutex_lock(jack_devout_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy(jack_devout->jack_port));
+      g_value_set_pointer(value, g_list_copy_deep(jack_devout->jack_port,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(jack_devout_mutex);
     }

@@ -1,3 +1,10 @@
+ags (2.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved idle CPU usage
+	* implemented ags_cell_pattern_play()
+	* fixed AgsNotationEdit position cursor by using left or right key
+
 ags (2.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1128,6 +1128,8 @@ ags_audio_loop_run(AgsThread *thread)
 
       export_thread = g_atomic_pointer_get(&(export_thread->next));
     }
+
+    usleep((guint) (USEC_PER_SEC / thread->freq) - 4);
   }
 }
 
