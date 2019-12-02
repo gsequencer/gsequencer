@@ -20,6 +20,7 @@
 #include <ags/thread/ags_polling_thread.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_priority.h>
 
 #include <ags/thread/ags_poll_fd.h>
 
@@ -216,10 +217,28 @@ ags_polling_thread_run(AgsThread *thread)
   /* real-time setup */
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    AgsPriority *priority;
+
     struct sched_param param;
+
+    gchar *str;
+
+    priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_POLLING_THREAD_RT_PRIORITY;
+
+    str = ags_priority_get_value(priority,
+				 AGS_PRIORITY_RT_THREAD,
+				 "polling-thread");
+
+    if(str != NULL){
+      param.sched_priority = (int) g_ascii_strtoull(str,
+						    NULL,
+						    10);
+
+      g_free(str);
+    }
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");

@@ -239,13 +239,16 @@ int
 main(int argc, char **argv)
 {  
   AgsConfig *config;
-
+  AgsPriority *priority;
+  
   gchar *filename;
+  gchar *priority_filename;
 #if defined AGS_W32API
   gchar *app_dir;
   gchar *path;
 #endif
-
+  gchar *str;
+  
   gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
   guint i;
@@ -266,7 +269,7 @@ main(int argc, char **argv)
 
   gboolean has_file;
   int result;
-
+  
 #ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 #endif
@@ -279,7 +282,26 @@ main(int argc, char **argv)
   builtin_theme_disabled = FALSE;
 
   config = NULL;
+  priority = ags_priority_get_instance();
   
+#if defined (AGS_W32API)
+#else
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  wdir = g_strdup_printf("%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+    
+  priority_filename = g_strdup_printf("%s/priority.conf",
+				      wdir);
+
+  ags_priority_load_from_file(priority,
+			      priority_filename);
+
+  g_free(priority_filename);
+  g_free(wdir);
+#endif
   //  mtrace();
 
 #ifdef AGS_WITH_RT
@@ -298,7 +320,19 @@ main(int argc, char **argv)
   }
 
   param.sched_priority = GSEQUENCER_RT_PRIORITY;
-      
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       "gsequencer");
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }

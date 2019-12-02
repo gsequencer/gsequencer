@@ -474,6 +474,7 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_mutable.lo \
 	ags/object/libags_la-ags_plugin.lo \
 	ags/object/libags_la-ags_portlet.lo \
+	ags/object/libags_la-ags_priority.lo \
 	ags/object/libags_la-ags_seekable.lo \
 	ags/object/libags_la-ags_sequencer.lo \
 	ags/object/libags_la-ags_soundcard.lo \
@@ -4760,6 +4761,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_plugin.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo \
+	ags/object/$(DEPDIR)/libags_la-ags_priority.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_sequencer.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo \
@@ -5459,13 +5461,13 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/object/ags_macros.h ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h ags/object/ags_mutable.h \
 	ags/object/ags_plugin.h ags/object/ags_portlet.h \
-	ags/object/ags_seekable.h ags/object/ags_sequencer.h \
-	ags/object/ags_soundcard.h ags/object/ags_sound_server.h \
-	ags/object/ags_tactable.h ags/file/ags_file.h \
-	ags/file/ags_file_id_ref.h ags/file/ags_file_launch.h \
-	ags/file/ags_file_link.h ags/file/ags_file_lookup.h \
-	ags/file/ags_file_stock.h ags/file/ags_file_util.h \
-	ags/thread/ags_autosave_thread.h \
+	ags/object/ags_priority.h ags/object/ags_seekable.h \
+	ags/object/ags_sequencer.h ags/object/ags_soundcard.h \
+	ags/object/ags_sound_server.h ags/object/ags_tactable.h \
+	ags/file/ags_file.h ags/file/ags_file_id_ref.h \
+	ags/file/ags_file_launch.h ags/file/ags_file_link.h \
+	ags/file/ags_file_lookup.h ags/file/ags_file_stock.h \
+	ags/file/ags_file_util.h ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_condition_manager.h \
 	ags/thread/ags_destroy_worker.h \
@@ -8400,6 +8402,7 @@ libags_object_h_sources = \
 	ags/object/ags_mutable.h \
 	ags/object/ags_plugin.h \
 	ags/object/ags_portlet.h \
+	ags/object/ags_priority.h \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
@@ -8422,6 +8425,7 @@ libags_object_c_sources = \
 	ags/object/ags_mutable.c \
 	ags/object/ags_plugin.c \
 	ags/object/ags_portlet.c \
+	ags/object/ags_priority.c \
 	ags/object/ags_seekable.c \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
@@ -10337,6 +10341,8 @@ ags/object/libags_la-ags_mutable.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_plugin.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_portlet.lo: ags/object/$(am__dirstamp) \
+	ags/object/$(DEPDIR)/$(am__dirstamp)
+ags/object/libags_la-ags_priority.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_seekable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -14452,6 +14458,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_plugin.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_priority.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_sequencer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo@am__quote@ # am--include-marker
@@ -15001,6 +15008,13 @@ ags/object/libags_la-ags_portlet.lo: ags/object/ags_portlet.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_portlet.c' object='ags/object/libags_la-ags_portlet.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_portlet.lo `test -f 'ags/object/ags_portlet.c' || echo '$(srcdir)/'`ags/object/ags_portlet.c
+
+ags/object/libags_la-ags_priority.lo: ags/object/ags_priority.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_priority.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_priority.Tpo -c -o ags/object/libags_la-ags_priority.lo `test -f 'ags/object/ags_priority.c' || echo '$(srcdir)/'`ags/object/ags_priority.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_priority.Tpo ags/object/$(DEPDIR)/libags_la-ags_priority.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_priority.c' object='ags/object/libags_la-ags_priority.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_priority.lo `test -f 'ags/object/ags_priority.c' || echo '$(srcdir)/'`ags/object/ags_priority.c
 
 ags/object/libags_la-ags_seekable.lo: ags/object/ags_seekable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_seekable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_seekable.Tpo -c -o ags/object/libags_la-ags_seekable.lo `test -f 'ags/object/ags_seekable.c' || echo '$(srcdir)/'`ags/object/ags_seekable.c
@@ -24982,6 +24996,7 @@ distclean: distclean-recursive
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_plugin.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo
+	-rm -f ags/object/$(DEPDIR)/libags_la-ags_priority.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_sequencer.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo
@@ -25915,6 +25930,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_plugin.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo
+	-rm -f ags/object/$(DEPDIR)/libags_la-ags_priority.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_sequencer.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo
