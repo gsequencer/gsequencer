@@ -183,7 +183,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 	    }
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
-	    ags_dial_draw((AgsDial *) child_widget);
+	    gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f", live_dssi_bridge->port_values[i]);

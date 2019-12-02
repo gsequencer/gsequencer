@@ -1046,6 +1046,9 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 					    &error);
       osc_server->ip4_fd = g_socket_get_fd(osc_server->ip4_socket);
       
+      g_socket_set_listen_backlog(osc_server->ip4_socket,
+				  AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
       g_rec_mutex_unlock(osc_server_mutex);
 
       if(error != NULL){
@@ -1065,6 +1068,9 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 					    G_SOCKET_PROTOCOL_TCP,
 					    &error);
       osc_server->ip4_fd = g_socket_get_fd(osc_server->ip4_socket);
+      
+      g_socket_set_listen_backlog(osc_server->ip4_socket,
+				  AGS_OSC_SERVER_DEFAULT_BACKLOG);
       
       g_rec_mutex_unlock(osc_server_mutex);
 
@@ -1111,6 +1117,9 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 					    &error);
       osc_server->ip6_fd = g_socket_get_fd(osc_server->ip6_socket);
 
+      g_socket_set_listen_backlog(osc_server->ip6_socket,
+				  AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
       g_rec_mutex_unlock(osc_server_mutex);
 
       if(error != NULL){
@@ -1130,6 +1139,9 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 					    G_SOCKET_PROTOCOL_TCP,
 					    &error);
       osc_server->ip6_fd = g_socket_get_fd(osc_server->ip6_socket);
+
+      g_socket_set_listen_backlog(osc_server->ip6_socket,
+				  AGS_OSC_SERVER_DEFAULT_BACKLOG);
 
       g_rec_mutex_unlock(osc_server_mutex);
 
@@ -1393,9 +1405,6 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
   if(osc_server->ip4_fd != -1){
     g_rec_mutex_lock(osc_server_mutex);
 
-    g_socket_set_listen_backlog(osc_server->ip4_socket,
-				AGS_OSC_SERVER_DEFAULT_BACKLOG);
-
     error = NULL;
     g_socket_listen(osc_server->ip4_socket,
 		    &error);
@@ -1411,9 +1420,6 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 
   if(osc_server->ip6_fd != -1){
     g_rec_mutex_lock(osc_server_mutex);
-
-    g_socket_set_listen_backlog(osc_server->ip6_socket,
-				AGS_OSC_SERVER_DEFAULT_BACKLOG);
 
     error = NULL;
     g_socket_listen(osc_server->ip6_socket,

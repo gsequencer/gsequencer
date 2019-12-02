@@ -233,7 +233,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_notation_edit_test_add_test, &is_available);
 
-  g_thread_join(ags_functional_test_util_self());
+  g_thread_join(ags_functional_test_util_test_runner_thread());
 
   return(-1);
 }

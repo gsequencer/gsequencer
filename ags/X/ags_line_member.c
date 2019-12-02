@@ -658,7 +658,7 @@ ags_line_member_set_property(GObject *gobject,
 	gtk_adjustment_set_value(new_adjustment,
 				 gtk_adjustment_get_value(adjustment));
 
-	ags_dial_draw((AgsDial *) new_child);
+	gtk_widget_queue_draw((AgsDial *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);

@@ -109,9 +109,9 @@ ags_functional_test_util_driver_dispatch(GSource *source,
 }
 
 GThread*
-ags_functional_test_util_self()
+ags_functional_test_util_test_runner_thread()
 {
-  return(g_thread_self());
+  return(ags_functional_test_util_thread);
 }
 
 void*

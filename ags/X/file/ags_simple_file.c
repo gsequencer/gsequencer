@@ -3683,7 +3683,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
 	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				 val);
-	ags_dial_draw((AgsDial *) child_widget);
+	gtk_widget_queue_draw((AgsDial *) child_widget);
       }
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
       if(str != NULL){
@@ -5144,7 +5144,7 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 			    }else if(AGS_IS_DIAL(child_widget)){
 			      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 						       val);
-			      ags_dial_draw((AgsDial *) child_widget);
+			      gtk_widget_queue_draw((AgsDial *) child_widget);
 			    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 			      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 							   ((val != 0.0) ? TRUE: FALSE));

@@ -392,8 +392,8 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_machine_add_and_destroy_test_add_test, &is_available);
-
-  g_thread_join(ags_functional_test_util_self());
   
+  g_thread_join(ags_functional_test_util_test_runner_thread());
+
   return(-1);
 }

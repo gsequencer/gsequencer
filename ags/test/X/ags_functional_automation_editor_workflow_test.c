@@ -982,8 +982,8 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_automation_editor_workflow_test_add_test, &is_available);
-
-  g_thread_join(ags_functional_test_util_self());
   
+  g_thread_join(ags_functional_test_util_test_runner_thread());
+
   return(-1);
 }

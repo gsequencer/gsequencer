@@ -307,7 +307,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_matrix_test_add_test, &is_available);
 
-  g_thread_join(ags_functional_test_util_self());
+  g_thread_join(ags_functional_test_util_test_runner_thread());
 
   return(-1);
 }

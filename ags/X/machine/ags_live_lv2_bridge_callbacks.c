@@ -565,7 +565,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 		}
 		
 		gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
-		ags_dial_draw((AgsDial *) child_widget);
+		gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 		g_message(" --- %f", live_lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
@@ -702,7 +702,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				     value);
-	    ags_dial_draw((AgsDial *) child_widget);
+	    gtk_widget_queue_draw((AgsDial *) child_widget);
 	  }
 	
 	  //	AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);

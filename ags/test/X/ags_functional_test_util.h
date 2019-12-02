@@ -54,7 +54,7 @@ struct _AgsFunctionalTestUtilContainerTest
   guint count;
 };
 
-GThread* ags_functional_test_util_self();
+GThread* ags_functional_test_util_test_runner_thread();
 
 /* legacy setup */
 void ags_functional_test_util_setup_and_launch();
