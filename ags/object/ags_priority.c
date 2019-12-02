@@ -427,6 +427,7 @@ ags_priority_real_load_defaults(AgsPriority *priority)
   ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "default", "45");
   ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "polling-thread", "95");
   ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "thread-pool", "99");
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "task-thread", "95");
 
   pthread_mutex_unlock(priority_mutex);
 }
