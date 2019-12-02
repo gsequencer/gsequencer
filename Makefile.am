@@ -609,6 +609,7 @@ libags_object_h_sources =  \
 	ags/object/ags_mutable.h \
 	ags/object/ags_plugin.h \
 	ags/object/ags_portlet.h \
+	ags/object/ags_priority.h \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
@@ -631,6 +632,7 @@ libags_object_c_sources = \
 	ags/object/ags_mutable.c \
 	ags/object/ags_plugin.c \
 	ags/object/ags_portlet.c \
+	ags/object/ags_priority.c \
 	ags/object/ags_seekable.c \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \

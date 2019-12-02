@@ -218,7 +218,7 @@ void ags_xorg_application_context_quit(AgsApplicationContext *application_contex
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
-void* ags_xorg_application_context_main_loop_thread(GMainLoop *main_loop);
+void* ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop);
 
 /**
  * SECTION:ags_xorg_application_context
@@ -2614,7 +2614,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 			      TRUE);
 
   g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
-	       ags_xorg_application_context_main_loop_thread,
+	       ags_xorg_application_context_audio_main_loop_thread,
 	       main_loop);
   
   /* OSC server main context and main loop */
@@ -4036,8 +4036,39 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 }
 
 void*
-ags_xorg_application_context_main_loop_thread(GMainLoop *main_loop)
+ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 {
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
+  struct sched_param param;
+
+  gchar *str;
+#endif
+  
+  /* real-time setup */
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = LIBAGS_AUDIO_RT_PRIORITY;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       "libags-audio");
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed");
+  }
+#endif
+  
   g_main_loop_run(main_loop);
 
   g_thread_exit(NULL);

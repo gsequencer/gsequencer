@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <pango/pangocairo.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
@@ -234,7 +236,8 @@ int
 main(int argc, char **argv)
 {  
   AgsConfig *config;
-
+  AgsPriority *priority;
+  
   gchar *filename;
 #if defined AGS_W32API
   gchar *app_dir;
@@ -256,9 +259,12 @@ main(int argc, char **argv)
   uid_t uid;
 #endif
   
-  gchar *wdir, *config_file;
+  gchar *wdir;
+  gchar *config_filename;
+  gchar *priority_filename;
   gchar *rc_filename;
-
+  gchar *str;
+  
   gboolean has_file;
   int result;
 
@@ -275,8 +281,30 @@ main(int argc, char **argv)
 
   config = NULL;
   
-  //  mtrace();
+  priority = ags_priority_get_instance();  
 
+//  mtrace();
+  
+#if defined (AGS_W32API)
+#else
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  wdir = g_strdup_printf("%s/%s",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+    
+  priority_filename = g_strdup_printf("%s/priority.conf",
+				      wdir);
+
+  ags_priority_load_from_file(priority,
+			      priority_filename);
+
+  g_free(priority_filename);
+  g_free(wdir);
+#endif
+
+  /* real-time setup */
 #ifdef AGS_WITH_RT
   result = getrlimit(RLIMIT_STACK, &rl);
 
@@ -293,7 +321,19 @@ main(int argc, char **argv)
   }
 
   param.sched_priority = GSEQUENCER_RT_PRIORITY;
-      
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       "gsequencer");
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }
@@ -491,9 +531,9 @@ main(int argc, char **argv)
     }
   }
     
-  config_file = g_strdup_printf("%s\\%s",
-				path,
-				AGS_DEFAULT_CONFIG);
+  config_filename = g_strdup_printf("%s\\%s",
+				    path,
+				    AGS_DEFAULT_CONFIG);
 
   g_free(path);
 #else
@@ -501,9 +541,9 @@ main(int argc, char **argv)
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
     
-  config_file = g_strdup_printf("%s/%s",
-				wdir,
-				AGS_DEFAULT_CONFIG);
+  config_filename = g_strdup_printf("%s/%s",
+				    wdir,
+				    AGS_DEFAULT_CONFIG);
 
   g_free(wdir);
 #endif
@@ -511,9 +551,9 @@ main(int argc, char **argv)
     config = ags_config_get_instance();
 
     ags_config_load_from_file(config,
-			      config_file);
+			      config_filename);
 
-    g_free(config_file);
+    g_free(config_filename);
   }
 
   /* some GUI scaling */

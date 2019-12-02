@@ -422,15 +422,34 @@ ags_audio_thread_run(AgsThread *thread)
 
 //  g_message("do: audio %f", thread->tic_delay);
   
+  /* real-time setup */
 #ifdef AGS_WITH_RT
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP)){
+    AgsPriority *priority;
+    
     struct sched_param param;
+
+    gchar *str;
+
+    priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
+    }
+
+    str = ags_priority_get_value(priority,
+				 AGS_PRIORITY_RT_THREAD,
+				 "default");
+
+    if(str != NULL){
+      param.sched_priority = (int) g_ascii_strtoull(str,
+						    NULL,
+						    10);
+
+      g_free(str);
     }
 
     ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP);
