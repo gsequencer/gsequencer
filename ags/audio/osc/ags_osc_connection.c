@@ -1040,8 +1040,10 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   g_rec_mutex_unlock(osc_connection_mutex);
   
   if(error != NULL){
-    g_critical("AgsOscConnection - %s", error->message);
-
+    if(!g_error_matches(error, G_IO_ERROR, G_IO_ERROR_WOULD_BLOCK)){
+      g_critical("AgsOscConnection - %s", error->message);
+    }
+    
     g_error_free(error);
   }
   

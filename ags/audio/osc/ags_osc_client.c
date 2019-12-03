@@ -914,9 +914,9 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     flags = fcntl(osc_client->ip4_fd, F_GETFL, 0);
     fcntl(osc_client->ip4_fd, F_SETFL, flags | O_NONBLOCK);
 #else
-    g_object_set(osc_client->ip4_socket,
-		 "blocking", FALSE,
-		 NULL);
+//    g_object_set(osc_client->ip4_socket,
+//		 "blocking", FALSE,
+//		 NULL);
 #endif
   }
 
@@ -928,9 +928,9 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     flags = fcntl(osc_client->ip6_fd, F_GETFL, 0);
     fcntl(osc_client->ip6_fd, F_SETFL, flags | O_NONBLOCK);
 #else
-    g_object_set(osc_client->ip6_socket,
-		 "blocking", FALSE,
-		 NULL);
+//    g_object_set(osc_client->ip6_socket,
+//		 "blocking", FALSE,
+//		 NULL);
 #endif
   }
   

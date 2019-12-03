@@ -1466,12 +1466,9 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
       osc_connection->socket = connection_socket;
       osc_connection->fd = g_socket_get_fd(connection_socket);
 
-      //TODO:JK: check adding
-#if 0
       g_object_set(connection_socket,
 		   "blocking", FALSE,
 		   NULL);
-#endif
       
       ags_osc_connection_set_flags(osc_connection,
 				   (AGS_OSC_CONNECTION_ACTIVE |
@@ -1512,12 +1509,9 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
       osc_connection->socket = connection_socket;
       osc_connection->fd = g_socket_get_fd(connection_socket);
 
-      //TODO:JK: check adding
-#if 0
       g_object_set(connection_socket,
 		   "blocking", FALSE,
 		   NULL);
-#endif
       
       ags_osc_connection_set_flags(osc_connection,
 				   (AGS_OSC_CONNECTION_ACTIVE |
