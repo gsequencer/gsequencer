@@ -34,12 +34,16 @@ G_BEGIN_DECLS
 #define AGS_IS_AUTHENTICATION_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTHENTICATION_MANAGER))
 #define AGS_AUTHENTICATION_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_AUTHENTICATION_MANAGER, AgsAuthenticationManagerClass))
 
+#define AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsAuthenticationManager *) obj)->obj_mutex))
+
 typedef struct _AgsAuthenticationManager AgsAuthenticationManager;
 typedef struct _AgsAuthenticationManagerClass AgsAuthenticationManagerClass;
 
 struct _AgsAuthenticationManager
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
   
   GList *authentication;
 };
@@ -65,6 +69,10 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 					  gchar *password,
 					  gchar **user_uuid,
 					  gchar **security_token);
+
+gchar* ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
+					     gchar *authentication_module,
+					     gchar *login);
 
 gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
 						      GObject *security_context,

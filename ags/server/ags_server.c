@@ -24,6 +24,8 @@
 
 #include <ags/server/ags_service_provider.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
+
 #include <ags/server/controller/ags_front_controller.h>
 
 #include <stdlib.h>
@@ -57,6 +59,15 @@ void ags_server_real_stop(AgsServer *server);
 
 gboolean ags_server_real_listen(AgsServer *server);
 
+gboolean ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
+					 SoupMessage *msg,
+					 const char *username,
+					 const char *password,
+					 AgsServer *server);
+char* ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
+					     SoupMessage *msg,
+					     const char *username,
+					     AgsServer *server);
 void ags_server_xmlrpc_callback(SoupServer *soup_server,
 				SoupMessage *msg,
 				const char *path,
@@ -80,6 +91,7 @@ enum{
   PROP_SERVER_PORT,
   PROP_IP4,
   PROP_IP6,
+  PROP_REALM,
   PROP_FRONT_CONTROLLER,
   PROP_CONTROLLER,
 };
@@ -212,6 +224,22 @@ ags_server_class_init(AgsServerClass *server)
 				  param_spec);
 
   /**
+   * AgsServer:realm:
+   *
+   * The realm to use.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_string("realm",
+				   i18n_pspec("realm"),
+				   i18n_pspec("The realm to use"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REALM,
+				  param_spec);
+
+  /**
    * AgsServer:front-controller:
    *
    * The assigned #AgsFrontController.
@@ -332,6 +360,8 @@ ags_server_init(AgsServer *server)
 
   server->ip4_address = NULL;
   server->ip6_address = NULL;
+
+  server->realm = NULL;
   
   server->soup_server = NULL;
   server->auth_module = NULL;
@@ -429,6 +459,27 @@ ags_server_set_property(GObject *gobject,
       g_free(server->ip6);
 
       server->ip6 = g_strdup(ip6);
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_REALM:
+    {
+      gchar *realm;
+
+      realm = g_value_get_string(value);
+
+      g_rec_mutex_lock(server_mutex);
+      
+      if(server->realm == realm){
+	g_rec_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      g_free(server->realm);
+
+      server->realm = g_strdup(realm);
 
       g_rec_mutex_unlock(server_mutex);
     }
@@ -542,6 +593,16 @@ ags_server_get_property(GObject *gobject,
       g_rec_mutex_unlock(server_mutex);
     }
     break;    
+  case PROP_REALM:
+    {
+      g_rec_mutex_lock(server_mutex);
+
+      g_value_set_string(value,
+			 server->realm);
+      
+      g_rec_mutex_unlock(server_mutex);
+    }
+    break;
   case PROP_FRONT_CONTROLLER:
     {
       g_rec_mutex_lock(server_mutex);
@@ -575,6 +636,19 @@ ags_server_dispose(GObject *gobject)
   AgsServer *server;
 
   server = AGS_SERVER(gobject);
+
+  if(server->front_controller != NULL){
+    g_object_unref(server->front_controller);
+
+    server->front_controller = NULL;
+  }
+  
+  if(server->controller != NULL){
+    g_list_free_full(server->controller,
+		     g_object_unref);
+
+    server->controller = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->dispose(gobject);
@@ -588,6 +662,16 @@ ags_server_finalize(GObject *gobject)
   server = AGS_SERVER(gobject);
 
   g_free(server->domain);
+  g_free(server->realm);
+
+  if(server->front_controller != NULL){
+    g_object_unref(server->front_controller);
+  }
+  
+  if(server->controller != NULL){
+    g_list_free_full(server->controller,
+		     g_object_unref);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
@@ -923,6 +1007,14 @@ ags_server_real_start(AgsServer *server)
   server->soup_server = soup_server_new("interface", soup_address_new(server->domain, server->server_port),
 					NULL);
 
+  server->auth_domain = soup_auth_domain_digest_new(SOUP_AUTH_DOMAIN_REALM, server->realm,
+						    SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
+						    SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK, ags_server_xmlrpc_digest_auth_callback,
+						    SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA, server,
+						    SOUP_AUTH_DOMAIN_ADD_PATH, "/ags-xmlrpc",
+						    NULL);
+  soup_server_add_auth_domain(server->soup_server, server->auth_domain);
+  
   soup_server_add_handler(server->soup_server,
 			  NULL,
 			  ags_server_xmlrpc_callback,
@@ -1134,6 +1226,48 @@ ags_server_listen(AgsServer *server)
   return(created_connection);
 }
 
+gboolean
+ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
+				SoupMessage *msg,
+				const char *username,
+				const char *password,
+				AgsServer *server)
+{
+  AgsAuthenticationManager *authentication_manager;
+
+  gboolean success;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  success = ags_authentication_manager_login(authentication_manager,
+					     server->auth_module,
+					     username,
+					     password,
+					     NULL,
+					     NULL);
+
+  return(success);
+}
+
+char*
+ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
+				       SoupMessage *msg,
+				       const char *username,
+				       AgsServer *server)
+{
+  AgsAuthenticationManager *authentication_manager;
+
+  char *digest;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  digest = ags_authentication_manager_get_digest(authentication_manager,
+						 server->auth_module,
+						 username);
+
+  return(digest);
+}
+
 void
 ags_server_xmlrpc_callback(SoupServer *soup_server,
 			   SoupMessage *msg,
@@ -1142,6 +1276,7 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 			   SoupClientContext *client,
 			   AgsServer *server)
 {
+  //TODO:JK: implement me
 }
 
 /**

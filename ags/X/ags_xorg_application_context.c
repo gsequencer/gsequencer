@@ -4046,9 +4046,11 @@ ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop)
   AgsApplicationContext *application_context;
 
   GList *start_list, *list;
+
+  g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
   
   application_context = ags_application_context_get_instance();
-
+  
   while(ags_xorg_application_context_get_show_animation(AGS_UI_PROVIDER(application_context))){
     g_usleep(G_USEC_PER_SEC / 30);
   }
@@ -4082,6 +4084,8 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 
   gchar *str;
 #endif
+
+  g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
   
   /* real-time setup */
 #ifdef AGS_WITH_RT

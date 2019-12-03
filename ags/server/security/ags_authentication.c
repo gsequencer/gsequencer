@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,6 +115,34 @@ ags_authentication_login(AgsAuthentication *authentication,
 					 password,
 					 user_uuid, security_token,
 					 error));
+}
+
+/**
+ * ags_authentication_get_digest:
+ * @authentication: the #AgsAuthentication
+ * @login: the login
+ * @error: the #GError-struct
+ * 
+ * Get digest of @login.
+ *
+ * Returns: the encrypted password
+ *
+ * Since: 3.0.0
+ */
+gchar*
+ags_authentication_get_digest(AgsAuthentication *authentication,
+			      gchar *login,
+			      GError **error)
+{
+  AgsAuthenticationInterface *authentication_interface;
+
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
+  g_return_val_if_fail(authentication_interface->get_digest, NULL);
+
+  return(authentication_interface->get_digest(authentication,
+					      login,
+					      error));
 }
 
 /**

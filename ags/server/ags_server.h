@@ -101,10 +101,15 @@ struct _AgsServer
 
   GSocketAddress *ip4_address;
   GSocketAddress *ip6_address;
+
+  gchar *realm;
   
   SoupServer *soup_server;
+
   gchar *auth_module;
 
+  SoupAuthDomain *auth_domain;
+  
   GObject *front_controller;
 
   GList *controller;

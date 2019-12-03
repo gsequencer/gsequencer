@@ -54,6 +54,10 @@ struct _AgsAuthenticationInterface
   
   gchar* (*generate_token)(AgsAuthentication *authentication,
 			   GError **error);
+
+  gchar* (*get_digest)(AgsAuthentication *authentication,
+		       gchar *login,
+		       GError **error);
   
   gchar** (*get_groups)(AgsAuthentication *authentication,
 			GObject *security_context,
@@ -92,6 +96,10 @@ gboolean ags_authentication_logout(AgsAuthentication *authentication,
   
 gchar* ags_authentication_generate_token(AgsAuthentication *authentication,
 					 GError **error);
+
+gchar* ags_authentication_get_digest(AgsAuthentication *authentication,
+				     gchar *login,
+				     GError **error);
 
 gchar** ags_authentication_get_groups(AgsAuthentication *authentication,
 				      GObject *security_context,

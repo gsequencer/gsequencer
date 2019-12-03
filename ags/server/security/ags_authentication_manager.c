@@ -85,6 +85,8 @@ ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authenticat
 void
 ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager)
 {
+  g_rec_mutex_init(&(authentication_manager->obj_mutex));
+
   authentication_manager->authentication = NULL;
 }
 
@@ -100,43 +102,131 @@ ags_authentication_manager_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_authentication_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_authentication_manager_get_authentication:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * 
+ * Get authentication.
+ * 
+ * Returns: the #GList-struct containing #GObject implementing #AgsAuthentication
+ * 
+ * Since: 3.0.0
+ */
 GList*
 ags_authentication_manager_get_authentication(AgsAuthenticationManager *authentication_manager)
 {
-  if(authentication_manager == NULL){
-    authentication_manager = ags_authentication_manager_get_instance();
-  }
+  GList *authentication;
+
+  GRecMutex *authentication_manager_mutex;
   
-  return(authentication_manager->authentication);
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager)){
+    return(NULL);
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* get authentication */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  authentication = g_list_copy_deep(authentication_manager->authentication,
+				    g_object_ref,
+				    NULL);
+
+  g_rec_mutex_unlock(authentication_manager_mutex);
+  
+  return(authentication);
 }
 
+/**
+ * ags_authentication_manager_add_authentication:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @authentication: the #GObject implementing #AgsAuthentication
+ * 
+ * Add @authentication to @authentication_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_authentication_manager_add_authentication(AgsAuthenticationManager *authentication_manager,
 					      GObject *authentication)
 {
-  if(authentication_manager == NULL){
-    authentication_manager = ags_authentication_manager_get_instance();
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     !AGS_IS_AUTHENTICATION(authentication)){
+    return;
   }
 
-  authentication_manager->authentication = g_list_prepend(authentication_manager->authentication,
-							  authentication);
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* add authentication */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  if(g_list_find(authentication_manager->authentication, authentication) == NULL){
+    authentication_manager->authentication = g_list_prepend(authentication_manager->authentication,
+							    authentication);
+    g_object_ref(authentication);
+  }
+
+  g_rec_mutex_unlock(authentication_manager_mutex);
 }
 
+/**
+ * ags_authentication_manager_remove_authentication:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @authentication: the #GObject implementing #AgsAuthentication
+ * 
+ * Remove @authentication from @authentication_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authentication_manager,
 						 GObject *authentication)
 {
-  if(authentication_manager == NULL){
-    authentication_manager = ags_authentication_manager_get_instance();
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     !AGS_IS_AUTHENTICATION(authentication)){
+    return;
   }
 
-  authentication_manager->authentication = g_list_remove(authentication_manager->authentication,
-							 authentication);
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* remove authentication */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  if(g_list_find(authentication_manager->authentication, authentication) != NULL){
+    authentication_manager->authentication = g_list_remove(authentication_manager->authentication,
+							   authentication);
+    g_object_unref(authentication);
+  }
+
+  g_rec_mutex_unlock(authentication_manager_mutex);
 }
 
+/**
+ * ags_authentication_manager_login:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @authentication_module: the authentication module
+ * @login: the login
+ * @password: the password
+ * @user_uuid: return location of user UUID
+ * @security_token: return location of security token
+ * 
+ * Login.
+ *
+ * Returns: %TRUE if login was successful, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
 				 gchar *authentication_module,
@@ -145,11 +235,12 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 				 gchar **user_uuid,
 				 gchar **security_token)
 {
-  GList *authentication;
+  GList *start_authentication, *authentication;
 
   gchar *current_token, *current_uuid;
   
-  authentication = authentication_manager->authentication;
+  authentication =
+    start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
 
   current_uuid = NULL;
   current_token = NULL;
@@ -172,6 +263,9 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
       if(security_token != NULL){
 	*security_token = current_token;
       }
+
+      g_list_free_full(start_authentication,
+		       g_object_unref);
       
       return(TRUE);
     }
@@ -184,19 +278,92 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
     
     authentication = authentication->next;
   }
+
+  g_list_free_full(start_authentication,
+		   g_object_unref);
   
   return(FALSE);
 }
 
+/**
+ * ags_authentication_manager_get_digest:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @authentication_module: the authentication module
+ * @login: the login
+ * 
+ * Get digest of @login.
+ * 
+ * Returns: the digest as string, or %NULL if not available
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
+				      gchar *authentication_module,
+				      gchar *login)
+{
+  GList *start_authentication, *authentication;
+
+  gchar *current_digest;
+  
+  authentication =
+    start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  while(authentication != NULL){
+    if(g_strv_contains(ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data)),
+		       authentication_module)){
+      GError *error;
+
+      error = NULL;
+    
+      current_digest = ags_authentication_get_digest(AGS_AUTHENTICATION(authentication->data),
+						     login,
+						     &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
+
+      g_list_free_full(start_authentication,
+		       g_object_unref);
+      
+      return(current_digest);
+    }
+    
+    authentication = authentication->next;
+  }
+
+  g_list_free_full(start_authentication,
+		   g_object_unref);
+
+  return(NULL);
+}
+
+/**
+ * ags_authentication_manager_is_session_active:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @security_context: the security context
+ * @login: the login
+ * @security_token: the security token
+ * 
+ * Check if session is active.
+ *
+ * Returns: %TRUE if active, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
 					     GObject *security_context,
 					     gchar *login,
 					     gchar *security_token)
 {
-  GList *authentication;
+  GList *start_authentication, *authentication;
   
-  authentication = authentication_manager->authentication;
+  authentication =
+    start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
   
   while(authentication != NULL){
     GError *error;
@@ -208,6 +375,9 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
 					    login,
 					    security_token,
 					    &error)){
+      g_list_free_full(start_authentication,
+		       g_object_unref);
+
       return(TRUE);
     }
 
@@ -219,6 +389,9 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
     
     authentication = authentication->next;
   }
+
+  g_list_free_full(start_authentication,
+		   g_object_unref);
   
   return(FALSE);
 }
@@ -237,15 +410,13 @@ ags_authentication_manager_get_instance()
 {
   static GMutex mutex;
 
-  g_mutex_lock(&(mutex));
+  g_mutex_lock(&mutex);
 
   if(ags_authentication_manager == NULL){
     ags_authentication_manager = ags_authentication_manager_new();
-
-    g_mutex_unlock(&(mutex));
-  }else{
-    g_mutex_unlock(&(mutex));
   }
+  
+  g_mutex_unlock(&mutex);
 
   return(ags_authentication_manager);
 }
