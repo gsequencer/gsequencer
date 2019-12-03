@@ -310,8 +310,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     g_list_free_full(start_list,
 		     g_object_unref);
-    
-    g_object_unref(output_soundcard);
+
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
   }
 }
 

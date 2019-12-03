@@ -189,7 +189,10 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     ags_recycling_add_audio_signal(first_recycling,
 				   audio_signal);
 
-    g_object_unref(output_soundcard);
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
+
     g_object_unref(first_recycling);
   }
 }

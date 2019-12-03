@@ -732,6 +732,10 @@ ags_window_load_file_timeout(AgsWindow *window)
 
       GError *error;
 
+      if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+	return(TRUE);
+      }
+      
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						   "filename", window->filename,
 						   NULL);

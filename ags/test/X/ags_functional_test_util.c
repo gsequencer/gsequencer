@@ -307,7 +307,7 @@ ags_functional_test_util_setup_and_launch_filename(gchar *filename)
   ags_test_launch_filename(filename);
 
   /* do the work */
-  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
+  while(!ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(ags_application_context))){
     usleep(500000);
   }
 
@@ -915,6 +915,13 @@ ags_functional_test_util_button_click(GtkButton *button)
   	
   ags_functional_test_util_reaction_time();
 
+  ags_test_enter();
+
+  g_signal_emit_by_name(widget,
+			"clicked");
+  
+  ags_test_leave();
+
   ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
@@ -984,6 +991,13 @@ ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
 			   GDK_BUTTON_RELEASE);
   	
   ags_functional_test_util_reaction_time();
+
+  ags_test_enter();
+
+  g_signal_emit_by_name(widget,
+			"clicked");
+  
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   

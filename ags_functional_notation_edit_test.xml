@@ -19,7 +19,7 @@ buffer-size=1024
 pcm-channels=2
 format=16
 samplerate=44100
-device=hw:0,0
+device=hw:0
 
 [thread]
 model=super-threaded

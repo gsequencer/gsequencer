@@ -2558,6 +2558,9 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+  AgsMessageQueue *audio_message_queue;
 
   GMainContext *server_main_context;
   GMainContext *audio_main_context;
@@ -2616,6 +2619,17 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
 	       ags_xorg_application_context_audio_main_loop_thread,
 	       main_loop);
+
+  /* message delivery */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_queue_new("libags");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) message_queue);
+
+  audio_message_queue = ags_message_queue_new("libags-audio");
+  ags_message_delivery_add_queue(message_delivery,
+				 (GObject *) audio_message_queue);
   
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();
@@ -2726,9 +2740,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsThread *sequencer_thread;
   AgsDestroyWorker *destroy_worker;
   AgsTaskLauncher *task_launcher;
-  AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
-  AgsMessageQueue *audio_message_queue;
 
   AgsLog *log;
   AgsConfig *config;
@@ -2888,17 +2899,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       break;
     }
   }
-
-  /* message delivery */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_queue = ags_message_queue_new("libags");
-  ags_message_delivery_add_queue(message_delivery,
-				 (GObject *) message_queue);
-
-  audio_message_queue = ags_message_queue_new("libags-audio");
-  ags_message_delivery_add_queue(message_delivery,
-				 (GObject *) audio_message_queue);
 
   /* get user information */
 #if defined AGS_W32API

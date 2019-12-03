@@ -1232,7 +1232,7 @@ ags_thread_set_max_precision(AgsThread *thread, gdouble max_precision)
   thread->tic_delay = 0.0;
   
   if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_POST_SYNC)){
-    thread->tic_delay = thread->delay;
+    thread->tic_delay = floor(thread->delay); // thread->delay;
   }else if(ags_thread_test_flags(thread, AGS_THREAD_INTERMEDIATE_PRE_SYNC)){
     thread->tic_delay = 1.0;
       }else{
@@ -2315,13 +2315,13 @@ ags_thread_real_clock(AgsThread *thread)
     if(main_tic_delay + 1.0 < main_delay){
       next_main_tic_delay = main_tic_delay + 1.0;
     }else{
-      next_main_tic_delay = (main_tic_delay + 1.0) - main_delay;
+      next_main_tic_delay = (main_tic_delay + 1.0) - floor(main_delay); // (main_tic_delay + 1.0) - main_delay;
     }
 
     if(main_tic_delay - 1.0 > 0.0){
       prev_main_tic_delay = main_tic_delay - 1.0;
     }else{
-      prev_main_tic_delay = (main_delay + 1.0) - (main_delay + main_tic_delay);
+      prev_main_tic_delay = (floor(main_delay) + 1.0) - (floor(main_delay) + main_tic_delay); // (main_delay + 1.0) - (main_delay + main_tic_delay);
     }
   
     ags_thread_set_sync_tic_flags(thread, sync_tic_wait);
@@ -2351,10 +2351,12 @@ ags_thread_real_clock(AgsThread *thread)
   /* synchronize */
   ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_WAITING);
     
-  if(!ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic) ||
-     current_sync_tic != main_sync_tic){
-    g_rec_mutex_unlock(tree_mutex);
-      
+  if(current_sync_tic != main_sync_tic ||
+     !ags_thread_is_tree_ready_recursive(main_loop, current_sync_tic)){
+    gboolean unlock_tree;
+
+    unlock_tree = TRUE;
+          
     g_mutex_lock(wait_mutex);
       
     if(ags_thread_test_sync_tic_flags(thread, sync_tic_wait) &&
@@ -2363,12 +2365,24 @@ ags_thread_real_clock(AgsThread *thread)
 
       while(ags_thread_test_sync_tic_flags(thread, sync_tic_wait) &&
 	    !ags_thread_test_sync_tic_flags(thread, sync_tic_done)){
+	if(unlock_tree){
+	  unlock_tree = FALSE;
+	  
+	  g_rec_mutex_unlock(tree_mutex);
+	}
+	
 	g_cond_wait(wait_cond,
 		    wait_mutex);
       }
     }
 
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAITING);
+
+    if(unlock_tree){
+      unlock_tree = FALSE;
+	  
+      g_rec_mutex_unlock(tree_mutex);
+    }
 
     ags_thread_unset_sync_tic_flags(thread, sync_tic_wait);
     ags_thread_unset_sync_tic_flags(thread, sync_tic_done);
@@ -2382,8 +2396,6 @@ ags_thread_real_clock(AgsThread *thread)
 
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), TRUE);
 
-    g_rec_mutex_unlock(tree_mutex);
-
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAITING);
 
     /* get task launcher */
@@ -2395,11 +2407,12 @@ ags_thread_real_clock(AgsThread *thread)
     /* signal */
 #if 1
     if(main_sync_tic == current_sync_tic){
-      ags_thread_set_tree_sync_recursive(main_loop,
-					 main_sync_tic);
     }else{
       g_critical("out-of-sync - main sync-tic != current sync-tic");
     }
+
+    ags_thread_set_tree_sync_recursive(main_loop,
+				       main_sync_tic);
 #else
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);
@@ -2412,6 +2425,8 @@ ags_thread_real_clock(AgsThread *thread)
 
     ags_thread_set_sync_tic_flags(thread, next_sync_tic_wait);
     ags_thread_unset_sync_tic_flags(thread, next_sync_tic_done);
+
+    g_rec_mutex_unlock(tree_mutex);
   }
   
   /* compute clocked steps */
@@ -2425,7 +2440,7 @@ ags_thread_real_clock(AgsThread *thread)
     if(thread->tic_delay >= thread->delay){
       clocked_steps = 1;
 
-      thread->tic_delay -= thread->delay;
+      thread->tic_delay = 0.0; // thread->delay;
     }
 
     if(initial_sync){
@@ -2435,7 +2450,7 @@ ags_thread_real_clock(AgsThread *thread)
   }else{
     clocked_steps = (guint) floor((1.0 + thread->tic_delay) / thread->delay);
 
-    thread->tic_delay = (1.0 / thread->delay) - floor(1.0 / thread->delay);
+    thread->tic_delay = 0.0; // (1.0 / thread->delay) - floor(1.0 / thread->delay);
   }
 
   g_rec_mutex_unlock(thread_mutex);
@@ -2675,11 +2690,12 @@ ags_thread_loop(void *ptr)
     /* signal */
 #if 1
     if(main_sync_tic == current_sync_tic){
-      ags_thread_set_tree_sync_recursive(main_loop,
-					 main_sync_tic);
     }else{
       g_critical("out-of-sync - main sync-tic != current sync-tic");
     }
+
+    ags_thread_set_tree_sync_recursive(main_loop,
+				       main_sync_tic);
 #else
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);

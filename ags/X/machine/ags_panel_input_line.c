@@ -302,25 +302,27 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 		 "output-soundcard-channel", output_soundcard_channel,
 		 NULL);
   }
-  
-  device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
 
-  /* label */
-  str = g_strdup_printf("%s:%s[%d]",
-			G_OBJECT_TYPE_NAME(output_soundcard),
-			device,
-			output_soundcard_channel);
-  gtk_label_set_label(panel_input_line->soundcard_connection,
-		      str);
+  if(AGS_IS_SOUNDCARD(output_soundcard)){
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
+
+    /* label */
+    str = g_strdup_printf("%s:%s[%d]",
+			  G_OBJECT_TYPE_NAME(output_soundcard),
+			  device,
+			  output_soundcard_channel);
+    gtk_label_set_label(panel_input_line->soundcard_connection,
+			str);
     
-  g_free(str);
- 
+    g_free(str);
+
+    g_object_unref(output_soundcard);
+  }
+  
 #ifdef AGS_DEBUG
   g_message("ags_panel_input_line_set_channel - channel: %u",
 	    channel->line);
 #endif
-
-  g_object_unref(output_soundcard);
 }
 
 void
