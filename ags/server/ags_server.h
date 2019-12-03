@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gio/gio.h>
+
+#include <libsoup/soup.h>
+
 #include <ags/lib/ags_uuid.h>
 
 G_BEGIN_DECLS
@@ -43,6 +47,8 @@ G_BEGIN_DECLS
 
 #define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-password-store"
 
+#define AGS_SERVER_DEFAULT_BACKLOG (512)
+
 typedef struct _AgsServer AgsServer;
 typedef struct _AgsServerClass AgsServerClass;
 typedef struct _AgsServerInfo AgsServerInfo;
@@ -61,13 +67,12 @@ typedef struct _AgsServerInfo AgsServerInfo;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SERVER_ADDED_TO_REGISTRY  = 1,
-  AGS_SERVER_CONNECTED          = 1 <<  1,
-  AGS_SERVER_STARTED            = 1 <<  2,
-  AGS_SERVER_RUNNING            = 1 <<  3,
-  AGS_SERVER_INET4              = 1 <<  4,
-  AGS_SERVER_INET6              = 1 <<  5,
-  AGS_SERVER_ANY_ADDRESS        = 1 <<  6,
+  AGS_SERVER_STARTED            = 1,
+  AGS_SERVER_RUNNING            = 1 <<  1,
+  AGS_SERVER_TERMINATING        = 1 <<  2,
+  AGS_SERVER_INET4              = 1 <<  3,
+  AGS_SERVER_INET6              = 1 <<  4,
+  AGS_SERVER_ANY_ADDRESS        = 1 <<  5,
 }AgsServerFlags;
 
 struct _AgsServer
@@ -82,33 +87,26 @@ struct _AgsServer
 
   AgsServerInfo *server_info;
 
-#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
-  TServer *abyss_server;
-  TSocket *socket;
-#else
-  void *abyss_server;
-  void *socket;  
-#endif
-
   gchar *ip4;
   gchar *ip6;
-
+  
   gchar *domain;
   guint server_port;
-  
+
   int ip4_fd;
   int ip6_fd;
+
+  GSocket *ip4_socket;
+  GSocket *ip6_socket;
+
+  GSocketAddress *ip4_address;
+  GSocketAddress *ip6_address;
   
-#if defined AGS_W32API
-  gpointer ip4_address;
-  gpointer ip6_address;
-#else
-  struct sockaddr_in *ip4_address;
-  struct sockaddr_in6 *ip6_address;
-#endif
-  
+  SoupServer *soup_server;
   gchar *auth_module;
-  
+
+  GObject *front_controller;
+
   GList *controller;
 };
 
@@ -118,6 +116,8 @@ struct _AgsServerClass
   
   void (*start)(AgsServer *server);
   void (*stop)(AgsServer *server);
+
+  gboolean (*listen)(AgsServer *server);
 };
 
 /**
@@ -141,8 +141,16 @@ void ags_server_unset_flags(AgsServer *server, guint flags);
 
 AgsServerInfo* ags_server_info_alloc(gchar *server_name, gchar *uuid);
 
+/* fields */
+void ags_server_add_controller(AgsServer *server,
+			       GObject *controller);
+void ags_server_remove_controller(AgsServer *server,
+				  GObject *controller);
+
 void ags_server_start(AgsServer *server);
 void ags_server_stop(AgsServer *server);
+
+gboolean ags_server_listen(AgsServer *server);
 
 AgsServer* ags_server_lookup(AgsServerInfo *server_info);
 

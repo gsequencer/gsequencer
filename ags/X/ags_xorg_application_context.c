@@ -218,6 +218,7 @@ void ags_xorg_application_context_quit(AgsApplicationContext *application_contex
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
+void* ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop);
 void* ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop);
 
 /**
@@ -2604,8 +2605,12 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   xorg_application_context->server_main_context = server_main_context;
 
-  g_main_loop_new(server_main_context,
-		  TRUE);
+  main_loop = g_main_loop_new(server_main_context,
+			      TRUE);
+
+  g_thread_new("Advanced Gtk+ Sequencer - server main loop",
+	       ags_xorg_application_context_server_main_loop_thread,
+	       main_loop);
 
   /* audio main context and main loop */
   audio_main_context = g_main_context_new();
@@ -4033,6 +4038,38 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
   //TODO:JK: implement me
   
   return(node);
+}
+
+void*
+ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop)
+{
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+  
+  application_context = ags_application_context_get_instance();
+
+  while(ags_xorg_application_context_get_show_animation(AGS_UI_PROVIDER(application_context))){
+    g_usleep(G_USEC_PER_SEC / 30);
+  }
+
+  list = 
+    start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_server_start(AGS_SERVER(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  g_main_loop_run(main_loop);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void*

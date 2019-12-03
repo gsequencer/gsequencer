@@ -19,12 +19,12 @@
 
 #include <ags/server/ags_server.h>
 
-#include <ags/util/ags_id_generator.h>
-
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
 #include <ags/server/ags_service_provider.h>
+
+#include <ags/server/controller/ags_front_controller.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +40,6 @@
 #include <ags/i18n.h>
 
 void ags_server_class_init(AgsServerClass *server);
-void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_init(AgsServer *server);
 void ags_server_set_property(GObject *gobject,
 			     guint prop_id,
@@ -53,21 +52,17 @@ void ags_server_get_property(GObject *gobject,
 void ags_server_dispose(GObject *gobject);
 void ags_server_finalize(GObject *gobject);
 
-AgsUUID* ags_server_get_uuid(AgsConnectable *connectable);
-gboolean ags_server_has_resource(AgsConnectable *connectable);
-gboolean ags_server_is_ready(AgsConnectable *connectable);
-void ags_server_add_to_registry(AgsConnectable *connectable);
-void ags_server_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_server_list_resource(AgsConnectable *connectable);
-xmlNode* ags_server_xml_compose(AgsConnectable *connectable);
-void ags_server_xml_parse(AgsConnectable *connectable,
-			   xmlNode *node);
-gboolean ags_server_is_connected(AgsConnectable *connectable);
-void ags_server_connect(AgsConnectable *connectable);
-void ags_server_disconnect(AgsConnectable *connectable);
-
 void ags_server_real_start(AgsServer *server);
 void ags_server_real_stop(AgsServer *server);
+
+gboolean ags_server_real_listen(AgsServer *server);
+
+void ags_server_xmlrpc_callback(SoupServer *soup_server,
+				SoupMessage *msg,
+				const char *path,
+				GHashTable *query,
+				SoupClientContext *client,
+				AgsServer *server);
 
 /**
  * SECTION:ags_server
@@ -85,11 +80,14 @@ enum{
   PROP_SERVER_PORT,
   PROP_IP4,
   PROP_IP6,
+  PROP_FRONT_CONTROLLER,
+  PROP_CONTROLLER,
 };
 
 enum{
   START,
   STOP,
+  LISTEN,
   LAST_SIGNAL,
 };
 
@@ -117,21 +115,11 @@ ags_server_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_server_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_server_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_server = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsServer",
 					     &ags_server,
 					     0);
-
-    g_type_add_interface_static(ags_type_server,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_server);
   }
@@ -162,7 +150,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The domain to use.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("domain",
 				   i18n_pspec("domain"),
@@ -178,7 +166,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The server port to use.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("server-port",
 				 i18n_pspec("server port"),
@@ -196,7 +184,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The IPv4 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip4",
 				   i18n_pspec("ip4"),
@@ -212,7 +200,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The IPv6 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip6",
 				   i18n_pspec("ip6"),
@@ -223,9 +211,42 @@ ags_server_class_init(AgsServerClass *server)
 				  PROP_IP6,
 				  param_spec);
 
+  /**
+   * AgsServer:front-controller:
+   *
+   * The assigned #AgsFrontController.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("front-controller",
+				   i18n_pspec("assigned  front controller"),
+				   i18n_pspec("The  front controller it is assigned with"),
+				   AGS_TYPE_FRONT_CONTROLLER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FRONT_CONTROLLER,
+				  param_spec);
+  
+  /**
+   * AgsServer:controller:
+   *
+   * The assigned #AgsController providing default settings.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_pointer("controller",
+				    i18n_pspec("assigned controller"),
+				    i18n_pspec("The controller it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROLLER,
+				  param_spec);
+
   /* AgsServer */
   server->start = ags_server_real_start;
   server->stop = ags_server_real_stop;
+
+  server->listen = ags_server_real_listen;
 
   /* signals */
   /**
@@ -234,7 +255,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The ::start signal is emitted as the server starts.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   server_signals[START] =
     g_signal_new("start",
@@ -251,7 +272,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The ::stop signal is emitted as the server stops.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   server_signals[STOP] =
     g_signal_new("stop",
@@ -261,28 +282,26 @@ ags_server_class_init(AgsServerClass *server)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-}
 
-void
-ags_server_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->get_uuid = ags_server_get_uuid;
-  connectable->has_resource = ags_server_has_resource;
 
-  connectable->is_ready = ags_server_is_ready;
-  connectable->add_to_registry = ags_server_add_to_registry;
-  connectable->remove_from_registry = ags_server_remove_from_registry;
-
-  connectable->list_resource = ags_server_list_resource;
-  connectable->xml_compose = ags_server_xml_compose;
-  connectable->xml_parse = ags_server_xml_parse;
-
-  connectable->is_connected = ags_server_is_connected;  
-  connectable->connect = ags_server_connect;
-  connectable->disconnect = ags_server_disconnect;
-
-  connectable->connect_connection = NULL;
-  connectable->disconnect_connection = NULL;
+  /**
+   * AgsServer::listen:
+   * @server: the #AgsServer
+   *
+   * The ::listen signal is emited during listen of server.
+   *
+   * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
+   * 
+   * Since: 3.0.0
+   */
+  server_signals[LISTEN] =
+    g_signal_new("listen",
+		 G_TYPE_FROM_CLASS(server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsServerClass, listen),
+		 NULL, NULL,
+		 ags_cclosure_marshal_BOOLEAN__VOID,
+		 G_TYPE_BOOLEAN, 0);
 }
 
 void
@@ -299,36 +318,26 @@ ags_server_init(AgsServer *server)
   /*  */
   server->server_info = ags_server_info_alloc("localhost", ags_uuid_to_string(server->uuid));
 
-#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
-  server->abyss_server = (TServer *) malloc(sizeof(TServer));
-  server->socket = NULL;
-#else
-  server->abyss_server = NULL;
-  server->socket = NULL;
-#endif
-
   server->ip4 = g_strdup(AGS_SERVER_DEFAULT_INET4_ADDRESS);
   server->ip6 = g_strdup(AGS_SERVER_DEFAULT_INET6_ADDRESS);
-
+  
   server->domain = g_strdup(AGS_SERVER_DEFAULT_DOMAIN);
   server->server_port = AGS_SERVER_DEFAULT_SERVER_PORT;
-  
+
   server->ip4_fd = -1;
   server->ip6_fd = -1;
-  
-#if defined AGS_W32API
+
+  server->ip4_socket = NULL;
+  server->ip6_socket = NULL;
+
   server->ip4_address = NULL;
   server->ip6_address = NULL;
-#else
-  server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
-  memset(server->ip4_address, 0, sizeof(struct sockaddr_in));
   
-  server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
-  memset(server->ip6_address, 0, sizeof(struct sockaddr_in6));
-#endif
+  server->soup_server = NULL;
+  server->auth_module = NULL;
   
-  server->auth_module = AGS_SERVER_DEFAULT_AUTH_MODULE;
-  
+  server->front_controller = NULL;
+
   server->controller = NULL;
 }
 
@@ -424,6 +433,53 @@ ags_server_set_property(GObject *gobject,
       g_rec_mutex_unlock(server_mutex);
     }
     break;
+  case PROP_FRONT_CONTROLLER:
+    {
+      GObject *front_controller;
+
+      front_controller = g_value_get_object(value);
+
+      g_rec_mutex_lock(server_mutex);
+
+      if(server->front_controller == front_controller){
+	g_rec_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      if(server->front_controller != NULL){
+	g_object_unref(server->front_controller);
+      }
+      
+      if(front_controller != NULL){
+	g_object_ref(front_controller);
+      }
+      
+      server->front_controller = front_controller;
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_CONTROLLER:
+    {
+      GObject *controller;
+
+      controller = g_value_get_pointer(value);
+
+      g_rec_mutex_lock(server_mutex);
+
+      if(g_list_find(server->controller, controller) != NULL){
+	g_rec_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      g_rec_mutex_unlock(server_mutex);
+
+      ags_server_add_controller(server,
+				    controller);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -486,6 +542,27 @@ ags_server_get_property(GObject *gobject,
       g_rec_mutex_unlock(server_mutex);
     }
     break;    
+  case PROP_FRONT_CONTROLLER:
+    {
+      g_rec_mutex_lock(server_mutex);
+
+      g_value_set_object(value, server->front_controller);
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_CONTROLLER:
+    {
+      g_rec_mutex_lock(server_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy_deep(server->controller,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -512,159 +589,8 @@ ags_server_finalize(GObject *gobject)
 
   g_free(server->domain);
   
-  g_free(server->ip4);
-  g_free(server->ip6);
-  
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
-}
-
-AgsUUID*
-ags_server_get_uuid(AgsConnectable *connectable)
-{
-  AgsServer *server;
-  
-  AgsUUID *ptr;
-
-  GRecMutex *server_mutex;
-
-  server = AGS_SERVER(connectable);
-
-  /* get server signal mutex */
-  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
-
-  /* get UUID */
-  g_rec_mutex_lock(server_mutex);
-
-  ptr = server->uuid;
-
-  g_rec_mutex_unlock(server_mutex);
-  
-  return(ptr);
-}
-
-gboolean
-ags_server_has_resource(AgsConnectable *connectable)
-{
-  return(FALSE);
-}
-
-gboolean
-ags_server_is_ready(AgsConnectable *connectable)
-{
-  AgsServer *server;
-  
-  gboolean is_ready;
-
-  server = AGS_SERVER(connectable);
-
-  /* check is added */
-  is_ready = ags_server_test_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
-  
-  return(is_ready);
-}
-
-void
-ags_server_add_to_registry(AgsConnectable *connectable)
-{
-  AgsServer *server;
-
-  if(ags_connectable_is_ready(connectable)){
-    return;
-  }
-  
-  server = AGS_SERVER(connectable);
-
-  ags_server_set_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
-}
-
-void
-ags_server_remove_from_registry(AgsConnectable *connectable)
-{
-  AgsServer *server;
-
-  if(!ags_connectable_is_ready(connectable)){
-    return;
-  }
-
-  server = AGS_SERVER(connectable);
-
-  ags_server_unset_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
-}
-
-xmlNode*
-ags_server_list_resource(AgsConnectable *connectable)
-{
-  xmlNode *node;
-  
-  node = NULL;
-
-  //TODO:JK: implement me
-  
-  return(node);
-}
-
-xmlNode*
-ags_server_xml_compose(AgsConnectable *connectable)
-{
-  xmlNode *node;
-  
-  node = NULL;
-
-  //TODO:JK: implement me
-  
-  return(node);
-}
-
-void
-ags_server_xml_parse(AgsConnectable *connectable,
-		      xmlNode *node)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_server_is_connected(AgsConnectable *connectable)
-{
-  AgsServer *server;
-  
-  gboolean is_connected;
-
-  server = AGS_SERVER(connectable);
-
-  /* check is connected */
-  is_connected = ags_server_test_flags(server, AGS_SERVER_CONNECTED);
-  
-  return(is_connected);
-}
-
-void
-ags_server_connect(AgsConnectable *connectable)
-{
-  AgsServer *server;
-  
-  if(ags_connectable_is_connected(connectable)){
-    return;
-  }
-
-  server = AGS_SERVER(connectable);
-
-  ags_server_set_flags(server, AGS_SERVER_CONNECTED);
-}
-
-void
-ags_server_disconnect(AgsConnectable *connectable)
-{
-
-  AgsServer *server;
-
-  if(!ags_connectable_is_connected(connectable)){
-    return;
-  }
-
-  server = AGS_SERVER(connectable);
-  
-  ags_server_unset_flags(server, AGS_SERVER_CONNECTED);
 }
 
 /**
@@ -676,7 +602,7 @@ ags_server_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_server_test_flags(AgsServer *server, guint flags)
@@ -709,7 +635,7 @@ ags_server_test_flags(AgsServer *server, guint flags)
  *
  * Enable a feature of @server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_server_set_flags(AgsServer *server, guint flags)
@@ -740,7 +666,7 @@ ags_server_set_flags(AgsServer *server, guint flags)
  *
  * Disable a feature of @server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_server_unset_flags(AgsServer *server, guint flags)
@@ -773,7 +699,7 @@ ags_server_unset_flags(AgsServer *server, guint flags)
  * 
  * Returns: the allocated #AgsServerInfo-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServerInfo*
 ags_server_info_alloc(gchar *server_name, gchar *uuid)
@@ -788,47 +714,222 @@ ags_server_info_alloc(gchar *server_name, gchar *uuid)
   return(server_info);
 }
 
+/**
+ * ags_server_add_controller:
+ * @server: the #AgsServer
+ * @controller: the #AgsController
+ *
+ * Add @controller to @server.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_server_add_controller(AgsServer *server,
+			  GObject *controller)
+{
+  if(!AGS_IS_SERVER(server) ||
+     !AGS_IS_CONTROLLER(controller)){
+    return;
+  }
+
+  if(g_list_find(server->controller, controller) == NULL){
+    g_object_ref(controller);
+    server->controller = g_list_prepend(server->controller,
+					controller);
+
+    g_object_set(controller,
+		 "server", server,
+		 NULL);
+  }
+}
+
+/**
+ * ags_server_remove_controller:
+ * @server: the #AgsServer
+ * @controller: the #AgsController
+ *
+ * Remove @controller from @server.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_server_remove_controller(AgsServer *server,
+			     GObject *controller)
+{
+  if(!AGS_IS_SERVER(server) ||
+     !AGS_IS_CONTROLLER(controller)){
+    return;
+  }
+
+  if(g_list_find(server->controller, controller) != NULL){
+    server->controller = g_list_remove(server->controller,
+				       controller);
+
+    g_object_set(controller,
+		 "server", NULL,
+		 NULL);
+
+    g_object_unref(controller);
+  }
+}
+
 void
 ags_server_real_start(AgsServer *server)
 {
-  AgsRegistry *registry;
+  gboolean any_address;
+  gboolean ip4_success, ip6_success;
 
-  AgsApplicationContext *application_context;
+  GError *error;
 
-  const char *error;
+  GRecMutex *server_mutex;
 
-  application_context = ags_application_context_get_instance();
+  if(ags_server_test_flags(server, AGS_SERVER_STARTED)){
+    return;
+  }
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  ags_server_set_flags(server, AGS_SERVER_STARTED);
+
+  /* get server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  any_address = ags_server_test_flags(server, AGS_SERVER_ANY_ADDRESS);
   
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(registry));
+  ip4_success = FALSE;
+  ip6_success = FALSE;
+    
+  if(ags_server_test_flags(server, AGS_SERVER_INET4)){
+    ip4_success = TRUE;
 
-#ifndef AGS_W32API
-#if 0
-  //  xmlrpc_registry_set_shutdown(registry,
-  //			       &requestShutdown, &terminationRequested);
-  server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
-  bind(server->socket_fd, server->address, sizeof(struct sockaddr_in));
+    /* create socket */
+    g_rec_mutex_lock(server_mutex);
+      
+    error = NULL;      
+    server->ip4_socket = g_socket_new(G_SOCKET_FAMILY_IPV4,
+				      G_SOCKET_TYPE_STREAM,
+				      G_SOCKET_PROTOCOL_TCP,
+				      &error);
+    server->ip4_fd = g_socket_get_fd(server->ip4_socket);
+      
+    g_socket_set_listen_backlog(server->ip4_socket,
+				AGS_SERVER_DEFAULT_BACKLOG);
+      
+    g_rec_mutex_unlock(server_mutex);
 
-#if defined AGS_WITH_XMLRPC_C
-  SocketUnixCreateFd(server->socket_fd, &(server->socket));
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
 
-  ServerCreateSocket2(server->abyss_server, server->socket, &error);
-  xmlrpc_server_abyss_set_handlers2(server->abyss_server, "/RPC2", registry->registry);
-  ServerInit(server->abyss_server);
-  //  setupSignalHandlers();
+      g_error_free(error);
+    }
+    
+    /* get ip4 */
+    if(any_address){
+      g_rec_mutex_lock(server_mutex);  
 
-  while((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    printf("Waiting for next RPC...\n");
-    ServerRunOnce(server->abyss_server);
-    /* This waits for the next connection, accepts it, reads the
-       HTTP POST request, executes the indicated RPC, and closes
-       the connection.
-    */
-  } 
-#endif /* AGS_WITH_XMLRPC_C */
-#endif
-#endif /* AGS_W32API */
+      server->ip4_address = g_inet_socket_address_new(g_inet_address_new_any(G_SOCKET_FAMILY_IPV4),
+						      server->server_port);
+
+      g_rec_mutex_unlock(server_mutex);  
+    }else{
+      g_rec_mutex_lock(server_mutex);  
+
+      server->ip4_address = g_inet_socket_address_new(g_inet_address_new_from_string(server->ip4),
+						      server->server_port);
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+  }
+
+  if(ags_server_test_flags(server, AGS_SERVER_INET6)){    
+    ip6_success = TRUE;
+  
+    /* create socket */
+    g_rec_mutex_lock(server_mutex);
+      
+    error = NULL;      
+    server->ip6_socket = g_socket_new(G_SOCKET_FAMILY_IPV6,
+					  G_SOCKET_TYPE_STREAM,
+					  G_SOCKET_PROTOCOL_TCP,
+					  &error);
+    server->ip6_fd = g_socket_get_fd(server->ip6_socket);
+
+    g_socket_set_listen_backlog(server->ip6_socket,
+				AGS_SERVER_DEFAULT_BACKLOG);
+
+    g_rec_mutex_unlock(server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+
+    /* get ip6 */
+    if(any_address){
+      g_rec_mutex_lock(server_mutex);
+
+      server->ip6_address = g_inet_socket_address_new(g_inet_address_new_any(G_SOCKET_FAMILY_IPV6),
+						      server->server_port);
+      
+      g_rec_mutex_unlock(server_mutex);
+    }else{
+      g_rec_mutex_lock(server_mutex);
+
+      server->ip6_address = g_inet_socket_address_new(g_inet_address_new_from_string(server->ip6),
+						      server->server_port);
+
+      g_rec_mutex_unlock(server_mutex);
+    }
+  }
+  
+  if(ip4_success != TRUE && ip6_success != TRUE){
+    g_critical("no protocol family");
+
+    return;
+  }
+
+  if(ip4_success){
+    error = NULL;
+    g_socket_bind(server->ip4_socket,
+		  server->ip4_address,
+		  TRUE,
+		  &error);
+    
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+  }
+  
+  if(ip6_success){
+    error = NULL;
+    g_socket_bind(server->ip6_socket,
+		  server->ip6_address,
+		  TRUE,
+		  &error);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  ags_server_set_flags(server, AGS_SERVER_RUNNING);
+
+  g_message("starting to listen on XMLRPC");
+
+  /* create listen thread */
+  server->soup_server = soup_server_new("interface", soup_address_new(server->domain, server->server_port),
+					NULL);
+
+  soup_server_add_handler(server->soup_server,
+			  NULL,
+			  ags_server_xmlrpc_callback,
+			  server,
+			  NULL);
+
+  ags_server_listen(server);
 }
 
 /**
@@ -837,7 +938,7 @@ ags_server_real_start(AgsServer *server)
  * 
  * Start the XMLRPC-C abyss server.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_server_start(AgsServer *server)
@@ -853,23 +954,50 @@ ags_server_start(AgsServer *server)
 void
 ags_server_real_stop(AgsServer *server)
 {
+  GError *error;
+  
   GRecMutex *server_mutex;
 
+  if(!ags_server_test_flags(server, AGS_SERVER_RUNNING)){
+    return;
+  }
+  
   /* get server mutex */
   server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  /* stop */
+  ags_server_set_flags(server, AGS_SERVER_TERMINATING);
+  ags_server_unset_flags(server, AGS_SERVER_RUNNING);
 
   /* close fd */
   g_rec_mutex_lock(server_mutex);
 
+  soup_server_disconnect(server->soup_server);
+  
   if(server->ip4_fd != -1){
-    close(server->ip4_fd);
+    error = NULL;
+    g_socket_close(server->ip4_socket,
+		   &error);
+    g_object_unref(server->ip4_socket);
+
+    server->ip4_socket = NULL;
+    server->ip4_fd = -1;
   }
 
   if(server->ip6_fd != -1){
-    close(server->ip6_fd);
+    error = NULL;
+    g_socket_close(server->ip6_socket,
+		   &error);
+    g_object_unref(server->ip6_socket);
+
+    server->ip6_socket = NULL;
+    server->ip6_fd = -1;
   }
 
-  g_rec_mutex_lock(server_mutex);
+  g_rec_mutex_unlock(server_mutex);
+
+  ags_server_unset_flags(server, (AGS_SERVER_STARTED |
+				  AGS_SERVER_TERMINATING));
 }
 
 /**
@@ -878,7 +1006,7 @@ ags_server_real_stop(AgsServer *server)
  * 
  * Stop the XMLRPC-C abyss server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_server_stop(AgsServer *server)
@@ -899,7 +1027,7 @@ ags_server_stop(AgsServer *server)
  *
  * Returns: the associated #AgsServer if found, else %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServer*
 ags_server_lookup(AgsServerInfo *server_info)
@@ -927,6 +1055,95 @@ ags_server_lookup(AgsServerInfo *server_info)
   return(NULL);
 }
 
+gboolean
+ags_server_real_listen(AgsServer *server)
+{
+  GError *error;
+
+  GRecMutex *server_mutex;
+  
+  if(!ags_server_test_flags(server, AGS_SERVER_STARTED)){
+    return(FALSE);
+  }
+  
+  /* get  server mutex */
+  server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+  if(server->ip4_fd != -1){
+    g_rec_mutex_lock(server_mutex);
+
+    error = NULL;
+    soup_server_listen_socket(server->soup_server,
+			      server->ip4_socket,
+			      SOUP_SERVER_LISTEN_HTTPS,
+			      &error);
+    
+    g_rec_mutex_unlock(server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+  }
+
+  if(server->ip6_fd != -1){
+    g_rec_mutex_lock(server_mutex);
+
+    error = NULL;
+    soup_server_listen_socket(server->soup_server,
+			      server->ip6_socket,
+			      SOUP_SERVER_LISTEN_HTTPS,
+			      &error);
+    
+    g_rec_mutex_unlock(server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+  }  
+  
+  return(FALSE);
+}
+
+/**
+ * ags_server_listen:
+ * @server: the #AgsServer
+ * 
+ * Listen as  server.
+ * 
+ * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_server_listen(AgsServer *server)
+{
+  gboolean created_connection;
+
+  g_return_val_if_fail(AGS_IS_SERVER(server), FALSE);
+  
+  g_object_ref((GObject *) server);
+  g_signal_emit(G_OBJECT(server),
+		server_signals[LISTEN], 0,
+		&created_connection);
+  g_object_unref((GObject *) server);
+
+  return(created_connection);
+}
+
+void
+ags_server_xmlrpc_callback(SoupServer *soup_server,
+			   SoupMessage *msg,
+			   const char *path,
+			   GHashTable *query,
+			   SoupClientContext *client,
+			   AgsServer *server)
+{
+}
+
 /**
  * ags_server_new:
  * @application_context: the #AgsApplicationContext
@@ -935,7 +1152,7 @@ ags_server_lookup(AgsServerInfo *server_info)
  * 
  * Returns: a new #AgsServer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServer*
 ags_server_new()

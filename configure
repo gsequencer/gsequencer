@@ -667,15 +667,6 @@ FAST_TEST_MODE_FALSE
 FAST_TEST_MODE_TRUE
 RUN_FUNCTIONAL_TESTS_FALSE
 RUN_FUNCTIONAL_TESTS_TRUE
-XMLRPC_SERVER_ABYSS_LIBS
-XMLRPC_SERVER_ABYSS_CFLAGS
-XMLRPC_SERVER_CGI_LIBS
-XMLRPC_SERVER_CGI_CFLAGS
-XMLRPC_CLIENT_LIBS
-XMLRPC_CLIENT_CFLAGS
-XMLRPC_UTIL_LIBS
-XMLRPC_UTIL_CFLAGS
-XMLRPC_C_CONFIG
 GTK_LIBS
 GTK_CFLAGS
 CAIRO_LIBS
@@ -690,6 +681,8 @@ WITH_LIBINSTPATCH_FALSE
 WITH_LIBINSTPATCH_TRUE
 LIBINSTPATCH_LIBS
 LIBINSTPATCH_CFLAGS
+LIBSOUP_LIBS
+LIBSOUP_CFLAGS
 GIO_LIBS
 GIO_CFLAGS
 GOBJECT_LIBS
@@ -897,7 +890,6 @@ enable_audio_unit
 enable_wasapi
 enable_libinstpatch
 enable_vst3
-enable_xmlrpc
 enable_x11
 enable_quartz
 enable_run_functional_tests
@@ -959,6 +951,8 @@ GOBJECT_CFLAGS
 GOBJECT_LIBS
 GIO_CFLAGS
 GIO_LIBS
+LIBSOUP_CFLAGS
+LIBSOUP_LIBS
 LIBINSTPATCH_CFLAGS
 LIBINSTPATCH_LIBS
 FONTCONFIG_CFLAGS
@@ -1626,7 +1620,6 @@ Optional Features:
   --enable-wasapi         enable WASAPI (default is no)
   --enable-libinstpatch   enable libinstpatch (default is yes)
   --enable-vst3           enable vst3 (default is no)
-  --enable-xmlrpc         enable xmlrpc (default is no)
   --enable-x11            enable X11 (default is yes)
   --enable-quartz         enable quartz (default is no)
   --enable-run-functional-tests
@@ -1720,6 +1713,10 @@ Some influential environment variables:
               linker flags for GOBJECT, overriding pkg-config
   GIO_CFLAGS  C compiler flags for GIO, overriding pkg-config
   GIO_LIBS    linker flags for GIO, overriding pkg-config
+  LIBSOUP_CFLAGS
+              C compiler flags for LIBSOUP, overriding pkg-config
+  LIBSOUP_LIBS
+              linker flags for LIBSOUP, overriding pkg-config
   LIBINSTPATCH_CFLAGS
               C compiler flags for LIBINSTPATCH, overriding pkg-config
   LIBINSTPATCH_LIBS
@@ -7283,14 +7280,6 @@ if test "${enable_pulse+set}" = set; then :
   enableval=$enable_pulse;
 else
   enable_pulse=yes
-fi
-
-
-# Check whether --enable-xmlrpc was given.
-if test "${enable_xmlrpc+set}" = set; then :
-  enableval=$enable_xmlrpc;
-else
-  enable_xmlrpc=no
 fi
 
 
@@ -22030,6 +22019,100 @@ fi
 
 
 
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBSOUP" >&5
+$as_echo_n "checking for LIBSOUP... " >&6; }
+
+if test -n "$LIBSOUP_CFLAGS"; then
+    pkg_cv_LIBSOUP_CFLAGS="$LIBSOUP_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.68.2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.68.2") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBSOUP_CFLAGS=`$PKG_CONFIG --cflags "libsoup-2.4 >= 2.68.2" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBSOUP_LIBS"; then
+    pkg_cv_LIBSOUP_LIBS="$LIBSOUP_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.68.2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.68.2") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBSOUP_LIBS=`$PKG_CONFIG --libs "libsoup-2.4 >= 2.68.2" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libsoup-2.4 >= 2.68.2" 2>&1`
+        else
+	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libsoup-2.4 >= 2.68.2" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBSOUP_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (libsoup-2.4 >= 2.68.2) were not met:
+
+$LIBSOUP_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables LIBSOUP_CFLAGS
+and LIBSOUP_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables LIBSOUP_CFLAGS
+and LIBSOUP_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	LIBSOUP_CFLAGS=$pkg_cv_LIBSOUP_CFLAGS
+	LIBSOUP_LIBS=$pkg_cv_LIBSOUP_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for atk_value_get_value_and_text in -latk-1.0" >&5
 $as_echo_n "checking for atk_value_get_value_and_text in -latk-1.0... " >&6; }
 if ${ac_cv_lib_atk_1_0_atk_value_get_value_and_text+:} false; then :
@@ -22574,89 +22657,99 @@ fi
 
 
 
-if test "x$enable_xmlrpc" != xno; then :
-  # Extract the first word of "xmlrpc-c-config", so it can be a program name with args.
-set dummy xmlrpc-c-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_XMLRPC_C_CONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$XMLRPC_C_CONFIG"; then
-  ac_cv_prog_XMLRPC_C_CONFIG="$XMLRPC_C_CONFIG" # Let the user override the test.
-else
-  ac_prog_rejected=no
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    if test "$as_dir/$ac_word$ac_exec_ext" = "1"; then
-       ac_prog_rejected=yes
-       continue
-     fi
-    ac_cv_prog_XMLRPC_C_CONFIG="1"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
 
-if test $ac_prog_rejected = yes; then
-  # We found a bogon in the path, so make sure we never use it.
-  set dummy $ac_cv_prog_XMLRPC_C_CONFIG
-  shift
-  if test $# != 0; then
-    # We chose a different compiler from the bogus one.
-    # However, it has the same basename, so the bogon will be chosen
-    # first if we set XMLRPC_C_CONFIG to just the basename; use the full file name.
-    shift
-    ac_cv_prog_XMLRPC_C_CONFIG="$as_dir/$ac_word${1+' '}$@"
-  fi
-fi
-  test -z "$ac_cv_prog_XMLRPC_C_CONFIG" && ac_cv_prog_XMLRPC_C_CONFIG="0"
-fi
-fi
-XMLRPC_C_CONFIG=$ac_cv_prog_XMLRPC_C_CONFIG
-if test -n "$XMLRPC_C_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XMLRPC_C_CONFIG" >&5
-$as_echo "$XMLRPC_C_CONFIG" >&6; }
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GTK" >&5
+$as_echo_n "checking for GTK... " >&6; }
+
+if test -n "$GTK_CFLAGS"; then
+    pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.12\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.12") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-3.0 >= 3.24.12" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GTK_LIBS"; then
+    pkg_cv_GTK_LIBS="$GTK_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.12\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.12") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-3.0 >= 3.24.12" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-fi
 
-
-      XMLRPC_UTIL_CFLAGS=$(xmlrpc-c-config server-util --cflags)
-
-      XMLRPC_UTIL_LIBS=$(xmlrpc-c-config server-util --libs)
-
-      XMLRPC_CLIENT_CFLAGS=$(xmlrpc-c-config client --cflags)
-
-      XMLRPC_CLIENT_LIBS=$(xmlrpc-c-config client --libs)
-
-#      AC_SUBST(XMLRPC_SERVER_CFLAGS, $(xmlrpc-c-config abyss --cflags))
-#      AC_SUBST(XMLRPC_SERVER_LIBS, $(xmlrpc-c-config abyss --libs))
-      XMLRPC_SERVER_CGI_CFLAGS=$(xmlrpc-c-config cgi-server --cflags)
-
-      XMLRPC_SERVER_CGI_LIBS=$(xmlrpc-c-config cgi-server --libs)
-
-      XMLRPC_SERVER_ABYSS_CFLAGS=$(xmlrpc-c-config abyss-server --cflags)
-
-      XMLRPC_SERVER_ABYSS_LIBS=$(xmlrpc-c-config abyss-server --libs)
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: xmlrpc-c enabled" >&5
-$as_echo "$as_me: xmlrpc-c enabled" >&6;}
-
-$as_echo "#define AGS_WITH_XMLRPC_C 1" >>confdefs.h
-
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: xmlrpc-c disabled" >&5
-$as_echo "$as_me: xmlrpc-c disabled" >&6;}
+        _pkg_short_errors_supported=no
 fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-3.0 >= 3.24.12" 2>&1`
+        else
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-3.0 >= 3.24.12" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GTK_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gtk+-3.0 >= 3.24.12) were not met:
+
+$GTK_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GTK_CFLAGS
+and GTK_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GTK_CFLAGS
+and GTK_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	GTK_CFLAGS=$pkg_cv_GTK_CFLAGS
+	GTK_LIBS=$pkg_cv_GTK_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
 
 if test "x$enable_run_functional_tests" == xyes; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: run functional tests enabled" >&5

@@ -90,11 +90,6 @@ AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
 	      [],
 	      [enable_pulse=yes])
 
-AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
-				      [enable xmlrpc (default is no)])],
-	      [],
-	      [enable_xmlrpc=no])
-
 AC_ARG_ENABLE(x11, [AS_HELP_STRING([--enable-x11],
 				   [enable X11 (default is yes)])],
 	      [],
@@ -334,6 +329,10 @@ PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
+PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.68.2])
+AC_SUBST(LIBSOUP_CFLAGS)
+AC_SUBST(LIBSOUP_LIBS)
+
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
@@ -370,21 +369,9 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.12])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AS_IF([test "x$enable_xmlrpc" != xno],
-      [AC_CHECK_PROG([XMLRPC_C_CONFIG], [xmlrpc-c-config], [1], [0], [$PATH], [1])
-      AC_SUBST(XMLRPC_UTIL_CFLAGS, $(xmlrpc-c-config server-util --cflags))
-      AC_SUBST(XMLRPC_UTIL_LIBS, $(xmlrpc-c-config server-util --libs))
-      AC_SUBST(XMLRPC_CLIENT_CFLAGS, $(xmlrpc-c-config client --cflags))
-      AC_SUBST(XMLRPC_CLIENT_LIBS, $(xmlrpc-c-config client --libs))
-#      AC_SUBST(XMLRPC_SERVER_CFLAGS, $(xmlrpc-c-config abyss --cflags))
-#      AC_SUBST(XMLRPC_SERVER_LIBS, $(xmlrpc-c-config abyss --libs))
-      AC_SUBST(XMLRPC_SERVER_CGI_CFLAGS, $(xmlrpc-c-config cgi-server --cflags))
-      AC_SUBST(XMLRPC_SERVER_CGI_LIBS, $(xmlrpc-c-config cgi-server --libs))
-      AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS, $(xmlrpc-c-config abyss-server --cflags))
-      AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS, $(xmlrpc-c-config abyss-server --libs))
-      AC_MSG_NOTICE([xmlrpc-c enabled])
-      AC_DEFINE([AGS_WITH_XMLRPC_C], [1], [Disable if you don't want xmlrpc-c])],
-      AC_MSG_NOTICE([xmlrpc-c disabled]))
+PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.12])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],

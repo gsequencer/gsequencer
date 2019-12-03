@@ -451,6 +451,8 @@ LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
 LIBINTL = @LIBINTL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBSOUP_CFLAGS = @LIBSOUP_CFLAGS@
+LIBSOUP_LIBS = @LIBSOUP_LIBS@
 LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIBXML2_CFLAGS = @LIBXML2_CFLAGS@
@@ -510,15 +512,6 @@ XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMKMF = @XMKMF@
-XMLRPC_CLIENT_CFLAGS = @XMLRPC_CLIENT_CFLAGS@
-XMLRPC_CLIENT_LIBS = @XMLRPC_CLIENT_LIBS@
-XMLRPC_C_CONFIG = @XMLRPC_C_CONFIG@
-XMLRPC_SERVER_ABYSS_CFLAGS = @XMLRPC_SERVER_ABYSS_CFLAGS@
-XMLRPC_SERVER_ABYSS_LIBS = @XMLRPC_SERVER_ABYSS_LIBS@
-XMLRPC_SERVER_CGI_CFLAGS = @XMLRPC_SERVER_CGI_CFLAGS@
-XMLRPC_SERVER_CGI_LIBS = @XMLRPC_SERVER_CGI_LIBS@
-XMLRPC_UTIL_CFLAGS = @XMLRPC_UTIL_CFLAGS@
-XMLRPC_UTIL_LIBS = @XMLRPC_UTIL_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -749,9 +742,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags-audio/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libags-audio/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
