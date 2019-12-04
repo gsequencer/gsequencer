@@ -215,6 +215,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 {
   AgsXmlAuthentication *xml_authentication;
   AgsXmlPasswordStore *xml_password_store;
+  AgsAuthenticationManager *authentication_manager;
   AgsPasswordStoreManager *password_store_manager;
   
   xmlXPathContext *xpath_context; 
@@ -226,8 +227,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
   
   GList *start_password_store, *password_store;
   
-  gchar *current_uuid;
-  gchar *current_token;
+  gchar *current_user_uuid;
+  gchar *current_security_token;
   xmlChar *xpath;
 
   guint i;
@@ -256,8 +257,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
     return(FALSE);
   }
   
-  current_uuid = NULL;
-  current_token = NULL;
+  current_user_uuid = NULL;
+  current_security_token = NULL;
 
   success = FALSE;
   
@@ -332,7 +333,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	  if(!g_ascii_strncasecmp(child->name,
 				  "ags-srv-user-uuid",
 				  18)){
-	    current_uuid = xmlNodeGetContent(child);
+	    current_user_uuid = xmlNodeGetContent(child);
 
 	    break;
 	  }
@@ -350,7 +351,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
     xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
     
     xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
-					current_uuid);
+					current_user_uuid);
     
     g_rec_mutex_lock(xml_authentication_mutex);
     
@@ -377,9 +378,49 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 
     g_free(xpath);
 
+    /* security context */
     if(auth_node != NULL){
+      AgsSecurityContext *security_context;
+      
+      xmlNode *auth_group_list_node;
+      
+      authentication_manager = ags_authentication_manager_get_instance();
+
+      /* get business group */
+      auth_group_list_node = NULL;
+
+      child = auth_node->children;
+
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!g_ascii_strncasecmp(child->name,
+				  "ags-srv-auth-group-list",
+				  24)){
+	    auth_group_list_node = child;
+
+	    break;
+	  }
+	}
+	
+	child = child->next;
+      }
+
+      /* security context */
+      security_context = ags_security_context_new();
+      ags_security_context_parse_business_group(security_context,
+						auth_group_list_node);
+      
+      ags_authentication_manager_insert_user_uuid(authentication_manager,
+						  current_user_uuid,
+						  security_context);
+    }
+
+    /* session */
+    if(auth_node != NULL){
+      xmlNode *session_list_node;
       xmlNode *session_node;
 
+      session_list_node = NULL;
       session_node = NULL;
       
       g_rec_mutex_lock(xml_authentication_mutex);
@@ -389,11 +430,9 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!g_ascii_strncasecmp(child->name,
-				  "ags-srv-auth-session",
-				  21)){
-	    session_node = child;
-	    
-	    current_token = xmlNodeGetContent(child);
+				  "ags-srv-auth-session-list",
+				  26)){
+	    session_list_node = child;
 
 	    break;
 	  }
@@ -402,19 +441,23 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	child = child->next;
       }
 
-      if(current_token == NULL ||
-	 strlen(current_token) != AGS_UUID_STRING_DEFAULT_LENGTH){
-	if(session_node == NULL){
-	  session_node = xmlNewNode(NULL,
-				    "ags-srv-auth-session");
-	  xmlAddChild(auth_node,
-		      session_node);
-	}
+      if(session_list_node == NULL){
+	session_list_node = xmlNewNode(NULL,
+				       "ags-srv-auth-session-list");
+	xmlAddChild(auth_node,
+		    session_list_node);	
+      }
 
-	current_token = g_uuid_string_random();
+      if(session_list_node != NULL){
+	session_node = xmlNewNode(NULL,
+				  "ags-srv-auth-session");
+	xmlAddChild(session_list_node,
+		    session_node);
+
+	current_security_token = g_uuid_string_random();
 
 	xmlNodeSetContent(session_node,
-			  current_token);
+			  current_security_token);
       }
 
       if(session_node != NULL){
@@ -437,17 +480,17 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
     }
   }
 
-  if(current_uuid == NULL ||
-     current_token == NULL){
+  if(current_user_uuid == NULL ||
+     current_security_token == NULL){
     success = FALSE;
   }
   
   if(user_uuid != NULL){
-    user_uuid[0] = current_uuid;
+    user_uuid[0] = current_user_uuid;
   }
 
   if(security_token != NULL){
-    security_token[0] = current_token;
+    security_token[0] = current_security_token;
   }
   
   return(success);
@@ -473,7 +516,7 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 
   GList *start_password_store, *password_store;
 
-  gchar *current_uuid;
+  gchar *current_user_uuid;
 
   gboolean success;
 
@@ -489,7 +532,7 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
     return(FALSE);
   }
 
-  current_uuid = NULL;
+  current_user_uuid = NULL;
   
   success = FALSE;
   

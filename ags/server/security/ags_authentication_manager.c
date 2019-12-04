@@ -375,7 +375,7 @@ ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentica
 }
 
 /**
- * ags_authentication_manager_insert_uuid:
+ * ags_authentication_manager_insert_user_uuid:
  * @authentication_manager: the #AgsAuthenticationManager
  * @user_uuid: the user UUID
  * @security_context: the #AgsSecurityContext
@@ -385,8 +385,8 @@ ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentica
  * Since: 3.0.0
  */
 void
-ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_manager,
-				       gchar *user_uuid, AgsSecurityContext *security_context)
+ags_authentication_manager_insert_user_uuid(AgsAuthenticationManager *authentication_manager,
+					    gchar *user_uuid, AgsSecurityContext *security_context)
 {
   GRecMutex *authentication_manager_mutex;
   
@@ -412,7 +412,7 @@ ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_
 }
 
 /**
- * ags_authentication_manager_remove_uuid:
+ * ags_authentication_manager_remove_user_uuid:
  * @authentication_manager: the #AgsAuthenticationManager
  * @user_uuid: user UUID
  * 
@@ -421,8 +421,8 @@ ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_
  * Since: 3.0.0
  */
 void
-ags_authentication_manager_remove_uuid(AgsAuthenticationManager *authentication_manager,
-				       gchar *user_uuid)
+ags_authentication_manager_remove_user_uuid(AgsAuthenticationManager *authentication_manager,
+					    gchar *user_uuid)
 {
   GRecMutex *authentication_manager_mutex;
   
@@ -468,13 +468,13 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 {
   GList *start_authentication, *authentication;
 
-  gchar *current_token, *current_uuid;
+  gchar *current_security_token, *current_user_uuid;
   
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
 
-  current_uuid = NULL;
-  current_token = NULL;
+  current_user_uuid = NULL;
+  current_security_token = NULL;
   
   while(authentication != NULL){
     GError *error;
@@ -485,14 +485,20 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 		       authentication_module) &&
        ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
 				login, password,
-				&current_uuid, &current_token,
+				&current_user_uuid, &current_security_token,
 				&error)){
+      AgsSecurityContext *security_context;
+      
+      ags_authentication_manager_insert_login(authentication_manager,
+					      login,
+					      current_user_uuid);
+      
       if(user_uuid != NULL){
-	*user_uuid = current_uuid;
+	*user_uuid = current_user_uuid;
       }
 
       if(security_token != NULL){
-	*security_token = current_token;
+	*security_token = current_security_token;
       }
 
       g_list_free_full(start_authentication,
@@ -522,6 +528,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
  * @authentication_module: the authentication module
  * @realm: the realm
  * @login: the login
+ * @security_token: the security token
  * 
  * Get digest of @login.
  * 

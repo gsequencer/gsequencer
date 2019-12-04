@@ -23,9 +23,6 @@
 <!ELEMENT ags-srv-auth-group-list (ags-srv-auth-group*)>
 
 <!ELEMENT ags-srv-auth-group (#CDATA)>
-<!ATTLIST ags-srv-auth-group
-	  permission       CDATA      #REQUIRED
-	  >
 
 <!-- session node -->
 <!ELEMENT ags-srv-auth-session-list (ags-srv-auth-session*)>

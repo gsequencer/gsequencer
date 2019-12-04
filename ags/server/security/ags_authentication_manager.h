@@ -77,10 +77,10 @@ void ags_authentication_manager_remove_login(AgsAuthenticationManager *authentic
 
 AgsSecurityContext* ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentication_manager,
 								gchar *user_uuid);
-void ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_manager,
-					    gchar *user_uuid, AgsSecurityContext *security_context);
-void ags_authentication_manager_remove_uuid(AgsAuthenticationManager *authentication_manager,
-					    gchar *user_uuid);
+void ags_authentication_manager_insert_user_uuid(AgsAuthenticationManager *authentication_manager,
+						 gchar *user_uuid, AgsSecurityContext *security_context);
+void ags_authentication_manager_remove_user_uuid(AgsAuthenticationManager *authentication_manager,
+						 gchar *user_uuid);
 
 /*  */
 gboolean ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,

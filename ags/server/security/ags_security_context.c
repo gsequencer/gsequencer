@@ -19,9 +19,9 @@
 
 #include <ags/server/security/ags_security_context.h>
 
-#include <ags/i18n.h>
-
 #include <stdlib.h>
+
+#include <ags/i18n.h>
 
 void ags_security_context_class_init(AgsSecurityContextClass *security_context);
 void ags_security_context_init(AgsSecurityContext *security_context);
@@ -105,7 +105,7 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
    *
    * The assigned certificates as string.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("certs",
 				   i18n("certificates as string"),
@@ -120,21 +120,32 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
 void
 ags_security_context_init(AgsSecurityContext *security_context)
 {
+  g_rec_mutex_init(&(security_context->obj_mutex));
+
   security_context->certs = NULL;
 
-  security_context->permitted_context = NULL;
+  security_context->server_context_umask = (AGS_SECURITY_CONTEXT_RPC_READ |
+					    AGS_SECURITY_CONTEXT_RPC_WRITE);
+  
+  security_context->business_group = NULL;
+  
   security_context->server_context = NULL;
 }
 
 void
 ags_security_context_set_property(GObject *gobject,
-			guint prop_id,
-			const GValue *value,
-			GParamSpec *param_spec)
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
 {
   AgsSecurityContext *security_context;
 
+  GRecMutex *security_context_mutex;
+  
   security_context = AGS_SECURITY_CONTEXT(gobject);
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
   
   switch(prop_id){
   case PROP_CERTS:
@@ -143,7 +154,11 @@ ags_security_context_set_property(GObject *gobject,
 
       certs = g_value_get_string(value);
 
+      g_rec_mutex_lock(security_context_mutex);
+      
       security_context->certs = g_strdup(certs);
+
+      g_rec_mutex_unlock(security_context_mutex);
     }
     break;
   default:
@@ -154,18 +169,27 @@ ags_security_context_set_property(GObject *gobject,
 
 void
 ags_security_context_get_property(GObject *gobject,
-			guint prop_id,
-			GValue *value,
-			GParamSpec *param_spec)
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
 {
   AgsSecurityContext *security_context;
 
+  GRecMutex *security_context_mutex;
+
   security_context = AGS_SECURITY_CONTEXT(gobject);
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
   
   switch(prop_id){
   case PROP_CERTS:
     {
+      g_rec_mutex_lock(security_context_mutex);
+
       g_value_set_string(value, security_context->certs);
+
+      g_rec_mutex_unlock(security_context_mutex);
     }
     break;
   default:
@@ -185,23 +209,23 @@ ags_security_context_finalize(GObject *gobject)
 
   g_free(security_context->certs);
 
-  /* permitted contex */
-  if(security_context->permitted_context != NULL){
-    strv = security_context->permitted_context;
+  /* business group */
+  if(security_context->business_group != NULL){
+    strv = security_context->business_group;
 
-    for(; *strv != NULL; strv++){
-      free(*strv);
+    for(; strv[0] != NULL; strv++){
+      g_free(strv[0]);
     }
     
-    free(security_context->permitted_context);
+    free(security_context->business_group);
   }
 
   /* server context */
   if(security_context->server_context != NULL){
     strv = security_context->server_context;
 
-    for(; *strv != NULL; strv++){
-      free(*strv);
+    for(; strv[0] != NULL; strv++){
+      g_free(strv[0]);
     }
     
     free(security_context->server_context);
@@ -211,18 +235,209 @@ ags_security_context_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_security_context_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_security_context_parse_business_group:
+ * @security_context: the #AgsSecurityContext
+ * @business_group_list: the xmlNode containing groups
+ * 
+ * Parse @business_group and apply to @security_context.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_security_context_parse_business_group(AgsSecurityContext *security_context,
+					  xmlNode *business_group_list)
+{
+  xmlNode *child;
+
+  guint i;
+  
+  GRecMutex *security_context_mutex;
+  
+  if(!AGS_IS_SECURITY_CONTEXT(security_context)){
+    return;
+  }
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
+
+  /* clear business group */
+  g_rec_mutex_lock(security_context_mutex);
+
+  if(security_context->business_group != NULL){
+    gchar **strv;
+    
+    strv = security_context->business_group;
+
+    for(; strv[0] != NULL; strv++){
+      g_free(strv[0]);
+    }
+    
+    free(security_context->business_group);
+
+    security_context->business_group = NULL;
+  }
+  
+  g_rec_mutex_unlock(security_context_mutex);
+
+  if(business_group_list == NULL){
+    return;
+  }
+  
+  /* read business group */
+  g_rec_mutex_lock(security_context_mutex);
+  
+  if(!g_ascii_strncasecmp(business_group_list->name,
+			  "ags-srv-auth-group-list",
+			  24)){
+    child = business_group_list->children;
+
+    i = 0;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-auth-group",
+				19)){
+	  if(i == 0){
+	    security_context->business_group = (gchar **) malloc(2 * sizeof(gchar *)); 
+	  }else{
+	    security_context->business_group = (gchar **) realloc(security_context->business_group,
+								  (i + 2) * sizeof(gchar *)); 
+	  }
+
+	  security_context->business_group[i] = xmlNodeGetContent(child);
+	  
+	  i++;
+	}
+      }
+      
+      child = child->next;
+    }
+
+    if(i > 0){
+      security_context->business_group[i] = NULL;
+    }
+  }
+
+  g_rec_mutex_unlock(security_context_mutex);
+}
+
+/**
+ * ags_security_context_add_server_context:
+ * @security_context: the #AgsSecurityContext
+ * @server_context: the server context
+ * 
+ * Add @server_context to @security_context.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_security_context_add_server_context(AgsSecurityContext *security_context,
 					gchar *server_context)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  GRecMutex *security_context_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     server_context == NULL){
+    return;
+  }
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
+
+  /* add server context */
+  g_rec_mutex_lock(security_context_mutex);
+
+  i = 0;
+
+  if(security_context->server_context != NULL){
+    i = g_strv_length(security_context->server_context);
+  }
+
+  if(i == 0){
+    security_context->server_context = (gchar **) malloc(2 * sizeof(gchar *));
+  }else{
+    security_context->server_context = (gchar **) malloc((i + 2) * sizeof(gchar *));
+  }
+
+  security_context->server_context[i] = g_strdup(server_context);
+  security_context->server_context[i + 1] = NULL;
+  
+  g_rec_mutex_unlock(security_context_mutex);
 }
 
+/**
+ * ags_security_context_remove_server_context:
+ * @security_context: the #AgsSecurityContext
+ * @server_context: the server context
+ * 
+ * Remove @server_context from @security_context.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_security_context_remove_server_context(AgsSecurityContext *security_context,
 					   gchar *server_context)
 {
-  //TODO:JK: implement me
+  gint position;
+  guint length;
+  guint i, j;
+  
+  GRecMutex *security_context_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     server_context == NULL){
+    return(FALSE);
+  }
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
+
+  /* remove server context */
+  g_rec_mutex_lock(security_context_mutex);
+  
+  position = ags_strv_index(security_context->server_context,
+			    server_context);
+
+  if(position >= 0){
+    length = g_strv_length(security_context->server_context);
+
+    if(length == 1){
+      g_free(security_context->server_context[0]);
+
+      free(security_context->server_context);
+      
+      security_context->server_context = NULL;
+    }else{
+      gchar **strv;
+
+      strv = (gchar **) malloc(length * sizeof(gchar *));
+      
+      for(i = 0, j = 0; i < length - 1; i++, j++){
+	if(i == position){
+	  g_free(security_context->server_context[j]);
+	  
+	  j++;
+	}
+
+	strv[i] = security_context->server_context[j];
+      }
+
+      strv[i] = NULL;
+
+      /* free old strv */
+      free(security_context->business_group);
+
+      security_context->business_group = strv;
+    }
+  }
+  
+  g_rec_mutex_unlock(security_context_mutex);
 
   return(TRUE);
 }
@@ -234,7 +449,7 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
  *
  * Returns: the new #AgsSecurityContext instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSecurityContext*
 ags_security_context_new()

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_SECURITY_CONTEXT                (ags_security_context_get_type())
@@ -31,6 +33,8 @@ G_BEGIN_DECLS
 #define AGS_IS_SECURITY_CONTEXT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SECURITY_CONTEXT))
 #define AGS_IS_SECURITY_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SECURITY_CONTEXT))
 #define AGS_SECURITY_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SECURITY_CONTEXT, AgsSecurityContextClass))
+
+#define AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(obj) (&(((AgsSecurityContext *) obj)->obj_mutex))
 
 typedef struct _AgsSecurityContext AgsSecurityContext;
 typedef struct _AgsSecurityContextClass AgsSecurityContextClass;
@@ -56,10 +60,15 @@ typedef enum{
 struct _AgsSecurityContext
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
   
   gchar *certs;
 
-  gchar **permitted_context;
+  guint server_context_umask;
+  
+  gchar **business_group;
+
   gchar **server_context;
 };
 
@@ -69,6 +78,9 @@ struct _AgsSecurityContextClass
 };
 
 GType ags_security_context_get_type();
+
+void ags_security_context_parse_business_group(AgsSecurityContext *security_context,
+					       xmlNode *business_group_list);
 
 void ags_security_context_add_server_context(AgsSecurityContext *security_context,
 					     gchar *server_context);
