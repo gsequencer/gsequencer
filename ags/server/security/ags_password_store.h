@@ -40,7 +40,7 @@ typedef struct _AgsPasswordStoreInterface AgsPasswordStoreInterface;
 struct _AgsPasswordStoreInterface
 {
   GTypeInterface ginterface;
-
+  
   void (*set_login_name)(AgsPasswordStore *password_store,
 			 GObject *security_context,
 			 gchar *user_uuid,

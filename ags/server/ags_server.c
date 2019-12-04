@@ -1235,6 +1235,8 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 {
   AgsAuthenticationManager *authentication_manager;
 
+  gchar *security_token;
+  
   gboolean success;
   
   authentication_manager = ags_authentication_manager_get_instance();
@@ -1244,8 +1246,27 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 					     username,
 					     password,
 					     NULL,
-					     NULL);
+					     &security_token);
+  
+  if(success){
+    SoupCookie *session_cookie;
 
+    GSList *cookie;
+
+    cookie = NULL;
+    
+    session_cookie = soup_cookie_new("ags-srv-security-token",
+				     security_token,
+				     server->domain,
+				     NULL,
+				     -1);
+    cookie = g_slist_prepend(cookie,
+			     session_cookie);
+    
+    soup_cookies_to_response(cookie,
+			     msg);
+  }
+  
   return(success);
 }
 
@@ -1257,14 +1278,38 @@ ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
 {
   AgsAuthenticationManager *authentication_manager;
 
+  GSList *cookie;
+  
+  gchar *security_token;
   char *digest;
   
   authentication_manager = ags_authentication_manager_get_instance();
 
+  cookie = soup_cookies_from_request(msg);
+
+  security_token = NULL;
+  
+  while(cookie != NULL){
+    char *cookie_name;
+
+    cookie_name = soup_cookie_get_name(cookie->data);
+    
+    if(!g_ascii_strncasecmp(cookie_name,
+			    "ags-srv-security-token",
+			    23)){
+      security_token = soup_cookie_get_value(cookie->data);
+      
+      break;
+    }
+
+    cookie = cookie->next;
+  }
+  
   digest = ags_authentication_manager_get_digest(authentication_manager,
 						 server->auth_module,
 						 server->realm,
-						 username);
+						 username,
+						 security_token);
 
   return(digest);
 }

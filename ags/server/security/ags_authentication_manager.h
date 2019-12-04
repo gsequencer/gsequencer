@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_security_context.h>
 
 G_BEGIN_DECLS
 
@@ -46,6 +47,9 @@ struct _AgsAuthenticationManager
   GRecMutex obj_mutex;
   
   GList *authentication;
+
+  GHashTable *login;
+  GHashTable *user_uuid;
 };
 
 struct _AgsAuthenticationManagerClass
@@ -63,6 +67,22 @@ void ags_authentication_manager_remove_authentication(AgsAuthenticationManager *
 						      GObject *authentication);
 
 /*  */
+gchar* ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
+					       gchar *login);
+void ags_authentication_manager_insert_login(AgsAuthenticationManager *authentication_manager,
+					     gchar *login,
+					     gchar *user_uuid);
+void ags_authentication_manager_remove_login(AgsAuthenticationManager *authentication_manager,
+					     gchar *login);
+
+AgsSecurityContext* ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentication_manager,
+								gchar *user_uuid);
+void ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_manager,
+					    gchar *user_uuid, AgsSecurityContext *security_context);
+void ags_authentication_manager_remove_uuid(AgsAuthenticationManager *authentication_manager,
+					    gchar *user_uuid);
+
+/*  */
 gboolean ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
 					  gchar *authentication_module,
 					  gchar *login,
@@ -73,7 +93,8 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 gchar* ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
 					     gchar *authentication_module,
 					     gchar *realm,
-					     gchar *login);
+					     gchar *login,
+					     gchar *security_token);
 
 gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
 						      GObject *security_context,

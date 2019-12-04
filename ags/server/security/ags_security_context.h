@@ -56,7 +56,7 @@ typedef enum{
 struct _AgsSecurityContext
 {
   GObject gobject;
-
+  
   gchar *certs;
 
   gchar **permitted_context;

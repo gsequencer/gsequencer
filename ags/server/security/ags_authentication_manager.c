@@ -88,6 +88,16 @@ ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager
   g_rec_mutex_init(&(authentication_manager->obj_mutex));
 
   authentication_manager->authentication = NULL;
+
+  authentication_manager->login = g_hash_table_new_full(g_direct_hash,
+							g_str_equal,
+							g_free,
+							g_free);
+
+  authentication_manager->user_uuid = g_hash_table_new_full(g_direct_hash,
+							    g_str_equal,
+							    g_free,
+							    g_object_unref);
 }
 
 void
@@ -213,6 +223,227 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
 }
 
 /**
+ * ags_authentication_manager_lookup_login:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @login: the login
+ * 
+ * Lookup @login.
+ * 
+ * Returns: the user UUID or %NULL
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
+					gchar *login)
+{
+  gchar *user_uuid;
+  
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL){
+    return(NULL);
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  /* lookup login */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  user_uuid = g_hash_table_lookup(authentication_manager->login,
+				  login);
+
+  if(user_uuid != NULL){
+    user_uuid = g_strdup(user_uuid);
+  }
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+  
+  return(user_uuid);
+}
+
+/**
+ * ags_authentication_manager_insert_login:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @login: the login
+ * @user_uuid: the user UUID
+ * 
+ * Insert @login as key and @user_uuid as its value.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_authentication_manager_insert_login(AgsAuthenticationManager *authentication_manager,
+					gchar *login,
+					gchar *user_uuid)
+{
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL ||
+     user_uuid == NULL){
+    return;
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* insert login and user uuid */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  g_hash_table_insert(authentication_manager->login,
+		      g_strdup(login),
+		      g_strdup(user_uuid));
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+}
+
+/**
+ * ags_authentication_manager_remove_login:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @login: the login
+ * 
+ * Remove @login.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_authentication_manager_remove_login(AgsAuthenticationManager *authentication_manager,
+					gchar *login)
+{
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL){
+    return;
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  /* remove login */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  g_hash_table_remove(authentication_manager->login,
+		      login);
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+}
+
+/**
+ * ags_authentication_manager_lookup_user_uuid:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @user_uuid: the user UUID
+ * 
+ * Lookup @user_uuid.
+ * 
+ * Returns: the #AgsSecurityContext or %NULL
+ * 
+ * Since: 3.0.0
+ */
+AgsSecurityContext*
+ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentication_manager,
+					    gchar *user_uuid)
+{
+  AgsSecurityContext *security_context;
+  
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     user_uuid == NULL){
+    return(NULL);
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  /* lookup login */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  security_context = g_hash_table_lookup(authentication_manager->user_uuid,
+					 user_uuid);
+
+  if(security_context != NULL){
+    g_object_ref(security_context);
+  }
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+  
+  return(security_context);
+}
+
+/**
+ * ags_authentication_manager_insert_uuid:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @user_uuid: the user UUID
+ * @security_context: the #AgsSecurityContext
+ * 
+ * Insert @user_uuid as key and @security_context as its value.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_authentication_manager_insert_uuid(AgsAuthenticationManager *authentication_manager,
+				       gchar *user_uuid, AgsSecurityContext *security_context)
+{
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     user_uuid == NULL ||
+     !AGS_IS_SECURITY_CONTEXT(security_context)){
+    return;
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* insert login and user uuid */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  g_object_ref(security_context);
+  
+  g_hash_table_insert(authentication_manager->user_uuid,
+		      g_strdup(user_uuid),
+		      security_context);
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+}
+
+/**
+ * ags_authentication_manager_remove_uuid:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @user_uuid: user UUID
+ * 
+ * Remove @user_uuid.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_authentication_manager_remove_uuid(AgsAuthenticationManager *authentication_manager,
+				       gchar *user_uuid)
+{
+  GRecMutex *authentication_manager_mutex;
+  
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     user_uuid == NULL){
+    return;
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  /* remove user UUID */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  g_hash_table_remove(authentication_manager->user_uuid,
+		      user_uuid);
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+}
+
+/**
  * ags_authentication_manager_login:
  * @authentication_manager: the #AgsAuthenticationManager
  * @authentication_module: the authentication module
@@ -302,7 +533,8 @@ gchar*
 ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
 				      gchar *authentication_module,
 				      gchar *realm,
-				      gchar *login)
+				      gchar *login,
+				      gchar *security_token)
 {
   GList *start_authentication, *authentication;
 
@@ -321,6 +553,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
       current_digest = ags_authentication_get_digest(AGS_AUTHENTICATION(authentication->data),
 						     realm,
 						     login,
+						     security_token,
 						     &error);
 
       if(error != NULL){
@@ -406,7 +639,7 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
  *
  * Returns: the #AgsAuthenticationManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAuthenticationManager*
 ags_authentication_manager_get_instance()
@@ -431,7 +664,7 @@ ags_authentication_manager_get_instance()
  *
  * Returns: a new #AgsAuthenticationManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAuthenticationManager*
 ags_authentication_manager_new()

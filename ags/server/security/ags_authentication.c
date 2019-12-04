@@ -122,6 +122,7 @@ ags_authentication_login(AgsAuthentication *authentication,
  * @authentication: the #AgsAuthentication
  * @realm: the realm
  * @login: the login
+ * @security_token: the security token
  * @error: the #GError-struct
  * 
  * Get digest of @login.
@@ -134,6 +135,7 @@ gchar*
 ags_authentication_get_digest(AgsAuthentication *authentication,
 			      gchar *realm,
 			      gchar *login,
+			      gchar *security_token,
 			      GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -145,6 +147,7 @@ ags_authentication_get_digest(AgsAuthentication *authentication,
   return(authentication_interface->get_digest(authentication,
 					      realm,
 					      login,
+					      security_token,
 					      error));
 }
 

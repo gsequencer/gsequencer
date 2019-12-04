@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/lib/ags_uuid.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_password_store_manager.h>
 #include <ags/server/security/ags_authentication.h>
 #include <ags/server/security/ags_xml_password_store.h>
@@ -53,6 +54,7 @@ gchar* ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 gchar* ags_xml_authentication_get_digest(AgsAuthentication *authentication,
 					 gchar *realm,
 					 gchar *login,
+					 gchar *security_token,
 					 GError **error);
 gchar** ags_xml_authentication_get_groups(AgsAuthentication *authentication,
 					  GObject *security_context,
@@ -414,6 +416,22 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	xmlNodeSetContent(session_node,
 			  current_token);
       }
+
+      if(session_node != NULL){
+	GDateTime *date_time;
+
+	gchar *str;
+	
+	date_time = g_date_time_new_now_utc();
+	
+	str = g_date_time_format_iso8601(date_time);
+	
+	xmlNewProp(session_node,
+		   "last-active",
+		   str);
+
+	g_free(str);
+      }
       
       g_rec_mutex_unlock(xml_authentication_mutex);
     }
@@ -441,9 +459,70 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 			      gchar *login, gchar *security_token,
 			      GError **error)
 {
+  AgsXmlAuthentication *xml_authentication;
+  AgsXmlPasswordStore *xml_password_store;
+  AgsAuthenticationManager *authentication_manager;
+  AgsPasswordStoreManager *password_store_manager;
+
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *auth_node;
+  xmlNode *user_node;
+  xmlNode *child;
+
+  GList *start_password_store, *password_store;
+
+  gchar *current_uuid;
+
+  gboolean success;
+
+  if(login == NULL ||
+     security_token == NULL){
+    return(FALSE);
+  }
+
+  xml_authentication = AGS_XML_AUTHENTICATION(authentication);
+
+  if(xml_authentication->doc == NULL ||
+     xml_authentication->root_node == NULL){
+    return(FALSE);
+  }
+
+  current_uuid = NULL;
+  
+  success = FALSE;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  success = ags_authentication_manager_is_session_active(authentication_manager,
+							 NULL,
+							 login,
+							 security_token);
+
+  if(success){
+    password_store_manager = ags_password_store_manager_get_instance();
+
+    /* password store */
+    xml_password_store = NULL;
+    
+    password_store =
+      start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
+    
+    while(password_store != NULL){
+      if(AGS_IS_XML_PASSWORD_STORE(password_store->data)){
+	xml_password_store = password_store->data;
+	
+	break;
+      }
+      
+      password_store = password_store->next;
+    }
+  }
+  
   //TODO:JK: implement me
 
-  return(FALSE);
+  return(success);
 }
 
 gchar*
@@ -459,6 +538,7 @@ gchar*
 ags_xml_authentication_get_digest(AgsAuthentication *authentication,
 				  gchar *realm,
 				  gchar *login,
+				  gchar *security_token,
 				  GError **error)
 {
   //TODO:JK: implement me
