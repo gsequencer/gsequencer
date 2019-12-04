@@ -34,12 +34,16 @@ G_BEGIN_DECLS
 #define AGS_IS_PASSWORD_STORE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PASSWORD_STORE_MANAGER))
 #define AGS_PASSWORD_STORE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManagerClass))
 
+#define AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsPasswordStoreManager *) obj)->obj_mutex))
+
 typedef struct _AgsPasswordStoreManager AgsPasswordStoreManager;
 typedef struct _AgsPasswordStoreManagerClass AgsPasswordStoreManagerClass;
 
 struct _AgsPasswordStoreManager
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
   
   GList *password_store;
 };

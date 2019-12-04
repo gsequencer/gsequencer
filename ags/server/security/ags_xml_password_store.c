@@ -153,6 +153,8 @@ ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *
 void
 ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store)
 {
+  g_rec_mutex_init(&(xml_password_store->obj_mutex));
+
   xml_password_store->filename = NULL;
   xml_password_store->encoding = NULL;
   xml_password_store->dtd = NULL;

@@ -289,6 +289,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
  * ags_authentication_manager_get_digest:
  * @authentication_manager: the #AgsAuthenticationManager
  * @authentication_module: the authentication module
+ * @realm: the realm
  * @login: the login
  * 
  * Get digest of @login.
@@ -300,6 +301,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 gchar*
 ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
 				      gchar *authentication_module,
+				      gchar *realm,
 				      gchar *login)
 {
   GList *start_authentication, *authentication;
@@ -317,6 +319,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
       error = NULL;
     
       current_digest = ags_authentication_get_digest(AGS_AUTHENTICATION(authentication->data),
+						     realm,
 						     login,
 						     &error);
 

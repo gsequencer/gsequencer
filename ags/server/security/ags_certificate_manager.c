@@ -85,6 +85,8 @@ ags_certificate_manager_class_init(AgsCertificateManagerClass *certificate_manag
 void
 ags_certificate_manager_init(AgsCertificateManager *certificate_manager)
 {
+  g_rec_mutex_init(&(certificate_manager->obj_mutex));
+
   certificate_manager->certificate = NULL;
 }
 
@@ -103,40 +105,123 @@ ags_certificate_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_certificate_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_certificate_manager_get_certificate:
+ * @certificate_manager: the #AgsCertificateManager
+ * 
+ * Get certificate.
+ * 
+ * Returns: the #GList-struct containing #GObject implementing #AgsCertificate
+ * 
+ * Since: 3.0.0
+ */
 GList*
 ags_certificate_manager_get_certificate(AgsCertificateManager *certificate_manager)
 {
-  if(certificate_manager == NULL){
-    certificate_manager = ags_certificate_manager_get_instance();
-  }
+  GList *certificate;
+
+  GRecMutex *certificate_manager_mutex;
   
-  return(certificate_manager->certificate);
+  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager)){
+    return(NULL);
+  }
+
+  /* get certificate manager mutex */
+  certificate_manager_mutex = AGS_CERTIFICATE_MANAGER_GET_OBJ_MUTEX(certificate_manager);
+
+  /* get certificate */
+  g_rec_mutex_lock(certificate_manager_mutex);
+
+  certificate = g_list_copy_deep(certificate_manager->certificate,
+				 g_object_ref,
+				 NULL);
+
+  g_rec_mutex_unlock(certificate_manager_mutex);
+  
+  return(certificate);
 }
 
+/**
+ * ags_certificate_manager_add_certificate:
+ * @certificate_manager: the #AgsCertificateManager
+ * @certificate: the #GObject implementing #AgsCertificate
+ * 
+ * Add @certificate to @certificate_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_certificate_manager_add_certificate(AgsCertificateManager *certificate_manager,
 					GObject *certificate)
 {
-  if(certificate_manager == NULL){
-    certificate_manager = ags_certificate_manager_get_instance();
+  GRecMutex *certificate_manager_mutex;
+  
+  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager) ||
+     !AGS_IS_CERTIFICATE(certificate)){
+    return;
   }
 
-  certificate_manager->certificate = g_list_prepend(certificate_manager->certificate,
-						    certificate);
+  /* get certificate manager mutex */
+  certificate_manager_mutex = AGS_CERTIFICATE_MANAGER_GET_OBJ_MUTEX(certificate_manager);
+
+  /* add certificate */
+  g_rec_mutex_lock(certificate_manager_mutex);
+
+  if(g_list_find(certificate_manager->certificate, certificate) == NULL){
+    certificate_manager->certificate = g_list_prepend(certificate_manager->certificate,
+						      certificate);
+    g_object_ref(certificate);
+  }
+
+  g_rec_mutex_unlock(certificate_manager_mutex);
 }
 
+/**
+ * ags_certificate_manager_remove_certificate:
+ * @certificate_manager: the #AgsCertificateManager
+ * @certificate: the #GObject implementing #AgsCertificate
+ * 
+ * Remove @certificate from @certificate_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_certificate_manager_remove_certificate(AgsCertificateManager *certificate_manager,
 					   GObject *certificate)
 {
-  if(certificate_manager == NULL){
-    certificate_manager = ags_certificate_manager_get_instance();
+  GRecMutex *certificate_manager_mutex;
+  
+  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager) ||
+     !AGS_IS_CERTIFICATE(certificate)){
+    return;
   }
 
-  certificate_manager->certificate = g_list_remove(certificate_manager->certificate,
-						   certificate);
+  /* get certificate manager mutex */
+  certificate_manager_mutex = AGS_CERTIFICATE_MANAGER_GET_OBJ_MUTEX(certificate_manager);
+
+  /* remove certificate */
+  g_rec_mutex_lock(certificate_manager_mutex);
+
+  if(g_list_find(certificate_manager->certificate, certificate) != NULL){
+    certificate_manager->certificate = g_list_remove(certificate_manager->certificate,
+						     certificate);
+    g_object_unref(certificate);
+  }
+
+  g_rec_mutex_unlock(certificate_manager_mutex);
 }
 
+/**
+ * ags_certificate_manager_verify_certificate:
+ * @certificate_manager: the #AgsCertificateManager
+ * @certs: the certs
+ * 
+ * Verify @certs.
+ * 
+ * Returns: %TRUE if valid, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_manager,
 					   gchar *certs)
@@ -153,22 +238,20 @@ ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_ma
  *
  * Returns: the #AgsCertificateManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCertificateManager*
 ags_certificate_manager_get_instance()
 {
   static GRecMutex mutex;
 
-  g_mutex_lock(&(mutex));
+  g_mutex_lock(&mutex);
 
   if(ags_certificate_manager == NULL){
     ags_certificate_manager = ags_certificate_manager_new();
-
-    g_mutex_unlock(&(mutex));
-  }else{
-    g_mutex_unlock(&(mutex));
   }
+  
+  g_mutex_unlock(&mutex);
 
   return(ags_certificate_manager);
 }
@@ -180,7 +263,7 @@ ags_certificate_manager_get_instance()
  *
  * Returns: a new #AgsCertificateManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCertificateManager*
 ags_certificate_manager_new()

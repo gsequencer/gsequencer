@@ -34,12 +34,16 @@ G_BEGIN_DECLS
 #define AGS_IS_CERTIFICATE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CERTIFICATE_MANAGER))
 #define AGS_CERTIFICATE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_CERTIFICATE_MANAGER, AgsCertificateManagerClass))
 
+#define AGS_CERTIFICATE_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsCertificateManager *) obj)->obj_mutex))
+
 typedef struct _AgsCertificateManager AgsCertificateManager;
 typedef struct _AgsCertificateManagerClass AgsCertificateManagerClass;
 
 struct _AgsCertificateManager
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
   
   GList *certificate;
 };

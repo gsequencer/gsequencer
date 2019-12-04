@@ -120,6 +120,7 @@ ags_authentication_login(AgsAuthentication *authentication,
 /**
  * ags_authentication_get_digest:
  * @authentication: the #AgsAuthentication
+ * @realm: the realm
  * @login: the login
  * @error: the #GError-struct
  * 
@@ -131,6 +132,7 @@ ags_authentication_login(AgsAuthentication *authentication,
  */
 gchar*
 ags_authentication_get_digest(AgsAuthentication *authentication,
+			      gchar *realm,
 			      gchar *login,
 			      GError **error)
 {
@@ -141,6 +143,7 @@ ags_authentication_get_digest(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->get_digest, NULL);
 
   return(authentication_interface->get_digest(authentication,
+					      realm,
 					      login,
 					      error));
 }

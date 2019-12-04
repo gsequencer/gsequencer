@@ -72,6 +72,7 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 
 gchar* ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
 					     gchar *authentication_module,
+					     gchar *realm,
 					     gchar *login);
 
 gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,

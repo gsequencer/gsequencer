@@ -114,6 +114,8 @@ ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *certific
 void
 ags_xml_certificate_init(AgsXmlCertificate *xml_certificate)
 {
+  g_rec_mutex_init(&(xml_certificate->obj_mutex));
+
   xml_certificate->filename = NULL;
   xml_certificate->encoding = NULL;
   xml_certificate->dtd = NULL;

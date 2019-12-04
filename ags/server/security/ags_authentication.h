@@ -56,6 +56,7 @@ struct _AgsAuthenticationInterface
 			   GError **error);
 
   gchar* (*get_digest)(AgsAuthentication *authentication,
+		       gchar *realm,
 		       gchar *login,
 		       GError **error);
   
@@ -98,6 +99,7 @@ gchar* ags_authentication_generate_token(AgsAuthentication *authentication,
 					 GError **error);
 
 gchar* ags_authentication_get_digest(AgsAuthentication *authentication,
+				     gchar *realm,
 				     gchar *login,
 				     GError **error);
 

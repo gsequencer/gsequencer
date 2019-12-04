@@ -19,7 +19,11 @@
 
 #include <ags/server/security/ags_xml_authentication.h>
 
+#include <ags/lib/ags_uuid.h>
+
+#include <ags/server/security/ags_password_store_manager.h>
 #include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_xml_password_store.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -46,6 +50,10 @@ gboolean ags_xml_authentication_logout(AgsAuthentication *authentication,
 				       GError **error); 
 gchar* ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 					     GError **error);
+gchar* ags_xml_authentication_get_digest(AgsAuthentication *authentication,
+					 gchar *realm,
+					 gchar *login,
+					 GError **error);
 gchar** ags_xml_authentication_get_groups(AgsAuthentication *authentication,
 					  GObject *security_context,
 					  gchar *login,
@@ -142,6 +150,8 @@ ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface 
   
   authentication->generate_token = ags_xml_authentication_generate_token;
   
+  authentication->get_digest = ags_xml_authentication_get_digest;
+
   authentication->get_groups = ags_xml_authentication_get_groups;
   
   authentication->get_permission = ags_xml_authentication_get_permission;
@@ -152,6 +162,8 @@ ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface 
 void
 ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication)
 {
+  g_rec_mutex_init(&(xml_authentication->obj_mutex));
+
   xml_authentication->filename = NULL;
   xml_authentication->encoding = NULL;
   xml_authentication->dtd = NULL;
@@ -175,14 +187,21 @@ ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authenticati
 {
   static gchar **authentication_module = NULL;
 
-  if(authentication_module == NULL){
-    authentication_module = (gchar **) malloc(3 * sizeof(gchar *));
+  static GMutex mutex;
 
-    authentication_module[0] = "ags-base-authentication";
-    authentication_module[1] = "ags-xml-authentication";
-    authentication_module[2] = NULL;
+  g_mutex_lock(&mutex);
+  
+  if(authentication_module == NULL){
+    authentication_module = (gchar **) malloc(4 * sizeof(gchar *));
+
+    authentication_module[0] = "ags-basic-authentication";
+    authentication_module[1] = "ags-digest-authentication";
+    authentication_module[2] = "ags-xml-authentication";
+    authentication_module[3] = NULL;
   }
   
+  g_mutex_unlock(&mutex);
+
   return(authentication_module);
 }
 
@@ -193,32 +212,227 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 			     GError **error)
 {
   AgsXmlAuthentication *xml_authentication;
-
+  AgsXmlPasswordStore *xml_password_store;
+  AgsPasswordStoreManager *password_store_manager;
+  
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
   xmlNode **node;
   xmlNode *auth_node;
   xmlNode *user_node;
-
+  xmlNode *child;
+  
+  GList *start_password_store, *password_store;
+  
   gchar *current_uuid;
   gchar *current_token;
   xmlChar *xpath;
 
   guint i;
+  gboolean success;
+
+  GRecMutex *xml_authentication_mutex;
+  GRecMutex *xml_password_store_mutex;
+  
+  if(user_uuid != NULL){
+    user_uuid[0] = NULL;
+  }
+
+  if(security_token != NULL){
+    security_token[0] = NULL;
+  }
   
   if(login == NULL ||
      password == NULL){
-
-    return(NULL);
+    return(FALSE);
   }    
   
   xml_authentication = AGS_XML_AUTHENTICATION(authentication);
 
+  if(xml_authentication->doc == NULL ||
+     xml_authentication->root_node == NULL){
+    return(FALSE);
+  }
+  
   current_uuid = NULL;
   current_token = NULL;
 
+  success = FALSE;
+  
+  password_store_manager = ags_password_store_manager_get_instance();
 
-  return(FALSE);
+  success = ags_password_store_manager_check_password(password_store_manager,
+						      login,
+						      password);
+
+  if(success){
+    /* password store */
+    xml_password_store = NULL;
+    
+    password_store =
+      start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
+
+    while(password_store != NULL){
+      if(AGS_IS_XML_PASSWORD_STORE(password_store->data)){
+	xml_password_store = password_store->data;
+	
+	break;
+      }
+      
+      password_store = password_store->next;
+    }
+
+    /* uuid */
+    user_node = NULL;
+
+    if(xml_password_store != NULL){
+      xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+      
+      xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-login[text() = '%s']",
+					  login);
+
+      g_rec_mutex_lock(xml_password_store_mutex);
+      
+      xpath_context = xmlXPathNewContext(xml_password_store->doc);
+      xpath_object = xmlXPathEval(xpath,
+				  xpath_context);
+
+      if(xpath_object->nodesetval != NULL){
+	node = xpath_object->nodesetval->nodeTab;
+
+	for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	  if(node[i]->type == XML_ELEMENT_NODE){
+	    user_node = node[i]->parent;
+
+	    break;
+	  }
+	}
+      }
+
+      g_rec_mutex_unlock(xml_password_store_mutex);
+
+      xmlXPathFreeObject(xpath_object);
+      xmlXPathFreeContext(xpath_context);
+
+      g_free(xpath);
+    }
+    
+    g_list_free_full(start_password_store,
+		     g_object_unref);
+
+    if(user_node != NULL){
+      g_rec_mutex_lock(xml_password_store_mutex);
+
+      child = user_node->children;
+
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!g_ascii_strncasecmp(child->name,
+				  "ags-srv-user-uuid",
+				  18)){
+	    current_uuid = xmlNodeGetContent(child);
+
+	    break;
+	  }
+	}
+	
+	child = child->next;
+      }
+      
+      g_rec_mutex_unlock(xml_password_store_mutex);
+    }
+    
+    /* session */
+    auth_node = NULL;
+    
+    xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
+    
+    xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
+					current_uuid);
+    
+    g_rec_mutex_lock(xml_authentication_mutex);
+    
+    xpath_context = xmlXPathNewContext(xml_authentication->doc);
+    xpath_object = xmlXPathEval(xpath,
+				xpath_context);
+
+    if(xpath_object->nodesetval != NULL){
+      node = xpath_object->nodesetval->nodeTab;
+
+      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	if(node[i]->type == XML_ELEMENT_NODE){
+	  auth_node = node[i]->parent;
+
+	  break;
+	}
+      }
+    }
+
+    g_rec_mutex_unlock(xml_authentication_mutex);
+
+    xmlXPathFreeObject(xpath_object);
+    xmlXPathFreeContext(xpath_context);
+
+    g_free(xpath);
+
+    if(auth_node != NULL){
+      xmlNode *session_node;
+
+      session_node = NULL;
+      
+      g_rec_mutex_lock(xml_authentication_mutex);
+
+      child = auth_node->children;
+
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!g_ascii_strncasecmp(child->name,
+				  "ags-srv-auth-session",
+				  21)){
+	    session_node = child;
+	    
+	    current_token = xmlNodeGetContent(child);
+
+	    break;
+	  }
+	}
+	
+	child = child->next;
+      }
+
+      if(current_token == NULL ||
+	 strlen(current_token) != AGS_UUID_STRING_DEFAULT_LENGTH){
+	if(session_node == NULL){
+	  session_node = xmlNewNode(NULL,
+				    "ags-srv-auth-session");
+	  xmlAddChild(auth_node,
+		      session_node);
+	}
+
+	current_token = g_uuid_string_random();
+
+	xmlNodeSetContent(session_node,
+			  current_token);
+      }
+      
+      g_rec_mutex_unlock(xml_authentication_mutex);
+    }
+  }
+
+  if(current_uuid == NULL ||
+     current_token == NULL){
+    success = FALSE;
+  }
+  
+  if(user_uuid != NULL){
+    user_uuid[0] = current_uuid;
+  }
+
+  if(security_token != NULL){
+    security_token[0] = current_token;
+  }
+  
+  return(success);
 }
 
 gboolean
@@ -235,6 +449,17 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 gchar*
 ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 				      GError **error)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+gchar*
+ags_xml_authentication_get_digest(AgsAuthentication *authentication,
+				  gchar *realm,
+				  gchar *login,
+				  GError **error)
 {
   //TODO:JK: implement me
 

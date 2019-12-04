@@ -1263,6 +1263,7 @@ ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
 
   digest = ags_authentication_manager_get_digest(authentication_manager,
 						 server->auth_module,
+						 server->realm,
 						 username);
 
   return(digest);
