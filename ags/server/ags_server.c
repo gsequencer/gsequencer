@@ -1011,7 +1011,7 @@ ags_server_real_start(AgsServer *server)
 						    SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
 						    SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK, ags_server_xmlrpc_digest_auth_callback,
 						    SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA, server,
-						    SOUP_AUTH_DOMAIN_ADD_PATH, "/ags-xmlrpc",
+						    SOUP_AUTH_DOMAIN_ADD_PATH, AGS_CONTROLLER_BASE_PATH,
 						    NULL);
   soup_server_add_auth_domain(server->soup_server, server->auth_domain);
   

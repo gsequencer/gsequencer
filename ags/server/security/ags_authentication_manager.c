@@ -92,12 +92,7 @@ ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager
   authentication_manager->login = g_hash_table_new_full(g_direct_hash,
 							g_str_equal,
 							g_free,
-							g_free);
-
-  authentication_manager->user_uuid = g_hash_table_new_full(g_direct_hash,
-							    g_str_equal,
-							    g_free,
-							    g_object_unref);
+							ags_login_info_unref);
 }
 
 void
@@ -112,8 +107,98 @@ ags_authentication_manager_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
+  if(authentication_manager->login != NULL){
+    g_hash_table_destroy(authentication_manager->login);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_authentication_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_login_info_alloc:
+ * 
+ * Alloc #AgsLoginInfo-struct.
+ * 
+ * Returns: the newly allocated #AgsLoginInfo-struct
+ * 
+ * Since: 3.0.0
+ */
+AgsLoginInfo*
+ags_login_info_alloc()
+{
+  AgsLoginInfo *login_info;
+
+  login_info = (AgsLoginInfo *) malloc(sizeof(AgsLoginInfo));
+
+  login_info->ref_count = 0;
+  login_info->active_session_count = 0;
+
+  login_info->user_uuid = NULL;
+
+  login_info->security_context = NULL;
+
+  return(login_info);
+}
+
+/**
+ * ags_login_info_free:
+ * @login_info: the #AgsLoginInfo-struct
+ * 
+ * Free @login_info.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_login_info_free(AgsLoginInfo *login_info)
+{
+  if(login_info == NULL){
+    return;
+  }
+
+  g_free(login_info->user_uuid);
+  
+  g_object_unref(login_info->security_context);
+}
+
+/**
+ * ags_login_info_ref:
+ * @login_info: the #AgsLoginInfo-struct
+ * 
+ * Increase ref-count of @login_info.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_login_info_ref(AgsLoginInfo *login_info)
+{
+  if(login_info == NULL){
+    return;
+  }
+
+  login_info->ref_count += 1;
+}
+
+/**
+ * ags_login_info_unref:
+ * @login_info: the #AgsLoginInfo-struct
+ * 
+ * Decrease ref-count of @login_info and free the struct if it drops to 0.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_login_info_unref(AgsLoginInfo *login_info)
+{
+  if(login_info == NULL){
+    return;
+  }
+
+  login_info->ref_count -= 1;
+
+  if(login_info->ref_count <= 0){
+    ags_login_info_free(login_info);
+  }
 }
 
 /**
@@ -229,15 +314,15 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
  * 
  * Lookup @login.
  * 
- * Returns: the user UUID or %NULL
+ * Returns: the user #AgsLoginInfo-struct or %NULL
  * 
  * Since: 3.0.0
  */
-gchar*
+AgsLoginInfo*
 ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
 					gchar *login)
 {
-  gchar *user_uuid;
+  AgsLoginInfo *login_info;
   
   GRecMutex *authentication_manager_mutex;
   
@@ -252,38 +337,38 @@ ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication
   /* lookup login */
   g_rec_mutex_lock(authentication_manager_mutex);
 
-  user_uuid = g_hash_table_lookup(authentication_manager->login,
-				  login);
+  login_info = g_hash_table_lookup(authentication_manager->login,
+				   login);
 
-  if(user_uuid != NULL){
-    user_uuid = g_strdup(user_uuid);
+  if(login_info != NULL){
+    ags_login_info_ref(login_info);
   }
   
   g_rec_mutex_unlock(authentication_manager_mutex);
   
-  return(user_uuid);
+  return(login_info);
 }
 
 /**
  * ags_authentication_manager_insert_login:
  * @authentication_manager: the #AgsAuthenticationManager
  * @login: the login
- * @user_uuid: the user UUID
+ * @login_info: the #AgsLoginInfo-struct
  * 
- * Insert @login as key and @user_uuid as its value.
+ * Insert @login as key and @login_info as its value.
  * 
  * Since: 3.0.0
  */
 void
 ags_authentication_manager_insert_login(AgsAuthenticationManager *authentication_manager,
 					gchar *login,
-					gchar *user_uuid)
+					AgsLoginInfo *login_info)
 {
   GRecMutex *authentication_manager_mutex;
   
   if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
      login == NULL ||
-     user_uuid == NULL){
+     login_info == NULL){
     return;
   }
 
@@ -293,9 +378,11 @@ ags_authentication_manager_insert_login(AgsAuthenticationManager *authentication
   /* insert login and user uuid */
   g_rec_mutex_lock(authentication_manager_mutex);
 
+  ags_login_info_ref(login_info);
+  
   g_hash_table_insert(authentication_manager->login,
 		      g_strdup(login),
-		      g_strdup(user_uuid));
+		      login_info);
   
   g_rec_mutex_unlock(authentication_manager_mutex);
 }
@@ -333,117 +420,6 @@ ags_authentication_manager_remove_login(AgsAuthenticationManager *authentication
 }
 
 /**
- * ags_authentication_manager_lookup_user_uuid:
- * @authentication_manager: the #AgsAuthenticationManager
- * @user_uuid: the user UUID
- * 
- * Lookup @user_uuid.
- * 
- * Returns: the #AgsSecurityContext or %NULL
- * 
- * Since: 3.0.0
- */
-AgsSecurityContext*
-ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentication_manager,
-					    gchar *user_uuid)
-{
-  AgsSecurityContext *security_context;
-  
-  GRecMutex *authentication_manager_mutex;
-  
-  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
-     user_uuid == NULL){
-    return(NULL);
-  }
-
-  /* get authentication manager mutex */
-  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
-  
-  /* lookup login */
-  g_rec_mutex_lock(authentication_manager_mutex);
-
-  security_context = g_hash_table_lookup(authentication_manager->user_uuid,
-					 user_uuid);
-
-  if(security_context != NULL){
-    g_object_ref(security_context);
-  }
-  
-  g_rec_mutex_unlock(authentication_manager_mutex);
-  
-  return(security_context);
-}
-
-/**
- * ags_authentication_manager_insert_user_uuid:
- * @authentication_manager: the #AgsAuthenticationManager
- * @user_uuid: the user UUID
- * @security_context: the #AgsSecurityContext
- * 
- * Insert @user_uuid as key and @security_context as its value.
- * 
- * Since: 3.0.0
- */
-void
-ags_authentication_manager_insert_user_uuid(AgsAuthenticationManager *authentication_manager,
-					    gchar *user_uuid, AgsSecurityContext *security_context)
-{
-  GRecMutex *authentication_manager_mutex;
-  
-  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
-     user_uuid == NULL ||
-     !AGS_IS_SECURITY_CONTEXT(security_context)){
-    return;
-  }
-
-  /* get authentication manager mutex */
-  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
-
-  /* insert login and user uuid */
-  g_rec_mutex_lock(authentication_manager_mutex);
-
-  g_object_ref(security_context);
-  
-  g_hash_table_insert(authentication_manager->user_uuid,
-		      g_strdup(user_uuid),
-		      security_context);
-  
-  g_rec_mutex_unlock(authentication_manager_mutex);
-}
-
-/**
- * ags_authentication_manager_remove_user_uuid:
- * @authentication_manager: the #AgsAuthenticationManager
- * @user_uuid: user UUID
- * 
- * Remove @user_uuid.
- * 
- * Since: 3.0.0
- */
-void
-ags_authentication_manager_remove_user_uuid(AgsAuthenticationManager *authentication_manager,
-					    gchar *user_uuid)
-{
-  GRecMutex *authentication_manager_mutex;
-  
-  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
-     user_uuid == NULL){
-    return;
-  }
-
-  /* get authentication manager mutex */
-  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
-  
-  /* remove user UUID */
-  g_rec_mutex_lock(authentication_manager_mutex);
-
-  g_hash_table_remove(authentication_manager->user_uuid,
-		      user_uuid);
-  
-  g_rec_mutex_unlock(authentication_manager_mutex);
-}
-
-/**
  * ags_authentication_manager_login:
  * @authentication_manager: the #AgsAuthenticationManager
  * @authentication_module: the authentication module
@@ -466,6 +442,8 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 				 gchar **user_uuid,
 				 gchar **security_token)
 {
+  AgsSecurityContext *current_security_context;
+  
   GList *start_authentication, *authentication;
 
   gchar *current_security_token, *current_user_uuid;
@@ -487,12 +465,6 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 				login, password,
 				&current_user_uuid, &current_security_token,
 				&error)){
-      AgsSecurityContext *security_context;
-      
-      ags_authentication_manager_insert_login(authentication_manager,
-					      login,
-					      current_user_uuid);
-      
       if(user_uuid != NULL){
 	*user_uuid = current_user_uuid;
       }
@@ -501,6 +473,76 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 	*security_token = current_security_token;
       }
 
+      g_list_free_full(start_authentication,
+		       g_object_unref);
+      
+      return(TRUE);
+    }
+
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
+    
+    authentication = authentication->next;
+  }
+
+  g_list_free_full(start_authentication,
+		   g_object_unref);
+  
+  return(FALSE);
+}
+
+/**
+ * ags_authentication_manager_logout:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * @security_context: the #AgsSecurityContext
+ * @login: the login
+ * @security_token: the security token
+ * 
+ * Logout.
+ *
+ * Returns: %TRUE if logout was successful, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manager,
+				  GObject *security_context,
+				  gchar *login,
+				  gchar *security_token)
+{
+  AgsSecurityContext *current_security_context;
+  
+  GList *start_authentication, *authentication;
+
+  authentication =
+    start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+  
+  while(authentication != NULL){
+    GError *error;
+
+    error = NULL;
+    
+    if(ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
+					    security_context,
+					    login,
+					    security_token,
+					    &error)){
+      error = NULL;
+      ags_authentication_logout(AGS_AUTHENTICATION(authentication->data),
+				security_context,
+				login,
+				security_token,
+				&error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+	
+	g_error_free(error);
+      }
+      
       g_list_free_full(start_authentication,
 		       g_object_unref);
       

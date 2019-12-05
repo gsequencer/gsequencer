@@ -21,9 +21,9 @@
 
 #include <ags/server/ags_server.h>
 
-#include <ags/i18n.h>
-
 #include <stdlib.h>
+
+#include <ags/i18n.h>
 
 void ags_controller_class_init(AgsControllerClass *controller);
 void ags_controller_init(AgsController *controller);
@@ -146,8 +146,9 @@ ags_controller_init(AgsController *controller)
   controller->server = NULL;
 
   controller->context_path = NULL;
-
-  controller->resource = g_hash_table_new_full(g_str_hash, g_str_equal,
+  
+  controller->resource = g_hash_table_new_full(g_direct_hash,
+					       g_str_equal,
 					       g_free,
 					       (GDestroyNotify) ags_controller_resource_free);
 }

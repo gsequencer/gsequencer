@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 
 typedef struct _AgsAuthenticationManager AgsAuthenticationManager;
 typedef struct _AgsAuthenticationManagerClass AgsAuthenticationManagerClass;
+typedef struct _AgsLoginInfo AgsLoginInfo;
 
 struct _AgsAuthenticationManager
 {
@@ -49,7 +50,6 @@ struct _AgsAuthenticationManager
   GList *authentication;
 
   GHashTable *login;
-  GHashTable *user_uuid;
 };
 
 struct _AgsAuthenticationManagerClass
@@ -57,7 +57,23 @@ struct _AgsAuthenticationManagerClass
   GObjectClass gobject;
 };
 
+struct _AgsLoginInfo
+{
+  gint ref_count;
+  gint active_session_count;
+  
+  gchar *user_uuid;
+
+  AgsSecurityContext *security_context;
+};
+
 GType ags_authentication_manager_get_type(void);
+
+AgsLoginInfo* ags_login_info_alloc();
+void ags_login_info_free(AgsLoginInfo *login_info);
+
+void ags_login_info_ref(AgsLoginInfo *login_info);
+void ags_login_info_unref(AgsLoginInfo *login_info);
 
 GList* ags_authentication_manager_get_authentication(AgsAuthenticationManager *authentication_manager);
 
@@ -66,21 +82,14 @@ void ags_authentication_manager_add_authentication(AgsAuthenticationManager *aut
 void ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authentication_manager,
 						      GObject *authentication);
 
-/*  */
-gchar* ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
-					       gchar *login);
+/* login */
+AgsLoginInfo* ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
+						      gchar *login);
 void ags_authentication_manager_insert_login(AgsAuthenticationManager *authentication_manager,
 					     gchar *login,
-					     gchar *user_uuid);
+					     AgsLoginInfo *login_info);
 void ags_authentication_manager_remove_login(AgsAuthenticationManager *authentication_manager,
 					     gchar *login);
-
-AgsSecurityContext* ags_authentication_manager_lookup_user_uuid(AgsAuthenticationManager *authentication_manager,
-								gchar *user_uuid);
-void ags_authentication_manager_insert_user_uuid(AgsAuthenticationManager *authentication_manager,
-						 gchar *user_uuid, AgsSecurityContext *security_context);
-void ags_authentication_manager_remove_user_uuid(AgsAuthenticationManager *authentication_manager,
-						 gchar *user_uuid);
 
 /*  */
 gboolean ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
@@ -89,6 +98,11 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 					  gchar *password,
 					  gchar **user_uuid,
 					  gchar **security_token);
+
+gboolean ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manager,
+					   GObject *security_context,
+					   gchar *login,
+					   gchar *security_token);
 
 gchar* ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_manager,
 					     gchar *authentication_module,

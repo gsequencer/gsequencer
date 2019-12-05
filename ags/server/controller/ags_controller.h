@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 
 #define AGS_CONTROLLER_GET_OBJ_MUTEX(obj) (&(((AgsController *) obj)->obj_mutex))
 
-#define AGS_CONTROLLER_BASE_PATH "/ags-server"
+#define AGS_CONTROLLER_BASE_PATH "/ags-xmlrpc"
 
 typedef struct _AgsController AgsController;
 typedef struct _AgsControllerClass AgsControllerClass;
@@ -49,7 +49,7 @@ struct _AgsController
   GObject *server;
 
   gchar *context_path;
-
+  
   GHashTable *resource;
 };
 

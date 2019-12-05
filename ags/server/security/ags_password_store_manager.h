@@ -44,6 +44,8 @@ struct _AgsPasswordStoreManager
   GObject gobject;
 
   GRecMutex obj_mutex;
+
+  gchar *salt;
   
   GList *password_store;
 };

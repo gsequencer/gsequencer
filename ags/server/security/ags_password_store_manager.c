@@ -87,6 +87,8 @@ ags_password_store_manager_init(AgsPasswordStoreManager *password_store_manager)
 {
   g_rec_mutex_init(&(password_store_manager->obj_mutex));
 
+  password_store_manager->salt = NULL;
+  
   password_store_manager->password_store = NULL;
 }
 
@@ -228,9 +230,91 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 					  gchar *login,
 					  gchar *password)
 {
-  //TODO:JK: implement me
+  GList *start_password_store, *password_store;
+
+  gchar *salt;
+  gchar *encrypted_password;
   
-  return(FALSE);
+  gboolean success;
+
+  GError *error;
+
+  GRecMutex *password_store_manager_mutex;
+  
+  if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager) ||
+     login == NULL ||
+     password == NULL){
+    return(FALSE);
+  }
+
+  /* get password_store manager mutex */
+  password_store_manager_mutex = AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(password_store_manager);
+
+  /* get salt */
+  g_rec_mutex_lock(password_store_manager_mutex);
+
+  salt = g_strdup(password_store_manager->salt);
+  
+  g_rec_mutex_unlock(password_store_manager_mutex);  
+
+  /* check password */
+  password_store =
+    start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
+
+  success = FALSE;
+  
+  while(password_store != NULL){
+    gchar *current_password;
+
+    error = NULL;
+    current_password = ags_password_store_get_password(AGS_PASSWORD_STORE(password_store->data),
+						       NULL,
+						       login,
+						       NULL,
+						       &error);
+
+    if(error != NULL){
+      g_critical("%s", error->message);
+
+      g_error_free(error);
+    }
+    
+    if(salt != NULL){
+      error = NULL;
+      encrypted_password = ags_password_store_encrypt_password(AGS_PASSWORD_STORE(password_store->data),
+							       password,
+							       salt,
+							       &error);
+
+      if(error != NULL){
+	g_critical("%s", error->message);
+
+	g_error_free(error);
+      }
+    }else{
+      encrypted_password = password;
+    }
+    
+    success = (current_password != NULL && !g_strcmp0(encrypted_password, current_password)) ? TRUE: FALSE;
+    
+    if(salt != NULL){
+      g_free(encrypted_password);
+    }
+    
+    g_free(current_password);
+
+    if(success){
+      break;
+    }
+    
+    password_store = password_store->next;
+  }
+  
+  g_list_free_full(start_password_store,
+		   g_object_unref);
+  g_free(salt);
+  
+  return(success);
 }
 
 /**
