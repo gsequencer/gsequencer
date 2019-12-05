@@ -198,10 +198,10 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 			     gchar **user_uuid, gchar **security_token,
 			     GError **error)
 {
-  AgsXmlAuthentication *xml_authentication;
-  AgsXmlPasswordStore *xml_password_store;
   AgsAuthenticationManager *authentication_manager;
   AgsPasswordStoreManager *password_store_manager;
+  AgsXmlAuthentication *xml_authentication;
+  AgsXmlPasswordStore *xml_password_store;
   
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
@@ -501,7 +501,6 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 			      GError **error)
 {
   AgsXmlAuthentication *xml_authentication;
-  AgsXmlPasswordStore *xml_password_store;
   AgsAuthenticationManager *authentication_manager;
   AgsPasswordStoreManager *password_store_manager;
 
@@ -696,9 +695,63 @@ ags_xml_authentication_get_digest(AgsAuthentication *authentication,
 				  gchar *security_token,
 				  GError **error)
 {
-  //TODO:JK: implement me
+  AgsPasswordStoreManager *password_store_manager;
+  AgsXmlAuthentication *xml_authentication;
+  AgsXmlPasswordStore *xml_password_store;
 
-  return(NULL);
+  GList *start_password_store, *password_store;
+
+  gchar *password;
+  gchar *digest;
+
+  GError *this_error;
+  
+  if(realm == NULL ||
+     login == NULL ||
+     security_token == NULL){
+    return(NULL);
+  }
+  
+  xml_authentication = AGS_XML_AUTHENTICATION(authentication);
+
+  password_store_manager = ags_password_store_manager_get_instance();
+
+  /* password store */
+  xml_password_store = NULL;
+    
+  password_store =
+    start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
+
+  while(password_store != NULL){
+    if(AGS_IS_XML_PASSWORD_STORE(password_store->data)){
+      xml_password_store = password_store->data;
+	
+      break;
+    }
+      
+    password_store = password_store->next;
+  }
+
+  this_error = NULL;
+  password = ags_password_store_get_password(AGS_PASSWORD_STORE(xml_password_store),
+					     NULL,
+					     login,
+					     security_token,
+					     &this_error);
+
+  if(this_error != NULL){
+    g_warning("%s", this_error->message);
+    
+    g_error_free(this_error);
+  }
+  
+  digest = soup_auth_domain_digest_encode_password(login,
+						   realm,
+						   password);
+
+  g_free(password);
+  
+  return(digest);
 }
 
 gboolean

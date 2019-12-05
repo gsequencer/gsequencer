@@ -69,7 +69,7 @@ ags_authentication_base_init(AgsAuthenticationInterface *ginterface)
  *
  * Returns: a %NULL terminated array of strings of available authentication modules
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_authentication_get_authentication_module(AgsAuthentication *authentication)
@@ -96,7 +96,7 @@ ags_authentication_get_authentication_module(AgsAuthentication *authentication)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_login(AgsAuthentication *authentication,
@@ -163,7 +163,7 @@ ags_authentication_get_digest(AgsAuthentication *authentication,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_logout(AgsAuthentication *authentication,
@@ -194,7 +194,7 @@ ags_authentication_logout(AgsAuthentication *authentication,
  *
  * Returns: the generated token
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_authentication_generate_token(AgsAuthentication *authentication,
@@ -222,7 +222,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
  *
  * Returns: %TRUE if session active, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_is_session_active(AgsAuthentication *authentication,
