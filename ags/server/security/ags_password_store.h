@@ -55,13 +55,13 @@ struct _AgsPasswordStoreInterface
 
   void (*set_password)(AgsPasswordStore *password_store,
 		       GObject *security_context,
-		       gchar *login,
+		       gchar *user_uuid,
 		       gchar *security_token,
 		       gchar *password,
 		       GError **error);
   gchar* (*get_password)(AgsPasswordStore *password_store,
 			 GObject *security_context,
-			 gchar *login,
+			 gchar *user_uuid,
 			 gchar *security_token,
 			 GError **error);
   
@@ -87,13 +87,13 @@ gchar* ags_password_store_get_login_name(AgsPasswordStore *password_store,
 
 void ags_password_store_set_password(AgsPasswordStore *password_store,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     gchar *password,
 				     GError **error);
 gchar* ags_password_store_get_password(AgsPasswordStore *password_store,
 				       GObject *security_context,
-				       gchar *login,
+				       gchar *user_uuid,
 				       gchar *security_token,
 				       GError **error);
 

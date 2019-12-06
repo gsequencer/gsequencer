@@ -502,9 +502,9 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 			      gchar *login, gchar *security_token,
 			      GError **error)
 {
-  AgsXmlAuthentication *xml_authentication;
   AgsAuthenticationManager *authentication_manager;
   AgsPasswordStoreManager *password_store_manager;
+  AgsXmlAuthentication *xml_authentication;
 
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
