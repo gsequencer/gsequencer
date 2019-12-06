@@ -89,6 +89,8 @@ ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager
 
   authentication_manager->authentication = NULL;
 
+  authentication_manager->session_timeout = AGS_AUTHENTICATION_MANAGER_DEFAULT_SESSION_TIMEOUT;
+  
   authentication_manager->login = g_hash_table_new_full(g_direct_hash,
 							g_str_equal,
 							g_free,
@@ -305,6 +307,30 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
   }
 
   g_rec_mutex_unlock(authentication_manager_mutex);
+}
+
+gint64
+ags_authentication_manager_get_session_timeout(AgsAuthenticationManager *authentication_manager)
+{
+  gint64 session_timeout;
+
+  GRecMutex *authentication_manager_mutex;
+
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager)){
+    return(0);
+  }
+
+  /* get authentication manager mutex */
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  /* get sesssion timeout */
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  session_timeout = authentication_manager->session_timeout;
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+
+  return(session_timeout);
 }
 
 /**

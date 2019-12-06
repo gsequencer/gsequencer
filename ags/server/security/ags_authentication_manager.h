@@ -37,6 +37,8 @@ G_BEGIN_DECLS
 
 #define AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsAuthenticationManager *) obj)->obj_mutex))
 
+#define AGS_AUTHENTICATION_MANAGER_DEFAULT_SESSION_TIMEOUT (2 * G_TIME_SPAN_HOUR)
+
 typedef struct _AgsAuthenticationManager AgsAuthenticationManager;
 typedef struct _AgsAuthenticationManagerClass AgsAuthenticationManagerClass;
 typedef struct _AgsLoginInfo AgsLoginInfo;
@@ -49,6 +51,8 @@ struct _AgsAuthenticationManager
   
   GList *authentication;
 
+  gint64 session_timeout;
+  
   GHashTable *login;
 };
 
@@ -81,6 +85,8 @@ void ags_authentication_manager_add_authentication(AgsAuthenticationManager *aut
 						   GObject *authentication);
 void ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authentication_manager,
 						      GObject *authentication);
+
+gint64 ags_authentication_manager_get_session_timeout(AgsAuthenticationManager *authentication_manager);
 
 /* login */
 AgsLoginInfo* ags_authentication_manager_lookup_login(AgsAuthenticationManager *authentication_manager,
