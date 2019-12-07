@@ -1505,7 +1505,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   static FILE *file = NULL;
   struct stat sb;
-  static gchar *license;
+  static gchar *license = NULL;
   static GdkPixbuf *logo = NULL;
 
   gchar *license_filename;
@@ -1521,6 +1521,9 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   gchar *authors[] = { "Joël Krähemann", NULL }; 
 
+  license_filename = NULL;
+  logo_filename = NULL;
+  
 #if defined AGS_W32API
   app_dir = NULL;
 #endif
@@ -1558,6 +1561,8 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 #else
     license_filename = g_strdup("/usr/share/common-licenses/GPL-3");
 #endif
+  }else{
+    license_filename = g_strdup(license_filename);
   }
 #endif
   
@@ -1565,18 +1570,21 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 		 G_FILE_TEST_EXISTS)){
     if(file == NULL){
       file = fopen(license_filename, "r");
-      stat(license_filename, &sb);
-      license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
-      n_read = fread(license, sizeof(char), sb.st_size, file);
+      if(file != NULL){
+	stat(license_filename, &sb);
+	license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
-      if(n_read != sb.st_size){
-	g_critical("fread() number of bytes returned doesn't match buffer size");
+	n_read = fread(license, sizeof(char), sb.st_size, file);
+
+	if(n_read != sb.st_size){
+	  g_critical("fread() number of bytes returned doesn't match buffer size");
+	}
+      
+	license[sb.st_size] = '\0';
+	fclose(file);
       }
       
-      license[sb.st_size] = '\0';
-      fclose(file);
-
 #ifdef AGS_LOGO_FILENAME
       logo_filename = g_strdup(AGS_LOGO_FILENAME);
 #else

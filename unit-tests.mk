@@ -29,7 +29,13 @@ check_PROGRAMS += \
 	ags_file_launch_test \
 	ags_file_lookup_test \
 	ags_server_application_context_test \
-	ags_server_test
+	ags_server_test \
+	ags_controller_test \
+	ags_front_controller_test \
+	ags_authentication_manager_test \
+	ags_password_store_manager_test \
+	ags_xml_authentication_test \
+	ags_xml_password_store_test
 
 # unit tests - libags-audio
 check_PROGRAMS += \
@@ -320,6 +326,42 @@ ags_server_test_SOURCES = ags/test/server/ags_server_test.c
 ags_server_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_server_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# controller unit test
+ags_controller_test_SOURCES = ags/test/server/controller/ags_controller_test.c
+ags_controller_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_controller_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_controller_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# front controller unit test
+ags_front_controller_test_SOURCES = ags/test/server/controller/ags_front_controller_test.c
+ags_front_controller_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_front_controller_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_front_controller_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# authentication manager unit test
+ags_authentication_manager_test_SOURCES = ags/test/server/security/ags_authentication_manager_test.c
+ags_authentication_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_authentication_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_authentication_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# password store manager unit test
+ags_password_store_manager_test_SOURCES = ags/test/server/security/ags_password_store_manager_test.c
+ags_password_store_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_password_store_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_password_store_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML authentication unit test
+ags_xml_authentication_test_SOURCES = ags/test/server/security/ags_xml_authentication_test.c
+ags_xml_authentication_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_authentication_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_authentication_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML password store unit test
+ags_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_store_test.c
+ags_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # base plugin unit test
 ags_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
