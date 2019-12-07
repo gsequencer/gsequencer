@@ -1456,7 +1456,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   static FILE *file = NULL;
   struct stat sb;
-  static gchar *license;
+  static gchar *license = NULL;
   static GdkPixbuf *logo = NULL;
 
   gchar *license_filename;
@@ -1472,7 +1472,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   gchar *authors[] = { "Joël Krähemann", NULL }; 
 
-#if defined AGS_W32API
+#if defined(AGS_W32API)
   app_dir = NULL;
 #endif
   
@@ -1480,7 +1480,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   license_filename = g_strdup(AGS_LICENSE_FILENAME);
 #else
   if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
-#if defined (AGS_W32API)
+#if defined(AGS_W32API)
     application_context = ags_application_context_get_instance();
 
     if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
@@ -1509,6 +1509,8 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 #else
     license_filename = g_strdup("/usr/share/common-licenses/GPL-3");
 #endif
+  }else{
+    license_filename = g_strdup(license_filename);
   }
 #endif
   
@@ -1516,23 +1518,26 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 		 G_FILE_TEST_EXISTS)){
     if(file == NULL){
       file = fopen(license_filename, "r");
-      stat(license_filename, &sb);
-      license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
-      n_read = fread(license, sizeof(char), sb.st_size, file);
+      if(file != NULL){
+	stat(license_filename, &sb);
+	license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
-      if(n_read != sb.st_size){
-	g_critical("fread() number of bytes returned doesn't match buffer size");
+	n_read = fread(license, sizeof(char), sb.st_size, file);
+
+	if(n_read != sb.st_size){
+	  g_critical("fread() number of bytes returned doesn't match buffer size");
+	}
+      
+	license[sb.st_size] = '\0';
+	fclose(file);
       }
       
-      license[sb.st_size] = '\0';
-      fclose(file);
-
 #ifdef AGS_LOGO_FILENAME
       logo_filename = g_strdup(AGS_LOGO_FILENAME);
 #else
       if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
-#if defined AGS_W32API
+#if defined(AGS_W32API)
 	logo_filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags.png",
 				      g_get_current_dir());
     
@@ -1589,10 +1594,4 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 			"title", "Advanced Gtk+ Sequencer",
 			"logo", logo,
 			NULL);
-
-  g_free(license_filename);
-
-#if defined AGS_W32API
-  g_free(app_dir);
-#endif
 }
