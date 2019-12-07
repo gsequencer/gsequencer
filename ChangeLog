@@ -4,7 +4,7 @@ ags (3.0.0)
 	* migrated to Gtk3
 	* migrated AgsOscServer and AgsOscClient to GIO sockets
 	* TODO:JK: migrated AgsBasePlugin to GModule
-	* TODO:JK: migrated AgsServer to Libsoup XMLRPC
+	* migrated AgsServer to Libsoup XMLRPC
 	* migrated AgsThread to GThread API
 	* TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
 	* TODO:JK: migrated to gi18n.h?
@@ -30,6 +30,18 @@ ags (3.0.0)
 	* TODO:JK: removed AgsMenuBar
 	* removed barriers of AgsThread
 	* TODO:JK: removed nested functions
+
+ags (2.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsPriority to configure RT threads
+
+ags (2.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved idle CPU usage
+	* implemented ags_cell_pattern_play()
+	* fixed AgsNotationEdit position cursor by using left or right key
 
 ags (2.4.0)
 
