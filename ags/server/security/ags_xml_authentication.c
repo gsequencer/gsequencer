@@ -408,6 +408,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	ags_authentication_manager_insert_login(authentication_manager,
 						login,
 						login_info);
+
+	ags_login_info_unref(login_info);
       }else{
 	login_info->active_session_count += 1;
       }      

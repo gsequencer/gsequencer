@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gio/gio.h>
+
+#include <libsoup/soup.h>
+
 #include <ags/server/controller/ags_controller.h>
 
 G_BEGIN_DECLS
@@ -46,34 +50,26 @@ struct _AgsFrontControllerClass
 {
   AgsControllerClass controller;
 
-  gpointer (*authenticate)(AgsFrontController *front_controller,
-			   gchar *authentication_module,
-			   gchar *login,
-			   gchar *password,
-			   gchar *certs);
-
   gpointer (*do_request)(AgsFrontController *front_controller,
+			 SoupMessage *msg,
+			 GHashTable *query,
+			 SoupClientContext *client,
 			 GObject *security_context,
-			 gchar *context_path,
+			 gchar *path,
 			 gchar *login,
-			 gchar *security_token,
-			 guint n_params, gchar **parameter_name, GValue *value);
+			 gchar *security_token);
 };
 
 GType ags_front_controller_get_type();
 
-gpointer ags_front_controller_authenticate(AgsFrontController *front_controller,
-					   gchar *authentication_module,
-					   gchar *login,
-					   gchar *password,
-					   gchar *certs);
-
 gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
+					 SoupMessage *msg,
+					 GHashTable *query,
+					 SoupClientContext *client,
 					 GObject *security_context,
-					 gchar *context_path,
+					 gchar *path,
 					 gchar *login,
-					 gchar *security_token,
-					 guint n_params, gchar **parameter_name, GValue *value);
+					 gchar *security_token);
 
 AgsFrontController* ags_front_controller_new();
 

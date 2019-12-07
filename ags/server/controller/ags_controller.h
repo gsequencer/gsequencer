@@ -71,6 +71,8 @@ struct _AgsControllerClass
  */
 struct _AgsControllerResource
 {
+  gint ref_count;
+
   gchar *group_id;
   gchar *user_id;
 
@@ -82,6 +84,9 @@ GType ags_controller_get_type();
 AgsControllerResource* ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
 						     guint access_mode);
 void ags_controller_resource_free(AgsControllerResource *controller_resource);
+
+void ags_controller_resource_ref(AgsControllerResource *controller_resource);
+void ags_controller_resource_unref(AgsControllerResource *controller_resource);
 
 void ags_controller_add_resource(AgsController *controller,
 				 gchar *resource_name, AgsControllerResource *controller_resource);

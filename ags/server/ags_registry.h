@@ -23,11 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_WITH_XMLRPC_C
-#include <xmlrpc.h>
-#include <xmlrpc_server.h>
-#endif
-
 #include <ags/lib/ags_uuid.h>
 
 G_BEGIN_DECLS
@@ -65,12 +60,6 @@ struct _AgsRegistry
   guint flags;
 
   GRecMutex obj_mutex;
-
-#ifdef AGS_WITH_XMLRPC_C
-  xmlrpc_registry *registry;
-#else
-  gpointer registry;
-#endif
   
   GObject *server;
 

@@ -1249,11 +1249,20 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 					     &security_token);
   
   if(success){
+    SoupCookie *login_cookie;
     SoupCookie *session_cookie;
 
     GSList *cookie;
 
     cookie = NULL;
+
+    login_cookie = soup_cookie_new("ags-srv-login",
+				   username,
+				   server->domain,
+				   NULL,
+				   -1);
+    cookie = g_slist_prepend(cookie,
+			     login_cookie);
     
     session_cookie = soup_cookie_new("ags-srv-security-token",
 				     security_token,
@@ -1322,7 +1331,86 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 			   SoupClientContext *client,
 			   AgsServer *server)
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+  AgsFrontController *front_controller;
+  AgsSecurityContext *security_context;
+
+  AgsLoginInfo *login_info;
+
+  GSList *cookie;
+
+  gchar *login;
+  gchar *security_token;
+
+  GRecMutex *authentication_manager_mutex;
+
+  authentication_manager = ags_authentication_manager_get_instance();
+  
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  cookie = soup_cookies_from_request(msg);
+
+  login = NULL;
+  security_token = NULL;
+  
+  while(cookie != NULL){
+    char *cookie_name;
+
+    cookie_name = soup_cookie_get_name(cookie->data);
+    
+    if(!g_ascii_strncasecmp(cookie_name,
+				  "ags-srv-login",
+				  14)){
+      login = soup_cookie_get_value(cookie->data);
+    }else if(!g_ascii_strncasecmp(cookie_name,
+				  "ags-srv-security-token",
+				  23)){
+      security_token = soup_cookie_get_value(cookie->data);
+    }
+
+    if(login != NULL &&
+       security_token != NULL){
+      break;
+    }
+    
+    cookie = cookie->next;
+  }
+  
+  g_object_get(server,
+	       "front-controller", &front_controller,
+	       NULL);
+
+  login_info = ags_authentication_manager_lookup_login(authentication_manager,
+						       login);
+
+  g_rec_mutex_lock(authentication_manager_mutex);
+
+  security_context = login_info->security_context;
+  g_object_ref(security_context);
+  
+  g_rec_mutex_unlock(authentication_manager_mutex);
+
+  if(ags_authentication_manager_is_session_active(authentication_manager,
+						  security_context,
+						  login,
+						  security_token)){
+    ags_front_controller_do_request(front_controller,
+				    msg,
+				    query,
+				    client,
+				    security_context,
+				    path,
+				    login,
+				    security_token);
+  }else{
+    g_message("AgsServer - session not active");
+  }
+  
+  g_object_unref(front_controller);
+
+  g_object_unref(security_context);
+
+  ags_login_info_unref(login_info);
 }
 
 /**

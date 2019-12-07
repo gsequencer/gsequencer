@@ -421,7 +421,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	
 	GRecMutex *mutex;
 
-	/* get OSC front controller mutex */
+	/* get OSC controller mutex */
 	mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
 
 	/* match path */

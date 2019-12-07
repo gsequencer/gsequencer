@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -150,7 +150,7 @@ ags_controller_init(AgsController *controller)
   controller->resource = g_hash_table_new_full(g_direct_hash,
 					       g_str_equal,
 					       g_free,
-					       (GDestroyNotify) ags_controller_resource_free);
+					       (GDestroyNotify) ags_controller_resource_unref);
 }
 
 void
@@ -284,6 +284,8 @@ ags_controller_finalize(GObject *gobject)
   }
 
   g_free(controller->context_path);
+
+  g_hash_table_destroy(controller->resource);
   
   /* call parent */
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
@@ -299,7 +301,7 @@ ags_controller_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsControllerResource-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsControllerResource*
 ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
@@ -308,6 +310,8 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
   AgsControllerResource *controller_resource;
 
   controller_resource = (AgsControllerResource *) malloc(sizeof(AgsControllerResource));
+
+  controller_resource->ref_count = 1;
 
   controller_resource->group_id = g_strdup(group_id);
   controller_resource->user_id = g_strdup(user_id);
@@ -323,7 +327,7 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
  * 
  * Free @controller_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_resource_free(AgsControllerResource *controller_resource)
@@ -339,6 +343,46 @@ ags_controller_resource_free(AgsControllerResource *controller_resource)
 }
 
 /**
+ * ags_controller_resource_ref:
+ * @controller_resource: the #AgsControllerResource-struct
+ * 
+ * Increase ref-count of @controller_resource.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_controller_resource_ref(AgsControllerResource *controller_resource)
+{
+  if(controller_resource == NULL){
+    return;
+  }
+
+  controller_resource->ref_count += 1;
+}
+
+/**
+ * ags_controller_resource_unref:
+ * @controller_resource: the #AgsControllerResource-struct
+ * 
+ * Decrease ref-count of @controller_resource and free it if ref-count drops to 0.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_controller_resource_unref(AgsControllerResource *controller_resource)
+{
+  if(controller_resource == NULL){
+    return;
+  }
+
+  controller_resource->ref_count -= 1;
+
+  if(controller_resource->ref_count <= 0){
+    ags_controller_resource_free(controller_resource);
+  }
+}
+
+/**
  * ags_controller_add_resource:
  * @controller: the #AgsController
  * @resource_name: the resource name as string
@@ -346,20 +390,32 @@ ags_controller_resource_free(AgsControllerResource *controller_resource)
  * 
  * Add @controller_resource with key @resource_name to hash table.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_add_resource(AgsController *controller,
 			    gchar *resource_name, AgsControllerResource *controller_resource)
 {
+  GRecMutex *controller_mutex;
+
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL ||
      controller_resource == NULL){
     return;
   }
   
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
+
+  /* add resource */
+  g_rec_mutex_lock(controller_mutex);
+
+  ags_controller_resource_ref(controller_resource);
+  
   g_hash_table_insert(controller->resource,
 		      g_strdup(resource_name), controller_resource);
+
+  g_rec_mutex_unlock(controller_mutex);
 }
 
 /**
@@ -369,19 +425,29 @@ ags_controller_add_resource(AgsController *controller,
  * 
  * Remove key @resource_name from hash table.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_remove_resource(AgsController *controller,
 			       gchar *resource_name)
 {
+  GRecMutex *controller_mutex;
+
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL){
     return;
   }
+  
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
+
+  /* remove resource */
+  g_rec_mutex_lock(controller_mutex);
 
   g_hash_table_remove(controller->resource,
 		      resource_name);
+
+  g_rec_mutex_unlock(controller_mutex);
 }
 
 /**
@@ -393,23 +459,35 @@ ags_controller_remove_resource(AgsController *controller,
  * 
  * Returns: the matchin #AgsControllerResource-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsControllerResource*
 ags_controller_lookup_resource(AgsController *controller,
 			       gchar *resource_name)
 {
-  AgsControllerResource *resource;
+  AgsControllerResource *controller_resource;
+
+  GRecMutex *controller_mutex;
 
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL){
     return(NULL);
   }
 
-  resource = (AgsControllerResource *) g_hash_table_lookup(controller->resource,
-							   resource_name);
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
 
-  return(resource);
+  /* lookup resource */
+  g_rec_mutex_lock(controller_mutex);
+
+  controller_resource = (AgsControllerResource *) g_hash_table_lookup(controller->resource,
+								      resource_name);
+  
+  ags_controller_resource_ref(controller_resource);
+  
+  g_rec_mutex_unlock(controller_mutex);
+
+  return(controller_resource);
 }
 
 /**
@@ -422,7 +500,7 @@ ags_controller_lookup_resource(AgsController *controller,
  * 
  * Returns: %TRUE if allowed to proceed, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_controller_query_security_context(AgsController *controller,
@@ -440,7 +518,7 @@ ags_controller_query_security_context(AgsController *controller,
  * 
  * Returns: the #AgsController
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsController*
 ags_controller_new()

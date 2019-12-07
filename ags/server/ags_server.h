@@ -55,10 +55,9 @@ typedef struct _AgsServerInfo AgsServerInfo;
 
 /**
  * AgsServerFlags:
- * @AGS_SERVER_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
- * @AGS_SERVER_CONNECTED: the server was connected by #AgsConnectable::connect()
  * @AGS_SERVER_STARTED: the server was started
  * @AGS_SERVER_RUNNING: the server is up and running
+ * @AGS_TERMINATING: the server is closing connections and terminating
  * @AGS_SERVER_INET4: use IPv4
  * @AGS_SERVER_INET6: use IPv6
  * @AGS_SERVER_ANY_ADDRESS: listen on any address

@@ -759,14 +759,16 @@ deprecated_libags_server_controller_h_sources =
 libags_server_controller_h_sources = \
 	$(deprecated_libags_server_controller_h_sources) \
 	ags/server/controller/ags_controller.h \
-	ags/server/controller/ags_front_controller.h
+	ags/server/controller/ags_front_controller.h \
+	ags/server/controller/ags_plugin_controller.h
 
 deprecated_libags_server_controller_c_sources =
 
 libags_server_controller_c_sources = \
 	$(deprecated_libags_server_controller_c_sources) \
 	ags/server/controller/ags_controller.c \
-	ags/server/controller/ags_front_controller.c
+	ags/server/controller/ags_front_controller.c \
+	ags/server/controller/ags_plugin_controller.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =

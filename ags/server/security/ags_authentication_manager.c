@@ -133,7 +133,7 @@ ags_login_info_alloc()
 
   login_info = (AgsLoginInfo *) malloc(sizeof(AgsLoginInfo));
 
-  login_info->ref_count = 0;
+  login_info->ref_count = 1;
   login_info->active_session_count = 0;
 
   login_info->user_uuid = NULL;
@@ -185,7 +185,7 @@ ags_login_info_ref(AgsLoginInfo *login_info)
  * ags_login_info_unref:
  * @login_info: the #AgsLoginInfo-struct
  * 
- * Decrease ref-count of @login_info and free the struct if it drops to 0.
+ * Decrease ref-count of @login_info and free it if ref-count drops to 0.
  * 
  * Since: 3.0.0
  */

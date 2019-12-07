@@ -157,12 +157,6 @@ ags_registry_init(AgsRegistry *registry)
   registry->flags = 0;
 
   g_rec_mutex_init(&(registry->obj_mutex));
-
-#ifdef AGS_WITH_XMLRPC_C
-  registry->registry = xmlrpc_registry_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)));
-#else
-  registry->registry = NULL;
-#endif
   
   registry->counter = 0;
   
