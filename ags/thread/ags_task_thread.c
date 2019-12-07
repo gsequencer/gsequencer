@@ -20,6 +20,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_priority.h>
 #include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_async_queue.h>
 
@@ -573,10 +574,28 @@ ags_task_thread_run(AgsThread *thread)
   /* real-time setup */
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    AgsPriority *priority;
+
     struct sched_param param;
+
+    gchar *str;
+    
+    priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_TASK_THREAD_RT_PRIORITY;
+      
+    str = ags_priority_get_value(priority,
+				 AGS_PRIORITY_RT_THREAD,
+				 "task-thread");
+
+    if(str != NULL){
+      param.sched_priority = (int) g_ascii_strtoull(str,
+						    NULL,
+						    10);
+
+      g_free(str);
+    }
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");

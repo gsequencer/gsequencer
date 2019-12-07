@@ -1105,4 +1105,3 @@ ags_config_new(GObject *application_context)
 
   return(config);
 }
-

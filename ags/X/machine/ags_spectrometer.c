@@ -378,13 +378,13 @@ ags_spectrometer_disconnect(AgsConnectable *connectable)
   spectrometer = AGS_SPECTROMETER(connectable);
 
   g_object_disconnect(spectrometer,
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_spectrometer_resize_audio_channels_callback),
 		      NULL,
 		      NULL);
 
   g_object_disconnect(spectrometer,
-		      "resize-pads",
+		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_spectrometer_resize_pads_callback),
 		      NULL,
 		      NULL);

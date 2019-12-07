@@ -54,6 +54,7 @@
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_portlet.h>
+#include <ags/object/ags_priority.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_sequencer.h>
 #include <ags/object/ags_soundcard.h>
