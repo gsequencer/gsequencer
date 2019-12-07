@@ -159,8 +159,10 @@ ags_login_info_free(AgsLoginInfo *login_info)
   }
 
   g_free(login_info->user_uuid);
-  
-  g_object_unref(login_info->security_context);
+
+  if(login_info->security_context != NULL){
+    g_object_unref(login_info->security_context);
+  }
 }
 
 /**
@@ -473,9 +475,23 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
   GList *start_authentication, *authentication;
 
   gchar *current_security_token, *current_user_uuid;
+
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL ||
+     password == NULL){
+    return(FALSE);
+  }
   
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  if(user_uuid != NULL){
+    user_uuid[0] = NULL;
+  }
+
+  if(security_token != NULL){
+    security_token[0] = NULL;
+  }
 
   current_user_uuid = NULL;
   current_security_token = NULL;
@@ -492,11 +508,11 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 				&current_user_uuid, &current_security_token,
 				&error)){
       if(user_uuid != NULL){
-	*user_uuid = current_user_uuid;
+	user_uuid[0] = current_user_uuid;
       }
 
       if(security_token != NULL){
-	*security_token = current_security_token;
+	security_token[0] = current_security_token;
       }
 
       g_list_free_full(start_authentication,
@@ -542,6 +558,12 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
   AgsSecurityContext *current_security_context;
   
   GList *start_authentication, *authentication;
+
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL ||
+     security_token == NULL){
+    return(FALSE);
+  }
 
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
@@ -614,6 +636,12 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
   GList *start_authentication, *authentication;
 
   gchar *current_digest;
+
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL ||
+     security_token == NULL){
+    return(NULL);
+  }
   
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
@@ -671,8 +699,13 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
 					     gchar *login,
 					     gchar *security_token)
 {
-  GList *start_authentication, *authentication;
-  
+  GList *start_authentication, *authentication;  
+
+  if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
+     login == NULL){
+    return(FALSE);
+  }
+
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
   

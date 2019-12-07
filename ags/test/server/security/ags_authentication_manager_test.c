@@ -45,6 +45,36 @@ void ags_authentication_manager_test_logout();
 void ags_authentication_manager_test_get_digest();
 void ags_authentication_manager_test_is_session_active();
 
+#define AGS_AUTHENTICATION_MANAGER_TEST_GET_AUTHENTICATION_XML_AUTHENTICATION_COUNT (7)
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_ADD_AUTHENTICATION_XML_AUTHENTICATION_COUNT (9)
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT (7)
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOOKUP_LOGIN_DEFAULT_LOGIN "ags-test-login"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_INSERT_LOGIN_DEFAULT_LOGIN "ags-test-login"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_LOGIN_DEFAULT_LOGIN "ags-test-login"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_AUTHENTICATION_MODULE "ags-xml-authentication"
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_LOGIN "ags-test-login"
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_PASSWORD "ags-test-password"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_AUTHENTICATION_MODULE "ags-xml-authentication"
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_LOGIN "ags-test-login"
+#define AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_AUTHENTICATION_MODULE "ags-xml-authentication"
+#define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_REALM "ags-test-realm"
+#define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_LOGIN "ags-test-login"
+#define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+
+#define AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_LOGIN "ags-test-login"
+#define AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+
+AgsServerApplicationContext *server_application_context;
+
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -52,6 +82,16 @@ void ags_authentication_manager_test_is_session_active();
 int
 ags_authentication_manager_test_init_suite()
 {
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+
+  server_application_context = (AgsApplicationContext *) ags_server_application_context_new();
+  g_object_ref(server_application_context);
+
+  ags_application_context_prepare(server_application_context);
+  ags_application_context_setup(server_application_context);
+
   return(0);
 }
 
@@ -68,90 +108,305 @@ ags_authentication_manager_test_clean_suite()
 void
 ags_authentication_manager_test_login_info_alloc()
 {
-  //TODO:JK: implement me
+  AgsLoginInfo *login_info;
+
+  login_info = ags_login_info_alloc();
+
+  CU_ASSERT(login_info != 0);
+  CU_ASSERT(login_info->ref_count == 1);
+  CU_ASSERT(login_info->active_session_count == 0);
+  CU_ASSERT(login_info->user_uuid == NULL);
+  CU_ASSERT(login_info->security_context == NULL);
 }
 
 void
 ags_authentication_manager_test_login_info_free()
 {
-  //TODO:JK: implement me
+  AgsLoginInfo *login_info;
+
+  /* check empty */
+  login_info = ags_login_info_alloc();
+
+  ags_login_info_free(login_info);
+
+  /* check with fields */
+  login_info = ags_login_info_alloc();
+
+  login_info->user_uuid = g_strdup("ags-test-uuid");
+
+  login_info->security_context = ags_security_context_new();
+  
+  ags_login_info_free(login_info);
 }
 
 void
 ags_authentication_manager_test_login_info_ref()
 {
-  //TODO:JK: implement me
+  AgsLoginInfo *login_info;
+
+  /* check empty */
+  login_info = ags_login_info_alloc();
+
+  ags_login_info_ref(login_info);
 }
 
 void
 ags_authentication_manager_test_login_info_unref()
 {
-  //TODO:JK: implement me
+  AgsLoginInfo *login_info;
+
+  /* check empty */
+  login_info = ags_login_info_alloc();
+
+  ags_login_info_unref(login_info);
 }
 
 void
 ags_authentication_manager_test_get_authentication()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  AgsXmlAuthentication **xml_authentication;
+
+  GList *start_authentication, *authentication;
+
+  guint i;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  authentication_manager->authentication = NULL;
+  
+  /* assert #0 - empty */
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication == NULL);
+
+  /* assert #1 - with authentication */
+  xml_authentication = (AgsXmlAuthentication **) malloc(AGS_AUTHENTICATION_MANAGER_TEST_GET_AUTHENTICATION_XML_AUTHENTICATION_COUNT * sizeof(AgsXmlAuthentication *));
+
+  for(i = 0; i < AGS_AUTHENTICATION_MANAGER_TEST_GET_AUTHENTICATION_XML_AUTHENTICATION_COUNT; i++){
+    xml_authentication[i] = ags_xml_authentication_new();
+    authentication_manager->authentication = g_list_prepend(authentication_manager->authentication,
+							    xml_authentication[i]);
+  }
+  
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication != NULL);
+  CU_ASSERT(g_list_length(start_authentication) == AGS_AUTHENTICATION_MANAGER_TEST_GET_AUTHENTICATION_XML_AUTHENTICATION_COUNT);
+
 }
 
 void
 ags_authentication_manager_test_add_authentication()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  AgsXmlAuthentication **xml_authentication;
+
+  GList *start_authentication, *authentication;
+
+  guint i;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  authentication_manager->authentication = NULL;
+  
+  /* assert #0 - empty */
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication == NULL);
+
+  /* assert #1 - with authentication */
+  xml_authentication = (AgsXmlAuthentication **) malloc(AGS_AUTHENTICATION_MANAGER_TEST_ADD_AUTHENTICATION_XML_AUTHENTICATION_COUNT * sizeof(AgsXmlAuthentication *));
+
+  for(i = 0; i < AGS_AUTHENTICATION_MANAGER_TEST_ADD_AUTHENTICATION_XML_AUTHENTICATION_COUNT; i++){
+    xml_authentication[i] = ags_xml_authentication_new();
+    ags_authentication_manager_add_authentication(authentication_manager,
+						  xml_authentication[i]);
+  }
+  
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication != NULL);
+  CU_ASSERT(g_list_length(start_authentication) == AGS_AUTHENTICATION_MANAGER_TEST_ADD_AUTHENTICATION_XML_AUTHENTICATION_COUNT);
 }
 
 void
 ags_authentication_manager_test_remove_authentication()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  AgsXmlAuthentication **xml_authentication;
+
+  GList *start_authentication, *authentication;
+
+  guint i;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  authentication_manager->authentication = NULL;
+  
+  /* assert #0 - empty */
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication == NULL);
+
+  /* assert #1 - with authentication */
+  xml_authentication = (AgsXmlAuthentication **) malloc(AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT * sizeof(AgsXmlAuthentication *));
+
+  for(i = 0; i < AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT; i++){
+    xml_authentication[i] = ags_xml_authentication_new();
+    authentication_manager->authentication = g_list_prepend(authentication_manager->authentication,
+							    xml_authentication[i]);
+  }
+  
+  for(i = 0; i < AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT; i++){
+    ags_authentication_manager_remove_authentication(authentication_manager,
+						     xml_authentication[i]);
+  }
+
+  start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
+
+  CU_ASSERT(start_authentication == NULL);
 }
 
 void
 ags_authentication_manager_test_get_session_timeout()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  gint64 session_timeout;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  session_timeout = ags_authentication_manager_get_session_timeout(authentication_manager);
+
+  CU_ASSERT(session_timeout != 0);
 }
 
 void
 ags_authentication_manager_test_lookup_login()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  AgsLoginInfo *login_info;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  login_info = ags_authentication_manager_lookup_login(authentication_manager,
+						       AGS_AUTHENTICATION_MANAGER_TEST_LOOKUP_LOGIN_DEFAULT_LOGIN);
+
+  CU_ASSERT(login_info == NULL);
 }
 
 void
 ags_authentication_manager_test_insert_login()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  AgsLoginInfo *login_info;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  login_info = ags_login_info_alloc();
+
+  ags_authentication_manager_insert_login(authentication_manager,
+					  AGS_AUTHENTICATION_MANAGER_TEST_INSERT_LOGIN_DEFAULT_LOGIN,
+					  login_info);
 }
 
 void
 ags_authentication_manager_test_remove_login()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  ags_authentication_manager_remove_login(authentication_manager,
+					  AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_LOGIN_DEFAULT_LOGIN);
 }
 
 void
 ags_authentication_manager_test_login()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+
+  gchar *user_uuid;
+  gchar *security_token;
+  
+  gboolean success;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  success = ags_authentication_manager_login(authentication_manager,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_AUTHENTICATION_MODULE,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_LOGIN,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGIN_DEFAULT_PASSWORD,
+					     &user_uuid,
+					     &security_token);
+
+  CU_ASSERT(success == FALSE);
+  CU_ASSERT(user_uuid == NULL);
+  CU_ASSERT(security_token == NULL);
 }
 
 void
 ags_authentication_manager_test_logout()
 {
-  //TODO:JK: implement me
+  AgsAuthenticationManager *authentication_manager;
+  
+  gboolean success;
+  
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  success = ags_authentication_manager_logout(authentication_manager,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_AUTHENTICATION_MODULE,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_LOGIN,
+					     AGS_AUTHENTICATION_MANAGER_TEST_LOGOUT_DEFAULT_SECURITY_TOKEN);
+
+  CU_ASSERT(success == FALSE);
 }
 
 void
 ags_authentication_manager_test_get_digest()
 {
+  AgsAuthenticationManager *authentication_manager;
+  
+  gchar *digest;
+
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  digest = ags_authentication_manager_get_digest(authentication_manager,
+						 AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_AUTHENTICATION_MODULE,
+						 AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_REALM,
+						 AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_LOGIN,
+						 AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_SECURITY_TOKEN);
+
+  CU_ASSERT(digest == NULL);
+  
   //TODO:JK: implement me
 }
 
 void
 ags_authentication_manager_test_is_session_active()
 {
+  AgsAuthenticationManager *authentication_manager;
+  AgsSecurityContext *security_context;
+  
+  gboolean success;
+
+  authentication_manager = ags_authentication_manager_get_instance();
+
+  security_context = ags_security_context_new();
+  
+  success = ags_authentication_manager_is_session_active(authentication_manager,
+							 security_context,
+							 AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_LOGIN,
+							 AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_SECURITY_TOKEN);
+
+  CU_ASSERT(success == FALSE);
+
   //TODO:JK: implement me
 }
 
