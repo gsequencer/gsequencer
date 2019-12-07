@@ -187,7 +187,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAudioApplicationContextTest\0", ags_audio_application_context_test_init_suite, ags_audio_application_context_test_clean_suite);
+  pSuite = CU_add_suite("AgsAudioApplicationContextTest", ags_audio_application_context_test_init_suite, ags_audio_application_context_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -196,8 +196,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudioApplicationContext doing dispose\0", ags_audio_application_context_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudioApplicationContext doing finalize\0", ags_audio_application_context_test_finalize) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAudioApplicationContext doing dispose", ags_audio_application_context_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioApplicationContext doing finalize", ags_audio_application_context_test_finalize) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

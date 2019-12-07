@@ -20,13 +20,6 @@
 #ifndef __AGS_SERVER_APPLICATION_CONTEXT_H__
 #define __AGS_SERVER_APPLICATION_CONTEXT_H__
 
-#ifdef AGS_WITH_XMLRPC_C
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/abyss.h>
-#include <xmlrpc-c/server.h>
-#include <xmlrpc-c/server_abyss.h>
-#endif
-
 #include <glib.h>
 #include <glib-object.h>
 
@@ -48,31 +41,17 @@ G_BEGIN_DECLS
 #define AGS_IS_SERVER_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER_APPLICATION_CONTEXT))
 #define AGS_SERVER_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContextClass))
 
-#define AGS_SERVER_BUILD_ID "Sun Feb 26 23:03:41 CET 2017"
-#define AGS_SERVER_DEFAULT_VERSION "1.0.0"
+#define AGS_SERVER_VERSION "3.0.0"
+#define AGS_SERVER_BUILD_ID "Sat Dec  7 10:02:36 UTC 2019"
 
 typedef struct _AgsServerApplicationContext AgsServerApplicationContext;
 typedef struct _AgsServerApplicationContextClass AgsServerApplicationContextClass;
-
-/**
- * AgsServerApplicationContextFlags:
- * @AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER: enable the server
- *
- * Enum values to control the behavior or indicate internal state of #AgsServerApplicationContext by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER      = 1,
-}AgsServerApplicationContextFlags;
 
 struct _AgsServerApplicationContext
 {
   AgsApplicationContext application_context;
 
   guint flags;
-
-  gchar *version;
-  gchar *build_id;
 
   AgsThreadPool *thread_pool;
 
@@ -87,12 +66,6 @@ struct _AgsServerApplicationContext
   AgsRegistry *registry;
   
   GList *server;
-
-#ifdef AGS_WITH_XMLRPC_C
-  xmlrpc_env *env;
-#else
-  void *env;
-#endif
 };
 
 struct _AgsServerApplicationContextClass
