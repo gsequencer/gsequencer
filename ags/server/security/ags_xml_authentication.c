@@ -727,24 +727,28 @@ ags_xml_authentication_get_digest(AgsAuthentication *authentication,
     password_store = password_store->next;
   }
 
-  this_error = NULL;
-  password = ags_password_store_get_password(AGS_PASSWORD_STORE(xml_password_store),
-					     NULL,
-					     login,
-					     security_token,
-					     &this_error);
+  digest = NULL;
 
-  if(this_error != NULL){
-    g_warning("%s", this_error->message);
+  if(xml_password_store != NULL){
+    this_error = NULL;
+    password = ags_password_store_get_password(AGS_PASSWORD_STORE(xml_password_store),
+					       NULL,
+					       login,
+					       security_token,
+					       &this_error);
+
+    if(this_error != NULL){
+      g_warning("%s", this_error->message);
     
-    g_error_free(this_error);
-  }
+      g_error_free(this_error);
+    }
   
-  digest = soup_auth_domain_digest_encode_password(login,
-						   realm,
-						   password);
+    digest = soup_auth_domain_digest_encode_password(login,
+						     realm,
+						     password);
 
-  g_free(password);
+    g_free(password);
+  }
   
   return(digest);
 }
@@ -914,6 +918,62 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
   return(success);
 }
 
+/**
+ * ags_xml_authentication_open_filename:
+ * @xml_authentication: the #AgsXmlAuthentication
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_xml_authentication_open_filename(AgsXmlAuthentication *xml_authentication,
+				     gchar *filename)
+{
+  xmlDoc *doc;
+
+  GRecMutex *xml_authentication_mutex;
+
+  if(!AGS_IS_XML_AUTHENTICATION(xml_authentication) ||
+     filename == NULL){
+    return;
+  }
+  
+  xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
+
+  /* open XML */
+  doc = xmlReadFile(filename,
+		    NULL,
+		    0);
+
+  g_rec_mutex_lock(xml_authentication_mutex);
+
+  xml_authentication->filename = g_strdup(filename);
+
+  xml_authentication->doc = doc;
+  
+  if(doc == NULL){
+    g_warning("AgsXmlAuthentication - failed to read XML document %s", filename);
+  }else{
+    /* get the root node */
+    xml_authentication->root_node = xmlDocGetRootElement(doc);
+  }
+
+  g_rec_mutex_unlock(xml_authentication_mutex);
+}
+
+/**
+ * ags_xml_authentication_find_user_uuid:
+ * @xml_authentication: the #AgsXmlAuthentication
+ * @user_uuid: the user UUID
+ * 
+ * Find ags-srv-auth xmlNode containing @user_uuid.
+ * 
+ * Returns: the matching xmlNode or %NULL
+ * 
+ * Since: 3.0.0
+ */
 xmlNode*
 ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
 				      gchar *user_uuid)
@@ -926,20 +986,28 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   xmlChar *xpath;
 
   guint i;
+
+  GRecMutex *xml_authentication_mutex;
   
   if(!AGS_IS_XML_AUTHENTICATION(xml_authentication) ||
      user_uuid == NULL){
     return(NULL);
   }    
 
+  xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
+
   /* retrieve auth node */
   xpath = g_strdup_printf("(//ags-srv-auth)/ags-srv-user-uuid[content()='%s']",
 			  user_uuid);
 
+  g_rec_mutex_lock(xml_authentication_mutex);
+
   /* Create xpath evaluation context */
   xpath_context = xmlXPathNewContext(xml_authentication->doc);
 
-  if(xpath_context == NULL) {
+  if(xpath_context == NULL){
+    g_rec_mutex_unlock(xml_authentication_mutex);
+
     g_warning("Error: unable to create new XPath context");
 
     return(NULL);
@@ -949,8 +1017,11 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   xpath_object = xmlXPathEval(xpath,
 			      xpath_context);
 
-  if(xpath_object == NULL) {
+  if(xpath_object == NULL){
+    g_rec_mutex_unlock(xml_authentication_mutex);
+
     g_warning("Error: unable to evaluate xpath expression");
+
     xmlXPathFreeContext(xpath_context); 
 
     return(NULL);
@@ -967,6 +1038,8 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
       break;
     }
   }
+
+  g_rec_mutex_unlock(xml_authentication_mutex);
 
   /* free xpath and return */
   g_free(xpath);

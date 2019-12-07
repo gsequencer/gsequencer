@@ -2739,6 +2739,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
 
+  AgsServer *server;
+  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
@@ -3500,8 +3502,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   g_free(sequencer_group);
   
   /* AgsServer */
+  server = ags_server_new();
   xorg_application_context->server = g_list_append(xorg_application_context->server,
-						   ags_server_new());
+						   server);
   
   /* AgsSoundcardThread and AgsExportThread */
   xorg_application_context->default_soundcard_thread = NULL;

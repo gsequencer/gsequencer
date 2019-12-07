@@ -18,6 +18,7 @@ check_LTLIBRARIES = libgsequencer_test.la
 #TODO:JK: fix tests after refactoring
 # functional tests
 check_PROGRAMS += \
+	ags_functional_server_test \
 	ags_functional_audio_test \
 	ags_functional_pitch_test \
 	ags_functional_fourier_transform_test \
@@ -47,6 +48,12 @@ endif
 
 libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
+
+# functional server test
+ags_functional_server_test_SOURCES = ags/test/server/ags_functional_server_test.c
+ags_functional_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_functional_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_server_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional audio test
 ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c

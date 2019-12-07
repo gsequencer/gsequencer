@@ -591,6 +591,51 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 /**
  * ags_xml_password_store_find_login:
  * @xml_password_store: the #AgsXmlPasswordStore
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_xml_password_store_open_filename(AgsXmlPasswordStore *xml_password_store,
+				     gchar *filename)
+{
+  xmlDoc *doc;
+
+  GRecMutex *xml_password_store_mutex;
+
+  if(!AGS_IS_XML_PASSWORD_STORE(xml_password_store) ||
+     filename == NULL){
+    return;
+  }    
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+
+  /* open XML */
+  doc = xmlReadFile(filename,
+		    NULL,
+		    0);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+
+  xml_password_store->filename = g_strdup(filename);
+
+  xml_password_store->doc = doc;
+  
+  if(doc == NULL){
+    g_warning("AgsXmlPasswordStore - failed to read XML document %s", filename);
+  }else{
+    /* get the root node */
+    xml_password_store->root_node = xmlDocGetRootElement(doc);
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+}
+
+/**
+ * ags_xml_password_store_find_login:
+ * @xml_password_store: the #AgsXmlPasswordStore
  * @login: the login
  * 
  * Find ags-srv-user xmlNode containing @login.

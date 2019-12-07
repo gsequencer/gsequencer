@@ -262,6 +262,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 #TODO:JK: fix tests after refactoring
 # functional tests
 @RUN_FUNCTIONAL_TESTS_TRUE@am__append_21 = \
+@RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_server_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_pitch_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_fourier_transform_test \
@@ -360,7 +361,7 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(libgsequencerdir)" "$(DESTDIR)$(man1dir)" \
 	"$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" \
 	"$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(includedir)"
-@RUN_FUNCTIONAL_TESTS_TRUE@am__EXEEXT_1 =  \
+@RUN_FUNCTIONAL_TESTS_TRUE@am__EXEEXT_1 = ags_functional_server_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_pitch_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_fourier_transform_test$(EXEEXT) \
@@ -2986,6 +2987,17 @@ ags_functional_pitch_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_pitch_test_CFLAGS) $(CFLAGS) \
 	$(ags_functional_pitch_test_LDFLAGS) $(LDFLAGS) -o $@
+am__ags_functional_server_test_SOURCES_DIST =  \
+	ags/test/server/ags_functional_server_test.c
+@RUN_FUNCTIONAL_TESTS_TRUE@am_ags_functional_server_test_OBJECTS = ags/test/server/functional_server_test-ags_functional_server_test.$(OBJEXT)
+ags_functional_server_test_OBJECTS =  \
+	$(am_ags_functional_server_test_OBJECTS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_server_test_DEPENDENCIES =  \
+@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__DEPENDENCIES_3)
+ags_functional_server_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_server_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_server_test_LDFLAGS) $(LDFLAGS) -o $@
 am__ags_functional_synth_test_SOURCES_DIST =  \
 	ags/test/X/machine/ags_functional_synth_test.c
 @RUN_FUNCTIONAL_TESTS_TRUE@am_ags_functional_synth_test_OBJECTS = ags/test/X/machine/functional_synth_test-ags_functional_synth_test.$(OBJEXT)
@@ -5078,6 +5090,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/plugin/$(DEPDIR)/lv2ui_manager_test-ags_lv2ui_manager_test.Po \
 	ags/test/plugin/$(DEPDIR)/lv2ui_plugin_test-ags_lv2ui_plugin_test.Po \
 	ags/test/plugin/$(DEPDIR)/plugin_port_test-ags_plugin_port_test.Po \
+	ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po \
 	ags/test/server/$(DEPDIR)/server_application_context_test-ags_server_application_context_test.Po \
 	ags/test/server/$(DEPDIR)/server_test-ags_server_test.Po \
 	ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po \
@@ -5266,6 +5279,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_functional_osc_server_test_SOURCES) \
 	$(ags_functional_panel_test_SOURCES) \
 	$(ags_functional_pitch_test_SOURCES) \
+	$(ags_functional_server_test_SOURCES) \
 	$(ags_functional_synth_test_SOURCES) $(ags_input_test_SOURCES) \
 	$(ags_ladspa_conversion_test_SOURCES) \
 	$(ags_ladspa_manager_test_SOURCES) \
@@ -5429,6 +5443,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(am__ags_functional_osc_server_test_SOURCES_DIST) \
 	$(am__ags_functional_panel_test_SOURCES_DIST) \
 	$(am__ags_functional_pitch_test_SOURCES_DIST) \
+	$(am__ags_functional_server_test_SOURCES_DIST) \
 	$(am__ags_functional_synth_test_SOURCES_DIST) \
 	$(ags_input_test_SOURCES) \
 	$(ags_ladspa_conversion_test_SOURCES) \
@@ -7772,6 +7787,12 @@ ags_xorg_application_context_test_LDADD = libgsequencer.la libags_gui.la libags_
 @RUN_FUNCTIONAL_TESTS_TRUE@	$(am__append_22)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
+
+# functional server test
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_server_test_SOURCES = ags/test/server/ags_functional_server_test.c
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_server_test_LDFLAGS = -pthread $(LDFLAGS)
+@RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_server_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional audio test
 @RUN_FUNCTIONAL_TESTS_TRUE@ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
@@ -12469,6 +12490,19 @@ ags/test/audio/functional_pitch_test-ags_functional_pitch_test.$(OBJEXT):  \
 ags_functional_pitch_test$(EXEEXT): $(ags_functional_pitch_test_OBJECTS) $(ags_functional_pitch_test_DEPENDENCIES) $(EXTRA_ags_functional_pitch_test_DEPENDENCIES) 
 	@rm -f ags_functional_pitch_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_functional_pitch_test_LINK) $(ags_functional_pitch_test_OBJECTS) $(ags_functional_pitch_test_LDADD) $(LIBS)
+ags/test/server/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/server
+	@: > ags/test/server/$(am__dirstamp)
+ags/test/server/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/server/$(DEPDIR)
+	@: > ags/test/server/$(DEPDIR)/$(am__dirstamp)
+ags/test/server/functional_server_test-ags_functional_server_test.$(OBJEXT):  \
+	ags/test/server/$(am__dirstamp) \
+	ags/test/server/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_server_test$(EXEEXT): $(ags_functional_server_test_OBJECTS) $(ags_functional_server_test_DEPENDENCIES) $(EXTRA_ags_functional_server_test_DEPENDENCIES) 
+	@rm -f ags_functional_server_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_server_test_LINK) $(ags_functional_server_test_OBJECTS) $(ags_functional_server_test_LDADD) $(LIBS)
 ags/test/X/machine/functional_synth_test-ags_functional_synth_test.$(OBJEXT):  \
 	ags/test/X/machine/$(am__dirstamp) \
 	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -13006,12 +13040,6 @@ ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.$(OBJEXT):  \
 ags_seek_soundcard_test$(EXEEXT): $(ags_seek_soundcard_test_OBJECTS) $(ags_seek_soundcard_test_DEPENDENCIES) $(EXTRA_ags_seek_soundcard_test_DEPENDENCIES) 
 	@rm -f ags_seek_soundcard_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_seek_soundcard_test_LINK) $(ags_seek_soundcard_test_OBJECTS) $(ags_seek_soundcard_test_LDADD) $(LIBS)
-ags/test/server/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/server
-	@: > ags/test/server/$(am__dirstamp)
-ags/test/server/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/server/$(DEPDIR)
-	@: > ags/test/server/$(DEPDIR)/$(am__dirstamp)
 ags/test/server/server_application_context_test-ags_server_application_context_test.$(OBJEXT):  \
 	ags/test/server/$(am__dirstamp) \
 	ags/test/server/$(DEPDIR)/$(am__dirstamp)
@@ -14107,6 +14135,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/lv2ui_manager_test-ags_lv2ui_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/lv2ui_plugin_test-ags_lv2ui_plugin_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/plugin_port_test-ags_plugin_port_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/$(DEPDIR)/server_application_context_test-ags_server_application_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/$(DEPDIR)/server_test-ags_server_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po@am__quote@ # am--include-marker
@@ -20027,6 +20056,20 @@ ags/test/audio/functional_pitch_test-ags_functional_pitch_test.obj: ags/test/aud
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_pitch_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/functional_pitch_test-ags_functional_pitch_test.obj `if test -f 'ags/test/audio/ags_functional_pitch_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_functional_pitch_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_functional_pitch_test.c'; fi`
 
+ags/test/server/functional_server_test-ags_functional_server_test.o: ags/test/server/ags_functional_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_server_test_CFLAGS) $(CFLAGS) -MT ags/test/server/functional_server_test-ags_functional_server_test.o -MD -MP -MF ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Tpo -c -o ags/test/server/functional_server_test-ags_functional_server_test.o `test -f 'ags/test/server/ags_functional_server_test.c' || echo '$(srcdir)/'`ags/test/server/ags_functional_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Tpo ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/ags_functional_server_test.c' object='ags/test/server/functional_server_test-ags_functional_server_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/functional_server_test-ags_functional_server_test.o `test -f 'ags/test/server/ags_functional_server_test.c' || echo '$(srcdir)/'`ags/test/server/ags_functional_server_test.c
+
+ags/test/server/functional_server_test-ags_functional_server_test.obj: ags/test/server/ags_functional_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_server_test_CFLAGS) $(CFLAGS) -MT ags/test/server/functional_server_test-ags_functional_server_test.obj -MD -MP -MF ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Tpo -c -o ags/test/server/functional_server_test-ags_functional_server_test.obj `if test -f 'ags/test/server/ags_functional_server_test.c'; then $(CYGPATH_W) 'ags/test/server/ags_functional_server_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/ags_functional_server_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Tpo ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/ags_functional_server_test.c' object='ags/test/server/functional_server_test-ags_functional_server_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/functional_server_test-ags_functional_server_test.obj `if test -f 'ags/test/server/ags_functional_server_test.c'; then $(CYGPATH_W) 'ags/test/server/ags_functional_server_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/ags_functional_server_test.c'; fi`
+
 ags/test/X/machine/functional_synth_test-ags_functional_synth_test.o: ags/test/X/machine/ags_functional_synth_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_synth_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/functional_synth_test-ags_functional_synth_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/functional_synth_test-ags_functional_synth_test.Tpo -c -o ags/test/X/machine/functional_synth_test-ags_functional_synth_test.o `test -f 'ags/test/X/machine/ags_functional_synth_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_synth_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/functional_synth_test-ags_functional_synth_test.Tpo ags/test/X/machine/$(DEPDIR)/functional_synth_test-ags_functional_synth_test.Po
@@ -23237,6 +23280,13 @@ ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_server_test.log: ags_functional_server_test$(EXEEXT)
+	@p='ags_functional_server_test$(EXEEXT)'; \
+	b='ags_functional_server_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_functional_audio_test.log: ags_functional_audio_test$(EXEEXT)
 	@p='ags_functional_audio_test$(EXEEXT)'; \
 	b='ags_functional_audio_test'; \
@@ -24518,6 +24568,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/plugin/$(DEPDIR)/lv2ui_manager_test-ags_lv2ui_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/lv2ui_plugin_test-ags_lv2ui_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/plugin_port_test-ags_plugin_port_test.Po
+	-rm -f ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po
 	-rm -f ags/test/server/$(DEPDIR)/server_application_context_test-ags_server_application_context_test.Po
 	-rm -f ags/test/server/$(DEPDIR)/server_test-ags_server_test.Po
 	-rm -f ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po
@@ -25435,6 +25486,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/plugin/$(DEPDIR)/lv2ui_manager_test-ags_lv2ui_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/lv2ui_plugin_test-ags_lv2ui_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/plugin_port_test-ags_plugin_port_test.Po
+	-rm -f ags/test/server/$(DEPDIR)/functional_server_test-ags_functional_server_test.Po
 	-rm -f ags/test/server/$(DEPDIR)/server_application_context_test-ags_server_application_context_test.Po
 	-rm -f ags/test/server/$(DEPDIR)/server_test-ags_server_test.Po
 	-rm -f ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po

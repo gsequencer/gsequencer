@@ -34,6 +34,10 @@ void ags_xml_password_store_test_get_login_name();
 void ags_xml_password_store_test_set_password();
 void ags_xml_password_store_test_get_password();
 void ags_xml_password_store_test_encrypt_password();
+void ags_xml_password_store_test_open();
+void ags_xml_password_store_test_find_login();
+
+AgsServerApplicationContext *server_application_context;
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
@@ -42,6 +46,16 @@ void ags_xml_password_store_test_encrypt_password();
 int
 ags_xml_password_store_test_init_suite()
 {
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+
+  server_application_context = (AgsApplicationContext *) ags_server_application_context_new();
+  g_object_ref(server_application_context);
+
+  ags_application_context_prepare(server_application_context);
+  ags_application_context_setup(server_application_context);
+
   return(0);
 }
 
@@ -58,6 +72,10 @@ ags_xml_password_store_test_clean_suite()
 void
 ags_xml_password_store_test_set_login_name()
 {
+  AgsXmlPasswordStore *xml_password_store;
+
+  xml_password_store = ags_xml_password_store_new();
+  
   //TODO:JK: implement me
 }
 
@@ -81,6 +99,18 @@ ags_xml_password_store_test_get_password()
 
 void
 ags_xml_password_store_test_encrypt_password()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_password_store_test_open()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_password_store_test_find_login()
 {
   //TODO:JK: implement me
 }
@@ -109,7 +139,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore get login name", ags_xml_password_store_test_get_login_name) == NULL) ||
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore set password", ags_xml_password_store_test_set_password) == NULL) ||
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore get password", ags_xml_password_store_test_get_password) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsXmlPasswordStore encrypt password", ags_xml_password_store_test_encrypt_password) == NULL)){
+     (CU_add_test(pSuite, "test of AgsXmlPasswordStore encrypt password", ags_xml_password_store_test_encrypt_password) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsXmlPasswordStore open", ags_xml_password_store_test_open) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsXmlPasswordStore find login", ags_xml_password_store_test_find_login) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

@@ -988,7 +988,7 @@ ags_file_real_open(AgsFile *file,
 		  file->filename);
     }
   }else{
-    /*Get the root element node */
+    /* get the root node */
     file->root_node = xmlDocGetRootElement(file->doc);
   }
 

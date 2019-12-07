@@ -60,6 +60,9 @@ struct _AgsXmlPasswordStoreClass
 
 GType ags_xml_password_store_get_type();
 
+void ags_xml_password_store_open_filename(AgsXmlPasswordStore *xml_password_store,
+					  gchar *filename);
+
 xmlNode* ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
 					   gchar *login);
 

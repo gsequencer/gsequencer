@@ -60,6 +60,9 @@ struct _AgsXmlAuthenticationClass
 
 GType ags_xml_authentication_get_type();
 
+void ags_xml_authentication_open_filename(AgsXmlAuthentication *xml_authentication,
+					  gchar *filename);
+
 xmlNode* ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
 					       gchar *user_uuid);
 

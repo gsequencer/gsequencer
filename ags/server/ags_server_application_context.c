@@ -741,7 +741,7 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
 {
   AgsServerApplicationContext *server_application_context;
 
-  AgsThread *server_loop;
+  AgsThread *generic_main_loop;
   AgsTaskLauncher *task_launcher;
 
   GMainContext *server_main_context;
@@ -766,6 +766,13 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
   g_main_loop_new(server_main_context,
 		  TRUE);
 
+  /* AgsGenericMainLoop */
+  generic_main_loop = (AgsThread *) ags_generic_main_loop_new();
+  g_object_ref(generic_main_loop);
+  
+  application_context->main_loop = (GObject *) generic_main_loop;
+  ags_connectable_connect(AGS_CONNECTABLE(generic_main_loop));
+  
   /* AgsTaskLauncher */
   task_launcher = ags_task_launcher_new();
   g_object_ref(task_launcher);
@@ -775,10 +782,6 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
 
   ags_task_launcher_attach(task_launcher,
 			   server_main_context);
-  
-  /* main loop run */
-  g_main_loop_run(g_main_loop_new(server_main_context,
-				  TRUE));
 }
 
 void
@@ -812,6 +815,11 @@ ags_server_application_context_setup(AgsApplicationContext *application_context)
   /* AgsThreadPool */
   server_application_context->thread_pool = NULL;
 
+  /* AgsServer */
+  server = ags_server_new();
+  server_application_context->server = g_list_append(server_application_context->server,
+						     server);
+  
   /* unref */
   g_object_unref(main_loop);
   

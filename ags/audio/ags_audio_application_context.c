@@ -1702,7 +1702,7 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 		  TRUE);
 
   /* AgsAudioLoop */
-  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) NULL);
+  audio_loop = (AgsThread *) ags_audio_loop_new();
   g_object_ref(audio_loop);
   
   application_context->main_loop = (GObject *) audio_loop;

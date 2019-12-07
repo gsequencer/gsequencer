@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ags-server-authentication version="3.0.0" build-id="Sat Dec  7 18:08:16 UTC 2019">
+  <ags-srv-auth-list>
+    <ags-srv-auth>
+      <ags-srv-user-uuid>ags-test-user-uuid-0</ags-srv-user-uuid>
+      <ags-srv-group-list>
+	<ags-srv-group>audio</ags-srv-group>
+      </ags-srv-group-list>
+    </ags-srv-auth>
+  </ags-srv-auth-list>
+</ags-server-authentication>

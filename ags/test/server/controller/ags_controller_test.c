@@ -31,8 +31,8 @@ int ags_controller_test_clean_suite();
 
 void ags_controller_test_resource_alloc();
 void ags_controller_test_resource_free();
-void ags_controller_test_ref();
-void ags_controller_test_unref();
+void ags_controller_test_resource_ref();
+void ags_controller_test_resource_unref();
 void ags_controller_test_add_resource();
 void ags_controller_test_remove_resource();
 void ags_controller_test_lookup_resource();
@@ -71,13 +71,13 @@ ags_controller_test_resource_free()
 }
 
 void
-ags_controller_test_ref()
+ags_controller_test_resource_ref()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_controller_test_unref()
+ags_controller_test_resource_unref()
 {
   //TODO:JK: implement me
 }

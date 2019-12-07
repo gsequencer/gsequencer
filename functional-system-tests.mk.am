@@ -27,6 +27,7 @@ noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 
 # functional system tests - edit target
 installcheck_programs = \
+	ags_check_system_functional_server_test \
 	ags_check_system_functional_audio_test \
 	ags_check_system_functional_pitch_test \
 	ags_check_system_functional_fourier_transform_test \
@@ -52,6 +53,12 @@ libgsequencer_check_system_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c 
 libgsequencer_check_system_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libgsequencer_check_system_test_la_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
 libgsequencer_check_system_test_la_LIBADD = $(libgsequencer_check_system_test_LIBADD)
+
+# functional server test
+ags_check_system_functional_server_test_SOURCES = ags/test/server/ags_functional_server_test.c
+ags_check_system_functional_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_functional_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_server_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional audio test
 ags_check_system_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
@@ -169,6 +176,7 @@ ags_check_system_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_audio_config_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 ags-check-system-functional-test: $(installcheck_programs)
+	./ags_check_system_functional_server_test
 	./ags_check_system_functional_audio_test
 	./ags_check_system_functional_pitch_test
 	./ags_check_system_functional_fourier_transform_test
