@@ -2723,8 +2723,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
-  AgsServer *server;
-
   GObject *soundcard;
   GObject *sequencer;
   AgsJackServer *jack_server;

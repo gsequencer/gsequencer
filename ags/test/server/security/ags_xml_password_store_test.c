@@ -34,8 +34,27 @@ void ags_xml_password_store_test_get_login_name();
 void ags_xml_password_store_test_set_password();
 void ags_xml_password_store_test_get_password();
 void ags_xml_password_store_test_encrypt_password();
-void ags_xml_password_store_test_open();
+void ags_xml_password_store_test_open_filename();
 void ags_xml_password_store_test_find_login();
+
+#define AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_USER_UUID "ags-test-uuid"
+#define AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+#define AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_LOGIN_NAME "ags-test-user"
+
+#define AGS_XML_PASSWORD_STORE_TEST_GET_LOGIN_NAME_DEFAULT_USER_UUID "ags-test-uuid"
+#define AGS_XML_PASSWORD_STORE_TEST_GET_LOGIN_NAME_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+
+#define AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_USER_UUID "ags-test-uuid"
+#define AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+#define AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_PASSWORD "ags-test-password"
+
+#define AGS_XML_PASSWORD_STORE_TEST_GET_PASSWORD_DEFAULT_USER_UUID "ags-test-uuid"
+#define AGS_XML_PASSWORD_STORE_TEST_GET_PASSWORD_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
+
+#define AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD "ags-test-password"
+#define AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_SALT "ags-puts-salt-in-pizza"
+
+#define AGS_XML_PASSWORD_STORE_TEST_OPEN_FILENAME SRCDIR "/" "ags_password_store_test.xml"
 
 AgsServerApplicationContext *server_application_context;
 
@@ -73,8 +92,21 @@ void
 ags_xml_password_store_test_set_login_name()
 {
   AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
 
+  GError *error;
+  
   xml_password_store = ags_xml_password_store_new();
+
+  security_context = ags_security_context_new();
+
+  error = NULL;
+  ags_password_store_set_login_name(AGS_PASSWORD_STORE(xml_password_store),
+				    security_context,
+				    AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_USER_UUID,
+				    AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_SECURITY_TOKEN,
+				    AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_LOGIN_NAME,
+				    &error);
   
   //TODO:JK: implement me
 }
@@ -82,31 +114,117 @@ ags_xml_password_store_test_set_login_name()
 void
 ags_xml_password_store_test_get_login_name()
 {
+  AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
+
+  gchar *login_name;
+  
+  GError *error;
+  
+  xml_password_store = ags_xml_password_store_new();
+
+  security_context = ags_security_context_new();
+
+  error = NULL;
+  login_name = ags_password_store_get_login_name(AGS_PASSWORD_STORE(xml_password_store),
+						 security_context,
+						 AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_USER_UUID,
+						 AGS_XML_PASSWORD_STORE_TEST_SET_LOGIN_NAME_DEFAULT_SECURITY_TOKEN,
+						 &error);
+
+  CU_ASSERT(login_name == NULL);
+  
   //TODO:JK: implement me
 }
 
 void
 ags_xml_password_store_test_set_password()
 {
+  AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
+
+  GError *error;
+  
+  xml_password_store = ags_xml_password_store_new();
+
+  security_context = ags_security_context_new();
+
+  error = NULL;
+  ags_password_store_set_password(AGS_PASSWORD_STORE(xml_password_store),
+				  security_context,
+				  AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_USER_UUID,
+				  AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_SECURITY_TOKEN,
+				  AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_PASSWORD,
+				  &error);
+
   //TODO:JK: implement me
 }
 
 void
 ags_xml_password_store_test_get_password()
 {
+  AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
+
+  gchar *password;
+  
+  GError *error;
+  
+  xml_password_store = ags_xml_password_store_new();
+
+  security_context = ags_security_context_new();
+
+  error = NULL;
+  password = ags_password_store_get_password(AGS_PASSWORD_STORE(xml_password_store),
+					     security_context,
+					     AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_USER_UUID,
+					     AGS_XML_PASSWORD_STORE_TEST_SET_PASSWORD_DEFAULT_SECURITY_TOKEN,
+					     &error);
+
+  CU_ASSERT(password == NULL);
+
   //TODO:JK: implement me
 }
 
 void
 ags_xml_password_store_test_encrypt_password()
 {
+  AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
+
+  gchar *password;
+  
+  GError *error;
+  
+  xml_password_store = ags_xml_password_store_new();
+
+  security_context = ags_security_context_new();
+
+  error = NULL;
+  password = ags_password_store_encrypt_password(AGS_PASSWORD_STORE(xml_password_store),
+						 AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD,
+						 AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_SALT,
+						 &error);
+
+  CU_ASSERT(password != NULL);
+  CU_ASSERT((!g_strcmp0(password, AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD)) == FALSE);
+  
   //TODO:JK: implement me
 }
 
 void
-ags_xml_password_store_test_open()
+ags_xml_password_store_test_open_filename()
 {
-  //TODO:JK: implement me
+  AgsXmlPasswordStore *xml_password_store;
+  
+  xml_password_store = ags_xml_password_store_new();
+
+  ags_xml_password_store_open_filename(xml_password_store,
+				       AGS_XML_PASSWORD_STORE_TEST_OPEN_FILENAME);
+
+  CU_ASSERT(xml_password_store->filename != NULL);
+  CU_ASSERT(xml_password_store->doc != NULL);
+  CU_ASSERT(xml_password_store->root_node != NULL);
 }
 
 void
@@ -140,7 +258,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore set password", ags_xml_password_store_test_set_password) == NULL) ||
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore get password", ags_xml_password_store_test_get_password) == NULL) ||
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore encrypt password", ags_xml_password_store_test_encrypt_password) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsXmlPasswordStore open", ags_xml_password_store_test_open) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsXmlPasswordStore open filename", ags_xml_password_store_test_open_filename) == NULL) ||
      (CU_add_test(pSuite, "test of AgsXmlPasswordStore find login", ags_xml_password_store_test_find_login) == NULL)){
     CU_cleanup_registry();
     
