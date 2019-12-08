@@ -91,7 +91,7 @@ ags_authentication_manager_init(AgsAuthenticationManager *authentication_manager
 
   authentication_manager->session_timeout = AGS_AUTHENTICATION_MANAGER_DEFAULT_SESSION_TIMEOUT;
   
-  authentication_manager->login = g_hash_table_new_full(g_direct_hash,
+  authentication_manager->login = g_hash_table_new_full(g_str_hash,
 							g_str_equal,
 							g_free,
 							ags_login_info_unref);

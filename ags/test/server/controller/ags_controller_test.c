@@ -38,6 +38,12 @@ void ags_controller_test_remove_resource();
 void ags_controller_test_lookup_resource();
 void ags_controller_test_query_security_context();
 
+#define AGS_CONTROLLER_TEST_ADD_RESOURCE_RESOURCE_COUNT (7)
+
+#define AGS_CONTROLLER_TEST_REMOVE_RESOURCE_RESOURCE_COUNT (9)
+
+#define AGS_CONTROLLER_TEST_LOOKUP_RESOURCE_RESOURCE_COUNT (5)
+
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -61,43 +67,145 @@ ags_controller_test_clean_suite()
 void
 ags_controller_test_resource_alloc()
 {
-  //TODO:JK: implement me
+  AgsControllerResource *controller_resource;
+
+  controller_resource = ags_controller_resource_alloc("group-id", "user-id",
+						      0x744);
+
+  CU_ASSERT(controller_resource != NULL);
+  CU_ASSERT(controller_resource->ref_count == 1);
+  CU_ASSERT(!g_strcmp0(controller_resource->group_id, "group-id") == TRUE);
+  CU_ASSERT(!g_strcmp0(controller_resource->user_id, "user-id") == TRUE);
+  CU_ASSERT(controller_resource->access_mode == 0x744);
 }
 
 void
 ags_controller_test_resource_free()
 {
-  //TODO:JK: implement me
+  AgsControllerResource *controller_resource;
+
+  controller_resource = ags_controller_resource_alloc(NULL, NULL,
+						      0x0);
+
+  ags_controller_resource_free(controller_resource);
 }
 
 void
 ags_controller_test_resource_ref()
 {
-  //TODO:JK: implement me
+  AgsControllerResource *controller_resource;
+
+  controller_resource = ags_controller_resource_alloc("group-id", "user-id",
+						      0x744);
+
+  ags_controller_resource_ref(controller_resource);
+  CU_ASSERT(controller_resource->ref_count == 2);
 }
 
 void
 ags_controller_test_resource_unref()
 {
-  //TODO:JK: implement me
+  AgsControllerResource *controller_resource;
+
+  controller_resource = ags_controller_resource_alloc("group-id", "user-id",
+						      0x744);
+
+  ags_controller_resource_unref(controller_resource);
 }
 
 void
 ags_controller_test_add_resource()
 {
-  //TODO:JK: implement me
+  AgsController *controller;
+  
+  AgsControllerResource **controller_resource;
+
+  guint i;
+  
+  controller = ags_controller_new();
+
+  controller_resource = (AgsControllerResource **) malloc(AGS_CONTROLLER_TEST_ADD_RESOURCE_RESOURCE_COUNT * sizeof(AgsControllerResource *));
+
+  for(i = 0; i < AGS_CONTROLLER_TEST_ADD_RESOURCE_RESOURCE_COUNT; i++){
+    controller_resource[i] = ags_controller_resource_alloc(NULL, NULL,
+							   0x0);
+    ags_controller_add_resource(controller,
+				g_strdup_printf("resource-%d", i),
+				controller_resource[i]);
+				
+  }
+
+  CU_ASSERT(g_hash_table_size(controller->resource) == AGS_CONTROLLER_TEST_ADD_RESOURCE_RESOURCE_COUNT);
 }
 
 void
 ags_controller_test_remove_resource()
 {
-  //TODO:JK: implement me
+  AgsController *controller;
+  
+  AgsControllerResource **controller_resource;
+
+  guint i;
+  
+  controller = ags_controller_new();
+
+  controller_resource = (AgsControllerResource **) malloc(AGS_CONTROLLER_TEST_REMOVE_RESOURCE_RESOURCE_COUNT * sizeof(AgsControllerResource *));
+
+  for(i = 0; i < AGS_CONTROLLER_TEST_REMOVE_RESOURCE_RESOURCE_COUNT; i++){
+    controller_resource[i] = ags_controller_resource_alloc(NULL, NULL,
+							   0x0);
+    g_hash_table_insert(controller->resource,
+			g_strdup_printf("resource-%d", i),
+			controller_resource[i]);
+				
+  }
+
+  for(i = 0; i < AGS_CONTROLLER_TEST_REMOVE_RESOURCE_RESOURCE_COUNT; i++){
+    ags_controller_remove_resource(controller,
+				   g_strdup_printf("resource-%d", i));
+				   
+  }
+      
+  CU_ASSERT(g_hash_table_size(controller->resource) == 0);
 }
 
 void
 ags_controller_test_lookup_resource()
 {
-  //TODO:JK: implement me
+  AgsController *controller;
+  
+  AgsControllerResource **controller_resource;
+
+  guint i;
+  gboolean success;
+  
+  controller = ags_controller_new();
+
+  controller_resource = (AgsControllerResource **) malloc(AGS_CONTROLLER_TEST_LOOKUP_RESOURCE_RESOURCE_COUNT * sizeof(AgsControllerResource *));
+
+  for(i = 0; i < AGS_CONTROLLER_TEST_LOOKUP_RESOURCE_RESOURCE_COUNT; i++){
+    controller_resource[i] = ags_controller_resource_alloc(NULL, NULL,
+							   0x0);
+    g_hash_table_insert(controller->resource,
+			g_strdup_printf("resource-%d", i),
+			controller_resource[i]);
+				
+  }
+
+  success = TRUE;
+
+  for(i = 0; i < AGS_CONTROLLER_TEST_LOOKUP_RESOURCE_RESOURCE_COUNT; i++){
+    AgsControllerResource *current;
+    
+    current = ags_controller_lookup_resource(controller,
+					     g_strdup_printf("resource-%d", i));
+
+    if(current == NULL){
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void

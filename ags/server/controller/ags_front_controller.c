@@ -86,7 +86,7 @@ ags_front_controller_get_type()
       (GInstanceInitFunc) ags_front_controller_init,
     };
     
-    ags_type_front_controller = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_front_controller = g_type_register_static(AGS_TYPE_CONTROLLER,
 						       "AgsFrontController",
 						       &ags_front_controller_info,
 						       0);
@@ -199,6 +199,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 	       "server", &server,
 	       NULL);
 
+  start_controller = NULL;
   g_object_get(server,
 	       "controller", &start_controller,
 	       NULL);
@@ -217,12 +218,16 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
       controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller->data);
     
       /* match path */
+      success = FALSE;
+
       g_rec_mutex_lock(controller_mutex);
 
-      success = !strncmp(AGS_CONTROLLER(controller->data)->context_path,
-			 path,
-			 delimiter - path - 1);
-
+      if(AGS_CONTROLLER(controller->data)->context_path != NULL){
+	success = !strncmp(AGS_CONTROLLER(controller->data)->context_path,
+			   path,
+			   delimiter - path - 1);
+      }
+      
       g_rec_mutex_unlock(controller_mutex);
 
       if(success){
@@ -283,6 +288,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 		msg,
 		query,
 		client,
+		security_context,
 		path,
 		login,
 		security_token,

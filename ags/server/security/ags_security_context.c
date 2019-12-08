@@ -360,7 +360,8 @@ ags_security_context_add_server_context(AgsSecurityContext *security_context,
   if(i == 0){
     security_context->server_context = (gchar **) malloc(2 * sizeof(gchar *));
   }else{
-    security_context->server_context = (gchar **) malloc((i + 2) * sizeof(gchar *));
+    security_context->server_context = (gchar **) realloc(security_context->server_context,
+							  (i + 2) * sizeof(gchar *));
   }
 
   security_context->server_context[i] = g_strdup(server_context);
@@ -431,9 +432,9 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
       strv[i] = NULL;
 
       /* free old strv */
-      free(security_context->business_group);
+      free(security_context->server_context);
 
-      security_context->business_group = strv;
+      security_context->server_context = strv;
     }
   }
   

@@ -31,6 +31,8 @@ int ags_front_controller_test_clean_suite();
 
 void ags_front_controller_test_do_request();
 
+AgsServerApplicationContext *server_application_context;
+
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -38,6 +40,16 @@ void ags_front_controller_test_do_request();
 int
 ags_front_controller_test_init_suite()
 {
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+
+  server_application_context = (AgsApplicationContext *) ags_server_application_context_new();
+  g_object_ref(server_application_context);
+
+  ags_application_context_prepare(server_application_context);
+  ags_application_context_setup(server_application_context);
+
   return(0);
 }
 
@@ -54,7 +66,31 @@ ags_front_controller_test_clean_suite()
 void
 ags_front_controller_test_do_request()
 {
-  //TODO:JK: implement me
+  AgsServer *server;
+  AgsFrontController *front_controller;
+  AgsSecurityContext *security_context;
+  
+  gpointer response;
+
+  server = server_application_context->server->data;
+  
+  front_controller = ags_front_controller_new();
+  ags_server_add_controller(server,
+			    front_controller);
+  g_object_set(front_controller,
+	       "server", server,
+	       NULL);
+  
+  security_context = ags_security_context_new();
+  
+  response = ags_front_controller_do_request(front_controller,
+					     NULL,
+					     NULL,
+					     NULL,
+					     security_context,
+					     "/ags-xmlrpc/status",
+					     "ags-test-login",
+					     "ags-test-security-token");
 }
 
 int

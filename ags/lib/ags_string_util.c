@@ -169,8 +169,8 @@ ags_strv_index(gchar **str_array,
     return(-1);
   }
 
-  for(i = 0; *str_array != NULL; i++, str_array++){
-    if(!g_strcmp0(*str_array, str)){
+  for(i = 0; str_array[0] != NULL; i++, str_array++){
+    if(!g_strcmp0(str_array[0], str)){
       return(i);
     }
   }

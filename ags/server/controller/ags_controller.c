@@ -147,7 +147,7 @@ ags_controller_init(AgsController *controller)
 
   controller->context_path = NULL;
   
-  controller->resource = g_hash_table_new_full(g_direct_hash,
+  controller->resource = g_hash_table_new_full(g_str_hash,
 					       g_str_equal,
 					       g_free,
 					       (GDestroyNotify) ags_controller_resource_unref);

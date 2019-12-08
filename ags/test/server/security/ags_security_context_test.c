@@ -62,13 +62,45 @@ ags_security_context_test_parse_business_group()
 void
 ags_security_context_test_add_server_context()
 {
-  //TODO:JK: implement me
+  AgsSecurityContext *security_context;
+
+  security_context = ags_security_context_new();
+
+  ags_security_context_add_server_context(security_context,
+					  "/ags-xmlrpc/logout");
+
+  CU_ASSERT(g_strv_contains(security_context->server_context, "/ags-xmlrpc/logout") == TRUE);
+  
+  ags_security_context_add_server_context(security_context,
+					  "/ags-xmlrpc/osc");
+
+  CU_ASSERT(g_strv_contains(security_context->server_context, "/ags-xmlrpc/logout") == TRUE);
+  CU_ASSERT(g_strv_contains(security_context->server_context, "/ags-xmlrpc/osc") == TRUE);
 }
 
 void
 ags_security_context_test_remove_server_context()
 {
-  //TODO:JK: implement me
+  AgsSecurityContext *security_context;
+
+  security_context = ags_security_context_new();
+
+  security_context->server_context = (gchar **) malloc(3 * sizeof(gchar *));
+
+  security_context->server_context[0] = g_strdup("/ags-xmlrpc/logout");
+  security_context->server_context[1] = g_strdup("/ags-xmlrpc/osc");
+  security_context->server_context[2] = NULL;
+
+  /* remove #0 */
+  ags_security_context_remove_server_context(security_context, "/ags-xmlrpc/logout");
+  
+  CU_ASSERT(g_strv_contains(security_context->server_context, "/ags-xmlrpc/logout") == FALSE);
+  CU_ASSERT(g_strv_contains(security_context->server_context, "/ags-xmlrpc/osc") == TRUE);
+
+  /* remove #1 */
+  ags_security_context_remove_server_context(security_context, "/ags-xmlrpc/osc");
+  
+  CU_ASSERT(security_context->server_context == NULL);
 }
 
 int

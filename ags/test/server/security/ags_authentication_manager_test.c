@@ -49,7 +49,7 @@ void ags_authentication_manager_test_is_session_active();
 
 #define AGS_AUTHENTICATION_MANAGER_TEST_ADD_AUTHENTICATION_XML_AUTHENTICATION_COUNT (9)
 
-#define AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT (7)
+#define AGS_AUTHENTICATION_MANAGER_TEST_REMOVE_AUTHENTICATION_XML_AUTHENTICATION_COUNT (13)
 
 #define AGS_AUTHENTICATION_MANAGER_TEST_LOOKUP_LOGIN_DEFAULT_LOGIN "ags-test-login"
 
@@ -165,7 +165,6 @@ void
 ags_authentication_manager_test_get_authentication()
 {
   AgsAuthenticationManager *authentication_manager;
-
   AgsXmlAuthentication **xml_authentication;
 
   GList *start_authentication, *authentication;
@@ -201,7 +200,6 @@ void
 ags_authentication_manager_test_add_authentication()
 {
   AgsAuthenticationManager *authentication_manager;
-
   AgsXmlAuthentication **xml_authentication;
 
   GList *start_authentication, *authentication;
@@ -236,7 +234,6 @@ void
 ags_authentication_manager_test_remove_authentication()
 {
   AgsAuthenticationManager *authentication_manager;
-
   AgsXmlAuthentication **xml_authentication;
 
   GList *start_authentication, *authentication;

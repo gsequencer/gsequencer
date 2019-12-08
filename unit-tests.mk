@@ -35,7 +35,8 @@ check_PROGRAMS += \
 	ags_authentication_manager_test \
 	ags_password_store_manager_test \
 	ags_xml_authentication_test \
-	ags_xml_password_store_test
+	ags_xml_password_store_test \
+	ags_security_context_test
 
 # unit tests - libags-audio
 check_PROGRAMS += \
@@ -362,6 +363,12 @@ ags_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_
 ags_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# security context unit test
+ags_security_context_test_SOURCES = ags/test/server/security/ags_security_context_test.c
+ags_security_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_security_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_security_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # base plugin unit test
 ags_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c

@@ -152,6 +152,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_password_store_manager_test$(EXEEXT) \
 	ags_xml_authentication_test$(EXEEXT) \
 	ags_xml_password_store_test$(EXEEXT) \
+	ags_security_context_test$(EXEEXT) \
 	ags_base_plugin_test$(EXEEXT) ags_dssi_manager_test$(EXEEXT) \
 	ags_dssi_plugin_test$(EXEEXT) \
 	ags_ladspa_conversion_test$(EXEEXT) \
@@ -3929,6 +3930,17 @@ ags_route_lv2_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_route_lv2_audio_test_CFLAGS) $(CFLAGS) \
 	$(ags_route_lv2_audio_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_security_context_test_OBJECTS = ags/test/server/security/security_context_test-ags_security_context_test.$(OBJEXT)
+ags_security_context_test_OBJECTS =  \
+	$(am_ags_security_context_test_OBJECTS)
+ags_security_context_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_security_context_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_security_context_test_CFLAGS) $(CFLAGS) \
+	$(ags_security_context_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_seek_soundcard_test_OBJECTS = ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.$(OBJEXT)
 ags_seek_soundcard_test_OBJECTS =  \
 	$(am_ags_seek_soundcard_test_OBJECTS)
@@ -5097,6 +5109,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po \
 	ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po \
 	ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po \
+	ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po \
 	ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po \
 	ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po \
 	ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po \
@@ -5347,6 +5360,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) \
 	$(ags_route_dssi_audio_test_SOURCES) \
 	$(ags_route_lv2_audio_test_SOURCES) \
+	$(ags_security_context_test_SOURCES) \
 	$(ags_seek_soundcard_test_SOURCES) \
 	$(ags_server_application_context_test_SOURCES) \
 	$(ags_server_test_SOURCES) \
@@ -5512,6 +5526,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) \
 	$(ags_route_dssi_audio_test_SOURCES) \
 	$(ags_route_lv2_audio_test_SOURCES) \
+	$(ags_security_context_test_SOURCES) \
 	$(ags_seek_soundcard_test_SOURCES) \
 	$(ags_server_application_context_test_SOURCES) \
 	$(ags_server_test_SOURCES) \
@@ -6919,6 +6934,12 @@ ags_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_
 ags_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# security context unit test
+ags_security_context_test_SOURCES = ags/test/server/security/ags_security_context_test.c
+ags_security_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_security_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_security_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # base plugin unit test
 ags_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
@@ -13034,6 +13055,13 @@ ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.$(OBJEXT):  
 ags_route_lv2_audio_test$(EXEEXT): $(ags_route_lv2_audio_test_OBJECTS) $(ags_route_lv2_audio_test_DEPENDENCIES) $(EXTRA_ags_route_lv2_audio_test_DEPENDENCIES) 
 	@rm -f ags_route_lv2_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_route_lv2_audio_test_LINK) $(ags_route_lv2_audio_test_OBJECTS) $(ags_route_lv2_audio_test_LDADD) $(LIBS)
+ags/test/server/security/security_context_test-ags_security_context_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp) \
+	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
+
+ags_security_context_test$(EXEEXT): $(ags_security_context_test_OBJECTS) $(ags_security_context_test_DEPENDENCIES) $(EXTRA_ags_security_context_test_DEPENDENCIES) 
+	@rm -f ags_security_context_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_security_context_test_LINK) $(ags_security_context_test_OBJECTS) $(ags_security_context_test_LDADD) $(LIBS)
 ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.$(OBJEXT):  \
 	ags/test/audio/task/$(am__dirstamp) \
 	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -14143,6 +14171,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po@am__quote@ # am--include-marker
@@ -21107,6 +21136,20 @@ ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.obj: ags/tes
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_route_lv2_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.obj `if test -f 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_route_lv2_audio_test.c'; fi`
 
+ags/test/server/security/security_context_test-ags_security_context_test.o: ags/test/server/security/ags_security_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_security_context_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/security_context_test-ags_security_context_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Tpo -c -o ags/test/server/security/security_context_test-ags_security_context_test.o `test -f 'ags/test/server/security/ags_security_context_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_security_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Tpo ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_security_context_test.c' object='ags/test/server/security/security_context_test-ags_security_context_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_security_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/security_context_test-ags_security_context_test.o `test -f 'ags/test/server/security/ags_security_context_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_security_context_test.c
+
+ags/test/server/security/security_context_test-ags_security_context_test.obj: ags/test/server/security/ags_security_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_security_context_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/security_context_test-ags_security_context_test.obj -MD -MP -MF ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Tpo -c -o ags/test/server/security/security_context_test-ags_security_context_test.obj `if test -f 'ags/test/server/security/ags_security_context_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_security_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_security_context_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Tpo ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_security_context_test.c' object='ags/test/server/security/security_context_test-ags_security_context_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_security_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/security_context_test-ags_security_context_test.obj `if test -f 'ags/test/server/security/ags_security_context_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_security_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_security_context_test.c'; fi`
+
 ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.o: ags/test/audio/task/ags_seek_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_seek_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/seek_soundcard_test-ags_seek_soundcard_test.Tpo -c -o ags/test/audio/task/seek_soundcard_test-ags_seek_soundcard_test.o `test -f 'ags/test/audio/task/ags_seek_soundcard_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_seek_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/seek_soundcard_test-ags_seek_soundcard_test.Tpo ags/test/audio/task/$(DEPDIR)/seek_soundcard_test-ags_seek_soundcard_test.Po
@@ -22311,6 +22354,13 @@ ags_xml_authentication_test.log: ags_xml_authentication_test$(EXEEXT)
 ags_xml_password_store_test.log: ags_xml_password_store_test$(EXEEXT)
 	@p='ags_xml_password_store_test$(EXEEXT)'; \
 	b='ags_xml_password_store_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_security_context_test.log: ags_security_context_test$(EXEEXT)
+	@p='ags_security_context_test$(EXEEXT)'; \
+	b='ags_security_context_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -24576,6 +24626,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po
@@ -25494,6 +25545,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po

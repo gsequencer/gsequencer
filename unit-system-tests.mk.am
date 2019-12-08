@@ -44,7 +44,8 @@ libags_installcheck_programs = \
 	ags_check_system_authentication_manager_test \
 	ags_check_system_password_store_manager_test \
 	ags_check_system_xml_authentication_test \
-	ags_check_system_xml_password_store_test
+	ags_check_system_xml_password_store_test \
+	ags_check_system_security_context_test
 
 # unit system tests - libags-audio
 libags_audio_installcheck_programs = \
@@ -373,6 +374,12 @@ ags_check_system_xml_password_store_test_SOURCES = ags/test/server/security/ags_
 ags_check_system_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_check_system_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# security context unit test
+ags_check_system_security_context_test_SOURCES = ags/test/server/security/ags_security_context_test.c
+ags_check_system_security_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_check_system_security_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_security_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # base plugin unit test
 ags_check_system_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
@@ -1229,6 +1236,15 @@ ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_inst
 	./ags_check_system_file_id_ref_test
 	./ags_check_system_file_launch_test
 	./ags_check_system_file_lookup_test
+	./ags_check_system_server_application_context_test
+	./ags_check_system_server_test
+	./ags_check_system_controller_test
+	./ags_check_system_front_controller_test
+	./ags_check_system_authentication_manager_test
+	./ags_check_system_password_store_manager_test
+	./ags_check_system_xml_authentication_test
+	./ags_check_system_xml_password_store_test
+	./ags_check_system_security_context_test
 	./ags_check_system_base_plugin_test
 	./ags_check_system_dssi_manager_test
 	./ags_check_system_dssi_plugin_test
