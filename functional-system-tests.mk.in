@@ -126,7 +126,8 @@ CONFIG_HEADER = $(top_builddir)/ags/config.h \
 CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc \
 	libgsequencer.pc
 CONFIG_CLEAN_VPATH_FILES =
-@WITH_SYSTEM_TESTS_TRUE@am__EXEEXT_1 = ags_check_system_functional_audio_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@am__EXEEXT_1 = ags_check_system_functional_server_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_audio_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_pitch_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_fourier_transform_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_osc_server_test$(EXEEXT) \
@@ -398,6 +399,18 @@ ags_check_system_functional_pitch_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(CCLD) $(ags_check_system_functional_pitch_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_functional_pitch_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__ags_check_system_functional_server_test_SOURCES_DIST =  \
+	ags/test/server/ags_functional_server_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_functional_server_test_OBJECTS = ags/test/server/check_system_functional_server_test-ags_functional_server_test.$(OBJEXT)
+ags_check_system_functional_server_test_OBJECTS =  \
+	$(am_ags_check_system_functional_server_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_server_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_3)
+ags_check_system_functional_server_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_functional_server_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_functional_server_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_check_system_functional_synth_test_SOURCES_DIST =  \
 	ags/test/X/machine/ags_functional_synth_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_functional_synth_test_OBJECTS = ags/test/X/machine/check_system_functional_synth_test-ags_functional_synth_test.$(OBJEXT)
@@ -460,6 +473,7 @@ SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_osc_server_test_SOURCES) \
 	$(ags_check_system_functional_panel_test_SOURCES) \
 	$(ags_check_system_functional_pitch_test_SOURCES) \
+	$(ags_check_system_functional_server_test_SOURCES) \
 	$(ags_check_system_functional_synth_test_SOURCES)
 DIST_SOURCES = $(am__libgsequencer_check_system_test_la_SOURCES_DIST) \
 	$(am__ags_check_system_functional_audio_config_test_SOURCES_DIST) \
@@ -478,6 +492,7 @@ DIST_SOURCES = $(am__libgsequencer_check_system_test_la_SOURCES_DIST) \
 	$(am__ags_check_system_functional_osc_server_test_SOURCES_DIST) \
 	$(am__ags_check_system_functional_panel_test_SOURCES_DIST) \
 	$(am__ags_check_system_functional_pitch_test_SOURCES_DIST) \
+	$(am__ags_check_system_functional_server_test_SOURCES_DIST) \
 	$(am__ags_check_system_functional_synth_test_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
@@ -784,6 +799,7 @@ SUBDIRS = po
 
 # functional system tests - edit target
 @WITH_SYSTEM_TESTS_TRUE@installcheck_programs = \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_server_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_audio_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_pitch_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_functional_fourier_transform_test \
@@ -808,6 +824,12 @@ SUBDIRS = po
 @WITH_SYSTEM_TESTS_TRUE@libgsequencer_check_system_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@libgsequencer_check_system_test_la_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
 @WITH_SYSTEM_TESTS_TRUE@libgsequencer_check_system_test_la_LIBADD = $(libgsequencer_check_system_test_LIBADD)
+
+# functional server test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_server_test_SOURCES = ags/test/server/ags_functional_server_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_server_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_server_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional audio test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
@@ -1126,6 +1148,15 @@ ags/test/audio/check_system_functional_pitch_test-ags_functional_pitch_test.$(OB
 ags_check_system_functional_pitch_test$(EXEEXT): $(ags_check_system_functional_pitch_test_OBJECTS) $(ags_check_system_functional_pitch_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_pitch_test_DEPENDENCIES) 
 	@rm -f ags_check_system_functional_pitch_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_functional_pitch_test_LINK) $(ags_check_system_functional_pitch_test_OBJECTS) $(ags_check_system_functional_pitch_test_LDADD) $(LIBS)
+ags/test/server/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/server
+	@: > ags/test/server/$(am__dirstamp)
+ags/test/server/check_system_functional_server_test-ags_functional_server_test.$(OBJEXT):  \
+	ags/test/server/$(am__dirstamp)
+
+ags_check_system_functional_server_test$(EXEEXT): $(ags_check_system_functional_server_test_OBJECTS) $(ags_check_system_functional_server_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_server_test_DEPENDENCIES) 
+	@rm -f ags_check_system_functional_server_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_functional_server_test_LINK) $(ags_check_system_functional_server_test_OBJECTS) $(ags_check_system_functional_server_test_LDADD) $(LIBS)
 ags/test/X/machine/check_system_functional_synth_test-ags_functional_synth_test.$(OBJEXT):  \
 	ags/test/X/machine/$(am__dirstamp)
 
@@ -1140,6 +1171,7 @@ mostlyclean-compile:
 	-rm -f ags/test/X/machine/*.$(OBJEXT)
 	-rm -f ags/test/audio/*.$(OBJEXT)
 	-rm -f ags/test/audio/osc/*.$(OBJEXT)
+	-rm -f ags/test/server/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -1254,6 +1286,12 @@ ags/test/audio/check_system_functional_pitch_test-ags_functional_pitch_test.o: a
 
 ags/test/audio/check_system_functional_pitch_test-ags_functional_pitch_test.obj: ags/test/audio/ags_functional_pitch_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_pitch_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_functional_pitch_test-ags_functional_pitch_test.obj `if test -f 'ags/test/audio/ags_functional_pitch_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_functional_pitch_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_functional_pitch_test.c'; fi`
+
+ags/test/server/check_system_functional_server_test-ags_functional_server_test.o: ags/test/server/ags_functional_server_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/check_system_functional_server_test-ags_functional_server_test.o `test -f 'ags/test/server/ags_functional_server_test.c' || echo '$(srcdir)/'`ags/test/server/ags_functional_server_test.c
+
+ags/test/server/check_system_functional_server_test-ags_functional_server_test.obj: ags/test/server/ags_functional_server_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/check_system_functional_server_test-ags_functional_server_test.obj `if test -f 'ags/test/server/ags_functional_server_test.c'; then $(CYGPATH_W) 'ags/test/server/ags_functional_server_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/ags_functional_server_test.c'; fi`
 
 ags/test/X/machine/check_system_functional_synth_test-ags_functional_synth_test.o: ags/test/X/machine/ags_functional_synth_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_synth_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/check_system_functional_synth_test-ags_functional_synth_test.o `test -f 'ags/test/X/machine/ags_functional_synth_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_synth_test.c
@@ -1604,6 +1642,7 @@ distclean-generic:
 	-rm -f ags/test/X/machine/$(am__dirstamp)
 	-rm -f ags/test/audio/$(am__dirstamp)
 	-rm -f ags/test/audio/osc/$(am__dirstamp)
+	-rm -f ags/test/server/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1709,6 +1748,7 @@ uninstall-am:
 
 
 @WITH_SYSTEM_TESTS_TRUE@ags-check-system-functional-test: $(installcheck_programs)
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_functional_server_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_functional_audio_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_functional_pitch_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_functional_fourier_transform_test

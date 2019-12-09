@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 
 #define AGS_CONFIG_GENERIC "generic"
 #define AGS_CONFIG_THREAD "thread"
+#define AGS_CONFIG_SERVER "server"
 #define AGS_CONFIG_SOUNDCARD "soundcard"
 #define AGS_CONFIG_SOUNDCARD_0 "soundcard-0"
 #define AGS_CONFIG_SEQUENCER "sequencer"

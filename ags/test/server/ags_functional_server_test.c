@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,28 @@ int ags_functional_server_test_clean_suite();
 
 void ags_functional_server_test_authenticate();
 
+void ags_functional_server_test_authenticate_authenticate_callback(SoupSession *session,
+								   SoupMessage *msg,
+								   SoupAuth *auth,
+								   gboolean retrying,
+								   gpointer user_data);
+
+#define AGS_FUNCTIONAL_SERVER_TEST_CONFIG "[server]\n"		\
+  "realm=ags-test-realm\n"					\
+  "auto-start=true\n"						\
+  "any-address=false\n"						\
+  "enable-ip4=true\n"						\
+  "ip4-address=127.0.0.1\n"					\
+  "enable-ip6=false\n"						\
+  "ip6-address=::1\n"						\
+  "server-port=8080\n"						\
+  "\n"						       
+
+#define AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_LOGIN "ags-test-login"
+#define AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_PASSWORD "ags-test-password"
+
 AgsServerApplicationContext *server_application_context;
+SoupSession *soup_session;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -42,6 +63,9 @@ ags_functional_server_test_init_suite()
   AgsConfig *config;
 
   config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_FUNCTIONAL_SERVER_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_SERVER_TEST_CONFIG));
 
   server_application_context = (AgsApplicationContext *) ags_server_application_context_new();
   g_object_ref(server_application_context);
@@ -49,6 +73,14 @@ ags_functional_server_test_init_suite()
   ags_application_context_prepare(server_application_context);
   ags_application_context_setup(server_application_context);
   
+  /* server */
+  sleep(5);
+
+  /* soup session */
+  soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_COOKIE_JAR,
+					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
+					       NULL);
+
   return(0);
 }
 
@@ -67,7 +99,37 @@ ags_functional_server_test_clean_suite()
 void
 ags_functional_server_test_authenticate()
 {
+  SoupMessage *msg;
+  
+  guint status;
+
+  static const gchar *form_data = "";
+
+  msg = soup_form_request_new("GET",
+			      "http://localhost:8080/ags-xmlrpc",
+			      NULL);
+  g_signal_connect(soup_session, "authenticate",
+		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
+  
+  status = soup_session_send_message(soup_session, msg);
+
+  g_message("status %d", status);
+  
   //TODO:JK: implement
+}
+
+void
+ags_functional_server_test_authenticate_authenticate_callback(SoupSession *session,
+							      SoupMessage *msg,
+							      SoupAuth *auth,
+							      gboolean retrying,
+							      gpointer user_data)
+{
+  g_message("authenticate: ****");
+  
+  soup_auth_authenticate(auth,
+			 AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_LOGIN,
+			 AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_PASSWORD);
 }
 
 int
@@ -97,7 +159,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsServer doing authenticate", ags_functional_server_test_authenticate) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsServer doing authentication", ags_functional_server_test_authenticate) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

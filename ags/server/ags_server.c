@@ -1004,8 +1004,7 @@ ags_server_real_start(AgsServer *server)
   g_message("starting to listen on XMLRPC");
 
   /* create listen thread */
-  server->soup_server = soup_server_new("interface", soup_address_new(server->domain, server->server_port),
-					NULL);
+  server->soup_server = soup_server_new(NULL);
 
   server->auth_domain = soup_auth_domain_digest_new(SOUP_AUTH_DOMAIN_REALM, server->realm,
 						    SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
@@ -1165,9 +1164,23 @@ ags_server_real_listen(AgsServer *server)
     g_rec_mutex_lock(server_mutex);
 
     error = NULL;
+    g_socket_listen(server->ip4_socket,
+		    &error);
+    
+    g_rec_mutex_unlock(server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+
+    g_rec_mutex_lock(server_mutex);
+
+    error = NULL;
     soup_server_listen_socket(server->soup_server,
 			      server->ip4_socket,
-			      SOUP_SERVER_LISTEN_HTTPS,
+			      0,
 			      &error);
     
     g_rec_mutex_unlock(server_mutex);
@@ -1183,9 +1196,23 @@ ags_server_real_listen(AgsServer *server)
     g_rec_mutex_lock(server_mutex);
 
     error = NULL;
+    g_socket_listen(server->ip6_socket,
+		    &error);
+    
+    g_rec_mutex_unlock(server_mutex);
+
+    if(error != NULL){
+      g_critical("AgsServer - %s", error->message);
+
+      g_error_free(error);
+    }
+
+    g_rec_mutex_lock(server_mutex);
+
+    error = NULL;
     soup_server_listen_socket(server->soup_server,
 			      server->ip6_socket,
-			      SOUP_SERVER_LISTEN_HTTPS,
+			      0,
 			      &error);
     
     g_rec_mutex_unlock(server_mutex);

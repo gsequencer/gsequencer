@@ -1748,10 +1748,6 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsAudioApplicationContext *audio_application_context;
 
-  AgsServer *server;
-
-  GObject *soundcard;
-  GObject *sequencer;
   AgsJackServer *jack_server;
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
@@ -1763,6 +1759,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   AgsLv2Manager *lv2_manager;
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
+
+  AgsServer *server;
 
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
@@ -1777,6 +1775,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   AgsLog *log;
   AgsConfig *config;
 
+  GObject *soundcard;
+  GObject *sequencer;
+
   GList *list;  
 
 #ifndef AGS_W32API
@@ -1787,6 +1788,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
   gchar *blacklist_path;
   gchar *blacklist_filename;
+  gchar *server_group;
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *osc_server_group;
@@ -2421,8 +2423,180 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   g_free(sequencer_group);
 
   /* AgsServer */
-  audio_application_context->server = g_list_append(audio_application_context->server,
-						    ags_server_new());
+  audio_application_context->server = NULL;
+  server = NULL;
+
+  server_group = g_strdup("server");
+  
+  for(i = 0; ; i++){
+    gchar *ip4, *ip6;
+
+    guint server_port;
+    gboolean auto_start;
+    gboolean any_address;
+    gboolean enable_ip4, enable_ip6;
+    
+    if(!g_key_file_has_group(config->key_file,
+			     server_group)){
+      if(i == 0){
+	g_free(server_group);    
+	server_group = g_strdup_printf("%s-%d",
+				       AGS_CONFIG_SERVER,
+				       i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+
+    server = ags_server_new();
+
+    audio_application_context->server = g_list_append(audio_application_context->server,
+						      server);
+    g_object_ref(server);
+
+    /* realm */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "realm");
+    
+    if(str != NULL){
+      g_object_set(server,
+		   "realm", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    /* any address */
+    any_address = FALSE;
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "any-address");
+    
+    if(str != NULL){
+      any_address = (!g_ascii_strncasecmp(str,
+					  "true",
+					  5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(any_address){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_ANY_ADDRESS));
+    }
+
+    /* enable ip4 and ip6 */
+    enable_ip4 = FALSE;
+    enable_ip6 = FALSE;
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "enable-ip4");
+    
+    if(str != NULL){
+      enable_ip4 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "enable-ip6");
+
+    if(str != NULL){
+      enable_ip6 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(enable_ip4){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_INET4));
+    }
+
+    if(enable_ip6){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_INET6));
+    }
+
+    /* ip4 and ip6 address */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "ip4-address");
+
+    if(str != NULL){
+      g_object_set(server,
+		   "ip4", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "ip6-address");
+
+    if(str != NULL){
+      g_object_set(server,
+		   "ip6", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    /* server port */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "server-port");
+
+    if(str != NULL){
+      server_port = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+      g_object_set(server,
+		   "server-port", server_port,
+		   NULL);
+    }
+    
+    /* auto-start */
+    auto_start = FALSE;
+    
+    str = ags_config_get_value(config,
+			       server_group,
+			       "auto-start");
+
+    if(str != NULL){
+      auto_start = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(auto_start){
+      ags_server_start(server);
+    }
+
+    g_free(server_group);    
+    server_group = g_strdup_printf("%s-%d",
+				   AGS_CONFIG_SERVER,
+				   i);
+  }
+
+  if(server == NULL){
+    server = ags_server_new();
+    ags_server_set_flags(server,
+			 (AGS_SERVER_INET4));
+
+    audio_application_context->server = g_list_append(audio_application_context->server,
+						      server);
+    g_object_ref(server);
+  }
   
   /* AgsSoundcardThread and AgsExportThread */
   audio_application_context->default_soundcard_thread = NULL;

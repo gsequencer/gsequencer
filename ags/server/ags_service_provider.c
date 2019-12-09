@@ -58,7 +58,7 @@ ags_service_provider_class_init(AgsServiceProviderInterface *ginterface)
  * Since: 3.0.0
  */
 gboolean
-is_operating(AgsServiceProvider *service_provider)
+ags_service_provider_is_operating(AgsServiceProvider *service_provider)
 {
   AgsServiceProviderInterface *service_provider_interface;
 

@@ -81,6 +81,8 @@ GList* ags_server_application_context_get_server(AgsServiceProvider *service_pro
 void ags_server_application_context_prepare(AgsApplicationContext *application_context);
 void ags_server_application_context_setup(AgsApplicationContext *application_context);
 
+void* ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop);
+
 static gpointer ags_server_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_server_application_context_parent_connectable_interface;
 
@@ -745,6 +747,7 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
   AgsTaskLauncher *task_launcher;
 
   GMainContext *server_main_context;
+  GMainLoop *main_loop;
     
   server_application_context = (AgsServerApplicationContext *) application_context;
 
@@ -763,8 +766,12 @@ ags_server_application_context_prepare(AgsApplicationContext *application_contex
 
   server_application_context->server_main_context = server_main_context;
 
-  g_main_loop_new(server_main_context,
-		  TRUE);
+  main_loop = g_main_loop_new(server_main_context,
+			      TRUE);
+
+  g_thread_new("Advanced Gtk+ Sequencer - server main loop",
+	       ags_server_application_context_server_main_loop_thread,
+	       main_loop);
 
   /* AgsGenericMainLoop */
   generic_main_loop = (AgsThread *) ags_generic_main_loop_new();
@@ -797,8 +804,17 @@ ags_server_application_context_setup(AgsApplicationContext *application_context)
   AgsLog *log;
   AgsConfig *config;    
   
+  gchar *server_group;
+  gchar *str;
+
+  guint i;
+
+  GRecMutex *application_context_mutex;
+  
   server_application_context = (AgsServerApplicationContext *) application_context;
 
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+  
   /* config and log */
   config = ags_config_get_instance();
 
@@ -816,14 +832,225 @@ ags_server_application_context_setup(AgsApplicationContext *application_context)
   server_application_context->thread_pool = NULL;
 
   /* AgsServer */
-  server = ags_server_new();
-  server_application_context->server = g_list_append(server_application_context->server,
-						     server);
+  server_application_context->server = NULL;
+  server = NULL;
+
+  server_group = g_strdup("server");
+  
+  for(i = 0; ; i++){
+    gchar *ip4, *ip6;
+
+    guint server_port;
+    gboolean auto_start;
+    gboolean any_address;
+    gboolean enable_ip4, enable_ip6;
+    
+    if(!g_key_file_has_group(config->key_file,
+			     server_group)){
+      if(i == 0){
+	g_free(server_group);    
+	server_group = g_strdup_printf("%s-%d",
+				       AGS_CONFIG_SERVER,
+				       i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+
+    server = ags_server_new();
+
+    server_application_context->server = g_list_append(server_application_context->server,
+						       server);
+    g_object_ref(server);
+
+    /* realm */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "realm");
+    
+    if(str != NULL){
+      g_object_set(server,
+		   "realm", str,
+		   NULL);
+      
+      g_free(str);
+    }
+    
+    /* any address */
+    any_address = FALSE;
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "any-address");
+    
+    if(str != NULL){
+      any_address = (!g_ascii_strncasecmp(str,
+					  "true",
+					  5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(any_address){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_ANY_ADDRESS));
+    }
+
+    /* enable ip4 and ip6 */
+    enable_ip4 = FALSE;
+    enable_ip6 = FALSE;
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "enable-ip4");
+    
+    if(str != NULL){
+      enable_ip4 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "enable-ip6");
+
+    if(str != NULL){
+      enable_ip6 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(enable_ip4){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_INET4));
+    }
+
+    if(enable_ip6){
+      ags_server_set_flags(server,
+			   (AGS_SERVER_INET6));
+    }
+
+    /* ip4 and ip6 address */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "ip4-address");
+
+    if(str != NULL){
+      g_object_set(server,
+		   "ip4", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       server_group,
+			       "ip6-address");
+
+    if(str != NULL){
+      g_object_set(server,
+		   "ip6", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    /* server port */
+    str = ags_config_get_value(config,
+			       server_group,
+			       "server-port");
+
+    if(str != NULL){
+      server_port = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+      g_object_set(server,
+		   "server-port", server_port,
+		   NULL);
+    }
+    
+    /* auto-start */
+    auto_start = FALSE;
+    
+    str = ags_config_get_value(config,
+			       server_group,
+			       "auto-start");
+
+    if(str != NULL){
+      auto_start = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(auto_start){
+//      ags_server_start(server);
+    }
+
+    g_free(server_group);    
+    server_group = g_strdup_printf("%s-%d",
+				   AGS_CONFIG_SERVER,
+				   i);
+  }
+
+  if(server == NULL){
+    server = ags_server_new();
+    ags_server_set_flags(server,
+			 (AGS_SERVER_INET4));
+
+    server_application_context->server = g_list_append(server_application_context->server,
+						       server);
+    g_object_ref(server);
+  }
+
+  g_rec_mutex_lock(application_context_mutex);
+
+  server_application_context->is_operating = TRUE;
+   
+  g_rec_mutex_unlock(application_context_mutex);
   
   /* unref */
   g_object_unref(main_loop);
   
   g_object_unref(task_launcher);
+}
+
+void*
+ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop)
+{
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+
+  g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
+  
+  application_context = ags_application_context_get_instance();
+
+  while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
+    usleep(500000);
+  }
+  
+  list = 
+    start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_server_start(AGS_SERVER(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  g_main_loop_run(main_loop);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 AgsServerApplicationContext*

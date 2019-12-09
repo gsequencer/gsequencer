@@ -153,7 +153,8 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_authentication_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_password_store_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_authentication_test$(EXEEXT) \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test$(EXEEXT)
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_security_context_test$(EXEEXT)
 @WITH_SYSTEM_TESTS_TRUE@am__EXEEXT_2 = ags_check_system_base_plugin_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_dssi_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_dssi_plugin_test$(EXEEXT) \
@@ -2701,6 +2702,22 @@ ags_check_system_route_lv2_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(CCLD) $(ags_check_system_route_lv2_audio_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_route_lv2_audio_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__ags_check_system_security_context_test_SOURCES_DIST =  \
+	ags/test/server/security/ags_security_context_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_security_context_test_OBJECTS = ags/test/server/security/check_system_security_context_test-ags_security_context_test.$(OBJEXT)
+ags_check_system_security_context_test_OBJECTS =  \
+	$(am_ags_check_system_security_context_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_security_context_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	libags_server.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	libags.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_security_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_security_context_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_security_context_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_check_system_seek_soundcard_test_SOURCES_DIST =  \
 	ags/test/audio/task/ags_seek_soundcard_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_seek_soundcard_test_OBJECTS = ags/test/audio/task/check_system_seek_soundcard_test-ags_seek_soundcard_test.$(OBJEXT)
@@ -3331,6 +3348,7 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_returnable_thread_test_SOURCES) \
 	$(ags_check_system_route_dssi_audio_test_SOURCES) \
 	$(ags_check_system_route_lv2_audio_test_SOURCES) \
+	$(ags_check_system_security_context_test_SOURCES) \
 	$(ags_check_system_seek_soundcard_test_SOURCES) \
 	$(ags_check_system_server_application_context_test_SOURCES) \
 	$(ags_check_system_server_test_SOURCES) \
@@ -3498,6 +3516,7 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_returnable_thread_test_SOURCES_DIST) \
 	$(am__ags_check_system_route_dssi_audio_test_SOURCES_DIST) \
 	$(am__ags_check_system_route_lv2_audio_test_SOURCES_DIST) \
+	$(am__ags_check_system_security_context_test_SOURCES_DIST) \
 	$(am__ags_check_system_seek_soundcard_test_SOURCES_DIST) \
 	$(am__ags_check_system_server_application_context_test_SOURCES_DIST) \
 	$(am__ags_check_system_server_test_SOURCES_DIST) \
@@ -3854,7 +3873,8 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_authentication_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_password_store_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_authentication_test \
-@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_security_context_test
 
 
 # unit system tests - libags-audio
@@ -4175,6 +4195,12 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# security context unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_security_context_test_SOURCES = ags/test/server/security/ags_security_context_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_security_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_security_context_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_security_context_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # base plugin unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
@@ -5953,6 +5979,12 @@ ags/test/audio/recall/check_system_route_lv2_audio_test-ags_route_lv2_audio_test
 ags_check_system_route_lv2_audio_test$(EXEEXT): $(ags_check_system_route_lv2_audio_test_OBJECTS) $(ags_check_system_route_lv2_audio_test_DEPENDENCIES) $(EXTRA_ags_check_system_route_lv2_audio_test_DEPENDENCIES) 
 	@rm -f ags_check_system_route_lv2_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_route_lv2_audio_test_LINK) $(ags_check_system_route_lv2_audio_test_OBJECTS) $(ags_check_system_route_lv2_audio_test_LDADD) $(LIBS)
+ags/test/server/security/check_system_security_context_test-ags_security_context_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp)
+
+ags_check_system_security_context_test$(EXEEXT): $(ags_check_system_security_context_test_OBJECTS) $(ags_check_system_security_context_test_DEPENDENCIES) $(EXTRA_ags_check_system_security_context_test_DEPENDENCIES) 
+	@rm -f ags_check_system_security_context_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_security_context_test_LINK) $(ags_check_system_security_context_test_OBJECTS) $(ags_check_system_security_context_test_LDADD) $(LIBS)
 ags/test/audio/task/check_system_seek_soundcard_test-ags_seek_soundcard_test.$(OBJEXT):  \
 	ags/test/audio/task/$(am__dirstamp)
 
@@ -6992,6 +7024,12 @@ ags/test/audio/recall/check_system_route_lv2_audio_test-ags_route_lv2_audio_test
 ags/test/audio/recall/check_system_route_lv2_audio_test-ags_route_lv2_audio_test.obj: ags/test/audio/recall/ags_route_lv2_audio_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_route_lv2_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/check_system_route_lv2_audio_test-ags_route_lv2_audio_test.obj `if test -f 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_route_lv2_audio_test.c'; fi`
 
+ags/test/server/security/check_system_security_context_test-ags_security_context_test.o: ags/test/server/security/ags_security_context_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_security_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_security_context_test-ags_security_context_test.o `test -f 'ags/test/server/security/ags_security_context_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_security_context_test.c
+
+ags/test/server/security/check_system_security_context_test-ags_security_context_test.obj: ags/test/server/security/ags_security_context_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_security_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_security_context_test-ags_security_context_test.obj `if test -f 'ags/test/server/security/ags_security_context_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_security_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_security_context_test.c'; fi`
+
 ags/test/audio/task/check_system_seek_soundcard_test-ags_seek_soundcard_test.o: ags/test/audio/task/ags_seek_soundcard_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_seek_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/check_system_seek_soundcard_test-ags_seek_soundcard_test.o `test -f 'ags/test/audio/task/ags_seek_soundcard_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_seek_soundcard_test.c
 
@@ -7643,6 +7681,15 @@ uninstall-am:
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_file_id_ref_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_file_launch_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_file_lookup_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_server_application_context_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_server_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_controller_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_front_controller_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_authentication_manager_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_password_store_manager_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_authentication_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_password_store_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_security_context_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_base_plugin_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_dssi_manager_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_dssi_plugin_test
