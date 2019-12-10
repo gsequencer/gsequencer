@@ -3182,27 +3182,27 @@ ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_UINT_POINTER_PO
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:OBJECT,POINTER,OBJECT,OBJECT,STRING,STRING,STRING (ags/object/ags_marshallers.list:78) */
+/* POINTER:OBJECT,POINTER,POINTER,OBJECT,STRING,STRING,STRING (ags/object/ags_marshallers.list:78) */
 void
-ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING (GClosure     *closure,
-                                                                                 GValue       *return_value,
-                                                                                 guint         n_param_values,
-                                                                                 const GValue *param_values,
-                                                                                 gpointer      invocation_hint G_GNUC_UNUSED,
-                                                                                 gpointer      marshal_data)
+ags_cclosure_marshal_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING (GClosure     *closure,
+                                                                                  GValue       *return_value,
+                                                                                  guint         n_param_values,
+                                                                                  const GValue *param_values,
+                                                                                  gpointer      invocation_hint G_GNUC_UNUSED,
+                                                                                  gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING) (gpointer data1,
-                                                                                               gpointer arg1,
-                                                                                               gpointer arg2,
-                                                                                               gpointer arg3,
-                                                                                               gpointer arg4,
-                                                                                               gpointer arg5,
-                                                                                               gpointer arg6,
-                                                                                               gpointer arg7,
-                                                                                               gpointer data2);
+  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING) (gpointer data1,
+                                                                                                gpointer arg1,
+                                                                                                gpointer arg2,
+                                                                                                gpointer arg3,
+                                                                                                gpointer arg4,
+                                                                                                gpointer arg5,
+                                                                                                gpointer arg6,
+                                                                                                gpointer arg7,
+                                                                                                gpointer data2);
   GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
-  GMarshalFunc_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING callback;
+  GMarshalFunc_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -3218,12 +3218,12 @@ ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING 
       data1 = g_value_peek_pointer (param_values + 0);
       data2 = closure->data;
     }
-  callback = (GMarshalFunc_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING) (marshal_data ? marshal_data : cc->callback);
+  callback = (GMarshalFunc_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING) (marshal_data ? marshal_data : cc->callback);
 
   v_return = callback (data1,
                        g_marshal_value_peek_object (param_values + 1),
                        g_marshal_value_peek_pointer (param_values + 2),
-                       g_marshal_value_peek_object (param_values + 3),
+                       g_marshal_value_peek_pointer (param_values + 3),
                        g_marshal_value_peek_object (param_values + 4),
                        g_marshal_value_peek_string (param_values + 5),
                        g_marshal_value_peek_string (param_values + 6),

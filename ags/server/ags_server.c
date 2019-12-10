@@ -364,7 +364,7 @@ ags_server_init(AgsServer *server)
   server->realm = NULL;
   
   server->soup_server = NULL;
-  server->auth_module = NULL;
+  server->auth_module = g_strdup(AGS_SERVER_DEFAULT_AUTH_MODULE);
   
   server->front_controller = NULL;
 
@@ -860,6 +860,8 @@ ags_server_remove_controller(AgsServer *server,
 void
 ags_server_real_start(AgsServer *server)
 {
+  AgsFrontController *front_controller;
+  
   gboolean any_address;
   gboolean ip4_success, ip6_success;
 
@@ -999,6 +1001,16 @@ ags_server_real_start(AgsServer *server)
     }
   }
 
+  front_controller = ags_front_controller_new();
+  g_object_set(front_controller,
+	       "server", server,
+	       NULL);
+
+  
+  g_object_set(server,
+	       "front-controller", front_controller,
+	       NULL);
+
   ags_server_set_flags(server, AGS_SERVER_RUNNING);
 
   g_message("starting to listen on XMLRPC");
@@ -1006,12 +1018,11 @@ ags_server_real_start(AgsServer *server)
   /* create listen thread */
   server->soup_server = soup_server_new(NULL);
 
-  server->auth_domain = soup_auth_domain_digest_new(SOUP_AUTH_DOMAIN_REALM, server->realm,
-						    SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
-						    SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK, ags_server_xmlrpc_digest_auth_callback,
-						    SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA, server,
-						    SOUP_AUTH_DOMAIN_ADD_PATH, AGS_CONTROLLER_BASE_PATH,
-						    NULL);
+  server->auth_domain = soup_auth_domain_basic_new(SOUP_AUTH_DOMAIN_REALM, server->realm,
+						   SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK, ags_server_xmlrpc_auth_callback,
+						   SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA, server,
+						   SOUP_AUTH_DOMAIN_ADD_PATH, AGS_CONTROLLER_BASE_PATH,
+						   NULL);
   soup_server_add_auth_domain(server->soup_server, server->auth_domain);
   
   soup_server_add_handler(server->soup_server,
@@ -1265,6 +1276,10 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
   gchar *security_token;
   
   gboolean success;
+
+  if(!AGS_IS_SERVER(server)){
+    return(FALSE);
+  }
   
   authentication_manager = ags_authentication_manager_get_instance();
 
@@ -1281,11 +1296,31 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 
     GSList *cookie;
 
+    gchar *domain;
+
+    GRecMutex *server_mutex;
+
+    server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+
+#if 0
+    g_rec_mutex_lock(server_mutex);
+
+    domain = g_strdup_printf("http://%s:%d%s",
+			     server->domain,
+			     server->server_port,
+			     AGS_CONTROLLER_BASE_PATH);
+
+    g_rec_mutex_unlock(server_mutex);
+#else
+    domain = NULL;
+#endif
+    
+    /* request */
     cookie = NULL;
 
     login_cookie = soup_cookie_new("ags-srv-login",
 				   username,
-				   server->domain,
+				   domain,
 				   NULL,
 				   -1);
     cookie = g_slist_prepend(cookie,
@@ -1293,7 +1328,29 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     
     session_cookie = soup_cookie_new("ags-srv-security-token",
 				     security_token,
-				     server->domain,
+				     domain,
+				     NULL,
+				     -1);
+    cookie = g_slist_prepend(cookie,
+			     session_cookie);
+    
+    soup_cookies_to_request(cookie,
+			    msg);
+
+    /* response */
+    cookie = NULL;
+
+    login_cookie = soup_cookie_new("ags-srv-login",
+				   username,
+				   domain,
+				   NULL,
+				   -1);
+    cookie = g_slist_prepend(cookie,
+			     login_cookie);
+    
+    session_cookie = soup_cookie_new("ags-srv-security-token",
+				     security_token,
+				     domain,
 				     NULL,
 				     -1);
     cookie = g_slist_prepend(cookie,
@@ -1319,6 +1376,10 @@ ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
   gchar *security_token;
   char *digest;
   
+  if(!AGS_IS_SERVER(server)){
+    return(FALSE);
+  }
+
   authentication_manager = ags_authentication_manager_get_instance();
 
   cookie = soup_cookies_from_request(msg);
@@ -1402,42 +1463,44 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
     
     cookie = cookie->next;
   }
-  
-  g_object_get(server,
-	       "front-controller", &front_controller,
-	       NULL);
 
   login_info = ags_authentication_manager_lookup_login(authentication_manager,
 						       login);
 
-  g_rec_mutex_lock(authentication_manager_mutex);
+  if(login_info != NULL){  
+    g_object_get(server,
+		 "front-controller", &front_controller,
+		 NULL);
+    
+    g_rec_mutex_lock(authentication_manager_mutex);
 
-  security_context = login_info->security_context;
-  g_object_ref(security_context);
+    security_context = login_info->security_context;
+    g_object_ref(security_context);
   
-  g_rec_mutex_unlock(authentication_manager_mutex);
+    g_rec_mutex_unlock(authentication_manager_mutex);
 
-  if(ags_authentication_manager_is_session_active(authentication_manager,
-						  security_context,
-						  login,
-						  security_token)){
-    ags_front_controller_do_request(front_controller,
-				    msg,
-				    query,
-				    client,
-				    security_context,
-				    path,
-				    login,
-				    security_token);
-  }else{
-    g_message("AgsServer - session not active");
+    if(ags_authentication_manager_is_session_active(authentication_manager,
+						    security_context,
+						    login,
+						    security_token)){
+      ags_front_controller_do_request(front_controller,
+				      msg,
+				      query,
+				      client,
+				      security_context,
+				      path,
+				      login,
+				      security_token);
+    }else{
+      g_message("AgsServer - session not active");
+    }
+  
+    g_object_unref(front_controller);
+
+    g_object_unref(security_context);
+
+    ags_login_info_unref(login_info);
   }
-  
-  g_object_unref(front_controller);
-
-  g_object_unref(security_context);
-
-  ags_login_info_unref(login_info);
 }
 
 /**

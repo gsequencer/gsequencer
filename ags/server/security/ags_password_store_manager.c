@@ -216,10 +216,10 @@ ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *passwo
 /**
  * ags_password_store_manager_check_password:
  * @password_store_manager: the #AgsPasswordStoreManager
- * @login: the login
+ * @user_uuid: the user uuid
  * @password: the password
  * 
- * Check @password to be valid for @login.
+ * Check @password to be valid for @user_uuid.
  * 
  * Returns: %TRUE if password matches, otherwise %FALSE
  * 
@@ -227,7 +227,7 @@ ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *passwo
  */
 gboolean
 ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
-					  gchar *login,
+					  gchar *user_uuid,
 					  gchar *password)
 {
   GList *start_password_store, *password_store;
@@ -242,7 +242,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
   GRecMutex *password_store_manager_mutex;
   
   if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager) ||
-     login == NULL ||
+     user_uuid == NULL ||
      password == NULL){
     return(FALSE);
   }
@@ -269,7 +269,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
     error = NULL;
     current_password = ags_password_store_get_password(AGS_PASSWORD_STORE(password_store->data),
 						       NULL,
-						       login,
+						       user_uuid,
 						       NULL,
 						       &error);
 
@@ -298,10 +298,10 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
     success = (current_password != NULL && !g_strcmp0(encrypted_password, current_password)) ? TRUE: FALSE;
     
     if(salt != NULL){
-      g_free(encrypted_password);
+//      g_free(encrypted_password);
     }
     
-    g_free(current_password);
+//    g_free(current_password);
 
     if(success){
       break;

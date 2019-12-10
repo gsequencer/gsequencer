@@ -61,6 +61,7 @@ typedef struct _AgsOscServerClass AgsOscServerClass;
  * @AGS_OSC_SERVER_UDP: run using UDP transport
  * @AGS_OSC_SERVER_TCP: run using TCP transport
  * @AGS_OSC_SERVER_ANY_ADDRESS: listen on any address
+ * @AGS_OSC_SERVER_AUTO_START: start the server
  * 
  * Enum values to control the behavior or indicate internal state of #AgsOscServer by
  * enable/disable as flags.
@@ -75,6 +76,7 @@ typedef enum{
   AGS_OSC_SERVER_TCP            = 1 <<  6,
   AGS_OSC_SERVER_UNIX           = 1 <<  7,
   AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  8,
+  AGS_OSC_SERVER_AUTO_START     = 1 <<  9,
 }AgsOscServerFlags;
 
 struct _AgsOscServer

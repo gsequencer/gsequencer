@@ -476,6 +476,8 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 
   gchar *current_security_token, *current_user_uuid;
 
+  GError *error;
+
   if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
      login == NULL ||
      password == NULL){
@@ -497,34 +499,37 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
   current_security_token = NULL;
   
   while(authentication != NULL){
-    GError *error;
-
-    error = NULL;
+    gchar **strv;
     
-    if(g_strv_contains(ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data)),
-		       authentication_module) &&
-       ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
-				login, password,
-				&current_user_uuid, &current_security_token,
-				&error)){
-      if(user_uuid != NULL){
-	user_uuid[0] = current_user_uuid;
-      }
-
-      if(security_token != NULL){
-	security_token[0] = current_security_token;
-      }
-
-      g_list_free_full(start_authentication,
-		       g_object_unref);
+    strv = ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data));
+    
+    if(g_strv_contains(strv,
+		       authentication_module)){
+      error = NULL;
       
-      return(TRUE);
-    }
+      if(ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
+				  login, password,
+				  &current_user_uuid, &current_security_token,
+				  &error)){
+	if(user_uuid != NULL){
+	  user_uuid[0] = current_user_uuid;
+	}
 
-    if(error != NULL){
-      g_warning("%s", error->message);
+	if(security_token != NULL){
+	  security_token[0] = current_security_token;
+	}
 
-      g_error_free(error);
+	g_list_free_full(start_authentication,
+			 g_object_unref);
+      
+	return(TRUE);
+      }
+      
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
     }
     
     authentication = authentication->next;

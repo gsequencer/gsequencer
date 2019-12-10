@@ -47,11 +47,17 @@ void ags_functional_server_test_authenticate_authenticate_callback(SoupSession *
   "server-port=8080\n"						\
   "\n"						       
 
+#define AGS_FUNCTIONAL_SERVER_TEST_XML_AUTHENTICATION_FILENAME SRCDIR "/" "ags_functional_server_test_authentication.xml"
+#define AGS_FUNCTIONAL_SERVER_TEST_XML_PASSWORD_STORE_FILENAME SRCDIR "/" "ags_functional_server_test_password_store.xml"
+#define AGS_FUNCTIONAL_SERVER_TEST_XML_COOKIE_FILENAME SRCDIR "/" "ags_functional_server_test_cookie"
+
 #define AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_LOGIN "ags-test-login"
 #define AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_PASSWORD "ags-test-password"
 
 AgsServerApplicationContext *server_application_context;
+
 SoupSession *soup_session;
+SoupCookieJar *jar;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -60,6 +66,11 @@ SoupSession *soup_session;
 int
 ags_functional_server_test_init_suite()
 {
+  AgsAuthenticationManager *authentication_manager;
+  AgsPasswordStoreManager *password_store_manager;
+  AgsXmlAuthentication *xml_authentication;
+  AgsXmlPasswordStore *xml_password_store;
+  
   AgsConfig *config;
 
   config = ags_config_get_instance();
@@ -67,6 +78,21 @@ ags_functional_server_test_init_suite()
 			    AGS_FUNCTIONAL_SERVER_TEST_CONFIG,
 			    strlen(AGS_FUNCTIONAL_SERVER_TEST_CONFIG));
 
+  authentication_manager = ags_authentication_manager_get_instance();
+  password_store_manager = ags_password_store_manager_get_instance();
+
+  xml_authentication = ags_xml_authentication_new();
+  ags_xml_authentication_open_filename(xml_authentication,
+				       AGS_FUNCTIONAL_SERVER_TEST_XML_AUTHENTICATION_FILENAME);
+  ags_authentication_manager_add_authentication(authentication_manager,
+						xml_authentication);
+  
+  xml_password_store = ags_xml_password_store_new();
+  ags_xml_password_store_open_filename(xml_password_store,
+				       AGS_FUNCTIONAL_SERVER_TEST_XML_PASSWORD_STORE_FILENAME);
+  ags_password_store_manager_add_password_store(password_store_manager,
+						xml_password_store);
+  
   server_application_context = (AgsApplicationContext *) ags_server_application_context_new();
   g_object_ref(server_application_context);
 
@@ -77,10 +103,13 @@ ags_functional_server_test_init_suite()
   sleep(5);
 
   /* soup session */
-  soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_COOKIE_JAR,
-					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
+  soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
 					       NULL);
 
+  jar = soup_cookie_jar_text_new(AGS_FUNCTIONAL_SERVER_TEST_XML_COOKIE_FILENAME,
+				 FALSE);     
+  soup_session_add_feature(soup_session, jar);
+  
   return(0);
 }
 
@@ -100,9 +129,21 @@ void
 ags_functional_server_test_authenticate()
 {
   SoupMessage *msg;
+  SoupMessageHeaders *response_headers;
+  SoupMessageBody *response_body;
+  SoupURI *soup_uri;
+  
+  SoupMessageHeadersIter iter;
+  GSList *cookie;
+
+  gchar *login;
+  gchar *security_token;
+  char *name, *value;
   
   guint status;
 
+  GError *error;
+  
   static const gchar *form_data = "";
 
   msg = soup_form_request_new("GET",
@@ -110,12 +151,61 @@ ags_functional_server_test_authenticate()
 			      NULL);
   g_signal_connect(soup_session, "authenticate",
 		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
-  
-  status = soup_session_send_message(soup_session, msg);
+
+  status = soup_session_send_message(soup_session,
+				     msg);
+
+  g_object_get(msg,
+	       "response-headers", &response_headers,
+	       "response-body", &response_body,
+	       NULL);
 
   g_message("status %d", status);
+
+  soup_uri = soup_uri_new("http://localhost:8080/ags-xmlrpc");
   
-  //TODO:JK: implement
+  cookie = NULL;
+  soup_message_headers_iter_init(&iter,
+				 response_headers);
+
+  while(soup_message_headers_iter_next(&iter, &name, &value)){
+    g_message("%s: %s", name, value);
+  }
+  
+  g_message("%s", response_body->data);
+
+  CU_ASSERT(status == 200);
+
+  cookie = soup_cookies_from_response(msg);
+  
+  login = NULL;
+  security_token = NULL;
+  
+  while(cookie != NULL){
+    char *cookie_name;
+
+    cookie_name = soup_cookie_get_name(cookie->data);
+
+    if(!g_ascii_strncasecmp(cookie_name,
+			    "ags-srv-login",
+			    14)){
+      login = soup_cookie_get_value(cookie->data);
+    }else if(!g_ascii_strncasecmp(cookie_name,
+				  "ags-srv-security-token",
+				  23)){
+      security_token = soup_cookie_get_value(cookie->data);
+    }
+
+    if(login != NULL &&
+       security_token != NULL){
+      break;
+    }
+    
+    cookie = cookie->next;
+  }
+
+  CU_ASSERT((!g_strcmp0(login, AGS_FUNCTIONAL_SERVER_TEST_AUTHENTICATE_LOGIN)) == TRUE);
+  CU_ASSERT(security_token != NULL);
 }
 
 void

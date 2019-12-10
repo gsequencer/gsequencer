@@ -3657,7 +3657,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     if(auto_start){
-      ags_server_start(server);
+      ags_server_set_flags(server, AGS_SERVER_AUTO_START);
     }
 
     g_free(server_group);    
@@ -3886,7 +3886,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     if(auto_start){
-      ags_osc_server_start(osc_server);
+      ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_AUTO_START);
     }
 
     g_free(osc_server_group);    
@@ -4232,8 +4232,10 @@ ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop)
     start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_server_start(AGS_SERVER(list->data));
-
+    if(ags_server_test_flags(list->data, AGS_SERVER_AUTO_START)){
+      ags_server_start(AGS_SERVER(list->data));
+    }
+    
     list = list->next;
   }
 
@@ -4250,6 +4252,10 @@ ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop)
 void*
 ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 {
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+
 #ifdef AGS_WITH_RT
   AgsPriority *priority;
 
@@ -4260,6 +4266,12 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 
   g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
   
+  application_context = ags_application_context_get_instance();
+
+  while(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+    g_usleep(G_USEC_PER_SEC / 30);
+  }
+
   /* real-time setup */
 #ifdef AGS_WITH_RT
   priority = ags_priority_get_instance();  
@@ -4283,6 +4295,20 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
   }
 #endif
   
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SERVICE_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(ags_osc_server_test_flags(list->data, AGS_OSC_SERVER_AUTO_START)){
+      ags_osc_server_start(AGS_OSC_SERVER(list->data));
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
   g_main_loop_run(main_loop);
 
   g_thread_exit(NULL);

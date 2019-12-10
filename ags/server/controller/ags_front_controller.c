@@ -137,11 +137,11 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING,
 		 G_TYPE_POINTER, 7,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
-		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
 		 G_TYPE_OBJECT,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
@@ -183,6 +183,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   gpointer start_response;
 
   gchar *delimiter;    
+
+  gboolean found_controller;
   
   if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
      path == NULL ||
@@ -208,6 +210,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 
   delimiter = rindex(path, '/');
 
+  found_controller = FALSE;
+  
   if(delimiter != NULL){  
     while(controller != NULL){
       gboolean success;
@@ -232,6 +236,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 
       if(success){
 	if(AGS_IS_PLUGIN_CONTROLLER(controller->data)){
+	  found_controller = TRUE;
+	  
 	  start_response = ags_plugin_controller_do_request(AGS_PLUGIN_CONTROLLER(controller->data),
 							    msg,
 							    query,
@@ -247,6 +253,16 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
     }
   }
 
+  if(!found_controller){
+    soup_message_set_status(msg,
+			    200);
+    soup_message_set_response(msg,
+			      "text/plain",
+			      SOUP_MEMORY_STATIC,
+			      "OK",
+			      2);
+  }
+  
   return(start_response);
 }
 

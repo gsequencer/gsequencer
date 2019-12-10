@@ -39,7 +39,7 @@ void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInter
 void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
 void ags_xml_authentication_finalize(GObject *gobject);
 
-gchar** ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authentication);
+gchar** ags_xml_authentication_get_authentication_module(AgsAuthentication *authentication);
 gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
 				      gchar *login, gchar *password,
 				      gchar **user_uuid, gchar **security_token,
@@ -133,7 +133,7 @@ ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication)
 void
 ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication)
 {
-  authentication->get_authentication_module = ags_xml_authenticaiton_get_authentication_module;
+  authentication->get_authentication_module = ags_xml_authentication_get_authentication_module;
   
   authentication->login = ags_xml_authentication_login;
   
@@ -170,7 +170,7 @@ ags_xml_authentication_finalize(GObject *gobject)
 }
 
 gchar**
-ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authentication)
+ags_xml_authentication_get_authentication_module(AgsAuthentication *authentication)
 {
   static gchar **authentication_module = NULL;
 
@@ -245,98 +245,101 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
   current_user_uuid = NULL;
   current_security_token = NULL;
 
-  success = FALSE;
-  
   password_store_manager = ags_password_store_manager_get_instance();
 
-  success = ags_password_store_manager_check_password(password_store_manager,
-						      login,
-						      password);
+  /* password store */
+  xml_password_store = NULL;
+    
+  password_store =
+    start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
 
+  while(password_store != NULL){
+    if(AGS_IS_XML_PASSWORD_STORE(password_store->data)){
+      xml_password_store = password_store->data;
+	
+      break;
+    }
+      
+    password_store = password_store->next;
+  }
+
+  /* uuid */
+  user_node = NULL;
+
+  if(xml_password_store != NULL){
+    xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+      
+    xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-login[text() = '%s']",
+			    login);
+
+    g_rec_mutex_lock(xml_password_store_mutex);
+      
+    xpath_context = xmlXPathNewContext(xml_password_store->doc);
+    xpath_object = xmlXPathEval(xpath,
+				xpath_context);
+
+    if(xpath_object->nodesetval != NULL){
+      node = xpath_object->nodesetval->nodeTab;
+
+      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	if(node[i]->type == XML_ELEMENT_NODE){
+	  user_node = node[i]->parent;
+
+	  break;
+	}
+      }
+    }
+
+    g_rec_mutex_unlock(xml_password_store_mutex);
+
+    xmlXPathFreeObject(xpath_object);
+    xmlXPathFreeContext(xpath_context);
+
+    g_free(xpath);
+  }
+    
+  g_list_free_full(start_password_store,
+		   g_object_unref);
+
+  if(user_node != NULL){
+    g_rec_mutex_lock(xml_password_store_mutex);
+
+    child = user_node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-user-uuid",
+				18)){
+	  current_user_uuid = xmlNodeGetContent(child);
+
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+      
+    g_rec_mutex_unlock(xml_password_store_mutex);
+  }
+
+  success = FALSE;
+  
+  if(current_user_uuid != NULL){
+    success = ags_password_store_manager_check_password(password_store_manager,
+							current_user_uuid,
+							password);
+  }
+  
   if(success){
-    /* password store */
-    xml_password_store = NULL;
-    
-    password_store =
-      start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
-
-    while(password_store != NULL){
-      if(AGS_IS_XML_PASSWORD_STORE(password_store->data)){
-	xml_password_store = password_store->data;
-	
-	break;
-      }
-      
-      password_store = password_store->next;
-    }
-
-    /* uuid */
-    user_node = NULL;
-
-    if(xml_password_store != NULL){
-      xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
-      
-      xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-login[text() = '%s']",
-					  login);
-
-      g_rec_mutex_lock(xml_password_store_mutex);
-      
-      xpath_context = xmlXPathNewContext(xml_password_store->doc);
-      xpath_object = xmlXPathEval(xpath,
-				  xpath_context);
-
-      if(xpath_object->nodesetval != NULL){
-	node = xpath_object->nodesetval->nodeTab;
-
-	for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-	  if(node[i]->type == XML_ELEMENT_NODE){
-	    user_node = node[i]->parent;
-
-	    break;
-	  }
-	}
-      }
-
-      g_rec_mutex_unlock(xml_password_store_mutex);
-
-      xmlXPathFreeObject(xpath_object);
-      xmlXPathFreeContext(xpath_context);
-
-      g_free(xpath);
-    }
-    
-    g_list_free_full(start_password_store,
-		     g_object_unref);
-
-    if(user_node != NULL){
-      g_rec_mutex_lock(xml_password_store_mutex);
-
-      child = user_node->children;
-
-      while(child != NULL){
-	if(child->type == XML_ELEMENT_NODE){
-	  if(!g_ascii_strncasecmp(child->name,
-				  "ags-srv-user-uuid",
-				  18)){
-	    current_user_uuid = xmlNodeGetContent(child);
-
-	    break;
-	  }
-	}
-	
-	child = child->next;
-      }
-      
-      g_rec_mutex_unlock(xml_password_store_mutex);
-    }
-    
     /* session */
     auth_node = NULL;
     
     xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
-    
-    xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
-					current_user_uuid);
+
+    xpath = NULL;
+    xpath = g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
+			    current_user_uuid);
     
     g_rec_mutex_lock(xml_authentication_mutex);
     
@@ -514,6 +517,8 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
   xmlNode *auth_node;
   xmlNode *child;
 
+  AgsLoginInfo *login_info;
+
   GList *start_password_store, *password_store;
 
   gchar *current_user_uuid;
@@ -553,10 +558,14 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 							 security_token);
 
   if(success){
-    AgsLoginInfo *login_info;
-    
-    current_user_uuid = ags_authentication_manager_lookup_login(authentication_manager,
-								login);
+    login_info = ags_authentication_manager_lookup_login(authentication_manager,
+							 login);
+
+    g_rec_mutex_lock(authentication_manager_mutex);
+  
+    current_user_uuid = g_strdup(login_info->user_uuid);
+
+    g_rec_mutex_unlock(authentication_manager_mutex);
 
     /* session */
     auth_node = NULL;
@@ -655,9 +664,6 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
       g_rec_mutex_unlock(xml_authentication_mutex);
 
       /* login info */
-      login_info = ags_authentication_manager_lookup_login(authentication_manager,
-							   login);
-
       g_rec_mutex_lock(authentication_manager_mutex);
 	
       if(login_info != NULL){
@@ -767,6 +773,8 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
   xmlNode **node;
   xmlNode *auth_node;
   xmlNode *child;
+
+  AgsLoginInfo *login_info;
   
   GList *start_password_store, *password_store;
 
@@ -776,6 +784,7 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
   guint i;
   gboolean success;
   
+  GRecMutex *authentication_manager_mutex;
   GRecMutex *xml_authentication_mutex;
 
   if(login == NULL ||
@@ -797,10 +806,18 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
   success = FALSE;
   
   authentication_manager = ags_authentication_manager_get_instance();
-  
-  current_user_uuid = ags_authentication_manager_lookup_login(authentication_manager,
-							      login);
 
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+  
+  login_info = ags_authentication_manager_lookup_login(authentication_manager,
+						       login);
+
+  g_rec_mutex_lock(authentication_manager_mutex);
+  
+  current_user_uuid = g_strdup(login_info->user_uuid);
+
+  g_rec_mutex_unlock(authentication_manager_mutex);
+  
   auth_node = NULL;
   
   xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",

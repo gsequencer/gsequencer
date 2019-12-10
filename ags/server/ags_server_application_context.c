@@ -988,7 +988,7 @@ ags_server_application_context_setup(AgsApplicationContext *application_context)
     }
 
     if(auto_start){
-//      ags_server_start(server);
+      ags_server_set_flags(server, AGS_SERVER_AUTO_START);
     }
 
     g_free(server_group);    
@@ -1031,15 +1031,17 @@ ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop)
   application_context = ags_application_context_get_instance();
 
   while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
-    usleep(500000);
+    usleep(G_USEC_PER_SEC / 30);
   }
   
   list = 
     start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_server_start(AGS_SERVER(list->data));
-
+    if(ags_server_test_flags(list->data, AGS_SERVER_AUTO_START)){
+      ags_server_start(AGS_SERVER(list->data));
+    }
+    
     list = list->next;
   }
 

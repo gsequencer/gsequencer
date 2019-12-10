@@ -490,8 +490,7 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
   
   GRecMutex *xml_password_store_mutex;
 
-  if(user_uuid == NULL ||
-     security_token == NULL){
+  if(user_uuid == NULL){
     return(NULL);
   }    
 
@@ -512,8 +511,9 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
   g_rec_mutex_lock(xml_password_store_mutex);
     
   xpath_context = xmlXPathNewContext(xml_password_store->doc);
-  xpath_object = xmlXPathEval(xpath,
-			      xpath_context);
+  xpath_object = xmlXPathNodeEval(xml_password_store->root_node,
+				  xpath,
+				  xpath_context);
 
   if(xpath_object->nodesetval != NULL){
     node = xpath_object->nodesetval->nodeTab;

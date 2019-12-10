@@ -2579,7 +2579,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     }
 
     if(auto_start){
-      ags_server_start(server);
+      ags_server_set_flags(server, AGS_SERVER_AUTO_START);
     }
 
     g_free(server_group);    
@@ -2808,7 +2808,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     }
 
     if(auto_start){
-      ags_osc_server_start(osc_server);
+      ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_AUTO_START);
     }
 
     g_free(osc_server_group);    

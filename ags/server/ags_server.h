@@ -45,7 +45,7 @@ G_BEGIN_DECLS
 #define AGS_SERVER_DEFAULT_INET4_ADDRESS "127.0.0.1"
 #define AGS_SERVER_DEFAULT_INET6_ADDRESS "::1"
 
-#define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-password-store"
+#define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-authentication"
 
 #define AGS_SERVER_DEFAULT_BACKLOG (512)
 
@@ -61,6 +61,7 @@ typedef struct _AgsServerInfo AgsServerInfo;
  * @AGS_SERVER_INET4: use IPv4
  * @AGS_SERVER_INET6: use IPv6
  * @AGS_SERVER_ANY_ADDRESS: listen on any address
+ * @AGS_SERVER_AUTO_START: start the server
  * 
  * Enum values to control the behavior or indicate internal state of #AgsServer by
  * enable/disable as flags.
@@ -72,6 +73,7 @@ typedef enum{
   AGS_SERVER_INET4              = 1 <<  3,
   AGS_SERVER_INET6              = 1 <<  4,
   AGS_SERVER_ANY_ADDRESS        = 1 <<  5,
+  AGS_SERVER_AUTO_START         = 1 <<  6,
 }AgsServerFlags;
 
 struct _AgsServer

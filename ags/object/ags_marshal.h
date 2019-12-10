@@ -717,14 +717,14 @@ void ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_UINT_POINT
                                                                                             gpointer      invocation_hint,
                                                                                             gpointer      marshal_data);
 
-/* POINTER:OBJECT,POINTER,OBJECT,OBJECT,STRING,STRING,STRING (ags/object/ags_marshallers.list:78) */
+/* POINTER:OBJECT,POINTER,POINTER,OBJECT,STRING,STRING,STRING (ags/object/ags_marshallers.list:78) */
 extern
-void ags_cclosure_marshal_POINTER__OBJECT_POINTER_OBJECT_OBJECT_STRING_STRING_STRING (GClosure     *closure,
-                                                                                      GValue       *return_value,
-                                                                                      guint         n_param_values,
-                                                                                      const GValue *param_values,
-                                                                                      gpointer      invocation_hint,
-                                                                                      gpointer      marshal_data);
+void ags_cclosure_marshal_POINTER__OBJECT_POINTER_POINTER_OBJECT_STRING_STRING_STRING (GClosure     *closure,
+                                                                                       GValue       *return_value,
+                                                                                       guint         n_param_values,
+                                                                                       const GValue *param_values,
+                                                                                       gpointer      invocation_hint,
+                                                                                       gpointer      marshal_data);
 
 /* POINTER:POINTER,STRING,STRING (ags/object/ags_marshallers.list:79) */
 extern
