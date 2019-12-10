@@ -1297,23 +1297,23 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     GSList *cookie;
 
     gchar *domain;
-
+    gchar *path;
+    
     GRecMutex *server_mutex;
 
     server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
-#if 0
     g_rec_mutex_lock(server_mutex);
 
-    domain = g_strdup_printf("http://%s:%d%s",
-			     server->domain,
-			     server->server_port,
-			     AGS_CONTROLLER_BASE_PATH);
-
+    if(strchr(server->domain, '.') == NULL){
+      domain = g_strdup(server->ip4);
+    }else{
+      domain = g_strdup(server->domain);
+    }
+    
     g_rec_mutex_unlock(server_mutex);
-#else
-    domain = NULL;
-#endif
+
+    path = "/";
     
     /* request */
     cookie = NULL;
@@ -1321,7 +1321,7 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     login_cookie = soup_cookie_new("ags-srv-login",
 				   username,
 				   domain,
-				   NULL,
+				   path,
 				   -1);
     cookie = g_slist_prepend(cookie,
 			     login_cookie);
@@ -1329,7 +1329,7 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     session_cookie = soup_cookie_new("ags-srv-security-token",
 				     security_token,
 				     domain,
-				     NULL,
+				     path,
 				     -1);
     cookie = g_slist_prepend(cookie,
 			     session_cookie);
@@ -1343,7 +1343,7 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     login_cookie = soup_cookie_new("ags-srv-login",
 				   username,
 				   domain,
-				   NULL,
+				   path,
 				   -1);
     cookie = g_slist_prepend(cookie,
 			     login_cookie);
@@ -1351,7 +1351,7 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     session_cookie = soup_cookie_new("ags-srv-security-token",
 				     security_token,
 				     domain,
-				     NULL,
+				     path,
 				     -1);
     cookie = g_slist_prepend(cookie,
 			     session_cookie);

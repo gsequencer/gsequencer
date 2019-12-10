@@ -84,6 +84,8 @@ EXTRA_DIST = config.rpath \
 	midi2xml.1 \
 	ags_authentication_test.xml \
 	ags_password_store_test.xml \
+	ags_functional_server_test_authentication.xml \
+	ags_functional_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
 	mkinstalldirs \

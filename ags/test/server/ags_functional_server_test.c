@@ -131,7 +131,6 @@ ags_functional_server_test_authenticate()
   SoupMessage *msg;
   SoupMessageHeaders *response_headers;
   SoupMessageBody *response_body;
-  SoupURI *soup_uri;
   
   SoupMessageHeadersIter iter;
   GSList *cookie;
@@ -147,7 +146,7 @@ ags_functional_server_test_authenticate()
   static const gchar *form_data = "";
 
   msg = soup_form_request_new("GET",
-			      "http://localhost:8080/ags-xmlrpc",
+			      "http://127.0.0.1:8080/ags-xmlrpc",
 			      NULL);
   g_signal_connect(soup_session, "authenticate",
 		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
@@ -161,14 +160,12 @@ ags_functional_server_test_authenticate()
 	       NULL);
 
   g_message("status %d", status);
-
-  soup_uri = soup_uri_new("http://localhost:8080/ags-xmlrpc");
   
   cookie = NULL;
   soup_message_headers_iter_init(&iter,
 				 response_headers);
 
-  while(soup_message_headers_iter_next(&iter, &name, &value)){
+  while(soup_message_headers_iter_next(&iter, &name, &value)){    
     g_message("%s: %s", name, value);
   }
   
@@ -185,7 +182,7 @@ ags_functional_server_test_authenticate()
     char *cookie_name;
 
     cookie_name = soup_cookie_get_name(cookie->data);
-
+    
     if(!g_ascii_strncasecmp(cookie_name,
 			    "ags-srv-login",
 			    14)){
