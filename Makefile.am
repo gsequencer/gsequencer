@@ -673,6 +673,7 @@ libags_thread_h_sources = \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_message_delivery.h \
+	ags/thread/ags_message_envelope.h \
 	ags/thread/ags_message_queue.h \
 	ags/thread/ags_returnable_thread.h \
 	ags/thread/ags_task_completion.h \
@@ -692,6 +693,7 @@ libags_thread_c_sources = \
 	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_message_delivery.c \
+	ags/thread/ags_message_envelope.c \
 	ags/thread/ags_message_queue.c \
 	ags/thread/ags_returnable_thread.c \
 	ags/thread/ags_task_completion.c \

@@ -50,7 +50,8 @@ void ags_message_queue_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_NAMESPACE,
+  PROP_SENDER_NAMESPACE,
+  PROP_RECIPIENT_NAMESPACE,
 };
 
 static gpointer ags_message_queue_parent_class = NULL;
@@ -106,30 +107,47 @@ ags_message_queue_class_init(AgsMessageQueueClass *message_queue)
 
   /* properties */
   /**
-   * AgsMessageQueue:namespace:
+   * AgsMessageQueue:sender-namespace:
    *
-   * The assigned namespace.
+   * The assigned namespace of sender.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
-  param_spec = g_param_spec_string("namespace",
-				   i18n_pspec("namespace of message queue"),
-				   i18n_pspec("The namespace this message queue is assigned to"),
+  param_spec = g_param_spec_string("sender-namespace",
+				   i18n_pspec("sender namespace of message queue"),
+				   i18n_pspec("The sender's namespace this message queue is assigned to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NAMESPACE,
+				  PROP_SENDER_NAMESPACE,
+				  param_spec);
+
+  /**
+   * AgsMessageQueue:recipient-namespace:
+   *
+   * The assigned namespace of recipient.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_string("recipient-namespace",
+				   i18n_pspec("recipient namespace of message queue"),
+				   i18n_pspec("The recipient's namespace this message queue is assigned to"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECIPIENT_NAMESPACE,
 				  param_spec);
 }
 
 void
 ags_message_queue_init(AgsMessageQueue *message_queue)
 {
-  message_queue->namespace = NULL;
-
   g_rec_mutex_init(&(message_queue->obj_mutex));
 
-  message_queue->message = NULL;
+  message_queue->sender_namespace = NULL;
+  message_queue->recipient_namespace = NULL;
+
+  message_queue->message_envelope = NULL;
 }
 
 void
@@ -140,24 +158,58 @@ ags_message_queue_set_property(GObject *gobject,
 {
   AgsMessageQueue *message_queue;
 
+  GRecMutex *message_queue_mutex;
+  
   message_queue = AGS_MESSAGE_QUEUE(gobject);
 
+  /* get message queue mutex */
+  message_queue_mutex = AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(message_queue);
+  
   switch(prop_id){
-  case PROP_NAMESPACE:
+  case PROP_SENDER_NAMESPACE:
     {
-      gchar *namespace;
+      gchar *sender_namespace;
 
-      namespace = (gchar *) g_value_get_string(value);
+      sender_namespace = (gchar *) g_value_get_string(value);
 
-      if(message_queue->namespace == namespace){
+      g_rec_mutex_lock(message_queue_mutex);
+      
+      if(message_queue->sender_namespace == sender_namespace){
+	g_rec_mutex_unlock(message_queue_mutex);
+	
 	return;
       }
       
-      if(message_queue->namespace != NULL){
-	g_free(message_queue->namespace);
+      if(message_queue->sender_namespace != NULL){
+	g_free(message_queue->sender_namespace);
       }
 
-      message_queue->namespace = g_strdup(namespace);
+      message_queue->sender_namespace = g_strdup(sender_namespace);
+
+      g_rec_mutex_unlock(message_queue_mutex);
+    }
+    break;
+  case PROP_RECIPIENT_NAMESPACE:
+    {
+      gchar *recipient_namespace;
+
+      recipient_namespace = (gchar *) g_value_get_string(value);
+
+      g_rec_mutex_lock(message_queue_mutex);
+      
+      if(message_queue->recipient_namespace == recipient_namespace){
+	g_rec_mutex_unlock(message_queue_mutex);
+	
+	return;
+      }
+      
+      if(message_queue->recipient_namespace != NULL){
+	g_free(message_queue->recipient_namespace);
+      }
+
+      message_queue->recipient_namespace = g_strdup(recipient_namespace);
+
+      g_rec_mutex_unlock(message_queue_mutex);
     }
     break;
   default:
@@ -174,12 +226,30 @@ ags_message_queue_get_property(GObject *gobject,
 {
   AgsMessageQueue *message_queue;
 
+  GRecMutex *message_queue_mutex;
+
   message_queue = AGS_MESSAGE_QUEUE(gobject);
 
+  /* get message queue mutex */
+  message_queue_mutex = AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(message_queue);
+
   switch(prop_id){
-  case PROP_NAMESPACE:
+  case PROP_SENDER_NAMESPACE:
     {
-      g_value_set_string(value, message_queue->namespace);
+      g_rec_mutex_lock(message_queue_mutex);
+
+      g_value_set_string(value, message_queue->sender_namespace);
+
+      g_rec_mutex_unlock(message_queue_mutex);
+    }
+    break;
+  case PROP_RECIPIENT_NAMESPACE:
+    {
+      g_rec_mutex_lock(message_queue_mutex);
+
+      g_value_set_string(value, message_queue->recipient_namespace);
+
+      g_rec_mutex_unlock(message_queue_mutex);
     }
     break;
   default:
@@ -195,6 +265,14 @@ ags_message_queue_dispose(GObject *gobject)
 
   message_queue = AGS_MESSAGE_QUEUE(gobject);
 
+  /* message */
+  if(message_queue->message_envelope != NULL){
+    g_list_free_full(message_queue->message_envelope,
+		     (GDestroyNotify) g_object_unref);
+
+    message_queue->message_envelope = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_message_queue_parent_class)->dispose(gobject);
 }
@@ -206,12 +284,13 @@ ags_message_queue_finalize(GObject *gobject)
 
   message_queue = AGS_MESSAGE_QUEUE(gobject);
 
-  g_free(message_queue->namespace);
+  g_free(message_queue->sender_namespace);
+  g_free(message_queue->recipient_namespace);
 
   /* message */
-  if(message_queue->message != NULL){
-    g_list_free_full(message_queue->message,
-		     (GDestroyNotify) ags_message_envelope_free);
+  if(message_queue->message_envelope != NULL){
+    g_list_free_full(message_queue->message_envelope,
+		     (GDestroyNotify) g_object_unref);
   }
   
   /* call parent */
@@ -219,135 +298,59 @@ ags_message_queue_finalize(GObject *gobject)
 }
 
 /**
- * ags_message_envelope_alloc:
- * @sender: the sender as #GObject
- * @recipient: the recipient as #GObject
- * @doc: the message document
- * 
- * Allocate #AgsMessageEnvelope-struct.
- * 
- * Since: 2.0.0
- */
-AgsMessageEnvelope*
-ags_message_envelope_alloc(GObject *sender,
-			   GObject *recipient,
-			   xmlDoc *doc)
-{
-  AgsMessageEnvelope *message;
-
-  message = (AgsMessageEnvelope *) malloc(sizeof(AgsMessageEnvelope));
-
-  if(sender != NULL){
-    g_object_ref(sender);
-  }
-  
-  message->sender = sender;
-
-  if(recipient != NULL){
-    g_object_ref(recipient);
-  }
-  
-  message->recipient = recipient;
-
-  message->doc = doc;
-
-  message->n_params = 0;
-
-  message->parameter_name = NULL;
-  message->value = NULL;
-  
-  return(message);
-}
-
-/**
- * ags_message_envelope_free:
- * @message: the #AgsMessageEnvelope-struct
- * 
- * Free @message.
- * 
- * Since: 2.0.0
- */
-void
-ags_message_envelope_free(AgsMessageEnvelope *message)
-{
-  guint i;
-  
-  if(message == NULL){
-    return;
-  }
-  
-  if(message->sender != NULL){
-    g_object_unref(message->sender);
-  }
-
-  if(message->recipient != NULL){
-    g_object_unref(message->recipient);
-  }
-  
-  if(message->doc != NULL){
-    xmlFreeDoc(message->doc);
-  }
-  
-  g_free(message->parameter_name);
-
-  for(i = 0; i < message->n_params; i++){
-    g_value_unset(&(message->value[i]));
-  }
-  
-  g_free(message->value);
-  
-  g_free(message);
-}
-
-/**
- * ags_message_queue_add_message:
+ * ags_message_queue_add_message_envelope:
  * @message_queue: the #AgsMessageQueue
- * @message: the #AgsMessageEnvelope-struct
+ * @message_envelope: the #AgsMessageEnvelope
  * 
  * Add @message to @message_queue.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_queue_add_message(AgsMessageQueue *message_queue,
-			      gpointer message)
+ags_message_queue_add_message_envelope(AgsMessageQueue *message_queue,
+				       GObject *message_envelope)
 {
   if(!AGS_IS_MESSAGE_QUEUE(message_queue) ||
-     message == NULL){
+     !AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
     return;
   }
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
 
-  message_queue->message = g_list_prepend(message_queue->message,
-					  message);
+  if(g_list_find(message_queue->message, message_envelope) == NULL){
+    message_queue->message_envelope = g_list_prepend(message_queue->message_envelope,
+						     message_envelope);
+    g_object_ref(message_envelope);
+  }
   
   g_rec_mutex_unlock(&(message_queue->obj_mutex));
 }
 
 /**
- * ags_message_queue_remove_message:
+ * ags_message_queue_remove_message_envelope:
  * @message_queue: the #AgsMessageQueue
- * @message: the #AgsMessageEnvelope-struct
+ * @message_envelope: the #AgsMessageEnvelope
  * 
  * Remove @message from @message_queue.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_queue_remove_message(AgsMessageQueue *message_queue,
-				 gpointer message)
+ags_message_queue_remove_message_envelope(AgsMessageQueue *message_queue,
+					  GObject *message_envelope)
 {
   if(!AGS_IS_MESSAGE_QUEUE(message_queue) ||
-     message == NULL){
+     !AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
     return;
   }
 
-
   g_rec_mutex_lock(&(message_queue->obj_mutex));
 
-  message_queue->message = g_list_remove(message_queue->message,
-					 message);
+  if(g_list_find(message_queue->message, message_envelope) != NULL){
+    message_queue->message_envelope = g_list_remove(message_queue->message_envelope,
+						    message_envelope);
+    g_object_unref(message_envelope);
+  }
   
   g_rec_mutex_unlock(&(message_queue->obj_mutex));
 }
@@ -361,13 +364,13 @@ ags_message_queue_remove_message(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_queue_find_sender(AgsMessageQueue *message_queue,
 			      GObject *sender)
 {
-  GList *message;
+  GList *start_message_envelope, *message_envelope;
   GList *match;
   
   if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
@@ -378,19 +381,34 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
  
-  message = message_queue->message;
-
-  while(message != NULL){
-    if(AGS_MESSAGE_ENVELOPE(message->data)->sender == sender){
-      match = g_list_prepend(match,
-			     message->data);
-    }
-    
-    message = message->next;
-  }
+  message_envelope = 
+    start_message_envelope = g_list_copy_deep(message_queue->message_envelope,
+					      (GCopyFunc) g_object_ref,
+					      NULL);
   
   g_rec_mutex_unlock(&(message_queue->obj_mutex));
 
+  while(message_envelope != NULL){
+    GRecMutex *message_envelope_mutex;
+
+    message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope->data);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+    
+    if(AGS_MESSAGE_ENVELOPE(message_envelope->data)->sender == sender){
+      match = g_list_prepend(match,
+			     message_envelope->data);
+      g_object_ref(message_envelope->data);
+    }
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+    
+    message_envelope = message_envelope->next;
+  }
+
+  g_list_free_full(start_message_envelope,
+		   g_object_unref);
+  
   return(match);
 }
 
@@ -403,13 +421,13 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
 				 GObject *recipient)
 {
-  GList *message;
+  GList *start_message_envelope, *message_envelope;
   GList *match;
   
   if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
@@ -420,19 +438,34 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
  
-  message = message_queue->message;
+  message_envelope = 
+    start_message_envelope = g_list_copy_deep(message_queue->message_envelope,
+					      (GCopyFunc) g_object_ref,
+					      NULL);
 
-  while(message != NULL){
-    if(AGS_MESSAGE_ENVELOPE(message->data)->recipient == recipient){
-      match = g_list_prepend(match,
-			     message->data);
-    }
-    
-    message = message->next;
-  }
-  
   g_rec_mutex_unlock(&(message_queue->obj_mutex));
 
+  while(message_envelope != NULL){
+    GRecMutex *message_envelope_mutex;
+
+    message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope->data);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    if(AGS_MESSAGE_ENVELOPE(message_envelope->data)->recipient == recipient){
+      match = g_list_prepend(match,
+			     message_envelope->data);
+      g_object_ref(message_envelope->data);
+    }
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+    
+    message_envelope = message_envelope->next;
+  }
+
+  g_list_free_full(start_message_envelope,
+		   g_object_unref);
+  
   return(match);
 }
 
@@ -445,13 +478,13 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_queue_query_message(AgsMessageQueue *message_queue,
 				gchar *xpath)
 {
-  GList *message;
+  GList *start_message_envelope, *message_envelope;
   GList *match;
   
   if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
@@ -462,9 +495,14 @@ ags_message_queue_query_message(AgsMessageQueue *message_queue,
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
  
-  message = message_queue->message;
+  message_envelope =
+    start_message_envelope = g_list_copy_deep(message_queue->message_envelope,
+					      (GCopyFunc) g_object_ref,
+					      NULL);
+  
+  g_rec_mutex_unlock(&(message_queue->obj_mutex));
 
-  while(message != NULL){
+  while(message_envelope != NULL){
     xmlXPathContext *xpath_context;
     xmlXPathObject *xpath_object;
 
@@ -472,7 +510,13 @@ ags_message_queue_query_message(AgsMessageQueue *message_queue,
 
     guint i;
 
-    xpath_context = xmlXPathNewContext(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+    GRecMutex *message_envelope_mutex;
+
+    message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope->data);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    xpath_context = xmlXPathNewContext(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
     xpath_object = xmlXPathEval((xmlChar *) xpath,
 				xpath_context);
     
@@ -482,40 +526,42 @@ ags_message_queue_query_message(AgsMessageQueue *message_queue,
       for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
 	if(node[i]->type == XML_ELEMENT_NODE){
 	  match = g_list_prepend(match,
-				 message->data);
+				 message_envelope->data);
 	  
 	  break;
 	}
       }
     }
+
+    g_rec_mutex_unlock(message_envelope_mutex);
     
-    message = message->next;
+    message_envelope = message_envelope->next;
   }
-  
-  g_rec_mutex_unlock(&(message_queue->obj_mutex));
+
+  g_list_free_full(start_message_envelope,
+		   g_object_unref);
 
   return(match);
 }
 
 /**
  * ags_message_queue_new:
- * @namespace: the namespace
+ * @sender_namespace: the sender namespace
  *
  * Create a new instance of #AgsMessageQueue.
  *
  * Returns: the new #AgsMessageQueue
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 AgsMessageQueue*
-ags_message_queue_new(gchar *namespace)
+ags_message_queue_new(gchar *sender_namespace)
 {
   AgsMessageQueue *message_queue;
 
   message_queue = (AgsMessageQueue *) g_object_new(AGS_TYPE_MESSAGE_QUEUE,
-						   "namespace", namespace,
+						   "sender-namespace", sender_namespace,
 						   NULL);
-
 
   return(message_queue);
 }

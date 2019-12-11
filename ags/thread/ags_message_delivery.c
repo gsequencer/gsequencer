@@ -127,20 +127,19 @@ ags_message_delivery_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_message_delivery_parent_class)->finalize(gobject);
 }
- 
 
 /**
- * ags_message_delivery_add_queue:
+ * ags_message_delivery_add_message_queue:
  * @message_delivery: the #AgsMessageDelivery
  * @message_queue: the #AgsMessageQueue
  *
  * Add @message_queue to @message_delivery.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
-			       GObject *message_queue)
+ags_message_delivery_add_message_queue(AgsMessageDelivery *message_delivery,
+					 GObject *message_queue)
 {
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
      !AGS_IS_MESSAGE_QUEUE(message_queue)){
@@ -160,17 +159,17 @@ ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
 }
 
 /**
- * ags_message_delivery_remove_queue:
+ * ags_message_delivery_remove_message_queue:
  * @message_delivery: the #AgsMessageDelivery
  * @message_queue: the #AgsMessageQueue
  *
  * Remove @message_queue to @message_delivery.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
-				  GObject *message_queue)
+ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_delivery,
+					  GObject *message_queue)
 {
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
      !AGS_IS_MESSAGE_QUEUE(message_queue)){
@@ -190,346 +189,328 @@ ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
 }
 
 /**
- * ags_message_delivery_find_namespace:
+ * ags_message_delivery_find_sender_namespace:
  * @message_delivery: the #AgsMessageDelivery to search
- * @namespace: the namespace as string to find
+ * @sender_namespace: the sender namespace as string to find
  * 
- * Find namespace of #AgsMessageQueue in @message_delivery.
+ * Find sender namespace of #AgsMessageQueue in @message_delivery.
  * 
- * Returns: the matching #AgsMessageQueue
+ * Returns: the matching #GList-struct containing #AgsMessageQueue or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-GObject*
-ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
-				    gchar *namespace)
+GList*
+ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
+					   gchar *sender_namespace)
 {
-  AgsMessageQueue *message_queue;
+  AgsMessageQueue *current_message_queue;
 
-  GList *list;
+  GList *start_list, *list;
+  GList *start_message_queue;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
-     namespace == NULL){
+     sender_namespace == NULL){
     return(NULL);
   }
 
   g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
-  list = message_delivery->message_queue;
+  list =
+    start_list = g_list_copy_deep(message_delivery->message_queue,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
   
   g_rec_mutex_unlock(&(message_delivery->obj_mutex));
 
+  start_message_queue = NULL;
+  
   while(list != NULL){
-    g_rec_mutex_lock(&(message_delivery->obj_mutex));
+    current_message_queue = AGS_MESSAGE_QUEUE(list->data);
 
-    message_queue = AGS_MESSAGE_QUEUE(list->data);
+    /* compare sender_namespace */
+    g_rec_mutex_lock(&(current_message_queue->obj_mutex));
     
-    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
+    if(!g_strcmp0(sender_namespace,
+		  current_message_queue->sender_namespace)){
+      start_message_queue = g_list_prepend(start_message_queue,
+					   current_message_queue);
 
-    /* compare namespace */
-    g_rec_mutex_lock(&(message_queue->obj_mutex));
-    
-    if(!g_strcmp0(namespace,
-		  message_queue->namespace)){
-      g_rec_mutex_unlock(&(message_queue->obj_mutex));
-
-      return((GObject *) message_queue);
+      g_object_ref(current_message_queue);
     }
 
-    g_rec_mutex_unlock(&(message_queue->obj_mutex));
+    g_rec_mutex_unlock(&(current_message_queue->obj_mutex));
     
     /* iterate */
-    g_rec_mutex_lock(&(message_delivery->obj_mutex));
-    
     list = list->next;
-
-    g_rec_mutex_unlock(&(message_delivery->obj_mutex));
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
-  return(NULL);
+  return(start_message_queue);
 }
 
 /**
- * ags_message_delivery_add_message:
+ * ags_message_delivery_add_message_envelope:
  * @message_delivery: the #AgsMessageDelivery
- * @namespace: the namespace as string
- * @message: the #AgsMessageEnvelope
+ * @sender_namespace: the sender namespace as string
+ * @message_envelope: the #AgsMessageEnvelope
  * 
- * Add @message to an #AgsMessageQueue specified by @namespace.
+ * Add @message to an #AgsMessageQueue specified by @sender_namespace.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
-				 gchar *namespace,
-				 gpointer message)
+ags_message_delivery_add_message_envelope(AgsMessageDelivery *message_delivery,
+					  gchar *sender_namespace,
+					  GObject *message_envelope)
 {
-  AgsMessageQueue *message_queue;
+  GList *start_message_queue, *message_queue;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
-     namespace == NULL){
+     !AGS_IS_MESSAGE_ENVELOPE(message_envelope) ||
+     sender_namespace == NULL){
     return;
   }
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  namespace);
-
-  if(message_queue == NULL){
-    message_queue = ags_message_queue_new(namespace);
-    ags_message_delivery_add_queue(message_delivery,
-				   message_queue);
-  }
+  message_queue =
+    start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								     sender_namespace);
   
-  ags_message_queue_add_message(message_queue,
-				message);  
+  while(message_queue != NULL){
+    ags_message_queue_add_message_envelope(message_queue->data,
+					   message_envelope);
+
+    message_queue = message_queue->next;
+  }
+
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
 }
 
 /**
- * ags_message_delivery_remove_message:
+ * ags_message_delivery_remove_message_envelope:
  * @message_delivery: the #AgsMessageDelivery
- * @namespace: the namespace as string
- * @message: the #AgsMessageEnvelope
+ * @sender_namespace: the sender namespace as string
+ * @message_envelope: the #AgsMessageEnvelope
  * 
- * Remove @message from an #AgsMessageQueue specified by @namespace.
+ * Remove @message from an #AgsMessageQueue specified by @sender_namespace.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
-				    gchar *namespace,
-				    gpointer message)
+ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_delivery,
+					     gchar *sender_namespace,
+					     GObject *message_envelope)
 {
-  AgsMessageQueue *message_queue;
+  GList *start_message_queue, *message_queue;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
-     namespace == NULL){
+     !AGS_IS_MESSAGE_ENVELOPE(message_envelope) ||
+     sender_namespace == NULL){
     return;
   }
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  namespace);
+  message_queue =
+    start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								     sender_namespace);
   
-  ags_message_queue_remove_message(message_queue,
-				   message);  
+  while(message_queue != NULL){
+    ags_message_queue_remove_message(message_queue->data,
+				     message_envelope);
+
+    message_queue = message_queue->next;
+  }
+
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
+  
 }
 
 /**
  * ags_message_delivery_find_sender:
  * @message_delivery: the #AgsMessageDelivery
- * @namespace: the namespace as string, maybe %NULL
+ * @sender_namespace: the sender_namespace as string, maybe %NULL
  * @sender: the sender as #GObject
  * 
- * Find @sender for @namespace matching #AgsMessageQueue. If @namespace equals %NULL match
+ * Find @sender for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
-				 gchar *namespace,
+				 gchar *sender_namespace,
 				 GObject *sender)
 {
-  AgsMessageQueue *message_queue;
-
-  GList *list;
-  GList *current_match, *match;
+  GList *start_message_queue, *message_queue;
+  GList *start_list, *list;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
     return(NULL);
   }
 
-  match = NULL;
-  
-  if(namespace == NULL){
+  if(sender_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
-    list = message_delivery->message_queue;
-
+    message_queue =
+      start_message_queue = g_list_copy_deep(message_delivery->message_queue,
+					     (GCopyFunc) g_object_ref,
+					     NULL);
+    
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-    while(list != NULL){
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-
-      message_queue = list->data;
-      
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-      current_match = ags_message_queue_find_sender(message_queue,
-						    sender);
-
-      if(current_match != NULL){
-	if(match == NULL){
-	  match = current_match;
-	}else{
-	  match = g_list_concat(current_match,
-				match);
-	}
-      }
-      
-      /* iterate */
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-      
-      list = list->next;
-
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-    }
   }else{
-    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									    namespace);
-
-    match = ags_message_queue_find_sender(message_queue,
-					  sender);
+    message_queue =
+      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								       sender_namespace);
   }
 
-  return(match);
+  start_list = NULL;
+  
+  while(message_queue != NULL){
+    list = ags_message_queue_find_sender(message_queue->data,
+					 sender);
+
+    if(list != NULL){
+      if(start_list == NULL){
+	start_list = current_match;
+      }else{
+	start_list = g_list_concat(list,
+				   start_list);
+      }
+    }
+      
+    /* iterate */
+    message_queue = message_queue->next;
+  }
+
+  return(start_list);
 }
 
 /**
  * ags_message_delivery_find_recipient:
  * @message_delivery: the #AgsMessageDelivery
- * @namespace: the namespace as string, maybe %NULL
+ * @sender_namespace: the sender namespace as string, maybe %NULL
  * @recipient: the recipient as #GObject
  * 
- * Find @recipient for @namespace matching #AgsMessageQueue. If @namespace equals %NULL match
+ * Find @recipient for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
-				    gchar *namespace,
+				    gchar *sender_namespace,
 				    GObject *recipient)
 {
-  AgsMessageQueue *message_queue;
-
-  GList *list;
-  GList *current_match, *match;
+  GList *start_message_queue, *message_queue;
+  GList *start_list, *list;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
     return(NULL);
   }
 
-  match = NULL;
-  
-  if(namespace == NULL){
+  if(sender_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
-    list = message_delivery->message_queue;
-
+    message_queue =
+      start_message_queue = g_list_copy_deep(message_delivery->message_queue,
+					     (GCopyFunc) g_object_ref,
+					     NULL);
+    
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-    while(list != NULL){
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-
-      message_queue = list->data;
-      
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-      current_match = ags_message_queue_find_recipient(message_queue,
-						       recipient);
-
-      if(current_match != NULL){
-	if(match == NULL){
-	  match = current_match;
-	}else{
-	  match = g_list_concat(current_match,
-				match);
-	}
-      }
-      
-      /* iterate */
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-      
-      list = list->next;
-
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-    }
   }else{
-    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									    namespace);
-
-    match = ags_message_queue_find_recipient(message_queue,
-					     recipient);
+    message_queue =
+      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								       sender_namespace);
   }
 
-  return(match);
+  start_list = NULL;
+  
+  while(message_queue != NULL){
+    list = ags_message_queue_find_recipient(message_queue->data,
+					    sender);
+
+    if(list != NULL){
+      if(start_list == NULL){
+	start_list = current_match;
+      }else{
+	start_list = g_list_concat(list,
+				   start_list);
+      }
+    }
+      
+    /* iterate */
+    message_queue = message_queue->next;
+  }
+
+  return(start_list);
 }
 
 /**
  * ags_message_delivery_query_message:
  * @message_delivery: the #AgsMessageDelivery
- * @namespace: the namespace as string, maybe %NULL
+ * @sender_namespace: the sender namespace as string, maybe %NULL
  * @xpath: the xpath to query
  * 
- * Query @xpath for @namespace matching #AgsMessageQueue. If @namespace equals %NULL match
+ * Query @xpath for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
-				   gchar *namespace,
+				   gchar *sender_namespace,
 				   gchar *xpath)
 {
-  AgsMessageQueue *message_queue;
-
-  GList *list;
-  GList *current_match, *match;
+  GList *start_message_queue, *message_queue;
+  GList *start_list, *list;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
     return(NULL);
   }
 
-  match = NULL;
-  
-  if(namespace == NULL){
+  if(sender_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
-    list = message_delivery->message_queue;
-
+    message_queue =
+      start_message_queue = g_list_copy_deep(message_delivery->message_queue,
+					     (GCopyFunc) g_object_ref,
+					     NULL);
+    
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-    while(list != NULL){
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-
-      message_queue = list->data;
-      
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-
-      current_match = ags_message_queue_query_message(message_queue,
-						      xpath);
-
-      if(current_match != NULL){
-	if(match == NULL){
-	  match = current_match;
-	}else{
-	  match = g_list_concat(current_match,
-				match);
-	}
-      }
-      
-      /* iterate */
-      g_rec_mutex_lock(&(message_delivery->obj_mutex));
-      
-      list = list->next;
-
-      g_rec_mutex_unlock(&(message_delivery->obj_mutex));
-    }
   }else{
-    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									    namespace);
-
-    match = ags_message_queue_query_message(message_queue,
-					    xpath);
+    message_queue =
+      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								       sender_namespace);
   }
 
-  return(match);
+  start_list = NULL;
+  
+  while(message_queue != NULL){
+    list = ags_message_queue_query_message(message_queue,
+					   xpath);
+
+    if(list != NULL){
+      if(start_list == NULL){
+	start_list = current_match;
+      }else{
+	start_list = g_list_concat(list,
+				   start_list);
+      }
+    }
+      
+    /* iterate */
+    message_queue = message_queue->next;
+  }
+
+  return(start_list);
 }
 
 /**
@@ -539,7 +520,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
  *
  * Returns: the #AgsMessageDelivery
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 AgsMessageDelivery*
 ags_message_delivery_get_instance()
@@ -564,7 +545,7 @@ ags_message_delivery_get_instance()
  *
  * Returns: the new #AgsMessageDelivery
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 AgsMessageDelivery*
 ags_message_delivery_new()

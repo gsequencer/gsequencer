@@ -1,0 +1,299 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2019 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/thread/ags_message_envelope.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
+#include <ags/i18n.h>
+
+void ags_message_envelope_class_init(AgsMessageEnvelopeClass *message_envelope);
+void ags_message_envelope_init(AgsMessageEnvelope *message_envelope);
+void ags_message_envelope_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_message_envelope_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+void ags_message_envelope_dispose(GObject *gobject);
+void ags_message_envelope_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_message_envelope
+ * @short_description: message envelope
+ * @title: AgsMessageEnvelope
+ * @section_id:
+ * @include: ags/thread/ags_message_envelope.h
+ *
+ * The #AgsMessageEnvelope acts as messages passing system.
+ */
+
+enum{
+  PROP_0,
+};
+
+static gpointer ags_message_envelope_parent_class = NULL;
+
+GType
+ags_message_envelope_get_type()
+{
+  static volatile gsize g_define_type_id__volatile = 0;
+
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_message_envelope = 0;
+
+    static const GTypeInfo ags_message_envelope_info = {
+      sizeof (AgsMessageEnvelopeClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_message_envelope_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMessageEnvelope),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_message_envelope_init,
+    };
+
+    ags_type_message_envelope = g_type_register_static(G_TYPE_OBJECT,
+						       "AgsMessageEnvelope",
+						       &ags_message_envelope_info,
+						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_message_envelope);
+  }
+
+  return g_define_type_id__volatile;
+}
+
+void
+ags_message_envelope_class_init(AgsMessageEnvelopeClass *message_envelope)
+{
+  GObjectClass *gobject;
+
+  GParamSpec *param_spec;
+  
+  ags_message_envelope_parent_class = g_type_class_peek_parent(message_envelope);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) message_envelope;
+  
+  gobject->set_property = ags_message_envelope_set_property;
+  gobject->get_property = ags_message_envelope_get_property;
+
+  gobject->dispose = ags_message_envelope_dispose;
+  gobject->finalize = ags_message_envelope_finalize;
+
+  /* properties */
+}
+
+void
+ags_message_envelope_init(AgsMessageEnvelope *message_envelope)
+{
+  g_rec_mutex_init(&(message_envelope->obj_mutex));
+
+  message_envelope->sender = NULL;
+  message_envelope->recipient = NULL;
+  
+  message_envelope->doc = NULL;
+
+  message_envelope->n_params = 0;
+
+  message_envelope->parameter_name = NULL;
+  message_envelope->value = NULL;
+}
+
+void
+ags_message_envelope_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
+
+  switch(prop_id){
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_message_envelope_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
+
+  switch(prop_id){
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_message_envelope_dispose(GObject *gobject)
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_message_envelope_parent_class)->dispose(gobject);
+}
+
+void
+ags_message_envelope_finalize(GObject *gobject)
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_message_envelope_parent_class)->finalize(gobject);
+}
+
+GObject*
+ags_message_envelope_get_sender(AgsMessageEnvelope *message_envelope)
+{
+  GObject *sender;
+
+  GRecMutex *message_envelope_mutex;
+  
+  if(!AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
+    return(NULL);
+  }
+
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
+  /* get sender */
+  g_rec_mutex_lock(message_envelope_mutex);
+  
+  sender = message_envelope->sender;
+  
+  g_rec_mutex_unlock(message_envelope_mutex);
+  
+  return(sender);
+}
+
+GObject*
+ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
+{
+  GObject *recipient;
+
+  GRecMutex *message_envelope_mutex;
+  
+  if(!AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
+    return(NULL);
+  }
+
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
+  /* get recipient */
+  g_rec_mutex_lock(message_envelope_mutex);
+  
+  recipient = message_envelope->recipient;
+  
+  g_rec_mutex_unlock(message_envelope_mutex);
+  
+  return(recipient);
+}
+
+xmlDoc*
+ags_message_envelope_get_doc(AgsMessageEnvelope *message_envelope)
+{
+  xmlDoc *doc;
+  
+  GRecMutex *message_envelope_mutex;
+  
+  if(!AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
+    return(NULL);
+  }
+
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
+  /* get doc */
+  g_rec_mutex_lock(message_envelope_mutex);
+  
+  doc = message_envelope->doc;
+  
+  g_rec_mutex_unlock(message_envelope_mutex);
+  
+  return(doc);
+}
+
+void
+ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
+				   guint *n_params,
+				   gchar ***parameter_name, GValue **value)
+{
+  GRecMutex *message_envelope_mutex;
+  
+  if(!AGS_IS_MESSAGE_ENVELOPE(message_envelope)){
+    return;
+  }
+
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
+  /* get parameter */
+  g_rec_mutex_lock(message_envelope_mutex);
+
+  if(n_params != NULL){
+    n_params[0] = message_envelope->n_params;
+  }
+
+  if(parameter_name != NULL){
+    parameter_name[0] = message_envelope->parameter_name;
+  }
+
+  if(value != NULL){
+    value[0] = message_envelope->value;
+  }
+  
+  g_rec_mutex_unlock(message_envelope_mutex);
+}
+
+/**
+ * ags_message_envelope_new:
+ *
+ * Create a new instance of #AgsMessageEnvelope.
+ *
+ * Returns: the new #AgsMessageEnvelope
+ *
+ * Since: 3.0.0
+ */ 
+AgsMessageEnvelope*
+ags_message_envelope_new()
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
+							 NULL);
+
+  return(message_envelope);
+}

@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MESSAGE_DELIVERY                (ags_message_delivery_get_type())
 #define AGS_MESSAGE_DELIVERY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MESSAGE_DELIVERY, AgsMessageDelivery))
@@ -55,36 +55,36 @@ struct _AgsMessageDeliveryClass
 
 GType ags_message_delivery_get_type();
 
-pthread_mutex_t* ags_message_delivery_get_class_mutex();
+void ags_message_delivery_add_message_queue(AgsMessageDelivery *message_delivery,
+					    GObject *message_queue);
+void ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_delivery,
+					       GObject *message_queue);
 
-void ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
-				    GObject *message_queue);
-void ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
-				       GObject *message_queue);
+GList* ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
+						  gchar *sender_namespace);
 
-GObject* ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
-					     gchar *namespace);
-
-void ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
-				      gchar *namespace,
-				      gpointer message);
-void ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
-					 gchar *namespace,
-					 gpointer message);
+void ags_message_delivery_add_message_envelope(AgsMessageDelivery *message_delivery,
+					       gchar *sender_namespace,
+					       GObject *message_envelope);
+void ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_delivery,
+						  gchar *sender_namespace,
+						  GObject *message_envelope);
 
 GList* ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
-					gchar *namespace,
+					gchar *sender_namespace,
 					GObject *sender);
 GList* ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
-					   gchar *namespace,
+					   gchar *sender_namespace,
 					   GObject *recipient);
 
 GList* ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
-					  gchar *namespace,
+					  gchar *sender_namespace,
 					  gchar *xpath);
 
 AgsMessageDelivery* ags_message_delivery_get_instance();
 
 AgsMessageDelivery* ags_message_delivery_new();
+
+G_END_DECLS
 
 #endif /*__AGS_MESSAGE_DELIVERY_H__*/

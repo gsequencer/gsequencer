@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MESSAGE_QUEUE                (ags_message_queue_get_type())
 #define AGS_MESSAGE_QUEUE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MESSAGE_QUEUE, AgsMessageQueue))
 #define AGS_MESSAGE_QUEUE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MESSAGE_QUEUE, AgsMessageQueue))
@@ -34,21 +36,19 @@
 
 #define AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(obj) (&(((AgsMessageQueue *) obj)->obj_mutex))
 
-#define AGS_MESSAGE_ENVELOPE(ptr) ((AgsMessageEnvelope *)(ptr))
-
 typedef struct _AgsMessageQueue AgsMessageQueue;
 typedef struct _AgsMessageQueueClass AgsMessageQueueClass;
-typedef struct _AgsMessageEnvelope AgsMessageEnvelope;
 
 struct _AgsMessageQueue
 {
   GObject gobject;
-
-  gchar *namespace;
   
   GRecMutex obj_mutex;
 
-  GList *message;
+  gchar *sender_namespace;
+  gchar *recipient_namespace;
+  
+  GList *message_envelope;
 };
 
 struct _AgsMessageQueueClass
@@ -56,31 +56,12 @@ struct _AgsMessageQueueClass
   GObjectClass gobject; 
 };
 
-struct _AgsMessageEnvelope
-{
-  GObject *sender;
-  GObject *recipient;
-
-  xmlDoc *doc;
-  
-  guint n_params;
-  gchar **parameter_name;
-  GValue *value;
-};
-
 GType ags_message_queue_get_type();
 
-pthread_mutex_t* ags_message_queue_get_class_mutex();
-
-AgsMessageEnvelope* ags_message_envelope_alloc(GObject *sender,
-					       GObject *recipient,
-					       xmlDoc *doc);
-void ags_message_envelope_free(AgsMessageEnvelope *message);
-
-void ags_message_queue_add_message(AgsMessageQueue *message_queue,
-				   gpointer message);
-void ags_message_queue_remove_message(AgsMessageQueue *message_queue,
-				      gpointer message);
+void ags_message_queue_add_message_envelope(AgsMessageQueue *message_queue,
+					    GObject *message_envelope);
+void ags_message_queue_remove_message_envelope(AgsMessageQueue *message_queue,
+					       GObject *message_envelope);
 
 GList* ags_message_queue_find_sender(AgsMessageQueue *message_queue,
 				     GObject *sender);
@@ -90,6 +71,8 @@ GList* ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
 GList* ags_message_queue_query_message(AgsMessageQueue *message_queue,
 				       gchar *xpath);
 
-AgsMessageQueue* ags_message_queue_new(gchar *namespace);
+AgsMessageQueue* ags_message_queue_new(gchar *sender_namespace);
+
+G_END_DECLS
 
 #endif /*__AGS_MESSAGE_QUEUE_H__*/
