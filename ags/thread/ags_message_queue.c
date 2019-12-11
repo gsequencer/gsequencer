@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_message_queue.h>
 
+#include <ags/thread/ags_message_envelope.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -317,7 +319,7 @@ ags_message_queue_add_message_envelope(AgsMessageQueue *message_queue,
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
 
-  if(g_list_find(message_queue->message, message_envelope) == NULL){
+  if(g_list_find(message_queue->message_envelope, message_envelope) == NULL){
     message_queue->message_envelope = g_list_prepend(message_queue->message_envelope,
 						     message_envelope);
     g_object_ref(message_envelope);
@@ -346,7 +348,7 @@ ags_message_queue_remove_message_envelope(AgsMessageQueue *message_queue,
 
   g_rec_mutex_lock(&(message_queue->obj_mutex));
 
-  if(g_list_find(message_queue->message, message_envelope) != NULL){
+  if(g_list_find(message_queue->message_envelope, message_envelope) != NULL){
     message_queue->message_envelope = g_list_remove(message_queue->message_envelope,
 						    message_envelope);
     g_object_unref(message_envelope);

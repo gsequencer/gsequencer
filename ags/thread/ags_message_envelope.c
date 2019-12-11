@@ -193,11 +193,13 @@ ags_message_envelope_finalize(GObject *gobject)
   for(i = 0; i < message_envelope->n_params; i++){
     gpointer data;
 
+    data = NULL;
+    
     if(G_VALUE_HOLDS_STRING(&(message_envelope->value[i]))){
       data = g_value_get_string(&(message_envelope->value[i]));
     }else if(G_VALUE_HOLDS_BOXED(&(message_envelope->value[i]))){
       data = g_value_get_boxed(&(message_envelope->value[i]));
-    }else if(G_VALUE_HOLDS_pointer(&(message_envelope->value[i]))){
+    }else if(G_VALUE_HOLDS_POINTER(&(message_envelope->value[i]))){
       data = g_value_get_pointer(&(message_envelope->value[i]));
     }else if(G_VALUE_HOLDS_OBJECT(&(message_envelope->value[i]))){
       data = g_value_get_object(&(message_envelope->value[i]));

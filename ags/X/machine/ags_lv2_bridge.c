@@ -81,9 +81,6 @@ enum{
 static gpointer ags_lv2_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_lv2_bridge_parent_connectable_interface;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
-
 GHashTable *ags_lv2_bridge_lv2ui_handle = NULL;
 GHashTable *ags_lv2_bridge_lv2ui_idle = NULL;
 
@@ -430,24 +427,6 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->ui_widget = NULL;
 
   lv2_bridge->lv2_window = NULL;
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      lv2_bridge,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) lv2_bridge);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      lv2_bridge,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) lv2_bridge);
 }
 
 void
@@ -666,13 +645,6 @@ ags_lv2_bridge_finalize(GObject *gobject)
   AgsLv2Bridge *lv2_bridge;
 
   lv2_bridge = AGS_LV2_BRIDGE(gobject);
-
-  /* message queue */
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
 
   /* lv2 plugin */
   if(lv2_bridge->lv2_plugin != NULL){

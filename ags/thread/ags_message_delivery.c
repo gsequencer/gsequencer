@@ -18,7 +18,9 @@
  */
 
 #include <ags/thread/ags_message_delivery.h>
+
 #include <ags/thread/ags_message_queue.h>
+#include <ags/thread/ags_message_envelope.h>
 
 void ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery);
 void ags_message_delivery_init(AgsMessageDelivery *message_delivery);
@@ -378,8 +380,8 @@ ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_deliver
 								     sender_namespace);
   
   while(message_queue != NULL){
-    ags_message_queue_remove_message(message_queue->data,
-				     message_envelope);
+    ags_message_queue_remove_message_envelope(message_queue->data,
+					      message_envelope);
 
     message_queue = message_queue->next;
   }
@@ -437,7 +439,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
 
     if(list != NULL){
       if(start_list == NULL){
-	start_list = current_match;
+	start_list = list;
       }else{
 	start_list = g_list_concat(list,
 				   start_list);
@@ -498,11 +500,11 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
   
   while(message_queue != NULL){
     list = ags_message_queue_find_recipient(message_queue->data,
-					    sender);
+					    recipient);
 
     if(list != NULL){
       if(start_list == NULL){
-	start_list = current_match;
+	start_list = list;
       }else{
 	start_list = g_list_concat(list,
 				   start_list);
@@ -567,7 +569,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
 
     if(list != NULL){
       if(start_list == NULL){
-	start_list = current_match;
+	start_list = list;
       }else{
 	start_list = g_list_concat(list,
 				   start_list);

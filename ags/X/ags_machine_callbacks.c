@@ -41,6 +41,12 @@ int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint res
 int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
+void
+ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)
+{
+  ags_machine_check_message(machine);
+}
+
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
 {

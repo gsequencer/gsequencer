@@ -64,8 +64,6 @@ static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GHashTable *ags_ffplayer_sf2_loader_completed = NULL;
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GtkStyle *ffplayer_style = NULL;
 
@@ -401,36 +399,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   g_hash_table_insert(ags_ffplayer_sf2_loader_completed,
 		      ffplayer, ags_ffplayer_sf2_loader_completed_timeout);
   g_timeout_add(1000 / 4, (GSourceFunc) ags_ffplayer_sf2_loader_completed_timeout, (gpointer) ffplayer);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      ffplayer,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) ffplayer);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      ffplayer,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) ffplayer);
 }
 
 void
 ags_ffplayer_finalize(GObject *gobject)
 {
   g_hash_table_remove(ags_ffplayer_sf2_loader_completed,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
 		      gobject);
 
   /* call parent */

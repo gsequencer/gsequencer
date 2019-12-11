@@ -89,9 +89,6 @@ enum{
 static gpointer ags_live_dssi_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_live_dssi_bridge_parent_connectable_interface;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
-
 extern GHashTable *ags_effect_bulk_indicator_queue_draw;
 
 GType
@@ -332,24 +329,6 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      live_dssi_bridge,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) live_dssi_bridge);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      live_dssi_bridge,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) live_dssi_bridge);
 }
 
 void
@@ -473,12 +452,6 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
 
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
   
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
-
   g_object_disconnect(G_OBJECT(live_dssi_bridge),
 		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),

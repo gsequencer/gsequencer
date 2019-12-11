@@ -1239,318 +1239,318 @@ ags_channel_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    {
-      AgsAudio *audio;
+  {
+    AgsAudio *audio;
 
-      audio = (AgsAudio *) g_value_get_object(value);
+    audio = (AgsAudio *) g_value_get_object(value);
 
-      g_rec_mutex_lock(channel_mutex);
+    g_rec_mutex_lock(channel_mutex);
 
-      if((AgsAudio *) channel->audio == audio){
-	g_rec_mutex_unlock(channel_mutex);
-	
-	return;
-      }
-
-      if(channel->audio != NULL){
-	g_object_unref(G_OBJECT(channel->audio));
-      }
-
-      if(audio != NULL){
-	g_object_ref(G_OBJECT(audio));
-      }
-
-      channel->audio = (GObject *) audio;
-
+    if((AgsAudio *) channel->audio == audio){
       g_rec_mutex_unlock(channel_mutex);
+	
+      return;
     }
-    break;
+
+    if(channel->audio != NULL){
+      g_object_unref(G_OBJECT(channel->audio));
+    }
+
+    if(audio != NULL){
+      g_object_ref(G_OBJECT(audio));
+    }
+
+    channel->audio = (GObject *) audio;
+
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD:
-    {
-      GObject *output_soundcard;
+  {
+    GObject *output_soundcard;
 
-      output_soundcard = (GObject *) g_value_get_object(value);
+    output_soundcard = (GObject *) g_value_get_object(value);
 
-      ags_channel_set_output_soundcard(channel,
-				       output_soundcard);
-    }
-    break;
+    ags_channel_set_output_soundcard(channel,
+				     output_soundcard);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->output_soundcard_channel = g_value_get_int(value);
+    channel->output_soundcard_channel = g_value_get_int(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD:
-    {
-      GObject *input_soundcard;
+  {
+    GObject *input_soundcard;
 
-      input_soundcard = (GObject *) g_value_get_object(value);
+    input_soundcard = (GObject *) g_value_get_object(value);
 
-      ags_channel_set_input_soundcard(channel,
-				      input_soundcard);
-    }
-    break;
+    ags_channel_set_input_soundcard(channel,
+				    input_soundcard);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->input_soundcard_channel = g_value_get_int(value);
+    channel->input_soundcard_channel = g_value_get_int(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      guint samplerate;
+  {
+    guint samplerate;
 
-      samplerate = g_value_get_uint(value);
+    samplerate = g_value_get_uint(value);
 
-      ags_channel_set_samplerate(channel,
-				 samplerate);
-    }
-    break;
+    ags_channel_set_samplerate(channel,
+			       samplerate);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      guint buffer_size;
+  {
+    guint buffer_size;
 
-      buffer_size = g_value_get_uint(value);
+    buffer_size = g_value_get_uint(value);
 
-      ags_channel_set_buffer_size(channel,
-				  buffer_size);
-    }
-    break;
+    ags_channel_set_buffer_size(channel,
+				buffer_size);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      guint format;
+  {
+    guint format;
 
-      format = g_value_get_uint(value);
+    format = g_value_get_uint(value);
 
-      ags_channel_set_format(channel,
-			     format);
-    }
-    break;
+    ags_channel_set_format(channel,
+			   format);
+  }
+  break;
   case PROP_PAD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->pad = g_value_get_uint(value);
+    channel->pad = g_value_get_uint(value);
       
-      g_rec_mutex_unlock(channel_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);	
+  }
+  break;
   case PROP_AUDIO_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->audio_channel = g_value_get_uint(value);
+    channel->audio_channel = g_value_get_uint(value);
       
-      g_rec_mutex_unlock(channel_mutex);	
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);	
+  }
+  break;
   case PROP_LINE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->line = g_value_get_uint(value);
+    channel->line = g_value_get_uint(value);
       
-      g_rec_mutex_unlock(channel_mutex);	
-    }
-    break;    
+    g_rec_mutex_unlock(channel_mutex);	
+  }
+  break;    
   case PROP_OCTAVE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->octave = g_value_get_int(value);
+    channel->octave = g_value_get_int(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_KEY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->key = g_value_get_uint(value);
+    channel->key = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_ABSOLUTE_KEY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->absolute_key = g_value_get_int(value);
+    channel->absolute_key = g_value_get_int(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NOTE_FREQUENCY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->note_frequency = g_value_get_double(value);
+    channel->note_frequency = g_value_get_double(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NOTE_KEY:
-    {
-      gchar *note_key;
+  {
+    gchar *note_key;
 
-      note_key = g_value_get_string(value);
+    note_key = g_value_get_string(value);
 
-      g_rec_mutex_lock(channel_mutex);
+    g_rec_mutex_lock(channel_mutex);
 
-      if(channel->note_key == note_key){
-	g_rec_mutex_unlock(channel_mutex);
-	
-	return;
-      }
-
-      if(channel->note_key != NULL){
-	g_free(channel->note_key);
-      }
-
-      channel->note_key = g_strdup(note_key);
-
+    if(channel->note_key == note_key){
       g_rec_mutex_unlock(channel_mutex);
+	
+      return;
     }
-    break;
+
+    if(channel->note_key != NULL){
+      g_free(channel->note_key);
+    }
+
+    channel->note_key = g_strdup(note_key);
+
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_MIDI_NOTE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      channel->midi_note = g_value_get_uint(value);
+    channel->midi_note = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_LINK:
-    {
-      AgsChannel *link;
+  {
+    AgsChannel *link;
 
-      link = (AgsChannel *) g_value_get_object(value);
+    link = (AgsChannel *) g_value_get_object(value);
 
-      g_rec_mutex_lock(channel_mutex);
+    g_rec_mutex_lock(channel_mutex);
       
-      if(channel->link == link){
-	g_rec_mutex_unlock(channel_mutex);
+    if(channel->link == link){
+      g_rec_mutex_unlock(channel_mutex);
 	
-	return;
-      }
-
-      g_rec_mutex_unlock(channel_mutex);
-      
-      ags_channel_set_link(channel,
-			   link,
-			   NULL);
+      return;
     }
-    break;
+
+    g_rec_mutex_unlock(channel_mutex);
+      
+    ags_channel_set_link(channel,
+			 link,
+			 NULL);
+  }
+  break;
   case PROP_PLAYBACK:
-    {
-      AgsPlayback *playback;
+  {
+    AgsPlayback *playback;
 
-      playback = (AgsPlayback *) g_value_get_object(value);
+    playback = (AgsPlayback *) g_value_get_object(value);
 
-      g_rec_mutex_lock(channel_mutex);
+    g_rec_mutex_lock(channel_mutex);
       
-      if(channel->playback == (GObject *) playback){
-	g_rec_mutex_unlock(channel_mutex);
-
-	return;
-      }
-
-      if(channel->playback != NULL){
-	g_object_unref(channel->playback);
-      }
-
-      if(playback != NULL){
-	g_object_ref(playback);
-      }
-
-      channel->playback = (GObject *) playback;
-
+    if(channel->playback == (GObject *) playback){
       g_rec_mutex_unlock(channel_mutex);
+
+      return;
     }
-    break;
+
+    if(channel->playback != NULL){
+      g_object_unref(channel->playback);
+    }
+
+    if(playback != NULL){
+      g_object_ref(playback);
+    }
+
+    channel->playback = (GObject *) playback;
+
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PATTERN:
-    {
-      AgsPattern *pattern;
+  {
+    AgsPattern *pattern;
 
-      pattern = (AgsPattern *) g_value_get_pointer(value);
+    pattern = (AgsPattern *) g_value_get_pointer(value);
 
-      ags_channel_add_pattern(channel,
-			      (GObject *) pattern);
-    }
-    break;
+    ags_channel_add_pattern(channel,
+			    (GObject *) pattern);
+  }
+  break;
   case PROP_RECALL_ID:
-    {
-      AgsRecallID *recall_id;
+  {
+    AgsRecallID *recall_id;
 
-      recall_id = (AgsRecallID *) g_value_get_pointer(value);
+    recall_id = (AgsRecallID *) g_value_get_pointer(value);
 
-      ags_channel_add_recall_id(channel,
-				recall_id);
-    }
-    break;
+    ags_channel_add_recall_id(channel,
+			      recall_id);
+  }
+  break;
   case PROP_RECYCLING_CONTEXT:
-    {
-      AgsRecyclingContext *recycling_context;
+  {
+    AgsRecyclingContext *recycling_context;
 
-      recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
+    recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
 
-      g_rec_mutex_lock(channel_mutex);
+    g_rec_mutex_lock(channel_mutex);
 
-      if(recycling_context == NULL ||
-	 g_list_find(channel->recycling_context, recycling_context) != NULL){
-	g_rec_mutex_unlock(channel_mutex);
-
-	return;
-      }
-
-      channel->recycling_context = g_list_prepend(channel->recycling_context,
-						  recycling_context);
-      g_object_ref(recycling_context);
-      
+    if(recycling_context == NULL ||
+       g_list_find(channel->recycling_context, recycling_context) != NULL){
       g_rec_mutex_unlock(channel_mutex);
+
+      return;
     }
-    break;
-  case PROP_RECALL_CONTAINER:
-    {
-      AgsRecallContainer *recall_container;
 
-      recall_container = (AgsRecallContainer *) g_value_get_pointer(value);
-
-      ags_channel_add_recall_container(channel,
-				       (GObject *) recall_container);
-    }
-    break;
-  case PROP_PLAY:
-    {
-      AgsRecall *play;
-
-      play = (AgsRecall *) g_value_get_pointer(value);
-
-      ags_channel_add_recall(channel,
-			     (GObject *) play,
-			     TRUE);
-    }
-    break;
-  case PROP_RECALL:
-    {
-      AgsRecall *recall;
+    channel->recycling_context = g_list_prepend(channel->recycling_context,
+						recycling_context);
+    g_object_ref(recycling_context);
       
-      /*  */
-      recall = (AgsRecall *) g_value_get_pointer(value);
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
+  case PROP_RECALL_CONTAINER:
+  {
+    AgsRecallContainer *recall_container;
 
-      ags_channel_add_recall(channel,
-			     (GObject *) recall,
-			     FALSE);
-    }
-    break;
+    recall_container = (AgsRecallContainer *) g_value_get_pointer(value);
+
+    ags_channel_add_recall_container(channel,
+				     (GObject *) recall_container);
+  }
+  break;
+  case PROP_PLAY:
+  {
+    AgsRecall *play;
+
+    play = (AgsRecall *) g_value_get_pointer(value);
+
+    ags_channel_add_recall(channel,
+			   (GObject *) play,
+			   TRUE);
+  }
+  break;
+  case PROP_RECALL:
+  {
+    AgsRecall *recall;
+      
+    /*  */
+    recall = (AgsRecall *) g_value_get_pointer(value);
+
+    ags_channel_add_recall(channel,
+			   (GObject *) recall,
+			   FALSE);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1574,293 +1574,293 @@ ags_channel_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->audio);
+    g_value_set_object(value, channel->audio);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->output_soundcard);
+    g_value_set_object(value, channel->output_soundcard);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_int(value, channel->output_soundcard_channel);
+    g_value_set_int(value, channel->output_soundcard_channel);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value,
-			 channel->input_soundcard);
+    g_value_set_object(value,
+		       channel->input_soundcard);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_int(value, channel->input_soundcard_channel);
+    g_value_set_int(value, channel->input_soundcard_channel);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->samplerate);
+    g_value_set_uint(value, channel->samplerate);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->buffer_size);
+    g_value_set_uint(value, channel->buffer_size);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->format);
+    g_value_set_uint(value, channel->format);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PAD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->pad);
+    g_value_set_uint(value, channel->pad);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_AUDIO_CHANNEL:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->audio_channel);
+    g_value_set_uint(value, channel->audio_channel);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_LINE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->line);
+    g_value_set_uint(value, channel->line);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_ABSOLUTE_KEY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_int(value, channel->absolute_key);
+    g_value_set_int(value, channel->absolute_key);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NOTE_FREQUENCY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_double(value, channel->note_frequency);
+    g_value_set_double(value, channel->note_frequency);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NOTE_KEY:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_string(value, channel->note_key);
+    g_value_set_string(value, channel->note_key);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_MIDI_NOTE:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_uint(value, channel->midi_note);
+    g_value_set_uint(value, channel->midi_note);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PREV:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->prev);
+    g_value_set_object(value, channel->prev);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PREV_PAD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->prev_pad);
+    g_value_set_object(value, channel->prev_pad);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NEXT:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->next);
+    g_value_set_object(value, channel->next);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_NEXT_PAD:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->next_pad);
+    g_value_set_object(value, channel->next_pad);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_LINK:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->link);
+    g_value_set_object(value, channel->link);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_FIRST_RECYCLING:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->first_recycling);
+    g_value_set_object(value, channel->first_recycling);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_LAST_RECYCLING:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->last_recycling);
+    g_value_set_object(value, channel->last_recycling);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PLAYBACK:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_object(value, channel->playback);
+    g_value_set_object(value, channel->playback);
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PATTERN:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_pointer(value, g_list_copy_deep(channel->pattern,
-						  (GCopyFunc) g_object_ref,
-						  NULL));
+    g_value_set_pointer(value, g_list_copy_deep(channel->pattern,
+						(GCopyFunc) g_object_ref,
+						NULL));
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_RECALL_ID:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_pointer(value, g_list_copy_deep(channel->recall_id,
-						  (GCopyFunc) g_object_ref,
-						  NULL));
+    g_value_set_pointer(value, g_list_copy_deep(channel->recall_id,
+						(GCopyFunc) g_object_ref,
+						NULL));
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_RECYCLING_CONTEXT:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_pointer(value, g_list_copy_deep(channel->recycling_context,
-						  (GCopyFunc) g_object_ref,
-						  NULL));
+    g_value_set_pointer(value, g_list_copy_deep(channel->recycling_context,
+						(GCopyFunc) g_object_ref,
+						NULL));
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_RECALL_CONTAINER:
-    {
-      g_rec_mutex_lock(channel_mutex);
+  {
+    g_rec_mutex_lock(channel_mutex);
 
-      g_value_set_pointer(value, g_list_copy_deep(channel->recall_container,
-						  (GCopyFunc) g_object_ref,
-						  NULL));
+    g_value_set_pointer(value, g_list_copy_deep(channel->recall_container,
+						(GCopyFunc) g_object_ref,
+						NULL));
 
-      g_rec_mutex_unlock(channel_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(channel_mutex);
+  }
+  break;
   case PROP_PLAY:
-    {
-      GRecMutex *play_mutex;
+  {
+    GRecMutex *play_mutex;
 
-      /* get play mutex */
-      play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
+    /* get play mutex */
+    play_mutex = AGS_CHANNEL_GET_PLAY_MUTEX(channel);
 
-      /*  */
-      g_rec_mutex_lock(play_mutex);
+    /*  */
+    g_rec_mutex_lock(play_mutex);
       
-      g_value_set_pointer(value,
-			  g_list_copy_deep(channel->play,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(channel->play,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(play_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(play_mutex);
+  }
+  break;
   case PROP_RECALL:
-    {      
-      GRecMutex *recall_mutex;
+  {      
+    GRecMutex *recall_mutex;
 
-      /* get recall mutex */
-      recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
+    /* get recall mutex */
+    recall_mutex = AGS_CHANNEL_GET_RECALL_MUTEX(channel);
 
-      /*  */
-      g_rec_mutex_lock(recall_mutex);
+    /*  */
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(channel->recall,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(channel->recall,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(recall_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -4903,7 +4903,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 					    AGS_SOUND_STAGING_RUN_INIT_POST));
 
 	g_list_free_full(recall_id,
-			   g_object_unref);
+			 g_object_unref);
       }
     }
   }
@@ -6630,7 +6630,8 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
   
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+
+  GList *start_message_queue;
 
   gdouble frequency;
   guint old_samplerate;
@@ -6693,10 +6694,10 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -6714,9 +6715,9 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 	       "AgsChannel::set-samplerate");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6745,9 +6746,12 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -6769,7 +6773,8 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+
+  GList *start_message_queue;
 
   gdouble frequency;
   guint old_buffer_size;
@@ -6832,10 +6837,10 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -6853,9 +6858,9 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 	       "AgsChannel::set-buffer-size");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6884,9 +6889,12 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -6906,7 +6914,8 @@ ags_channel_set_format(AgsChannel *channel, guint format)
   AgsRecycling *recycling;
 
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+
+  GList *start_message_queue;
 
   guint old_format;
   
@@ -6941,10 +6950,10 @@ ags_channel_set_format(AgsChannel *channel, guint format)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -6962,9 +6971,9 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 	       "AgsChannel::set-format");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6993,9 +7002,12 @@ ags_channel_set_format(AgsChannel *channel, guint format)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -8309,8 +8321,8 @@ ags_channel_real_add_effect(AgsChannel *channel,
   AgsLv2Plugin *lv2_plugin;
 
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
+  GList *start_message_queue;
   GList *recall_list;
   
   /* load plugin */
@@ -8350,10 +8362,10 @@ ags_channel_real_add_effect(AgsChannel *channel,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -8371,9 +8383,9 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "AgsChannel::add-effect");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8400,9 +8412,12 @@ ags_channel_real_add_effect(AgsChannel *channel,
     message->parameter_name[2] = NULL;
 
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
   
   return(recall_list);
@@ -8450,8 +8465,8 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   AgsRecallContainer *recall_container;
 
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
+  GList *start_message_queue;
   GList *automation_start, *automation;
   GList *port;
   GList *list_start, *list;
@@ -8676,10 +8691,10 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -8697,9 +8712,9 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 	       "AgsChannel::remove-effect");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 1;
@@ -8719,9 +8734,12 @@ ags_channel_real_remove_effect(AgsChannel *channel,
     message->parameter_name[1] = NULL;
 
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -9886,10 +9904,10 @@ ags_channel_real_start(AgsChannel *channel,
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
   AgsApplicationContext *application_context;  
 
+  GList *start_message_queue;
   GList *start_recall_id;
 
   gint i;
@@ -10098,10 +10116,10 @@ ags_channel_real_start(AgsChannel *channel,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -10119,9 +10137,9 @@ ags_channel_real_start(AgsChannel *channel,
 	       "AgsChannel::start");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10150,9 +10168,12 @@ ags_channel_real_start(AgsChannel *channel,
     message->parameter_name[2] = NULL;
 
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 
   return(start_recall_id);
@@ -10200,9 +10221,10 @@ ags_channel_real_stop(AgsChannel *channel,
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
   AgsApplicationContext *application_context;
+
+  GList *start_message_queue;
 
   gint i;
 
@@ -10302,10 +10324,10 @@ ags_channel_real_stop(AgsChannel *channel,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -10323,9 +10345,9 @@ ags_channel_real_stop(AgsChannel *channel,
 	       "AgsChannel::stop");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) channel,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) channel,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10352,9 +10374,12 @@ ags_channel_real_stop(AgsChannel *channel,
     message->parameter_name[2] = NULL;
 
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -11398,7 +11423,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  end_region = ags_recycling_next(last_recycling);
 	  
 	  position = ags_recycling_position(first_recycling, end_region,
-					   last_recycling);
+					    last_recycling);
 	  length += (position + 1);
 
 	  /* unref */

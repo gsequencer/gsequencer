@@ -1751,670 +1751,670 @@ ags_audio_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO_NAME:
-    {
-      gchar *audio_name;
+  {
+    gchar *audio_name;
 
-      audio_name = g_value_get_string(value);
+    audio_name = g_value_get_string(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->audio_name = g_strdup(audio_name);
+    audio->audio_name = g_strdup(audio_name);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD:
-    {
-      GObject *soundcard;
+  {
+    GObject *soundcard;
 
-      soundcard = g_value_get_object(value);
+    soundcard = g_value_get_object(value);
 
-      ags_audio_set_output_soundcard(audio,
-				     (GObject *) soundcard);
-    }
-    break;
+    ags_audio_set_output_soundcard(audio,
+				   (GObject *) soundcard);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD:
-    {
-      GObject *soundcard;
+  {
+    GObject *soundcard;
 
-      soundcard = g_value_get_object(value);
+    soundcard = g_value_get_object(value);
 
-      ags_audio_set_input_soundcard(audio,
-				    (GObject *) soundcard);
-    }
-    break;
+    ags_audio_set_input_soundcard(audio,
+				  (GObject *) soundcard);
+  }
+  break;
   case PROP_OUTPUT_SEQUENCER:
-    {
-      GObject *sequencer;
+  {
+    GObject *sequencer;
 
-      sequencer = g_value_get_object(value);
+    sequencer = g_value_get_object(value);
 
-      ags_audio_set_output_sequencer(audio,
-				     (GObject *) sequencer);
-    }
-    break;
+    ags_audio_set_output_sequencer(audio,
+				   (GObject *) sequencer);
+  }
+  break;
   case PROP_INPUT_SEQUENCER:
-    {
-      GObject *sequencer;
+  {
+    GObject *sequencer;
 
-      sequencer = g_value_get_object(value);
+    sequencer = g_value_get_object(value);
 
-      ags_audio_set_input_sequencer(audio,
-				    (GObject *) sequencer);
-    }
-    break;
+    ags_audio_set_input_sequencer(audio,
+				  (GObject *) sequencer);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      guint samplerate;
+  {
+    guint samplerate;
 
-      samplerate = g_value_get_uint(value);
+    samplerate = g_value_get_uint(value);
 
-      ags_audio_set_samplerate(audio,
-			       samplerate);
-    }
-    break;
+    ags_audio_set_samplerate(audio,
+			     samplerate);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      guint buffer_size;
+  {
+    guint buffer_size;
 
-      buffer_size = g_value_get_uint(value);
+    buffer_size = g_value_get_uint(value);
 
-      ags_audio_set_buffer_size(audio,
-				buffer_size);
-    }
-    break;
+    ags_audio_set_buffer_size(audio,
+			      buffer_size);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      guint format;
+  {
+    guint format;
 
-      format = g_value_get_uint(value);
+    format = g_value_get_uint(value);
 
-      ags_audio_set_format(audio,
-			   format);
-    }
-    break;
+    ags_audio_set_format(audio,
+			 format);
+  }
+  break;
   case PROP_BPM:
-    {
-      gdouble bpm;
+  {
+    gdouble bpm;
 
-      bpm = g_value_get_double(value);
+    bpm = g_value_get_double(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->bpm = bpm;
+    audio->bpm = bpm;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIN_AUDIO_CHANNELS:
-    {
-      guint min_audio_channels;
+  {
+    guint min_audio_channels;
 
-      min_audio_channels = g_value_get_uint(value);
+    min_audio_channels = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->min_audio_channels = min_audio_channels;
+    audio->min_audio_channels = min_audio_channels;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_AUDIO_CHANNELS:
-    {
-      guint max_audio_channels;
+  {
+    guint max_audio_channels;
 
-      max_audio_channels = g_value_get_uint(value);
+    max_audio_channels = g_value_get_uint(value);
 
-      ags_audio_set_max_audio_channels(audio,
-				       max_audio_channels);
-    }
-    break;
+    ags_audio_set_max_audio_channels(audio,
+				     max_audio_channels);
+  }
+  break;
   case PROP_MIN_OUTPUT_PADS:
-    {
-      guint min_output_pads;
+  {
+    guint min_output_pads;
 
-      min_output_pads = g_value_get_uint(value);
+    min_output_pads = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->min_output_pads = min_output_pads;
+    audio->min_output_pads = min_output_pads;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_OUTPUT_PADS:
-    {
-      guint max_output_pads;
+  {
+    guint max_output_pads;
 
-      max_output_pads = g_value_get_uint(value);
+    max_output_pads = g_value_get_uint(value);
 
-      ags_audio_set_max_pads(audio,
-			     AGS_TYPE_OUTPUT,
-			     max_output_pads);
-    }
-    break;
+    ags_audio_set_max_pads(audio,
+			   AGS_TYPE_OUTPUT,
+			   max_output_pads);
+  }
+  break;
   case PROP_MIN_INPUT_PADS:
-    {
-      guint min_input_pads;
+  {
+    guint min_input_pads;
 
-      min_input_pads = g_value_get_uint(value);
+    min_input_pads = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->min_input_pads = min_input_pads;
+    audio->min_input_pads = min_input_pads;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_INPUT_PADS:
-    {
-      guint max_input_pads;
+  {
+    guint max_input_pads;
 
-      max_input_pads = g_value_get_uint(value);
+    max_input_pads = g_value_get_uint(value);
 
-      ags_audio_set_max_pads(audio,
-			     AGS_TYPE_INPUT,
-			     max_input_pads);
-    }
-    break;
+    ags_audio_set_max_pads(audio,
+			   AGS_TYPE_INPUT,
+			   max_input_pads);
+  }
+  break;
   case PROP_AUDIO_CHANNELS:
-    {
-      guint audio_channels;
+  {
+    guint audio_channels;
 
-      audio_channels = g_value_get_uint(value);
+    audio_channels = g_value_get_uint(value);
 
-      ags_audio_set_audio_channels(audio,
-				   audio_channels, 0);
-    }
-    break;
+    ags_audio_set_audio_channels(audio,
+				 audio_channels, 0);
+  }
+  break;
   case PROP_OUTPUT_PADS:
-    {
-      guint output_pads;
+  {
+    guint output_pads;
 
-      output_pads = g_value_get_uint(value);
+    output_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio,
-			 AGS_TYPE_OUTPUT,
-			 output_pads, 0);
-    }
-    break;
+    ags_audio_set_pads(audio,
+		       AGS_TYPE_OUTPUT,
+		       output_pads, 0);
+  }
+  break;
   case PROP_INPUT_PADS:
-    {
-      guint input_pads;
+  {
+    guint input_pads;
 
-      input_pads = g_value_get_uint(value);
+    input_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio,
-			 AGS_TYPE_INPUT,
-			 input_pads, 0);
-    }
-    break;
+    ags_audio_set_pads(audio,
+		       AGS_TYPE_INPUT,
+		       input_pads, 0);
+  }
+  break;
   case PROP_AUDIO_START_MAPPING:
-    {
-      guint audio_start_mapping;
+  {
+    guint audio_start_mapping;
 
-      audio_start_mapping = g_value_get_uint(value);
+    audio_start_mapping = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
       
-      audio->audio_start_mapping = audio_start_mapping;
+    audio->audio_start_mapping = audio_start_mapping;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_AUDIO_END_MAPPING:
-    {
-      guint audio_end_mapping;
+  {
+    guint audio_end_mapping;
 
-      audio_end_mapping = g_value_get_uint(value);
+    audio_end_mapping = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->audio_end_mapping = audio_end_mapping;
+    audio->audio_end_mapping = audio_end_mapping;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_START_MAPPING:
-    {
-      guint midi_start_mapping;
+  {
+    guint midi_start_mapping;
 
-      midi_start_mapping = g_value_get_uint(value);
+    midi_start_mapping = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->midi_start_mapping = midi_start_mapping;
+    audio->midi_start_mapping = midi_start_mapping;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_END_MAPPING:
-    {
-      guint midi_end_mapping;
+  {
+    guint midi_end_mapping;
 
-      midi_end_mapping = g_value_get_uint(value);
+    midi_end_mapping = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->midi_end_mapping = midi_end_mapping;
+    audio->midi_end_mapping = midi_end_mapping;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_CHANNEL:
-    {
-      guint midi_channel;
+  {
+    guint midi_channel;
 
-      midi_channel = g_value_get_uint(value);
+    midi_channel = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->midi_channel = midi_channel;
+    audio->midi_channel = midi_channel;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_NUMERATOR:
-    {
-      guint numerator;
+  {
+    guint numerator;
 
-      numerator = g_value_get_uint(value);
+    numerator = g_value_get_uint(value);
 
-      /* numerator and time signature */
-      g_rec_mutex_lock(audio_mutex);
+    /* numerator and time signature */
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->numerator = numerator;
+    audio->numerator = numerator;
 
-      g_free(audio->time_signature);
-      audio->time_signature = g_strdup_printf("%u/%u",
-					      audio->numerator,
-					      audio->denominator);
+    g_free(audio->time_signature);
+    audio->time_signature = g_strdup_printf("%u/%u",
+					    audio->numerator,
+					    audio->denominator);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_DENOMINATOR:
-    {
-      guint denominator;
+  {
+    guint denominator;
 
-      denominator = g_value_get_uint(value);
+    denominator = g_value_get_uint(value);
 
-      /* denominator and time signature */
-      g_rec_mutex_lock(audio_mutex);
+    /* denominator and time signature */
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->denominator = denominator;
+    audio->denominator = denominator;
 
-      g_free(audio->time_signature);
-      audio->time_signature = g_strdup_printf("%u/%u",
-					      audio->numerator,
-					      audio->denominator);
+    g_free(audio->time_signature);
+    audio->time_signature = g_strdup_printf("%u/%u",
+					    audio->numerator,
+					    audio->denominator);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_IS_MINOR:
-    {
-      gboolean is_minor;
+  {
+    gboolean is_minor;
 
-      is_minor = g_value_get_boolean(value);
+    is_minor = g_value_get_boolean(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->is_minor = is_minor;
+    audio->is_minor = is_minor;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_SHARP_FLATS:
-    {
-      guint sharp_flats;
+  {
+    guint sharp_flats;
 
-      sharp_flats = g_value_get_uint(value);
+    sharp_flats = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->sharp_flats = sharp_flats;
+    audio->sharp_flats = sharp_flats;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OCTAVE:
-    {
-      gint octave;
+  {
+    gint octave;
 
-      octave = g_value_get_int(value);
+    octave = g_value_get_int(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->octave = octave;
+    audio->octave = octave;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_KEY:
-    {
-      guint key;
+  {
+    guint key;
 
-      key = g_value_get_uint(value);
+    key = g_value_get_uint(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->key = key;
+    audio->key = key;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_ABSOLUTE_KEY:
-    {
-      gint absolute_key;
+  {
+    gint absolute_key;
 
-      absolute_key = g_value_get_int(value);
+    absolute_key = g_value_get_int(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->absolute_key = absolute_key;
+    audio->absolute_key = absolute_key;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_LOOP_START:
-    {
-      guint64 loop_start;
+  {
+    guint64 loop_start;
 
-      loop_start = g_value_get_uint64(value);
+    loop_start = g_value_get_uint64(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->loop_start = loop_start;
+    audio->loop_start = loop_start;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_LOOP_END:
-    {
-      guint64 loop_end;
+  {
+    guint64 loop_end;
 
-      loop_end = g_value_get_uint64(value);
+    loop_end = g_value_get_uint64(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->loop_end = loop_end;
+    audio->loop_end = loop_end;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OFFSET:
-    {
-      guint64 offset;
+  {
+    guint64 offset;
 
-      offset = g_value_get_uint64(value);
+    offset = g_value_get_uint64(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      audio->offset = offset;
+    audio->offset = offset;
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_PRESET:
-    {
-      AgsPreset *preset;
+  {
+    AgsPreset *preset;
 
-      preset = (AgsPreset *) g_value_get_pointer(value);
+    preset = (AgsPreset *) g_value_get_pointer(value);
 
-      ags_audio_add_preset(audio,
-			   (GObject *) preset);
-    }
-    break;
+    ags_audio_add_preset(audio,
+			 (GObject *) preset);
+  }
+  break;
   case PROP_SYNTH_GENERATOR:
-    {
-      AgsSynthGenerator *synth_generator;
+  {
+    AgsSynthGenerator *synth_generator;
 
-      synth_generator = (AgsSynthGenerator *) g_value_get_pointer(value);
+    synth_generator = (AgsSynthGenerator *) g_value_get_pointer(value);
 
-      ags_audio_add_synth_generator(audio,
-				    (GObject *) synth_generator);
-    }
-    break;
+    ags_audio_add_synth_generator(audio,
+				  (GObject *) synth_generator);
+  }
+  break;
   case PROP_PLAYBACK_DOMAIN:
-    {
-      AgsPlaybackDomain *playback_domain;
+  {
+    AgsPlaybackDomain *playback_domain;
 
-      playback_domain = (AgsPlaybackDomain *) g_value_get_object(value);
+    playback_domain = (AgsPlaybackDomain *) g_value_get_object(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      if(audio->playback_domain == (GObject *) playback_domain){
-	g_rec_mutex_unlock(audio_mutex);
-	
-	return;
-      }
-
-      if(audio->playback_domain != NULL){
-	g_object_unref(audio->playback_domain);
-      }
-
-      if(playback_domain != NULL){
-	g_object_ref(playback_domain);
-      }
-
-      audio->playback_domain = (GObject *) playback_domain;
-
+    if(audio->playback_domain == (GObject *) playback_domain){
       g_rec_mutex_unlock(audio_mutex);
+	
+      return;
     }
-    break;
+
+    if(audio->playback_domain != NULL){
+      g_object_unref(audio->playback_domain);
+    }
+
+    if(playback_domain != NULL){
+      g_object_ref(playback_domain);
+    }
+
+    audio->playback_domain = (GObject *) playback_domain;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_CURSOR:
-    {
-      GObject *cursor;
+  {
+    GObject *cursor;
 
-      cursor = (GObject *) g_value_get_pointer(value);
+    cursor = (GObject *) g_value_get_pointer(value);
 
-      ags_audio_add_cursor(audio,
-			   (GObject *) cursor);
-    }
-    break;
+    ags_audio_add_cursor(audio,
+			 (GObject *) cursor);
+  }
+  break;
   case PROP_NOTATION:
-    {
-      AgsNotation *notation;
+  {
+    AgsNotation *notation;
 
-      notation = (AgsNotation *) g_value_get_pointer(value);
+    notation = (AgsNotation *) g_value_get_pointer(value);
 
-      ags_audio_add_notation(audio,
-			     (GObject *) notation);
-    }
-    break;
+    ags_audio_add_notation(audio,
+			   (GObject *) notation);
+  }
+  break;
   case PROP_AUTOMATION:
-    {
-      AgsAutomation *automation;
+  {
+    AgsAutomation *automation;
 
-      automation = (AgsAutomation *) g_value_get_pointer(value);
+    automation = (AgsAutomation *) g_value_get_pointer(value);
 
-      ags_audio_add_automation(audio,
-			       (GObject *) automation);
-    }
-    break;
+    ags_audio_add_automation(audio,
+			     (GObject *) automation);
+  }
+  break;
   case PROP_WAVE:
-    {
-      AgsWave *wave;
+  {
+    AgsWave *wave;
 
-      wave = (AgsWave *) g_value_get_pointer(value);
+    wave = (AgsWave *) g_value_get_pointer(value);
 
-      ags_audio_add_wave(audio,
-			 (GObject *) wave);
-    }
-    break;
+    ags_audio_add_wave(audio,
+		       (GObject *) wave);
+  }
+  break;
   case PROP_OUTPUT_AUDIO_FILE:
-    {
-      AgsAudioFile *output_audio_file;
+  {
+    AgsAudioFile *output_audio_file;
 
-      output_audio_file = (AgsAudioFile *) g_value_get_object(value);
+    output_audio_file = (AgsAudioFile *) g_value_get_object(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      if(audio->output_audio_file == (GObject *) output_audio_file){
-	g_rec_mutex_unlock(audio_mutex);
-	
-	return;
-      }
-
-      if(audio->output_audio_file != NULL){
-	g_object_unref(audio->output_audio_file);
-      }
-
-      if(output_audio_file != NULL){
-	g_object_ref(output_audio_file);
-      }
-
-      audio->output_audio_file = (GObject *) output_audio_file;
-
+    if(audio->output_audio_file == (GObject *) output_audio_file){
       g_rec_mutex_unlock(audio_mutex);
+	
+      return;
     }
-    break;
+
+    if(audio->output_audio_file != NULL){
+      g_object_unref(audio->output_audio_file);
+    }
+
+    if(output_audio_file != NULL){
+      g_object_ref(output_audio_file);
+    }
+
+    audio->output_audio_file = (GObject *) output_audio_file;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_AUDIO_FILE:
-    {
-      AgsAudioFile *input_audio_file;
+  {
+    AgsAudioFile *input_audio_file;
 
-      input_audio_file = (AgsAudioFile *) g_value_get_object(value);
+    input_audio_file = (AgsAudioFile *) g_value_get_object(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      if(audio->input_audio_file == (GObject *) input_audio_file){
-	g_rec_mutex_unlock(audio_mutex);
-	
-	return;
-      }
-
-      if(audio->input_audio_file != NULL){
-	g_object_unref(audio->input_audio_file);
-      }
-
-      if(input_audio_file != NULL){
-	g_object_ref(input_audio_file);
-      }
-
-      audio->input_audio_file = (GObject *) input_audio_file;
-
+    if(audio->input_audio_file == (GObject *) input_audio_file){
       g_rec_mutex_unlock(audio_mutex);
+	
+      return;
     }
-    break;
+
+    if(audio->input_audio_file != NULL){
+      g_object_unref(audio->input_audio_file);
+    }
+
+    if(input_audio_file != NULL){
+      g_object_ref(input_audio_file);
+    }
+
+    audio->input_audio_file = (GObject *) input_audio_file;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI:
-    {
-      AgsMidi *midi;
+  {
+    AgsMidi *midi;
 
-      midi = (AgsMidi *) g_value_get_pointer(value);
+    midi = (AgsMidi *) g_value_get_pointer(value);
 
-      ags_audio_add_midi(audio,
-			 (GObject *) midi);
-    }
-    break;
+    ags_audio_add_midi(audio,
+		       (GObject *) midi);
+  }
+  break;
   case PROP_OUTPUT_MIDI_FILE:
-    {
-      AgsMidiFile *output_midi_file;
+  {
+    AgsMidiFile *output_midi_file;
 
-      output_midi_file = g_value_get_object(value);
+    output_midi_file = g_value_get_object(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      if((AgsMidiFile *) audio->output_midi_file == output_midi_file){
-	g_rec_mutex_unlock(audio_mutex);
-	
-	return;
-      }
-
-      if(audio->output_midi_file != NULL){
-	g_object_unref(audio->output_midi_file);
-      }
-
-      if(output_midi_file != NULL) {
-	g_object_ref(output_midi_file);
-      }
-
-      audio->output_midi_file = (GObject *) output_midi_file;
-
+    if((AgsMidiFile *) audio->output_midi_file == output_midi_file){
       g_rec_mutex_unlock(audio_mutex);
+	
+      return;
     }
-    break;
+
+    if(audio->output_midi_file != NULL){
+      g_object_unref(audio->output_midi_file);
+    }
+
+    if(output_midi_file != NULL) {
+      g_object_ref(output_midi_file);
+    }
+
+    audio->output_midi_file = (GObject *) output_midi_file;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_MIDI_FILE:
-    {
-      AgsMidiFile *input_midi_file;
+  {
+    AgsMidiFile *input_midi_file;
 
-      input_midi_file = g_value_get_object(value);
+    input_midi_file = g_value_get_object(value);
 
-      g_rec_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
-      if((AgsMidiFile *) audio->input_midi_file == input_midi_file){
-	g_rec_mutex_unlock(audio_mutex);
-	
-	return;
-      }
-
-      if(audio->input_midi_file != NULL){
-	g_object_unref(audio->input_midi_file);
-      }
-
-      if(input_midi_file != NULL) {
-	g_object_ref(input_midi_file);
-      }
-
-      audio->input_midi_file = (GObject *) input_midi_file;
-
+    if((AgsMidiFile *) audio->input_midi_file == input_midi_file){
       g_rec_mutex_unlock(audio_mutex);
+	
+      return;
     }
-    break;
+
+    if(audio->input_midi_file != NULL){
+      g_object_unref(audio->input_midi_file);
+    }
+
+    if(input_midi_file != NULL) {
+      g_object_ref(input_midi_file);
+    }
+
+    audio->input_midi_file = (GObject *) input_midi_file;
+
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_RECALL_ID:
-    {
-      AgsRecallID *recall_id;
+  {
+    AgsRecallID *recall_id;
 
-      recall_id = (AgsRecallID *) g_value_get_pointer(value);
+    recall_id = (AgsRecallID *) g_value_get_pointer(value);
 
-      ags_audio_add_recall_id(audio,
-			      (GObject *) recall_id);
-    }
-    break;
+    ags_audio_add_recall_id(audio,
+			    (GObject *) recall_id);
+  }
+  break;
   case PROP_RECYCLING_CONTEXT:
-    {
-      AgsRecyclingContext *recycling_context;
+  {
+    AgsRecyclingContext *recycling_context;
 
-      recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
+    recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
 
-      ags_audio_add_recycling_context(audio,
-				      (GObject *) recycling_context);
-    }
-    break;
+    ags_audio_add_recycling_context(audio,
+				    (GObject *) recycling_context);
+  }
+  break;
   case PROP_RECALL_CONTAINER:
-    {
-      AgsRecallContainer *recall_container;
+  {
+    AgsRecallContainer *recall_container;
 
-      recall_container = (AgsRecallContainer *) g_value_get_pointer(value);
+    recall_container = (AgsRecallContainer *) g_value_get_pointer(value);
 
-      ags_audio_add_recall_container(audio,
-				     (GObject *) recall_container);
-    }
-    break;
+    ags_audio_add_recall_container(audio,
+				   (GObject *) recall_container);
+  }
+  break;
   case PROP_PLAY:
-    {
-      AgsRecall *recall;
+  {
+    AgsRecall *recall;
 
-      /*  */
-      recall = (AgsRecall *) g_value_get_pointer(value);
+    /*  */
+    recall = (AgsRecall *) g_value_get_pointer(value);
 
-      ags_audio_add_recall(audio,
-			   (GObject *) recall,
-			   TRUE);
-    }
-    break;
+    ags_audio_add_recall(audio,
+			 (GObject *) recall,
+			 TRUE);
+  }
+  break;
   case PROP_RECALL:
-    {
-      AgsRecall *recall;
+  {
+    AgsRecall *recall;
 
-      /*  */
-      recall = (AgsRecall *) g_value_get_pointer(value);
+    /*  */
+    recall = (AgsRecall *) g_value_get_pointer(value);
 
-      ags_audio_add_recall(audio,
-			   (GObject *) recall,
-			   FALSE);
-    }
-    break;
+    ags_audio_add_recall(audio,
+			 (GObject *) recall,
+			 FALSE);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
   }
@@ -2437,579 +2437,579 @@ ags_audio_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO_NAME:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_string(value,
-			 audio->audio_name);
+    g_value_set_string(value,
+		       audio->audio_name);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_SOUNDCARD:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->output_soundcard);
+    g_value_set_object(value,
+		       audio->output_soundcard);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_SOUNDCARD:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->input_soundcard);
+    g_value_set_object(value,
+		       audio->input_soundcard);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_SEQUENCER:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->output_sequencer);
+    g_value_set_object(value,
+		       audio->output_sequencer);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_SEQUENCER:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->input_sequencer);
+    g_value_set_object(value,
+		       audio->input_sequencer);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_SAMPLERATE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->samplerate);
+    g_value_set_uint(value,
+		     audio->samplerate);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_BUFFER_SIZE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->buffer_size);
+    g_value_set_uint(value,
+		     audio->buffer_size);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_FORMAT:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->format);
+    g_value_set_uint(value,
+		     audio->format);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_BPM:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_double(value,
-			 audio->bpm);
+    g_value_set_double(value,
+		       audio->bpm);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIN_AUDIO_CHANNELS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->min_audio_channels);
+    g_value_set_uint(value,
+		     audio->min_audio_channels);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_AUDIO_CHANNELS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->max_audio_channels);
+    g_value_set_uint(value,
+		     audio->max_audio_channels);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIN_OUTPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->min_output_pads);
+    g_value_set_uint(value,
+		     audio->min_output_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_OUTPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->max_output_pads);
+    g_value_set_uint(value,
+		     audio->max_output_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIN_INPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->min_input_pads);
+    g_value_set_uint(value,
+		     audio->min_input_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MAX_INPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->max_input_pads);
+    g_value_set_uint(value,
+		     audio->max_input_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_AUDIO_CHANNELS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->audio_channels);
+    g_value_set_uint(value,
+		     audio->audio_channels);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->output_pads);
+    g_value_set_uint(value,
+		     audio->output_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_LINES:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->output_lines);
+    g_value_set_uint(value,
+		     audio->output_lines);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_PADS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->input_pads);
+    g_value_set_uint(value,
+		     audio->input_pads);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_LINES:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->input_lines);
+    g_value_set_uint(value,
+		     audio->input_lines);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_AUDIO_START_MAPPING:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->audio_start_mapping);
+    g_value_set_uint(value,
+		     audio->audio_start_mapping);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_AUDIO_END_MAPPING:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->audio_end_mapping);
+    g_value_set_uint(value,
+		     audio->audio_end_mapping);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_START_MAPPING:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->midi_start_mapping);
+    g_value_set_uint(value,
+		     audio->midi_start_mapping);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_END_MAPPING:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->midi_end_mapping);
+    g_value_set_uint(value,
+		     audio->midi_end_mapping);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_MIDI_CHANNEL:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->midi_channel);
+    g_value_set_uint(value,
+		     audio->midi_channel);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_NUMERATOR:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->numerator);
+    g_value_set_uint(value,
+		     audio->numerator);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_DENOMINATOR:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->denominator);
+    g_value_set_uint(value,
+		     audio->denominator);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_TIME_SIGNATURE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_string(value,
-			 audio->time_signature);
+    g_value_set_string(value,
+		       audio->time_signature);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_IS_MINOR:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_boolean(value,
-			  audio->is_minor);
+    g_value_set_boolean(value,
+			audio->is_minor);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_SHARP_FLATS:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->sharp_flats);
+    g_value_set_uint(value,
+		     audio->sharp_flats);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OCTAVE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_int(value,
-		      audio->octave);
+    g_value_set_int(value,
+		    audio->octave);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_KEY:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint(value,
-		       audio->key);
+    g_value_set_uint(value,
+		     audio->key);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_ABSOLUTE_KEY:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_int(value,
-		      audio->absolute_key);
+    g_value_set_int(value,
+		    audio->absolute_key);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_LOOP_START:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint64(value,
-			 audio->loop_start);
+    g_value_set_uint64(value,
+		       audio->loop_start);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_LOOP_END:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint64(value,
-			 audio->loop_end);
+    g_value_set_uint64(value,
+		       audio->loop_end);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OFFSET:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_uint64(value,
-			 audio->offset);
+    g_value_set_uint64(value,
+		       audio->offset);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->output);
+    g_value_set_object(value,
+		       audio->output);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->input);
+    g_value_set_object(value,
+		       audio->input);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_PRESET:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->preset,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->preset,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_SYNTH_GENERATOR:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->synth_generator,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->synth_generator,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_PLAYBACK_DOMAIN:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->playback_domain);
+    g_value_set_object(value,
+		       audio->playback_domain);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_CURSOR:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->cursor,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->cursor,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_NOTATION:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->notation,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->notation,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_AUTOMATION:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->automation,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->automation,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_WAVE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->wave,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->wave,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_AUDIO_FILE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->output_audio_file);
+    g_value_set_object(value,
+		       audio->output_audio_file);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_AUDIO_FILE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->input_audio_file);
+    g_value_set_object(value,
+		       audio->input_audio_file);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_OUTPUT_MIDI_FILE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->output_midi_file);
+    g_value_set_object(value,
+		       audio->output_midi_file);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_INPUT_MIDI_FILE:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_object(value,
-			 audio->input_midi_file);
+    g_value_set_object(value,
+		       audio->input_midi_file);
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_RECALL_ID:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->recall_id,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->recall_id,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_RECYCLING_CONTEXT:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->recycling_context,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->recycling_context,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_RECALL_CONTAINER:
-    {
-      g_rec_mutex_lock(audio_mutex);
+  {
+    g_rec_mutex_lock(audio_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->recall_container,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->recall_container,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(audio_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(audio_mutex);
+  }
+  break;
   case PROP_PLAY:
-    {
-      GRecMutex *play_mutex;
+  {
+    GRecMutex *play_mutex;
 
-      /* get play mutex */
-      play_mutex = AGS_AUDIO_GET_PLAY_MUTEX(audio);
+    /* get play mutex */
+    play_mutex = AGS_AUDIO_GET_PLAY_MUTEX(audio);
 
-      /*  */
-      g_rec_mutex_lock(play_mutex);
+    /*  */
+    g_rec_mutex_lock(play_mutex);
       
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->play,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->play,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(play_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(play_mutex);
+  }
+  break;
   case PROP_RECALL:
-    {
-      GRecMutex *recall_mutex;
+  {
+    GRecMutex *recall_mutex;
 
-      /* get recall mutex */
-      recall_mutex = AGS_AUDIO_GET_RECALL_MUTEX(audio);
+    /* get recall mutex */
+    recall_mutex = AGS_AUDIO_GET_RECALL_MUTEX(audio);
 
-      /*  */
-      g_rec_mutex_lock(recall_mutex);
+    /*  */
+    g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_pointer(value,
-			  g_list_copy_deep(audio->recall,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
+    g_value_set_pointer(value,
+			g_list_copy_deep(audio->recall,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
-      g_rec_mutex_unlock(recall_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
   }
@@ -5656,7 +5656,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   AgsChannel *start_channel, *channel, *nth_channel, *next_channel;
 
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+
+  GList *start_message_queue;
 
   guint bank_dim[3];
 
@@ -5991,10 +5992,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -6012,9 +6013,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	       "AgsAudio::set-audio-channels");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6043,9 +6044,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -6653,7 +6657,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
   AgsPlaybackDomain *playback_domain;
   
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+
+  GList *start_message_queue;
   
   guint bank_dim[3];
 
@@ -7148,10 +7153,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -7169,9 +7174,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	       "AgsAudio::set-pads");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
     /* set parameter */
     message->n_params = 3;
 
@@ -7207,9 +7212,12 @@ ags_audio_real_set_pads(AgsAudio *audio,
     message->parameter_name[3] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -7736,8 +7744,8 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   
   AgsThread *audio_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
+  GList *start_message_queue;
   GList *start_list, *list;
 
   gdouble frequency;
@@ -7818,10 +7826,10 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -7839,9 +7847,9 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 	       "AgsAudio::set-samplerate");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -7870,9 +7878,12 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -7920,8 +7931,8 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 
   AgsThread *audio_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
+  GList *start_message_queue;
   GList *start_list, *list;
   
   gdouble frequency;
@@ -8002,10 +8013,10 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -8023,9 +8034,9 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 	       "AgsAudio::set-buffer-size");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8054,9 +8065,12 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -8102,8 +8116,8 @@ ags_audio_set_format(AgsAudio *audio, guint format)
   AgsChannel *start_output, *start_input;
   
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
+  GList *start_message_queue;
   GList *start_list, *list;
 
   guint old_format;
@@ -8162,10 +8176,10 @@ ags_audio_set_format(AgsAudio *audio, guint format)
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -8183,9 +8197,9 @@ ags_audio_set_format(AgsAudio *audio, guint format)
 	       "AgsAudio::set-format");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8214,9 +8228,12 @@ ags_audio_set_format(AgsAudio *audio, guint format)
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -10375,10 +10392,10 @@ ags_audio_real_start(AgsAudio *audio,
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
   AgsApplicationContext *application_context;  
 
+  GList *start_message_queue;
   GList *start_output_playback, *output_playback;
   GList *start_recall_id;
 
@@ -10660,10 +10677,10 @@ ags_audio_real_start(AgsAudio *audio,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -10681,9 +10698,9 @@ ags_audio_real_start(AgsAudio *audio,
 	       "AgsAudio::start");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10712,9 +10729,12 @@ ags_audio_real_start(AgsAudio *audio,
     message->parameter_name[2] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 
   return(start_recall_id);
@@ -10765,10 +10785,10 @@ ags_audio_real_stop(AgsAudio *audio,
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
   AgsApplicationContext *application_context;
 
+  GList *start_message_queue;
   GList *start_output_playback, *output_playback;
   GList *sequencer, *notation, *wave, *midi;
   
@@ -10957,10 +10977,10 @@ ags_audio_real_stop(AgsAudio *audio,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -10978,9 +10998,9 @@ ags_audio_real_stop(AgsAudio *audio,
 	       "AgsAudio::stop");
 
     /* add message */
-    message = ags_message_envelope_alloc((GObject *) audio,
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params((GObject *) audio,
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -11009,9 +11029,12 @@ ags_audio_real_stop(AgsAudio *audio,
     message->parameter_name[2] = NULL;
 
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 

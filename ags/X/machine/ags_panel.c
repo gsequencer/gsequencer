@@ -59,8 +59,6 @@ void ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
 static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-
 GType
 ags_panel_get_type(void)
 {
@@ -173,15 +171,6 @@ ags_panel_init(AgsPanel *panel)
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)), (GtkWidget *) panel->vbox);
 
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      panel,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) panel);
-
   /* input */
   AGS_MACHINE(panel)->input = (GtkContainer *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->input, FALSE, FALSE, 0);
@@ -189,10 +178,7 @@ ags_panel_init(AgsPanel *panel)
 
 static void
 ags_panel_finalize(GObject *gobject)
-{
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-  
+{  
   /* call parent */
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }

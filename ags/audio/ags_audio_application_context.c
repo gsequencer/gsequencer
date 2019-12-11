@@ -1217,9 +1217,10 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
 						    GObject *soundcard)
 {
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
 
   AgsApplicationContext *application_context;
+
+  GList *start_message_queue;
 
   GRecMutex *application_context_mutex;
 
@@ -1252,10 +1253,10 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+								   "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -1273,9 +1274,9 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
 	       "AgsSoundProvider::set-default-soundcard");
 
     /* add message */
-    message = ags_message_envelope_alloc(G_OBJECT(sound_provider),
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params(G_OBJECT(sound_provider),
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 1;
@@ -1296,9 +1297,12 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
     message->parameter_name[1] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
+
+    g_list_free_full(start_message_queue,
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -1863,8 +1867,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   message_delivery = ags_message_delivery_get_instance();
 
   message_queue = ags_message_queue_new("libags");
-  ags_message_delivery_add_queue(message_delivery,
-				 (GObject *) message_queue);
+  ags_message_delivery_add_message_queue(message_delivery,
+					 (GObject *) message_queue);
     
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();

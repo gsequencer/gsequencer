@@ -89,10 +89,6 @@ enum{
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
 
-GHashTable *ags_machine_message_monitor = NULL;
-GHashTable *ags_machine_generic_output_message_monitor = NULL;
-GHashTable *ags_machine_generic_input_message_monitor = NULL;
-
 GType
 ags_machine_get_type(void)
 {
@@ -432,38 +428,13 @@ ags_machine_init(AgsMachine *machine)
   GtkVBox *vbox;
   GtkFrame *frame;
 
-  if(ags_machine_message_monitor == NULL){
-    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							NULL,
-							NULL);
-  }
+  AgsApplicationContext *application_context;
 
-  if(ags_machine_generic_output_message_monitor == NULL){
-    ags_machine_generic_output_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								       NULL,
-								       NULL);
-  }
+  application_context = ags_application_context_get_instance();
 
-  if(ags_machine_generic_input_message_monitor == NULL){
-    ags_machine_generic_input_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								      NULL,
-								      NULL);
-  }
-
-  if(ags_machine_message_monitor == NULL){
-    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							NULL,
-							NULL);
-  }
+  g_signal_connect(application_context, "check-message",
+		   G_CALLBACK(ags_machine_check_message_callback), machine);
   
-  g_hash_table_insert(ags_machine_message_monitor,
-		      machine,
-		      ags_machine_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_message_monitor_timeout,
-		(gpointer) machine);
-
   machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
@@ -1139,6 +1110,12 @@ ags_machine_finalize(GObject *gobject)
   machine = (AgsMachine *) gobject;
 
   application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::check-message",
+		      G_CALLBACK(ags_machine_check_message_callback),
+		      machine,
+		      NULL);
   
   /* remove from sound provider */
   list =
@@ -1154,10 +1131,6 @@ ags_machine_finalize(GObject *gobject)
 		 (GFunc) g_object_unref,
 		 NULL);
   
-  /* remove message monitor */
-  g_hash_table_remove(ags_machine_message_monitor,
-		      machine);
-
   g_list_free_full(machine->enabled_automation_port,
 		   (GDestroyNotify) ags_machine_automation_port_free);
   
@@ -2902,360 +2875,200 @@ ags_machine_copy_pattern(AgsMachine *machine)
 }
 
 /**
- * ags_machine_message_monitor_timeout:
+ * ags_machine_check_message:
  * @machine: the #AgsMachine
  *
- * Monitor messages.
+ * Check message queue for message envelopes.
  *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-gboolean
-ags_machine_message_monitor_timeout(AgsMachine *machine)
+void
+ags_machine_check_message(AgsMachine *machine)
 {
-  if(g_hash_table_lookup(ags_machine_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
+  AgsMessageDelivery *message_delivery;
 
-    GList *message_start, *message;
-    GList *active_playback;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
+  GList *start_message_envelope, *message_envelope;
+  GList *active_playback;
 
-    message_start = 
-      message = ags_message_delivery_find_sender(message_delivery,
-						 "libags-audio",
-						 (GObject *) machine->audio);
+  if(!AGS_IS_MACHINE(machine)){
+    return;
+  }
+  
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_envelope =
+    start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+							      "libgsequencer",
+							      (GObject *) machine->audio);
+  
+  while(message_envelope != NULL){
+    xmlNode *root_node;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     "AgsAudio::set-samplerate",
+		     25)){
+	guint samplerate;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "samplerate");
+	samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set samplerate */
+	g_object_set(machine,
+		     "samplerate", samplerate,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-buffer-size",
+			   26)){
+	guint buffer_size;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "buffer-size");
+	buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set buffer size */
+	g_object_set(machine,
+		     "buffer-size", buffer_size,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-format",
+			   21)){
+	guint format;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "format");
+	format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set format */
+	g_object_set(machine,
+		     "format", format,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-audio-channels",
+			   29)){
+	guint audio_channels, audio_channels_old;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "audio-channels");
+	audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "audio-channels-old");
+	audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* resize audio channels */
+	ags_machine_resize_audio_channels(machine,
+					  audio_channels, audio_channels_old);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-pads",
+			   19)){
+	GType channel_type;
+	  
+	guint pads, pads_old;
+	gint position;
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "channel-type");
+	channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "pads");
+	pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "pads-old");
+	pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* resize pads */
+	ags_machine_resize_pads(machine,
+				channel_type,
+				pads, pads_old);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::stop",
+			   15)){
+	GList *recall_id;
+
+	gint sound_scope;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "recall-id");
+	recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "sound-scope");
+	sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	  
+	/* stop */
+	ags_machine_stop(machine,
+			 recall_id, sound_scope);
+      }
+    }
     
-    while(message != NULL){
+    message_envelope = message_envelope->next;
+  }
+      
+  g_list_free_full(start_message_envelope,
+		   (GDestroyNotify) g_object_unref);
+
+  /*  */
+  active_playback = machine->active_playback;
+
+  while(active_playback != NULL){
+    AgsChannel *channel;
+
+    g_object_get(active_playback->data,
+		 "channel", &channel,
+		 NULL);
+    
+    message_envelope =
+      start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+								"libgsequencer",
+								(GObject *) channel);
+
+    while(message_envelope != NULL){
       xmlNode *root_node;
 
-      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
       if(!xmlStrncmp(root_node->name,
 		     "ags-command",
 		     12)){
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
-		       "AgsAudio::set-samplerate",
-		       25)){
-	  guint samplerate;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "samplerate");
-	  samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set samplerate */
-	  g_object_set(machine,
-		       "samplerate", samplerate,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-buffer-size",
-		       26)){
-	  guint buffer_size;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "buffer-size");
-	  buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set buffer size */
-	  g_object_set(machine,
-		       "buffer-size", buffer_size,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-format",
-		       21)){
-	  guint format;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "format");
-	  format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set format */
-	  g_object_set(machine,
-		       "format", format,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-audio-channels",
-		       29)){
-	  guint audio_channels, audio_channels_old;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "audio-channels");
-	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "audio-channels-old");
-	  audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* resize audio channels */
-	  ags_machine_resize_audio_channels(machine,
-					    audio_channels, audio_channels_old);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-pads",
-		       19)){
-	  GType channel_type;
-	  
-	  guint pads, pads_old;
-	  gint position;
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "channel-type");
-	  channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "pads");
-	  pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "pads-old");
-	  pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* resize pads */
-	  ags_machine_resize_pads(machine,
-				  channel_type,
-				  pads, pads_old);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::stop",
-		       15)){
-	  GList *recall_id;
-
-	  gint sound_scope;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "recall-id");
-	  recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "sound-scope");
-	  sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-	  
-	  /* stop */
-	  ags_machine_stop(machine,
-			   recall_id, sound_scope);
+		       "AgsChannel::stop",
+		       18)){
+	  ags_machine_playback_set_active(machine,
+					  active_playback->data,
+					  FALSE);
 	}
       }
-      
-      ags_message_delivery_remove_message(message_delivery,
-					  "libags-audio",
-					  message->data);
-
-      message = message->next;
-    }
-      
-    g_list_free_full(message_start,
-		     (GDestroyNotify) ags_message_envelope_free);
-
-    /*  */
-    active_playback = machine->active_playback;
-
-    while(active_playback != NULL){
-      AgsChannel *channel;
-
-      g_object_get(active_playback->data,
-		   "channel", &channel,
-		   NULL);
-      
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) channel);
-
-      while(message != NULL){
-	xmlNode *root_node;
-
-	root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
-      
-	if(!xmlStrncmp(root_node->name,
-		       "ags-command",
-		       12)){
-	  if(!xmlStrncmp(xmlGetProp(root_node,
-				    "method"),
-			 "AgsChannel::stop",
-			 18)){
-	    ags_machine_playback_set_active(machine,
-					    active_playback->data,
-					    FALSE);
-	  }
-	}
 	
-	message = message->next;
-      }
+      message_envelope = message_envelope->next;
+    }
       
-      g_list_free(message_start);
+    g_list_free_full(start_message_envelope,
+		     (GDestroyNotify) g_object_unref);
 
-      g_object_unref(channel);
+    g_object_unref(channel);
       
-      active_playback = active_playback->next;
-    }
-
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-/**
- * ags_machine_generic_output_message_monitor_timeout:
- * @machine: the #AgsMachine
- *
- * Monitor messages and discard them.
- *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.1.35
- */
-gboolean
-ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
-{
-  if(g_hash_table_lookup(ags_machine_generic_output_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
-
-    AgsChannel *start_output;
-    AgsChannel *output, *next_output;
-    
-    GList *message_start, *message;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
-
-    g_object_get(machine->audio,
-		 "output", &start_output,
-		 NULL);
-
-    output = start_output;
-    
-    if(output != NULL){
-      g_object_ref(output);
-    }
-
-    next_output = NULL;
-    
-    while(output != NULL){
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) output);
-
-      while(message != NULL){
-	ags_message_delivery_remove_message(message_delivery,
-					    "libags-audio",
-					    message->data);
-
-	message = message->next;
-      }
-      
-      g_list_free_full(message_start,
-		       (GDestroyNotify) ags_message_envelope_free);
-
-      /* iterate */
-      next_output = ags_channel_next(output);
-
-      g_object_unref(output);
-
-      output = next_output;
-    }
-
-    if(start_output != NULL){
-      g_object_unref(start_output);
-    }
-    
-    if(next_output != NULL){
-      g_object_unref(next_output);
-    }
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-/**
- * ags_machine_generic_input_message_monitor_timeout:
- * @machine: the #AgsMachine
- *
- * Monitor messages and discard them.
- *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.1.35
- */
-gboolean
-ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
-{
-  if(g_hash_table_lookup(ags_machine_generic_input_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
-
-    AgsChannel *start_input;
-    AgsChannel *input, *next_input;
-        
-    GList *message_start, *message;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
-    
-    g_object_get(machine->audio,
-		 "input", &start_input,
-		 NULL);
-
-    input = start_input;
-    
-    if(input != NULL){
-      g_object_ref(input);
-    }
-
-    next_input = NULL;
-
-    while(input != NULL){
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) input);
-
-      while(message != NULL){
-	ags_message_delivery_remove_message(message_delivery,
-					    "libags-audio",
-					    message->data);
-
-	message = message->next;
-      }
-      
-      g_list_free_full(message_start,
-		       (GDestroyNotify) ags_message_envelope_free);
-      
-      /* iterate */
-      next_input = ags_channel_next(input);
-
-      g_object_unref(input);
-
-      input = next_input;
-    }
-    
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
-    
-    if(next_input != NULL){
-      g_object_unref(next_input);
-    }
-
-    return(TRUE);
-  }else{
-    return(FALSE);
+    active_playback = active_playback->next;
   }
 }
 

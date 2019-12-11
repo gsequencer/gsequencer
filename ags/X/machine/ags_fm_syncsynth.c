@@ -66,9 +66,6 @@ void ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
 static gpointer ags_fm_syncsynth_parent_class = NULL;
 static AgsConnectableInterface *ags_fm_syncsynth_parent_connectable_interface;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
-
 GType
 ags_fm_syncsynth_get_type(void)
 {
@@ -315,35 +312,11 @@ ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      fm_syncsynth,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) fm_syncsynth);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      fm_syncsynth,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) fm_syncsynth);
 }
 
 void
 ags_fm_syncsynth_finalize(GObject *gobject)
 {
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_fm_syncsynth_parent_class)->finalize(gobject);
 }

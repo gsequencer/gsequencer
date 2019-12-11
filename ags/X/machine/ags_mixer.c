@@ -50,8 +50,6 @@ void ags_mixer_map_recall(AgsMachine *machine);
 static gpointer ags_mixer_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-
 GType
 ags_mixer_get_type(void)
 {
@@ -144,15 +142,6 @@ ags_mixer_init(AgsMixer *mixer)
   /*  */
   mixer->name = NULL;
   mixer->xml_type = "ags-mixer";
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      mixer,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) mixer);
   
   /* input */
   mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -163,9 +152,6 @@ ags_mixer_init(AgsMixer *mixer)
 void
 ags_mixer_finalize(GObject *gobject)
 {
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_mixer_parent_class)->finalize(gobject);
 }

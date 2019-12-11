@@ -1442,10 +1442,10 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+  start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
 							     "libags-audio");
 
-  if(message_queue != NULL){
+  if(start_message_queue != NULL){
     AgsMessageEnvelope *message;
 
     xmlDoc *doc;
@@ -1463,9 +1463,9 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
 	       "AgsSoundProvider::set-default-soundcard");
 
     /* add message */
-    message = ags_message_envelope_alloc(G_OBJECT(sound_provider),
-					 NULL,
-					 doc);
+    message = ags_message_envelope_new_with_params(G_OBJECT(sound_provider),
+						   NULL,
+						   doc);
 
     /* set parameter */
     message->n_params = 1;
@@ -1486,12 +1486,12 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
     message->parameter_name[1] = NULL;
     
     /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
+    ags_message_delivery_add_message_envelope(message_delivery,
+					      "libags-audio",
+					      message);
 
     g_list_free_full(start_message_queue,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
   }
 }
 
@@ -2176,7 +2176,7 @@ ags_xorg_application_context_clean_message(AgsUiProvider *ui_provider)
 
     message_envelope =
       start_message_envelope = g_list_copy_deep(AGS_MESSAGE_QUEUE(message_queue->data)->message_envelope,
-						(GCcopyFunc) g_object_ref,
+						(GCopyFunc) g_object_ref,
 						NULL);
 
     g_rec_mutex_unlock(message_queue_mutex);
@@ -2689,15 +2689,15 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_object_set(message_queue,
 	       "recipient-namespace", "libgsequencer",
 	       NULL);
-  ags_message_delivery_add_queue(message_delivery,
-				 (GObject *) message_queue);
+  ags_message_delivery_add_message_queue(message_delivery,
+					 (GObject *) message_queue);
 
   audio_message_queue = ags_message_queue_new("libags-audio");
   g_object_set(audio_message_queue,
 	       "recipient-namespace", "libgsequencer",
 	       NULL);
-  ags_message_delivery_add_queue(message_delivery,
-				 (GObject *) audio_message_queue);
+  ags_message_delivery_add_message_queue(message_delivery,
+					 (GObject *) audio_message_queue);
   
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();

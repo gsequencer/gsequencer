@@ -60,7 +60,6 @@ static gpointer ags_pitch_sampler_parent_class = NULL;
 static AgsConnectableInterface *ags_pitch_sampler_parent_connectable_interface;
 
 GHashTable *ags_pitch_sampler_sfz_loader_completed = NULL;
-extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
 ags_pitch_sampler_get_type(void)
@@ -394,24 +393,12 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   g_hash_table_insert(ags_pitch_sampler_sfz_loader_completed,
 		      pitch_sampler, ags_pitch_sampler_sfz_loader_completed_timeout);
   g_timeout_add(1000 / 4, (GSourceFunc) ags_pitch_sampler_sfz_loader_completed_timeout, (gpointer) pitch_sampler);
-  
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      pitch_sampler,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) pitch_sampler);
 }
 
 void
 ags_pitch_sampler_finalize(GObject *gobject)
 {
   g_hash_table_remove(ags_pitch_sampler_sfz_loader_completed,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
 		      gobject);
 
   /* call parent */

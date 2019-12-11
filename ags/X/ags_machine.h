@@ -236,10 +236,7 @@ void ags_machine_copy_pattern(AgsMachine *machine);
 void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
 void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
 
-gboolean ags_machine_message_monitor_timeout(AgsMachine *machine);
-
-gboolean ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine);
-gboolean ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine);
+void ags_machine_check_message(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
 
