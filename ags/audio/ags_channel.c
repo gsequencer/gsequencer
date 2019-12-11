@@ -6716,8 +6716,8 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6859,8 +6859,8 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -6972,8 +6972,8 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8384,8 +8384,8 @@ ags_channel_real_add_effect(AgsChannel *channel,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8713,8 +8713,8 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 1;
@@ -10138,8 +10138,8 @@ ags_channel_real_start(AgsChannel *channel,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10346,8 +10346,8 @@ ags_channel_real_stop(AgsChannel *channel,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) channel,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;

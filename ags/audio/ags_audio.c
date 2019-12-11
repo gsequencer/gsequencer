@@ -6014,8 +6014,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -7175,8 +7175,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
     /* set parameter */
     message->n_params = 3;
 
@@ -7848,8 +7848,8 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8035,8 +8035,8 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -8198,8 +8198,8 @@ ags_audio_set_format(AgsAudio *audio, guint format)
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10699,8 +10699,8 @@ ags_audio_real_start(AgsAudio *audio,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;
@@ -10999,8 +10999,8 @@ ags_audio_real_stop(AgsAudio *audio,
 
     /* add message */
     message = ags_message_envelope_new((GObject *) audio,
-						   NULL,
-						   doc);
+				       NULL,
+				       doc);
 
     /* set parameter */
     message->n_params = 2;

@@ -50,6 +50,9 @@ void ags_message_envelope_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_SENDER,
+  PROP_RECIPIENT,
+  PROP_XML_DOC,
 };
 
 static gpointer ags_message_envelope_parent_class = NULL;
@@ -104,6 +107,52 @@ ags_message_envelope_class_init(AgsMessageEnvelopeClass *message_envelope)
   gobject->finalize = ags_message_envelope_finalize;
 
   /* properties */
+  /**
+   * AgsMessageEnvelope:sender:
+   *
+   * The assigned sender.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("sender",
+				   i18n_pspec("sender of message envelope"),
+				   i18n_pspec("The sender of message envelope"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SENDER,
+				  param_spec);
+
+  /**
+   * AgsMessageEnvelope:recipient:
+   *
+   * The assigned recipient.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("recipient",
+				   i18n_pspec("recipient of message envelope"),
+				   i18n_pspec("The recipient of message envelope"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECIPIENT,
+				  param_spec);
+
+  /**
+   * AgsMessageEnvelope:xml-doc:
+   *
+   * The assigned xml-doc.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_pointer("xml-doc",
+				    i18n_pspec("xml document of message envelope"),
+				    i18n_pspec("The xml document provided by message envelope"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_XML_DOC,
+				  param_spec);
 }
 
 void
@@ -130,9 +179,81 @@ ags_message_envelope_set_property(GObject *gobject,
 {
   AgsMessageEnvelope *message_envelope;
 
+  GRecMutex *message_envelope_mutex;
+
   message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
 
+  /* get message envelope mutex */
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
   switch(prop_id){
+  case PROP_SENDER:
+  {
+    GObject *sender;
+
+    sender = g_value_get_object(value);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    if(message_envelope->sender == sender){
+      g_rec_mutex_unlock(message_envelope_mutex);
+	
+      return;
+    }
+
+    if(message_envelope->sender != NULL){
+      g_object_unref(G_OBJECT(message_envelope->sender));
+    }
+
+    if(sender != NULL){
+      g_object_ref(G_OBJECT(sender));
+    }
+
+    message_envelope->sender = (GObject *) sender;
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
+  case PROP_RECIPIENT:
+  {
+    GObject *recipient;
+
+    recipient = g_value_get_object(value);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    if(message_envelope->recipient == recipient){
+      g_rec_mutex_unlock(message_envelope_mutex);
+	
+      return;
+    }
+
+    if(message_envelope->recipient != NULL){
+      g_object_unref(G_OBJECT(message_envelope->recipient));
+    }
+
+    if(recipient != NULL){
+      g_object_ref(G_OBJECT(recipient));
+    }
+
+    message_envelope->recipient = (GObject *) recipient;
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
+  case PROP_XML_DOC:
+  {
+    xmlDoc *doc;
+
+    doc = (xmlDoc *) g_value_get_pointer(value);
+
+    g_rec_mutex_lock(message_envelope_mutex);
+      
+    message_envelope->doc = doc;
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -147,9 +268,41 @@ ags_message_envelope_get_property(GObject *gobject,
 {
   AgsMessageEnvelope *message_envelope;
 
+  GRecMutex *message_envelope_mutex;
+
   message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
 
+  /* get message envelope mutex */
+  message_envelope_mutex = AGS_MESSAGE_ENVELOPE_GET_OBJ_MUTEX(message_envelope);
+
   switch(prop_id){
+  case PROP_SENDER:
+  {
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    g_value_set_object(value, message_envelope->sender);
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
+  case PROP_RECIPIENT:
+  {
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    g_value_set_object(value, message_envelope->recipient);
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
+  case PROP_XML_DOC:
+  {
+    g_rec_mutex_lock(message_envelope_mutex);
+
+    g_value_set_pointer(value, message_envelope->doc);
+
+    g_rec_mutex_unlock(message_envelope_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -381,12 +534,10 @@ ags_message_envelope_new(GObject *sender,
   AgsMessageEnvelope *message_envelope;
 
   message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
+							 "sender", sender,
+							 "recipient", recipient,
+							 "xml-doc", doc,
 							 NULL);
-
-  message_envelope->sender = sender;
-  message_envelope->recipient = recipient;
-  
-  message_envelope->doc = doc;
 
   return(message_envelope);
 }
@@ -417,12 +568,10 @@ ags_message_envelope_new_with_params(GObject *sender,
   AgsMessageEnvelope *message_envelope;
 
   message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
+							 "sender", sender,
+							 "recipient", recipient,
+							 "xml-doc", doc,
 							 NULL);
-
-  message_envelope->sender = sender;
-  message_envelope->recipient = recipient;
-  
-  message_envelope->doc = doc;
 
   message_envelope->n_params = n_params;
 
