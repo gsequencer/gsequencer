@@ -62,6 +62,8 @@ void ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_deliv
 
 GList* ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
 						  gchar *sender_namespace);
+GList* ags_message_delivery_find_recipient_namespace(AgsMessageDelivery *message_delivery,
+						     gchar *recipient_namespace);
 
 void ags_message_delivery_add_message_envelope(AgsMessageDelivery *message_delivery,
 					       gchar *sender_namespace,

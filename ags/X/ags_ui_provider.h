@@ -67,6 +67,9 @@ struct _AgsUiProviderInterface
 			AgsTask *task);
   void (*schedule_task_all)(AgsUiProvider *ui_provider,
 			    GList *task);
+
+  void (*check_message)(AgsUiProvider *ui_provider);
+  void (*clean_message)(AgsUiProvider *ui_provider);
   
   GtkWidget* (*get_animation_window)(AgsUiProvider *ui_provider);
   void (*set_animation_window)(AgsUiProvider *ui_provider,

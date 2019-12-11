@@ -31,6 +31,14 @@ void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
  * The #AgsUiProvider provides you the window capabilities.
  */
 
+enum {
+  CHECK_MESSAGE,
+  CLEAN_MESSAGE,
+  LAST_SIGNAL,
+};
+
+static guint ui_provider_signals[LAST_SIGNAL];
+
 GType
 ags_ui_provider_get_type()
 {
@@ -54,7 +62,41 @@ ags_ui_provider_get_type()
 void
 ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 {
-  /* empty */
+  /**
+   * AgsUiProvider::check-message:
+   * @ui_provider: the #AgsUiProvider object
+   *
+   * The ::check-message signal is emitted every check message of the UI provider. This notifies
+   * about to check for messages from message delivery.
+   *
+   * Since: 3.0.0
+   */
+  ui_provider_signals[CHECK_MESSAGE] =
+    g_signal_new("check-message",
+		 G_TYPE_FROM_INTERFACE(ginterface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsUiProviderInterface, check_message),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsUiProvider::clean-message:
+   * @ui_provider: the #AgsUiProvider object
+   *
+   * The ::clean-message signal is emitted every clean message of the UI provider. This notifies
+   * about to clean messages from message delivery.
+   *
+   * Since: 3.0.0
+   */
+  ui_provider_signals[CLEAN_MESSAGE] =
+    g_signal_new("clean-message",
+		 G_TYPE_FROM_INTERFACE(ginterface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsUiProviderInterface, clean_message),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 /**
@@ -281,6 +323,34 @@ ags_ui_provider_schedule_task_all(AgsUiProvider *ui_provider,
 
   ui_provider_interface->schedule_task_all(ui_provider,
 					   task);
+}
+
+/**
+ * ags_ui_provider_check_message:
+ * @ui_provider: the #AgsUiProvider
+ *
+ * Check messages the UI provider needs to consume.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_ui_provider_check_message(AgsUiProvider *ui_provider)
+{
+  g_signal_emit(ui_provider, ui_provider_signals[CHECK_MESSAGE], 0);
+}
+
+/**
+ * ags_ui_provider_clean_message:
+ * @ui_provider: the #AgsUiProvider
+ *
+ * Clean messages the UI provider needs to consume.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_ui_provider_clean_message(AgsUiProvider *ui_provider)
+{
+  g_signal_emit(ui_provider, ui_provider_signals[CLEAN_MESSAGE], 0);
 }
 
 /**

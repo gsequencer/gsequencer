@@ -73,6 +73,9 @@ void ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
 					gchar ***parameter_name, GValue **value);
 
 AgsMessageEnvelope* ags_message_envelope_new();
+AgsMessageEnvelope* ags_message_envelope_new_with_params(guint n_params,
+							 gchar **parameter_name,
+							 GValue *value);
 
 G_END_DECLS
 

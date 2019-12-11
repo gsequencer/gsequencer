@@ -251,6 +251,68 @@ ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
 }
 
 /**
+ * ags_message_delivery_find_recipient_namespace:
+ * @message_delivery: the #AgsMessageDelivery to search
+ * @recipient_namespace: the recipient namespace as string to find
+ * 
+ * Find recipient namespace of #AgsMessageQueue in @message_delivery.
+ * 
+ * Returns: the matching #GList-struct containing #AgsMessageQueue or %NULL
+ * 
+ * Since: 3.0.0
+ */
+GList*
+ags_message_delivery_find_recipient_namespace(AgsMessageDelivery *message_delivery,
+					      gchar *recipient_namespace)
+{
+  AgsMessageQueue *current_message_queue;
+
+  GList *start_list, *list;
+  GList *start_message_queue;
+  
+  if(!AGS_IS_MESSAGE_DELIVERY(message_delivery) ||
+     recipient_namespace == NULL){
+    return(NULL);
+  }
+
+  g_rec_mutex_lock(&(message_delivery->obj_mutex));
+
+  list =
+    start_list = g_list_copy_deep(message_delivery->message_queue,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+  
+  g_rec_mutex_unlock(&(message_delivery->obj_mutex));
+
+  start_message_queue = NULL;
+  
+  while(list != NULL){
+    current_message_queue = AGS_MESSAGE_QUEUE(list->data);
+
+    /* compare recipient_namespace */
+    g_rec_mutex_lock(&(current_message_queue->obj_mutex));
+    
+    if(!g_strcmp0(recipient_namespace,
+		  current_message_queue->recipient_namespace)){
+      start_message_queue = g_list_prepend(start_message_queue,
+					   current_message_queue);
+
+      g_object_ref(current_message_queue);
+    }
+
+    g_rec_mutex_unlock(&(current_message_queue->obj_mutex));
+    
+    /* iterate */
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  return(start_message_queue);
+}
+
+/**
  * ags_message_delivery_add_message_envelope:
  * @message_delivery: the #AgsMessageDelivery
  * @sender_namespace: the sender namespace as string

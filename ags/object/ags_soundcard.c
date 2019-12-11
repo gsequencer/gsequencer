@@ -524,8 +524,6 @@ ags_soundcard_record(AgsSoundcard *soundcard,
 void
 ags_soundcard_stop(AgsSoundcard *soundcard)
 {
-  AgsSoundcardInterface *soundcard_interface;
-
   g_signal_emit(soundcard, soundcard_signals[STOP], 0);
 }
 

@@ -162,6 +162,7 @@ void ags_xorg_application_context_schedule_task(AgsUiProvider *ui_provider,
 						AgsTask *task);
 void ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
 						    GList *task);
+void ags_xorg_application_context_clean_message(AgsUiProvider *ui_provider);
 GtkWidget* ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
 						       GtkWidget *widget);
@@ -477,6 +478,8 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
 
   ui_provider->schedule_task = ags_xorg_application_context_schedule_task;
   ui_provider->schedule_task_all = ags_xorg_application_context_schedule_task_all;
+
+  ui_provider->clean_message = ags_xorg_application_context_clean_message;
 
   ui_provider->get_animation_window = ags_xorg_application_context_get_animation_window;
   ui_provider->set_animation_window = ags_xorg_application_context_set_animation_window;
@@ -1404,7 +1407,7 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
 						   GObject *soundcard)
 {
   AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
+  GList *start_message_queue;
 
   AgsApplicationContext *application_context;
 
@@ -1439,8 +1442,8 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libags-audio");
+  message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
+							     "libags-audio");
 
   if(message_queue != NULL){
     AgsMessageEnvelope *message;
@@ -1486,6 +1489,9 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
     ags_message_delivery_add_message(message_delivery,
 				     "libags-audio",
 				     message);
+
+    g_list_free_full(start_message_queue,
+		     g_object_unref);
   }
 }
 
@@ -2143,6 +2149,57 @@ ags_xorg_application_context_schedule_task_all(AgsUiProvider *ui_provider,
   g_object_unref(task_launcher);
 }
 
+void
+ags_xorg_application_context_clean_message(AgsUiProvider *ui_provider)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  AgsMessageDelivery *message_delivery;
+  
+  GList *start_message_queue, *message_queue;
+  GList *start_message_envelope, *message_envelope;
+
+  GRecMutex *message_queue_mutex;
+  
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(ui_provider);
+
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = 
+    start_message_queue = ags_message_delivery_find_recipient_namespace(message_delivery,
+									"libgsequencer");
+
+  while(message_queue != NULL){
+    message_queue_mutex = AGS_MESSAGE_QUEUE_GET_OBJ_MUTEX(message_queue->data);
+
+    g_rec_mutex_lock(message_queue_mutex);
+
+    message_envelope =
+      start_message_envelope = g_list_copy_deep(AGS_MESSAGE_QUEUE(message_queue->data)->message_envelope,
+						(GCcopyFunc) g_object_ref,
+						NULL);
+
+    g_rec_mutex_unlock(message_queue_mutex);
+
+    while(message_envelope != NULL){
+      ags_message_queue_remove_message_envelope(message_queue->data,
+						message_envelope->data);
+
+      /* iterate */
+      message_envelope = message_envelope->next;
+    }
+
+    g_list_free_full(start_message_envelope,
+		     g_object_unref);
+
+    /* iterate */
+    message_queue = message_queue->next;
+  }
+
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
+}
+
 GtkWidget*
 ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
 {
@@ -2629,10 +2686,16 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   message_delivery = ags_message_delivery_get_instance();
 
   message_queue = ags_message_queue_new("libags");
+  g_object_set(message_queue,
+	       "recipient-namespace", "libgsequencer",
+	       NULL);
   ags_message_delivery_add_queue(message_delivery,
 				 (GObject *) message_queue);
 
   audio_message_queue = ags_message_queue_new("libags-audio");
+  g_object_set(audio_message_queue,
+	       "recipient-namespace", "libgsequencer",
+	       NULL);
   ags_message_delivery_add_queue(message_delivery,
 				 (GObject *) audio_message_queue);
   
@@ -2681,11 +2744,11 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
   /* start gui */
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
+  g_timeout_add((guint) (AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0),
 		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
 		(gpointer) xorg_application_context);
   
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
+  g_timeout_add((guint) (AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0),
 		(GSourceFunc) ags_xorg_application_context_task_timeout,
 		(gpointer) xorg_application_context);
 
@@ -4319,58 +4382,8 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 gboolean
 ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context)
 {
-  AgsMessageDelivery *message_delivery;
-
-  GList *message_start, *message;
-    
-  /* retrieve message */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_start = 
-    message = ags_message_delivery_find_sender(message_delivery,
-					       "libags-audio",
-					       (GObject *) xorg_application_context);
-  
-  while(message != NULL){
-    xmlNode *root_node;
-
-    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
-      
-    if(!xmlStrncmp(root_node->name,
-		   "ags-command",
-		   12)){
-      if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
-		     "AgsSoundProvider::set-default-soundcard",
-		     40)){
-#if 0	
-	GObject *default_soundcard;
-
-	gint position;
-
-	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				  "default-soundcard");
-
-	default_soundcard = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	if(xorg_application_context->window != NULL){
-	  g_object_set(xorg_application_context->window,
-		       "soundcard", default_soundcard,
-		       NULL);
-	}
-#endif
-      }
-    }
-    
-    ags_message_delivery_remove_message(message_delivery,
-					"libags-audio",
-					message->data);
-      
-    message = message->next;
-  }
-
-  g_list_free_full(message_start,
-		   (GDestroyNotify) ags_message_envelope_free);
+  ags_ui_provider_check_message(AGS_UI_PROVIDER(xorg_application_context));
+  ags_ui_provider_clean_message(AGS_UI_PROVIDER(xorg_application_context));
 
   return(TRUE);
 }

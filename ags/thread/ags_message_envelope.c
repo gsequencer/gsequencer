@@ -178,6 +178,16 @@ ags_message_envelope_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_message_envelope_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_message_envelope_get_sender:
+ * @message_envelope: the #AgsMessageEnvelope
+ * 
+ * Get sender.
+ * 
+ * Returns: the sender
+ * 
+ * Since: 3.0.0
+ */
 GObject*
 ags_message_envelope_get_sender(AgsMessageEnvelope *message_envelope)
 {
@@ -201,6 +211,16 @@ ags_message_envelope_get_sender(AgsMessageEnvelope *message_envelope)
   return(sender);
 }
 
+/**
+ * ags_message_envelope_get_recipient:
+ * @message_envelope: the #AgsMessageEnvelope
+ * 
+ * Get recipient.
+ * 
+ * Returns: the recipient
+ * 
+ * Since: 3.0.0
+ */
 GObject*
 ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
 {
@@ -224,6 +244,16 @@ ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
   return(recipient);
 }
 
+/**
+ * ags_message_envelope_get_doc:
+ * @message_envelope: the #AgsMessageEnvelope
+ * 
+ * Get xmlDoc.
+ * 
+ * Returns: the doc
+ * 
+ * Since: 3.0.0
+ */
 xmlDoc*
 ags_message_envelope_get_doc(AgsMessageEnvelope *message_envelope)
 {
@@ -247,6 +277,17 @@ ags_message_envelope_get_doc(AgsMessageEnvelope *message_envelope)
   return(doc);
 }
 
+/**
+ * ags_message_envelope_get_parameter:
+ * @message_envelope: the #AgsMessageEnvelope
+ * @n_params: return location of parameter count
+ * @parameter_name: return location %NULL terminated string vector containing parameter name
+ * @value: return location of #GValue-struct array containing values
+ * 
+ * Get parameters.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
 				   guint *n_params,
@@ -295,5 +336,35 @@ ags_message_envelope_new()
   message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
 							 NULL);
 
+  return(message_envelope);
+}
+
+/**
+ * ags_message_envelope_new_with_params:
+ * @n_params: n params
+ * @parameter_name: %NULL terminated string vector containing parameter names
+ * @value: the #GValue-struct array containing values
+ *
+ * Create a new instance of #AgsMessageEnvelope.
+ *
+ * Returns: the new #AgsMessageEnvelope
+ *
+ * Since: 3.0.0
+ */ 
+AgsMessageEnvelope*
+ags_message_envelope_new_with_params(guint n_params,
+				     gchar **parameter_name,
+				     GValue *value)
+{
+  AgsMessageEnvelope *message_envelope;
+
+  message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
+							 NULL);
+
+  message_envelope->n_params = n_params;
+
+  message_envelope->parameter_name = parameter_name;
+  message_envelope->value = value;
+  
   return(message_envelope);
 }
