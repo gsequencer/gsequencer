@@ -31,4 +31,10 @@
 
 #include <ags/X/ags_effect_line.h>
 
+G_BEGIN_DECLS
+
+void ags_effect_line_check_message_callback(GObject *application_context, AgsEffectLine *effect_line);
+
+G_END_DECLS
+
 #endif /*__AGS_EFFECT_LINE_CALLBACKS_H__*/

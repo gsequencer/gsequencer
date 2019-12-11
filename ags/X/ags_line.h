@@ -143,7 +143,8 @@ void ags_line_stop(AgsLine *line,
 
 GList* ags_line_find_next_grouped(GList *line);
 
-gboolean ags_line_message_monitor_timeout(AgsLine *line);
+void ags_line_check_message(AgsLine *line);
+
 gboolean ags_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);

@@ -124,7 +124,6 @@ enum{
 static gpointer ags_effect_line_parent_class = NULL;
 static guint effect_line_signals[LAST_SIGNAL];
 
-GHashTable *ags_effect_line_message_monitor = NULL;
 GHashTable *ags_effect_line_indicator_queue_draw = NULL;
 
 GType
@@ -495,21 +494,14 @@ ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_line_init(AgsEffectLine *effect_line)
 {
+  AgsApplicationContext *application_context;
   AgsConfig *config;
 
-  if(ags_effect_line_message_monitor == NULL){
-    ags_effect_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-						     NULL,
-						     NULL);
-  }
+  application_context = ags_application_context_get_instance();
 
-  g_hash_table_insert(ags_effect_line_message_monitor,
-		      effect_line, ags_effect_line_message_monitor_timeout);
+  g_signal_connect(application_context, "check-message",
+		   G_CALLBACK(ags_effect_line_check_message_callback), effect_line);
   
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_effect_line_message_monitor_timeout,
-		(gpointer) effect_line);
-
   if(ags_effect_line_indicator_queue_draw == NULL){
     ags_effect_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 								 NULL,
@@ -695,13 +687,19 @@ ags_effect_line_finalize(GObject *gobject)
 {
   AgsEffectLine *effect_line;
 
+  AgsApplicationContext *application_context;
+
   GList *list;
 
   effect_line = AGS_EFFECT_LINE(gobject);
 
-  /* remove message monitor */
-  g_hash_table_remove(ags_effect_line_message_monitor,
-		      effect_line);
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::check-message",
+		      G_CALLBACK(ags_effect_line_check_message_callback),
+		      effect_line,
+		      NULL);
 
   /* remove of the queued drawing hash */
   list = effect_line->queued_drawing;
@@ -718,7 +716,6 @@ ags_effect_line_finalize(GObject *gobject)
     g_object_unref(effect_line->channel);
   }
   
-
   /* call parent */  
   G_OBJECT_CLASS(ags_effect_line_parent_class)->finalize(gobject);
 }
@@ -2531,289 +2528,280 @@ ags_effect_line_find_next_grouped(GList *effect_line)
 }
 
 /**
- * ags_effect_line_message_monitor_timeout:
+ * ags_effect_line_check_message:
  * @effect_line: the #AgsEffectLine
  *
- * Monitor messages.
+ * Check message queue for message envelopes.
  *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-gboolean
-ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
+void
+ags_effect_line_check_message(AgsEffectLine *effect_line)
 {
-  if(g_hash_table_lookup(ags_effect_line_message_monitor,
-			 effect_line) != NULL){
-    AgsChannel *channel;
+  AgsChannel *channel;
     
-    AgsMessageDelivery *message_delivery;
+  AgsMessageDelivery *message_delivery;
 
-    GList *message_start, *message;
+  GList *start_message_envelope, *message_envelope;
 
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
+  if(!AGS_IS_EFFECT_LINE(effect_line)){
+    return;
+  }
 
-    channel = effect_line->channel;
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  channel = effect_line->channel;
 	  
-    message_start = 
-      message = ags_message_delivery_find_sender(message_delivery,
-						 "libags-audio",
-						 (GObject *) channel);
-    
-    while(message != NULL){
-      xmlNode *root_node;
-
-      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
-      
-      if(!xmlStrncmp(root_node->name,
-		     "ags-command",
-		     12)){
-	if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsChannel::set-samplerate",
-		       27)){
-	  guint samplerate;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "samplerate");
-	  samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set samplerate */
-	  g_object_set(effect_line,
-		       "samplerate", samplerate,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsChannel::set-buffer-size",
-		       28)){
-	  guint buffer_size;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "buffer-size");
-	  buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set buffer size */
-	  g_object_set(effect_line,
-		       "buffer-size", buffer_size,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsChannel::set-format",
-		       23)){
-	  guint format;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "format");
-	  format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set format */
-	  g_object_set(effect_line,
-		       "format", format,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsChannel::add-effect",
-		       22)){
-	  AgsMachine *machine;
-	  AgsMachineEditor *machine_editor;
-	  AgsLineMemberEditor *line_member_editor;
-	  AgsPluginBrowser *plugin_browser;
-
-	  GList *pad_editor, *pad_editor_start;
-	  GList *line_editor, *line_editor_start;
-	  GList *control_type_name;
-
-	  gchar *filename, *effect;
-
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "filename");
-	  filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "effect");
-	  effect = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* get machine and machine editor */
-	  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
-							   AGS_TYPE_MACHINE);
-	  machine_editor = (AgsMachineEditor *) machine->properties;
-
-	  /* get control type */
-	  control_type_name = NULL;  
-
-	  pad_editor_start = NULL;
-	  line_editor_start = NULL;
+  message_envelope =
+    start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+							      "libgsequencer",
+							      (GObject *) channel);
   
-	  if(machine_editor != NULL){
-	    pad_editor_start = 
-	      pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
-	    pad_editor = g_list_nth(pad_editor,
-				    channel->pad);
+  while(message_envelope != NULL){
+    xmlNode *root_node;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     "AgsChannel::set-samplerate",
+		     27)){
+	guint samplerate;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "samplerate");
+	samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set samplerate */
+	g_object_set(effect_line,
+		     "samplerate", samplerate,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsChannel::set-buffer-size",
+			   28)){
+	guint buffer_size;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "buffer-size");
+	buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set buffer size */
+	g_object_set(effect_line,
+		     "buffer-size", buffer_size,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsChannel::set-format",
+			   23)){
+	guint format;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "format");
+	format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set format */
+	g_object_set(effect_line,
+		     "format", format,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsChannel::add-effect",
+			   22)){
+	AgsMachine *machine;
+	AgsMachineEditor *machine_editor;
+	AgsLineMemberEditor *line_member_editor;
+	AgsPluginBrowser *plugin_browser;
+
+	GList *pad_editor, *pad_editor_start;
+	GList *line_editor, *line_editor_start;
+	GList *control_type_name;
+
+	gchar *filename, *effect;
+
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "filename");
+	filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "effect");
+	effect = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* get machine and machine editor */
+	machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
+							 AGS_TYPE_MACHINE);
+	machine_editor = (AgsMachineEditor *) machine->properties;
+
+	/* get control type */
+	control_type_name = NULL;  
+
+	pad_editor_start = NULL;
+	line_editor_start = NULL;
+  
+	if(machine_editor != NULL){
+	  pad_editor_start = 
+	    pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
+	  pad_editor = g_list_nth(pad_editor,
+				  channel->pad);
     
-	    if(pad_editor != NULL){
-	      line_editor_start =
-		line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
-	      line_editor = g_list_nth(line_editor,
-				       channel->audio_channel);
-	    }else{
-	      line_editor = NULL;
-	    }
-
-	    if(line_editor != NULL){
-	      line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
-
-	      plugin_browser = line_member_editor->plugin_browser;
-
-	      if(plugin_browser != NULL &&
-		 plugin_browser->active_browser != NULL){
-		GList *description, *description_start;
-		GList *port_control, *port_control_start;
-
-		gchar *controls;
-
-		/* get plugin browser */
-		description =
-		  description_start = NULL;
-
-		port_control = 
-		  port_control_start = NULL;
-	
-		if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-		  description_start = 
-		    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
-		}else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
-		  description_start = 
-		    description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
-		}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-		  description_start = 
-		    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
-		}else{
-		  g_message("ags_line_callbacks.c unsupported plugin browser");
-		}
-
-		/* get port description */
-		if(description != NULL){
-		  description = g_list_last(description);
-	  
-		  port_control_start =
-		    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
-	  
-		  if(port_control != NULL){
-		    while(port_control != NULL){
-		      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
-
-		      if(!g_ascii_strncasecmp(controls,
-					      "led",
-					      4)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "AgsLed");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "vertical indicator",
-						    19)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "AgsVIndicator");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "horizontal indicator",
-						    19)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "AgsHIndicator");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "spin button",
-						    12)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "GtkSpinButton");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "dial",
-						    5)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "AgsDial");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "vertical scale",
-						    15)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "GtkVScale");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "horizontal scale",
-						    17)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "GtkHScale");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "check-button",
-						    13)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "GtkCheckButton");
-		      }else if(!g_ascii_strncasecmp(controls,
-						    "toggle button",
-						    14)){
-			control_type_name = g_list_prepend(control_type_name,
-							   "GtkToggleButton");
-		      }
-	      
-		      port_control = port_control->next;
-		      port_control = port_control->next;
-		    }
-		  }
-
-		  /* free lists */
-		  g_list_free(description_start);
-		  g_list_free(port_control_start);
-		}
-	      }
-      
-	      //      line_member_editor->plugin_browser;
-	    }
+	  if(pad_editor != NULL){
+	    line_editor_start =
+	      line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
+	    line_editor = g_list_nth(line_editor,
+				     channel->audio_channel);
 	  }else{
-	    control_type_name = NULL;
+	    line_editor = NULL;
 	  }
-	  
-	  /* free lists */
-	  g_list_free(pad_editor_start);
-	  g_list_free(line_editor_start);
-	  
-	  /* add effect */
-	  ags_effect_line_add_effect(effect_line,
-				     control_type_name,
-				     filename,
-				     effect);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-					"method"),
-			     "AgsChannel::done",
-			     16)){
-	  AgsRecallID *recall_id;
 
-	  gint position;
+	  if(line_editor != NULL){
+	    line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
 
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "recall-id");
+	    plugin_browser = line_member_editor->plugin_browser;
+
+	    if(plugin_browser != NULL &&
+	       plugin_browser->active_browser != NULL){
+	      GList *description, *description_start;
+	      GList *port_control, *port_control_start;
+
+	      gchar *controls;
+
+	      /* get plugin browser */
+	      description =
+		description_start = NULL;
+
+	      port_control = 
+		port_control_start = NULL;
+	
+	      if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
+		description_start = 
+		  description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	      }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
+		description_start = 
+		  description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
+	      }else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
+		description_start = 
+		  description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	      }else{
+		g_message("ags_line_callbacks.c unsupported plugin browser");
+	      }
+
+	      /* get port description */
+	      if(description != NULL){
+		description = g_list_last(description);
 	  
-	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+		port_control_start =
+		  port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
+	  
+		if(port_control != NULL){
+		  while(port_control != NULL){
+		    controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
 
-	  /* done */
-	  ags_effect_line_done(effect_line,
-			       (GObject *) recall_id);
+		    if(!g_ascii_strncasecmp(controls,
+					    "led",
+					    4)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "AgsLed");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "vertical indicator",
+						  19)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "AgsVIndicator");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "horizontal indicator",
+						  19)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "AgsHIndicator");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "spin button",
+						  12)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "GtkSpinButton");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "dial",
+						  5)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "AgsDial");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "vertical scale",
+						  15)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "GtkVScale");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "horizontal scale",
+						  17)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "GtkHScale");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "check-button",
+						  13)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "GtkCheckButton");
+		    }else if(!g_ascii_strncasecmp(controls,
+						  "toggle button",
+						  14)){
+		      control_type_name = g_list_prepend(control_type_name,
+							 "GtkToggleButton");
+		    }
+	      
+		    port_control = port_control->next;
+		    port_control = port_control->next;
+		  }
+		}
+
+		/* free lists */
+		g_list_free(description_start);
+		g_list_free(port_control_start);
+	      }
+	    }
+      
+	    //      line_member_editor->plugin_browser;
+	  }
+	}else{
+	  control_type_name = NULL;
 	}
+	  
+	/* free lists */
+	g_list_free(pad_editor_start);
+	g_list_free(line_editor_start);
+	  
+	/* add effect */
+	ags_effect_line_add_effect(effect_line,
+				   control_type_name,
+				   filename,
+				   effect);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsChannel::done",
+			   16)){
+	AgsRecallID *recall_id;
+
+	gint position;
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "recall-id");
+	  
+	recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* done */
+	ags_effect_line_done(effect_line,
+			     (GObject *) recall_id);
       }
-      
-      ags_message_delivery_remove_message(message_delivery,
-					  "libags-audio",
-					  message->data);
-      
-      message = message->next;
     }
     
-    g_list_free_full(message_start,
-		     (GDestroyNotify) ags_message_envelope_free);
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
+    message_envelope = message_envelope->next;
   }
+
+  g_list_free_full(start_message_envelope,
+		   g_object_unref);
 }
 
 /**

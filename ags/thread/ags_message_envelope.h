@@ -54,6 +54,8 @@ struct _AgsMessageEnvelope
 
   gchar **parameter_name;
   GValue *value;
+
+  GDestroyNotify *free_func;
 };
 
 struct _AgsMessageEnvelopeClass

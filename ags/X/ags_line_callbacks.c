@@ -30,6 +30,12 @@
 #include <ags/X/ags_line_member.h>
 
 void
+ags_line_check_message_callback(GObject *application_context, AgsLine *line)
+{
+  ags_line_check_message(line);
+}
+
+void
 ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;

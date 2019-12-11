@@ -392,10 +392,10 @@ ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_deliver
 /**
  * ags_message_delivery_find_sender:
  * @message_delivery: the #AgsMessageDelivery
- * @sender_namespace: the sender_namespace as string, maybe %NULL
+ * @recipient_namespace: the recipient namespace as string, maybe %NULL
  * @sender: the sender as #GObject
  * 
- * Find @sender for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
+ * Find @sender for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
@@ -404,7 +404,7 @@ ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_deliver
  */
 GList*
 ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
-				 gchar *sender_namespace,
+				 gchar *recipient_namespace,
 				 GObject *sender)
 {
   GList *start_message_queue, *message_queue;
@@ -414,7 +414,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
     return(NULL);
   }
 
-  if(sender_namespace == NULL){
+  if(recipient_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     message_queue =
@@ -425,8 +425,8 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
   }else{
     message_queue =
-      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
-								       sender_namespace);
+      start_message_queue = ags_message_delivery_find_recipient_namespace(message_delivery,
+									  recipient_namespace);
   }
 
   start_list = NULL;
@@ -448,16 +448,19 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
     message_queue = message_queue->next;
   }
 
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
+  
   return(start_list);
 }
 
 /**
  * ags_message_delivery_find_recipient:
  * @message_delivery: the #AgsMessageDelivery
- * @sender_namespace: the sender namespace as string, maybe %NULL
+ * @recipient_namespace: the recipient namespace as string, maybe %NULL
  * @recipient: the recipient as #GObject
  * 
- * Find @recipient for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
+ * Find @recipient for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
@@ -466,7 +469,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
  */
 GList*
 ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
-				    gchar *sender_namespace,
+				    gchar *recipient_namespace,
 				    GObject *recipient)
 {
   GList *start_message_queue, *message_queue;
@@ -476,7 +479,7 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
     return(NULL);
   }
 
-  if(sender_namespace == NULL){
+  if(recipient_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     message_queue =
@@ -487,8 +490,8 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
   }else{
     message_queue =
-      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
-								       sender_namespace);
+      start_message_queue = ags_message_delivery_find_recipient_namespace(message_delivery,
+									  recipient_namespace);
   }
 
   start_list = NULL;
@@ -510,16 +513,19 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
     message_queue = message_queue->next;
   }
 
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
+  
   return(start_list);
 }
 
 /**
  * ags_message_delivery_query_message:
  * @message_delivery: the #AgsMessageDelivery
- * @sender_namespace: the sender namespace as string, maybe %NULL
+ * @recipient_namespace: the recipient namespace as string, maybe %NULL
  * @xpath: the xpath to query
  * 
- * Query @xpath for @sender_namespace matching #AgsMessageQueue. If @sender_namespace equals %NULL match
+ * Query @xpath for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
@@ -528,7 +534,7 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
  */
 GList*
 ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
-				   gchar *sender_namespace,
+				   gchar *recipient_namespace,
 				   gchar *xpath)
 {
   GList *start_message_queue, *message_queue;
@@ -538,7 +544,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
     return(NULL);
   }
 
-  if(sender_namespace == NULL){
+  if(recipient_namespace == NULL){
     g_rec_mutex_lock(&(message_delivery->obj_mutex));
 
     message_queue =
@@ -549,8 +555,8 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
     g_rec_mutex_unlock(&(message_delivery->obj_mutex));
   }else{
     message_queue =
-      start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
-								       sender_namespace);
+      start_message_queue = ags_message_delivery_find_recipient_namespace(message_delivery,
+									  recipient_namespace);
   }
 
   start_list = NULL;
@@ -572,6 +578,9 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
     message_queue = message_queue->next;
   }
 
+  g_list_free_full(start_message_queue,
+		   g_object_unref);
+  
   return(start_list);
 }
 

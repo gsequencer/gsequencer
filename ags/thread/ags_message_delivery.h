@@ -73,14 +73,14 @@ void ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_de
 						  GObject *message_envelope);
 
 GList* ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
-					gchar *sender_namespace,
+					gchar *recipient_namespace,
 					GObject *sender);
 GList* ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
-					   gchar *sender_namespace,
+					   gchar *recipient_namespace,
 					   GObject *recipient);
 
 GList* ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
-					  gchar *sender_namespace,
+					  gchar *recipient_namespace,
 					  gchar *xpath);
 
 AgsMessageDelivery* ags_message_delivery_get_instance();

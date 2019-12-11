@@ -172,8 +172,48 @@ ags_message_envelope_finalize(GObject *gobject)
 {
   AgsMessageEnvelope *message_envelope;
 
+  guint i;
+  
   message_envelope = AGS_MESSAGE_ENVELOPE(gobject);
 
+  if(message_envelope->sender != NULL){
+    g_object_unref(message_envelope->sender);
+  }
+
+  if(message_envelope->recipient != NULL){
+    g_object_unref(message_envelope->recipient);
+  }
+
+  if(message_envelope->doc != NULL){
+    xmlFreeDoc(message_envelope->doc);
+  }
+
+  g_strfreev(message_envelope->parameter_name);
+
+  for(i = 0; i < message_envelope->n_params; i++){
+    gpointer data;
+
+    if(G_VALUE_HOLDS_STRING(&(message_envelope->value[i]))){
+      data = g_value_get_string(&(message_envelope->value[i]));
+    }else if(G_VALUE_HOLDS_BOXED(&(message_envelope->value[i]))){
+      data = g_value_get_boxed(&(message_envelope->value[i]));
+    }else if(G_VALUE_HOLDS_pointer(&(message_envelope->value[i]))){
+      data = g_value_get_pointer(&(message_envelope->value[i]));
+    }else if(G_VALUE_HOLDS_OBJECT(&(message_envelope->value[i]))){
+      data = g_value_get_object(&(message_envelope->value[i]));
+    }
+    
+    if(message_envelope->free_func != NULL &&
+       message_envelope->free_func[i] != NULL){
+      message_envelope->free_func[i](data);
+    }
+
+    g_value_unset(&(message_envelope->value[i]));
+  }
+
+  g_free(message_envelope->value);
+  g_free(message_envelope->free_func);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_message_envelope_parent_class)->finalize(gobject);
 }
