@@ -363,6 +363,9 @@ ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
 
 /**
  * ags_message_envelope_new:
+ * @sender: the #GObject as sender
+ * @recipient: the #GObject as recipient
+ * @doc: the xmlDoc
  *
  * Create a new instance of #AgsMessageEnvelope.
  *
@@ -371,18 +374,28 @@ ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
  * Since: 3.0.0
  */ 
 AgsMessageEnvelope*
-ags_message_envelope_new()
+ags_message_envelope_new(GObject *sender,
+			 GObject *recipient,
+			 xmlDoc *doc)
 {
   AgsMessageEnvelope *message_envelope;
 
   message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
 							 NULL);
 
+  message_envelope->sender = sender;
+  message_envelope->recipient = recipient;
+  
+  message_envelope->doc = doc;
+
   return(message_envelope);
 }
 
 /**
  * ags_message_envelope_new_with_params:
+ * @sender: the #GObject as sender
+ * @recipient: the #GObject as recipient
+ * @doc: the xmlDoc
  * @n_params: n params
  * @parameter_name: %NULL terminated string vector containing parameter names
  * @value: the #GValue-struct array containing values
@@ -394,7 +407,10 @@ ags_message_envelope_new()
  * Since: 3.0.0
  */ 
 AgsMessageEnvelope*
-ags_message_envelope_new_with_params(guint n_params,
+ags_message_envelope_new_with_params(GObject *sender,
+				     GObject *recipient,
+				     xmlDoc *doc,
+				     guint n_params,
 				     gchar **parameter_name,
 				     GValue *value)
 {
@@ -402,6 +418,11 @@ ags_message_envelope_new_with_params(guint n_params,
 
   message_envelope = (AgsMessageEnvelope *) g_object_new(AGS_TYPE_MESSAGE_ENVELOPE,
 							 NULL);
+
+  message_envelope->sender = sender;
+  message_envelope->recipient = recipient;
+  
+  message_envelope->doc = doc;
 
   message_envelope->n_params = n_params;
 

@@ -74,8 +74,13 @@ void ags_message_envelope_get_parameter(AgsMessageEnvelope *message_envelope,
 					guint *n_params,
 					gchar ***parameter_name, GValue **value);
 
-AgsMessageEnvelope* ags_message_envelope_new();
-AgsMessageEnvelope* ags_message_envelope_new_with_params(guint n_params,
+AgsMessageEnvelope* ags_message_envelope_new(GObject *sender,
+					     GObject *recipient,
+					     xmlDoc *doc);
+AgsMessageEnvelope* ags_message_envelope_new_with_params(GObject *sender,
+							 GObject *recipient,
+							 xmlDoc *doc,
+							 guint n_params,
 							 gchar **parameter_name,
 							 GValue *value);
 

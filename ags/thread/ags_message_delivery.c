@@ -336,7 +336,7 @@ ags_message_delivery_add_message_envelope(AgsMessageDelivery *message_delivery,
      sender_namespace == NULL){
     return;
   }
-
+  
   message_queue =
     start_message_queue = ags_message_delivery_find_sender_namespace(message_delivery,
 								     sender_namespace);

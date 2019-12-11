@@ -6715,7 +6715,7 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 	       "AgsChannel::set-samplerate");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -6858,7 +6858,7 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 	       "AgsChannel::set-buffer-size");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -6971,7 +6971,7 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 	       "AgsChannel::set-format");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -8383,7 +8383,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 	       "AgsChannel::add-effect");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -8712,7 +8712,7 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 	       "AgsChannel::remove-effect");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -10137,7 +10137,7 @@ ags_channel_real_start(AgsChannel *channel,
 	       "AgsChannel::start");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 
@@ -10345,7 +10345,7 @@ ags_channel_real_stop(AgsChannel *channel,
 	       "AgsChannel::stop");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) channel,
+    message = ags_message_envelope_new((GObject *) channel,
 						   NULL,
 						   doc);
 

@@ -378,9 +378,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
   if(!AGS_IS_MESSAGE_QUEUE(message_queue)){
     return(NULL);
   }
-
-  match = NULL;
-
+  
   g_rec_mutex_lock(&(message_queue->obj_mutex));
  
   message_envelope = 
@@ -389,6 +387,8 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
 					      NULL);
   
   g_rec_mutex_unlock(&(message_queue->obj_mutex));
+
+  match = NULL;
 
   while(message_envelope != NULL){
     GRecMutex *message_envelope_mutex;

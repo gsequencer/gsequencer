@@ -6013,7 +6013,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	       "AgsAudio::set-audio-channels");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 
@@ -7174,7 +7174,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	       "AgsAudio::set-pads");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
     /* set parameter */
@@ -7847,7 +7847,7 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 	       "AgsAudio::set-samplerate");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 
@@ -8034,7 +8034,7 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 	       "AgsAudio::set-buffer-size");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 
@@ -8197,7 +8197,7 @@ ags_audio_set_format(AgsAudio *audio, guint format)
 	       "AgsAudio::set-format");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 
@@ -10698,7 +10698,7 @@ ags_audio_real_start(AgsAudio *audio,
 	       "AgsAudio::start");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 
@@ -10998,7 +10998,7 @@ ags_audio_real_stop(AgsAudio *audio,
 	       "AgsAudio::stop");
 
     /* add message */
-    message = ags_message_envelope_new_with_params((GObject *) audio,
+    message = ags_message_envelope_new((GObject *) audio,
 						   NULL,
 						   doc);
 

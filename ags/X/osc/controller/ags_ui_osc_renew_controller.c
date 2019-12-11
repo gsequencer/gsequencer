@@ -445,9 +445,9 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 			 "AgsMachine:run::clicked");
 
 	      /* add message */
-	      message = ags_message_envelope_new_with_params((GObject *) machine,
-							     NULL,
-							     doc);
+	      message = ags_message_envelope_new((GObject *) machine,
+						 NULL,
+						 doc);
 
 	      /* set parameter */
 	      message->n_params = 0;
@@ -866,9 +866,9 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
 		 "AgsUiOscRenewController::set-data");
 
       /* add message */
-      message = ags_message_envelope_new_with_params((GObject *) ui_osc_renew_controller,
-						     NULL,
-						     doc);
+      message = ags_message_envelope_new((GObject *) ui_osc_renew_controller,
+					 NULL,
+					 doc);
 
       /* set parameter */
       message->n_params = 3;

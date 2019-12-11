@@ -2893,7 +2893,7 @@ ags_machine_check_message(AgsMachine *machine)
   if(!AGS_IS_MACHINE(machine)){
     return;
   }
-  
+
   /* retrieve message */
   message_delivery = ags_message_delivery_get_instance();
 

@@ -1463,10 +1463,10 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
 	       "AgsSoundProvider::set-default-soundcard");
 
     /* add message */
-    message = ags_message_envelope_new_with_params(G_OBJECT(sound_provider),
-						   NULL,
-						   doc);
-
+    message = ags_message_envelope_new(G_OBJECT(sound_provider),
+				       NULL,
+				       doc);
+    
     /* set parameter */
     message->n_params = 1;
 
