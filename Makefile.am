@@ -394,6 +394,7 @@ EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) 
 
 EXTRA_DIST += \
 	$(top_srcdir)/ags/server/security/ags_authentication.dtd \
+	$(top_srcdir)/ags/server/security/ags_business_group.dtd \
 	$(top_srcdir)/ags/server/security/ags_certificate.dtd \
 	$(top_srcdir)/ags/server/security/ags_password_store.dtd \
 	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \

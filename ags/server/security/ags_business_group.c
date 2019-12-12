@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,371 +62,149 @@ ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
 }
 
 /**
- * ags_business_group_set_business_group_name:
+ * ags_business_group_set_group_name:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @group_id: the group's id
- * @business_group_name: the business group name
+ * @group_uuid: the group's UUID
+ * @group_name: the business group's name to set
  * @error: the #GError-struct
  *
  * Set business group name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
-					   GObject *security_context,
-					   gchar *login,
-					   gchar *security_token,
-					   gchar *group_id,
-					   gchar *business_group_name,
-					   GError **error)
+ags_business_group_set_group_name(AgsBusinessGroup *business_group,
+				  GObject *security_context,
+				  gchar *login,
+				  gchar *security_token,
+				  gchar *group_uuid,
+				  gchar *group_name,
+				  GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_business_group_name);
-  business_group_interface->set_business_group_name(business_group,
-						    security_context,
-						    login,
-						    security_token,
-						    group_id,
-						    business_group_name,
-						    error);
+  g_return_if_fail(business_group_interface->set_group_name);
+  business_group_interface->set_group_name(business_group,
+					   security_context,
+					   login,
+					   security_token,
+					   group_uuid,
+					   group_name,
+					   error);
 }
 
 /**
- * ags_business_group_get_business_group_name:
+ * ags_business_group_get_group_name:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @group_id: the group's id
+ * @group_uuid: the group's UUID
  * @error: the #GError-struct
  *
  * Get business group name.
  *
- * Returns: the business group name as string
+ * Returns: the business group's name as string
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
-ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
-					   GObject *security_context,
-					   gchar *login,
-					   gchar *security_token,
-					   gchar *group_id,
-					   GError **error)
+ags_business_group_get_group_name(AgsBusinessGroup *business_group,
+				  GObject *security_context,
+				  gchar *login,
+				  gchar *security_token,
+				  gchar *group_uuid,
+				  GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_business_group_name, NULL);
+  g_return_val_if_fail(business_group_interface->get_group_name, NULL);
 
-  return(business_group_interface->get_business_group_name(business_group,
-							   security_context,
-							   login,
-							   security_token,
-							   group_id,
-							   error));
+  return(business_group_interface->get_group_name(business_group,
+						  security_context,
+						  login,
+						  security_token,
+						  group_uuid,
+						  error));
 }
 
 /**
- * ags_business_group_set_user_id:
+ * ags_business_group_set_user:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @business_group_name: the business group name
- * @user_id: the string array containing ids of users
+ * @group_uuid: the business group's UUID
+ * @user: the string array containing user names
  * @error: the #GError-struct
  *
- * Set business group ids of users as string array.
+ * Set business group of user names as %NULL terminated string array.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_business_group_set_user_id(AgsBusinessGroup *business_group,
-			       GObject *security_context,
-			       gchar *login,
-			       gchar *security_token,
-			       gchar *business_group_name,
-			       gchar** user_id,
-			       GError **error)
+ags_business_group_set_user(AgsBusinessGroup *business_group,
+			    GObject *security_context,
+			    gchar *login,
+			    gchar *security_token,
+			    gchar *group_uuid,
+			    gchar **user,
+			    GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_user_id);
-  business_group_interface->set_user_id(business_group,
-					security_context,
-					login,
-					security_token,
-					business_group_name,
-					user_id,
-					error);
+  g_return_if_fail(business_group_interface->set_user);
+  business_group_interface->set_user(business_group,
+				     security_context,
+				     login,
+				     security_token,
+				     group_uuid,
+				     user,
+				     error);
 }
 
 /**
- * ags_business_group_get_user_id:
+ * ags_business_group_get_user:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @business_group_name: the business group name
+ * @group_uuid: the business group's UUID
  * @error: the #GError-struct
  *
- * Get business group name.
+ * Get business group name as %NULL terminated string array.
  *
- * Returns: the business group's ids of users as string array
+ * Returns: the business group's user names as string vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
-ags_business_group_get_user_id(AgsBusinessGroup *business_group,
-			       GObject *security_context,
-			       gchar *login,
-			       gchar *security_token,
-			       gchar *business_group_name,
-			       GError **error)
+ags_business_group_get_user(AgsBusinessGroup *business_group,
+			    GObject *security_context,
+			    gchar *login,
+			    gchar *security_token,
+			    gchar *group_uuid,
+			    GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_user_id, NULL);
+  g_return_val_if_fail(business_group_interface->get_user, NULL);
 
-  return(business_group_interface->get_user_id(business_group,
-					       security_context,
-					       login,
-					       security_token,
-					       business_group_name,
-					       error));
-}
-
-/**
- * ags_business_group_set_context_path_with_read_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @context_path: the string array containing context paths
- * @error: the #GError-struct
- *
- * Set business group context paths as string array.
- *
- * Since: 2.0.0
- */
-void
-ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
-							 GObject *security_context,
-							 gchar *login,
-							 gchar *security_token,
-							 gchar *business_group_name,
-							 gchar **context_path,
-							 GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_context_path_with_read_permission);
-  business_group_interface->set_context_path_with_read_permission(business_group,
-								  security_context,
-								  login,
-								  security_token,
-								  business_group_name,
-								  context_path,
-								  error);
-}
-
-/**
- * ags_business_group_get_context_path_with_read_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @error: the #GError-struct
- *
- * Get business group name.
- *
- * Returns: the business group's context paths as string array
- * 
- * Since: 2.0.0
- */
-gchar**
-ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *business_group,
-							 GObject *security_context,
-							 gchar *login,
-							 gchar *security_token,
-							 gchar *business_group_name,
-							 GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_context_path_with_read_permission, NULL);
-
-  return(business_group_interface->get_context_path_with_read_permission(business_group,
-									 security_context,
-									 login,
-									 security_token,
-									 business_group_name,
-									 error));
-}
-
-/**
- * ags_business_group_set_context_path_with_write_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @context_path: the string array containing context paths
- * @error: the #GError-struct
- *
- * Set business group context paths as string array.
- *
- * Since: 2.0.0
- */
-void
-ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *business_group,
-							  GObject *security_context,
-							  gchar *login,
-							  gchar *security_token,
-							  gchar *business_group_name,
-							  gchar **context_path,
-							  GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_context_path_with_write_permission);
-  business_group_interface->set_context_path_with_write_permission(business_group,
-								   security_context,
-								   login,
-								   security_token,
-								   business_group_name,
-								   context_path,
-								   error);
-}
-
-/**
- * ags_business_group_get_context_path_with_write_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @error: the #GError-struct
- *
- * Get business group name.
- *
- * Returns: the business group's context paths as string array
- * 
- * Since: 2.0.0
- */
-gchar**
-ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *business_group,
-							  GObject *security_context,
-							  gchar *login,
-							  gchar *security_token,
-							  gchar *business_group_name,
-							  GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_context_path_with_write_permission, NULL);
-
-  return(business_group_interface->get_context_path_with_write_permission(business_group,
-									  security_context,
-									  login,
-									  security_token,
-									  business_group_name,
-									  error));
-}
-
-/**
- * ags_business_group_set_context_path_with_execute_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @context_path: the string array containing context paths
- * @error: the #GError-struct
- *
- * Set business group context paths as string array.
- *
- * Since: 2.0.0
- */
-void
-ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *business_group,
-							    GObject *security_context,
-							    gchar *login,
-							    gchar *security_token,
-							    gchar *business_group_name,
-							    gchar **context_path,
-							    GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_context_path_with_execute_permission);
-  business_group_interface->set_context_path_with_execute_permission(business_group,
-								     security_context,
-								     login,
-								     security_token,
-								     business_group_name,
-								     context_path,
-								     error);
-}
-
-/**
- * ags_business_group_get_context_path_with_execute_permission:
- * @business_group: the #AgsBusinessGroup
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @business_group_name: the business group name
- * @error: the #GError-struct
- *
- * Get business group name.
- *
- * Returns: the business group's context paths as string array
- * 
- * Since: 2.0.0
- */
-gchar**
-ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *business_group,
-							    GObject *security_context,
-							    gchar *login,
-							    gchar *security_token,
-							    gchar *business_group_name,
-							    GError **error)
-{
-  AgsBusinessGroupInterface *business_group_interface;
-
-  g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
-  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_context_path_with_execute_permission, NULL);
-
-  return(business_group_interface->get_context_path_with_execute_permission(business_group,
-									    security_context,
-									    login,
-									    security_token,
-									    business_group_name,
-									    error));
+  return(business_group_interface->get_user(business_group,
+					    security_context,
+					    login,
+					    security_token,
+					    group_uuid,
+					    error));
 }
