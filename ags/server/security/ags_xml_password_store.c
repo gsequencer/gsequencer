@@ -44,6 +44,7 @@ void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_st
 void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
 void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
 void ags_xml_password_store_finalize(GObject *gobject);
+
 gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
 					     GObject *security_context,
 					     gchar *user_uuid,
@@ -170,6 +171,15 @@ ags_xml_password_store_finalize(GObject *gobject)
 
   xml_password_store = AGS_XML_PASSWORD_STORE(gobject);
 
+  g_free(xml_password_store->filename);
+  g_free(xml_password_store->encoding);
+  g_free(xml_password_store->dtd);
+  
+  if(xml_password_store->doc != NULL){
+    xmlFreeDoc(xml_password_store->doc);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_xml_password_store_parent_class)->finalize(gobject);
 }
 

@@ -1100,6 +1100,7 @@ am__objects_24 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_password_store_manager.lo \
 	ags/server/security/libags_server_la-ags_security_context.lo \
 	ags/server/security/libags_server_la-ags_xml_authentication.lo \
+	ags/server/security/libags_server_la-ags_xml_business_group.lo \
 	ags/server/security/libags_server_la-ags_xml_certificate.lo \
 	ags/server/security/libags_server_la-ags_xml_password_store.lo
 am__objects_25 = $(am__objects_1) \
@@ -4929,6 +4930,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store_manager.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo \
+	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo \
 	ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po \
@@ -5616,6 +5618,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/server/security/ags_password_store_manager.h \
 	ags/server/security/ags_security_context.h \
 	ags/server/security/ags_xml_authentication.h \
+	ags/server/security/ags_xml_business_group.h \
 	ags/server/security/ags_xml_certificate.h \
 	ags/server/security/ags_xml_password_store.h \
 	ags/server/controller/ags_controller.h \
@@ -8139,6 +8142,7 @@ libags_server_security_h_sources = \
 	ags/server/security/ags_password_store_manager.h \
 	ags/server/security/ags_security_context.h \
 	ags/server/security/ags_xml_authentication.h \
+	ags/server/security/ags_xml_business_group.h \
 	ags/server/security/ags_xml_certificate.h \
 	ags/server/security/ags_xml_password_store.h
 
@@ -8154,6 +8158,7 @@ libags_server_security_c_sources = \
 	ags/server/security/ags_password_store_manager.c \
 	ags/server/security/ags_security_context.c \
 	ags/server/security/ags_xml_authentication.c \
+	ags/server/security/ags_xml_business_group.c \
 	ags/server/security/ags_xml_certificate.c \
 	ags/server/security/ags_xml_password_store.c
 
@@ -10948,6 +10953,9 @@ ags/server/security/libags_server_la-ags_security_context.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_xml_authentication.lo:  \
+	ags/server/security/$(am__dirstamp) \
+	ags/server/security/$(DEPDIR)/$(am__dirstamp)
+ags/server/security/libags_server_la-ags_xml_business_group.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_xml_certificate.lo:  \
@@ -14001,6 +14009,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po@am__quote@ # am--include-marker
@@ -16905,6 +16914,13 @@ ags/server/security/libags_server_la-ags_xml_authentication.lo: ags/server/secur
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_xml_authentication.c' object='ags/server/security/libags_server_la-ags_xml_authentication.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_xml_authentication.lo `test -f 'ags/server/security/ags_xml_authentication.c' || echo '$(srcdir)/'`ags/server/security/ags_xml_authentication.c
+
+ags/server/security/libags_server_la-ags_xml_business_group.lo: ags/server/security/ags_xml_business_group.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_xml_business_group.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Tpo -c -o ags/server/security/libags_server_la-ags_xml_business_group.lo `test -f 'ags/server/security/ags_xml_business_group.c' || echo '$(srcdir)/'`ags/server/security/ags_xml_business_group.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Tpo ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_xml_business_group.c' object='ags/server/security/libags_server_la-ags_xml_business_group.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_xml_business_group.lo `test -f 'ags/server/security/ags_xml_business_group.c' || echo '$(srcdir)/'`ags/server/security/ags_xml_business_group.c
 
 ags/server/security/libags_server_la-ags_xml_certificate.lo: ags/server/security/ags_xml_certificate.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_xml_certificate.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Tpo -c -o ags/server/security/libags_server_la-ags_xml_certificate.lo `test -f 'ags/server/security/ags_xml_certificate.c' || echo '$(srcdir)/'`ags/server/security/ags_xml_certificate.c
@@ -24464,6 +24480,7 @@ distclean: distclean-recursive
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo
 	-rm -f ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po
@@ -25384,6 +25401,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_business_group.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo
 	-rm -f ags/test/X/$(DEPDIR)/functional_audio_config_test-ags_functional_audio_config_test.Po

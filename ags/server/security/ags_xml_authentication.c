@@ -166,6 +166,15 @@ ags_xml_authentication_finalize(GObject *gobject)
 
   xml_authentication = AGS_XML_AUTHENTICATION(gobject);
 
+  g_free(xml_authentication->filename);
+  g_free(xml_authentication->encoding);
+  g_free(xml_authentication->dtd);
+  
+  if(xml_authentication->doc != NULL){
+    xmlFreeDoc(xml_authentication->doc);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_xml_authentication_parent_class)->finalize(gobject);
 }
 
