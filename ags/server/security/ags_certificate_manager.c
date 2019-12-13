@@ -212,26 +212,6 @@ ags_certificate_manager_remove_certificate(AgsCertificateManager *certificate_ma
 }
 
 /**
- * ags_certificate_manager_verify_certificate:
- * @certificate_manager: the #AgsCertificateManager
- * @certs: the certs
- * 
- * Verify @certs.
- * 
- * Returns: %TRUE if valid, otherwise %FALSE
- * 
- * Since: 3.0.0
- */
-gboolean
-ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_manager,
-					   gchar *certs)
-{
-  //TODO:JK: implement me
-  
-  return(FALSE);
-}
-
-/**
  * ags_certificate_manager_get_instance:
  *
  * Get instance.
@@ -254,6 +234,172 @@ ags_certificate_manager_get_instance()
   g_mutex_unlock(&mutex);
 
   return(ags_certificate_manager);
+}
+
+/**
+ * ags_certificate_manager_get_key_file:
+ * @certificate_manager: the #AgsCertificateManager
+ * @security_context: the #AgsSecurityContext
+ * @login: the login
+ * @security_token: the security token
+ * @domain: the domain to find
+ * @key_type: the key type to find
+ * @public_key_file: return location of public key filename
+ * @private_key_file: return location of private key filename
+ * 
+ * Get public and private key file.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
+				     GObject *security_context,
+				     gchar *login,
+				     gchar *security_token,
+				     gchar *domain,
+				     gchar *key_type,
+				     gchar **public_key_file,
+				     gchar **private_key_file)
+{
+  GList *start_certificate, *certificate;
+  
+  gchar *current_public_key_file, *current_private_key_file;
+
+  gboolean success;
+
+  GError *error;
+  
+  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager) ||
+     domain == NULL ||
+     key_type == NULL){
+    return;
+  }
+  
+  if(public_key_file != NULL){
+    public_key_file[0] = NULL;
+  }
+
+  if(private_key_file != NULL){
+    private_key_file[0] = NULL;
+  }  
+
+  current_public_key_file = NULL;
+  current_private_key_file = NULL;
+
+  certificate =
+    start_certificate = ags_certificate_manager_get_certificate(certificate_manager);
+
+  success = FALSE;
+  
+  while(certificate != NULL){
+    gchar **tmp_cert_uuid;
+    gchar *tmp_domain, *tmp_key;
+    
+    guint i;
+
+    error = NULL;
+    tmp_cert_uuid = ags_certificate_get_cert_uuid(AGS_CERTIFICATE(certificate->data),
+						  security_context,
+						  user_uuid,
+						  security_token,
+						  &error);
+    
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
+    
+    if(tmp_cert_uuid != NULL){
+      for(i = 0; !success && tmp_cert_uuid[i] != NULL; i++){
+	error = NULL;
+	tmp_domain = ags_certificate_get_domain(AGS_CERTIFICATE(certificate->data),
+						security_context,
+						user_uuid,
+						security_token,
+						tmp_cert_uuid[i],
+						&error);
+    
+	if(error != NULL){
+	  g_warning("%s", error->message);
+
+	  g_error_free(error);
+	}
+
+	error = NULL;
+	tmp_key_type = ags_certificate_get_key_type(AGS_CERTIFICATE(certificate->data),
+						    security_context,
+						    user_uuid,
+						    security_token,
+						    tmp_cert_uuid[i],
+						    &error);
+    
+	if(error != NULL){
+	  g_warning("%s", error->message);
+
+	  g_error_free(error);
+	}
+
+	if(!g_ascii_strcasecmp(domain,
+			       tmp_domain) &&
+	   !g_ascii_strcasecmp(key_type,
+			       tmp_key_type)){
+	  success = TRUE;
+
+	  error = NULL;
+	  current_public_key_file = ags_certificate_get_public_key_file(AGS_CERTIFICATE(certificate->data),
+									security_context,
+									user_uuid,
+									security_token,
+									tmp_cert_uuid[i],
+									&error);
+    
+	  if(error != NULL){
+	    g_warning("%s", error->message);
+
+	    g_error_free(error);
+	  }
+	  
+	  error = NULL;
+	  current_private_key_file = ags_certificate_get_private_key_file(AGS_CERTIFICATE(certificate->data),
+									  security_context,
+									  user_uuid,
+									  security_token,
+									  tmp_cert_uuid[i],
+									  &error);
+    
+	  if(error != NULL){
+	    g_warning("%s", error->message);
+
+	    g_error_free(error);
+	  }
+	}
+
+	g_free(tmp_domain);
+	g_free(tmp_key_type);
+      }
+
+      g_strfreev(tmp_cert_uuid);
+    }
+
+    if(success){
+      break;
+    }
+    
+    /* iterate */
+    certificate = certificate->next;
+  }
+
+  g_list_free_full(start_certificate,
+		   (GDestroyNotify) g_object_unref);
+  
+  if(public_key_file != NULL){
+    public_key_file[0] = current_public_key_file;
+  }
+
+  if(private_key_file != NULL){
+    private_key_file[0] = current_private_key_file;
+  }
 }
 
 /**

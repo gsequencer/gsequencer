@@ -34,6 +34,11 @@ void ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *cer
 void ags_xml_certificate_init(AgsXmlCertificate *xml_certificate);
 void ags_xml_certificate_finalize(GObject *gobject);
 
+gchar** ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
+					  GObject *security_context,
+					  gchar *user_uuid,
+					  gchar *security_token,
+					  GError **error);
 void ags_xml_certificate_set_domain(AgsCertificate *certificate,
 				    GObject *security_context,
 				    gchar *user_uuid,
@@ -157,6 +162,8 @@ ags_xml_certificate_class_init(AgsXmlCertificateClass *xml_certificate)
 void
 ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *certificate)
 {
+  certificate->get_cert_uuid = ags_xml_certificate_get_cert_uuid;
+
   certificate->set_domain = ags_xml_certificate_set_domain;
   certificate->get_domain = ags_xml_certificate_get_domain;
 
@@ -191,6 +198,16 @@ ags_xml_certificate_finalize(GObject *gobject)
   xml_certificate = AGS_XML_CERTIFICATE(gobject);
 
   G_OBJECT_CLASS(ags_xml_certificate_parent_class)->finalize(gobject);
+}
+
+gchar**
+ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
+				  GObject *security_context,
+				  gchar *user_uuid,
+				  gchar *security_token,
+				  GError **error)
+{
+  //TODO:JK: implement me
 }
 
 void

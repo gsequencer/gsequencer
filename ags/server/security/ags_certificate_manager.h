@@ -63,8 +63,14 @@ void ags_certificate_manager_remove_certificate(AgsCertificateManager *certifica
 						GObject *certificate);
 
 /*  */
-gboolean ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_manager,
-						    gchar *certs);
+void ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
+					  GObject *security_context,
+					  gchar *login,
+					  gchar *security_token,
+					  gchar *domain,
+					  gchar *key_type,
+					  gchar **public_key_file,
+					  gchar **private_key_file);
 
 /*  */
 AgsCertificateManager* ags_certificate_manager_get_instance();

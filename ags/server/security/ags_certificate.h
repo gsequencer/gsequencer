@@ -39,6 +39,12 @@ struct _AgsCertificateInterface
 {
   GTypeInterface ginterface;
 
+  gchar** (*get_cert_uuid)(AgsCertificate *certificate,
+			   GObject *security_context,
+			   gchar *user_uuid,
+			   gchar *security_token,
+			   GError **error);
+  
   void (*set_domain)(AgsCertificate *certificate,
 		     GObject *security_context,
 		     gchar *user_uuid,
@@ -97,6 +103,12 @@ struct _AgsCertificateInterface
 };
 
 GType ags_certificate_get_type();
+
+gchar** ags_certificate_get_cert_uuid(AgsCertificate *certificate,
+				      GObject *security_context,
+				      gchar *user_uuid,
+				      gchar *security_token,
+				      GError **error);
 
 void ags_certificate_set_domain(AgsCertificate *certificate,
 				GObject *security_context,

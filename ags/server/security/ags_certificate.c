@@ -63,6 +63,40 @@ ags_certificate_base_init(AgsCertificateInterface *ginterface)
 }
 
 /**
+ * ags_certificate_get_cert_uuid:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @error: the #GError-struct
+ *
+ * Get cert UUID as string vector.
+ * 
+ * Returns: the cert UUIDs as %NULL terminated string array
+ * 
+ * Since: 3.0.0
+ */
+gchar**
+ags_certificate_get_cert_uuid(AgsCertificate *certificate,
+			      GObject *security_context,
+			      gchar *user_uuid,
+			      gchar *security_token,
+			      GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), NULL);
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_val_if_fail(certificate_interface->get_cert_uuid, NULL);
+
+  return(certificate_interface->get_cert_uuid(certificate,
+					      security_context,
+					      user_uuid,
+					      security_token,
+					      error));
+}
+
+/**
  * ags_certificate_set_domain:
  * @certificate: the #AgsCertificate
  * @security_context: the #AgsSecurityContext
