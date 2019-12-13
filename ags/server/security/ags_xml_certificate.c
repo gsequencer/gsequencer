@@ -207,7 +207,13 @@ ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
 				  gchar *security_token,
 				  GError **error)
 {
+  gchar **cert_uuid;
+
+  cert_uuid = NULL;
+  
   //TODO:JK: implement me
+
+  return(cert_uuid);
 }
 
 void
@@ -230,7 +236,13 @@ ags_xml_certificate_get_domain(AgsCertificate *certificate,
 			       gchar *cert_uuid,
 			       GError **error)
 {
+  gchar *domain;
+
+  domain = NULL;
+  
   //TODO:JK: implement me
+
+  return(domain);
 }
 
 void
@@ -253,7 +265,13 @@ ags_xml_certificate_get_key_type(AgsCertificate *certificate,
 				 gchar *cert_uuid,
 				 GError **error)
 {
+  gchar *key_type;
+
+  key_type = NULL;
+  
   //TODO:JK: implement me
+
+  return(key_type);
 }
 
 void
@@ -276,7 +294,13 @@ ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
 					gchar *cert_uuid,
 					GError **error)
 {
+  gchar *public_key_file;
+
+  public_key_file = NULL;
+  
   //TODO:JK: implement me
+
+  return(public_key_file);
 }
 
 void
@@ -299,7 +323,13 @@ ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
 					 gchar *cert_uuid,
 					 GError **error)
 {
+  gchar *private_key_file;
+
+  private_key_file = NULL;
+  
   //TODO:JK: implement me
+
+  return(private_key_file);
 }
 
 /**
@@ -309,7 +339,7 @@ ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
  *
  * Returns: the new #AgsXmlCertificate instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsXmlCertificate*
 ags_xml_certificate_new()

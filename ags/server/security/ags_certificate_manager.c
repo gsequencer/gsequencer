@@ -240,7 +240,7 @@ ags_certificate_manager_get_instance()
  * ags_certificate_manager_get_key_file:
  * @certificate_manager: the #AgsCertificateManager
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @domain: the domain to find
  * @key_type: the key type to find
@@ -254,7 +254,7 @@ ags_certificate_manager_get_instance()
 void
 ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     gchar *domain,
 				     gchar *key_type,
@@ -293,7 +293,7 @@ ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
   
   while(certificate != NULL){
     gchar **tmp_cert_uuid;
-    gchar *tmp_domain, *tmp_key;
+    gchar *tmp_domain, *tmp_key_type;
     
     guint i;
 

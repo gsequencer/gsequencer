@@ -65,7 +65,7 @@ void ags_certificate_manager_remove_certificate(AgsCertificateManager *certifica
 /*  */
 void ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
 					  GObject *security_context,
-					  gchar *login,
+					  gchar *user_uuid,
 					  gchar *security_token,
 					  gchar *domain,
 					  gchar *key_type,

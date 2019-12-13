@@ -131,13 +131,11 @@ ags_xml_business_group_class_init(AgsXmlBusinessGroupClass *xml_business_group)
 void
 ags_xml_business_group_business_group_interface_init(AgsBusinessGroupInterface *business_group)
 {
-  business_group->get_login_name = ags_xml_business_group_get_login_name;
-  business_group->set_login_name = ags_xml_business_group_set_login_name;
+  business_group->get_group_name = ags_xml_business_group_get_group_name;
+  business_group->set_group_name = ags_xml_business_group_set_group_name;
 
-  business_group->get_password = ags_xml_business_group_get_password;
-  business_group->set_password = ags_xml_business_group_set_password;
-
-  business_group->encrypt_password = ags_xml_business_group_encrypt_password;
+  business_group->get_user = ags_xml_business_group_get_user;
+  business_group->set_user = ags_xml_business_group_set_user;
 }
 
 void

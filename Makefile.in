@@ -1091,9 +1091,11 @@ am__objects_23 = $(am__objects_1) \
 	ags/server/libags_server_la-ags_server_status.lo \
 	ags/server/libags_server_la-ags_service_provider.lo
 am__objects_24 = $(am__objects_1) \
+	ags/server/security/libags_server_la-ags_auth_security_context.lo \
 	ags/server/security/libags_server_la-ags_authentication.lo \
 	ags/server/security/libags_server_la-ags_authentication_manager.lo \
 	ags/server/security/libags_server_la-ags_business_group.lo \
+	ags/server/security/libags_server_la-ags_business_group_manager.lo \
 	ags/server/security/libags_server_la-ags_certificate.lo \
 	ags/server/security/libags_server_la-ags_certificate_manager.lo \
 	ags/server/security/libags_server_la-ags_password_store.lo \
@@ -4921,9 +4923,11 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo \
 	ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo \
 	ags/server/controller/$(DEPDIR)/libags_server_la-ags_plugin_controller.Plo \
+	ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication_manager.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group.Plo \
+	ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate_manager.Plo \
 	ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store.Plo \
@@ -5609,9 +5613,11 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/server/ags_server_application_context.h \
 	ags/server/ags_server_status.h \
 	ags/server/ags_service_provider.h \
+	ags/server/security/ags_auth_security_context.h \
 	ags/server/security/ags_authentication.h \
 	ags/server/security/ags_authentication_manager.h \
 	ags/server/security/ags_business_group.h \
+	ags/server/security/ags_business_group_manager.h \
 	ags/server/security/ags_certificate.h \
 	ags/server/security/ags_certificate_manager.h \
 	ags/server/security/ags_password_store.h \
@@ -8133,9 +8139,11 @@ libags_server_c_sources = \
 deprecated_libags_server_security_h_sources = 
 libags_server_security_h_sources = \
 	$(deprecated_libags_server_security_h_sources) \
+	ags/server/security/ags_auth_security_context.h \
 	ags/server/security/ags_authentication.h \
 	ags/server/security/ags_authentication_manager.h \
 	ags/server/security/ags_business_group.h \
+	ags/server/security/ags_business_group_manager.h \
 	ags/server/security/ags_certificate.h \
 	ags/server/security/ags_certificate_manager.h \
 	ags/server/security/ags_password_store.h \
@@ -8149,9 +8157,11 @@ libags_server_security_h_sources = \
 deprecated_libags_server_security_c_sources = 
 libags_server_security_c_sources = \
 	$(deprecated_libags_server_security_c_sources) \
+	ags/server/security/ags_auth_security_context.c \
 	ags/server/security/ags_authentication.c \
 	ags/server/security/ags_authentication_manager.c \
 	ags/server/security/ags_business_group.c \
+	ags/server/security/ags_business_group_manager.c \
 	ags/server/security/ags_certificate.c \
 	ags/server/security/ags_certificate_manager.c \
 	ags/server/security/ags_password_store.c \
@@ -10928,6 +10938,9 @@ ags/server/security/$(am__dirstamp):
 ags/server/security/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/server/security/$(DEPDIR)
 	@: > ags/server/security/$(DEPDIR)/$(am__dirstamp)
+ags/server/security/libags_server_la-ags_auth_security_context.lo:  \
+	ags/server/security/$(am__dirstamp) \
+	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_authentication.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
@@ -10935,6 +10948,9 @@ ags/server/security/libags_server_la-ags_authentication_manager.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_business_group.lo:  \
+	ags/server/security/$(am__dirstamp) \
+	ags/server/security/$(DEPDIR)/$(am__dirstamp)
+ags/server/security/libags_server_la-ags_business_group_manager.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_certificate.lo:  \
@@ -14000,9 +14016,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_plugin_controller.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store.Plo@am__quote@ # am--include-marker
@@ -16852,6 +16870,13 @@ ags/server/libags_server_la-ags_service_provider.lo: ags/server/ags_service_prov
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/libags_server_la-ags_service_provider.lo `test -f 'ags/server/ags_service_provider.c' || echo '$(srcdir)/'`ags/server/ags_service_provider.c
 
+ags/server/security/libags_server_la-ags_auth_security_context.lo: ags/server/security/ags_auth_security_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_auth_security_context.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Tpo -c -o ags/server/security/libags_server_la-ags_auth_security_context.lo `test -f 'ags/server/security/ags_auth_security_context.c' || echo '$(srcdir)/'`ags/server/security/ags_auth_security_context.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Tpo ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_auth_security_context.c' object='ags/server/security/libags_server_la-ags_auth_security_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_auth_security_context.lo `test -f 'ags/server/security/ags_auth_security_context.c' || echo '$(srcdir)/'`ags/server/security/ags_auth_security_context.c
+
 ags/server/security/libags_server_la-ags_authentication.lo: ags/server/security/ags_authentication.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_authentication.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Tpo -c -o ags/server/security/libags_server_la-ags_authentication.lo `test -f 'ags/server/security/ags_authentication.c' || echo '$(srcdir)/'`ags/server/security/ags_authentication.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Tpo ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo
@@ -16872,6 +16897,13 @@ ags/server/security/libags_server_la-ags_business_group.lo: ags/server/security/
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_business_group.c' object='ags/server/security/libags_server_la-ags_business_group.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_business_group.lo `test -f 'ags/server/security/ags_business_group.c' || echo '$(srcdir)/'`ags/server/security/ags_business_group.c
+
+ags/server/security/libags_server_la-ags_business_group_manager.lo: ags/server/security/ags_business_group_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_business_group_manager.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Tpo -c -o ags/server/security/libags_server_la-ags_business_group_manager.lo `test -f 'ags/server/security/ags_business_group_manager.c' || echo '$(srcdir)/'`ags/server/security/ags_business_group_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Tpo ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_business_group_manager.c' object='ags/server/security/libags_server_la-ags_business_group_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_business_group_manager.lo `test -f 'ags/server/security/ags_business_group_manager.c' || echo '$(srcdir)/'`ags/server/security/ags_business_group_manager.c
 
 ags/server/security/libags_server_la-ags_certificate.lo: ags/server/security/ags_certificate.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_certificate.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate.Tpo -c -o ags/server/security/libags_server_la-ags_certificate.lo `test -f 'ags/server/security/ags_certificate.c' || echo '$(srcdir)/'`ags/server/security/ags_certificate.c
@@ -24471,9 +24503,11 @@ distclean: distclean-recursive
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_plugin_controller.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store.Plo
@@ -25392,9 +25426,11 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo
 	-rm -f ags/server/controller/$(DEPDIR)/libags_server_la-ags_plugin_controller.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_auth_security_context.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group.Plo
+	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate_manager.Plo
 	-rm -f ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store.Plo

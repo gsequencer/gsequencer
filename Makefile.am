@@ -732,9 +732,11 @@ deprecated_libags_server_security_h_sources =
 
 libags_server_security_h_sources = \
 	$(deprecated_libags_server_security_h_sources) \
+	ags/server/security/ags_auth_security_context.h \
 	ags/server/security/ags_authentication.h \
 	ags/server/security/ags_authentication_manager.h \
 	ags/server/security/ags_business_group.h \
+	ags/server/security/ags_business_group_manager.h \
 	ags/server/security/ags_certificate.h \
 	ags/server/security/ags_certificate_manager.h \
 	ags/server/security/ags_password_store.h \
@@ -749,9 +751,11 @@ deprecated_libags_server_security_c_sources =
 
 libags_server_security_c_sources = \
 	$(deprecated_libags_server_security_c_sources) \
+	ags/server/security/ags_auth_security_context.c \
 	ags/server/security/ags_authentication.c \
 	ags/server/security/ags_authentication_manager.c \
 	ags/server/security/ags_business_group.c \
+	ags/server/security/ags_business_group_manager.c \
 	ags/server/security/ags_certificate.c \
 	ags/server/security/ags_certificate_manager.c \
 	ags/server/security/ags_password_store.c \

@@ -91,19 +91,23 @@
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_service_provider.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_business_group_manager.h>
+#include <ags/server/security/ags_certificate_manager.h>
 #include <ags/server/security/ags_password_store_manager.h>
+#include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_certificate.h>
 #include <ags/server/security/ags_business_group.h>
 #include <ags/server/security/ags_password_store.h>
-#include <ags/server/security/ags_certificate_manager.h>
-#include <ags/server/security/ags_certificate.h>
-#include <ags/server/security/ags_xml_certificate.h>
 #include <ags/server/security/ags_security_context.h>
-#include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_auth_security_context.h>
 #include <ags/server/security/ags_xml_authentication.h>
-#include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_xml_business_group.h>
+#include <ags/server/security/ags_xml_certificate.h>
 #include <ags/server/security/ags_xml_password_store.h>
 
 #include <ags/server/controller/ags_controller.h>
 #include <ags/server/controller/ags_front_controller.h>
+#include <ags/server/controller/ags_plugin_controller.h>
 
 #endif /*__LIBAGS_H__*/
