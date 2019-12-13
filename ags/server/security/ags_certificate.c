@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,29 +63,297 @@ ags_certificate_base_init(AgsCertificateInterface *ginterface)
 }
 
 /**
- * ags_certificate_verify:
+ * ags_certificate_set_domain:
  * @certificate: the #AgsCertificate
- * @certs: the certificate data
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @domain: the domain
  * @error: the #GError-struct
+ *
+ * Set domain.
  * 
- * Verify @certs. 
- *
- * Returns: %TRUE on success, otherwise %FALSE
- *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-gboolean
-ags_certificate_verify(AgsCertificate *certificate,
-		       gchar *certs,
-		       GError **error)
+void
+ags_certificate_set_domain(AgsCertificate *certificate,
+			   GObject *security_context,
+			   gchar *user_uuid,
+			   gchar *security_token,
+			   gchar *cert_uuid,
+			   gchar *domain,
+			   GError **error)
 {
   AgsCertificateInterface *certificate_interface;
 
-  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), FALSE);
+  g_return_if_fail(AGS_IS_CERTIFICATE(certificate));
   certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
-  g_return_val_if_fail(certificate_interface->verify, FALSE);
+  g_return_if_fail(certificate_interface->set_domain);
+  certificate_interface->set_domain(certificate,
+				    security_context,
+				    user_uuid,
+				    security_token,
+				    cert_uuid,
+				    domain,
+				    error);
+}
 
-  return(certificate_interface->verify(certificate,
-				       certs,
-				       error));
+/**
+ * ags_certificate_get_domain:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @error: the #GError-struct
+ *
+ * Get domain.
+ * 
+ * Returns: the domain
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_certificate_get_domain(AgsCertificate *certificate,
+			   GObject *security_context,
+			   gchar *user_uuid,
+			   gchar *security_token,
+			   gchar *cert_uuid,
+			   GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), NULL);
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_val_if_fail(certificate_interface->get_domain, NULL);
+
+  return(certificate_interface->get_domain(certificate,
+					   security_context,
+					   user_uuid,
+					   security_token,
+					   cert_uuid,
+					   error));
+}
+
+/**
+ * ags_certificate_set_key_type:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @key_type: the key type
+ * @error: the #GError-struct
+ *
+ * Set key type.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_certificate_set_key_type(AgsCertificate *certificate,
+			     GObject *security_context,
+			     gchar *user_uuid,
+			     gchar *security_token,
+			     gchar *cert_uuid,
+			     gchar *key_type,
+			     GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_if_fail(AGS_IS_CERTIFICATE(certificate));
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_if_fail(certificate_interface->set_key_type);
+  certificate_interface->set_key_type(certificate,
+				      security_context,
+				      user_uuid,
+				      security_token,
+				      cert_uuid,
+				      key_type,
+				      error);
+}
+
+/**
+ * ags_certificate_get_key_type:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @error: the #GError-struct
+ *
+ * Get key type.
+ * 
+ * Returns: the key type
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_certificate_get_key_type(AgsCertificate *certificate,
+			     GObject *security_context,
+			     gchar *user_uuid,
+			     gchar *security_token,
+			     gchar *cert_uuid,
+			     GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), NULL);
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_val_if_fail(certificate_interface->get_key_type, NULL);
+
+  return(certificate_interface->get_key_type(certificate,
+					     security_context,
+					     user_uuid,
+					     security_token,
+					     cert_uuid,
+					     error));
+}
+
+/**
+ * ags_certificate_set_public_key_file:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @public_key_file: the public key file
+ * @error: the #GError-struct
+ *
+ * Set public key file.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_certificate_set_public_key_file(AgsCertificate *certificate,
+				    GObject *security_context,
+				    gchar *user_uuid,
+				    gchar *security_token,
+				    gchar *cert_uuid,
+				    gchar *public_key_file,
+				    GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_if_fail(AGS_IS_CERTIFICATE(certificate));
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_if_fail(certificate_interface->set_public_key_file);
+  certificate_interface->set_public_key_file(certificate,
+					     security_context,
+					     user_uuid,
+					     security_token,
+					     cert_uuid,
+					     public_key_file,
+					     error);
+}
+
+/**
+ * ags_certificate_get_public_key_file:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @error: the #GError-struct
+ *
+ * Get public key file.
+ * 
+ * Returns: the public key file
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_certificate_get_public_key_file(AgsCertificate *certificate,
+				    GObject *security_context,
+				    gchar *user_uuid,
+				    gchar *security_token,
+				    gchar *cert_uuid,
+				    GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), NULL);
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_val_if_fail(certificate_interface->get_public_key_file, NULL);
+
+  return(certificate_interface->get_public_key_file(certificate,
+						    security_context,
+						    user_uuid,
+						    security_token,
+						    cert_uuid,
+						    error));
+}
+
+/**
+ * ags_certificate_set_private_key_file:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @private_key_file: the private key file
+ * @error: the #GError-struct
+ *
+ * Set private key file.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_certificate_set_private_key_file(AgsCertificate *certificate,
+				     GObject *security_context,
+				     gchar *user_uuid,
+				     gchar *security_token,
+				     gchar *cert_uuid,
+				     gchar *private_key_file,
+				     GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_if_fail(AGS_IS_CERTIFICATE(certificate));
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_if_fail(certificate_interface->set_private_key_file);
+  certificate_interface->set_private_key_file(certificate,
+					      security_context,
+					      user_uuid,
+					      security_token,
+					      cert_uuid,
+					      private_key_file,
+					      error);
+}
+
+/**
+ * ags_certificate_get_private_key_file:
+ * @certificate: the #AgsCertificate
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @cert_uuid: the cert's UUID
+ * @error: the #GError-struct
+ *
+ * Get private key file.
+ * 
+ * Returns: the private key file
+ * 
+ * Since: 3.0.0
+ */
+gchar*
+ags_certificate_get_private_key_file(AgsCertificate *certificate,
+				     GObject *security_context,
+				     gchar *user_uuid,
+				     gchar *security_token,
+				     gchar *cert_uuid,
+				     GError **error)
+{
+  AgsCertificateInterface *certificate_interface;
+
+  g_return_val_if_fail(AGS_IS_CERTIFICATE(certificate), NULL);
+  certificate_interface = AGS_CERTIFICATE_GET_INTERFACE(certificate);
+  g_return_val_if_fail(certificate_interface->get_private_key_file, NULL);
+
+  return(certificate_interface->get_private_key_file(certificate,
+						     security_context,
+						     user_uuid,
+						     security_token,
+						     cert_uuid,
+						     error));
 }

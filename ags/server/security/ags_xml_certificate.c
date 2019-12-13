@@ -34,9 +34,58 @@ void ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *cer
 void ags_xml_certificate_init(AgsXmlCertificate *xml_certificate);
 void ags_xml_certificate_finalize(GObject *gobject);
 
-gboolean ags_xml_certificate_verify(AgsCertificate *certificate,
-				    gchar *certs,
+void ags_xml_certificate_set_domain(AgsCertificate *certificate,
+				    GObject *security_context,
+				    gchar *user_uuid,
+				    gchar *security_token,
+				    gchar *cert_uuid,
+				    gchar *domain,
 				    GError **error);
+gchar* ags_xml_certificate_get_domain(AgsCertificate *certificate,
+				      GObject *security_context,
+				      gchar *user_uuid,
+				      gchar *security_token,
+				      gchar *cert_uuid,
+				      GError **error);
+void ags_xml_certificate_set_key_type(AgsCertificate *certificate,
+				      GObject *security_context,
+				      gchar *user_uuid,
+				      gchar *security_token,
+				      gchar *cert_uuid,
+				      gchar *key_type,
+				      GError **error);
+gchar* ags_xml_certificate_get_key_type(AgsCertificate *certificate,
+					GObject *security_context,
+					gchar *user_uuid,
+					gchar *security_token,
+					gchar *cert_uuid,
+					GError **error);
+void ags_xml_certificate_set_public_key_file(AgsCertificate *certificate,
+					     GObject *security_context,
+					     gchar *user_uuid,
+					     gchar *security_token,
+					     gchar *cert_uuid,
+					     gchar *public_key_file,
+					     GError **error);
+gchar* ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
+					       GObject *security_context,
+					       gchar *user_uuid,
+					       gchar *security_token,
+					       gchar *cert_uuid,
+					       GError **error);
+void ags_xml_certificate_set_private_key_file(AgsCertificate *certificate,
+					      GObject *security_context,
+					      gchar *user_uuid,
+					      gchar *security_token,
+					      gchar *cert_uuid,
+					      gchar *private_key_file,
+					      GError **error);
+gchar* ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
+						GObject *security_context,
+						gchar *user_uuid,
+						gchar *security_token,
+						gchar *cert_uuid,
+						GError **error);
 
 /**
  * SECTION:ags_xml_certificate
@@ -108,7 +157,17 @@ ags_xml_certificate_class_init(AgsXmlCertificateClass *xml_certificate)
 void
 ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *certificate)
 {
-  certificate->verify = ags_xml_certificate_verify;  
+  certificate->set_domain = ags_xml_certificate_set_domain;
+  certificate->get_domain = ags_xml_certificate_get_domain;
+
+  certificate->set_key_type = ags_xml_certificate_set_key_type;
+  certificate->get_key_type = ags_xml_certificate_get_key_type;
+
+  certificate->set_public_key_file = ags_xml_certificate_set_public_key_file;
+  certificate->get_public_key_file = ags_xml_certificate_get_public_key_file;
+
+  certificate->set_private_key_file = ags_xml_certificate_set_private_key_file;
+  certificate->get_private_key_file = ags_xml_certificate_get_private_key_file;
 }
 
 void
@@ -134,18 +193,96 @@ ags_xml_certificate_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_xml_certificate_parent_class)->finalize(gobject);
 }
 
-gboolean
-ags_xml_certificate_verify(AgsCertificate *certificate,
-			   gchar *certs,
-			   GError **error)
+void
+ags_xml_certificate_set_domain(AgsCertificate *certificate,
+			       GObject *security_context,
+			       gchar *user_uuid,
+			       gchar *security_token,
+			       gchar *cert_uuid,
+			       gchar *domain,
+			       GError **error)
 {
-  if(certs == NULL){
-    return(FALSE);
-  }    
-  
   //TODO:JK: implement me
+}
 
-  return(FALSE);
+gchar*
+ags_xml_certificate_get_domain(AgsCertificate *certificate,
+			       GObject *security_context,
+			       gchar *user_uuid,
+			       gchar *security_token,
+			       gchar *cert_uuid,
+			       GError **error)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_certificate_set_key_type(AgsCertificate *certificate,
+				 GObject *security_context,
+				 gchar *user_uuid,
+				 gchar *security_token,
+				 gchar *cert_uuid,
+				 gchar *key_type,
+				 GError **error)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_xml_certificate_get_key_type(AgsCertificate *certificate,
+				 GObject *security_context,
+				 gchar *user_uuid,
+				 gchar *security_token,
+				 gchar *cert_uuid,
+				 GError **error)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_certificate_set_public_key_file(AgsCertificate *certificate,
+					GObject *security_context,
+					gchar *user_uuid,
+					gchar *security_token,
+					gchar *cert_uuid,
+					gchar *public_key_file,
+					GError **error)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
+					GObject *security_context,
+					gchar *user_uuid,
+					gchar *security_token,
+					gchar *cert_uuid,
+					GError **error)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_certificate_set_private_key_file(AgsCertificate *certificate,
+					 GObject *security_context,
+					 gchar *user_uuid,
+					 gchar *security_token,
+					 gchar *cert_uuid,
+					 gchar *private_key_file,
+					 GError **error)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
+					 GObject *security_context,
+					 gchar *user_uuid,
+					 gchar *security_token,
+					 gchar *cert_uuid,
+					 GError **error)
+{
+  //TODO:JK: implement me
 }
 
 /**

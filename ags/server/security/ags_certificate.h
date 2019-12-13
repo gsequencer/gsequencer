@@ -39,16 +39,120 @@ struct _AgsCertificateInterface
 {
   GTypeInterface ginterface;
 
-  gboolean (*verify)(AgsCertificate *certificate,
-		     gchar *certs,
+  void (*set_domain)(AgsCertificate *certificate,
+		     GObject *security_context,
+		     gchar *user_uuid,
+		     gchar *security_token,
+		     gchar *cert_uuid,
+		     gchar *domain,
 		     GError **error);
+  gchar* (*get_domain)(AgsCertificate *certificate,
+		       GObject *security_context,
+		       gchar *user_uuid,
+		       gchar *security_token,
+		       gchar *cert_uuid,
+		       GError **error);
+
+  void (*set_key_type)(AgsCertificate *certificate,
+		       GObject *security_context,
+		       gchar *user_uuid,
+		       gchar *security_token,
+		       gchar *cert_uuid,
+		       gchar *key_type,
+		       GError **error);
+  gchar* (*get_key_type)(AgsCertificate *certificate,
+			 GObject *security_context,
+			 gchar *user_uuid,
+			 gchar *security_token,
+			 gchar *cert_uuid,
+			 GError **error);
+
+  void (*set_public_key_file)(AgsCertificate *certificate,
+			      GObject *security_context,
+			      gchar *user_uuid,
+			      gchar *security_token,
+			      gchar *cert_uuid,
+			      gchar *public_key_file,
+			      GError **error);
+  gchar* (*get_public_key_file)(AgsCertificate *certificate,
+				GObject *security_context,
+				gchar *user_uuid,
+				gchar *security_token,
+				gchar *cert_uuid,
+				GError **error);
+
+  void (*set_private_key_file)(AgsCertificate *certificate,
+			       GObject *security_context,
+			       gchar *user_uuid,
+			       gchar *security_token,
+			       gchar *cert_uuid,
+			       gchar *private_key_file,
+			       GError **error);
+  gchar* (*get_private_key_file)(AgsCertificate *certificate,
+				 GObject *security_context,
+				 gchar *user_uuid,
+				 gchar *security_token,
+				 gchar *cert_uuid,
+				 GError **error);
 };
 
 GType ags_certificate_get_type();
 
-gboolean ags_certificate_verify(AgsCertificate *certificate,
-				gchar *certs,
+void ags_certificate_set_domain(AgsCertificate *certificate,
+				GObject *security_context,
+				gchar *user_uuid,
+				gchar *security_token,
+				gchar *cert_uuid,
+				gchar *domain,
 				GError **error);
+gchar* ags_certificate_get_domain(AgsCertificate *certificate,
+				  GObject *security_context,
+				  gchar *user_uuid,
+				  gchar *security_token,
+				  gchar *cert_uuid,
+				  GError **error);
+
+void ags_certificate_set_key_type(AgsCertificate *certificate,
+				  GObject *security_context,
+				  gchar *user_uuid,
+				  gchar *security_token,
+				  gchar *cert_uuid,
+				  gchar *key_type,
+				  GError **error);
+gchar* ags_certificate_get_key_type(AgsCertificate *certificate,
+				    GObject *security_context,
+				    gchar *user_uuid,
+				    gchar *security_token,
+				    gchar *cert_uuid,
+				    GError **error);
+
+void ags_certificate_set_public_key_file(AgsCertificate *certificate,
+					 GObject *security_context,
+					 gchar *user_uuid,
+					 gchar *security_token,
+					 gchar *cert_uuid,
+					 gchar *public_key_file,
+					 GError **error);
+gchar* ags_certificate_get_public_key_file(AgsCertificate *certificate,
+					   GObject *security_context,
+					   gchar *user_uuid,
+					   gchar *security_token,
+					   gchar *cert_uuid,
+					   GError **error);
+
+void ags_certificate_set_private_key_file(AgsCertificate *certificate,
+					  GObject *security_context,
+					  gchar *user_uuid,
+					  gchar *security_token,
+					  gchar *cert_uuid,
+					  gchar *private_key_file,
+					  GError **error);
+gchar* ags_certificate_get_private_key_file(AgsCertificate *certificate,
+					    GObject *security_context,
+					    gchar *user_uuid,
+					    gchar *security_token,
+					    gchar *cert_uuid,
+					    GError **error);
 
 G_END_DECLS
 
