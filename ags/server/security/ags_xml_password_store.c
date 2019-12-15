@@ -201,16 +201,25 @@ ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
   xmlNode *login_node;
   xmlNode *child;
   
-  xmlChar *xpath;
+  gchar *xpath;
   
   guint i;
   
   GRecMutex *xml_password_store_mutex;
 
   /* authentication */
-  if(user_uuid == NULL ||
-     security_token == NULL){
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
     return;
+  }
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
   }
       
   xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
@@ -224,8 +233,8 @@ ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
 
   user_node = NULL;
 
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
-				      user_uuid);
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
 
   g_rec_mutex_lock(xml_password_store_mutex);
     
@@ -299,17 +308,26 @@ ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
   xmlNode *login_node;
   xmlNode *child;
   
-  xmlChar *xpath;
-  xmlChar *login;
+  gchar *xpath;
+  gchar *login;
   
   guint i;
   
   GRecMutex *xml_password_store_mutex;
 
-  if(user_uuid == NULL ||
-     security_token == NULL){
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
     return(NULL);
   }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
 
   xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
 
@@ -322,8 +340,8 @@ ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
   
   user_node = NULL;
 
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
-				      user_uuid);
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
 
   g_rec_mutex_lock(xml_password_store_mutex);
     
@@ -372,7 +390,13 @@ ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
     }
 
     if(login_node != NULL){
-      login = xmlNodeGetContent(login_node);
+      xmlChar *tmp_login;
+      
+      tmp_login = xmlNodeGetContent(login_node);
+
+      login = g_strdup(tmp_login);
+
+      xmlFree(tmp_login);
     }
   }
 
@@ -534,8 +558,8 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
   
   user_node = NULL;
 
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
-				      user_uuid);
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
 
   g_rec_mutex_lock(xml_password_store_mutex);
     
@@ -688,7 +712,7 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
   xmlNode **node;
   xmlNode *user_node;
   
-  xmlChar *xpath;
+  gchar *xpath;
 
   guint i;
   
