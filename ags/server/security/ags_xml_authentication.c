@@ -22,8 +22,11 @@
 #include <ags/lib/ags_uuid.h>
 
 #include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_business_group_manager.h>
 #include <ags/server/security/ags_password_store_manager.h>
 #include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_business_group.h>
+#include <ags/server/security/ags_xml_business_group.h>
 #include <ags/server/security/ags_xml_password_store.h>
 #include <ags/server/security/ags_auth_security_context.h>
 
@@ -408,15 +411,42 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 							   login);
 
       if(login_info == NULL){
+	AgsBusinessGroupManager *business_group_manager;
+
+	GList *start_business_group, *business_group;
+
+	business_group_manager = ags_business_group_manager_get_instance();
+
+	/* login info */
 	login_info = ags_login_info_alloc();
 
 	login_info->active_session_count = 1;
 
 	login_info->user_uuid = g_strdup(current_user_uuid);
 
+	/* security context */
 	login_info->security_context = ags_security_context_new();
-	ags_security_context_parse_business_group(login_info->security_context,
-						  auth_group_list_node);
+
+	business_group =
+	  start_business_group = ags_business_group_manager_get_business_group(business_group_manager);
+	
+	while(business_group != NULL){
+	  if(AGS_IS_XML_BUSINESS_GROUP(business_group->data)){
+	    GRecMutex *xml_business_group_mutex;	    
+	
+	    xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(business_group->data);
+
+	    g_rec_mutex_lock(xml_business_group_mutex);
+	    
+	    ags_security_context_parse_business_group(login_info->security_context,
+						      AGS_XML_BUSINESS_GROUP(business_group->data)->doc,
+						      current_user_uuid);
+
+	    g_rec_mutex_unlock(xml_business_group_mutex);
+	  }
+	  
+	  business_group = business_group->next;
+	}
 	
 	ags_authentication_manager_insert_login(authentication_manager,
 						login,

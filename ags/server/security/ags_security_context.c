@@ -19,6 +19,14 @@
 
 #include <ags/server/security/ags_security_context.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -238,7 +246,8 @@ ags_security_context_finalize(GObject *gobject)
 /**
  * ags_security_context_parse_business_group:
  * @security_context: the #AgsSecurityContext
- * @business_group_list: the xmlNode containing groups
+ * @xml_doc: the xmlDoc containing groups
+ * @user_uuid: the user's UUID
  * 
  * Parse @business_group and apply to @security_context.
  * 
@@ -246,9 +255,14 @@ ags_security_context_finalize(GObject *gobject)
  */
 void
 ags_security_context_parse_business_group(AgsSecurityContext *security_context,
-					  xmlNode *business_group_list)
+					  xmlDoc *xml_doc,
+					  gchar *user_uuid)
 {
-  xmlNode *child;
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  
+  gchar *xpath;
 
   guint i;
   
@@ -280,47 +294,50 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
   
   g_rec_mutex_unlock(security_context_mutex);
 
-  if(business_group_list == NULL){
+  if(xml_doc == NULL ||
+     user_uuid == NULL){
     return;
   }
   
-  /* read business group */
-  g_rec_mutex_lock(security_context_mutex);
+  /* read server business group name */
+  xpath = g_strdup_printf("(/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-name)/../ags-srv-group-user-list/ags-srv-group-user[text() = '%s']",
+			  user_uuid);
   
-  if(!g_ascii_strncasecmp(business_group_list->name,
-			  "ags-srv-auth-group-list",
-			  24)){
-    child = business_group_list->children;
+  g_rec_mutex_lock(security_context_mutex);
 
-    i = 0;
-    
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!g_ascii_strncasecmp(child->name,
-				"ags-srv-auth-group",
-				19)){
-	  if(i == 0){
-	    security_context->business_group = (gchar **) malloc(2 * sizeof(gchar *)); 
-	  }else{
-	    security_context->business_group = (gchar **) realloc(security_context->business_group,
-								  (i + 2) * sizeof(gchar *)); 
-	  }
+  xpath_context = xmlXPathNewContext(xml_doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
 
-	  security_context->business_group[i] = xmlNodeGetContent(child);
-	  
-	  i++;
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	xmlChar *group_name;
+	
+	group_name = xmlNodeGetContent(node[i]);
+
+	if(i == 0){
+	  security_context->business_group = (gchar **) malloc(2 * sizeof(gchar *)); 
+	}else{
+	  security_context->business_group = (gchar **) realloc(security_context->business_group,
+								(i + 2) * sizeof(gchar *)); 
 	}
-      }
-      
-      child = child->next;
-    }
 
-    if(i > 0){
-      security_context->business_group[i] = NULL;
+	security_context->business_group[i] = g_strdup(group_name);	
+	
+	xmlFree(group_name);
+      }
     }
   }
-
+  
   g_rec_mutex_unlock(security_context_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 /**

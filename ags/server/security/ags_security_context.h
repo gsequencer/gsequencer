@@ -80,7 +80,8 @@ struct _AgsSecurityContextClass
 GType ags_security_context_get_type();
 
 void ags_security_context_parse_business_group(AgsSecurityContext *security_context,
-					       xmlNode *business_group_list);
+					       xmlDoc *xml_doc,
+					       gchar *user_uuid);
 
 void ags_security_context_add_server_context(AgsSecurityContext *security_context,
 					     gchar *server_context);
