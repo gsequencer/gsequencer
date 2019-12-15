@@ -70,7 +70,7 @@ void ags_authentication_manager_test_is_session_active();
 #define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_LOGIN "ags-test-login"
 #define AGS_AUTHENTICATION_MANAGER_TEST_GET_DIGEST_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
 
-#define AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_LOGIN "ags-test-login"
+#define AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_USER_UUID "ags-test-user-uuid"
 #define AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_SECURITY_TOKEN "ags-test-security-token"
 
 AgsServerApplicationContext *server_application_context;
@@ -399,7 +399,7 @@ ags_authentication_manager_test_is_session_active()
   
   success = ags_authentication_manager_is_session_active(authentication_manager,
 							 security_context,
-							 AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_LOGIN,
+							 AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_USER_UUID,
 							 AGS_AUTHENTICATION_MANAGER_TEST_IS_SESSION_ACTIVE_DEFAULT_SECURITY_TOKEN);
 
   CU_ASSERT(success == FALSE);

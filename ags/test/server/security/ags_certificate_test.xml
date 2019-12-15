@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ags-server-certificate version="3.0.0" build-id="Sat Dec  7 18:08:16 UTC 2019">
+  <ags-srv-cert-list>
+    <ags-srv-cert>
+      <ags-srv-cert-uuid>ags-test-cert-uuid-0</ags-srv-cert-uuid>
+      <ags-srv-cert-domain>ags-test-domain</ags-srv-cert-domain>
+      <ags-srv-cert-key-type>ags-test-key-type</ags-srv-cert-key-type>
+      <ags-srv-cert-public-key-file>ags-test-public-key-file</ags-srv-cert-public-key-file>
+      <ags-srv-cert-private-key-file>ags-test-private-key-file</ags-srv-cert-private-key-file>
+    </ags-srv-cert>
+  </ags-srv-cert-list>
+</ags-server-certificate>

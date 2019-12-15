@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -33,8 +33,12 @@ check_PROGRAMS += \
 	ags_controller_test \
 	ags_front_controller_test \
 	ags_authentication_manager_test \
+	ags_business_group_manager_test \
+	ags_certificate_manager_test \
 	ags_password_store_manager_test \
 	ags_xml_authentication_test \
+	ags_xml_business_group_test \
+	ags_xml_certificate_test \
 	ags_xml_password_store_test \
 	ags_security_context_test
 
@@ -346,6 +350,18 @@ ags_authentication_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_C
 ags_authentication_manager_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_authentication_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# business group manager unit test
+ags_business_group_manager_test_SOURCES = ags/test/server/security/ags_business_group_manager_test.c
+ags_business_group_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_business_group_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_business_group_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# certificate manager unit test
+ags_certificate_manager_test_SOURCES = ags/test/server/security/ags_certificate_manager_test.c
+ags_certificate_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_certificate_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_certificate_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # password store manager unit test
 ags_password_store_manager_test_SOURCES = ags/test/server/security/ags_password_store_manager_test.c
 ags_password_store_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -357,6 +373,18 @@ ags_xml_authentication_test_SOURCES = ags/test/server/security/ags_xml_authentic
 ags_xml_authentication_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_xml_authentication_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_xml_authentication_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML business group unit test
+ags_xml_business_group_test_SOURCES = ags/test/server/security/ags_xml_business_group_test.c
+ags_xml_business_group_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_business_group_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_business_group_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML certificate unit test
+ags_xml_certificate_test_SOURCES = ags/test/server/security/ags_xml_certificate_test.c
+ags_xml_certificate_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_certificate_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_certificate_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML password store unit test
 ags_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_store_test.c

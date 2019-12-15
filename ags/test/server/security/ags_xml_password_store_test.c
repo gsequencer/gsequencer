@@ -98,7 +98,7 @@ ags_xml_password_store_test_set_login_name()
   
   xml_password_store = ags_xml_password_store_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
 
   error = NULL;
   ags_password_store_set_login_name(AGS_PASSWORD_STORE(xml_password_store),
@@ -123,7 +123,7 @@ ags_xml_password_store_test_get_login_name()
   
   xml_password_store = ags_xml_password_store_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
 
   error = NULL;
   login_name = ags_password_store_get_login_name(AGS_PASSWORD_STORE(xml_password_store),
@@ -147,7 +147,7 @@ ags_xml_password_store_test_set_password()
   
   xml_password_store = ags_xml_password_store_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
 
   error = NULL;
   ags_password_store_set_password(AGS_PASSWORD_STORE(xml_password_store),
@@ -172,7 +172,7 @@ ags_xml_password_store_test_get_password()
   
   xml_password_store = ags_xml_password_store_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
 
   error = NULL;
   password = ags_password_store_get_password(AGS_PASSWORD_STORE(xml_password_store),
@@ -198,7 +198,7 @@ ags_xml_password_store_test_encrypt_password()
   
   xml_password_store = ags_xml_password_store_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
 
   error = NULL;
   password = ags_password_store_encrypt_password(AGS_PASSWORD_STORE(xml_password_store),

@@ -21,7 +21,7 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -149,8 +149,12 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_server_test$(EXEEXT) ags_controller_test$(EXEEXT) \
 	ags_front_controller_test$(EXEEXT) \
 	ags_authentication_manager_test$(EXEEXT) \
+	ags_business_group_manager_test$(EXEEXT) \
+	ags_certificate_manager_test$(EXEEXT) \
 	ags_password_store_manager_test$(EXEEXT) \
 	ags_xml_authentication_test$(EXEEXT) \
+	ags_xml_business_group_test$(EXEEXT) \
+	ags_xml_certificate_test$(EXEEXT) \
 	ags_xml_password_store_test$(EXEEXT) \
 	ags_security_context_test$(EXEEXT) \
 	ags_base_plugin_test$(EXEEXT) ags_dssi_manager_test$(EXEEXT) \
@@ -2296,6 +2300,17 @@ ags_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_buffer_util_test_CFLAGS) $(CFLAGS) \
 	$(ags_buffer_util_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_business_group_manager_test_OBJECTS = ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.$(OBJEXT)
+ags_business_group_manager_test_OBJECTS =  \
+	$(am_ags_business_group_manager_test_OBJECTS)
+ags_business_group_manager_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_business_group_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_business_group_manager_test_CFLAGS) $(CFLAGS) \
+	$(ags_business_group_manager_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_cancel_audio_test_OBJECTS = ags/test/audio/task/cancel_audio_test-ags_cancel_audio_test.$(OBJEXT)
 ags_cancel_audio_test_OBJECTS = $(am_ags_cancel_audio_test_OBJECTS)
 ags_cancel_audio_test_DEPENDENCIES = libags_audio.la libags_server.la \
@@ -2347,6 +2362,17 @@ ags_capture_wave_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_capture_wave_channel_test_CFLAGS) $(CFLAGS) \
 	$(ags_capture_wave_channel_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_certificate_manager_test_OBJECTS = ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.$(OBJEXT)
+ags_certificate_manager_test_OBJECTS =  \
+	$(am_ags_certificate_manager_test_OBJECTS)
+ags_certificate_manager_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_certificate_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_certificate_manager_test_CFLAGS) $(CFLAGS) \
+	$(ags_certificate_manager_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
@@ -4248,6 +4274,28 @@ ags_xml_authentication_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_xml_authentication_test_CFLAGS) $(CFLAGS) \
 	$(ags_xml_authentication_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_xml_business_group_test_OBJECTS = ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.$(OBJEXT)
+ags_xml_business_group_test_OBJECTS =  \
+	$(am_ags_xml_business_group_test_OBJECTS)
+ags_xml_business_group_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_xml_business_group_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_xml_business_group_test_CFLAGS) $(CFLAGS) \
+	$(ags_xml_business_group_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_xml_certificate_test_OBJECTS = ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.$(OBJEXT)
+ags_xml_certificate_test_OBJECTS =  \
+	$(am_ags_xml_certificate_test_OBJECTS)
+ags_xml_certificate_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_xml_certificate_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_xml_certificate_test_CFLAGS) $(CFLAGS) \
+	$(ags_xml_certificate_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_xml_password_store_test_OBJECTS = ags/test/server/security/xml_password_store_test-ags_xml_password_store_test.$(OBJEXT)
 ags_xml_password_store_test_OBJECTS =  \
 	$(am_ags_xml_password_store_test_OBJECTS)
@@ -5115,9 +5163,13 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po \
 	ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po \
 	ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po \
+	ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po \
+	ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po \
 	ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po \
 	ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po \
 	ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po \
+	ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po \
+	ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po \
 	ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po \
 	ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po \
 	ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Po \
@@ -5251,10 +5303,12 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_buffer_audio_signal_test_SOURCES) \
 	$(ags_buffer_channel_test_SOURCES) $(ags_buffer_test_SOURCES) \
 	$(ags_buffer_util_test_SOURCES) \
+	$(ags_business_group_manager_test_SOURCES) \
 	$(ags_cancel_audio_test_SOURCES) \
 	$(ags_cancel_channel_test_SOURCES) \
 	$(ags_capture_wave_audio_test_SOURCES) \
 	$(ags_capture_wave_channel_test_SOURCES) \
+	$(ags_certificate_manager_test_SOURCES) \
 	$(ags_channel_test_SOURCES) \
 	$(ags_char_buffer_util_test_SOURCES) \
 	$(ags_clear_audio_signal_test_SOURCES) \
@@ -5388,6 +5442,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_volume_channel_test_SOURCES) $(ags_wave_test_SOURCES) \
 	$(ags_worker_thread_test_SOURCES) \
 	$(ags_xml_authentication_test_SOURCES) \
+	$(ags_xml_business_group_test_SOURCES) \
+	$(ags_xml_certificate_test_SOURCES) \
 	$(ags_xml_password_store_test_SOURCES) \
 	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
@@ -5416,10 +5472,12 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_buffer_audio_signal_test_SOURCES) \
 	$(ags_buffer_channel_test_SOURCES) $(ags_buffer_test_SOURCES) \
 	$(ags_buffer_util_test_SOURCES) \
+	$(ags_business_group_manager_test_SOURCES) \
 	$(ags_cancel_audio_test_SOURCES) \
 	$(ags_cancel_channel_test_SOURCES) \
 	$(ags_capture_wave_audio_test_SOURCES) \
 	$(ags_capture_wave_channel_test_SOURCES) \
+	$(ags_certificate_manager_test_SOURCES) \
 	$(ags_channel_test_SOURCES) \
 	$(ags_char_buffer_util_test_SOURCES) \
 	$(ags_clear_audio_signal_test_SOURCES) \
@@ -5554,6 +5612,8 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_volume_channel_test_SOURCES) $(ags_wave_test_SOURCES) \
 	$(ags_worker_thread_test_SOURCES) \
 	$(ags_xml_authentication_test_SOURCES) \
+	$(ags_xml_business_group_test_SOURCES) \
+	$(ags_xml_certificate_test_SOURCES) \
 	$(ags_xml_password_store_test_SOURCES) \
 	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
@@ -6411,6 +6471,7 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	ags/config.h.in ags/ags_config.h.in gtk-doc.make \
 	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
 	ags_example.xml midi2xml.1 ags_authentication_test.xml \
+	ags_business_group_test.xml ags_certificate_test.xml \
 	ags_password_store_test.xml \
 	ags_functional_server_test_authentication.xml \
 	ags_functional_server_test_password_store.xml \
@@ -6932,6 +6993,18 @@ ags_authentication_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_C
 ags_authentication_manager_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_authentication_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# business group manager unit test
+ags_business_group_manager_test_SOURCES = ags/test/server/security/ags_business_group_manager_test.c
+ags_business_group_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_business_group_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_business_group_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# certificate manager unit test
+ags_certificate_manager_test_SOURCES = ags/test/server/security/ags_certificate_manager_test.c
+ags_certificate_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_certificate_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_certificate_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # password store manager unit test
 ags_password_store_manager_test_SOURCES = ags/test/server/security/ags_password_store_manager_test.c
 ags_password_store_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -6943,6 +7016,18 @@ ags_xml_authentication_test_SOURCES = ags/test/server/security/ags_xml_authentic
 ags_xml_authentication_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_xml_authentication_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_xml_authentication_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML business group unit test
+ags_xml_business_group_test_SOURCES = ags/test/server/security/ags_xml_business_group_test.c
+ags_xml_business_group_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_business_group_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_business_group_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML certificate unit test
+ags_xml_certificate_test_SOURCES = ags/test/server/security/ags_xml_certificate_test.c
+ags_xml_certificate_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_xml_certificate_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xml_certificate_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML password store unit test
 ags_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_store_test.c
@@ -12118,6 +12203,13 @@ ags/test/lib/buffer_util_test-ags_buffer_util_test.$(OBJEXT):  \
 ags_buffer_util_test$(EXEEXT): $(ags_buffer_util_test_OBJECTS) $(ags_buffer_util_test_DEPENDENCIES) $(EXTRA_ags_buffer_util_test_DEPENDENCIES) 
 	@rm -f ags_buffer_util_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_buffer_util_test_LINK) $(ags_buffer_util_test_OBJECTS) $(ags_buffer_util_test_LDADD) $(LIBS)
+ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp) \
+	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
+
+ags_business_group_manager_test$(EXEEXT): $(ags_business_group_manager_test_OBJECTS) $(ags_business_group_manager_test_DEPENDENCIES) $(EXTRA_ags_business_group_manager_test_DEPENDENCIES) 
+	@rm -f ags_business_group_manager_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_business_group_manager_test_LINK) $(ags_business_group_manager_test_OBJECTS) $(ags_business_group_manager_test_LDADD) $(LIBS)
 ags/test/audio/task/cancel_audio_test-ags_cancel_audio_test.$(OBJEXT):  \
 	ags/test/audio/task/$(am__dirstamp) \
 	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -12146,6 +12238,13 @@ ags/test/audio/recall/capture_wave_channel_test-ags_capture_wave_channel_test.$(
 ags_capture_wave_channel_test$(EXEEXT): $(ags_capture_wave_channel_test_OBJECTS) $(ags_capture_wave_channel_test_DEPENDENCIES) $(EXTRA_ags_capture_wave_channel_test_DEPENDENCIES) 
 	@rm -f ags_capture_wave_channel_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_capture_wave_channel_test_LINK) $(ags_capture_wave_channel_test_OBJECTS) $(ags_capture_wave_channel_test_LDADD) $(LIBS)
+ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp) \
+	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
+
+ags_certificate_manager_test$(EXEEXT): $(ags_certificate_manager_test_OBJECTS) $(ags_certificate_manager_test_DEPENDENCIES) $(EXTRA_ags_certificate_manager_test_DEPENDENCIES) 
+	@rm -f ags_certificate_manager_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_certificate_manager_test_LINK) $(ags_certificate_manager_test_OBJECTS) $(ags_certificate_manager_test_LDADD) $(LIBS)
 ags/test/audio/channel_test-ags_channel_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -13279,6 +13378,20 @@ ags/test/server/security/xml_authentication_test-ags_xml_authentication_test.$(O
 ags_xml_authentication_test$(EXEEXT): $(ags_xml_authentication_test_OBJECTS) $(ags_xml_authentication_test_DEPENDENCIES) $(EXTRA_ags_xml_authentication_test_DEPENDENCIES) 
 	@rm -f ags_xml_authentication_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_xml_authentication_test_LINK) $(ags_xml_authentication_test_OBJECTS) $(ags_xml_authentication_test_LDADD) $(LIBS)
+ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp) \
+	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
+
+ags_xml_business_group_test$(EXEEXT): $(ags_xml_business_group_test_OBJECTS) $(ags_xml_business_group_test_DEPENDENCIES) $(EXTRA_ags_xml_business_group_test_DEPENDENCIES) 
+	@rm -f ags_xml_business_group_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_xml_business_group_test_LINK) $(ags_xml_business_group_test_OBJECTS) $(ags_xml_business_group_test_LDADD) $(LIBS)
+ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp) \
+	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
+
+ags_xml_certificate_test$(EXEEXT): $(ags_xml_certificate_test_OBJECTS) $(ags_xml_certificate_test_DEPENDENCIES) $(EXTRA_ags_xml_certificate_test_DEPENDENCIES) 
+	@rm -f ags_xml_certificate_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_xml_certificate_test_LINK) $(ags_xml_certificate_test_OBJECTS) $(ags_xml_certificate_test_LDADD) $(LIBS)
 ags/test/server/security/xml_password_store_test-ags_xml_password_store_test.$(OBJEXT):  \
 	ags/test/server/security/$(am__dirstamp) \
 	ags/test/server/security/$(DEPDIR)/$(am__dirstamp)
@@ -14208,9 +14321,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Po@am__quote@ # am--include-marker
@@ -19355,6 +19472,20 @@ ags/test/lib/buffer_util_test-ags_buffer_util_test.obj: ags/test/lib/ags_buffer_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/buffer_util_test-ags_buffer_util_test.obj `if test -f 'ags/test/lib/ags_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_buffer_util_test.c'; fi`
 
+ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.o: ags/test/server/security/ags_business_group_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_business_group_manager_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Tpo -c -o ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.o `test -f 'ags/test/server/security/ags_business_group_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_business_group_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Tpo ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_business_group_manager_test.c' object='ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_business_group_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.o `test -f 'ags/test/server/security/ags_business_group_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_business_group_manager_test.c
+
+ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.obj: ags/test/server/security/ags_business_group_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_business_group_manager_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.obj -MD -MP -MF ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Tpo -c -o ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.obj `if test -f 'ags/test/server/security/ags_business_group_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_business_group_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_business_group_manager_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Tpo ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_business_group_manager_test.c' object='ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_business_group_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/business_group_manager_test-ags_business_group_manager_test.obj `if test -f 'ags/test/server/security/ags_business_group_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_business_group_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_business_group_manager_test.c'; fi`
+
 ags/test/audio/task/cancel_audio_test-ags_cancel_audio_test.o: ags/test/audio/task/ags_cancel_audio_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_cancel_audio_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/cancel_audio_test-ags_cancel_audio_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/cancel_audio_test-ags_cancel_audio_test.Tpo -c -o ags/test/audio/task/cancel_audio_test-ags_cancel_audio_test.o `test -f 'ags/test/audio/task/ags_cancel_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_cancel_audio_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/cancel_audio_test-ags_cancel_audio_test.Tpo ags/test/audio/task/$(DEPDIR)/cancel_audio_test-ags_cancel_audio_test.Po
@@ -19410,6 +19541,20 @@ ags/test/audio/recall/capture_wave_channel_test-ags_capture_wave_channel_test.ob
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_capture_wave_channel_test.c' object='ags/test/audio/recall/capture_wave_channel_test-ags_capture_wave_channel_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_capture_wave_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/capture_wave_channel_test-ags_capture_wave_channel_test.obj `if test -f 'ags/test/audio/recall/ags_capture_wave_channel_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_capture_wave_channel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_capture_wave_channel_test.c'; fi`
+
+ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.o: ags/test/server/security/ags_certificate_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_certificate_manager_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Tpo -c -o ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.o `test -f 'ags/test/server/security/ags_certificate_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_certificate_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Tpo ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_certificate_manager_test.c' object='ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_certificate_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.o `test -f 'ags/test/server/security/ags_certificate_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_certificate_manager_test.c
+
+ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.obj: ags/test/server/security/ags_certificate_manager_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_certificate_manager_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.obj -MD -MP -MF ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Tpo -c -o ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.obj `if test -f 'ags/test/server/security/ags_certificate_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_certificate_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_certificate_manager_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Tpo ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_certificate_manager_test.c' object='ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_certificate_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/certificate_manager_test-ags_certificate_manager_test.obj `if test -f 'ags/test/server/security/ags_certificate_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_certificate_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_certificate_manager_test.c'; fi`
 
 ags/test/audio/channel_test-ags_channel_test.o: ags/test/audio/ags_channel_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_channel_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/channel_test-ags_channel_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/channel_test-ags_channel_test.Tpo -c -o ags/test/audio/channel_test-ags_channel_test.o `test -f 'ags/test/audio/ags_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_channel_test.c
@@ -21581,6 +21726,34 @@ ags/test/server/security/xml_authentication_test-ags_xml_authentication_test.obj
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_authentication_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/xml_authentication_test-ags_xml_authentication_test.obj `if test -f 'ags/test/server/security/ags_xml_authentication_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_authentication_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_authentication_test.c'; fi`
 
+ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.o: ags/test/server/security/ags_xml_business_group_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_business_group_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Tpo -c -o ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.o `test -f 'ags/test/server/security/ags_xml_business_group_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_business_group_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Tpo ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_xml_business_group_test.c' object='ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_business_group_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.o `test -f 'ags/test/server/security/ags_xml_business_group_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_business_group_test.c
+
+ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.obj: ags/test/server/security/ags_xml_business_group_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_business_group_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.obj -MD -MP -MF ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Tpo -c -o ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.obj `if test -f 'ags/test/server/security/ags_xml_business_group_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_business_group_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_business_group_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Tpo ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_xml_business_group_test.c' object='ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_business_group_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/xml_business_group_test-ags_xml_business_group_test.obj `if test -f 'ags/test/server/security/ags_xml_business_group_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_business_group_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_business_group_test.c'; fi`
+
+ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.o: ags/test/server/security/ags_xml_certificate_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_certificate_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Tpo -c -o ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.o `test -f 'ags/test/server/security/ags_xml_certificate_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_certificate_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Tpo ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_xml_certificate_test.c' object='ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_certificate_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.o `test -f 'ags/test/server/security/ags_xml_certificate_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_certificate_test.c
+
+ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.obj: ags/test/server/security/ags_xml_certificate_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_certificate_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.obj -MD -MP -MF ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Tpo -c -o ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.obj `if test -f 'ags/test/server/security/ags_xml_certificate_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_certificate_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_certificate_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Tpo ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/server/security/ags_xml_certificate_test.c' object='ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_certificate_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/xml_certificate_test-ags_xml_certificate_test.obj `if test -f 'ags/test/server/security/ags_xml_certificate_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_certificate_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_certificate_test.c'; fi`
+
 ags/test/server/security/xml_password_store_test-ags_xml_password_store_test.o: ags/test/server/security/ags_xml_password_store_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xml_password_store_test_CFLAGS) $(CFLAGS) -MT ags/test/server/security/xml_password_store_test-ags_xml_password_store_test.o -MD -MP -MF ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Tpo -c -o ags/test/server/security/xml_password_store_test-ags_xml_password_store_test.o `test -f 'ags/test/server/security/ags_xml_password_store_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_password_store_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Tpo ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po
@@ -22404,6 +22577,20 @@ ags_authentication_manager_test.log: ags_authentication_manager_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_business_group_manager_test.log: ags_business_group_manager_test$(EXEEXT)
+	@p='ags_business_group_manager_test$(EXEEXT)'; \
+	b='ags_business_group_manager_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_certificate_manager_test.log: ags_certificate_manager_test$(EXEEXT)
+	@p='ags_certificate_manager_test$(EXEEXT)'; \
+	b='ags_certificate_manager_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_password_store_manager_test.log: ags_password_store_manager_test$(EXEEXT)
 	@p='ags_password_store_manager_test$(EXEEXT)'; \
 	b='ags_password_store_manager_test'; \
@@ -22414,6 +22601,20 @@ ags_password_store_manager_test.log: ags_password_store_manager_test$(EXEEXT)
 ags_xml_authentication_test.log: ags_xml_authentication_test$(EXEEXT)
 	@p='ags_xml_authentication_test$(EXEEXT)'; \
 	b='ags_xml_authentication_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_xml_business_group_test.log: ags_xml_business_group_test$(EXEEXT)
+	@p='ags_xml_business_group_test$(EXEEXT)'; \
+	b='ags_xml_business_group_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_xml_certificate_test.log: ags_xml_certificate_test$(EXEEXT)
+	@p='ags_xml_certificate_test$(EXEEXT)'; \
+	b='ags_xml_certificate_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -24695,9 +24896,13 @@ distclean: distclean-recursive
 	-rm -f ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po
 	-rm -f ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Po
@@ -25618,9 +25823,13 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/server/controller/$(DEPDIR)/controller_test-ags_controller_test.Po
 	-rm -f ags/test/server/controller/$(DEPDIR)/front_controller_test-ags_front_controller_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/authentication_manager_test-ags_authentication_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/business_group_manager_test-ags_business_group_manager_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/certificate_manager_test-ags_certificate_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/password_store_manager_test-ags_password_store_manager_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/security_context_test-ags_security_context_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_authentication_test-ags_xml_authentication_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/xml_business_group_test-ags_xml_business_group_test.Po
+	-rm -f ags/test/server/security/$(DEPDIR)/xml_certificate_test-ags_xml_certificate_test.Po
 	-rm -f ags/test/server/security/$(DEPDIR)/xml_password_store_test-ags_xml_password_store_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po
 	-rm -f ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Po

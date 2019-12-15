@@ -150,7 +150,7 @@ ags_xml_authentication_test_logout()
   
   xml_authentication = ags_xml_authentication_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
   
   error = NULL;
   success = ags_authentication_logout(AGS_AUTHENTICATION(xml_authentication),
@@ -218,7 +218,7 @@ ags_xml_authentication_test_is_session_active()
   
   xml_authentication = ags_xml_authentication_new();
 
-  security_context = ags_security_context_new();
+  security_context = ags_auth_security_context_get_instance();
   
   error = NULL;
   success = ags_authentication_logout(AGS_AUTHENTICATION(xml_authentication),

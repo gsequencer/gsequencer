@@ -83,6 +83,8 @@ EXTRA_DIST = config.rpath \
 	ags_example.xml \
 	midi2xml.1 \
 	ags_authentication_test.xml \
+	ags_business_group_test.xml \
+	ags_certificate_test.xml \
 	ags_password_store_test.xml \
 	ags_functional_server_test_authentication.xml \
 	ags_functional_server_test_password_store.xml \

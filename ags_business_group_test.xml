@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ags-server-business-group version="3.0.0" build-id="Sat Dec  7 18:08:16 UTC 2019">
+  <ags-srv-group-list>
+    <ags-srv-group>
+      <ags-srv-group-uuid>ags-test-group-uuid-0</ags-srv-group-uuid>
+      <ags-srv-group-name>ags-test-name</ags-srv-group-name>
+      <ags-srv-group-user-list>
+	<ags-srv-group-user>ags-test-user-uuid-0</ags-srv-group-user>
+	<ags-srv-group-user>ags-test-user-uuid-1</ags-srv-group-user>
+	<ags-srv-group-user>ags-test-user-uuid-2</ags-srv-group-user>
+      </ags-srv-group-user-list>
+    </ags-srv-group>
+  </ags-srv-group-list>
+</ags-server-business-group>

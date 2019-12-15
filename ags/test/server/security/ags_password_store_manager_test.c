@@ -94,7 +94,7 @@ ags_password_store_manager_test_get_password_store()
 
   CU_ASSERT(start_password_store == NULL);
 
-  /* assert #1 - with password_store */
+  /* assert #1 - with password store */
   xml_password_store = (AgsXmlPasswordStore **) malloc(AGS_PASSWORD_STORE_MANAGER_TEST_GET_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT * sizeof(AgsXmlPasswordStore *));
 
   for(i = 0; i < AGS_PASSWORD_STORE_MANAGER_TEST_GET_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT; i++){
@@ -128,7 +128,7 @@ ags_password_store_manager_test_add_password_store()
 
   CU_ASSERT(start_password_store == NULL);
 
-  /* assert #1 - with password_store */
+  /* assert #1 - with password store */
   xml_password_store = (AgsXmlPasswordStore **) malloc(AGS_PASSWORD_STORE_MANAGER_TEST_ADD_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT * sizeof(AgsXmlPasswordStore *));
 
   for(i = 0; i < AGS_PASSWORD_STORE_MANAGER_TEST_ADD_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT; i++){
@@ -162,7 +162,7 @@ ags_password_store_manager_test_remove_password_store()
 
   CU_ASSERT(start_password_store == NULL);
 
-  /* assert #1 - with password_store */
+  /* assert #1 - with password store */
   xml_password_store = (AgsXmlPasswordStore **) malloc(AGS_PASSWORD_STORE_MANAGER_TEST_REMOVE_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT * sizeof(AgsXmlPasswordStore *));
 
   for(i = 0; i < AGS_PASSWORD_STORE_MANAGER_TEST_REMOVE_PASSWORD_STORE_XML_PASSWORD_STORE_COUNT; i++){
@@ -219,9 +219,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsPasswordStoreManager get password_store", ags_password_store_manager_test_get_password_store) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPasswordStoreManager add password_store", ags_password_store_manager_test_add_password_store) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPasswordStoreManager remove password_store", ags_password_store_manager_test_remove_password_store) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsPasswordStoreManager get password store", ags_password_store_manager_test_get_password_store) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPasswordStoreManager add password store", ags_password_store_manager_test_add_password_store) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPasswordStoreManager remove password store", ags_password_store_manager_test_remove_password_store) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPasswordStoreManager check password", ags_password_store_manager_test_check_password) == NULL)){
     CU_cleanup_registry();
     
