@@ -62,6 +62,40 @@ ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
 }
 
 /**
+ * ags_business_group_get_group_uuid:
+ * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
+ * @user_uuid: the users unique identifier
+ * @security_token: the security token
+ * @error: the #GError-struct
+ *
+ * Get group UUID as string vector.
+ * 
+ * Returns: the group UUIDs as %NULL terminated string array
+ * 
+ * Since: 3.0.0
+ */
+gchar**
+ags_business_group_get_group_uuid(AgsBusinessGroup *business_group,
+				  GObject *security_context,
+				  gchar *user_uuid,
+				  gchar *security_token,
+				  GError **error)
+{
+  AgsBusinessGroupInterface *business_group_interface;
+
+  g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
+  business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
+  g_return_val_if_fail(business_group_interface->get_group_uuid, NULL);
+
+  return(business_group_interface->get_group_uuid(business_group,
+						  security_context,
+						  user_uuid,
+						  security_token,
+						  error));
+}
+
+/**
  * ags_business_group_set_group_name:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext

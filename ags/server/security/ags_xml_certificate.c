@@ -217,11 +217,83 @@ ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
 				  gchar *security_token,
 				  GError **error)
 {
+  AgsXmlCertificate *xml_certificate;
+
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  
+  gchar *xpath;
   gchar **cert_uuid;
+  
+  guint i;
+  guint j;
+  
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context)){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
 
   cert_uuid = NULL;
-  
-  //TODO:JK: implement me
+
+  xpath = g_strdup("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid");
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathNodeEval(xml_certificate->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0, j = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	xmlChar *current_user_uuid;
+	
+	current_user_uuid = xmlNodeGetContent(node[i]);
+
+	if(j == 0){
+	  cert_uuid = (gchar **) malloc(2 * sizeof(gchar *)); 
+	}else{
+	  cert_uuid = (gchar **) realloc(cert_uuid,
+					 (j + 2) * sizeof(gchar *)); 
+	}
+
+	cert_uuid[j] = g_strdup(current_user_uuid);
+	
+	xmlFree(current_user_uuid);
+
+	j++;
+      }
+    }
+
+    if(j > 0){
+      cert_uuid[j] = NULL;
+    }
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
 
   return(cert_uuid);
 }
@@ -235,7 +307,103 @@ ags_xml_certificate_set_domain(AgsCertificate *certificate,
 			       gchar *domain,
 			       GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *domain_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return;
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(cert_node != NULL){
+    domain_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-domain",
+				20)){
+	  domain_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(domain_node == NULL){
+      domain_node = xmlNewNode(NULL,
+			       "ags-srv-cert-domain");
+      xmlAddChild(cert_node,
+		  domain_node);
+    }
+
+    xmlNodeSetContent(domain_node,
+		      domain);
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -246,11 +414,107 @@ ags_xml_certificate_get_domain(AgsCertificate *certificate,
 			       gchar *cert_uuid,
 			       GError **error)
 {
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *domain_node;
+  xmlNode *child;
+  
+  gchar *xpath;
   gchar *domain;
+
+  guint i;
+  
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+  
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathNodeEval(xml_certificate->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
 
   domain = NULL;
   
-  //TODO:JK: implement me
+  if(cert_node != NULL){
+    domain_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-domain",
+				20)){
+	  domain_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(domain_node != NULL){
+      xmlChar *tmp_domain;
+      
+      tmp_domain = xmlNodeGetContent(domain_node);
+
+      domain = g_strdup(tmp_domain);
+
+      xmlFree(tmp_domain);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(domain);
 }
@@ -264,7 +528,103 @@ ags_xml_certificate_set_key_type(AgsCertificate *certificate,
 				 gchar *key_type,
 				 GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *key_type_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return;
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(cert_node != NULL){
+    key_type_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-key-type",
+				22)){
+	  key_type_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(key_type_node == NULL){
+      key_type_node = xmlNewNode(NULL,
+				 "ags-srv-cert-key-type");
+      xmlAddChild(cert_node,
+		  key_type_node);
+    }
+
+    xmlNodeSetContent(key_type_node,
+		      key_type);
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -275,11 +635,107 @@ ags_xml_certificate_get_key_type(AgsCertificate *certificate,
 				 gchar *cert_uuid,
 				 GError **error)
 {
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *key_type_node;
+  xmlNode *child;
+  
+  gchar *xpath;
   gchar *key_type;
+
+  guint i;
+  
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+  
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathNodeEval(xml_certificate->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
 
   key_type = NULL;
   
-  //TODO:JK: implement me
+  if(cert_node != NULL){
+    key_type_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-key-type",
+				22)){
+	  key_type_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(key_type_node != NULL){
+      xmlChar *tmp_key_type;
+      
+      tmp_key_type = xmlNodeGetContent(key_type_node);
+
+      key_type = g_strdup(tmp_key_type);
+
+      xmlFree(tmp_key_type);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(key_type);
 }
@@ -293,7 +749,103 @@ ags_xml_certificate_set_public_key_file(AgsCertificate *certificate,
 					gchar *public_key_file,
 					GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *public_key_file_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return;
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(cert_node != NULL){
+    public_key_file_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-public-key-file",
+				29)){
+	  public_key_file_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(public_key_file_node == NULL){
+      public_key_file_node = xmlNewNode(NULL,
+					"ags-srv-cert-public-key-file");
+      xmlAddChild(cert_node,
+		  public_key_file_node);
+    }
+
+    xmlNodeSetContent(public_key_file_node,
+		      public_key_file);
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -304,11 +856,107 @@ ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
 					gchar *cert_uuid,
 					GError **error)
 {
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *public_key_file_node;
+  xmlNode *child;
+  
+  gchar *xpath;
   gchar *public_key_file;
+
+  guint i;
+  
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+  
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathNodeEval(xml_certificate->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
 
   public_key_file = NULL;
   
-  //TODO:JK: implement me
+  if(cert_node != NULL){
+    public_key_file_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-public-key-file",
+				29)){
+	  public_key_file_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(public_key_file_node != NULL){
+      xmlChar *tmp_public_key_file;
+      
+      tmp_public_key_file = xmlNodeGetContent(public_key_file_node);
+
+      public_key_file = g_strdup(tmp_public_key_file);
+
+      xmlFree(tmp_public_key_file);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(public_key_file);
 }
@@ -322,7 +970,103 @@ ags_xml_certificate_set_private_key_file(AgsCertificate *certificate,
 					 gchar *private_key_file,
 					 GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *private_key_file_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return;
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(cert_node != NULL){
+    private_key_file_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-private-key-file",
+				30)){
+	  private_key_file_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(private_key_file_node == NULL){
+      private_key_file_node = xmlNewNode(NULL,
+					 "ags-srv-cert-private-key-file");
+      xmlAddChild(cert_node,
+		  private_key_file_node);
+    }
+
+    xmlNodeSetContent(private_key_file_node,
+		      private_key_file);
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -333,11 +1077,107 @@ ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
 					 gchar *cert_uuid,
 					 GError **error)
 {
+  AgsXmlCertificate *xml_certificate;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *cert_node;
+  xmlNode *private_key_file_node;
+  xmlNode *child;
+  
+  gchar *xpath;
   gchar *private_key_file;
+
+  guint i;
+  
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     cert_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_certificate = AGS_XML_CERTIFICATE(certificate);
+
+  if(xml_certificate->doc == NULL ||
+     xml_certificate->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+  
+  cert_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid[text() = '%s']",
+			  cert_uuid);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_certificate->doc);
+  xpath_object = xmlXPathNodeEval(xml_certificate->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	cert_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
 
   private_key_file = NULL;
   
-  //TODO:JK: implement me
+  if(cert_node != NULL){
+    private_key_file_node = NULL;
+    
+    child = cert_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-cert-private-key-file",
+				30)){
+	  private_key_file_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(private_key_file_node != NULL){
+      xmlChar *tmp_private_key_file;
+      
+      tmp_private_key_file = xmlNodeGetContent(private_key_file_node);
+
+      private_key_file = g_strdup(tmp_private_key_file);
+
+      xmlFree(tmp_private_key_file);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(private_key_file);
 }

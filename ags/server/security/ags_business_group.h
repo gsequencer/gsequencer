@@ -39,6 +39,12 @@ struct _AgsBusinessGroupInterface
 {
   GTypeInterface ginterface;
   
+  gchar** (*get_group_uuid)(AgsBusinessGroup *business_group,
+			    GObject *security_context,
+			    gchar *user_uuid,
+			    gchar *security_token,
+			    GError **error);
+  
   void (*set_group_name)(AgsBusinessGroup *business_group,
 			 GObject *security_context,
 			 gchar *user_uuid,
@@ -69,6 +75,12 @@ struct _AgsBusinessGroupInterface
 };
 
 GType ags_business_group_get_type();
+
+gchar** ags_business_group_get_group_uuid(AgsBusinessGroup *business_group,
+					  GObject *security_context,
+					  gchar *user_uuid,
+					  gchar *security_token,
+					  GError **error);
 
 void ags_business_group_set_group_name(AgsBusinessGroup *business_group,
 				       GObject *security_context,

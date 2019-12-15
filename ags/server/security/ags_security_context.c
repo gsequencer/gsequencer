@@ -332,6 +332,10 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
 	j++;
       }
     }
+
+    if(j > 0){
+      security_context->business_group[j] = NULL;
+    }
   }
   
   g_rec_mutex_unlock(security_context_mutex);
