@@ -180,7 +180,103 @@ ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
 				      gchar *group_name,
 				      GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlBusinessGroup *xml_business_group;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *group_node;
+  xmlNode *group_name_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+
+  GRecMutex *xml_business_group_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     group_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_business_group = AGS_XML_BUSINESS_GROUP(business_group);
+
+  if(xml_business_group->doc == NULL ||
+     xml_business_group->root_node == NULL){
+    return;
+  }
+
+  xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(xml_business_group);
+
+  group_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid[text() = '%s']",
+			  group_uuid);
+
+  g_rec_mutex_lock(xml_business_group_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_business_group->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	group_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(group_node != NULL){
+    group_name_node = NULL;
+    
+    child = group_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-group-name",
+				21)){
+	  group_name_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(group_name_node == NULL){
+      group_name_node = xmlNewNode(NULL,
+				 "ags-srv-group-name");
+      xmlAddChild(group_node,
+		  group_name_node);
+    }
+
+    xmlNodeSetContent(group_name_node,
+		      group_name);
+  }
+
+  g_rec_mutex_unlock(xml_business_group_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -191,18 +287,107 @@ ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
 				      gchar *group_uuid,
 				      GError **error)
 {
+  AgsXmlBusinessGroup *xml_business_group;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *group_node;
+  xmlNode *group_name_node;
+  xmlNode *child;
+  
+  gchar *xpath;
   gchar *group_name;
 
-  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
-    if(user_uuid == NULL ||
-       security_token == NULL){
-      return(NULL);
-    }    
-  }
+  guint i;
   
+  GRecMutex *xml_business_group_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     group_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_business_group = AGS_XML_BUSINESS_GROUP(business_group);
+
+  if(xml_business_group->doc == NULL ||
+     xml_business_group->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(xml_business_group);
+  
+  group_node = NULL;
+
+  xpath = (xmlChar *) g_strdup_printf("/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid[text() = '%s']",
+				      group_uuid);
+
+  g_rec_mutex_lock(xml_business_group_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_business_group->doc);
+  xpath_object = xmlXPathNodeEval(xml_business_group->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	group_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
   group_name = NULL;
   
-  //TODO:JK: implement me
+  if(group_node != NULL){
+    group_name_node = NULL;
+    
+    child = group_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-group-name",
+				21)){
+	  group_name_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(group_name_node != NULL){
+      xmlChar *tmp_group_name;
+      
+      tmp_group_name = xmlNodeGetContent(group_name_node);
+
+      group_name = g_strdup(tmp_group_name);
+
+      xmlFree(tmp_group_name);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_business_group_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(group_name);
 }
@@ -215,8 +400,110 @@ ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
 				gchar *group_uuid,
 				gchar **user,
 				GError **error)
-{
-  //TODO:JK: implement me
+{  
+  AgsXmlBusinessGroup *xml_business_group;
+
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *group_node;
+  xmlNode *user_list_node;
+  xmlNode *user_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  gchar **iter;
+  
+  guint i;
+  
+  GRecMutex *xml_business_group_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     group_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+
+  xml_business_group = AGS_XML_BUSINESS_GROUP(business_group);
+
+  if(xml_business_group->doc == NULL ||
+     xml_business_group->root_node == NULL){
+    return;
+  }
+
+  xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(xml_business_group);
+  
+  group_node = NULL;
+
+  xpath = (xmlChar *) g_strdup_printf("/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid[text() = '%s']",
+				      group_uuid);
+
+  g_rec_mutex_lock(xml_business_group_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_business_group->doc);
+  xpath_object = xmlXPathNodeEval(xml_business_group->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	group_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+  
+  if(group_node != NULL){
+    /* remove user list */
+    child = group_node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-group-user-list",
+				24)){
+	  xmlUnlinkNode(child);
+	  xmlFreeNode(child);
+	  	  
+	  break;
+	}
+      }
+      
+      child = child->next;
+    }
+
+    /* add user list */
+    user_list_node = xmlNewNode(NULL,
+				"ags-srv-group-user-list");
+    xmlAddChild(group_node,
+		user_list_node);
+
+    if(user != NULL){
+      for(iter = user; iter[0] != NULL; iter++){
+	user_node = xmlNewNode(NULL,
+				  "ags-srv-group-user");
+	xmlAddChild(user_list_node,
+		    user_node);
+
+	xmlNodeSetContent(user_node,
+			  iter[0]);	
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(xml_business_group_mutex);
 }
 
 gchar**
@@ -227,11 +514,81 @@ ags_xml_business_group_get_user(AgsBusinessGroup *business_group,
 				gchar *group_uuid,
 				GError **error)
 {
-  gchar **user;
+  AgsXmlBusinessGroup *xml_business_group;
 
-  user = NULL;
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
   
-  //TODO:JK: implement me
+  gchar *xpath;
+  gchar **user;
+  
+  guint i;
+  guint j;
+  
+  GRecMutex *xml_business_group_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     group_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_business_group = AGS_XML_BUSINESS_GROUP(business_group);
+
+  if(xml_business_group->doc == NULL ||
+     xml_business_group->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(xml_business_group);
+  
+  user = NULL;
+
+  xpath = (xmlChar *) g_strdup_printf("(/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid[text() = '%s'])/../ags-srv-group-user-list/ags-srv-group-user",
+				      group_uuid);
+
+  g_rec_mutex_lock(xml_business_group_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_business_group->doc);
+  xpath_object = xmlXPathNodeEval(xml_business_group->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0, j = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	xmlChar *user_name;
+	
+	user_name = xmlNodeGetContent(node[i]);
+
+	if(j == 0){
+	  user = (gchar **) malloc(2 * sizeof(gchar *)); 
+	}else{
+	  user = (gchar **) realloc(user,
+				    (j + 2) * sizeof(gchar *)); 
+	}
+
+	user[j] = g_strdup(user_name);	
+	
+	xmlFree(user_name);
+
+	j++;
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(xml_business_group_mutex);
 
   return(user);
 }

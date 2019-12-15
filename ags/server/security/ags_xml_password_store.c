@@ -396,18 +396,26 @@ ags_xml_password_store_set_password(AgsPasswordStore *password_store,
   xmlNode *password_node;
   xmlNode *child;
   
-  xmlChar *xpath;
+  gchar *xpath;
   
   guint i;
-  gboolean success;
   
   GRecMutex *xml_password_store_mutex;
 
-  if(user_uuid == NULL ||
-     security_token == NULL){
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
     return;
   }    
 
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+  
   xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
 
   if(xml_password_store->doc == NULL ||
@@ -419,8 +427,8 @@ ags_xml_password_store_set_password(AgsPasswordStore *password_store,
   
   user_node = NULL;
 
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
-				      user_uuid);
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
 
   g_rec_mutex_lock(xml_password_store_mutex);
     
@@ -439,13 +447,6 @@ ags_xml_password_store_set_password(AgsPasswordStore *password_store,
       }
     }
   }
-
-  g_rec_mutex_unlock(xml_password_store_mutex);
-
-  xmlXPathFreeObject(xpath_object);
-  xmlXPathFreeContext(xpath_context);
-
-  g_free(xpath);
 
   if(user_node != NULL){
     password_node = NULL;
@@ -476,6 +477,13 @@ ags_xml_password_store_set_password(AgsPasswordStore *password_store,
     xmlNodeSetContent(password_node,
 		      password);
   }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
@@ -494,17 +502,26 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
   xmlNode *password_node;
   xmlNode *child;
   
-  xmlChar *xpath;
-  xmlChar *password;
+  gchar *xpath;
+  gchar *password;
 
   guint i;
-  gboolean success;
   
   GRecMutex *xml_password_store_mutex;
 
-  if(user_uuid == NULL){
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
     return(NULL);
   }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
 
   xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
 
@@ -539,13 +556,6 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
     }
   }
 
-  g_rec_mutex_unlock(xml_password_store_mutex);
-
-  xmlXPathFreeObject(xpath_object);
-  xmlXPathFreeContext(xpath_context);
-
-  g_free(xpath);
-
   password = NULL;
   
   if(user_node != NULL){
@@ -568,9 +578,22 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
     }
 
     if(password_node != NULL){
-      password = xmlNodeGetContent(password_node);
+      xmlChar *tmp_password;
+      
+      tmp_password = xmlNodeGetContent(password_node);
+
+      password = g_strdup(tmp_password);
+
+      xmlFree(tmp_password);
     }
   }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 
   return(password);
 }

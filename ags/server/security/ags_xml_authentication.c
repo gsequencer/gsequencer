@@ -897,7 +897,7 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 
   GList *start_password_store, *password_store;
 
-  xmlChar *xpath;
+  gchar *xpath;
   
   guint i;
   gboolean success;
@@ -905,7 +905,8 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
   GRecMutex *authentication_manager_mutex;
   GRecMutex *xml_authentication_mutex;
 
-  if(user_uuid == NULL ||
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL ||
      security_token == NULL){
     return(FALSE);
   }
@@ -1107,7 +1108,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   xmlNode **node;
   xmlNode *auth_node;
   
-  xmlChar *xpath;
+  gchar *xpath;
 
   guint i;
 
@@ -1121,7 +1122,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
 
   /* retrieve auth node */
-  xpath = g_strdup_printf("(//ags-srv-auth)/ags-srv-user-uuid[content()='%s']",
+  xpath = g_strdup_printf("(/ags-server-authentication/ags-srv-auth-list/ags-srv-auth)/ags-srv-user-uuid[content()='%s']",
 			  user_uuid);
 
   g_rec_mutex_lock(xml_authentication_mutex);
@@ -1178,7 +1179,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
  *
  * Returns: the new #AgsXmlAuthentication instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsXmlAuthentication*
 ags_xml_authentication_new()

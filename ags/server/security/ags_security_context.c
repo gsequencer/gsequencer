@@ -264,7 +264,7 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
   
   gchar *xpath;
 
-  guint i;
+  guint i, j;
   
   GRecMutex *security_context_mutex;
   
@@ -312,22 +312,24 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
   if(xpath_object->nodesetval != NULL){
     node = xpath_object->nodesetval->nodeTab;
 
-    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    for(i = 0, j = 0; i < xpath_object->nodesetval->nodeNr; i++){
       if(node[i]->type == XML_ELEMENT_NODE){
 	xmlChar *group_name;
 	
 	group_name = xmlNodeGetContent(node[i]);
 
-	if(i == 0){
+	if(j == 0){
 	  security_context->business_group = (gchar **) malloc(2 * sizeof(gchar *)); 
 	}else{
 	  security_context->business_group = (gchar **) realloc(security_context->business_group,
-								(i + 2) * sizeof(gchar *)); 
+								(j + 2) * sizeof(gchar *)); 
 	}
 
-	security_context->business_group[i] = g_strdup(group_name);	
+	security_context->business_group[j] = g_strdup(group_name);	
 	
 	xmlFree(group_name);
+
+	j++;
       }
     }
   }
