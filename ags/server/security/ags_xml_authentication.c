@@ -232,7 +232,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
   
   gchar *current_user_uuid;
   gchar *current_security_token;
-  xmlChar *xpath;
+  gchar *xpath;
 
   guint i;
   gboolean success;
@@ -331,8 +331,14 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	if(!g_ascii_strncasecmp(child->name,
 				"ags-srv-user-uuid",
 				18)){
-	  current_user_uuid = xmlNodeGetContent(child);
+	  xmlChar *tmp_user_uuid;
+	  
+	  tmp_user_uuid = xmlNodeGetContent(child);
 
+	  current_user_uuid = g_strdup(tmp_user_uuid);
+
+	  xmlFree(tmp_user_uuid);
+	  
 	  break;
 	}
       }
@@ -357,7 +363,6 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
     
     xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
 
-    xpath = NULL;
     xpath = g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
 			    current_user_uuid);
     
@@ -631,7 +636,7 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
   GList *start_password_store, *password_store;
 
   gchar *current_user_uuid;
-  xmlChar *xpath;
+  gchar *xpath;
 
   guint i;
   gboolean is_session_active;
@@ -691,8 +696,8 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
     
   xml_authentication_mutex = AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(xml_authentication);
     
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
-				      current_user_uuid);
+  xpath = g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
+			  current_user_uuid);
     
   g_rec_mutex_lock(xml_authentication_mutex);
     
@@ -928,8 +933,8 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
     
   auth_node = NULL;
   
-  xpath = (xmlChar *) g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
-				      user_uuid);
+  xpath = g_strdup_printf("/ags-server-authentication/ags-srv-auth-list/ags-srv-auth/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
     
   g_rec_mutex_lock(xml_authentication_mutex);
     

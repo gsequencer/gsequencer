@@ -104,6 +104,7 @@ ags_functional_server_test_init_suite()
 
   /* soup session */
   soup_session = soup_session_new_with_options(SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_BASIC,
+					       SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_AUTH_DIGEST,
 					       NULL);
 
   jar = soup_cookie_jar_text_new(AGS_FUNCTIONAL_SERVER_TEST_XML_COOKIE_FILENAME,

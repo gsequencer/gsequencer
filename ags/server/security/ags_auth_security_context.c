@@ -121,7 +121,7 @@ ags_auth_security_context_get_instance()
   g_mutex_lock(&mutex);
 
   if(ags_auth_security_context == NULL){
-    ags_auth_security_context = ags_security_context_new();
+    ags_auth_security_context = ags_auth_security_context_new();
   }
   
   g_mutex_unlock(&mutex);

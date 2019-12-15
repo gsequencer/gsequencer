@@ -22,6 +22,7 @@
 
 #include <ags/server/security/ags_xml_password_store.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_password_store.h>
 #include <ags/server/security/ags_auth_security_context.h>
 

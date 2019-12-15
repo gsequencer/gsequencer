@@ -1303,18 +1303,19 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
 
     server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
+    domain = NULL;
+    path = NULL;
+    
     g_rec_mutex_lock(server_mutex);
 
-    if(strchr(server->domain, '.') == NULL){
-      domain = g_strdup(server->ip4);
-    }else{
+    if(server->domain != NULL &&
+       strchr(server->domain, '.') != NULL){
       domain = g_strdup(server->domain);
+      path = "/";
     }
     
     g_rec_mutex_unlock(server_mutex);
 
-    path = "/";
-    
     /* request */
     cookie = NULL;
 
@@ -1358,6 +1359,8 @@ ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
     
     soup_cookies_to_response(cookie,
 			     msg);
+
+    g_free(domain);
   }
   
   return(success);

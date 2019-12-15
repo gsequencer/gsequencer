@@ -19,6 +19,7 @@
 
 #include <ags/server/security/ags_xml_certificate.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_certificate.h>
 #include <ags/server/security/ags_auth_security_context.h>
 
