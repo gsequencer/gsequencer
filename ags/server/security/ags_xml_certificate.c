@@ -20,6 +20,7 @@
 #include <ags/server/security/ags_xml_certificate.h>
 
 #include <ags/server/security/ags_certificate.h>
+#include <ags/server/security/ags_auth_security_context.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -197,6 +198,15 @@ ags_xml_certificate_finalize(GObject *gobject)
 
   xml_certificate = AGS_XML_CERTIFICATE(gobject);
 
+  g_free(xml_certificate->filename);
+  g_free(xml_certificate->encoding);
+  g_free(xml_certificate->dtd);
+  
+  if(xml_certificate->doc != NULL){
+    xmlFreeDoc(xml_certificate->doc);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_xml_certificate_parent_class)->finalize(gobject);
 }
 
@@ -330,6 +340,51 @@ ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
   //TODO:JK: implement me
 
   return(private_key_file);
+}
+
+/**
+ * ags_xml_certificate_open_filename:
+ * @xml_certificate: the #AgsXmlCertificate
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_xml_certificate_open_filename(AgsXmlCertificate *xml_certificate,
+				  gchar *filename)
+{
+  xmlDoc *doc;
+
+  GRecMutex *xml_certificate_mutex;
+
+  if(!AGS_IS_XML_CERTIFICATE(xml_certificate) ||
+     filename == NULL){
+    return;
+  }
+  
+  xml_certificate_mutex = AGS_XML_CERTIFICATE_GET_OBJ_MUTEX(xml_certificate);
+
+  /* open XML */
+  doc = xmlReadFile(filename,
+		    NULL,
+		    0);
+
+  g_rec_mutex_lock(xml_certificate_mutex);
+
+  xml_certificate->filename = g_strdup(filename);
+
+  xml_certificate->doc = doc;
+  
+  if(doc == NULL){
+    g_warning("AgsXmlCertificate - failed to read XML document %s", filename);
+  }else{
+    /* get the root node */
+    xml_certificate->root_node = xmlDocGetRootElement(doc);
+  }
+
+  g_rec_mutex_unlock(xml_certificate_mutex);
 }
 
 /**

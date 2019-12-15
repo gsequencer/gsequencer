@@ -23,6 +23,7 @@
 #include <ags/server/security/ags_xml_password_store.h>
 
 #include <ags/server/security/ags_password_store.h>
+#include <ags/server/security/ags_auth_security_context.h>
 
 #include <unistd.h>
 
@@ -206,11 +207,12 @@ ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
   
   GRecMutex *xml_password_store_mutex;
 
+  /* authentication */
   if(user_uuid == NULL ||
      security_token == NULL){
     return;
-  }    
-
+  }
+      
   xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
 
   if(xml_password_store->doc == NULL ||

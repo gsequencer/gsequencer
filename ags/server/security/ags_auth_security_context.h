@@ -53,6 +53,8 @@ struct _AgsAuthSecurityContextClass
 
 GType ags_auth_security_context_get_type();
 
+AgsAuthSecurityContext* ags_auth_security_context_get_instance();
+
 AgsAuthSecurityContext* ags_auth_security_context_new();
 
 G_END_DECLS

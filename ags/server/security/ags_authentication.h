@@ -63,7 +63,7 @@ struct _AgsAuthenticationInterface
   
   gboolean (*is_session_active)(AgsAuthentication *authentication,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				GError **error);
 };
@@ -94,7 +94,7 @@ gchar* ags_authentication_get_digest(AgsAuthentication *authentication,
 
 gboolean ags_authentication_is_session_active(AgsAuthentication *authentication,
 					      GObject *security_context,
-					      gchar *login,
+					      gchar *user_uuid,
 					      gchar *security_token,
 					      GError **error);
 

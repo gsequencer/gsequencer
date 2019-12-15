@@ -39,6 +39,8 @@ void ags_auth_security_context_finalize(GObject *gobject);
 
 static gpointer ags_auth_security_context_parent_class = NULL;
 
+AgsAuthSecurityContext *ags_auth_security_context = NULL;
+
 GType
 ags_auth_security_context_get_type()
 {
@@ -100,6 +102,31 @@ ags_auth_security_context_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_auth_security_context_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_auth_security_context_get_instance:
+ *
+ * Get instance.
+ *
+ * Returns: the #AgsAuthSecurityContext
+ *
+ * Since: 3.0.0
+ */
+AgsAuthSecurityContext*
+ags_auth_security_context_get_instance()
+{
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+
+  if(ags_auth_security_context == NULL){
+    ags_auth_security_context = ags_security_context_new();
+  }
+  
+  g_mutex_unlock(&mutex);
+
+  return(ags_auth_security_context);
 }
 
 /**

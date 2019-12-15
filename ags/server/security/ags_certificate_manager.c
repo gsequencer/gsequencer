@@ -19,6 +19,8 @@
 
 #include <ags/server/security/ags_certificate_manager.h>
 
+#include <ags/server/security/ags_auth_security_context.h>
+
 void ags_certificate_manager_class_init(AgsCertificateManagerClass *certificate_manager);
 void ags_certificate_manager_init (AgsCertificateManager *certificate_manager);
 void ags_certificate_manager_finalize(GObject *gobject);

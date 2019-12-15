@@ -60,6 +60,9 @@ struct _AgsXmlCertificateClass
 
 GType ags_xml_certificate_get_type();
 
+void ags_xml_certificate_open_filename(AgsXmlCertificate *xml_certificate,
+				       gchar *filename);
+
 AgsXmlCertificate* ags_xml_certificate_new();
 
 G_END_DECLS

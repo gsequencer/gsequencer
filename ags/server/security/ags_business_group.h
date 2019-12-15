@@ -41,28 +41,28 @@ struct _AgsBusinessGroupInterface
   
   void (*set_group_name)(AgsBusinessGroup *business_group,
 			 GObject *security_context,
-			 gchar *login,
+			 gchar *user_uuid,
 			 gchar *security_token,
 			 gchar *group_uuid,
 			 gchar *group_name,
 			 GError **error);
   gchar* (*get_group_name)(AgsBusinessGroup *business_group,
 			   GObject *security_context,
-			   gchar *login,
+			   gchar *user_uuid,
 			   gchar *security_token,
 			   gchar *group_uuid,
 			   GError **error);
   
   void (*set_user)(AgsBusinessGroup *business_group,
 		   GObject *security_context,
-		   gchar *login,
+		   gchar *user_uuid,
 		   gchar *security_token,
 		   gchar *group_uuid,
 		   gchar** user_id,
 		   GError **error);
   gchar** (*get_user)(AgsBusinessGroup *business_group,
 		      GObject *security_context,
-		      gchar *login,
+		      gchar *user_uuid,
 		      gchar *security_token,
 		      gchar *group_uuid,
 		      GError **error);
@@ -72,28 +72,28 @@ GType ags_business_group_get_type();
 
 void ags_business_group_set_group_name(AgsBusinessGroup *business_group,
 				       GObject *security_context,
-				       gchar *login,
+				       gchar *user_uuid,
 				       gchar *security_token,
 				       gchar *group_uuid,
 				       gchar *group_name,
 				       GError **error);
 gchar* ags_business_group_get_group_name(AgsBusinessGroup *business_group,
 					 GObject *security_context,
-					 gchar *login,
+					 gchar *user_uuid,
 					 gchar *security_token,
 					 gchar *group_uuid,
 					 GError **error);
   
 void ags_business_group_set_user(AgsBusinessGroup *business_group,
 				 GObject *security_context,
-				 gchar *login,
+				 gchar *user_uuid,
 				 gchar *security_token,
 				 gchar *group_uuid,
 				 gchar **user,
 				 GError **error);
 gchar** ags_business_group_get_user(AgsBusinessGroup *business_group,
 				    GObject *security_context,
-				    gchar *login,
+				    gchar *user_uuid,
 				    gchar *security_token,
 				    gchar *group_uuid,
 				    GError **error);

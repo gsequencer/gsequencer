@@ -20,6 +20,7 @@
 #include <ags/server/security/ags_xml_business_group.h>
 
 #include <ags/server/security/ags_business_group.h>
+#include <ags/server/security/ags_auth_security_context.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -36,27 +37,27 @@ void ags_xml_business_group_finalize(GObject *gobject);
 
 void ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
 					   GObject *security_context,
-					   gchar *login,
+					   gchar *user_uuid,
 					   gchar *security_token,
 					   gchar *group_uuid,
 					   gchar *group_name,
 					   GError **error);
 gchar* ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
 					     GObject *security_context,
-					     gchar *login,
+					     gchar *user_uuid,
 					     gchar *security_token,
 					     gchar *group_uuid,
 					     GError **error);  
 void ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     gchar *group_uuid,
 				     gchar **user,
 				     GError **error);
 gchar** ags_xml_business_group_get_user(AgsBusinessGroup *business_group,
 					GObject *security_context,
-					gchar *login,
+					gchar *user_uuid,
 					gchar *security_token,
 					gchar *group_uuid,
 					GError **error);
@@ -173,7 +174,7 @@ ags_xml_business_group_finalize(GObject *gobject)
 void
 ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
 				      GObject *security_context,
-				      gchar *login,
+				      gchar *user_uuid,
 				      gchar *security_token,
 				      gchar *group_uuid,
 				      gchar *group_name,
@@ -185,13 +186,20 @@ ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
 gchar*
 ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
 				      GObject *security_context,
-				      gchar *login,
+				      gchar *user_uuid,
 				      gchar *security_token,
 				      gchar *group_uuid,
 				      GError **error)
 {
   gchar *group_name;
 
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(user_uuid == NULL ||
+       security_token == NULL){
+      return(NULL);
+    }    
+  }
+  
   group_name = NULL;
   
   //TODO:JK: implement me
@@ -202,7 +210,7 @@ ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
 void
 ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				gchar *group_uuid,
 				gchar **user,
@@ -214,7 +222,7 @@ ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
 gchar**
 ags_xml_business_group_get_user(AgsBusinessGroup *business_group,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				gchar *group_uuid,
 				GError **error)
@@ -226,6 +234,51 @@ ags_xml_business_group_get_user(AgsBusinessGroup *business_group,
   //TODO:JK: implement me
 
   return(user);
+}
+
+/**
+ * ags_xml_business_group_open_filename:
+ * @xml_business_group: the #AgsXmlBusinessGroup
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_xml_business_group_open_filename(AgsXmlBusinessGroup *xml_business_group,
+				     gchar *filename)
+{
+  xmlDoc *doc;
+
+  GRecMutex *xml_business_group_mutex;
+
+  if(!AGS_IS_XML_BUSINESS_GROUP(xml_business_group) ||
+     filename == NULL){
+    return;
+  }
+  
+  xml_business_group_mutex = AGS_XML_BUSINESS_GROUP_GET_OBJ_MUTEX(xml_business_group);
+
+  /* open XML */
+  doc = xmlReadFile(filename,
+		    NULL,
+		    0);
+
+  g_rec_mutex_lock(xml_business_group_mutex);
+
+  xml_business_group->filename = g_strdup(filename);
+
+  xml_business_group->doc = doc;
+  
+  if(doc == NULL){
+    g_warning("AgsXmlBusinessGroup - failed to read XML document %s", filename);
+  }else{
+    /* get the root node */
+    xml_business_group->root_node = xmlDocGetRootElement(doc);
+  }
+
+  g_rec_mutex_unlock(xml_business_group_mutex);
 }
 
 /**

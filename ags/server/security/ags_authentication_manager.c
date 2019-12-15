@@ -19,6 +19,8 @@
 
 #include <ags/server/security/ags_authentication_manager.h>
 
+#include <ags/server/security/ags_auth_security_context.h>
+
 void ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authentication_manager);
 void ags_authentication_manager_init (AgsAuthenticationManager *authentication_manager);
 void ags_authentication_manager_finalize(GObject *gobject);
@@ -562,7 +564,15 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
 {
   AgsSecurityContext *current_security_context;
   
+  AgsLoginInfo *login_info;
+
   GList *start_authentication, *authentication;
+
+  gchar *user_uuid;
+
+  gboolean is_session_active;
+  
+  GRecMutex *authentication_manager_mutex;
 
   if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
      login == NULL ||
@@ -570,6 +580,24 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
     return(FALSE);
   }
 
+  authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
+
+  login_info = ags_authentication_manager_lookup_login(authentication_manager,
+						       login);
+
+  user_uuid = NULL;
+  is_session_active = FALSE;
+  
+  if(login_info != NULL){  
+    g_rec_mutex_lock(authentication_manager_mutex);
+
+    user_uuid = g_strdup(login_info->user_uuid);
+
+    g_rec_mutex_unlock(authentication_manager_mutex);
+  }else{
+    return(FALSE);
+  }
+  
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
   
@@ -577,12 +605,19 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
     GError *error;
 
     error = NULL;
+    is_session_active = ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
+							     security_context,
+							     user_uuid,
+							     security_token,
+							     &error);
+
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
     
-    if(ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
-					    security_context,
-					    login,
-					    security_token,
-					    &error)){
+    if(is_session_active){
       error = NULL;
       ags_authentication_logout(AGS_AUTHENTICATION(authentication->data),
 				security_context,
@@ -596,16 +631,7 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
 	g_error_free(error);
       }
       
-      g_list_free_full(start_authentication,
-		       g_object_unref);
-      
-      return(TRUE);
-    }
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-
-      g_error_free(error);
+      break;
     }
     
     authentication = authentication->next;
@@ -613,8 +639,12 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
 
   g_list_free_full(start_authentication,
 		   g_object_unref);
+
+  ags_login_info_unref(login_info);
   
-  return(FALSE);
+  g_free(user_uuid);
+  
+  return(is_session_active);
 }
 
 /**
@@ -689,7 +719,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
  * ags_authentication_manager_is_session_active:
  * @authentication_manager: the #AgsAuthenticationManager
  * @security_context: the security context
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * 
  * Check if session is active.
@@ -701,16 +731,20 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
 gboolean
 ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
 					     GObject *security_context,
-					     gchar *login,
+					     gchar *user_uuid,
 					     gchar *security_token)
 {
   GList *start_authentication, *authentication;  
 
+  gboolean is_session_active;
+  
   if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
-     login == NULL){
+     user_uuid == NULL){
     return(FALSE);
   }
 
+  is_session_active = FALSE;
+  
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
   
@@ -718,22 +752,20 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
     GError *error;
 
     error = NULL;
-    
-    if(ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
-					    security_context,
-					    login,
-					    security_token,
-					    &error)){
-      g_list_free_full(start_authentication,
-		       g_object_unref);
-
-      return(TRUE);
-    }
+    is_session_active = ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
+							     security_context,
+							     user_uuid,
+							     security_token,
+							     &error);
 
     if(error != NULL){
       g_warning("%s", error->message);
 
       g_error_free(error);
+    }
+    
+    if(is_session_active){
+      break;
     }
     
     authentication = authentication->next;
@@ -742,7 +774,7 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
   g_list_free_full(start_authentication,
 		   g_object_unref);
   
-  return(FALSE);
+  return(is_session_active);
 }
 
 /**

@@ -1428,6 +1428,7 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
   GSList *cookie;
 
   gchar *login;
+  gchar *user_uuid;
   gchar *security_token;
 
   GRecMutex *authentication_manager_mutex;
@@ -1476,12 +1477,14 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 
     security_context = login_info->security_context;
     g_object_ref(security_context);
-  
+
+    user_uuid = g_strdup(login_info->user_uuid);
+    
     g_rec_mutex_unlock(authentication_manager_mutex);
 
     if(ags_authentication_manager_is_session_active(authentication_manager,
 						    security_context,
-						    login,
+						    user_uuid,
 						    security_token)){
       ags_front_controller_do_request(front_controller,
 				      msg,
@@ -1500,6 +1503,8 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
     g_object_unref(security_context);
 
     ags_login_info_unref(login_info);
+
+    g_free(user_uuid);
   }
 }
 

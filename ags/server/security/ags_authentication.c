@@ -214,7 +214,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
  * ags_authentication_is_session_active:
  * @authentication: the #AgsAuthentication
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @error: the #GError-struct
  * 
@@ -227,7 +227,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
 gboolean
 ags_authentication_is_session_active(AgsAuthentication *authentication,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     GError **error)
 {
@@ -239,7 +239,7 @@ ags_authentication_is_session_active(AgsAuthentication *authentication,
 
   return(authentication_interface->is_session_active(authentication,
 						     security_context,
-						     login,
+						     user_uuid,
 						     security_token,
 						     error));
 }

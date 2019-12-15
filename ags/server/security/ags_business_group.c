@@ -65,7 +65,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
  * ags_business_group_set_group_name:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @group_uuid: the group's UUID
  * @group_name: the business group's name to set
@@ -78,7 +78,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
 void
 ags_business_group_set_group_name(AgsBusinessGroup *business_group,
 				  GObject *security_context,
-				  gchar *login,
+				  gchar *user_uuid,
 				  gchar *security_token,
 				  gchar *group_uuid,
 				  gchar *group_name,
@@ -91,7 +91,7 @@ ags_business_group_set_group_name(AgsBusinessGroup *business_group,
   g_return_if_fail(business_group_interface->set_group_name);
   business_group_interface->set_group_name(business_group,
 					   security_context,
-					   login,
+					   user_uuid,
 					   security_token,
 					   group_uuid,
 					   group_name,
@@ -102,7 +102,7 @@ ags_business_group_set_group_name(AgsBusinessGroup *business_group,
  * ags_business_group_get_group_name:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @group_uuid: the group's UUID
  * @error: the #GError-struct
@@ -116,7 +116,7 @@ ags_business_group_set_group_name(AgsBusinessGroup *business_group,
 gchar*
 ags_business_group_get_group_name(AgsBusinessGroup *business_group,
 				  GObject *security_context,
-				  gchar *login,
+				  gchar *user_uuid,
 				  gchar *security_token,
 				  gchar *group_uuid,
 				  GError **error)
@@ -129,7 +129,7 @@ ags_business_group_get_group_name(AgsBusinessGroup *business_group,
 
   return(business_group_interface->get_group_name(business_group,
 						  security_context,
-						  login,
+						  user_uuid,
 						  security_token,
 						  group_uuid,
 						  error));
@@ -139,7 +139,7 @@ ags_business_group_get_group_name(AgsBusinessGroup *business_group,
  * ags_business_group_set_user:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @group_uuid: the business group's UUID
  * @user: the string array containing user names
@@ -152,7 +152,7 @@ ags_business_group_get_group_name(AgsBusinessGroup *business_group,
 void
 ags_business_group_set_user(AgsBusinessGroup *business_group,
 			    GObject *security_context,
-			    gchar *login,
+			    gchar *user_uuid,
 			    gchar *security_token,
 			    gchar *group_uuid,
 			    gchar **user,
@@ -165,7 +165,7 @@ ags_business_group_set_user(AgsBusinessGroup *business_group,
   g_return_if_fail(business_group_interface->set_user);
   business_group_interface->set_user(business_group,
 				     security_context,
-				     login,
+				     user_uuid,
 				     security_token,
 				     group_uuid,
 				     user,
@@ -176,7 +176,7 @@ ags_business_group_set_user(AgsBusinessGroup *business_group,
  * ags_business_group_get_user:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @group_uuid: the business group's UUID
  * @error: the #GError-struct
@@ -190,7 +190,7 @@ ags_business_group_set_user(AgsBusinessGroup *business_group,
 gchar**
 ags_business_group_get_user(AgsBusinessGroup *business_group,
 			    GObject *security_context,
-			    gchar *login,
+			    gchar *user_uuid,
 			    gchar *security_token,
 			    gchar *group_uuid,
 			    GError **error)
@@ -203,7 +203,7 @@ ags_business_group_get_user(AgsBusinessGroup *business_group,
 
   return(business_group_interface->get_user(business_group,
 					    security_context,
-					    login,
+					    user_uuid,
 					    security_token,
 					    group_uuid,
 					    error));
