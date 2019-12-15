@@ -83,10 +83,14 @@ void ags_security_context_parse_business_group(AgsSecurityContext *security_cont
 					       xmlDoc *xml_doc,
 					       gchar *user_uuid);
 
+gchar** ags_security_context_get_business_group(AgsSecurityContext *security_context);
+
 void ags_security_context_add_server_context(AgsSecurityContext *security_context,
 					     gchar *server_context);
 gboolean ags_security_context_remove_server_context(AgsSecurityContext *security_context,
 						    gchar *server_context);
+
+gchar** ags_security_context_get_server_context(AgsSecurityContext *security_context);
 
 AgsSecurityContext* ags_security_context_new();
 

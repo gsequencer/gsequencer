@@ -270,7 +270,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 
     error = NULL;
     current_password = ags_password_store_get_password(AGS_PASSWORD_STORE(password_store->data),
-						       NULL,
+						       ags_auth_security_context_get_instance(),
 						       user_uuid,
 						       NULL,
 						       &error);
@@ -294,16 +294,13 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
 	g_error_free(error);
       }
     }else{
-      encrypted_password = password;
+      encrypted_password = g_strdup(password);
     }
     
     success = (current_password != NULL && !g_strcmp0(encrypted_password, current_password)) ? TRUE: FALSE;
     
-    if(salt != NULL){
-//      g_free(encrypted_password);
-    }
-    
-//    g_free(current_password);
+    g_free(encrypted_password);
+    g_free(current_password);
 
     if(success){
       break;

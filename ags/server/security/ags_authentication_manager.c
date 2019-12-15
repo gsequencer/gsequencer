@@ -478,6 +478,8 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 
   gchar *current_security_token, *current_user_uuid;
 
+  gboolean success;
+  
   GError *error;
 
   if(!AGS_IS_AUTHENTICATION_MANAGER(authentication_manager) ||
@@ -489,6 +491,8 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
 
+  success = FALSE;
+  
   if(user_uuid != NULL){
     user_uuid[0] = NULL;
   }
@@ -508,11 +512,20 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
     if(g_strv_contains(strv,
 		       authentication_module)){
       error = NULL;
+      success = ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
+					 login,
+					 password,
+					 &current_user_uuid,
+					 &current_security_token,
+					 &error);
       
-      if(ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
-				  login, password,
-				  &current_user_uuid, &current_security_token,
-				  &error)){
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
+      
+      if(success){
 	if(user_uuid != NULL){
 	  user_uuid[0] = current_user_uuid;
 	}
@@ -521,16 +534,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 	  security_token[0] = current_security_token;
 	}
 
-	g_list_free_full(start_authentication,
-			 g_object_unref);
-      
-	return(TRUE);
-      }
-      
-      if(error != NULL){
-	g_warning("%s", error->message);
-
-	g_error_free(error);
+	break;
       }
     }
     
@@ -540,7 +544,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
   g_list_free_full(start_authentication,
 		   g_object_unref);
   
-  return(FALSE);
+  return(success);
 }
 
 /**
@@ -677,6 +681,8 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
      security_token == NULL){
     return(NULL);
   }
+
+  current_digest = NULL;
   
   authentication =
     start_authentication = ags_authentication_manager_get_authentication(authentication_manager);
@@ -700,10 +706,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
 	g_error_free(error);
       }
 
-      g_list_free_full(start_authentication,
-		       g_object_unref);
-      
-      return(current_digest);
+      break;
     }
     
     authentication = authentication->next;
@@ -712,7 +715,7 @@ ags_authentication_manager_get_digest(AgsAuthenticationManager *authentication_m
   g_list_free_full(start_authentication,
 		   g_object_unref);
 
-  return(NULL);
+  return(current_digest);
 }
 
 /**

@@ -341,6 +341,44 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
 }
 
 /**
+ * ags_security_context_get_business_group:
+ * @security_context: the #AgsSecurityContext
+ * 
+ * Get business group of @security_context.
+ * 
+ * Returns: the string vector containing business group or %NULL
+ * 
+ * Since: 3.0.0
+ */
+gchar**
+ags_security_context_get_business_group(AgsSecurityContext *security_context)
+{
+  gchar **business_group;
+  
+  GRecMutex *security_context_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context)){
+    return(NULL);
+  }
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
+
+  /* dup business group */
+  business_group = NULL;
+
+  g_rec_mutex_lock(security_context_mutex);
+
+  if(security_context->business_group != NULL){
+    business_group = g_strdupv(security_context->business_group);
+  }
+  
+  g_rec_mutex_unlock(security_context_mutex);
+
+  return(business_group);
+}
+
+/**
  * ags_security_context_add_server_context:
  * @security_context: the #AgsSecurityContext
  * @server_context: the server context
@@ -458,6 +496,44 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
   g_rec_mutex_unlock(security_context_mutex);
 
   return(TRUE);
+}
+
+/**
+ * ags_security_context_get_server_context:
+ * @security_context: the #AgsSecurityContext
+ * 
+ * Get business group of @security_context.
+ * 
+ * Returns: the string vector containing business group or %NULL
+ * 
+ * Since: 3.0.0
+ */
+gchar**
+ags_security_context_get_server_context(AgsSecurityContext *security_context)
+{
+  gchar **server_context;
+  
+  GRecMutex *security_context_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context)){
+    return(NULL);
+  }
+
+  /* get security context mutex */
+  security_context_mutex = AGS_SECURITY_CONTEXT_GET_OBJ_MUTEX(security_context);
+
+  /* dup business group */
+  server_context = NULL;
+
+  g_rec_mutex_lock(security_context_mutex);
+
+  if(security_context->server_context != NULL){
+    server_context = g_strdupv(security_context->server_context);
+  }
+  
+  g_rec_mutex_unlock(security_context_mutex);
+
+  return(server_context);
 }
 
 /**

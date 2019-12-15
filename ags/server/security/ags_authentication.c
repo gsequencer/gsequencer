@@ -100,8 +100,10 @@ ags_authentication_get_authentication_module(AgsAuthentication *authentication)
  */
 gboolean
 ags_authentication_login(AgsAuthentication *authentication,
-			 gchar *login, gchar *password,
-			 gchar **user_uuid, gchar **security_token,
+			 gchar *login,
+			 gchar *password,
+			 gchar **user_uuid,
+			 gchar **security_token,
 			 GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -113,7 +115,8 @@ ags_authentication_login(AgsAuthentication *authentication,
   return(authentication_interface->login(authentication,
 					 login,
 					 password,
-					 user_uuid, security_token,
+					 user_uuid,
+					 security_token,
 					 error));
 }
 

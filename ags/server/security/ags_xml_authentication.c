@@ -45,8 +45,10 @@ void ags_xml_authentication_finalize(GObject *gobject);
 
 gchar** ags_xml_authentication_get_authentication_module(AgsAuthentication *authentication);
 gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
-				      gchar *login, gchar *password,
-				      gchar **user_uuid, gchar **security_token,
+				      gchar *login,
+				      gchar *password,
+				      gchar **user_uuid,
+				      gchar **security_token,
 				      GError **error);
 gboolean ags_xml_authentication_logout(AgsAuthentication *authentication,
 				       GObject *security_context,
@@ -207,14 +209,17 @@ ags_xml_authentication_get_authentication_module(AgsAuthentication *authenticati
 
 gboolean
 ags_xml_authentication_login(AgsAuthentication *authentication,
-			     gchar *login, gchar *password,
-			     gchar **user_uuid, gchar **security_token,
+			     gchar *login,
+			     gchar *password,
+			     gchar **user_uuid,
+			     gchar **security_token,
 			     GError **error)
 {
   AgsAuthenticationManager *authentication_manager;
   AgsPasswordStoreManager *password_store_manager;
   AgsXmlAuthentication *xml_authentication;
   AgsXmlPasswordStore *xml_password_store;
+  AgsSecurityContext *security_context;
   
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
@@ -254,11 +259,13 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
      xml_authentication->root_node == NULL){
     return(FALSE);
   }
-  
-  current_user_uuid = NULL;
-  current_security_token = NULL;
 
   password_store_manager = ags_password_store_manager_get_instance();
+
+  security_context = NULL;
+
+  current_user_uuid = NULL;
+  current_security_token = NULL;
 
   /* password store */
   xml_password_store = NULL;
@@ -425,8 +432,10 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	login_info->user_uuid = g_strdup(current_user_uuid);
 
 	/* security context */
-	login_info->security_context = ags_security_context_new();
+	security_context = 
+	  login_info->security_context = ags_security_context_new();
 
+	/* parse business group */
 	business_group =
 	  start_business_group = ags_business_group_manager_get_business_group(business_group_manager);
 	
@@ -447,7 +456,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	  
 	  business_group = business_group->next;
 	}
-	
+
+	/* insert login */
 	ags_authentication_manager_insert_login(authentication_manager,
 						login,
 						login_info);
@@ -461,8 +471,12 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
     /* session */
     if(auth_node != NULL){
       xmlNode *session_list_node;
+      xmlNode *group_list_node;
       xmlNode *session_node;
+      xmlNode *group_node;
 
+      gchar **business_group;
+      
       session_list_node = NULL;
       session_node = NULL;
       
@@ -503,6 +517,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 			  current_security_token);
       }
 
+      /* session */
       if(session_node != NULL){
 	GDateTime *date_time;
 
@@ -522,6 +537,59 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
       }
       
       g_rec_mutex_unlock(xml_authentication_mutex);
+
+      /* persist groups */
+      group_list_node = NULL;
+      group_node = NULL;
+
+      business_group = ags_security_context_get_business_group(security_context);
+
+      if(business_group != NULL){      
+	g_rec_mutex_lock(xml_authentication_mutex);
+	
+	child = auth_node->children;
+
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!g_ascii_strncasecmp(child->name,
+				    "ags-srv-auth-group-list",
+				    26)){
+	      group_list_node = child;
+
+	      break;
+	    }
+	  }
+	
+	  child = child->next;
+	}
+
+	if(group_list_node == NULL){
+	  group_list_node = xmlNewNode(NULL,
+				       "ags-srv-auth-group-list");
+	  xmlAddChild(auth_node,
+		      group_list_node);	
+	}
+
+	if(group_list_node != NULL){
+	  gchar **iter;
+
+	  iter = business_group;
+
+	  for(; iter[0] != NULL; iter++){
+	    group_node = xmlNewNode(NULL,
+				    "ags-srv-auth-group");
+	    xmlAddChild(group_list_node,
+			group_node);
+	  
+	    xmlNodeSetContent(group_node,
+			      iter[0]);
+	  }
+	}
+      
+	g_rec_mutex_unlock(xml_authentication_mutex);
+
+	g_strfreev(business_group);
+      }
     }
   }
 
@@ -544,7 +612,8 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 gboolean
 ags_xml_authentication_logout(AgsAuthentication *authentication,
 			      GObject *security_context,
-			      gchar *login, gchar *security_token,
+			      gchar *login,
+			      gchar *security_token,
 			      GError **error)
 {
   AgsAuthenticationManager *authentication_manager;

@@ -271,12 +271,6 @@ ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
 
   GError *error;
   
-  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager) ||
-     domain == NULL ||
-     key_type == NULL){
-    return;
-  }
-  
   if(public_key_file != NULL){
     public_key_file[0] = NULL;
   }
@@ -284,6 +278,12 @@ ags_certificate_manager_get_key_file(AgsCertificateManager *certificate_manager,
   if(private_key_file != NULL){
     private_key_file[0] = NULL;
   }  
+  
+  if(!AGS_IS_CERTIFICATE_MANAGER(certificate_manager) ||
+     domain == NULL ||
+     key_type == NULL){
+    return;
+  }
 
   current_public_key_file = NULL;
   current_private_key_file = NULL;
