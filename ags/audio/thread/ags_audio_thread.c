@@ -399,7 +399,7 @@ ags_audio_thread_start(AgsThread *thread)
 					     AGS_AUDIO_THREAD_STATUS_DONE |
 					     AGS_AUDIO_THREAD_STATUS_WAIT_SYNC |
 					     AGS_AUDIO_THREAD_STATUS_DONE_SYNC));
-
+  
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->start(thread);
 }
 
@@ -456,6 +456,8 @@ ags_audio_thread_run(AgsThread *thread)
   }
 #endif
 
+  audio_loop = thread->parent;
+
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;
   }
@@ -478,7 +480,7 @@ ags_audio_thread_run(AgsThread *thread)
   sound_scope = audio_thread->sound_scope;
   
   g_rec_mutex_unlock(thread_mutex);
-  
+
   if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK){
     g_mutex_lock(&(audio_thread->wakeup_mutex));
         

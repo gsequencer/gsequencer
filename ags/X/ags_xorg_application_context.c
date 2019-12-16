@@ -4349,7 +4349,7 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
     param.sched_priority = (int) g_ascii_strtoull(str,
 						  NULL,
 						  10);
-
+    
     g_free(str);
   }
   

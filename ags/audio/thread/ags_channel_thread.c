@@ -22,6 +22,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -400,6 +402,7 @@ ags_channel_thread_run(AgsThread *thread)
   AgsChannel *channel;
   AgsPlayback *playback;
   
+  AgsAudioLoop *audio_loop;
   AgsChannelThread *channel_thread;
 
   GList *recall_id;
@@ -441,6 +444,8 @@ ags_channel_thread_run(AgsThread *thread)
     ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP);
   }
 #endif
+
+  audio_loop = thread->parent;
 
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_SYNCED)){
     return;

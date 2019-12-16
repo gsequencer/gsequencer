@@ -1188,7 +1188,7 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 						   audio_thread);
 	}
       }
-
+      
       g_list_free_full(recall_id,
 		       g_object_unref);
     }
@@ -1255,7 +1255,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	  g_mutex_unlock(&(audio_thread->done_mutex));
 	}
       }
-
+      
       g_list_free_full(recall_id,
 		       g_object_unref);
     }

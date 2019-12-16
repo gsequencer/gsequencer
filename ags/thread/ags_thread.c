@@ -1923,6 +1923,55 @@ ags_thread_is_tree_ready_recursive(AgsThread *thread, guint current_sync_tic)
 }
 
 void
+ags_thread_prepare_current_sync(AgsThread *current, guint current_sync_tic)
+{
+  if(!AGS_IS_THREAD(current)){
+    return;
+  }
+  
+  /* get current mutex */  
+  if((!ags_thread_test_status_flags(current, AGS_THREAD_STATUS_RUNNING) &&
+      !ags_thread_test_status_flags(current, AGS_THREAD_STATUS_READY)) ||
+     ags_thread_test_status_flags(current, AGS_THREAD_STATUS_IS_CHAOS_TREE)){
+    return;
+  }
+
+  if(ags_thread_get_current_sync_tic(current) != current_sync_tic){
+    g_critical("out-of-sync - main sync-tic != current sync-tic");
+    
+    return;
+  }
+
+  ags_thread_set_status_flags(current, AGS_THREAD_STATUS_SYNCED);
+}
+
+void
+ags_thread_prepare_tree_sync_recursive(AgsThread *thread, guint current_sync_tic)
+{
+  AgsThread *child, *next_child;
+  
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  ags_thread_prepare_current_sync(thread, current_sync_tic);
+
+  /* set tree sync recursive */
+  child = ags_thread_children(thread);
+
+  while(child != NULL){
+    ags_thread_prepare_tree_sync_recursive(child, current_sync_tic);
+
+    /* iterate */
+    next_child = ags_thread_next(child);
+
+    g_object_unref(child);
+
+    child = next_child;
+  }
+}
+
+void
 ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
 {
   guint next_current_sync_tic;
@@ -2033,9 +2082,11 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
     g_critical("invalid current sync-tic");
   }
 
-  ags_thread_set_status_flags(current, AGS_THREAD_STATUS_SYNCED);
   ags_thread_unset_status_flags(current, AGS_THREAD_STATUS_WAITING);
 
+  /* apply next current sync tic */
+  ags_thread_set_current_sync_tic(current, next_current_sync_tic);
+  
   g_mutex_lock(wait_mutex);
 
   ags_thread_set_sync_tic_flags(current, sync_tic_done);
@@ -2045,9 +2096,6 @@ ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic)
   }
 
   g_mutex_unlock(wait_mutex);
-
-  /* apply next current sync tic */
-  ags_thread_set_current_sync_tic(current, next_current_sync_tic);
 }
 
 void
@@ -2315,13 +2363,13 @@ ags_thread_real_clock(AgsThread *thread)
     if(main_tic_delay + 1.0 < main_delay){
       next_main_tic_delay = main_tic_delay + 1.0;
     }else{
-      next_main_tic_delay = (main_tic_delay + 1.0) - floor(main_delay); // (main_tic_delay + 1.0) - main_delay;
+      next_main_tic_delay =  0.0; //(main_tic_delay + 1.0) - floor(main_delay); // (main_tic_delay + 1.0) - main_delay;
     }
 
     if(main_tic_delay - 1.0 > 0.0){
       prev_main_tic_delay = main_tic_delay - 1.0;
     }else{
-      prev_main_tic_delay = (floor(main_delay) + 1.0) - (floor(main_delay) + main_tic_delay); // (main_delay + 1.0) - (main_delay + main_tic_delay);
+      prev_main_tic_delay = main_delay - 1.0; // (floor(main_delay) + 1.0) - (floor(main_delay) + main_tic_delay); // (main_delay + 1.0) - (main_delay + main_tic_delay);
     }
   
     ags_thread_set_sync_tic_flags(thread, sync_tic_wait);
@@ -2411,9 +2459,15 @@ ags_thread_real_clock(AgsThread *thread)
       g_critical("out-of-sync - main sync-tic != current sync-tic");
     }
 
+    ags_thread_prepare_tree_sync_recursive(main_loop,
+					   main_sync_tic);
+
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);
 #else
+    ags_thread_prepare_tree_sync_recursive(main_loop,
+					   main_sync_tic);
+
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);
 #endif
@@ -2522,12 +2576,6 @@ ags_thread_loop(void *ptr)
   }
 
   /* set/unset run flags */
-  ags_thread_set_status_flags(thread,
-			      (AGS_THREAD_STATUS_RUNNING |
-			       AGS_THREAD_STATUS_READY |
-			       AGS_THREAD_STATUS_INITIAL_RUN |
-			       AGS_THREAD_STATUS_INITIAL_SYNC));
-
   ags_thread_unset_status_flags(thread,
 				(AGS_THREAD_STATUS_RT_SETUP |
 				 AGS_THREAD_STATUS_WAITING |
@@ -2555,6 +2603,12 @@ ags_thread_loop(void *ptr)
 
   ags_thread_unset_flags(thread,
 			 (AGS_THREAD_MARK_SYNCED));
+
+  ags_thread_set_status_flags(thread,
+			      (AGS_THREAD_STATUS_RUNNING |
+			       AGS_THREAD_STATUS_READY |
+			       AGS_THREAD_STATUS_INITIAL_RUN |
+			       AGS_THREAD_STATUS_INITIAL_SYNC));
 
   /* get thread mutex */
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
@@ -2620,6 +2674,15 @@ ags_thread_loop(void *ptr)
       start_queue = start_queue->next;
     }
 
+    start_queue = start_start_queue;
+
+    while(start_queue != NULL){
+      while(!ags_thread_test_status_flags(start_queue->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+      
+      /* iterate */
+      start_queue = start_queue->next;
+    }
+    
     g_list_free_full(start_start_queue,
 		     g_object_unref);
     
@@ -2694,9 +2757,15 @@ ags_thread_loop(void *ptr)
       g_critical("out-of-sync - main sync-tic != current sync-tic");
     }
 
+    ags_thread_prepare_tree_sync_recursive(main_loop,
+					   main_sync_tic);
+
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);
 #else
+    ags_thread_prepare_tree_sync_recursive(main_loop,
+					   main_sync_tic);
+
     ags_thread_set_tree_sync_recursive(main_loop,
 				       main_sync_tic);
 #endif

@@ -281,6 +281,9 @@ void ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 gboolean ags_thread_is_current_ready(AgsThread *current, guint current_sync_tic);
 gboolean ags_thread_is_tree_ready_recursive(AgsThread *thread, guint current_sync_tic);
 
+void ags_thread_prepare_current_sync(AgsThread *current, guint current_sync_tic);
+void ags_thread_prepare_tree_sync_recursive(AgsThread *thread, guint current_sync_tic);
+
 void ags_thread_set_current_sync(AgsThread *current, guint current_sync_tic);
 void ags_thread_set_tree_sync_recursive(AgsThread *thread, guint current_sync_tic);
 

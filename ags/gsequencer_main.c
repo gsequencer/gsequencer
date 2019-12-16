@@ -293,7 +293,7 @@ main(int argc, char **argv)
   wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
-    
+  
   priority_filename = g_strdup_printf("%s/priority.conf",
 				      wdir);
 
