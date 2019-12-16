@@ -4287,7 +4287,7 @@ ags_xorg_application_context_server_main_loop_thread(GMainLoop *main_loop)
   
   application_context = ags_application_context_get_instance();
   
-  while(ags_xorg_application_context_get_show_animation(AGS_UI_PROVIDER(application_context))){
+  while(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     g_usleep(G_USEC_PER_SEC / 30);
   }
 

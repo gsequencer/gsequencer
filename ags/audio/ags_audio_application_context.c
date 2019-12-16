@@ -189,6 +189,9 @@ void ags_audio_application_context_quit(AgsApplicationContext *application_conte
 void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						      AgsAudioApplicationContext *audio_application_context);
 
+void* ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop);
+void* ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop);
+
 /**
  * SECTION:ags_audio_application_context
  * @short_description: audio application context
@@ -198,6 +201,8 @@ void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *
  *
  * The #AgsAudioApplicationContext provides you sound processing, output and capturing.
  */
+
+#define LIBAGS_AUDIO_RT_PRIORITY (95)
 
 enum{
   PROP_0,
@@ -1664,6 +1669,8 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   GMainContext *server_main_context;
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
+  GMainLoop *main_loop;
+  GThread *main_loop_thread;
   
   GList *start_queue;
   
@@ -1684,17 +1691,25 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
 
   audio_application_context->server_main_context = server_main_context;
 
-  g_main_loop_new(server_main_context,
-		  TRUE);
+  main_loop = g_main_loop_new(server_main_context,
+			      TRUE);
 
+  g_thread_new("Advanced Gtk+ Sequencer - server main loop",
+	       ags_audio_application_context_server_main_loop_thread,
+	       main_loop);
+  
   /* audio main context and main loop */
   audio_main_context = g_main_context_new();
   g_main_context_ref(audio_main_context);
 
   audio_application_context->audio_main_context = audio_main_context;
 
-  g_main_loop_new(audio_main_context,
-		  TRUE);
+  main_loop = g_main_loop_new(audio_main_context,
+			      TRUE);
+
+  g_thread_new("Advanced Gtk+ Sequencer - audio main loop",
+	       ags_audio_application_context_audio_main_loop_thread,
+	       main_loop);
 
   /* OSC server main context and main loop */
   osc_server_main_context = g_main_context_new();
@@ -1807,8 +1822,13 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   gboolean has_pulse;
   gboolean has_jack;
   gboolean is_output;
+
+  GRecMutex *application_context_mutex;
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
 
   /* config and log */
   config = ags_config_get_instance();
@@ -2864,6 +2884,13 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
 
+  /* set operating */
+  g_rec_mutex_lock(application_context_mutex);
+
+  audio_application_context->is_operating = TRUE;
+
+  g_rec_mutex_unlock(application_context_mutex);
+  
   /* unref */
   g_object_unref(main_loop);
   
@@ -3127,6 +3154,109 @@ ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *app
   //TODO:JK: implement me
 
   return(node);
+}
+
+void*
+ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop)
+{
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+
+  g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
+  
+  application_context = ags_application_context_get_instance();
+  
+  while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
+    g_usleep(G_USEC_PER_SEC / 30);
+  }
+
+  list = 
+    start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(ags_server_test_flags(list->data, AGS_SERVER_AUTO_START)){
+      ags_server_start(AGS_SERVER(list->data));
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  g_main_loop_run(main_loop);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
+}
+
+void*
+ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop)
+{
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
+  struct sched_param param;
+
+  gchar *str;
+#endif
+
+  g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
+  
+  application_context = ags_application_context_get_instance();
+
+  while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
+    g_usleep(G_USEC_PER_SEC / 30);
+  }
+
+  /* real-time setup */
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = LIBAGS_AUDIO_RT_PRIORITY;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       "libags-audio");
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed");
+  }
+#endif
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SERVICE_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(ags_osc_server_test_flags(list->data, AGS_OSC_SERVER_AUTO_START)){
+      ags_osc_server_start(AGS_OSC_SERVER(list->data));
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  g_main_loop_run(main_loop);
+
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 AgsAudioApplicationContext*

@@ -71,7 +71,7 @@ struct AgsFunctionalPitchTestWave* ags_functional_pitch_test_alloc(GList *templa
   "\n"							\
   "[thread]\n"						\
   "model=super-threaded\n"				\
-  "super-threaded-scope=channel\n"			\
+  "super-threaded-scope=audio\n"			\
   "lock-global=ags-thread\n"				\
   "lock-parent=ags-recycling-thread\n"			\
   "\n"							\
@@ -421,7 +421,7 @@ ags_functional_pitch_test_pitch_up()
     task = g_list_prepend(task,
 			  start_audio);
     
-    start_soundcard = ags_start_soundcard_new(audio_application_context);
+    start_soundcard = ags_start_soundcard_new();
     task = g_list_prepend(task,
 			  start_soundcard);
     
@@ -567,7 +567,7 @@ ags_functional_pitch_test_pitch_down()
     task = g_list_prepend(task,
 			  start_audio);
     
-    start_soundcard = ags_start_soundcard_new(audio_application_context);
+    start_soundcard = ags_start_soundcard_new();
     task = g_list_prepend(task,
 			  start_soundcard);
     
