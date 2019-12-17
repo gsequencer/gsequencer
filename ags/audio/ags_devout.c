@@ -3434,7 +3434,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
     g_usleep(1);
   }
-
+  
   g_atomic_int_set(&(devout->available),
 		   FALSE);
   

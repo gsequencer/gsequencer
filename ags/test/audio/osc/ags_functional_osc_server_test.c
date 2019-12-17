@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,8 @@
 #include <math.h>
 #include <time.h>
 
+gpointer ags_functional_osc_server_test_add_thread(gpointer data);
+
 int ags_functional_osc_server_test_init_suite();
 int ags_functional_osc_server_test_clean_suite();
 
@@ -48,61 +50,67 @@ void ags_functional_osc_server_test_node_controller();
 void ags_functional_osc_server_test_renew_controller();
 void ags_functional_osc_server_test_status_controller();
 
-#define AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=false\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[sequencer-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "\n"                                                 \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_FUNCTIONAL_OSC_SERVER_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=false\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "thread-pool-max-unused-threads=8\n"				\
+  "max-precision=125\n"						\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=alsa\n"						\
+  "device=default\n"						\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[sequencer-0]\n"						\
+  "backend=alsa\n"						\
+  "device=default\n"						\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
   "\n"
 
 #define AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=false\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=256\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+  "autosave-thread=false\n"						\
+  "simple-file=false\n"							\
+  "disable-feature=experimental\n"					\
+  "segmentation=4/4\n"							\
+  "\n"									\
+  "[thread]\n"								\
+  "model=super-threaded\n"						\
+  "super-threaded-scope=channel\n"					\
+  "lock-global=ags-thread\n"						\
+  "lock-parent=ags-recycling-thread\n"					\
+  "thread-pool-max-unused-threads=8\n"					\
+  "max-precision=125\n"							\
+  "\n"									\
+  "[soundcard-0]\n"							\
+  "backend=alsa\n"							\
+  "device=default\n"							\
+  "samplerate=44100\n"							\
+  "buffer-size=256\n"							\
+  "pcm-channels=2\n"							\
+  "dsp-channels=2\n"							\
+  "format=16\n"								\
+  "\n"									\
+  "[recall]\n"								\
+  "auto-sense=true\n"							\
   "\n"
 
 #define AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT (16 * 30)
+
+GThread *add_thread = NULL;
 
 AgsApplicationContext *application_context;
 
@@ -112,6 +120,54 @@ AgsOscServer *osc_server;
 AgsOscClient *osc_client;
 
 GObject *default_soundcard;
+
+gpointer
+ags_functional_osc_server_test_add_thread(gpointer data)
+{
+  CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
+  
+  /* initialize the CUnit test registry */
+  if(CUE_SUCCESS != CU_initialize_registry()){
+    exit(CU_get_error());
+  }
+
+  /* add a suite to the registry */
+  pSuite = CU_add_suite("AgsFunctionalOscServerTest", ags_functional_osc_server_test_init_suite, ags_functional_osc_server_test_clean_suite);
+  
+  if(pSuite == NULL){
+    CU_cleanup_registry();
+    
+    exit(CU_get_error());
+  }
+
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "test of AgsOscServer providing action controller", ags_functional_osc_server_test_action_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing config controller", ags_functional_osc_server_test_config_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing info controller", ags_functional_osc_server_test_info_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing meter controller", ags_functional_osc_server_test_meter_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing node controller", ags_functional_osc_server_test_node_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing renew controller", ags_functional_osc_server_test_renew_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer providing status controller", ags_functional_osc_server_test_status_controller) == NULL)){
+    CU_cleanup_registry();
+      
+    exit(CU_get_error());
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+  
+  exit(CU_get_error());
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -206,6 +262,8 @@ ags_functional_osc_server_test_init_suite()
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(drum));
+  
   /* OSC server */
   signal(SIGPIPE, SIG_IGN);
   
@@ -766,48 +824,14 @@ ags_functional_osc_server_test_status_controller()
 int
 main(int argc, char **argv)
 {
-  CU_pSuite pSuite = NULL;
+  add_thread = g_thread_new("libags_audio.so - functional OSC server test",
+			    ags_functional_osc_server_test_add_thread,
+			    NULL);
 
-  putenv("LC_ALL=C");
-  putenv("LANG=C");
-
-  putenv("LADSPA_PATH=\"\"");
-  putenv("DSSI_PATH=\"\"");
-  putenv("LV2_PATH=\"\"");
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  FALSE));
   
-  /* initialize the CUnit test registry */
-  if(CUE_SUCCESS != CU_initialize_registry()){
-    return CU_get_error();
-  }
-
-  /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFunctionalOscServerTest", ags_functional_osc_server_test_init_suite, ags_functional_osc_server_test_clean_suite);
+  g_thread_join(add_thread);
   
-  if(pSuite == NULL){
-    CU_cleanup_registry();
-    
-    return CU_get_error();
-  }
-
-  /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsOscServer providing action controller", ags_functional_osc_server_test_action_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing config controller", ags_functional_osc_server_test_config_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing info controller", ags_functional_osc_server_test_info_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing meter controller", ags_functional_osc_server_test_meter_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing node controller", ags_functional_osc_server_test_node_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing renew controller", ags_functional_osc_server_test_renew_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer providing status controller", ags_functional_osc_server_test_status_controller) == NULL)){
-    CU_cleanup_registry();
-      
-    return CU_get_error();
-  }
-  
-  /* Run all tests using the CUnit Basic interface */
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  
-  CU_cleanup_registry();
-  
-  return(CU_get_error());
+  return(-1);
 }
-
