@@ -1493,7 +1493,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   recall_channel_port = NULL;
   
   /* search channels */
-  channel = NULL;
+  channel =
+    start_channel = NULL;
   
   if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_OUTPUT){
     g_object_get(audio,

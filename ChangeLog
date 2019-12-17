@@ -1,3 +1,8 @@
+ags (2.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV related to AgsFFPlayer's effect bulk
+
 ags (2.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
