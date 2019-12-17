@@ -128,7 +128,7 @@ ags_ffplayer_bulk_input_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input)
 {
-  //TODO:JK: implement me
+  AGS_EFFECT_BULK(ffplayer_bulk_input)->channel_type = AGS_TYPE_INPUT;
 }
 
 void
