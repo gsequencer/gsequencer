@@ -1,3 +1,14 @@
+ags (2.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV related to AgsFFPlayer's effect bulk
+	* fixed accessing freed memory of AgsBulkMember
+
+ags (2.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potentially freed env pointer
+
 ags (2.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

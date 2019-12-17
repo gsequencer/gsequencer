@@ -2655,6 +2655,9 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   ags_effect_bulk_plugin_free(effect_bulk_plugin);
 
   /* retrieve audio properties and channel */
+  current = 
+    start_channel = NULL;
+  
   pthread_mutex_lock(audio_mutex);
 
   audio_channels = effect_bulk->audio->audio_channels;
@@ -2672,7 +2675,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
     if(current != NULL){
       g_object_ref(current);
     }
-  }else{
+  }else if(effect_bulk->channel_type == AGS_TYPE_INPUT){
     g_object_get(effect_bulk->audio,
 		 "input", &start_channel,
 		 "input-pads", &pads,
@@ -2741,17 +2744,26 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   list =
     start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
-  filename = AGS_BULK_MEMBER(list->data)->filename;
-  effect = AGS_BULK_MEMBER(list->data)->effect;
+  g_object_get(list->data,
+	       "filename", &filename,
+	       "effect", &effect,
+	       NULL);
 
   i = 0;
   
   while(list != NULL && i <= nth){    
     if(AGS_IS_BULK_MEMBER(list->data)){
+      g_message("%s %s", AGS_BULK_MEMBER(list->data)->filename, AGS_BULK_MEMBER(list->data)->effect);
+      
       if(!(!g_strcmp0(AGS_BULK_MEMBER(list->data)->filename, filename) &&
 	   !g_strcmp0(AGS_BULK_MEMBER(list->data)->effect, effect))){
-	filename = AGS_BULK_MEMBER(list->data)->filename;
-	effect = AGS_BULK_MEMBER(list->data)->effect;
+	g_free(filename);
+	g_free(effect);
+
+	g_object_get(list->data,
+		     "filename", &filename,
+		     "effect", &effect,
+		     NULL);
 
 	i++;
       }
@@ -2768,8 +2780,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 	}
 
 	gtk_widget_destroy(GTK_WIDGET(list->data));
-      }
-      
+      }      
     }
 
     list = list->next;
