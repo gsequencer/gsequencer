@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.4.4\n"
+"Project-Id-Version: gsequencer 2.4.5\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-12-17 15:37+0100\n"
+"POT-Creation-Date: 2019-12-18 02:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -157,24 +157,24 @@ msgstr ""
 msgid "filename: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:184 ags/X/ags_ladspa_browser.c:176
-#: ags/X/ags_lv2_browser.c:180
+#: ags/X/ags_dssi_browser.c:184 ags/X/ags_ladspa_browser.c:191
+#: ags/X/ags_lv2_browser.c:195
 msgid "effect: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:207 ags/X/ags_ladspa_browser.c:198
+#: ags/X/ags_dssi_browser.c:207 ags/X/ags_ladspa_browser.c:213
 msgid "Label: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:217 ags/X/ags_ladspa_browser.c:208
+#: ags/X/ags_dssi_browser.c:217 ags/X/ags_ladspa_browser.c:223
 msgid "Maker: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:227 ags/X/ags_ladspa_browser.c:218
+#: ags/X/ags_dssi_browser.c:227 ags/X/ags_ladspa_browser.c:233
 msgid "Copyright: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser.c:236 ags/X/ags_ladspa_browser.c:227
+#: ags/X/ags_dssi_browser.c:236 ags/X/ags_ladspa_browser.c:242
 msgid "Ports: "
 msgstr ""
 
@@ -309,22 +309,22 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:200 ags/X/ags_lv2_browser_callbacks.c:193
+#: ags/X/ags_lv2_browser.c:215 ags/X/ags_lv2_browser_callbacks.c:193
 #: ags/X/ags_lv2_browser_callbacks.c:320
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:213 ags/X/ags_lv2_browser_callbacks.c:203
+#: ags/X/ags_lv2_browser.c:228 ags/X/ags_lv2_browser_callbacks.c:203
 #: ags/X/ags_lv2_browser_callbacks.c:329
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:226 ags/X/ags_lv2_browser_callbacks.c:213
+#: ags/X/ags_lv2_browser.c:241 ags/X/ags_lv2_browser_callbacks.c:213
 #: ags/X/ags_lv2_browser_callbacks.c:338
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:239 ags/X/ags_lv2_browser_callbacks.c:224
+#: ags/X/ags_lv2_browser.c:254 ags/X/ags_lv2_browser_callbacks.c:224
 #: ags/X/ags_lv2_browser_callbacks.c:347
 msgid "Ports"
 msgstr ""

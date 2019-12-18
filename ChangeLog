@@ -1,3 +1,9 @@
+ags (2.4.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved alphabetically sorted plugin filenames in AgsLadspaBrowser and AgsLv2Browser
+	* improved AgsEffectBridge removing effects
+
 ags (2.4.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

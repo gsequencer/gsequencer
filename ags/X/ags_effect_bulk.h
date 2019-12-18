@@ -111,6 +111,8 @@ struct _AgsEffectBulkPlugin
   gchar *effect;
   
   GList *control_type_name;
+
+  guint control_count;
 };
 
 GType ags_effect_bulk_get_type(void);

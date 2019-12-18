@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <fcntl.h>
