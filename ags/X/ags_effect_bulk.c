@@ -849,6 +849,8 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
   effect_plugin->effect = g_strdup(effect);
 
   effect_plugin->control_type_name = NULL;
+
+  effect_plugin->control_count = 0;
   
   return(effect_plugin);
 }
@@ -917,7 +919,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
-  
+  guint control_count;
+
   guint x, y;
   guint i, j;
   guint k;
@@ -1147,8 +1150,11 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	       NULL);
 
   plugin_port = start_plugin_port;
-  
+
   port_count = g_list_length(plugin_port);
+
+  control_count = 0;
+  
   k = 0;
 
   while(plugin_port != NULL){
@@ -1173,6 +1179,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       gboolean do_step_conversion;
       
       pthread_mutex_t *plugin_port_mutex;
+
+      control_count++;
       
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
@@ -1427,6 +1435,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
+  effect_bulk_plugin->control_count = control_count;
+
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
   
@@ -1473,6 +1483,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
+  guint control_count;
   
   guint x, y;
   guint i, j;
@@ -1712,6 +1723,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   plugin_port = start_plugin_port;
 
   port_count = g_list_length(start_plugin_port);
+
+  control_count = 0;
+  
   k = 0;
 
   while(plugin_port != NULL){
@@ -1734,6 +1748,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
       pthread_mutex_t *plugin_port_mutex;
 
+      control_count++;
+      
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
       
@@ -1979,6 +1995,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
+  effect_bulk_plugin->control_count = control_count;
+
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
   
@@ -2027,7 +2045,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   gdouble step;
   guint pads, audio_channels;
   guint port_count;
-
+  guint control_count;
+  
   guint x, y;
   guint i, j;
   guint k;
@@ -2273,6 +2292,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   plugin_port = start_plugin_port;
 
   port_count = g_list_length(plugin_port);
+
+  control_count = 0;
+  
   k = 0;
 
   while(plugin_port != NULL){
@@ -2294,6 +2316,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       pthread_mutex_t *plugin_port_mutex;
 
+      control_count++;
+      
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
             
@@ -2520,6 +2544,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
+  effect_bulk_plugin->control_count = control_count;
+
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
 
@@ -2628,14 +2654,14 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   AgsChannel *current, *next_current;
 
   AgsEffectBulkPlugin *effect_bulk_plugin;
-  
-  GList *start_list, *list;
 
-  gchar *filename, *effect;
+  GList *plugin;
+  GList *start_list, *list;
 
   guint nth_effect, n_recall;
 
   guint pads, audio_channels;
+  guint control_count;
   guint i, j;
 
   pthread_mutex_t *audio_mutex;
@@ -2646,14 +2672,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   audio_mutex = effect_bulk->audio->obj_mutex;
   
   pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-  /* free plugin specification */
-  effect_bulk_plugin = g_list_nth_data(effect_bulk->plugin,
-				       nth);
-  effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
-				      effect_bulk_plugin);
-  ags_effect_bulk_plugin_free(effect_bulk_plugin);
-
+  
   /* retrieve audio properties and channel */
   current = 
     start_channel = NULL;
@@ -2734,6 +2753,15 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
     if(current != NULL){
       g_object_unref(current);
     }
+
+    /* remove plugin specification */
+    effect_bulk_plugin = g_list_nth_data(effect_bulk->plugin,
+					 nth);
+
+    effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
+					effect_bulk_plugin);
+
+    ags_effect_bulk_plugin_free(effect_bulk_plugin);
     
     return;
   }
@@ -2741,52 +2769,56 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   nth_effect--;
   
   /* destroy control */
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
-  g_object_get(list->data,
-	       "filename", &filename,
-	       "effect", &effect,
-	       NULL);
-
-  i = 0;
+  start_list = g_list_reverse(start_list);
   
-  while(list != NULL && i <= nth){    
+  i = 0;
+  j = 0;
+  
+  plugin = effect_bulk->plugin;
+
+  effect_bulk_plugin = g_list_nth_data(effect_bulk->plugin,
+				       nth);
+
+  control_count = 0;
+
+  while(plugin != NULL && plugin->data != effect_bulk_plugin){
+    control_count += AGS_EFFECT_BULK_PLUGIN(plugin->data)->control_count;
+    
+    plugin = plugin->next;
+  }
+
+  list = g_list_nth(start_list,
+		    control_count);
+  
+  while(list != NULL && j < effect_bulk_plugin->control_count){
     if(AGS_IS_BULK_MEMBER(list->data)){
-      g_message("%s %s", AGS_BULK_MEMBER(list->data)->filename, AGS_BULK_MEMBER(list->data)->effect);
+      GtkWidget *child_widget;
       
-      if(!(!g_strcmp0(AGS_BULK_MEMBER(list->data)->filename, filename) &&
-	   !g_strcmp0(AGS_BULK_MEMBER(list->data)->effect, effect))){
-	g_free(filename);
-	g_free(effect);
-
-	g_object_get(list->data,
-		     "filename", &filename,
-		     "effect", &effect,
-		     NULL);
-
-	i++;
+      child_widget = gtk_bin_get_child(list->data);
+	
+      if(AGS_IS_LED(child_widget) ||
+	 AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			    child_widget);
       }
       
-      if(i == nth){
-	GtkWidget *child_widget;
-	
-	child_widget = gtk_bin_get_child(list->data);
-
-	if(AGS_IS_LED(child_widget) ||
-	   AGS_IS_INDICATOR(child_widget)){
-	  g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
-			      child_widget);
-	}
-
-	gtk_widget_destroy(GTK_WIDGET(list->data));
-      }      
+      gtk_widget_destroy(GTK_WIDGET(list->data));
+      
+      j++;
     }
 
     list = list->next;
   }
-
+  
   g_list_free(start_list);
+
+  /* remove plugin specification */
+  effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
+				      effect_bulk_plugin);
+
+  ags_effect_bulk_plugin_free(effect_bulk_plugin);
   
   /* remove recalls */
   if(current != NULL){

@@ -135,7 +135,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   GtkTable *table;
   GtkLabel *label;
 
-  GList *list;
+  GList *start_list, *list;
 
   gchar *str;
   gchar **filenames, **filenames_start;
@@ -167,12 +167,27 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     filenames_start = ags_lv2_manager_get_filenames(ags_lv2_manager_get_instance());
   
   if(filenames_start != NULL){
-    while(*filenames != NULL){
-      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
-				     *filenames);
+    list = NULL;
+    
+    while(filenames[0] != NULL){
+      list = g_list_prepend(list,
+			    filenames[0]);
       
       filenames++;
     }
+
+    list =
+      start_list = g_list_sort(list,
+			       g_strcmp0);
+
+    while(list != NULL){
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
+				     list->data);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
 
     g_free(filenames_start);
   }
