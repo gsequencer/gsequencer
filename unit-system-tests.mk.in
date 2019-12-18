@@ -151,8 +151,12 @@ CONFIG_CLEAN_VPATH_FILES =
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_controller_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_front_controller_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_authentication_manager_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_business_group_manager_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_certificate_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_password_store_manager_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_authentication_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_business_group_test$(EXEEXT) \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_certificate_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test$(EXEEXT) \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_security_context_test$(EXEEXT)
 @WITH_SYSTEM_TESTS_TRUE@am__EXEEXT_2 = ags_check_system_base_plugin_test$(EXEEXT) \
@@ -736,6 +740,24 @@ ags_check_system_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_buffer_util_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_buffer_util_test_LDFLAGS) $(LDFLAGS) -o $@
+am__ags_check_system_business_group_manager_test_SOURCES_DIST =  \
+	ags/test/server/security/ags_business_group_manager_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_business_group_manager_test_OBJECTS = ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.$(OBJEXT)
+ags_check_system_business_group_manager_test_OBJECTS =  \
+	$(am_ags_check_system_business_group_manager_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_business_group_manager_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	libags_server.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	libags.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_business_group_manager_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_check_system_business_group_manager_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_check_system_business_group_manager_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_check_system_cancel_audio_test_SOURCES_DIST =  \
 	ags/test/audio/task/ags_cancel_audio_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_cancel_audio_test_OBJECTS = ags/test/audio/task/check_system_cancel_audio_test-ags_cancel_audio_test.$(OBJEXT)
@@ -807,6 +829,22 @@ ags_check_system_capture_wave_channel_test_LINK = $(LIBTOOL) \
 	--mode=link $(CCLD) \
 	$(ags_check_system_capture_wave_channel_test_CFLAGS) $(CFLAGS) \
 	$(ags_check_system_capture_wave_channel_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am__ags_check_system_certificate_manager_test_SOURCES_DIST =  \
+	ags/test/server/security/ags_certificate_manager_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_certificate_manager_test_OBJECTS = ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.$(OBJEXT)
+ags_check_system_certificate_manager_test_OBJECTS =  \
+	$(am_ags_check_system_certificate_manager_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_certificate_manager_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	libags_server.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	libags.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_certificate_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_certificate_manager_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_certificate_manager_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__ags_check_system_channel_test_SOURCES_DIST =  \
 	ags/test/audio/ags_channel_test.c
@@ -3136,6 +3174,38 @@ ags_check_system_xml_authentication_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(CCLD) $(ags_check_system_xml_authentication_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_xml_authentication_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__ags_check_system_xml_business_group_test_SOURCES_DIST =  \
+	ags/test/server/security/ags_xml_business_group_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_xml_business_group_test_OBJECTS = ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.$(OBJEXT)
+ags_check_system_xml_business_group_test_OBJECTS =  \
+	$(am_ags_check_system_xml_business_group_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	libags_server.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	libags.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_xml_business_group_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_xml_business_group_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_xml_business_group_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am__ags_check_system_xml_certificate_test_SOURCES_DIST =  \
+	ags/test/server/security/ags_xml_certificate_test.c
+@WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_xml_certificate_test_OBJECTS = ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.$(OBJEXT)
+ags_check_system_xml_certificate_test_OBJECTS =  \
+	$(am_ags_check_system_xml_certificate_test_OBJECTS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_DEPENDENCIES =  \
+@WITH_SYSTEM_TESTS_TRUE@	libags_server.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	libags.la libags_thread.la \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_SYSTEM_TESTS_TRUE@	$(am__DEPENDENCIES_1)
+ags_check_system_xml_certificate_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_check_system_xml_certificate_test_CFLAGS) \
+	$(CFLAGS) $(ags_check_system_xml_certificate_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am__ags_check_system_xml_password_store_test_SOURCES_DIST =  \
 	ags/test/server/security/ags_xml_password_store_test.c
 @WITH_SYSTEM_TESTS_TRUE@am_ags_check_system_xml_password_store_test_OBJECTS = ags/test/server/security/check_system_xml_password_store_test-ags_xml_password_store_test.$(OBJEXT)
@@ -3234,10 +3304,12 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_buffer_channel_test_SOURCES) \
 	$(ags_check_system_buffer_test_SOURCES) \
 	$(ags_check_system_buffer_util_test_SOURCES) \
+	$(ags_check_system_business_group_manager_test_SOURCES) \
 	$(ags_check_system_cancel_audio_test_SOURCES) \
 	$(ags_check_system_cancel_channel_test_SOURCES) \
 	$(ags_check_system_capture_wave_audio_test_SOURCES) \
 	$(ags_check_system_capture_wave_channel_test_SOURCES) \
+	$(ags_check_system_certificate_manager_test_SOURCES) \
 	$(ags_check_system_channel_test_SOURCES) \
 	$(ags_check_system_char_buffer_util_test_SOURCES) \
 	$(ags_check_system_clear_audio_signal_test_SOURCES) \
@@ -3375,6 +3447,8 @@ SOURCES = $(ags_check_system_acceleration_test_SOURCES) \
 	$(ags_check_system_wave_test_SOURCES) \
 	$(ags_check_system_worker_thread_test_SOURCES) \
 	$(ags_check_system_xml_authentication_test_SOURCES) \
+	$(ags_check_system_xml_business_group_test_SOURCES) \
+	$(ags_check_system_xml_certificate_test_SOURCES) \
 	$(ags_check_system_xml_password_store_test_SOURCES) \
 	$(ags_check_system_xorg_application_context_test_SOURCES)
 DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
@@ -3402,10 +3476,12 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_buffer_channel_test_SOURCES_DIST) \
 	$(am__ags_check_system_buffer_test_SOURCES_DIST) \
 	$(am__ags_check_system_buffer_util_test_SOURCES_DIST) \
+	$(am__ags_check_system_business_group_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_cancel_audio_test_SOURCES_DIST) \
 	$(am__ags_check_system_cancel_channel_test_SOURCES_DIST) \
 	$(am__ags_check_system_capture_wave_audio_test_SOURCES_DIST) \
 	$(am__ags_check_system_capture_wave_channel_test_SOURCES_DIST) \
+	$(am__ags_check_system_certificate_manager_test_SOURCES_DIST) \
 	$(am__ags_check_system_channel_test_SOURCES_DIST) \
 	$(am__ags_check_system_char_buffer_util_test_SOURCES_DIST) \
 	$(am__ags_check_system_clear_audio_signal_test_SOURCES_DIST) \
@@ -3543,6 +3619,8 @@ DIST_SOURCES = $(am__ags_check_system_acceleration_test_SOURCES_DIST) \
 	$(am__ags_check_system_wave_test_SOURCES_DIST) \
 	$(am__ags_check_system_worker_thread_test_SOURCES_DIST) \
 	$(am__ags_check_system_xml_authentication_test_SOURCES_DIST) \
+	$(am__ags_check_system_xml_business_group_test_SOURCES_DIST) \
+	$(am__ags_check_system_xml_certificate_test_SOURCES_DIST) \
 	$(am__ags_check_system_xml_password_store_test_SOURCES_DIST) \
 	$(am__ags_check_system_xorg_application_context_test_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
@@ -3871,8 +3949,12 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_controller_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_front_controller_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_authentication_manager_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_business_group_manager_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_certificate_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_password_store_manager_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_authentication_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_business_group_test \
+@WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_certificate_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_xml_password_store_test \
 @WITH_SYSTEM_TESTS_TRUE@	ags_check_system_security_context_test
 
@@ -4178,6 +4260,18 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_authentication_manager_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_authentication_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
+# business group manager unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_business_group_manager_test_SOURCES = ags/test/server/security/ags_business_group_manager_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_business_group_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_business_group_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_business_group_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# certificate manager unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_certificate_manager_test_SOURCES = ags/test/server/security/ags_certificate_manager_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_certificate_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_certificate_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_certificate_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
 # password store manager unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_password_store_manager_test_SOURCES = ags/test/server/security/ags_password_store_manager_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_password_store_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
@@ -4189,6 +4283,18 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_LDFLAGS = -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML business group unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_SOURCES = ags/test/server/security/ags_xml_business_group_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# XML certificate unit test
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_SOURCES = ags/test/server/security/ags_xml_certificate_test.c
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML password store unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_store_test.c
@@ -5277,6 +5383,12 @@ ags/test/lib/check_system_buffer_util_test-ags_buffer_util_test.$(OBJEXT):  \
 ags_check_system_buffer_util_test$(EXEEXT): $(ags_check_system_buffer_util_test_OBJECTS) $(ags_check_system_buffer_util_test_DEPENDENCIES) $(EXTRA_ags_check_system_buffer_util_test_DEPENDENCIES) 
 	@rm -f ags_check_system_buffer_util_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_buffer_util_test_LINK) $(ags_check_system_buffer_util_test_OBJECTS) $(ags_check_system_buffer_util_test_LDADD) $(LIBS)
+ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp)
+
+ags_check_system_business_group_manager_test$(EXEEXT): $(ags_check_system_business_group_manager_test_OBJECTS) $(ags_check_system_business_group_manager_test_DEPENDENCIES) $(EXTRA_ags_check_system_business_group_manager_test_DEPENDENCIES) 
+	@rm -f ags_check_system_business_group_manager_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_business_group_manager_test_LINK) $(ags_check_system_business_group_manager_test_OBJECTS) $(ags_check_system_business_group_manager_test_LDADD) $(LIBS)
 ags/test/audio/task/check_system_cancel_audio_test-ags_cancel_audio_test.$(OBJEXT):  \
 	ags/test/audio/task/$(am__dirstamp)
 
@@ -5301,6 +5413,12 @@ ags/test/audio/recall/check_system_capture_wave_channel_test-ags_capture_wave_ch
 ags_check_system_capture_wave_channel_test$(EXEEXT): $(ags_check_system_capture_wave_channel_test_OBJECTS) $(ags_check_system_capture_wave_channel_test_DEPENDENCIES) $(EXTRA_ags_check_system_capture_wave_channel_test_DEPENDENCIES) 
 	@rm -f ags_check_system_capture_wave_channel_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_capture_wave_channel_test_LINK) $(ags_check_system_capture_wave_channel_test_OBJECTS) $(ags_check_system_capture_wave_channel_test_LDADD) $(LIBS)
+ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp)
+
+ags_check_system_certificate_manager_test$(EXEEXT): $(ags_check_system_certificate_manager_test_OBJECTS) $(ags_check_system_certificate_manager_test_DEPENDENCIES) $(EXTRA_ags_check_system_certificate_manager_test_DEPENDENCIES) 
+	@rm -f ags_check_system_certificate_manager_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_certificate_manager_test_LINK) $(ags_check_system_certificate_manager_test_OBJECTS) $(ags_check_system_certificate_manager_test_LDADD) $(LIBS)
 ags/test/audio/check_system_channel_test-ags_channel_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp)
 
@@ -6144,6 +6262,18 @@ ags/test/server/security/check_system_xml_authentication_test-ags_xml_authentica
 ags_check_system_xml_authentication_test$(EXEEXT): $(ags_check_system_xml_authentication_test_OBJECTS) $(ags_check_system_xml_authentication_test_DEPENDENCIES) $(EXTRA_ags_check_system_xml_authentication_test_DEPENDENCIES) 
 	@rm -f ags_check_system_xml_authentication_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_xml_authentication_test_LINK) $(ags_check_system_xml_authentication_test_OBJECTS) $(ags_check_system_xml_authentication_test_LDADD) $(LIBS)
+ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp)
+
+ags_check_system_xml_business_group_test$(EXEEXT): $(ags_check_system_xml_business_group_test_OBJECTS) $(ags_check_system_xml_business_group_test_DEPENDENCIES) $(EXTRA_ags_check_system_xml_business_group_test_DEPENDENCIES) 
+	@rm -f ags_check_system_xml_business_group_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_xml_business_group_test_LINK) $(ags_check_system_xml_business_group_test_OBJECTS) $(ags_check_system_xml_business_group_test_LDADD) $(LIBS)
+ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.$(OBJEXT):  \
+	ags/test/server/security/$(am__dirstamp)
+
+ags_check_system_xml_certificate_test$(EXEEXT): $(ags_check_system_xml_certificate_test_OBJECTS) $(ags_check_system_xml_certificate_test_DEPENDENCIES) $(EXTRA_ags_check_system_xml_certificate_test_DEPENDENCIES) 
+	@rm -f ags_check_system_xml_certificate_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_xml_certificate_test_LINK) $(ags_check_system_xml_certificate_test_OBJECTS) $(ags_check_system_xml_certificate_test_LDADD) $(LIBS)
 ags/test/server/security/check_system_xml_password_store_test-ags_xml_password_store_test.$(OBJEXT):  \
 	ags/test/server/security/$(am__dirstamp)
 
@@ -6340,6 +6470,12 @@ ags/test/lib/check_system_buffer_util_test-ags_buffer_util_test.o: ags/test/lib/
 ags/test/lib/check_system_buffer_util_test-ags_buffer_util_test.obj: ags/test/lib/ags_buffer_util_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/check_system_buffer_util_test-ags_buffer_util_test.obj `if test -f 'ags/test/lib/ags_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_buffer_util_test.c'; fi`
 
+ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.o: ags/test/server/security/ags_business_group_manager_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_business_group_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.o `test -f 'ags/test/server/security/ags_business_group_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_business_group_manager_test.c
+
+ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.obj: ags/test/server/security/ags_business_group_manager_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_business_group_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_business_group_manager_test-ags_business_group_manager_test.obj `if test -f 'ags/test/server/security/ags_business_group_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_business_group_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_business_group_manager_test.c'; fi`
+
 ags/test/audio/task/check_system_cancel_audio_test-ags_cancel_audio_test.o: ags/test/audio/task/ags_cancel_audio_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_cancel_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/check_system_cancel_audio_test-ags_cancel_audio_test.o `test -f 'ags/test/audio/task/ags_cancel_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_cancel_audio_test.c
 
@@ -6363,6 +6499,12 @@ ags/test/audio/recall/check_system_capture_wave_channel_test-ags_capture_wave_ch
 
 ags/test/audio/recall/check_system_capture_wave_channel_test-ags_capture_wave_channel_test.obj: ags/test/audio/recall/ags_capture_wave_channel_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_capture_wave_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/check_system_capture_wave_channel_test-ags_capture_wave_channel_test.obj `if test -f 'ags/test/audio/recall/ags_capture_wave_channel_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_capture_wave_channel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_capture_wave_channel_test.c'; fi`
+
+ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.o: ags/test/server/security/ags_certificate_manager_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_certificate_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.o `test -f 'ags/test/server/security/ags_certificate_manager_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_certificate_manager_test.c
+
+ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.obj: ags/test/server/security/ags_certificate_manager_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_certificate_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_certificate_manager_test-ags_certificate_manager_test.obj `if test -f 'ags/test/server/security/ags_certificate_manager_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_certificate_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_certificate_manager_test.c'; fi`
 
 ags/test/audio/check_system_channel_test-ags_channel_test.o: ags/test/audio/ags_channel_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/check_system_channel_test-ags_channel_test.o `test -f 'ags/test/audio/ags_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_channel_test.c
@@ -7186,6 +7328,18 @@ ags/test/server/security/check_system_xml_authentication_test-ags_xml_authentica
 ags/test/server/security/check_system_xml_authentication_test-ags_xml_authentication_test.obj: ags/test/server/security/ags_xml_authentication_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_authentication_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_authentication_test-ags_xml_authentication_test.obj `if test -f 'ags/test/server/security/ags_xml_authentication_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_authentication_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_authentication_test.c'; fi`
 
+ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.o: ags/test/server/security/ags_xml_business_group_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_business_group_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.o `test -f 'ags/test/server/security/ags_xml_business_group_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_business_group_test.c
+
+ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.obj: ags/test/server/security/ags_xml_business_group_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_business_group_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_business_group_test-ags_xml_business_group_test.obj `if test -f 'ags/test/server/security/ags_xml_business_group_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_business_group_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_business_group_test.c'; fi`
+
+ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.o: ags/test/server/security/ags_xml_certificate_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_certificate_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.o `test -f 'ags/test/server/security/ags_xml_certificate_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_certificate_test.c
+
+ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.obj: ags/test/server/security/ags_xml_certificate_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_certificate_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_certificate_test-ags_xml_certificate_test.obj `if test -f 'ags/test/server/security/ags_xml_certificate_test.c'; then $(CYGPATH_W) 'ags/test/server/security/ags_xml_certificate_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/server/security/ags_xml_certificate_test.c'; fi`
+
 ags/test/server/security/check_system_xml_password_store_test-ags_xml_password_store_test.o: ags/test/server/security/ags_xml_password_store_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_xml_password_store_test_CFLAGS) $(CFLAGS) -c -o ags/test/server/security/check_system_xml_password_store_test-ags_xml_password_store_test.o `test -f 'ags/test/server/security/ags_xml_password_store_test.c' || echo '$(srcdir)/'`ags/test/server/security/ags_xml_password_store_test.c
 
@@ -7686,8 +7840,12 @@ uninstall-am:
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_controller_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_front_controller_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_authentication_manager_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_business_group_manager_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_certificate_manager_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_password_store_manager_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_authentication_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_business_group_test
+@WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_certificate_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_xml_password_store_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_security_context_test
 @WITH_SYSTEM_TESTS_TRUE@	./ags_check_system_base_plugin_test
