@@ -315,13 +315,13 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 }
 
 /**
- * ags_front__controller_new:
+ * ags_front_controller_new:
  * 
  * Instantiate new #AgsFrontController
  * 
  * Returns: the #AgsFrontController
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFrontController*
 ags_front_controller_new()
