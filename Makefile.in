@@ -545,7 +545,7 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/osc/ags_osc_buffer_util.c \
 	ags/audio/osc/ags_osc_builder.c ags/audio/osc/ags_osc_client.c \
 	ags/audio/osc/ags_osc_connection.c \
-	ags/audio/osc/ags_osc_parser.c \
+	ags/audio/osc/ags_osc_message.c ags/audio/osc/ags_osc_parser.c \
 	ags/audio/osc/ags_osc_response.c \
 	ags/audio/osc/ags_osc_server.c ags/audio/osc/ags_osc_util.c \
 	ags/audio/osc/ags_osc_xmlrpc_connection.c \
@@ -833,6 +833,7 @@ am__objects_11 = $(am__objects_1) \
 	ags/audio/osc/libags_audio_la-ags_osc_builder.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_client.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_connection.lo \
+	ags/audio/osc/libags_audio_la-ags_osc_message.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_parser.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_response.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_server.lo \
@@ -4740,6 +4741,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_builder.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_client.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_connection.Plo \
+	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_response.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo \
@@ -5766,7 +5768,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/osc/ags_osc_buffer_util.h \
 	ags/audio/osc/ags_osc_builder.h ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_connection.h \
-	ags/audio/osc/ags_osc_parser.h \
+	ags/audio/osc/ags_osc_message.h ags/audio/osc/ags_osc_parser.h \
 	ags/audio/osc/ags_osc_response.h \
 	ags/audio/osc/ags_osc_server.h ags/audio/osc/ags_osc_util.h \
 	ags/audio/osc/ags_osc_xmlrpc_connection.h \
@@ -8560,6 +8562,7 @@ libags_audio_osc_h_sources = \
 	ags/audio/osc/ags_osc_builder.h \
 	ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_connection.h \
+	ags/audio/osc/ags_osc_message.h \
 	ags/audio/osc/ags_osc_parser.h \
 	ags/audio/osc/ags_osc_response.h \
 	ags/audio/osc/ags_osc_server.h \
@@ -8574,6 +8577,7 @@ libags_audio_osc_c_sources = \
 	ags/audio/osc/ags_osc_builder.c \
 	ags/audio/osc/ags_osc_client.c \
 	ags/audio/osc/ags_osc_connection.c \
+	ags/audio/osc/ags_osc_message.c \
 	ags/audio/osc/ags_osc_parser.c \
 	ags/audio/osc/ags_osc_response.c \
 	ags/audio/osc/ags_osc_server.c \
@@ -10289,6 +10293,9 @@ ags/audio/osc/libags_audio_la-ags_osc_client.lo:  \
 	ags/audio/osc/$(am__dirstamp) \
 	ags/audio/osc/$(DEPDIR)/$(am__dirstamp)
 ags/audio/osc/libags_audio_la-ags_osc_connection.lo:  \
+	ags/audio/osc/$(am__dirstamp) \
+	ags/audio/osc/$(DEPDIR)/$(am__dirstamp)
+ags/audio/osc/libags_audio_la-ags_osc_message.lo:  \
 	ags/audio/osc/$(am__dirstamp) \
 	ags/audio/osc/$(DEPDIR)/$(am__dirstamp)
 ags/audio/osc/libags_audio_la-ags_osc_parser.lo:  \
@@ -13935,6 +13942,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_builder.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_client.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_connection.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_response.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo@am__quote@ # am--include-marker
@@ -15409,6 +15417,13 @@ ags/audio/osc/libags_audio_la-ags_osc_connection.lo: ags/audio/osc/ags_osc_conne
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/ags_osc_connection.c' object='ags/audio/osc/libags_audio_la-ags_osc_connection.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/libags_audio_la-ags_osc_connection.lo `test -f 'ags/audio/osc/ags_osc_connection.c' || echo '$(srcdir)/'`ags/audio/osc/ags_osc_connection.c
+
+ags/audio/osc/libags_audio_la-ags_osc_message.lo: ags/audio/osc/ags_osc_message.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/libags_audio_la-ags_osc_message.lo -MD -MP -MF ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Tpo -c -o ags/audio/osc/libags_audio_la-ags_osc_message.lo `test -f 'ags/audio/osc/ags_osc_message.c' || echo '$(srcdir)/'`ags/audio/osc/ags_osc_message.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Tpo ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/ags_osc_message.c' object='ags/audio/osc/libags_audio_la-ags_osc_message.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/libags_audio_la-ags_osc_message.lo `test -f 'ags/audio/osc/ags_osc_message.c' || echo '$(srcdir)/'`ags/audio/osc/ags_osc_message.c
 
 ags/audio/osc/libags_audio_la-ags_osc_parser.lo: ags/audio/osc/ags_osc_parser.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/libags_audio_la-ags_osc_parser.lo -MD -MP -MF ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Tpo -c -o ags/audio/osc/libags_audio_la-ags_osc_parser.lo `test -f 'ags/audio/osc/ags_osc_parser.c' || echo '$(srcdir)/'`ags/audio/osc/ags_osc_parser.c
@@ -24537,6 +24552,7 @@ distclean: distclean-recursive
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_builder.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_client.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_connection.Plo
+	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_response.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo
@@ -25467,6 +25483,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_builder.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_client.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_connection.Plo
+	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_message.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_response.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo

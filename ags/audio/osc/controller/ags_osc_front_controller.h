@@ -78,35 +78,16 @@ struct _AgsOscFrontControllerClass
 			 unsigned char *packet, guint packet_size);
 };
 
-struct _AgsOscFrontControllerMessage
-{
-  AgsOscConnection *osc_connection;
-  
-  gint32 tv_sec;
-  gint32 tv_fraction;
-  gboolean immediately;
-
-  guint message_size;
-
-  unsigned char *message;
-};
-
 GType ags_osc_front_controller_get_type();
 
 gboolean ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags);
 void ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags);
 void ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags);
 
-gint ags_osc_front_controller_message_sort_func(gconstpointer a,
-						gconstpointer b);
-
-AgsOscFrontControllerMessage* ags_osc_front_controller_message_alloc();
-void ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message);
-
 void ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
-					  AgsOscFrontControllerMessage *message);
+					  GObject *message);
 void ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
-					     AgsOscFrontControllerMessage *message);
+					     GObject *message);
 
 void ags_osc_front_controller_start_delegate(AgsOscFrontController *osc_front_controller);
 void ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controller);

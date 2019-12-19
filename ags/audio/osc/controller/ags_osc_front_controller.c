@@ -20,6 +20,7 @@
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_message.h>
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
@@ -283,7 +284,7 @@ ags_osc_front_controller_dispose(GObject *gobject)
   
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
-		     (GDestroyNotify) ags_osc_front_controller_message_free);
+		     (GDestroyNotify) g_object_unref);
 
     osc_front_controller->message = NULL;
   }
@@ -303,7 +304,7 @@ ags_osc_front_controller_finalize(GObject *gobject)
     
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
-		     (GDestroyNotify) ags_osc_front_controller_message_free);
+		     (GDestroyNotify) g_object_unref);
   }
   
   /* call parent */
@@ -373,14 +374,14 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       start_list = g_list_copy(osc_front_controller->message);
 
     while(list != NULL){
-      if(AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->immediately){
+      if(AGS_OSC_MESSAGE(list->data)->immediately){
 	start_message = g_list_prepend(start_message,
 				       list->data);
 	
 	ags_osc_front_controller_remove_message(osc_front_controller,
 						list->data);
       }else{
-	current_time = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_sec + AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
+	current_time = AGS_OSC_MESSAGE(list->data)->tv_sec + AGS_OSC_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
       
 	if(current_time < time_now){
 	  start_message = g_list_prepend(start_message,
@@ -406,11 +407,11 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     while(message != NULL){
       GList *start_osc_response, *osc_response;
 
-      AgsOscFrontControllerMessage *current;
+      AgsOscMessage *current;
       
       gchar *path;
 
-      ags_osc_buffer_util_get_string(AGS_OSC_FRONT_CONTROLLER_MESSAGE(message->data)->message,
+      ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
 				     &path, NULL);
 
       controller = start_controller;
@@ -433,7 +434,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	g_rec_mutex_unlock(mutex);
 	
 	if(success){
-	  current = AGS_OSC_FRONT_CONTROLLER_MESSAGE(message->data);
+	  current = AGS_OSC_MESSAGE(message->data);
 	  
 	  /* delegate */
 	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
@@ -494,13 +495,13 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
     /* free messages */
     g_list_free_full(start_message,
-		     (GDestroyNotify) ags_osc_front_controller_message_free);
+		     (GDestroyNotify) g_object_unref);
 
     /* next */
     g_mutex_lock(&(osc_front_controller->delegate_mutex));
 
     if(osc_front_controller->message != NULL){
-      time_next = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_sec + AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296 * 1000.0;
+      time_next = AGS_OSC_MESSAGE(osc_front_controller->message)->tv_sec + AGS_OSC_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296 * 1000.0;
     }else{
       time_now = g_get_monotonic_time();
 
@@ -614,123 +615,17 @@ ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller
 }
 
 /**
- * ags_osc_front_controller_message_sort_func:
- * @a: the #AgsOscFrontControllerMessage-struct
- * @b: the other #AgsOscFrontControllerMessage-struct
- * 
- * Compare @a and @b in view of timing.
- *
- * Returns: -1 if @a happens before @b, 0 if at the very same time or 1 if after
- * 
- * Since: 2.1.0
- */
-gint
-ags_osc_front_controller_message_sort_func(gconstpointer a,
-					   gconstpointer b)
-{
-  AgsOscFrontControllerMessage *message_a, *message_b;
-
-  if(a == NULL || b == NULL){
-    return(0);
-  }
-
-  message_a = a;
-  message_b = b;
-
-  if(message_a->immediately &&
-     message_b->immediately){
-    return(0);
-  }
-
-  if(message_a->immediately){
-    return(-1);
-  }
-  
-  if(message_b->immediately){
-    return(1);
-  }
-
-  if(message_a->tv_sec < message_b->tv_sec ||
-     (message_a->tv_sec == message_b->tv_sec &&
-      message_a->tv_fraction < message_b->tv_fraction)){
-    return(-1);
-  }
-  
-  if(message_a->tv_sec > message_b->tv_sec ||
-     (message_a->tv_sec == message_b->tv_sec &&
-      message_a->tv_fraction > message_b->tv_fraction)){
-    return(1);
-  }
-
-  return(0);
-}
-
-/**
- * ags_osc_front_controller_message_alloc:
- * 
- * Allocate #AgsOscFrontControllerMessage-struct.
- * 
- * Returns: the newly allocated #AgsOscFrontControllerMessage-struct
- * 
- * Since: 2.1.0
- */
-AgsOscFrontControllerMessage*
-ags_osc_front_controller_message_alloc()
-{
-  AgsOscFrontControllerMessage *message;
-
-  message = (AgsOscFrontControllerMessage *) malloc(sizeof(AgsOscFrontControllerMessage));
-
-  message->osc_connection = NULL;
-  
-  message->tv_sec = 0;
-  message->tv_fraction = 0;
-  message->immediately = FALSE;
-
-  message->message_size = 0;
-  message->message = NULL;
-
-  return(message);
-}
-
-/**
- * ags_osc_front_controller_message_free:
- * @message: the #AgsOscFrontControllerMessage-struct
- * 
- * Free @message.
- * 
- * Since: 2.1.0
- */
-void
-ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message)
-{
-  if(message == NULL){
-    return;
-  }
-
-  if(message->osc_connection != NULL){
-    g_object_unref(message->osc_connection);
-  }
-  
-  if(message->message != NULL){
-    free(message->message);
-  }
-  
-  free(message);
-}
-
-/**
  * ags_osc_front_controller_add_message:
  * @osc_front_controller: the #AgsOscFrontController
- * @message: the #AgsOscFrontControllerMessage-struct
+ * @message: the #AgsOscMessage
  * 
  * Add @message to @osc_front_controller.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
-				     AgsOscFrontControllerMessage *message)
+				     GObject *message)
 {
   GRecMutex *osc_controller_mutex;
 
@@ -748,7 +643,8 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
   if(g_list_find(osc_front_controller->message, message) == NULL){
     osc_front_controller->message = g_list_insert_sorted(osc_front_controller->message,
 							 message,
-							 ags_osc_front_controller_message_sort_func);
+							 ags_osc_message_sort_func);
+    g_object_ref(message);
   }
   
   g_rec_mutex_unlock(osc_controller_mutex);
@@ -757,15 +653,15 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
 /**
  * ags_osc_front_controller_remove_message:
  * @osc_front_controller: the #AgsOscFrontController
- * @message: the #AgsOscFrontControllerMessage-struct
+ * @message: the #AgsOscMessage
  * 
  * Remove @message from @osc_front_controller.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
-					AgsOscFrontControllerMessage *message)
+					GObject *message)
 {
   GRecMutex *osc_controller_mutex;
 
@@ -783,6 +679,7 @@ ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_control
   if(g_list_find(osc_front_controller->message, message) != NULL){
     osc_front_controller->message = g_list_remove(osc_front_controller->message,
 						  message);
+    g_object_unref(message);
   }
   
   g_rec_mutex_unlock(osc_controller_mutex);
@@ -943,7 +840,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 guint offset,
 							 gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
   {
-    AgsOscFrontControllerMessage *message;
+    AgsOscMessage *message;
 
     gchar *address_pattern;
     gchar *type_tag;
@@ -1036,7 +933,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 
     read_count += (4 * (guint) ceil((double) data_length / 4.0));
 
-    message = ags_osc_front_controller_message_alloc();
+    message = ags_osc_message_new();
 
     message->osc_connection = osc_connection;
     g_object_ref(osc_connection);
