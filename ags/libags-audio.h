@@ -152,6 +152,8 @@
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_server.h>
 #include <ags/audio/osc/ags_osc_util.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
 #include <ags/audio/osc/controller/ags_osc_action_controller.h>
 #include <ags/audio/osc/controller/ags_osc_config_controller.h>
@@ -163,6 +165,8 @@
 #include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
+
+#include <ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.h>
 
 /* audio wasapi */
 #include <ags/audio/wasapi/ags_wasapi_devout.h>

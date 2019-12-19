@@ -42,7 +42,6 @@ void ags_osc_xmlrpc_connection_finalize(GObject *gobject);
  */
 
 static gpointer ags_osc_xmlrpc_connection_parent_class = NULL;
-static guint osc_xmlrpc_connection_signals[LAST_SIGNAL];
 
 GType
 ags_osc_xmlrpc_connection_get_type(void)

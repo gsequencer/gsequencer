@@ -46,7 +46,6 @@ gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_contro
  */
 
 static gpointer ags_osc_xmlrpc_controller_parent_class = NULL;
-static guint osc_xmlrpc_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_xmlrpc_controller_get_type()
@@ -102,7 +101,6 @@ ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_con
   gobject->finalize = ags_osc_xmlrpc_controller_finalize;
 
   /* AgsOscXmlrpcController */
-  osc_xmlrpc_controller->do_request = ags_osc_xmlrpc_controller_real_do_request;
 
   /* signals */
 }
