@@ -657,6 +657,9 @@ ags_osc_server_dispose(GObject *gobject)
 
     osc_server->connection = NULL;
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_osc_server_parent_class)->dispose(gobject);
 }
 
 void

@@ -126,6 +126,11 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 	       NULL);
 
   g_free(context_path);
+
+  /* OSC XMLRPC server */
+  osc_xmlrpc_controller->osc_xmlrpc_server = NULL;
+
+  osc_xmlrpc_controller->message = NULL;
 }
 
 void

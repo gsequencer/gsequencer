@@ -44,6 +44,10 @@ typedef struct _AgsOscXmlrpcControllerClass AgsOscXmlrpcControllerClass;
 struct _AgsOscXmlrpcController
 {
   AgsController controller;
+
+  GObject *osc_xmlrpc_server;
+
+  GList *message;
 };
 
 struct _AgsOscXmlrpcControllerClass
