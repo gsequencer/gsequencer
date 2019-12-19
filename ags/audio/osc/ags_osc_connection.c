@@ -179,6 +179,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
   g_object_class_install_property(gobject,
 				  PROP_IP6,
 				  param_spec);
+
   /* AgsOscConnectionClass */  
   osc_connection->read_bytes = ags_osc_connection_real_read_bytes;
   osc_connection->write_response = ags_osc_connection_real_write_response;

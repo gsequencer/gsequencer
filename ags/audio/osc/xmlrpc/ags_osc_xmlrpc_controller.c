@@ -21,9 +21,9 @@
 
 #include <string.h>
 
-void ags_osc_xmlrpc_controller_class_init(AgsOscXMLRPCControllerClass *osc_xmlrpc_controller);
+void ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller);
 void ags_osc_xmlrpc_controller_plugin_controller_interface_init(AgsPluginControllerInterface *plugin_controller);
-void ags_osc_xmlrpc_controller_init(AgsOscXMLRPCController *osc_xmlrpc_controller);
+void ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller);
 void ags_osc_xmlrpc_controller_finalize(GObject *gobject);
 
 gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
@@ -38,11 +38,11 @@ gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_contro
 /**
  * SECTION:ags_osc_xmlrpc_controller
  * @short_description: handle OSC XMLRPC requests
- * @title: AgsOscXMLRPCController
+ * @title: AgsOscXmlrpcController
  * @section_id:
  * @include: ags/audio/osc/controller/ags_osc_xmlrpc_controller.h
  *
- * The #AgsOscXMLRPCController is an object to handle XMLRPC requests.
+ * The #AgsOscXmlrpcController is an object to handle XMLRPC requests.
  */
 
 static gpointer ags_osc_xmlrpc_controller_parent_class = NULL;
@@ -57,13 +57,13 @@ ags_osc_xmlrpc_controller_get_type()
     GType ags_type_osc_xmlrpc_controller = 0;
 
     static const GTypeInfo ags_osc_xmlrpc_controller_info = {
-      sizeof (AgsOscXMLRPCControllerClass),
+      sizeof (AgsOscXmlrpcControllerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_osc_xmlrpc_controller_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsOscXMLRPCController),
+      sizeof (AgsOscXmlrpcController),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_osc_xmlrpc_controller_init,
     };
@@ -75,7 +75,7 @@ ags_osc_xmlrpc_controller_get_type()
     };
     
     ags_type_osc_xmlrpc_controller = g_type_register_static(AGS_TYPE_CONTROLLER,
-							    "AgsOscXMLRPCController",
+							    "AgsOscXmlrpcController",
 							    &ags_osc_xmlrpc_controller_info,
 							    0);
 
@@ -90,7 +90,7 @@ ags_osc_xmlrpc_controller_get_type()
 }
 
 void
-ags_osc_xmlrpc_controller_class_init(AgsOscXMLRPCControllerClass *osc_xmlrpc_controller)
+ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller)
 {
   GObjectClass *gobject;
   
@@ -101,7 +101,7 @@ ags_osc_xmlrpc_controller_class_init(AgsOscXMLRPCControllerClass *osc_xmlrpc_con
 
   gobject->finalize = ags_osc_xmlrpc_controller_finalize;
 
-  /* AgsOscXMLRPCController */
+  /* AgsOscXmlrpcController */
   osc_xmlrpc_controller->do_request = ags_osc_xmlrpc_controller_real_do_request;
 
   /* signals */
@@ -114,7 +114,7 @@ ags_osc_xmlrpc_controller_plugin_controller_interface_init(AgsPluginControllerIn
 }
 
 void
-ags_osc_xmlrpc_controller_init(AgsOscXMLRPCController *osc_xmlrpc_controller)
+ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 {
   gchar *context_path;
 
@@ -131,7 +131,7 @@ ags_osc_xmlrpc_controller_init(AgsOscXMLRPCController *osc_xmlrpc_controller)
 void
 ags_osc_xmlrpc_controller_finalize(GObject *gobject)
 {
-  AgsOscXMLRPCController *osc_xmlrpc_controller;
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
 
   osc_xmlrpc_controller = AGS_OSC_XMLRPC_CONTROLLER(gobject);
 
@@ -168,18 +168,18 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 /**
  * ags_osc_xmlrpc_controller_new:
  * 
- * Instantiate new #AgsOscXMLRPCController
+ * Instantiate new #AgsOscXmlrpcController
  * 
- * Returns: the #AgsOscXMLRPCController
+ * Returns: the #AgsOscXmlrpcController
  * 
  * Since: 3.0.0
  */
-AgsOscXMLRPCController*
+AgsOscXmlrpcController*
 ags_osc_xmlrpc_controller_new()
 {
-  AgsOscXMLRPCController *osc_xmlrpc_controller;
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
 
-  osc_xmlrpc_controller = (AgsOscXMLRPCController *) g_object_new(AGS_TYPE_OSC_XMLRPC_CONTROLLER,
+  osc_xmlrpc_controller = (AgsOscXmlrpcController *) g_object_new(AGS_TYPE_OSC_XMLRPC_CONTROLLER,
 								  NULL);
 
   return(osc_xmlrpc_controller);
