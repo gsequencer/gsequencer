@@ -72,11 +72,11 @@ struct _AgsOscConnection
 
   struct timespec *start_time;
 
-  unsigned char *cache_data;
+  guchar *cache_data;
 
   guint cache_data_length;
   
-  unsigned char *buffer;
+  guchar *buffer;
   guint allocated_buffer_size;
   
   guint read_count;
@@ -90,8 +90,8 @@ struct _AgsOscConnectionClass
 {
   GObjectClass gobject;
 
-  unsigned char* (*read_bytes)(AgsOscConnection *osc_connection,
-			       guint *data_length);
+  guchar* (*read_bytes)(AgsOscConnection *osc_connection,
+			guint *data_length);
   gint64 (*write_response)(AgsOscConnection *osc_connection,
 			   GObject *osc_response);
   
@@ -108,7 +108,7 @@ gboolean ags_osc_connection_timeout_expired(struct timespec *start_time,
 					    struct timespec *timeout_delay);
 
 /* events */
-unsigned char* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
+guchar* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 					     guint *data_length);
 
 gint64 ags_osc_connection_write_response(AgsOscConnection *osc_connection,

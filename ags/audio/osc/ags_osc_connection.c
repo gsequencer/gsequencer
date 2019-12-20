@@ -49,7 +49,7 @@ void ags_osc_connection_get_property(GObject *gobject,
 void ags_osc_connection_dispose(GObject *gobject);
 void ags_osc_connection_finalize(GObject *gobject);
 
-unsigned char* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
+guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 						  guint *data_length);
 gint64 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 					      GObject *osc_response);
@@ -272,10 +272,10 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->start_time->tv_sec = 0;
   osc_connection->start_time->tv_nsec = 0;
 
-  osc_connection->cache_data = (unsigned char *) malloc(AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH * sizeof(unsigned char));
+  osc_connection->cache_data = (guchar *) malloc(AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH * sizeof(guchar));
   osc_connection->cache_data_length = 0;
   
-  osc_connection->buffer = (unsigned char *) malloc(AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(unsigned char));
+  osc_connection->buffer = (guchar *) malloc(AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
   osc_connection->allocated_buffer_size = AGS_OSC_CONNECTION_CHUNK_SIZE;
 
   osc_connection->read_count = 0;
@@ -646,12 +646,12 @@ ags_osc_connection_timeout_expired(struct timespec *start_time,
   return(FALSE);
 }
 
-unsigned char*
+guchar*
 ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 				   guint *data_length)
 {
-  unsigned char *buffer;
-  unsigned char data[AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH];
+  guchar *buffer;
+  guchar data[AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH];
   
   guint allocated_buffer_size;
   guint read_count;
@@ -721,7 +721,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
     if(osc_connection->cache_data_length > 0){
       memcpy(data,
 	     osc_connection->cache_data,
-	     osc_connection->cache_data_length * sizeof(unsigned char));
+	     osc_connection->cache_data_length * sizeof(guchar));
 
       available_data_length += osc_connection->cache_data_length;
     }
@@ -834,7 +834,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	
 	g_rec_mutex_lock(osc_connection_mutex);
 
-	memcpy(osc_connection->buffer, data + start_data, (end_data - start_data + 1) * sizeof(unsigned char));
+	memcpy(osc_connection->buffer, data + start_data, (end_data - start_data + 1) * sizeof(guchar));
 	  
 	g_rec_mutex_unlock(osc_connection_mutex);
 
@@ -847,7 +847,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	   end_data < available_data_length){
 	  memcpy(osc_connection->cache_data,
 		 data + end_data,
-		 (available_data_length - end_data) * sizeof(unsigned char));
+		 (available_data_length - end_data) * sizeof(guchar));
 
 	  osc_connection->cache_data_length = available_data_length - end_data;
 	}
@@ -861,7 +861,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	  
 	g_rec_mutex_lock(osc_connection_mutex);
 
-	memcpy(osc_connection->buffer, data + start_data, (available_data_length - start_data) * sizeof(unsigned char));
+	memcpy(osc_connection->buffer, data + start_data, (available_data_length - start_data) * sizeof(guchar));
 	  
 	g_rec_mutex_unlock(osc_connection_mutex);
 
@@ -895,7 +895,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	  
 	  g_rec_mutex_lock(osc_connection_mutex);
 
-	  memcpy(osc_connection->buffer + read_count, data, (i + 1) * sizeof(unsigned char));
+	  memcpy(osc_connection->buffer + read_count, data, (i + 1) * sizeof(guchar));
 	
 	  g_rec_mutex_unlock(osc_connection_mutex);
 
@@ -909,7 +909,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	  if(i < available_data_length){
 	    memcpy(osc_connection->cache_data,
 		   data + i,
-		   (available_data_length - i) * sizeof(unsigned char));
+		   (available_data_length - i) * sizeof(guchar));
 
 	    osc_connection->cache_data_length = available_data_length - i;
 	  }
@@ -932,7 +932,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	  
 	  g_rec_mutex_lock(osc_connection_mutex);
 	
-	  memcpy(osc_connection->buffer + read_count, data, (available_data_length) * sizeof(unsigned char));
+	  memcpy(osc_connection->buffer + read_count, data, (available_data_length) * sizeof(guchar));
 
 	  g_rec_mutex_unlock(osc_connection_mutex);
 
@@ -965,11 +965,11 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
  * 
  * Since: 2.1.0
  */
-unsigned char*
+guchar*
 ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 			      guint *data_length)
 {
-  unsigned char *buffer;
+  guchar *buffer;
   
   g_return_val_if_fail(AGS_IS_OSC_CONNECTION(osc_connection), NULL);
   
@@ -987,7 +987,7 @@ gint64
 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 				       GObject *osc_response)
 {
-  unsigned char *slip_buffer;
+  guchar *slip_buffer;
   
   int fd;
   guint slip_buffer_length;
@@ -1033,7 +1033,7 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   if(osc_connection->socket != NULL){
     num_write = g_socket_send(osc_connection->socket,
 			      slip_buffer,
-			      slip_buffer_length * sizeof(unsigned char),
+			      slip_buffer_length * sizeof(guchar),
 			      NULL,
 			      &error);
   }
@@ -1050,7 +1050,7 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   
   //TODO:JK: check remove
 #if 0  
-  num_write = write(fd, slip_buffer, slip_buffer_length * sizeof(unsigned char));
+  num_write = write(fd, slip_buffer, slip_buffer_length * sizeof(guchar));
 #endif
   
   if(slip_buffer != NULL){

@@ -565,7 +565,7 @@ ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc
   g_rec_mutex_unlock(controller_mutex);
 
   /* create delegate thread */
-  osc_xmlrpc_controller->delegate_thread = g_thread_new("Advanced Gtk+ Sequencer OSC Server - delegate thread",
+  osc_xmlrpc_controller->delegate_thread = g_thread_new("Advanced Gtk+ Sequencer OSC XMLRPC Server - delegate thread",
 							ags_osc_xmlrpc_controller_delegate_thread,
 							osc_xmlrpc_controller);
 }

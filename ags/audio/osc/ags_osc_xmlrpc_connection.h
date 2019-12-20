@@ -25,6 +25,8 @@
 
 #include <gio/gio.h>
 
+#include <libsoup/soup.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_connection.h>
@@ -44,6 +46,18 @@ typedef struct _AgsOscXmlrpcConnectionClass AgsOscXmlrpcConnectionClass;
 struct _AgsOscXmlrpcConnection
 {
   AgsOscConnection connection;
+
+  SoupMessage *msg;
+  GHashTable *query;
+  
+  SoupClientContext *client;
+  
+  GObject *security_context;
+  
+  gchar *path;
+  
+  gchar *login;
+  gchar *security_token;
 };
 
 struct _AgsOscXmlrpcConnectionClass
