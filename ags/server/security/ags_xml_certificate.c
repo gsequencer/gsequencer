@@ -256,7 +256,7 @@ ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
 
   cert_uuid = NULL;
 
-  xpath = g_strdup("/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid");
+  xpath = "/ags-server-certificate/ags-srv-cert-list/ags-srv-cert/ags-srv-cert-uuid";
 
   g_rec_mutex_lock(xml_certificate_mutex);
     
@@ -295,6 +295,9 @@ ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
   }
 
   g_rec_mutex_unlock(xml_certificate_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   return(cert_uuid);
 }

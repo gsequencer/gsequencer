@@ -215,7 +215,7 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 {
   gchar *context_path;
 
-  context_path = g_strdup_printf("%s/ags-osc-srv",
+  context_path = g_strdup_printf("%s/ags-osc-over-xmlrpc-srv",
 				 AGS_CONTROLLER_BASE_PATH);
   
   g_object_set(osc_xmlrpc_controller,

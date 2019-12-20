@@ -25,6 +25,8 @@
 
 #include <gio/gio.h>
 
+#include <libsoup/soup.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
@@ -38,12 +40,16 @@ G_BEGIN_DECLS
 #define AGS_IS_OSC_XMLRPC_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_XMLRPC_SERVER))
 #define AGS_OSC_XMLRPC_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_XMLRPC_SERVER, AgsOscXmlrpcServerClass))
 
+#define AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE (16384)
+
 typedef struct _AgsOscXmlrpcServer AgsOscXmlrpcServer;
 typedef struct _AgsOscXmlrpcServerClass AgsOscXmlrpcServerClass;
 
 struct _AgsOscXmlrpcServer
 {
   AgsOscServer osc_server;
+
+  AgsServer *xmlrpc_server;
 };
 
 struct _AgsOscXmlrpcServerClass
@@ -52,6 +58,20 @@ struct _AgsOscXmlrpcServerClass
 };
 
 GType ags_osc_xmlrpc_server_get_type(void);
+
+GObject* ags_osc_xmlrpc_server_find_websocket_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
+							 SoupWebsocketConnection *websocket_connection);
+
+void ags_osc_xmlrpc_server_add_websocket_handler(AgsOscXmlrpcServer *osc_xmlrpc_server,
+						 char *path,
+						 char *origin,
+						 char **protocols,
+						 SoupServerWebsocketCallback callback,
+						 gpointer user_data,
+						 GDestroyNotify destroy);
+
+/* default controllers */
+void ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_server);
 
 /* instance */
 AgsOscXmlrpcServer* ags_osc_xmlrpc_server_new();

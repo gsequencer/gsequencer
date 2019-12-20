@@ -224,7 +224,7 @@ ags_xml_business_group_get_group_uuid(AgsBusinessGroup *business_group,
 
   group_uuid = NULL;
 
-  xpath = g_strdup("/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid");
+  xpath = "/ags-server-business-group/ags-srv-group-list/ags-srv-group/ags-srv-group-uuid";
 
   g_rec_mutex_lock(xml_business_group_mutex);
     
@@ -263,6 +263,9 @@ ags_xml_business_group_get_group_uuid(AgsBusinessGroup *business_group,
   }
 
   g_rec_mutex_unlock(xml_business_group_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   return(group_uuid);
 }
