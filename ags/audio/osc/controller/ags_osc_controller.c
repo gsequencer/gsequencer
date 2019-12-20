@@ -91,6 +91,7 @@ void
 ags_osc_controller_class_init(AgsOscControllerClass *osc_controller)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_osc_controller_parent_class = g_type_class_peek_parent(osc_controller);

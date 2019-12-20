@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/ags_osc_message.h>
 
+#include <ags/i18n.h>
+
 void ags_osc_message_class_init(AgsOscMessageClass *osc_message);
 void ags_osc_message_init(AgsOscMessage *osc_message);
 void ags_osc_message_set_property(GObject *gobject,
@@ -44,10 +46,15 @@ void ags_osc_message_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_OSC_CONNECTION,
+  PROP_TV_SEC,
+  PROP_TV_FRACTION,
+  PROP_IMMEDIATELY,
+  PROP_MESSAGE_SIZE,
+  PROP_MESSAGE,
 };
 
 static gpointer ags_osc_message_parent_class = NULL;
-
 
 GType
 ags_osc_message_get_type(void)
@@ -96,12 +103,114 @@ ags_osc_message_class_init(AgsOscMessageClass *osc_message)
   
   gobject->dispose = ags_osc_message_dispose;
   gobject->finalize = ags_osc_message_finalize;
+
+  /* properties */
+  /**
+   * AgsOscMessage:osc-connection:
+   *
+   * The assigned #AgsOscConnection.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("osc-connection",
+				   i18n_pspec("assigned OSC connection"),
+				   i18n_pspec("The OSC connection it is assigned with"),
+				   AGS_TYPE_OSC_CONNECTION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OSC_CONNECTION,
+				  param_spec);
+
+  /**
+   * AgsOscMessage:tv-sec:
+   *
+   * The time value in seconds.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_int("tv-sec",
+				i18n_pspec("time value seconds"),
+				i18n_pspec("The time value in seconds"),
+				0,
+				G_MAXINT32,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TV_SEC,
+				  param_spec);
+
+  /**
+   * AgsOscMessage:tv-fraction:
+   *
+   * The time value's fraction.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_int("tv-fraction",
+				i18n_pspec("time value fraction"),
+				i18n_pspec("The fraction of time value"),
+				0,
+				G_MAXINT32,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TV_FRACTION,
+				  param_spec);
+
+  /**
+   * AgsOscMessage:immediately:
+   *
+   * The immediately switch.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_boolean("immediately",
+				    i18n_pspec("immediately"),
+				    i18n_pspec("The immediately switch"),
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IMMEDIATELY,
+				  param_spec);
+
+  /**
+   * AgsOscMessage:message-size:
+   *
+   * The size of message in bytes.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_uint("message-size",
+				 i18n_pspec("message size"),
+				 i18n_pspec("The size of message"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MESSAGE_SIZE,
+				  param_spec);
+
+  /**
+   * AgsOscMessage:message:
+   *
+   * The message data.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_pointer("message",
+				    i18n_pspec("message"),
+				    i18n_pspec("The IPv6 address of the server"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MESSAGE,
+				  param_spec);
 }
 
 void
 ags_osc_message_init(AgsOscMessage *osc_message)
 {
-  /* osc connection mutex */
+  /* osc message mutex */
   g_rec_mutex_init(&(osc_message->obj_mutex));
 
   osc_message->osc_connection = NULL;
@@ -130,6 +239,98 @@ ags_osc_message_set_property(GObject *gobject,
   osc_message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(osc_message);
   
   switch(prop_id){
+  case PROP_OSC_CONNECTION:
+    {
+      GObject *osc_connection;
+
+      osc_connection = g_value_get_object(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+
+      if(osc_message->osc_connection == osc_connection){
+	g_rec_mutex_unlock(osc_message_mutex);
+
+	return;
+      }
+
+      if(osc_message->osc_connection != NULL){
+	g_object_unref(osc_message->osc_connection);
+      }
+      
+      if(osc_connection != NULL){
+	g_object_ref(osc_connection);
+      }
+      
+      osc_message->osc_connection = osc_connection;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_TV_SEC:
+    {
+      gint32 tv_sec;
+
+      tv_sec = (gint32) g_value_get_int(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      osc_message->tv_sec = tv_sec;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_TV_FRACTION:
+    {
+      gint32 tv_fraction;
+
+      tv_fraction = (gint32) g_value_get_int(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      osc_message->tv_fraction = tv_fraction;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_IMMEDIATELY:
+    {
+      gboolean immediately;
+
+      immediately = g_value_get_boolean(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      osc_message->immediately = immediately;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_MESSAGE_SIZE:
+    {
+      guint message_size;
+
+      message_size = g_value_get_uint(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      osc_message->message_size = message_size;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_MESSAGE:
+    {
+      guchar *message;
+
+      message = g_value_get_pointer(value);
+
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      osc_message->message = message;
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -152,6 +353,65 @@ ags_osc_message_get_property(GObject *gobject,
   osc_message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(osc_message);
   
   switch(prop_id){
+  case PROP_OSC_CONNECTION:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+
+      g_value_set_object(value, osc_message->osc_connection);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_TV_SEC:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      g_value_set_int(value,
+		      (gint) osc_message->tv_sec);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;    
+  case PROP_TV_FRACTION:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      g_value_set_int(value,
+		      (gint) osc_message->tv_fraction);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;
+  case PROP_IMMEDIATELY:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      g_value_set_boolean(value,
+			  osc_message->immediately);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;    
+  case PROP_MESSAGE_SIZE:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      g_value_set_uint(value,
+		       osc_message->message_size);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;    
+  case PROP_MESSAGE:
+    {
+      g_rec_mutex_lock(osc_message_mutex);
+      
+      g_value_set_pointer(value,
+			  osc_message->message);
+
+      g_rec_mutex_unlock(osc_message_mutex);
+    }
+    break;    
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

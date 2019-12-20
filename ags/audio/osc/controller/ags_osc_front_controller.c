@@ -152,7 +152,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    * AgsOscFrontController::start-delegate:
    * @osc_front_controller: the #AgsOscFrontController
    *
-   * The ::start-delegate signal is emited during start of delegating front.
+   * The ::start-delegate signal is emited during start of delegating messages.
    *
    * Since: 2.1.0
    */
@@ -169,7 +169,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    * AgsOscFrontController::stop-delegate:
    * @osc_front_controller: the #AgsOscFrontController
    *
-   * The ::stop-delegate signal is emited during stop of delegating front.
+   * The ::stop-delegate signal is emited during stop of delegating messages.
    *
    * Since: 2.1.0
    */
@@ -840,8 +840,9 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 guint offset,
 							 gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
   {
-    AgsOscMessage *message;
+    AgsOscMessage *osc_message;
 
+    guchar *message;
     gchar *address_pattern;
     gchar *type_tag;
 
@@ -933,24 +934,24 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 
     read_count += (4 * (guint) ceil((double) data_length / 4.0));
 
-    message = ags_osc_message_new();
+    osc_message = ags_osc_message_new();
 
-    message->osc_connection = osc_connection;
-    g_object_ref(osc_connection);
-    
-    message->tv_sec = tv_sec;
-    message->tv_fraction = tv_fraction;
-    message->immediately = immediately;
-    
-    message->message_size = read_count;
-    
-    message->message = (unsigned char *) malloc(read_count * sizeof(unsigned char));
-    memcpy(message->message,
+    message = (guchar *) malloc(read_count * sizeof(guchar));
+    memcpy(message,
 	   packet + offset,
-	   read_count * sizeof(unsigned char));
+	   read_count * sizeof(guchar));
+
+    g_object_set(osc_message,
+		 "osc-connection", osc_connection,
+		 "tv-sec", tv_sec,
+		 "tv-fraction", tv_fraction,
+		 "immediately", immediately,
+		 "message-size", read_count,
+		 "message", message,
+		 NULL);    
 
     ags_osc_front_controller_add_message(osc_front_controller,
-					 message);
+					 osc_message);
     
     return(read_count);
   }

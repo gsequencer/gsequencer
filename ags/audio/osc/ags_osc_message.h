@@ -57,7 +57,7 @@ struct _AgsOscMessage
 
   guint message_size;
 
-  unsigned char *message;
+  guchar *message;
 };
 
 struct _AgsOscMessageClass

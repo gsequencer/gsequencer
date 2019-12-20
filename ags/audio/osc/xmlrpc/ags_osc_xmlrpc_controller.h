@@ -41,11 +41,28 @@ G_BEGIN_DECLS
 typedef struct _AgsOscXmlrpcController AgsOscXmlrpcController;
 typedef struct _AgsOscXmlrpcControllerClass AgsOscXmlrpcControllerClass;
 
+typedef enum{
+  AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED        = 1,
+  AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING        = 1 <<  1,
+  AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING    = 1 <<  2,
+}AgsOscXmlrpcControllerFlags;
+
 struct _AgsOscXmlrpcController
 {
   AgsController controller;
 
+  guint flags;
+
   GObject *osc_xmlrpc_server;
+
+  gint64 delegate_timeout;
+  
+  volatile gboolean do_reset;
+
+  GMutex delegate_mutex;
+  GCond delegate_cond;
+  
+  GThread *delegate_thread;
 
   GList *message;
 };
@@ -53,9 +70,24 @@ struct _AgsOscXmlrpcController
 struct _AgsOscXmlrpcControllerClass
 {
   AgsControllerClass controller;
+
+  void (*start_delegate)(AgsOscXmlrpcController *osc_xmlrpc_controller);
+  void (*stop_delegate)(AgsOscXmlrpcController *osc_xmlrpc_controller);
 };
 
 GType ags_osc_xmlrpc_controller_get_type();
+
+gboolean ags_osc_xmlrpc_controller_test_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
+void ags_osc_xmlrpc_controller_set_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
+void ags_osc_xmlrpc_controller_unset_flags(AgsOscXmlrpcController *osc_xmlrpc_controller, guint flags);
+
+void ags_osc_xmlrpc_controller_add_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
+					  GObject *message);
+void ags_osc_xmlrpc_controller_remove_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
+					     GObject *message);
+
+void ags_osc_xmlrpc_controller_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
+void ags_osc_xmlrpc_controller_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
 
 AgsOscXmlrpcController* ags_osc_xmlrpc_controller_new();
 
