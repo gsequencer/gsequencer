@@ -49,12 +49,12 @@ void ags_osc_xmlrpc_connection_close(AgsOscXmlrpcConnection *osc_xmlrpc_connecti
 
 /**
  * SECTION:ags_osc_xmlrpc_connection
- * @short_description: the OSC server side xmlrpc_connection
+ * @short_description: the OSC server side XMLRPC connection
  * @title: AgsOscXmlrpcConnection
  * @section_id:
  * @include: ags/audio/osc/ags_osc_xmlrpc_connection.h
  *
- * #AgsOscXmlrpcConnection your OSC server side xmlrpc_connection.
+ * #AgsOscXmlrpcConnection your OSC server side XMLRPC connection.
  */
 
 enum{
@@ -513,8 +513,24 @@ ags_osc_xmlrpc_connection_dispose(GObject *gobject)
 {
   AgsOscXmlrpcConnection *osc_xmlrpc_connection;
     
-  osc_xmlrpc_connection = (AgsOscXmlrpcConnection *) gobject;
-  
+  osc_xmlrpc_connection = (AgsOscXmlrpcConnection *) gobject;  
+
+  if(osc_xmlrpc_connection->msg != NULL){
+    g_object_unref(osc_xmlrpc_connection->msg);
+
+    osc_xmlrpc_connection->msg = NULL;
+  }
+
+  if(osc_xmlrpc_connection->security_context != NULL){
+    g_object_unref(osc_xmlrpc_connection->security_context);
+
+    osc_xmlrpc_connection->security_context = NULL;
+  }
+
+  g_free(osc_xmlrpc_connection->path);
+  g_free(osc_xmlrpc_connection->login);
+  g_free(osc_xmlrpc_connection->security_token);
+
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_connection_parent_class)->dispose(gobject);
 }
@@ -525,6 +541,18 @@ ags_osc_xmlrpc_connection_finalize(GObject *gobject)
   AgsOscXmlrpcConnection *osc_xmlrpc_connection;
     
   osc_xmlrpc_connection = (AgsOscXmlrpcConnection *) gobject;
+
+  if(osc_xmlrpc_connection->msg != NULL){
+    g_object_unref(osc_xmlrpc_connection->msg);
+  }
+
+  if(osc_xmlrpc_connection->security_context != NULL){
+    g_object_unref(osc_xmlrpc_connection->security_context);
+  }
+
+  g_free(osc_xmlrpc_connection->path);
+  g_free(osc_xmlrpc_connection->login);
+  g_free(osc_xmlrpc_connection->security_token);
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_connection_parent_class)->finalize(gobject);
