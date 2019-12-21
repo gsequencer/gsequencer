@@ -19,6 +19,7 @@
 
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
+#include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
 #include <ags/audio/osc/ags_osc_websocket_connection.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
@@ -289,6 +290,63 @@ ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server)
 }
 
 /**
+ * ags_osc_xmlrpc_server_find_xmlrpc_connection:
+ * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
+ * @client: the #SoupeClientContext-struct
+ * 
+ * Find @client in @osc_xmlrpc_server's connection property.
+ * 
+ * Returns: the matching #GObject or %NULL
+ * 
+ * Since: 3.0.0
+ */
+GObject*
+ags_osc_xmlrpc_server_find_xmlrpc_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
+					     SoupClientContext *client)
+{
+  AgsOscXmlrpcConnection *osc_xmlrpc_connection;
+
+  GList *start_list, *list;
+
+  if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
+    return(NULL);
+  }
+  
+  osc_xmlrpc_connection = NULL;
+
+  g_object_get(osc_xmlrpc_server,
+	       "connection", &start_list,
+	       NULL);
+
+  list = start_list;
+
+  while(list != NULL){
+    SoupClientContext *current;
+
+    g_object_get(list->data,
+		 "client", &current,
+		 NULL);
+
+    if(current == client){
+      osc_xmlrpc_connection = list->data;
+    }
+
+    g_object_unref(current);
+
+    if(osc_xmlrpc_connection != NULL){
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  return(osc_xmlrpc_connection);
+}
+
+/**
  * ags_osc_xmlrpc_server_find_websocket_connection:
  * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
  * @websocket_connection: the #SoupWebsocketConnection
@@ -509,7 +567,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 				(GObject *) status_controller);
 
   /* OSC monitor websocket handler */
-  osc_monitor_path = g_strdup_printf("%s/ags-osc-over-xmlrpc-srv/monitor",
+  osc_monitor_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/monitor",
 				     AGS_CONTROLLER_BASE_PATH);
   
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,

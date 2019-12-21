@@ -46,9 +46,6 @@ typedef struct _AgsOscXmlrpcConnectionClass AgsOscXmlrpcConnectionClass;
 struct _AgsOscXmlrpcConnection
 {
   AgsOscConnection connection;
-
-  SoupMessage *msg;
-  GHashTable *query;
   
   SoupClientContext *client;
   

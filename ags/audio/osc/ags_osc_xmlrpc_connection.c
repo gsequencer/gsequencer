@@ -59,8 +59,6 @@ void ags_osc_xmlrpc_connection_close(AgsOscXmlrpcConnection *osc_xmlrpc_connecti
 
 enum{
   PROP_0,
-  PROP_MSG,
-  PROP_QUERY,
   PROP_CLIENT,
   PROP_SECURITY_CONTEXT,
   PROP_PATH,
@@ -120,37 +118,6 @@ ags_osc_xmlrpc_connection_class_init(AgsOscXmlrpcConnectionClass *osc_xmlrpc_con
   gobject->finalize = ags_osc_xmlrpc_connection_finalize;
 
   /* properties */
-  /**
-   * AgsOscXmlrpcConnection:msg:
-   *
-   * The assigned #SoupMessage.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_object("msg",
-				   i18n_pspec("assigned soup message"),
-				   i18n_pspec("The soup message it is assigned with"),
-				   SOUP_TYPE_MESSAGE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_MSG,
-				  param_spec);
-
-  /**
-   * AgsOscXmlrpcConnection:query:
-   *
-   * The assigned #GHashTable-struct containing query.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("query",
-				    i18n_pspec("assigned query"),
-				    i18n_pspec("The assigned query"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_QUERY,
-				  param_spec);
-
   /**
    * AgsOscXmlrpcConnection:client:
    *
@@ -245,9 +212,6 @@ ags_osc_xmlrpc_connection_class_init(AgsOscXmlrpcConnectionClass *osc_xmlrpc_con
 void
 ags_osc_xmlrpc_connection_init(AgsOscXmlrpcConnection *osc_xmlrpc_connection)
 {
-  osc_xmlrpc_connection->msg = NULL;
-  osc_xmlrpc_connection->query = NULL;
-
   osc_xmlrpc_connection->client = NULL;
 
   osc_xmlrpc_connection->security_context = NULL;
@@ -274,46 +238,6 @@ ags_osc_xmlrpc_connection_set_property(GObject *gobject,
   osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(osc_xmlrpc_connection);
   
   switch(prop_id){
-  case PROP_MSG:
-    {
-      GObject *msg;
-
-      msg = g_value_get_object(value);
-
-      g_rec_mutex_lock(osc_connection_mutex);
-
-      if(osc_xmlrpc_connection->msg == msg){
-	g_rec_mutex_unlock(osc_connection_mutex);
-
-	return;
-      }
-
-      if(osc_xmlrpc_connection->msg != NULL){
-	g_object_unref(osc_xmlrpc_connection->msg);
-      }
-      
-      if(msg != NULL){
-	g_object_ref(msg);
-      }
-      
-      osc_xmlrpc_connection->msg = msg;
-
-      g_rec_mutex_unlock(osc_connection_mutex);
-    }
-    break;
-  case PROP_QUERY:
-    {
-      GHashTable *query;
-
-      query = g_value_get_pointer(value);
-
-      g_rec_mutex_lock(osc_connection_mutex);
-      
-      osc_xmlrpc_connection->query = query;
-
-      g_rec_mutex_unlock(osc_connection_mutex);
-    }
-    break;
   case PROP_CLIENT:
     {
       SoupClientContext *client;
@@ -439,24 +363,6 @@ ags_osc_xmlrpc_connection_get_property(GObject *gobject,
   osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(osc_xmlrpc_connection);
   
   switch(prop_id){
-  case PROP_MSG:
-    {
-      g_rec_mutex_lock(osc_connection_mutex);
-
-      g_value_set_object(value, osc_xmlrpc_connection->msg);
-
-      g_rec_mutex_unlock(osc_connection_mutex);
-    }
-    break;
-  case PROP_QUERY:
-    {
-      g_rec_mutex_lock(osc_connection_mutex);
-
-      g_value_set_pointer(value, osc_xmlrpc_connection->query);
-
-      g_rec_mutex_unlock(osc_connection_mutex);
-    }
-    break;
   case PROP_CLIENT:
     {
       g_rec_mutex_lock(osc_connection_mutex);
@@ -515,12 +421,6 @@ ags_osc_xmlrpc_connection_dispose(GObject *gobject)
     
   osc_xmlrpc_connection = (AgsOscXmlrpcConnection *) gobject;  
 
-  if(osc_xmlrpc_connection->msg != NULL){
-    g_object_unref(osc_xmlrpc_connection->msg);
-
-    osc_xmlrpc_connection->msg = NULL;
-  }
-
   if(osc_xmlrpc_connection->security_context != NULL){
     g_object_unref(osc_xmlrpc_connection->security_context);
 
@@ -541,10 +441,6 @@ ags_osc_xmlrpc_connection_finalize(GObject *gobject)
   AgsOscXmlrpcConnection *osc_xmlrpc_connection;
     
   osc_xmlrpc_connection = (AgsOscXmlrpcConnection *) gobject;
-
-  if(osc_xmlrpc_connection->msg != NULL){
-    g_object_unref(osc_xmlrpc_connection->msg);
-  }
 
   if(osc_xmlrpc_connection->security_context != NULL){
     g_object_unref(osc_xmlrpc_connection->security_context);

@@ -63,9 +63,19 @@ void* ags_osc_front_controller_delegate_thread(void *ptr);
 void ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller);
 void ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_controller);
 
+gsize ags_osc_front_controller_read_bundle(AgsOscFrontController *osc_front_controller,
+					   AgsOscConnection *osc_connection,
+					   guchar *packet, gsize packet_size,
+					   gsize offset);
+gsize ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controller,
+					    AgsOscConnection *osc_connection,
+					    guchar *packet, gsize packet_size,
+					    gsize offset,
+					    gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
+
 gpointer ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
 						  AgsOscConnection *osc_connection,
-						  unsigned char *packet, guint packet_size);
+						  guchar *packet, gsize packet_size);
 
 /**
  * SECTION:ags_osc_front_controller
@@ -199,11 +209,11 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscFrontControllerClass, do_request),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_INT64,
 		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
-		 G_TYPE_UINT);
+		 G_TYPE_INT64);
 }
 
 void
@@ -767,201 +777,193 @@ ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controll
   g_object_unref((GObject *) osc_front_controller);
 }
 
-gpointer
-ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
-					 AgsOscConnection *osc_connection,
-					 unsigned char *packet, guint packet_size)
+gsize
+ags_osc_front_controller_read_bundle(AgsOscFrontController *osc_front_controller,
+				     AgsOscConnection *osc_connection,
+				     guchar *packet, gsize packet_size,
+				     gsize offset)
 {
   gint32 tv_sec;
   gint32 tv_fraction;
   gboolean immediately;
-  guint offset;
+  gsize read_count;
+  gint32 length;
 
-  auto guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
-							     AgsOscConnection *osc_connection,
-							     unsigned char *packet, guint packet_size,
-							     guint offset);
-  auto guint ags_osc_front_controller_do_request_read_message(AgsOscFrontController *osc_front_controller,
-							      AgsOscConnection *osc_connection,
-							      unsigned char *packet, guint packet_size,
-							      guint offset,
-							      gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
-
-  guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
-							AgsOscConnection *osc_connection,
-							unsigned char *packet, guint packet_size,
-							guint offset)
-  {
-    gint32 tv_sec;
-    gint32 tv_fraction;
-    gboolean immediately;
-    guint read_count;
-    gint32 length;
-
-    read_count = 8;
+  read_count = 8;
     
-    ags_osc_buffer_util_get_timetag(packet + offset + read_count,
-				    &(tv_sec), &(tv_fraction), &(immediately));
-    read_count += 8;
+  ags_osc_buffer_util_get_timetag(packet + offset + read_count,
+				  &(tv_sec), &(tv_fraction), &(immediately));
+  read_count += 8;
 
-    for(; offset < packet_size;){
-      ags_osc_buffer_util_get_int32(packet + offset + read_count,
-				    &length);
-      read_count += 4;
+  for(; offset < packet_size;){
+    ags_osc_buffer_util_get_int32(packet + offset + read_count,
+				  &length);
+    read_count += 4;
 
-      if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
-	ags_osc_front_controller_do_request_read_bundle(osc_front_controller,
-							osc_connection,
-							packet, packet_size,
-							offset + read_count);
+    if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
+      ags_osc_front_controller_read_bundle(osc_front_controller,
+					   osc_connection,
+					   packet, packet_size,
+					   offset + read_count);
 
-	read_count += ((guint) 4 * ceil((double) length / 4.0));
-      }else if(packet[offset + read_count] == '/'){
-	ags_osc_front_controller_do_request_read_message(osc_front_controller,
-							 osc_connection,
-							 packet, packet_size,
-							 offset + read_count,
-							 tv_sec, tv_fraction, immediately);
+      read_count += ((gsize) 4 * ceil((double) length / 4.0));
+    }else if(packet[offset + read_count] == '/'){
+      ags_osc_front_controller_read_message(osc_front_controller,
+					    osc_connection,
+					    packet, packet_size,
+					    offset + read_count,
+					    tv_sec, tv_fraction, immediately);
 
-	read_count += ((guint) 4 * ceil((double) length / 4.0));
-      }else{
-	read_count += 1;
+      read_count += ((gsize) 4 * ceil((double) length / 4.0));
+    }else{
+      read_count += 1;
 	
-	g_warning("malformed data");
-      }
+      g_warning("malformed data");
     }
-    
-    return(read_count);
   }
+    
+  return(read_count);
+}
   
-  guint ags_osc_front_controller_do_request_read_message(AgsOscFrontController *osc_front_controller,
-							 AgsOscConnection *osc_connection,
-							 unsigned char *packet, guint packet_size,
-							 guint offset,
-							 gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
-  {
-    AgsOscMessage *osc_message;
+gsize
+ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controller,
+				      AgsOscConnection *osc_connection,
+				      guchar *packet, gsize packet_size,
+				      gsize offset,
+				      gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
+{
+  AgsOscMessage *osc_message;
 
-    guchar *message;
-    gchar *address_pattern;
-    gchar *type_tag;
+  guchar *message;
+  gchar *address_pattern;
+  gchar *type_tag;
 
-    gsize address_pattern_length;
-    gsize type_tag_length;
-    gsize data_length;
-    guint read_count;
-    guint i;
+  gsize address_pattern_length;
+  gsize type_tag_length;
+  gsize data_length;
+  gsize read_count;
+  guint i;
 
-    read_count = 0;
+  read_count = 0;
 
-    ags_osc_buffer_util_get_string(packet + offset,
-				   &address_pattern, &address_pattern_length);
+  ags_osc_buffer_util_get_string(packet + offset,
+				 &address_pattern, &address_pattern_length);
     
-    if(address_pattern == NULL){
-      return(0);
-    }
-    
-    read_count += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
-    free(address_pattern);
-    
-    type_tag = NULL;
-
-    if(packet_size > offset + read_count){
-      if(packet[offset + read_count] == ','){
-	ags_osc_buffer_util_get_string(packet + offset + read_count,
-				       &type_tag, &type_tag_length);
-
-	read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
-      }
-    }
-
-    data_length = 0;
-    
-    if(type_tag != NULL){
-      for(i = 1; i < type_tag_length; i++){
-	switch(type_tag[i]){
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
-	  {
-	    //empty
-	  }
-	  break;
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
-	  {
-	    data_length += 4;
-	  }
-	  break;
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
-	  {
-	    data_length += 8;
-	  }
-	  break;
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
-	  {
-	    guint length;
-
-	    length = strlen(packet + offset + read_count + data_length);
-
-	    data_length += (4 * (guint) ceil((double) (length + 1) / 4.0));
-	  }
-	  break;
-	case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
-	  {
-	    gint32 data_size;
-
-	    ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
-					  &data_size);
-
-	    data_length += data_size;
-	  }
-	  break;
-	}
-      }
-
-      free(type_tag);
-    }
-
-    read_count += (4 * (guint) ceil((double) data_length / 4.0));
-
-    osc_message = ags_osc_message_new();
-
-    message = (guchar *) malloc(read_count * sizeof(guchar));
-    memcpy(message,
-	   packet + offset,
-	   read_count * sizeof(guchar));
-
-    g_object_set(osc_message,
-		 "osc-connection", osc_connection,
-		 "tv-sec", tv_sec,
-		 "tv-fraction", tv_fraction,
-		 "immediately", immediately,
-		 "message-size", read_count,
-		 "message", message,
-		 NULL);    
-
-    ags_osc_front_controller_add_message(osc_front_controller,
-					 osc_message);
-    
-    return(read_count);
+  if(address_pattern == NULL){
+    return(0);
   }
+    
+  read_count += (4 * (gsize) ceil((double) (address_pattern_length + 1) / 4.0));
+  free(address_pattern);
+    
+  type_tag = NULL;
+
+  if(packet_size > offset + read_count){
+    if(packet[offset + read_count] == ','){
+      ags_osc_buffer_util_get_string(packet + offset + read_count,
+				     &type_tag, &type_tag_length);
+
+      read_count += (4 * (gsize) ceil((double) (type_tag_length + 1) / 4.0));
+    }
+  }
+
+  data_length = 0;
+    
+  if(type_tag != NULL){
+    for(i = 1; i < type_tag_length; i++){
+      switch(type_tag[i]){
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+      {
+	//empty
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+      {
+	data_length += 4;
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+      {
+	data_length += 8;
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+      {
+	gsize length;
+
+	length = strlen(packet + offset + read_count + data_length);
+
+	data_length += (4 * (gsize) ceil((double) (length + 1) / 4.0));
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+      {
+	gint32 data_size;
+
+	ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
+				      &data_size);
+
+	data_length += data_size;
+      }
+      break;
+      }
+    }
+
+    free(type_tag);
+  }
+
+  read_count += (4 * (gsize) ceil((double) data_length / 4.0));
+
+  osc_message = ags_osc_message_new();
+
+  message = (guchar *) malloc(read_count * sizeof(guchar));
+  memcpy(message,
+	 packet + offset,
+	 read_count * sizeof(guchar));
+
+  g_object_set(osc_message,
+	       "osc-connection", osc_connection,
+	       "tv-sec", tv_sec,
+	       "tv-fraction", tv_fraction,
+	       "immediately", immediately,
+	       "message-size", read_count,
+	       "message", message,
+	       NULL);    
+
+  ags_osc_front_controller_add_message(osc_front_controller,
+				       osc_message);
+    
+  return(read_count);
+}
+
+gpointer
+ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+					 AgsOscConnection *osc_connection,
+					 guchar *packet, gsize packet_size)
+{
+  gint32 tv_sec;
+  gint32 tv_fraction;
+  gboolean immediately;
+  gsize offset;
     
   tv_sec = 0;
   tv_fraction = 0;
   immediately = TRUE;
 
   for(offset = 4; offset < packet_size;){
-    guint read_count;
+    gsize read_count;
 
 #ifdef AGS_DEBUG    
     g_message("%d %d", offset, packet_size);
@@ -969,16 +971,16 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 #endif
     
     if(!g_strcmp0(packet + offset, "#bundle")){      
-      read_count = ags_osc_front_controller_do_request_read_bundle(osc_front_controller,
-								   osc_connection,
-								   packet, packet_size,
-								   offset);
+      read_count = ags_osc_front_controller_read_bundle(osc_front_controller,
+							osc_connection,
+							packet, packet_size,
+							offset);
     }else if(packet[offset] == '/'){
-      read_count = ags_osc_front_controller_do_request_read_message(osc_front_controller,
-								    osc_connection,
-								    packet, packet_size,
-								    offset,
-								    0, 0, TRUE);
+      read_count = ags_osc_front_controller_read_message(osc_front_controller,
+							 osc_connection,
+							 packet, packet_size,
+							 offset,
+							 0, 0, TRUE);
     }else{
       read_count = 1;
 
@@ -986,7 +988,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     }
 
     if(read_count > 0){
-      offset += ((guint) 4 * ceil((double) read_count / 4.0));
+      offset += ((gsize) 4 * ceil((double) read_count / 4.0));
     }else{
       offset += 1;
       
@@ -1013,7 +1015,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 gpointer
 ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
 				    AgsOscConnection *osc_connection,
-				    unsigned char *packet, guint packet_size)
+				    guchar *packet, gsize packet_size)
 {
   gpointer osc_response;
   

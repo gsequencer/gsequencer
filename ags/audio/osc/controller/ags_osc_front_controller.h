@@ -72,7 +72,7 @@ struct _AgsOscFrontControllerClass
 
   gpointer (*do_request)(AgsOscFrontController *osc_front_controller,
 			 AgsOscConnection *osc_connection,
-			 unsigned char *packet, guint packet_size);
+			 guchar *packet, gsize packet_size);
 };
 
 GType ags_osc_front_controller_get_type();
@@ -91,7 +91,7 @@ void ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_con
 
 gpointer ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
 					     AgsOscConnection *osc_connection,
-					     unsigned char *packet, guint packet_size);
+					     guchar *packet, gsize packet_size);
 
 AgsOscFrontController* ags_osc_front_controller_new();
 

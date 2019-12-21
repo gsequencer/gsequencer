@@ -20,6 +20,7 @@
 #include <ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.h>
 
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
 #include <ags/audio/osc/ags_osc_message.h>
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_util.h>
@@ -57,6 +58,16 @@ void* ags_osc_xmlrpc_controller_delegate_thread(void *ptr);
 
 void ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
 void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
+
+gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
+					    AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					    guchar *packet, gsize packet_size,
+					    gsize offset);
+gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
+					     AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					     guchar *packet, gsize packet_size,
+					     gsize offset,
+					     gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
 
 gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 					      SoupMessage *msg,
@@ -215,7 +226,7 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 {
   gchar *context_path;
 
-  context_path = g_strdup_printf("%s/ags-osc-over-xmlrpc-srv",
+  context_path = g_strdup_printf("%s/ags-osc-over-xmlrpc",
 				 AGS_CONTROLLER_BASE_PATH);
   
   g_object_set(osc_xmlrpc_controller,
@@ -625,6 +636,177 @@ ags_osc_xmlrpc_controller_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_contr
   g_object_unref((GObject *) osc_xmlrpc_controller);
 }
 
+gsize
+ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
+				      AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				      guchar *packet, gsize packet_size,
+				      gsize offset)
+{
+  gint32 tv_sec;
+  gint32 tv_fraction;
+  gboolean immediately;
+  gsize read_count;
+  gint32 length;
+
+  read_count = 8;
+    
+  ags_osc_buffer_util_get_timetag(packet + offset + read_count,
+				  &(tv_sec), &(tv_fraction), &(immediately));
+  read_count += 8;
+
+  for(; offset < packet_size;){
+    ags_osc_buffer_util_get_int32(packet + offset + read_count,
+				  &length);
+    read_count += 4;
+
+    if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
+      ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
+					    osc_xmlrpc_connection,
+					    packet, packet_size,
+					    offset + read_count);
+
+      read_count += ((gsize) 4 * ceil((double) length / 4.0));
+    }else if(packet[offset + read_count] == '/'){
+      ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
+					     osc_xmlrpc_connection,
+					     packet, packet_size,
+					     offset + read_count,
+					     tv_sec, tv_fraction, immediately);
+
+      read_count += ((gsize) 4 * ceil((double) length / 4.0));
+    }else{
+      read_count += 1;
+	
+      g_warning("malformed data");
+    }
+  }
+    
+  return(read_count);
+}
+
+gsize
+ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
+				       AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				       guchar *packet, gsize packet_size,
+				       gsize offset,
+				       gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
+{
+  AgsOscMessage *osc_message;
+
+  guchar *message;
+  gchar *address_pattern;
+  gchar *type_tag;
+
+  gsize address_pattern_length;
+  gsize type_tag_length;
+  gsize data_length;
+  gsize read_count;
+  guint i;
+
+  read_count = 0;
+
+  ags_osc_buffer_util_get_string(packet + offset,
+				 &address_pattern, &address_pattern_length);
+    
+  if(address_pattern == NULL){
+    return(0);
+  }
+    
+  read_count += (4 * (gsize) ceil((double) (address_pattern_length + 1) / 4.0));
+  free(address_pattern);
+    
+  type_tag = NULL;
+
+  if(packet_size > offset + read_count){
+    if(packet[offset + read_count] == ','){
+      ags_osc_buffer_util_get_string(packet + offset + read_count,
+				     &type_tag, &type_tag_length);
+
+      read_count += (4 * (gsize) ceil((double) (type_tag_length + 1) / 4.0));
+    }
+  }
+
+  data_length = 0;
+    
+  if(type_tag != NULL){
+    for(i = 1; i < type_tag_length; i++){
+      switch(type_tag[i]){
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+      {
+	//empty
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+      {
+	data_length += 4;
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+      {
+	data_length += 8;
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+      {
+	gsize length;
+
+	length = strlen(packet + offset + read_count + data_length);
+
+	data_length += (4 * (gsize) ceil((double) (length + 1) / 4.0));
+      }
+      break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+      {
+	gint32 data_size;
+
+	ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
+				      &data_size);
+
+	data_length += data_size;
+      }
+      break;
+      }
+    }
+
+    free(type_tag);
+  }
+
+  read_count += (4 * (gsize) ceil((double) data_length / 4.0));
+
+  osc_message = ags_osc_message_new();
+
+  message = (guchar *) malloc(read_count * sizeof(guchar));
+  memcpy(message,
+	 packet + offset,
+	 read_count * sizeof(guchar));
+
+  g_object_set(osc_message,
+	       "osc-connection", osc_xmlrpc_connection,
+	       "tv-sec", tv_sec,
+	       "tv-fraction", tv_fraction,
+	       "immediately", immediately,
+	       "message-size", read_count,
+	       "message", message,
+	       NULL);    
+
+  ags_osc_xmlrpc_controller_add_message(osc_xmlrpc_controller,
+					osc_message);
+    
+  return(read_count);
+}
+
 gpointer
 ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 				     SoupMessage *msg,
@@ -635,8 +817,26 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 				     gchar *login,
 				     gchar *security_token)
 {
-  gpointer start_response;
+  AgsOscXmlrpcServer *osc_xmlrpc_server;
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
+  AgsOscXmlrpcConnection *osc_xmlrpc_connection;
   
+  xmlDoc *doc;
+  xmlNode *root_node;
+  xmlNode *child;
+  
+  GBytes *request_body_data;
+
+  gchar *data;
+  guchar *packet;
+
+  gsize data_size;
+  gsize packet_size;
+  gint32 tv_sec;
+  gint32 tv_fraction;
+  gboolean immediately;
+  gsize offset;
+
   if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
      path == NULL ||
      login == NULL ||
@@ -644,11 +844,111 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     return(NULL);
   }
 
-  //TODO:JK: use certs
+  g_object_get(msg,
+	       "request-body-data", &request_body_data,
+	       NULL);
 
-  start_response = NULL;
+  data = g_bytes_get_data(request_body_data,
+			  &data_size);
+
+  /* parse XML doc */
+  doc = xmlParseDoc(data);
+
+  if(doc == NULL){
+    return(NULL);
+  }
+
+  root_node = xmlDocGetRootElement(doc);
+
+  if(root_node == NULL){
+    return(NULL);
+  }
+
+  child = root_node->children;
+
+  packet = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-srv-packet",
+		     15)){
+	xmlChar *tmp_packet;
+
+	tmp_packet = xmlNodeGetContent(child);
+
+	packet = g_base64_decode(tmp_packet,
+				 &packet_size);
+      }
+    }
+    
+    child = child->next;
+  }
+
+  /*  */
+  osc_xmlrpc_controller = AGS_OSC_XMLRPC_CONTROLLER(plugin_controller);
   
-  return(start_response);
+  g_object_get(osc_xmlrpc_controller,
+	       "osc-xmlrpc-server", &osc_xmlrpc_server,
+	       NULL);
+  
+  osc_xmlrpc_connection = ags_osc_xmlrpc_server_find_xmlrpc_connection(osc_xmlrpc_server,
+								       client);
+
+  if(osc_xmlrpc_connection == NULL){
+    osc_xmlrpc_connection = ags_osc_xmlrpc_connection_new(osc_xmlrpc_server);
+    g_object_set(osc_xmlrpc_connection,
+		 "client", client,
+		 "security-context", security_context,
+		 "login", login,
+		 "security-token", security_token,
+		 NULL);
+
+    ags_osc_server_add_connection(osc_xmlrpc_server,
+				  osc_xmlrpc_connection);
+  }
+  
+  tv_sec = 0;
+  tv_fraction = 0;
+  immediately = TRUE;
+
+  for(offset = 4; offset < packet_size;){
+    gsize read_count;
+
+#ifdef AGS_DEBUG    
+    g_message("%d %d", offset, packet_size);
+    g_message("%x[%c]", packet[offset], packet[offset]);
+#endif
+    
+    if(!g_strcmp0(packet + offset, "#bundle")){      
+      read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
+							 osc_xmlrpc_connection,
+							 packet, packet_size,
+							 offset);
+    }else if(packet[offset] == '/'){
+      read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
+							  osc_xmlrpc_connection,
+							  packet, packet_size,
+							  offset,
+							  0, 0, TRUE);
+    }else{
+      read_count = 1;
+
+      g_warning("malformed data");
+    }
+
+    if(read_count > 0){
+      offset += ((gsize) 4 * ceil((double) read_count / 4.0));
+    }else{
+      offset += 1;
+      
+      g_warning("malformed data");
+    }
+  }
+
+  g_free(packet);
+  
+  return(NULL);
 }
 
 /**
