@@ -1096,6 +1096,7 @@ libags_audio_osc_h_sources = \
 	ags/audio/osc/ags_osc_util.h \
 	ags/audio/osc/ags_osc_websocket_connection.h \
 	ags/audio/osc/ags_osc_xmlrpc_connection.h \
+	ags/audio/osc/ags_osc_xmlrpc_message.h \
 	ags/audio/osc/ags_osc_xmlrpc_server.h
 
 deprecated_libags_audio_osc_c_sources =
@@ -1113,6 +1114,7 @@ libags_audio_osc_c_sources = \
 	ags/audio/osc/ags_osc_util.c \
 	ags/audio/osc/ags_osc_websocket_connection.c \
 	ags/audio/osc/ags_osc_xmlrpc_connection.c \
+	ags/audio/osc/ags_osc_xmlrpc_message.c \
 	ags/audio/osc/ags_osc_xmlrpc_server.c
 
 deprecated_libags_audio_osc_controller_h_sources =

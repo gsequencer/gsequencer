@@ -20,6 +20,7 @@
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
 #include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 #include <ags/audio/osc/ags_osc_websocket_connection.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
@@ -78,6 +79,7 @@ void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 
 enum{
   PROP_0,
+  PROP_OSC_XMLRPC_CONTROLLER,
   PROP_XMLRPC_SERVER,
 };
 
@@ -149,6 +151,22 @@ ags_osc_xmlrpc_server_class_init(AgsOscXmlrpcServerClass *osc_xmlrpc_server)
 				  PROP_XMLRPC_SERVER,
 				  param_spec);
 
+  /**
+   * AgsOscXmlrpcServer:osc-xmlrpc-controller:
+   *
+   * The assigned #AgsOscXmlrpcController.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("osc-xmlrpc-controller",
+				   i18n_pspec("OSC XMLRPC controller"),
+				   i18n_pspec("The OSC XMLRPC controller"),
+				   AGS_TYPE_CONTROLLER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OSC_XMLRPC_CONTROLLER,
+				  param_spec);
+
   /* AgsOscServerClass */
   osc_server = (AgsOscServerClass *) osc_xmlrpc_server;
 
@@ -163,6 +181,8 @@ void
 ags_osc_xmlrpc_server_init(AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
   osc_xmlrpc_server->xmlrpc_server = NULL;
+
+  osc_xmlrpc_server->osc_xmlrpc_controller = NULL;
 }
 
 void
@@ -208,6 +228,33 @@ ags_osc_xmlrpc_server_set_property(GObject *gobject,
     g_rec_mutex_unlock(osc_server_mutex);
   }
   break;
+  case PROP_OSC_XMLRPC_CONTROLLER:
+  {
+    GObject *osc_xmlrpc_controller;
+
+    osc_xmlrpc_controller = g_value_get_object(value);
+
+    g_rec_mutex_lock(osc_server_mutex);
+
+    if(osc_xmlrpc_server->osc_xmlrpc_controller == osc_xmlrpc_controller){
+      g_rec_mutex_unlock(osc_server_mutex);
+
+      return;
+    }
+
+    if(osc_xmlrpc_server->osc_xmlrpc_controller != NULL){
+      g_object_unref(osc_xmlrpc_server->osc_xmlrpc_controller);
+    }
+      
+    if(osc_xmlrpc_controller != NULL){
+      g_object_ref(osc_xmlrpc_controller);
+    }
+      
+    osc_xmlrpc_server->osc_xmlrpc_controller = osc_xmlrpc_controller;
+
+    g_rec_mutex_unlock(osc_server_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -239,6 +286,15 @@ ags_osc_xmlrpc_server_get_property(GObject *gobject,
     g_rec_mutex_unlock(osc_server_mutex);
   }
   break;
+  case PROP_OSC_XMLRPC_CONTROLLER:
+  {
+    g_rec_mutex_lock(osc_server_mutex);
+
+    g_value_set_object(value, osc_xmlrpc_server->osc_xmlrpc_controller);
+
+    g_rec_mutex_unlock(osc_server_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -257,6 +313,12 @@ ags_osc_xmlrpc_server_dispose(GObject *gobject)
 
     osc_xmlrpc_server->xmlrpc_server = NULL;
   }
+
+  if(osc_xmlrpc_server->osc_xmlrpc_controller != NULL){
+    g_object_unref(osc_xmlrpc_server->osc_xmlrpc_controller);
+
+    osc_xmlrpc_server->osc_xmlrpc_controller = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_server_parent_class)->dispose(gobject);
@@ -271,6 +333,10 @@ ags_osc_xmlrpc_server_finalize(GObject *gobject)
 
   if(osc_xmlrpc_server->xmlrpc_server != NULL){
     g_object_unref(osc_xmlrpc_server->xmlrpc_server);
+  }
+
+  if(osc_xmlrpc_server->osc_xmlrpc_controller != NULL){
+    g_object_unref(osc_xmlrpc_server->osc_xmlrpc_controller);
   }
 
   /* call parent */
@@ -499,6 +565,10 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 	       "server", xmlrpc_server,
 	       "osc-xmlrpc-server", osc_xmlrpc_server,
 	       NULL);
+
+  g_object_set(osc_xmlrpc_server,
+	       "osc-xmlrpc-controller", osc_xmlrpc_controller,
+	       NULL);
   
   ags_server_add_controller(xmlrpc_server,
 			    (GObject *) osc_xmlrpc_controller);
@@ -586,6 +656,9 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					 SoupClientContext *client,
 					 AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
+  AgsOscXmlrpcMessage *osc_xmlrpc_message;
+
   AgsAuthenticationManager *authentication_manager;
   AgsSecurityContext *security_context;
 
@@ -606,13 +679,25 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   gchar *login;
   gchar *user_uuid;
   gchar *security_token;
-
+  gchar *resource_id;
+  
   gsize num_read;
   guint i;
   
   GError *error;
   
+  GRecMutex *controller_mutex;
   GRecMutex *authentication_manager_mutex;
+
+  g_object_get(osc_xmlrpc_server,
+	       "osc-xmlrpc-controller", &osc_xmlrpc_controller,
+	       NULL);
+
+  if(osc_xmlrpc_controller == NULL){
+    return;
+  }
+  
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(osc_xmlrpc_controller);
 
   authentication_manager = ags_authentication_manager_get_instance();
   
@@ -655,6 +740,8 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   login = NULL;
   security_token = NULL;
 
+  resource_id = NULL;
+
   /* login */
   xpath = "/ags-osc-over-xmlrpc/ags-srv-login";
 
@@ -684,7 +771,7 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   xmlXPathFreeObject(xpath_object);
   xmlXPathFreeContext(xpath_context);
 
-  /* security_token */
+  /* security token */
   xpath = "/ags-osc-over-xmlrpc/ags-srv-security-token";
 
   xpath_context = xmlXPathNewContext(doc);
@@ -712,6 +799,42 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 
   xmlXPathFreeObject(xpath_object);
   xmlXPathFreeContext(xpath_context);
+
+  /* security token */
+  xpath = "/ags-osc-over-xmlrpc/ags-srv-redirect";
+
+  xpath_context = xmlXPathNewContext(doc);
+  xpath_object = xmlXPathNodeEval(root_node,
+				  xpath,
+				  xpath_context);
+  
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	xmlChar *tmp_resource_id;
+	
+	tmp_resource_id = xmlGetProp(node[i],
+				     "resource-id");
+
+	resource_id = g_strdup(tmp_resource_id);
+
+	xmlFree(tmp_resource_id);
+	
+	break;
+      }
+    }
+  }
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  if(login == NULL ||
+     security_token == NULL ||
+     resource_id == NULL){
+    return;
+  }
   
   login_info = ags_authentication_manager_lookup_login(authentication_manager,
 						       login);
@@ -732,25 +855,68 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 						    security_token)){
       AgsOscWebsocketConnection *osc_websocket_connection;
 
-      osc_websocket_connection = ags_osc_xmlrpc_server_find_websocket_connection(osc_xmlrpc_server,
-										 websocket_connection);
+      GList *start_controller, *controller;
+      GList *start_message, *message;
 
-      if(osc_websocket_connection == NULL){
-	osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
-	g_object_set(osc_websocket_connection,
-		     "websocket-connection", websocket_connection,
-		     "client", client,
-		     "security-context", security_context,
-		     "path", path,
-		     "login", login,
-		     "security-token", security_token,
-		     NULL);
+      gpointer start_osc_response;
+
+      g_rec_mutex_lock(controller_mutex);
+
+      start_message = g_list_copy_deep(osc_xmlrpc_controller->message,
+				       (GCopyFunc) g_object_ref,
+				       NULL);
+      
+      g_rec_mutex_unlock(controller_mutex);
+
+      message = ags_osc_xmlrpc_message_find_resource_id(start_message,
+							resource_id);
+
+      if(message != NULL){
+	AgsOscMessage *current;
+
+	current = message->data;
 	
-	ags_osc_server_add_connection(osc_xmlrpc_server,
-				      osc_websocket_connection);
+	osc_websocket_connection = ags_osc_xmlrpc_server_find_websocket_connection(osc_xmlrpc_server,
+										   websocket_connection);
 
-	//TODO:JK: implement me
+	if(osc_websocket_connection == NULL){
+	  osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
+	  g_object_set(osc_websocket_connection,
+		       "websocket-connection", websocket_connection,
+		       "client", client,
+		       "security-context", security_context,
+		       "path", path,
+		       "login", login,
+		       "security-token", security_token,
+		       NULL);
+	
+	  ags_osc_server_add_connection(osc_xmlrpc_server,
+					osc_websocket_connection);
+
+	  g_object_set(current,
+		       "osc-connection", osc_websocket_connection,
+		       NULL);	  
+	}
+
+	g_object_get(osc_xmlrpc_server,
+		     "controller", &start_controller,
+		     NULL);
+
+	controller = ags_list_util_find_type(start_controller,
+					     AGS_TYPE_OSC_METER_CONTROLLER);
+
+	if(controller != NULL){
+	  start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
+
+	  g_list_free_full(start_osc_response,
+			   g_object_unref);
+	}
       }
+      
+      g_list_free_full(start_message,
+		       g_object_unref);
     }
     
     g_object_unref(security_context);

@@ -21,6 +21,7 @@
 
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 #include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 #include <ags/audio/osc/ags_osc_message.h>
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_util.h>
@@ -61,10 +62,14 @@ void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xm
 
 gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
 					    AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					    SoupMessage *msg,
+					    GHashTable *query,
 					    guchar *packet, gsize packet_size,
 					    gsize offset);
 gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 					     AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					     SoupMessage *msg,
+					     GHashTable *query,
 					     guchar *packet, gsize packet_size,
 					     gsize offset,
 					     gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
@@ -383,7 +388,274 @@ ags_osc_xmlrpc_controller_finalize(GObject *gobject)
 void*
 ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 {
-  //TODO:JK: implement me
+  AgsOscXmlrpcServer *osc_xmlrpc_server;
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
+
+  GList *start_controller, *controller;
+  
+  gint64 time_now, time_next;
+  gint64 current_time;
+  
+  GRecMutex *controller_mutex;
+
+  osc_xmlrpc_controller = AGS_OSC_XMLRPC_CONTROLLER(ptr);
+
+  g_object_get(osc_xmlrpc_controller,
+	       "osc-xmlrpc-server", &osc_xmlrpc_server,
+	       NULL);
+
+  g_object_get(osc_xmlrpc_server,
+	       "controller", &start_controller,
+	       NULL);
+  
+  /* get OSC xmlrpc controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(osc_xmlrpc_controller);
+
+  time_next = 0;
+
+  ags_osc_xmlrpc_controller_set_flags(osc_xmlrpc_controller,
+				      AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING);
+  
+  while(ags_osc_xmlrpc_controller_test_flags(osc_xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING)){
+    GList *start_message, *message;
+    GList *start_list, *list;
+    
+    g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
+
+    time_now = g_get_monotonic_time();
+    osc_xmlrpc_controller->delegate_timeout = time_now + (G_TIME_SPAN_SECOND / 30);
+    
+    while(!g_atomic_int_get(&(osc_xmlrpc_controller->do_reset)) &&
+	  ((time_now < time_next) &&
+	   (time_now < osc_xmlrpc_controller->delegate_timeout))){
+      g_cond_wait_until(&(osc_xmlrpc_controller->delegate_cond),
+			&(osc_xmlrpc_controller->delegate_mutex),
+			osc_xmlrpc_controller->delegate_timeout);
+      
+      time_now = g_get_monotonic_time();
+    }
+
+    g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+		     FALSE);
+    
+    g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
+
+    /* check delegate */
+    g_rec_mutex_lock(controller_mutex);
+
+    start_message = NULL;
+    list =
+      start_list = g_list_copy_deep(osc_xmlrpc_controller->message,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+    
+    g_rec_mutex_unlock(controller_mutex);
+
+    while(list != NULL){
+      gboolean immediately;
+      
+      GRecMutex *message_mutex;
+
+      message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(list->data);
+
+      g_object_get(list->data,
+		   "immediately", &immediately,
+		   NULL);
+      
+      if(immediately){
+	start_message = g_list_prepend(start_message,
+				       list->data);
+	g_object_ref(list->data);
+	
+	ags_osc_xmlrpc_controller_remove_message(osc_xmlrpc_controller,
+						 list->data);
+      }else{
+	g_rec_mutex_lock(message_mutex);
+	
+	current_time = AGS_OSC_MESSAGE(list->data)->tv_sec + AGS_OSC_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
+
+	g_rec_mutex_unlock(message_mutex);
+      
+	if(current_time < time_now){
+	  start_message = g_list_prepend(start_message,
+					 list->data);
+	  g_object_ref(list->data);
+	  
+	  ags_osc_xmlrpc_controller_remove_message(osc_xmlrpc_controller,
+						   list->data);
+	}else{
+	  break;
+	}
+      }
+
+      list = list->next;
+    }
+
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
+    
+    message = 
+      start_message = g_list_reverse(start_message);
+
+    while(message != NULL){
+      GList *start_osc_response, *osc_response;
+
+      AgsOscMessage *current;
+      
+      gchar *path;
+
+      ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
+				     &path, NULL);
+
+      controller = start_controller;
+      start_osc_response = NULL;
+      
+      while(controller != NULL){
+	gboolean success;
+	
+	GRecMutex *mutex;
+
+	/* get OSC controller mutex */
+	mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
+
+	/* match path */
+	g_rec_mutex_lock(mutex);
+	
+	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->context_path,
+			     path);
+
+	g_rec_mutex_unlock(mutex);
+	
+	if(success){
+	  current = AGS_OSC_MESSAGE(message->data);
+	  
+	  /* delegate */
+	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_action_controller_run_action(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
+	  }else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_config_controller_apply_config(controller->data,
+									current->osc_connection,
+									current->message, current->message_size);
+	  }else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_info_controller_get_info(controller->data,
+								  current->osc_connection,
+								  current->message, current->message_size);
+	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+	    xmlDoc *doc;
+	    xmlNode *root_node;
+	    xmlNode *redirect_node;
+	    
+	    xmlChar *buffer;
+	    gchar *osc_monitor_path;
+	    gchar *resource_id;
+
+	    int buffer_length;
+	    
+	    doc = xmlNewDoc("1.0");
+	    
+	    root_node = xmlNewNode(NULL, "ags-osc-over-xmlrpc");
+	    xmlDocSetRootElement(doc, root_node);
+
+	    redirect_node = xmlNewNode(NULL, "ags-srv-redirect");
+
+	    resource_id = g_uuid_string_random();
+	    
+	    xmlNewProp(redirect_node,
+		       "resource-id",
+		       resource_id);
+
+	    xmlAddChild(root_node,
+			redirect_node);
+
+	    /* set resource id */
+	    g_object_set(current,
+			 "resource-id", resource_id,
+			 NULL);
+	    
+	    /* set redirect */
+	    osc_monitor_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/monitor",
+					       AGS_CONTROLLER_BASE_PATH);
+
+	    soup_message_set_redirect(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
+				      303,
+				      osc_monitor_path);
+
+	    g_free(osc_monitor_path);
+
+	    /* set response */
+	    xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
+
+	    soup_message_set_response(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
+				      "application/xml",
+				      SOUP_MEMORY_COPY,
+				      buffer,
+				      (gsize) buffer_length);
+
+	    xmlFree(buffer);
+	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_node_controller_get_data(controller->data,
+								  current->osc_connection,
+								  current->message, current->message_size);
+	  }else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_renew_controller_set_data(controller->data,
+								   current->osc_connection,
+								   current->message, current->message_size);
+	  }else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_status_controller_get_status(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
+	  }else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
+								      current->osc_connection,
+								      current->message, current->message_size);
+	  }
+	  
+	  break;
+	}
+	
+	controller = controller->next;
+      }
+
+      /* write response */
+      osc_response = start_osc_response;
+      
+      while(osc_response != NULL){
+	ags_osc_connection_write_response(current->osc_connection,
+					  osc_response->data);
+
+	osc_response = osc_response->next;
+      }
+
+      g_list_free_full(start_osc_response,
+		       g_object_unref);
+      
+      message = message->next;
+    }
+
+    /* free messages */
+    g_list_free_full(start_message,
+		     (GDestroyNotify) g_object_unref);
+
+    /* next */
+    g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
+
+    if(osc_xmlrpc_controller->message != NULL){
+      time_next = AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_sec + AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_fraction / 4.294967296 * 1000.0;
+    }else{
+      time_now = g_get_monotonic_time();
+
+      time_next = time_now + G_TIME_SPAN_SECOND / 30;
+    }
+    
+    g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
+  }
+
+  g_object_unref(osc_xmlrpc_server);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
   
   g_thread_exit(NULL);
 
@@ -639,6 +911,8 @@ ags_osc_xmlrpc_controller_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_contr
 gsize
 ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
 				      AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				      SoupMessage *msg,
+				      GHashTable *query,
 				      guchar *packet, gsize packet_size,
 				      gsize offset)
 {
@@ -662,6 +936,8 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
     if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
       ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
 					    osc_xmlrpc_connection,
+					    msg,
+					    query,
 					    packet, packet_size,
 					    offset + read_count);
 
@@ -669,6 +945,8 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
     }else if(packet[offset + read_count] == '/'){
       ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
 					     osc_xmlrpc_connection,
+					     msg,
+					     query,
 					     packet, packet_size,
 					     offset + read_count,
 					     tv_sec, tv_fraction, immediately);
@@ -687,6 +965,8 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 gsize
 ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
 				       AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				       SoupMessage *msg,
+				       GHashTable *query,
 				       guchar *packet, gsize packet_size,
 				       gsize offset,
 				       gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
@@ -785,7 +1065,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 
   read_count += (4 * (gsize) ceil((double) data_length / 4.0));
 
-  osc_message = ags_osc_message_new();
+  osc_message = ags_osc_xmlrpc_message_new();
 
   message = (guchar *) malloc(read_count * sizeof(guchar));
   memcpy(message,
@@ -799,6 +1079,8 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 	       "immediately", immediately,
 	       "message-size", read_count,
 	       "message", message,
+	       "msg", msg,
+	       "query", query,
 	       NULL);    
 
   ags_osc_xmlrpc_controller_add_message(osc_xmlrpc_controller,
@@ -923,11 +1205,15 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     if(!g_strcmp0(packet + offset, "#bundle")){      
       read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
 							 osc_xmlrpc_connection,
+							 msg,
+							 query,
 							 packet, packet_size,
 							 offset);
     }else if(packet[offset] == '/'){
       read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
 							  osc_xmlrpc_connection,
+							  msg,
+							  query,
 							  packet, packet_size,
 							  offset,
 							  0, 0, TRUE);

@@ -50,6 +50,8 @@ struct _AgsOscXmlrpcServer
   AgsOscServer osc_server;
 
   AgsServer *xmlrpc_server;
+
+  AgsController *osc_xmlrpc_controller;
 };
 
 struct _AgsOscXmlrpcServerClass

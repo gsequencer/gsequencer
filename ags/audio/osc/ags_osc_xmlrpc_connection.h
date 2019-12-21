@@ -45,7 +45,7 @@ typedef struct _AgsOscXmlrpcConnectionClass AgsOscXmlrpcConnectionClass;
 
 struct _AgsOscXmlrpcConnection
 {
-  AgsOscConnection connection;
+  AgsOscConnection osc_connection;
   
   SoupClientContext *client;
   
@@ -59,7 +59,7 @@ struct _AgsOscXmlrpcConnection
 
 struct _AgsOscXmlrpcConnectionClass
 {
-  AgsOscConnectionClass connection;
+  AgsOscConnectionClass osc_connection;
 };
 
 GType ags_osc_xmlrpc_connection_get_type(void);
