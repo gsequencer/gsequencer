@@ -24,6 +24,14 @@
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include <ags/i18n.h>
 
 void ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_websocket_connection);
@@ -39,13 +47,8 @@ void ags_osc_websocket_connection_get_property(GObject *gobject,
 void ags_osc_websocket_connection_dispose(GObject *gobject);
 void ags_osc_websocket_connection_finalize(GObject *gobject);
 
-guchar* ags_osc_websocket_connection_read_bytes(AgsOscWebsocketConnection *osc_websocket_connection,
-						guint *data_length);
-
 gint64 ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_websocket_connection,
 						   GObject *osc_response);
-
-void ags_osc_websocket_connection_close(AgsOscWebsocketConnection *osc_websocket_connection);
 
 /**
  * SECTION:ags_osc_websocket_connection
@@ -218,10 +221,10 @@ ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_webs
   /* AgsOscConnectionClass */
   osc_connection = (AgsOscConnection *) osc_websocket_connection;
   
-  osc_connection->read_bytes = ags_osc_websocket_connection_read_bytes;
+  osc_connection->read_bytes = NULL;
   osc_connection->write_response = ags_osc_websocket_connection_write_response;
   
-  osc_connection->close = ags_osc_websocket_connection_close;
+  osc_connection->close = NULL;
 
   /* signals */
 }
@@ -515,28 +518,91 @@ ags_osc_websocket_connection_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_osc_websocket_connection_parent_class)->finalize(gobject);
 }
 
-guchar*
-ags_osc_websocket_connection_read_bytes(AgsOscWebsocketConnection *osc_websocket_connection,
-					guint *data_length)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
 gint64
 ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_websocket_connection,
 					    GObject *osc_response)
 {
-  //TODO:JK: implement me
+  SoupWebsocketConnection *websocket_connection;
+  GIOStream *stream;
+  GOutputStream *output_stream;
 
-  return(0);
-}
+  xmlDoc *doc;
+  xmlNode *root_node;
+  xmlNode *osc_packet_node_list;
+  xmlNode *osc_packet_node;
+  
+  gchar *data;
+  xmlChar *buffer;
 
-void
-ags_osc_websocket_connection_close(AgsOscWebsocketConnection *osc_websocket_connection)
-{
-  //TODO:JK: implement me
+  int buffer_length;
+  
+  GError *error;
+
+  GRecMutex *osc_response_mutex;
+
+  /* get osc response mutex */
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
+
+  /* create XML doc */
+  doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+  root_node = xmlNewNode(NULL,
+			 BAD_CAST "ags-osc-over-xmlrpc");
+
+  xmlDocSetRootElement(doc,
+		       root_node);
+
+  osc_packet_node_list = xmlNewNode(NULL,
+				    BAD_CAST "ags-osc-packet-list");
+  
+  xmlAddChild(root_node,
+	      osc_packet_node_list);
+
+  osc_packet_node = xmlNewNode(NULL,
+				BAD_CAST "ags-osc-packet");
+
+  /* encode OSC packet */
+  g_rec_mutex_lock(osc_response_mutex);
+
+  data = g_base64_encode(AGS_OSC_RESPONSE(osc_response)->packet,
+			 AGS_OSC_RESPONSE(osc_response)->packet_size);
+
+  g_rec_mutex_unlock(osc_response_mutex);
+
+  xmlNodeSetContent(osc_packet_node,
+		    data);
+  
+  xmlAddChild(osc_packet_node_list,
+	      osc_packet_node);
+
+  xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
+  
+  /* write stream */
+  g_object_get(osc_websocket_connection,
+	       "websocket-connection", &websocket_connection,
+	       NULL);
+  
+  stream = soup_websocket_connection_get_io_stream(websocket_connection);
+  output_stream = g_io_stream_get_output_stream(stream);
+  
+  error = NULL;
+  g_output_stream_write(output_stream,
+			buffer,
+			(gsize) buffer_length,
+			NULL,
+			&error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+
+    g_error_free(error);
+  }
+
+  g_object_unref(websocket_connection);
+  
+  xmlFree(buffer);
+	    
+  return((gint64) buffer_length);
 }
 
 /**

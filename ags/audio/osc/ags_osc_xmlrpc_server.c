@@ -346,13 +346,84 @@ ags_osc_xmlrpc_server_finalize(GObject *gobject)
 void
 ags_osc_xmlrpc_server_start(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
+  
+  GList *start_controller, *controller;
+
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    return;
+  }
+  
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
+
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_RUNNING);
+
+  g_message("starting OSC XMLRPC threads");
+
+  /* controller */
+  g_object_get(osc_server,
+	       "osc-xmlrpc-controller", &osc_xmlrpc_controller,
+	       "controller", &start_controller,
+	       NULL);
+
+  ags_osc_xmlrpc_controller_start_delegate(osc_xmlrpc_controller);
+  
+  controller = start_controller;
+
+  while(controller != NULL){
+    if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+      ags_osc_meter_controller_start_monitor(controller->data);
+    }
+    
+    controller = controller->next;
+  }
+
+  g_object_unref(osc_xmlrpc_controller);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
 }
 
 void
 ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  AgsOscXmlrpcController *osc_xmlrpc_controller;
+  
+  GList *start_controller, *controller;
+
+  if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    return;
+  }
+  
+  /* stop */
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_TERMINATING);
+  ags_osc_server_unset_flags(osc_server, AGS_OSC_SERVER_RUNNING);
+
+  /* controller */
+  g_object_get(osc_server,
+	       "osc-xmlrpc-controller", &osc_xmlrpc_controller,
+	       "controller", &start_controller,
+	       NULL);
+
+  ags_osc_xmlrpc_controller_stop_delegate(osc_xmlrpc_controller);
+  
+  controller = start_controller;
+
+  while(controller != NULL){
+    if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+      ags_osc_meter_controller_stop_monitor(controller->data);
+    }
+    
+    controller = controller->next;
+  }
+
+  g_object_unref(osc_xmlrpc_controller);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
+
+  ags_osc_server_unset_flags(osc_server, (AGS_OSC_SERVER_STARTED |
+					  AGS_OSC_SERVER_TERMINATING));
 }
 
 /**
@@ -913,6 +984,9 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 	  g_list_free_full(start_osc_response,
 			   g_object_unref);
 	}
+
+	g_list_free_full(start_controller,
+			 g_object_unref);
       }
       
       g_list_free_full(start_message,

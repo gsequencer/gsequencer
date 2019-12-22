@@ -24,6 +24,14 @@
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include <ags/i18n.h>
 
 void ags_osc_xmlrpc_connection_class_init(AgsOscXmlrpcConnectionClass *osc_xmlrpc_connection);
@@ -38,14 +46,6 @@ void ags_osc_xmlrpc_connection_get_property(GObject *gobject,
 					    GParamSpec *param_spec);
 void ags_osc_xmlrpc_connection_dispose(GObject *gobject);
 void ags_osc_xmlrpc_connection_finalize(GObject *gobject);
-
-guchar* ags_osc_xmlrpc_connection_read_bytes(AgsOscXmlrpcConnection *osc_xmlrpc_connection,
-					     guint *data_length);
-
-gint64 ags_osc_xmlrpc_connection_write_response(AgsOscXmlrpcConnection *osc_xmlrpc_connection,
-						GObject *osc_response);
-
-void ags_osc_xmlrpc_connection_close(AgsOscXmlrpcConnection *osc_xmlrpc_connection);
 
 /**
  * SECTION:ags_osc_xmlrpc_connection
@@ -201,10 +201,10 @@ ags_osc_xmlrpc_connection_class_init(AgsOscXmlrpcConnectionClass *osc_xmlrpc_con
   /* AgsOscConnectionClass */
   osc_connection = (AgsOscConnection *) osc_xmlrpc_connection;
   
-  osc_connection->read_bytes = ags_osc_xmlrpc_connection_read_bytes;
-  osc_connection->write_response = ags_osc_xmlrpc_connection_write_response;
+  osc_connection->read_bytes = NULL;
+  osc_connection->write_response = NULL;
   
-  osc_connection->close = ags_osc_xmlrpc_connection_close;
+  osc_connection->close = NULL;
 
   /* signals */
 }
@@ -452,30 +452,6 @@ ags_osc_xmlrpc_connection_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_connection_parent_class)->finalize(gobject);
-}
-
-guchar*
-ags_osc_xmlrpc_connection_read_bytes(AgsOscXmlrpcConnection *osc_xmlrpc_connection,
-				     guint *data_length)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
-gint64
-ags_osc_xmlrpc_connection_write_response(AgsOscXmlrpcConnection *osc_xmlrpc_connection,
-					 GObject *osc_response)
-{
-  //TODO:JK: implement me
-
-  return(0);
-}
-
-void
-ags_osc_xmlrpc_connection_close(AgsOscXmlrpcConnection *osc_xmlrpc_connection)
-{
-  //TODO:JK: implement me
 }
 
 /**

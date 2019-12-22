@@ -611,6 +611,76 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 								      current->osc_connection,
 								      current->message, current->message_size);
 	  }
+
+	  /* write response */
+	  if(start_osc_response != NULL){
+	    xmlDoc *doc;
+	    xmlNode *root_node;
+	    xmlNode *osc_packet_node_list;
+	    xmlNode *osc_packet_node;
+  
+	    gchar *data;
+	    xmlChar *buffer;
+
+	    int buffer_length;
+
+	    GRecMutex *osc_response_mutex;
+
+	    /* create XML doc */
+	    doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+	    root_node = xmlNewNode(NULL,
+				   BAD_CAST "ags-osc-over-xmlrpc");
+
+	    xmlDocSetRootElement(doc,
+				 root_node);
+
+	    osc_packet_node_list = xmlNewNode(NULL,
+					      BAD_CAST "ags-osc-packet-list");
+  
+	    xmlAddChild(root_node,
+			osc_packet_node_list);
+
+	    osc_response = start_osc_response;
+      
+	    while(osc_response != NULL){
+	      /* get osc response mutex */
+	      osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
+
+	      osc_packet_node = xmlNewNode(NULL,
+					   BAD_CAST "ags-osc-packet");
+
+	      /* encode OSC packet */
+	      g_rec_mutex_lock(osc_response_mutex);
+
+	      data = g_base64_encode(AGS_OSC_RESPONSE(osc_response->data)->packet,
+				     AGS_OSC_RESPONSE(osc_response->data)->packet_size);
+
+	      g_rec_mutex_unlock(osc_response_mutex);
+
+	      xmlNodeSetContent(osc_packet_node,
+				data);
+  
+	      xmlAddChild(osc_packet_node_list,
+			  osc_packet_node);
+
+	      /* iterate */
+	      osc_response = osc_response->next;
+	    }
+
+	    xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
+
+	    soup_message_set_response(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
+				      "application/xml",
+				      SOUP_MEMORY_COPY,
+				      buffer,
+				      buffer_length);
+
+	    xmlFree(buffer);
+	    
+	    g_list_free_full(start_osc_response,
+			     g_object_unref);
+	  }      
 	  
 	  break;
 	}
@@ -618,22 +688,9 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 	controller = controller->next;
       }
 
-      /* write response */
-      osc_response = start_osc_response;
-      
-      while(osc_response != NULL){
-	ags_osc_connection_write_response(current->osc_connection,
-					  osc_response->data);
-
-	osc_response = osc_response->next;
-      }
-
-      g_list_free_full(start_osc_response,
-		       g_object_unref);
-      
       message = message->next;
     }
-
+    
     /* free messages */
     g_list_free_full(start_message,
 		     (GDestroyNotify) g_object_unref);
