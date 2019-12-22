@@ -152,7 +152,9 @@
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_server.h>
 #include <ags/audio/osc/ags_osc_util.h>
+#include <ags/audio/osc/ags_osc_websocket_connection.h>
 #include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
 #include <ags/audio/osc/controller/ags_osc_action_controller.h>

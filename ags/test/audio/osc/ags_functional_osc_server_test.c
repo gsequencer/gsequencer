@@ -308,18 +308,18 @@ ags_functional_osc_server_test_clean_suite()
 void
 ags_functional_osc_server_test_action_controller()
 {
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   gboolean retval;
     
-  static const unsigned char *start_soundcard_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSoundcard\x00\x00start\x00\x00\x00";
-  static const unsigned char *start_sequencer_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSequencer\x00\x00start\x00\x00\x00";
-  static const unsigned char *start_audio_message =     "/action\x00,ss\x00/AgsSoundProvider/AgsAudio[0]\x00\x00\x00start\x00\x00\x00";
-  static const unsigned char *stop_soundcard_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSoundcard\x00\x00stop\x00\x00\x00\x00";
-  static const unsigned char *stop_sequencer_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSequencer\x00\x00stop\x00\x00\x00\x00";
-  static const unsigned char *stop_audio_message =     "/action\x00,ss\x00/AgsSoundProvider/AgsAudio[0]\x00\x00\x00stop\x00\x00\x00\x00";
+  static const guchar *start_soundcard_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSoundcard\x00\x00start\x00\x00\x00";
+  static const guchar *start_sequencer_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSequencer\x00\x00start\x00\x00\x00";
+  static const guchar *start_audio_message =     "/action\x00,ss\x00/AgsSoundProvider/AgsAudio[0]\x00\x00\x00start\x00\x00\x00";
+  static const guchar *stop_soundcard_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSoundcard\x00\x00stop\x00\x00\x00\x00";
+  static const guchar *stop_sequencer_message = "/action\x00,ss\x00/AgsSoundProvider/AgsSequencer\x00\x00stop\x00\x00\x00\x00";
+  static const guchar *stop_audio_message =     "/action\x00,ss\x00/AgsSoundProvider/AgsAudio[0]\x00\x00\x00stop\x00\x00\x00\x00";
 
   static const guint start_soundcard_message_size = 52;
   static const guint start_sequencer_message_size = 52;
@@ -332,11 +332,11 @@ ags_functional_osc_server_test_action_controller()
   CU_ASSERT(osc_client->ip4_fd != -1);
   
   /* start soundcard */
-  packet = (unsigned char *) malloc((4 + start_soundcard_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + start_soundcard_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				start_soundcard_message_size);
-  memcpy(packet + 4, start_soundcard_message, (start_soundcard_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, start_soundcard_message, (start_soundcard_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + start_soundcard_message_size,
@@ -352,11 +352,11 @@ ags_functional_osc_server_test_action_controller()
   sleep(5);
   
   /* start sequencer */
-  packet = (unsigned char *) malloc((4 + start_sequencer_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + start_sequencer_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				start_sequencer_message_size);
-  memcpy(packet + 4, start_sequencer_message, (start_sequencer_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, start_sequencer_message, (start_sequencer_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + start_sequencer_message_size,
@@ -372,11 +372,11 @@ ags_functional_osc_server_test_action_controller()
   sleep(5);
   
   /* start audio */
-  packet = (unsigned char *) malloc((4 + start_audio_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + start_audio_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				start_audio_message_size);
-  memcpy(packet + 4, start_audio_message, (start_audio_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, start_audio_message, (start_audio_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + start_audio_message_size,
@@ -392,11 +392,11 @@ ags_functional_osc_server_test_action_controller()
   sleep(5);
 
   /* stop soundcard */
-  packet = (unsigned char *) malloc((4 + stop_soundcard_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + stop_soundcard_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				stop_soundcard_message_size);
-  memcpy(packet + 4, stop_soundcard_message, (stop_soundcard_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, stop_soundcard_message, (stop_soundcard_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + stop_soundcard_message_size,
@@ -412,11 +412,11 @@ ags_functional_osc_server_test_action_controller()
   sleep(5);
   
   /* stop sequencer */
-  packet = (unsigned char *) malloc((4 + stop_sequencer_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + stop_sequencer_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				stop_sequencer_message_size);
-  memcpy(packet + 4, stop_sequencer_message, (stop_sequencer_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, stop_sequencer_message, (stop_sequencer_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + stop_sequencer_message_size,
@@ -432,11 +432,11 @@ ags_functional_osc_server_test_action_controller()
   sleep(5);
   
   /* stop audio */
-  packet = (unsigned char *) malloc((4 + stop_audio_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + stop_audio_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				stop_audio_message_size);
-  memcpy(packet + 4, stop_audio_message, (stop_audio_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, stop_audio_message, (stop_audio_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + stop_audio_message_size,
@@ -455,16 +455,16 @@ ags_functional_osc_server_test_action_controller()
 void
 ags_functional_osc_server_test_config_controller()
 {
-  unsigned char *message;
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *message;
+  guchar *buffer;
+  guchar *packet;
 
   guint config_length;
   guint length;
   guint buffer_length;
   gboolean retval;
 
-  static const unsigned char *config_message = "/config\x00,s\x00\x00";
+  static const guchar *config_message = "/config\x00,s\x00\x00";
 
   static const guint config_message_size = 12;
 
@@ -476,17 +476,17 @@ ags_functional_osc_server_test_config_controller()
 
   length = config_message_size + (4 * ceil((double) (config_length + 1) / 4.0));
 
-  message = (unsigned char *) malloc(length * sizeof(unsigned char));
-  memset(message, 0, length * sizeof(unsigned char));
+  message = (guchar *) malloc(length * sizeof(guchar));
+  memset(message, 0, length * sizeof(guchar));
 
-  memcpy(message, config_message, config_message_size * sizeof(unsigned char));
-  memcpy(message + config_message_size, AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT, config_length * sizeof(unsigned char));
+  memcpy(message, config_message, config_message_size * sizeof(guchar));
+  memcpy(message + config_message_size, AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT, config_length * sizeof(guchar));
 
-  packet = (unsigned char *) malloc((4 + length) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + length) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				length);
-  memcpy(packet + 4, message, (length) * sizeof(unsigned char));
+  memcpy(packet + 4, message, (length) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + length,
@@ -505,24 +505,24 @@ ags_functional_osc_server_test_config_controller()
 void
 ags_functional_osc_server_test_info_controller()
 {
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   gboolean retval;
 
-  static const unsigned char *info_message = "/info\x00\x00\x00";
+  static const guchar *info_message = "/info\x00\x00\x00";
 
   static const guint info_message_size = 8;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
 
-  packet = (unsigned char *) malloc((4 + info_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + info_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				info_message_size);
-  memcpy(packet + 4, info_message, (info_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, info_message, (info_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + info_message_size,
@@ -545,16 +545,16 @@ ags_functional_osc_server_test_meter_controller()
   struct timespec timeout_delay;
   struct timespec idle_delay;
   
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   guint meter_packet_count;
   guint i;
   gboolean retval;
 
-  static const unsigned char *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
-  static const unsigned char *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const guchar *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const guchar *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
 
   static const guint enable_peak_message_size = 112;
   static const guint disable_peak_message_size = 112;
@@ -563,11 +563,11 @@ ags_functional_osc_server_test_meter_controller()
   CU_ASSERT(osc_client->ip4_fd != -1);
 
   /* enable meter */
-  packet = (unsigned char *) malloc((4 + enable_peak_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + enable_peak_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				enable_peak_message_size);
-  memcpy(packet + 4, enable_peak_message, (enable_peak_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, enable_peak_message, (enable_peak_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + enable_peak_message_size,
@@ -604,8 +604,8 @@ ags_functional_osc_server_test_meter_controller()
   
   while(!ags_osc_client_timeout_expired(&start_time,
 					&timeout_delay)){
-    unsigned char *current_data;
-    unsigned char *current_packet;
+    guchar *current_data;
+    guchar *current_packet;
     gchar *address_pattern;
     
     guint data_length;
@@ -644,11 +644,11 @@ ags_functional_osc_server_test_meter_controller()
   CU_ASSERT(meter_packet_count >= AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT);
 
   /* disable meter */
-  packet = (unsigned char *) malloc((4 + disable_peak_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + disable_peak_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				disable_peak_message_size);
-  memcpy(packet + 4, disable_peak_message, (disable_peak_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, disable_peak_message, (disable_peak_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + disable_peak_message_size,
@@ -668,14 +668,14 @@ ags_functional_osc_server_test_node_controller()
   struct timespec start_time;
   struct timespec timeout_delay;
 
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   gboolean retval;
   gboolean success;
   
-  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
+  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
 
   static const guint volume_message_size = 116;
 
@@ -683,11 +683,11 @@ ags_functional_osc_server_test_node_controller()
   CU_ASSERT(osc_client->ip4_fd != -1);
 
   /* volume message */
-  packet = (unsigned char *) malloc((4 + volume_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + volume_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				volume_message_size);
-  memcpy(packet + 4, volume_message, (volume_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, volume_message, (volume_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + volume_message_size,
@@ -720,8 +720,8 @@ ags_functional_osc_server_test_node_controller()
   
   while(!ags_osc_client_timeout_expired(&start_time,
 					&timeout_delay)){
-    unsigned char *current_data;
-    unsigned char *current_packet;
+    guchar *current_data;
+    guchar *current_packet;
     gchar *address_pattern;
     
     guint data_length;
@@ -754,13 +754,13 @@ ags_functional_osc_server_test_node_controller()
 void
 ags_functional_osc_server_test_renew_controller()
 {
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   gboolean retval;
 
-  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
 
   static const guint mute_message_size = 120;
 
@@ -768,11 +768,11 @@ ags_functional_osc_server_test_renew_controller()
   CU_ASSERT(osc_client->ip4_fd != -1);
 
   /* mute message */
-  packet = (unsigned char *) malloc((4 + mute_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + mute_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				mute_message_size);
-  memcpy(packet + 4, mute_message, (mute_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, mute_message, (mute_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + mute_message_size,
@@ -789,13 +789,13 @@ ags_functional_osc_server_test_renew_controller()
 void
 ags_functional_osc_server_test_status_controller()
 {
-  unsigned char *buffer;
-  unsigned char *packet;
+  guchar *buffer;
+  guchar *packet;
 
   guint buffer_length;
   gboolean retval;
 
-  static const unsigned char *status_message = "/status\x00,\x00\x00\x00";
+  static const guchar *status_message = "/status\x00,\x00\x00\x00";
 
   static const guint status_message_size = 12;
 
@@ -803,11 +803,11 @@ ags_functional_osc_server_test_status_controller()
   CU_ASSERT(osc_client->ip4_fd != -1);
 
   /* status message */
-  packet = (unsigned char *) malloc((4 + status_message_size) * sizeof(unsigned char));
+  packet = (guchar *) malloc((4 + status_message_size) * sizeof(guchar));
 
   ags_osc_buffer_util_put_int32(packet,
 				status_message_size);
-  memcpy(packet + 4, status_message, (status_message_size) * sizeof(unsigned char));
+  memcpy(packet + 4, status_message, (status_message_size) * sizeof(guchar));
 
   buffer = ags_osc_util_slip_encode(packet,
 				    4 + status_message_size,
