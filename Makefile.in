@@ -197,6 +197,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_osc_buffer_util_test$(EXEEXT) ags_osc_client_test$(EXEEXT) \
 	ags_osc_connection_test$(EXEEXT) ags_osc_message_test$(EXEEXT) \
 	ags_osc_server_test$(EXEEXT) \
+	ags_osc_xmlrpc_server_test$(EXEEXT) \
 	ags_osc_action_controller_test$(EXEEXT) \
 	ags_osc_config_controller_test$(EXEEXT) \
 	ags_osc_front_controller_test$(EXEEXT) \
@@ -3544,6 +3545,19 @@ ags_osc_xmlrpc_controller_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_osc_xmlrpc_controller_test_CFLAGS) $(CFLAGS) \
 	$(ags_osc_xmlrpc_controller_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_osc_xmlrpc_server_test_OBJECTS = ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.$(OBJEXT)
+ags_osc_xmlrpc_server_test_OBJECTS =  \
+	$(am_ags_osc_xmlrpc_server_test_OBJECTS)
+ags_osc_xmlrpc_server_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_osc_xmlrpc_server_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_osc_xmlrpc_server_test_CFLAGS) $(CFLAGS) \
+	$(ags_osc_xmlrpc_server_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_output_test_OBJECTS =  \
 	ags/test/audio/output_test-ags_output_test.$(OBJEXT)
 ags_output_test_OBJECTS = $(am_ags_output_test_OBJECTS)
@@ -5095,6 +5109,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/osc/$(DEPDIR)/osc_connection_test-ags_osc_connection_test.Po \
 	ags/test/audio/osc/$(DEPDIR)/osc_message_test-ags_osc_message_test.Po \
 	ags/test/audio/osc/$(DEPDIR)/osc_server_test-ags_osc_server_test.Po \
+	ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po \
 	ags/test/audio/osc/controller/$(DEPDIR)/osc_action_controller_test-ags_osc_action_controller_test.Po \
 	ags/test/audio/osc/controller/$(DEPDIR)/osc_config_controller_test-ags_osc_config_controller_test.Po \
 	ags/test/audio/osc/controller/$(DEPDIR)/osc_front_controller_test-ags_osc_front_controller_test.Po \
@@ -5436,6 +5451,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_osc_server_test_SOURCES) \
 	$(ags_osc_status_controller_test_SOURCES) \
 	$(ags_osc_xmlrpc_controller_test_SOURCES) \
+	$(ags_osc_xmlrpc_server_test_SOURCES) \
 	$(ags_output_test_SOURCES) \
 	$(ags_password_store_manager_test_SOURCES) \
 	$(ags_pattern_test_SOURCES) \
@@ -5608,6 +5624,7 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_osc_server_test_SOURCES) \
 	$(ags_osc_status_controller_test_SOURCES) \
 	$(ags_osc_xmlrpc_controller_test_SOURCES) \
+	$(ags_osc_xmlrpc_server_test_SOURCES) \
 	$(ags_output_test_SOURCES) \
 	$(ags_password_store_manager_test_SOURCES) \
 	$(ags_pattern_test_SOURCES) \
@@ -7462,6 +7479,12 @@ ags_osc_server_test_SOURCES = ags/test/audio/osc/ags_osc_server_test.c
 ags_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_osc_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_osc_server_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# osc XMLRPC server unit test
+ags_osc_xmlrpc_server_test_SOURCES = ags/test/audio/osc/ags_osc_xmlrpc_server_test.c
+ags_osc_xmlrpc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_osc_xmlrpc_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_xmlrpc_server_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # osc action controller unit test
 ags_osc_action_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_action_controller_test.c
@@ -13069,6 +13092,13 @@ ags/test/audio/osc/xmlrpc/osc_xmlrpc_controller_test-ags_osc_xmlrpc_controller_t
 ags_osc_xmlrpc_controller_test$(EXEEXT): $(ags_osc_xmlrpc_controller_test_OBJECTS) $(ags_osc_xmlrpc_controller_test_DEPENDENCIES) $(EXTRA_ags_osc_xmlrpc_controller_test_DEPENDENCIES) 
 	@rm -f ags_osc_xmlrpc_controller_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_osc_xmlrpc_controller_test_LINK) $(ags_osc_xmlrpc_controller_test_OBJECTS) $(ags_osc_xmlrpc_controller_test_LDADD) $(LIBS)
+ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.$(OBJEXT):  \
+	ags/test/audio/osc/$(am__dirstamp) \
+	ags/test/audio/osc/$(DEPDIR)/$(am__dirstamp)
+
+ags_osc_xmlrpc_server_test$(EXEEXT): $(ags_osc_xmlrpc_server_test_OBJECTS) $(ags_osc_xmlrpc_server_test_DEPENDENCIES) $(EXTRA_ags_osc_xmlrpc_server_test_DEPENDENCIES) 
+	@rm -f ags_osc_xmlrpc_server_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_osc_xmlrpc_server_test_LINK) $(ags_osc_xmlrpc_server_test_OBJECTS) $(ags_osc_xmlrpc_server_test_LDADD) $(LIBS)
 ags/test/audio/output_test-ags_output_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -14349,6 +14379,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/$(DEPDIR)/osc_connection_test-ags_osc_connection_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/$(DEPDIR)/osc_message_test-ags_osc_message_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/$(DEPDIR)/osc_server_test-ags_osc_server_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/controller/$(DEPDIR)/osc_action_controller_test-ags_osc_action_controller_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/controller/$(DEPDIR)/osc_config_controller_test-ags_osc_config_controller_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/controller/$(DEPDIR)/osc_front_controller_test-ags_osc_front_controller_test.Po@am__quote@ # am--include-marker
@@ -21057,6 +21088,20 @@ ags/test/audio/osc/xmlrpc/osc_xmlrpc_controller_test-ags_osc_xmlrpc_controller_t
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_xmlrpc_controller_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/xmlrpc/osc_xmlrpc_controller_test-ags_osc_xmlrpc_controller_test.obj `if test -f 'ags/test/audio/osc/xmlrpc/ags_osc_xmlrpc_controller_test.c'; then $(CYGPATH_W) 'ags/test/audio/osc/xmlrpc/ags_osc_xmlrpc_controller_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/osc/xmlrpc/ags_osc_xmlrpc_controller_test.c'; fi`
 
+ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.o: ags/test/audio/osc/ags_osc_xmlrpc_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_xmlrpc_server_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.o -MD -MP -MF ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Tpo -c -o ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.o `test -f 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c' || echo '$(srcdir)/'`ags/test/audio/osc/ags_osc_xmlrpc_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Tpo ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/osc/ags_osc_xmlrpc_server_test.c' object='ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_xmlrpc_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.o `test -f 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c' || echo '$(srcdir)/'`ags/test/audio/osc/ags_osc_xmlrpc_server_test.c
+
+ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.obj: ags/test/audio/osc/ags_osc_xmlrpc_server_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_xmlrpc_server_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.obj -MD -MP -MF ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Tpo -c -o ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.obj `if test -f 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; then $(CYGPATH_W) 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Tpo ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/osc/ags_osc_xmlrpc_server_test.c' object='ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_xmlrpc_server_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.obj `if test -f 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; then $(CYGPATH_W) 'ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/osc/ags_osc_xmlrpc_server_test.c'; fi`
+
 ags/test/audio/output_test-ags_output_test.o: ags/test/audio/ags_output_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_output_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/output_test-ags_output_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Tpo -c -o ags/test/audio/output_test-ags_output_test.o `test -f 'ags/test/audio/ags_output_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_output_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Tpo ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Po
@@ -23274,6 +23319,13 @@ ags_osc_server_test.log: ags_osc_server_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_osc_xmlrpc_server_test.log: ags_osc_xmlrpc_server_test$(EXEEXT)
+	@p='ags_osc_xmlrpc_server_test$(EXEEXT)'; \
+	b='ags_osc_xmlrpc_server_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_osc_action_controller_test.log: ags_osc_action_controller_test$(EXEEXT)
 	@p='ags_osc_action_controller_test$(EXEEXT)'; \
 	b='ags_osc_action_controller_test'; \
@@ -25021,6 +25073,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_connection_test-ags_osc_connection_test.Po
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_message_test-ags_osc_message_test.Po
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_server_test-ags_osc_server_test.Po
+	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_action_controller_test-ags_osc_action_controller_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_config_controller_test-ags_osc_config_controller_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_front_controller_test-ags_osc_front_controller_test.Po
@@ -25956,6 +26009,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_connection_test-ags_osc_connection_test.Po
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_message_test-ags_osc_message_test.Po
 	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_server_test-ags_osc_server_test.Po
+	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_xmlrpc_server_test-ags_osc_xmlrpc_server_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_action_controller_test-ags_osc_action_controller_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_config_controller_test-ags_osc_config_controller_test.Po
 	-rm -f ags/test/audio/osc/controller/$(DEPDIR)/osc_front_controller_test-ags_osc_front_controller_test.Po

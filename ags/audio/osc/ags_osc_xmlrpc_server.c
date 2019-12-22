@@ -468,8 +468,6 @@ ags_osc_xmlrpc_server_find_xmlrpc_connection(AgsOscXmlrpcServer *osc_xmlrpc_serv
       osc_xmlrpc_connection = list->data;
     }
 
-    g_object_unref(current);
-
     if(osc_xmlrpc_connection != NULL){
       break;
     }
@@ -613,11 +611,6 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 
   gchar *osc_monitor_path;
   
-  static const char **protocols = {
-    "osc-over-xmlrpc.gsequencer.org",
-    NULL,
-  };
-  
   if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
     return;
   }
@@ -714,7 +707,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,
 					      osc_monitor_path,
 					      NULL,
-					      protocols,
+					      NULL,
 					      ags_osc_xmlrpc_server_websocket_callback,
 					      osc_xmlrpc_server,
 					      NULL);
