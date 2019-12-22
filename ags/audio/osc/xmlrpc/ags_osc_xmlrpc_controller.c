@@ -160,6 +160,9 @@ ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_con
   /* GObjectClass */
   gobject = (GObjectClass *) osc_xmlrpc_controller;
 
+  gobject->set_property = ags_osc_xmlrpc_controller_set_property;
+  gobject->get_property = ags_osc_xmlrpc_controller_get_property;
+
   gobject->dispose = ags_osc_xmlrpc_controller_dispose;
   gobject->finalize = ags_osc_xmlrpc_controller_finalize;
 

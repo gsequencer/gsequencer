@@ -39,6 +39,7 @@ int ags_osc_message_test_clean_suite();
 
 void ags_osc_message_test_set_property();
 void ags_osc_message_test_get_property();
+void ags_osc_message_test_sort_func();
 
 #define AGS_OSC_MESSAGE_TEST_SET_PROPERTY_TV_SEC (32)
 #define AGS_OSC_MESSAGE_TEST_SET_PROPERTY_TV_FRACTION (25000)
@@ -173,6 +174,12 @@ ags_osc_message_test_get_property()
   CU_ASSERT(immediately == TRUE);
 }
 
+void
+ags_osc_message_test_sort_func()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -201,7 +208,8 @@ main(int argc, char **argv)
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsOscMessage set property", ags_osc_message_test_set_property) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscMessage get property", ags_osc_message_test_get_property) == NULL)){
+     (CU_add_test(pSuite, "test of AgsOscMessage get property", ags_osc_message_test_get_property) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscMessage sort func", ags_osc_message_test_sort_func) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
@@ -215,5 +223,3 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
-
-
