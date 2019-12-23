@@ -32,6 +32,7 @@ installcheck_programs = \
 	ags_check_system_functional_pitch_test \
 	ags_check_system_functional_fourier_transform_test \
 	ags_check_system_functional_osc_server_test \
+	ags_check_system_functional_osc_xmlrpc_server_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
 	ags_check_system_functional_machine_link_test \
 	ags_check_system_functional_line_member_add_and_destroy_test \
@@ -83,6 +84,12 @@ ags_check_system_functional_osc_server_test_SOURCES = ags/test/audio/osc/ags_fun
 ags_check_system_functional_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_functional_osc_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_osc_server_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional osc xmlrpc server test
+ags_check_system_functional_osc_xmlrpc_server_test_SOURCES = ags/test/audio/osc/ags_functional_osc_xmlrpc_server_test.c
+ags_check_system_functional_osc_xmlrpc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_check_system_functional_osc_xmlrpc_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_osc_xmlrpc_server_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional machine add and destroy test
 ags_check_system_functional_machine_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_machine_add_and_destroy_test.c
@@ -181,6 +188,7 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_pitch_test
 	./ags_check_system_functional_fourier_transform_test
 	./ags_check_system_functional_osc_server_test
+	./ags_check_system_functional_osc_xmlrpc_server_test
 	./ags_check_system_functional_machine_add_and_destroy_test
 	./ags_check_system_functional_machine_link_test
 	./ags_check_system_functional_line_member_add_and_destroy_test

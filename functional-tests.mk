@@ -23,6 +23,7 @@ check_PROGRAMS += \
 	ags_functional_pitch_test \
 	ags_functional_fourier_transform_test \
 	ags_functional_osc_server_test \
+	ags_functional_osc_xmlrpc_server_test \
 	ags_functional_machine_add_and_destroy_test \
 	ags_functional_machine_link_test \
 	ags_functional_line_member_add_and_destroy_test \
@@ -78,6 +79,12 @@ ags_functional_osc_server_test_SOURCES = ags/test/audio/osc/ags_functional_osc_s
 ags_functional_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_functional_osc_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_osc_server_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional osc xmlrpc server test
+ags_functional_osc_xmlrpc_server_test_SOURCES = ags/test/audio/osc/ags_functional_osc_xmlrpc_server_test.c
+ags_functional_osc_xmlrpc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_functional_osc_xmlrpc_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_osc_xmlrpc_server_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional machine add and destroy test
 ags_functional_machine_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_machine_add_and_destroy_test.c
