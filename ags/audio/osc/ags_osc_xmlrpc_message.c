@@ -343,7 +343,7 @@ ags_osc_xmlrpc_message_find_resource_id(GList *osc_xmlrpc_message,
   }
   
   while(osc_xmlrpc_message != NULL){    
-    g_object_get(osc_xmlrpc_message,
+    g_object_get(osc_xmlrpc_message->data,
 		 "resource-id", &current_resource_id,
 		 NULL);
 
