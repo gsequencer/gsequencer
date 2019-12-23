@@ -109,6 +109,7 @@ check_PROGRAMS += \
 	ags_osc_connection_test \
 	ags_osc_message_test \
 	ags_osc_server_test \
+	ags_osc_websocket_connection_test \
 	ags_osc_xmlrpc_connection_test \
 	ags_osc_xmlrpc_message_test \
 	ags_osc_xmlrpc_server_test \
@@ -768,6 +769,12 @@ ags_osc_server_test_SOURCES = ags/test/audio/osc/ags_osc_server_test.c
 ags_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
 ags_osc_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_osc_server_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
+
+# osc websocket connection unit test
+ags_osc_websocket_connection_test_SOURCES = ags/test/audio/osc/ags_osc_websocket_connection_test.c
+ags_osc_websocket_connection_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS)
+ags_osc_websocket_connection_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_websocket_connection_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS)
 
 # osc XMLRPC connection unit test
 ags_osc_xmlrpc_connection_test_SOURCES = ags/test/audio/osc/ags_osc_xmlrpc_connection_test.c
