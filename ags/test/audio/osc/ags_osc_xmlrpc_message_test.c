@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2018 Joël Krähemann
+ * Copyright (C) 2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,7 +122,7 @@ ags_osc_xmlrpc_message_test_get_property()
   CU_ASSERT(osc_xmlrpc_message->msg == soup_message);
   CU_ASSERT(osc_xmlrpc_message->query == query);
 
-  CU_ASSERT((!g_strcmp0(osc_xmlrpc_message->resource_id, AGS_OSC_XMLRPC_MESSAGE_TEST_GET_PROPERTY_RESOURCE_ID)) == TRUE);  
+  CU_ASSERT((!g_strcmp0(resource_id, AGS_OSC_XMLRPC_MESSAGE_TEST_GET_PROPERTY_RESOURCE_ID)) == TRUE);  
 }
 
 void
