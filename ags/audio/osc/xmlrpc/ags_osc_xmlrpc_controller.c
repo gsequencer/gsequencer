@@ -1165,7 +1165,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   
   xmlDoc *doc;
   xmlNode *root_node;
-  xmlNode *child;
+  xmlNode *osc_packet_node_list;
+  xmlNode *osc_packet_node;
   
   GBytes *request_body_data;
 
@@ -1206,27 +1207,6 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     return(NULL);
   }
 
-  child = root_node->children;
-
-  packet = NULL;
-
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
-		     "ags-srv-packet",
-		     15)){
-	xmlChar *tmp_packet;
-
-	tmp_packet = xmlNodeGetContent(child);
-
-	packet = g_base64_decode(tmp_packet,
-				 &packet_size);
-      }
-    }
-    
-    child = child->next;
-  }
-
   /*  */
   osc_xmlrpc_controller = AGS_OSC_XMLRPC_CONTROLLER(plugin_controller);
   
@@ -1249,51 +1229,85 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     ags_osc_server_add_connection(osc_xmlrpc_server,
 				  osc_xmlrpc_connection);
   }
-  
-  tv_sec = 0;
-  tv_fraction = 0;
-  immediately = TRUE;
 
-  for(offset = 4; offset < packet_size;){
-    gsize read_count;
+  osc_packet_node_list = root_node->children;
+
+  while(osc_packet_node_list != NULL){
+    if(osc_packet_node_list->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(osc_packet_node_list->name,
+		     "ags-osc-packet-list",
+		     20)){
+	osc_packet_node = osc_packet_node_list->children;
+	
+	while(osc_packet_node != NULL){
+	  if(osc_packet_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(osc_packet_node->name,
+			   "ags-osc-packet",
+			   15)){
+	      xmlChar *tmp_packet;
+
+	      tmp_packet = xmlNodeGetContent(osc_packet_node);
+
+	      packet = g_base64_decode(tmp_packet,
+				       &packet_size);
+
+	      tv_sec = 0;
+	      tv_fraction = 0;
+	      immediately = TRUE;
+
+	      for(offset = 4; offset < packet_size;){
+		gsize read_count;
 
 #ifdef AGS_DEBUG    
-    g_message("%d %d", offset, packet_size);
-    g_message("%x[%c]", packet[offset], packet[offset]);
+		g_message("%d %d", offset, packet_size);
+		g_message("%x[%c]", packet[offset], packet[offset]);
 #endif
     
-    if(!g_strcmp0(packet + offset, "#bundle")){      
-      read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
-							 osc_xmlrpc_connection,
-							 msg,
-							 query,
-							 packet, packet_size,
-							 offset);
-    }else if(packet[offset] == '/'){
-      read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
-							  osc_xmlrpc_connection,
-							  msg,
-							  query,
-							  packet, packet_size,
-							  offset,
-							  0, 0, TRUE);
-    }else{
-      read_count = 1;
+		if(!g_strcmp0(packet + offset, "#bundle")){      
+		  read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
+								     osc_xmlrpc_connection,
+								     msg,
+								     query,
+								     packet, packet_size,
+								     offset);
+		}else if(packet[offset] == '/'){
+		  read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
+								      osc_xmlrpc_connection,
+								      msg,
+								      query,
+								      packet, packet_size,
+								      offset,
+								      0, 0, TRUE);
+		}else{
+		  read_count = 1;
 
-      g_warning("malformed data");
-    }
+		  g_warning("malformed data");
+		}
 
-    if(read_count > 0){
-      offset += ((gsize) 4 * ceil((double) read_count / 4.0));
-    }else{
-      offset += 1;
+		if(read_count > 0){
+		  offset += ((gsize) 4 * ceil((double) read_count / 4.0));
+		}else{
+		  offset += 1;
       
-      g_warning("malformed data");
+		  g_warning("malformed data");
+		}
+	      }
+
+	      g_free(packet);
+	    }
+	  }
+    
+	  osc_packet_node = osc_packet_node->next;
+	}
+      }
     }
+    
+    osc_packet_node_list = osc_packet_node_list->next;
   }
 
-  g_free(packet);
-  
+  soup_message_set_status(msg,
+			  200);
+    
   return(NULL);
 }
 

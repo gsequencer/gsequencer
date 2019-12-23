@@ -111,6 +111,9 @@ ags_functional_server_test_init_suite()
 				 FALSE);     
   soup_session_add_feature(soup_session, jar);
   
+  g_signal_connect(soup_session, "authenticate",
+		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
+
   return(0);
 }
 
@@ -144,13 +147,9 @@ ags_functional_server_test_authenticate()
 
   GError *error;
   
-  static const gchar *form_data = "";
-
   msg = soup_form_request_new("GET",
 			      "http://127.0.0.1:8080/ags-xmlrpc",
 			      NULL);
-  g_signal_connect(soup_session, "authenticate",
-		   G_CALLBACK(ags_functional_server_test_authenticate_authenticate_callback), NULL);
 
   status = soup_session_send_message(soup_session,
 				     msg);
