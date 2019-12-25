@@ -551,8 +551,6 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
       ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
 				     &path, NULL);
 
-      g_message("-- %s", path);
-      
       controller = start_controller;
       start_osc_response = NULL;
       
@@ -990,7 +988,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
   guchar *message;
   gchar *address_pattern;
   gchar *type_tag;
-
+  
   gsize address_pattern_length;
   gsize type_tag_length;
   gsize data_length;
@@ -1127,10 +1125,10 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   
   GBytes *request_body_data;
 
+  xmlChar *buffer;
   gchar *data;
   guchar *packet;
   xmlChar *response_buffer;
-  gchar *response_path;
   gchar *response_resource_id;
 
   gsize data_size;
@@ -1156,10 +1154,13 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 			  &data_size);
 
   /* parse XML doc */
-  g_message("!! %s", data);
+  buffer = xmlCharStrndup(data,
+			  data_size);
   
-  doc = xmlParseDoc(data);
+  doc = xmlParseDoc(buffer);
 
+  xmlFree(buffer);
+  
   if(doc == NULL){
     return(NULL);
   }
@@ -1189,8 +1190,6 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 	       "resource-id", response_resource_id,
 	       NULL);
 
-  g_free(response_resource_id);
-  
   osc_packet_node_list = root_node->children;
 
   while(osc_packet_node_list != NULL){
@@ -1269,6 +1268,7 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   xmlFreeDoc(doc);
 
   /* response */
+  g_message("PATH=%s", path);
   response_doc = xmlNewDoc("1.0");
 	    
   response_root_node = xmlNewNode(NULL, "ags-osc-over-xmlrpc");
@@ -1281,30 +1281,25 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 	     "resource-id",
 	     response_resource_id);
 
-  soup_message_set_status(msg,
-			  303);
-
-  /* set redirect */
-  response_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/response",
-				  AGS_CONTROLLER_BASE_PATH);
-
-  soup_message_set_redirect(msg,
-			    303,
-			    response_path);
-
-  g_free(response_path);
+  xmlAddChild(response_root_node,
+	      response_redirect_node);
   
   /* set body */
   xmlDocDumpFormatMemoryEnc(response_doc, &response_buffer, &response_buffer_length, "UTF-8", TRUE);
 
   soup_message_set_response(msg,
-			    "application/xml",
+			    "text/xml; charset=UTF-8",
 			    SOUP_MEMORY_COPY,
 			    response_buffer,
 			    response_buffer_length);
 
+  soup_message_set_status(msg,
+			  200);
+
   xmlFree(response_buffer);
   xmlFreeDoc(response_doc);
+
+  g_free(response_resource_id);  
   
   return(NULL);
 }

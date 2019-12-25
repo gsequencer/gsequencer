@@ -37,13 +37,6 @@ int ags_osc_xmlrpc_message_test_clean_suite();
 
 void ags_osc_xmlrpc_message_test_set_property();
 void ags_osc_xmlrpc_message_test_get_property();
-void ags_osc_xmlrpc_message_test_find_resource_id();
-
-#define AGS_OSC_XMLRPC_MESSAGE_TEST_SET_PROPERTY_RESOURCE_ID "ags-test-resource-id"
-
-#define AGS_OSC_XMLRPC_MESSAGE_TEST_GET_PROPERTY_RESOURCE_ID "ags-test-resource-id"
-
-#define AGS_OSC_XMLRPC_MESSAGE_TEST_FIND_RESOURCE_ID_MESSAGE_COUNT (7)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -84,13 +77,10 @@ ags_osc_xmlrpc_message_test_set_property()
   g_object_set(osc_xmlrpc_message,
 	       "msg", soup_message,
 	       "query", query,
-	       "resource-id", AGS_OSC_XMLRPC_MESSAGE_TEST_SET_PROPERTY_RESOURCE_ID,
 	       NULL);
 
   CU_ASSERT(osc_xmlrpc_message->msg == soup_message);
   CU_ASSERT(osc_xmlrpc_message->query == query);
-
-  CU_ASSERT((!g_strcmp0(osc_xmlrpc_message->resource_id, AGS_OSC_XMLRPC_MESSAGE_TEST_SET_PROPERTY_RESOURCE_ID)) == TRUE);  
 }
 
 void
@@ -101,8 +91,6 @@ ags_osc_xmlrpc_message_test_get_property()
   SoupMessage *soup_message;
   GHashTable *query;
 
-  gchar *resource_id;
-
   osc_xmlrpc_message = ags_osc_xmlrpc_message_new();
 
   osc_xmlrpc_message->msg = soup_message_new("/ags-test-osc-xmlrpc",
@@ -111,57 +99,13 @@ ags_osc_xmlrpc_message_test_get_property()
   osc_xmlrpc_message->query = g_hash_table_new(g_str_hash,
 					       g_str_equal);
 
-  osc_xmlrpc_message->resource_id = AGS_OSC_XMLRPC_MESSAGE_TEST_GET_PROPERTY_RESOURCE_ID;
-
   g_object_get(osc_xmlrpc_message,
 	       "msg", &soup_message,
 	       "query", &query,
-	       "resource-id", &resource_id,
 	       NULL);
 
   CU_ASSERT(osc_xmlrpc_message->msg == soup_message);
   CU_ASSERT(osc_xmlrpc_message->query == query);
-
-  CU_ASSERT((!g_strcmp0(resource_id, AGS_OSC_XMLRPC_MESSAGE_TEST_GET_PROPERTY_RESOURCE_ID)) == TRUE);  
-}
-
-void
-ags_osc_xmlrpc_message_test_find_resource_id()
-{  
-  AgsOscXmlrpcMessage **osc_xmlrpc_message;
-
-  GList *start_list, *list;
-
-  guint i;
-  gboolean success;
-  
-  osc_xmlrpc_message = (AgsOscXmlrpcMessage **) malloc(AGS_OSC_XMLRPC_MESSAGE_TEST_FIND_RESOURCE_ID_MESSAGE_COUNT * sizeof(AgsOscXmlrpcMessage *));
-
-  start_list = NULL;
-  
-  for(i = 0; i < AGS_OSC_XMLRPC_MESSAGE_TEST_FIND_RESOURCE_ID_MESSAGE_COUNT; i++){
-    osc_xmlrpc_message[i] = ags_osc_xmlrpc_message_new();
-    start_list = g_list_prepend(start_list,
-				osc_xmlrpc_message[i]);
-    
-    osc_xmlrpc_message[i]->resource_id = g_strdup_printf("ags-test-resource-id-%d", i);
-  }
-
-  success = TRUE;
-
-  for(i = 0; i < AGS_OSC_XMLRPC_MESSAGE_TEST_FIND_RESOURCE_ID_MESSAGE_COUNT; i++){
-    list = ags_osc_xmlrpc_message_find_resource_id(start_list,
-						   g_strdup_printf("ags-test-resource-id-%d", i));
-
-    if(list == NULL ||
-       list->data != osc_xmlrpc_message[i]){
-      success = FALSE;
-
-      break;
-    }
-  }
-
-  CU_ASSERT(success == TRUE);
 }
 
 int
@@ -192,8 +136,7 @@ main(int argc, char **argv)
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsOscXmlrpcMessage set property", ags_osc_xmlrpc_message_test_set_property) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscXmlrpcMessage get property", ags_osc_xmlrpc_message_test_get_property) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscXmlrpcMessage find resource ID", ags_osc_xmlrpc_message_test_find_resource_id) == NULL)){
+     (CU_add_test(pSuite, "test of AgsOscXmlrpcMessage get property", ags_osc_xmlrpc_message_test_get_property) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

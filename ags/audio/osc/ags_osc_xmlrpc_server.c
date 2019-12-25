@@ -60,6 +60,12 @@ void ags_osc_xmlrpc_server_finalize(GObject *gobject);
 void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
 void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 
+void ags_osc_xmlrpc_server_websocket_early_handler_callback(SoupServer *server,
+							    SoupMessage *msg,
+							    const char *path,
+							    GHashTable *query,
+							    SoupClientContext *client,
+							    gpointer user_data);
 void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					      SoupWebsocketConnection *connection,
 					      const char *path,
@@ -467,8 +473,15 @@ ags_osc_xmlrpc_server_add_websocket_handler(AgsOscXmlrpcServer *osc_xmlrpc_serve
   /* get server mutex */
   server_mutex = AGS_SERVER_GET_OBJ_MUTEX(xmlrpc_server);
 
+  g_message("add websocket handler");
+  
   g_rec_mutex_lock(server_mutex);
 
+  soup_server_add_early_handler(xmlrpc_server->soup_server,
+				path,
+				ags_osc_xmlrpc_server_websocket_early_handler_callback,
+				NULL,
+				NULL);
   soup_server_add_websocket_handler(xmlrpc_server->soup_server,
 				    path,
 				    origin,
@@ -497,7 +510,13 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
   AgsOscXmlrpcController *osc_xmlrpc_controller;
 
   gchar *response_path;
-  
+
+  static const char *protocols[] = {
+    "Sec-WebSocket-Protocol",
+    "ags-osc-over-xmlrpc.gsequencer.org",
+    NULL,
+  };
+    
   if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
     return;
   }
@@ -594,12 +613,33 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,
 					      response_path,
 					      NULL,
-					      NULL,
+					      protocols,
 					      ags_osc_xmlrpc_server_websocket_callback,
 					      osc_xmlrpc_server,
 					      NULL);
 
   g_free(response_path);
+}
+
+void
+ags_osc_xmlrpc_server_websocket_early_handler_callback(SoupServer *server,
+						       SoupMessage *msg,
+						       const char *path,
+						       GHashTable *query,
+						       SoupClientContext *client,
+						       gpointer user_data)
+{
+  static const char *protocols[] = {
+    "Sec-WebSocket-Protocol",
+    "ags-osc-over-xmlrpc.gsequencer.org",
+    NULL,
+  };
+
+  g_message("MSG websocket PATH=%s", path);
+
+  soup_websocket_server_process_handshake(msg,
+					  NULL,
+					  protocols);
 }
 
 void
@@ -639,6 +679,8 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   GRecMutex *controller_mutex;
   GRecMutex *authentication_manager_mutex;
 
+  g_message("SRV-WEBSOCKET");
+  
   authentication_manager = ags_authentication_manager_get_instance();
   
   authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);

@@ -50,8 +50,6 @@ struct _AgsOscXmlrpcMessage
   
   SoupMessage *msg;
   GHashTable *query;
-
-  AgsOscWebsocketConnection *websocket_connection;
 };
 
 struct _AgsOscXmlrpcMessageClass
