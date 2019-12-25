@@ -185,12 +185,9 @@ ags_functional_osc_xmlrpc_server_test_add_thread(gpointer data)
   }
 
   /* add the tests to the suite */
-  if(
-#if 0
-    (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing action controller", ags_functional_osc_xmlrpc_server_test_action_controller) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing action controller", ags_functional_osc_xmlrpc_server_test_action_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing config controller", ags_functional_osc_xmlrpc_server_test_config_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing info controller", ags_functional_osc_xmlrpc_server_test_info_controller) == NULL) ||
-#endif
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing meter controller", ags_functional_osc_xmlrpc_server_test_meter_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing node controller", ags_functional_osc_xmlrpc_server_test_node_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing renew controller", ags_functional_osc_xmlrpc_server_test_renew_controller) == NULL) ||
@@ -405,7 +402,9 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
   GInputStream *input_stream;
 
   xmlDoc *doc;
-  xmlNode *root_node;  
+  xmlDoc *response_doc;
+  xmlNode *root_node;
+  xmlNode *response_root_node;
   xmlNode *login_node;
   xmlNode *security_token_node;
   xmlNode *redirect_node;
@@ -420,6 +419,8 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
 
   int buffer_length;
   gsize num_read;
+  guint i;
+  
   GError *error;
   
   g_message("websocket ...");
@@ -515,28 +516,75 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
   meter_packet_count = meter_data.meter_packet_count;
 
   data = g_malloc(65535 * sizeof(guchar));
+
+  i = 0;
   
   while(!ags_osc_client_timeout_expired(&start_time,
 					&timeout_delay)){
     error = NULL;
     num_read = g_input_stream_read(input_stream,
-				   data,
-				   65535,
+				   data + i,
+				   65535 - i - 1,
 				   NULL,
 				   &error);
 
-    if(num_read > 0 &&
-       num_read < 65535){
-      data[num_read] = '\0';
+    if(error != NULL){
+      g_critical("%s", error->message);
+    
+      g_error_free(error);
+    }
 
-      g_message(">>\n%s\n<<", data);
+    if(num_read > 0){
+      guint j;
 
-      g_atomic_int_inc(&(meter_packet_count[0]));
+      response_doc = NULL;
+      response_root_node = NULL;
+
+      for(j = 0; j < num_read; ){
+	gchar *offset, *end_offset;
+
+	offset = strstr(data + j, "</ags-osc-over-xmlrpc>");
+
+	if(offset != NULL){
+	  end_offset = offset + strlen("</ags-osc-over-xmlrpc>");
+	  end_offset[0] = '\0';
+
+	  i += (end_offset - ((gchar *) data + j));
+
+	  response_doc = xmlParseDoc(data + j);
+
+	  if(response_doc != NULL){
+	    response_root_node = xmlDocGetRootElement(response_doc);
+
+	    if(response_root_node != NULL){
+	      g_atomic_int_inc(&(meter_packet_count[0]));
+
+	      j = i + 1;
+	    }
+
+	    xmlFreeDoc(response_doc);
+	  }else{
+	    break;
+	  }
+	}
+
+	i = num_read - j;
+
+	if(i != 0){
+	  memcpy(data, data + j, num_read - j);
+	}
+      }
+      
+      if(i >= 65534){
+	i = 0;
+      }
     }
 
     nanosleep(&idle_delay,
 	      NULL);
   }
+
+  g_message("Total received packets: %d", g_atomic_int_get(&(meter_packet_count[0])));
 }
 
 void

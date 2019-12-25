@@ -1190,6 +1190,9 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 	       "resource-id", response_resource_id,
 	       NULL);
 
+  ags_osc_server_add_connection(osc_xmlrpc_server,
+				osc_websocket_connection);
+  
   osc_packet_node_list = root_node->children;
 
   while(osc_packet_node_list != NULL){

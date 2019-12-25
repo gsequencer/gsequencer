@@ -672,14 +672,13 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   gchar *resource_id;
   
   gsize num_read;
+  guint n_attempts;
   guint i;
   
   GError *error;
   
   GRecMutex *controller_mutex;
   GRecMutex *authentication_manager_mutex;
-
-  g_message("SRV-WEBSOCKET");
   
   authentication_manager = ags_authentication_manager_get_instance();
   
@@ -688,26 +687,41 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   stream = soup_websocket_connection_get_io_stream(websocket_connection);
   input_stream = g_io_stream_get_input_stream(stream);
 
-  error = NULL;
-  num_read = g_input_stream_read(input_stream,
-				 buffer,
-				 AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE,
-				 NULL,
-				 &error);
-
-  if(error != NULL){
-    g_warning("%s", error->message);
-
-    g_error_free(error);
-  }
-
-  if(num_read <= 0){
-    return;
-  }
+  doc = NULL;
+  root_node = NULL;
   
-  buffer[num_read] = '\0';
+  for(i = 0, n_attempts = 0; i < AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE - 1 && (doc == NULL || root_node == NULL) && n_attempts < 100; n_attempts++){
+    error = NULL;
+    num_read = g_input_stream_read(input_stream,
+				   buffer + i,
+				   AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE - i,
+				   NULL,
+				   &error);
 
-  doc = xmlParseDoc(buffer);
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
+
+    if(num_read <= 0){
+      g_usleep(125000);
+    }else{
+      i += num_read;
+      
+      buffer[i] = '\0';
+      
+      doc = xmlParseDoc(buffer);
+
+      if(doc != NULL){
+	root_node = xmlDocGetRootElement(doc);
+
+	if(root_node == NULL){
+	  xmlFreeDoc(doc);
+	}
+      }
+    }
+  }
 
   if(doc == NULL){
     return;
@@ -840,7 +854,7 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
       g_object_get(osc_xmlrpc_server,
 		   "connection", &start_connection,
 		   NULL);
-      
+
       connection = ags_osc_websocket_connection_find_resource_id(start_connection,
 								 resource_id);
 
