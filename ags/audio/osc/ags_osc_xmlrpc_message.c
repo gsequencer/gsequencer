@@ -48,7 +48,6 @@ enum{
   PROP_0,
   PROP_MSG,
   PROP_QUERY,
-  PROP_RESOURCE_ID,
 };
 
 static gpointer ags_osc_xmlrpc_message_parent_class = NULL;
@@ -133,22 +132,6 @@ ags_osc_xmlrpc_message_class_init(AgsOscXmlrpcMessageClass *osc_xmlrpc_message)
 				  PROP_QUERY,
 				  param_spec);
 
-  /**
-   * AgsOscXmlrpcMessage:resource-id:
-   *
-   * The resource ID from a redirect.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_string("resource-id",
-				   i18n_pspec("resource ID"),
-				   i18n_pspec("The resource ID from a redirect"),
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RESOURCE_ID,
-				  param_spec);
-
   /* signals */
 }
 
@@ -158,8 +141,6 @@ ags_osc_xmlrpc_message_init(AgsOscXmlrpcMessage *osc_xmlrpc_message)
   osc_xmlrpc_message->msg = NULL;
 
   osc_xmlrpc_message->query = NULL;
-
-  osc_xmlrpc_message->resource_id = NULL;
 }
 
 void
@@ -218,27 +199,6 @@ ags_osc_xmlrpc_message_set_property(GObject *gobject,
     g_rec_mutex_unlock(osc_message_mutex);
   }
   break;
-  case PROP_RESOURCE_ID:
-  {
-    gchar *resource_id;
-
-    resource_id = g_value_get_string(value);
-
-    g_rec_mutex_lock(osc_message_mutex);
-
-    if(resource_id == osc_xmlrpc_message->resource_id){
-      g_rec_mutex_unlock(osc_message_mutex);
-
-      return;
-    }
-    
-    g_free(osc_xmlrpc_message->resource_id);
-    
-    osc_xmlrpc_message->resource_id = g_strdup(resource_id);
-
-    g_rec_mutex_unlock(osc_message_mutex);
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -279,15 +239,6 @@ ags_osc_xmlrpc_message_get_property(GObject *gobject,
     g_rec_mutex_unlock(osc_message_mutex);
   }
   break;
-  case PROP_RESOURCE_ID:
-  {
-    g_rec_mutex_lock(osc_message_mutex);
-
-    g_value_set_string(value, osc_xmlrpc_message->resource_id);
-
-    g_rec_mutex_unlock(osc_message_mutex);
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -301,6 +252,12 @@ ags_osc_xmlrpc_message_dispose(GObject *gobject)
     
   osc_xmlrpc_message = (AgsOscXmlrpcMessage *) gobject;  
 
+  if(osc_xmlrpc_message->msg != NULL){
+    g_object_unref(osc_xmlrpc_message->msg);
+
+    osc_xmlrpc_message->msg = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_message_parent_class)->dispose(gobject);
 }
@@ -312,54 +269,12 @@ ags_osc_xmlrpc_message_finalize(GObject *gobject)
     
   osc_xmlrpc_message = (AgsOscXmlrpcMessage *) gobject;
 
-  g_free(osc_xmlrpc_message->resource_id);
-  
+  if(osc_xmlrpc_message->msg != NULL){
+    g_object_unref(osc_xmlrpc_message->msg);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_osc_xmlrpc_message_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_osc_xmlrpc_message_find_resource_id:
- * @osc_xmlrpc_message: the #GList-struct containing #AgsOscXmlrpcMessage
- * @resource_id: the resource id
- * 
- * Find @resource_id in @osc_xmlrpc_message.
- *
- * Returns: the next matchine #GList-struct or %NULL
- * 
- * Since: 3.0.0
- */
-GList*
-ags_osc_xmlrpc_message_find_resource_id(GList *osc_xmlrpc_message,
-					gchar *resource_id)
-{
-  gchar *current_resource_id;
-  
-  gboolean success;
-  
-  if(osc_xmlrpc_message == NULL ||
-     resource_id == NULL){
-    return(NULL);
-  }
-  
-  while(osc_xmlrpc_message != NULL){    
-    g_object_get(osc_xmlrpc_message->data,
-		 "resource-id", &current_resource_id,
-		 NULL);
-
-    success = (!g_strcmp0(resource_id, current_resource_id)) ? TRUE: FALSE;
-    
-    g_free(current_resource_id);
-
-    if(success){
-      break;
-    }
-
-    /* iterate */
-    osc_xmlrpc_message = osc_xmlrpc_message->next;
-  }
-
-  return(osc_xmlrpc_message);
 }
 
 /**

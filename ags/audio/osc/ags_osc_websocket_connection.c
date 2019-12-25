@@ -68,6 +68,7 @@ enum{
   PROP_PATH,
   PROP_LOGIN,
   PROP_SECURITY_TOKEN,
+  PROP_RESOURCE_ID,
 };
 
 static gpointer ags_osc_websocket_connection_parent_class = NULL;
@@ -218,6 +219,22 @@ ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_webs
 				  PROP_SECURITY_TOKEN,
 				  param_spec);
 
+  /**
+   * AgsOscWebsocketConnection:resource-id:
+   *
+   * The resource ID from a redirect.
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_string("resource-id",
+				   i18n_pspec("resource ID"),
+				   i18n_pspec("The resource ID from a redirect"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RESOURCE_ID,
+				  param_spec);
+
   /* AgsOscConnectionClass */
   osc_connection = (AgsOscConnection *) osc_websocket_connection;
   
@@ -242,6 +259,8 @@ ags_osc_websocket_connection_init(AgsOscWebsocketConnection *osc_websocket_conne
 
   osc_websocket_connection->login = NULL;
   osc_websocket_connection->security_token = NULL;
+
+  osc_websocket_connection->resource_id = NULL;
 }
 
 void
@@ -390,6 +409,27 @@ ags_osc_websocket_connection_set_property(GObject *gobject,
     g_rec_mutex_unlock(osc_connection_mutex);
   }
   break;
+  case PROP_RESOURCE_ID:
+  {
+    gchar *resource_id;
+
+    resource_id = g_value_get_string(value);
+
+    g_rec_mutex_lock(osc_connection_mutex);
+
+    if(resource_id == osc_websocket_connection->resource_id){
+      g_rec_mutex_unlock(osc_connection_mutex);
+
+      return;
+    }
+    
+    g_free(osc_websocket_connection->resource_id);
+    
+    osc_websocket_connection->resource_id = g_strdup(resource_id);
+
+    g_rec_mutex_unlock(osc_connection_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -466,6 +506,15 @@ ags_osc_websocket_connection_get_property(GObject *gobject,
     g_rec_mutex_unlock(osc_connection_mutex);
   }
   break;
+  case PROP_RESOURCE_ID:
+  {
+    g_rec_mutex_lock(osc_connection_mutex);
+
+    g_value_set_string(value, osc_websocket_connection->resource_id);
+
+    g_rec_mutex_unlock(osc_connection_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -514,6 +563,8 @@ ags_osc_websocket_connection_finalize(GObject *gobject)
   g_free(osc_websocket_connection->login);
   g_free(osc_websocket_connection->security_token);
   
+  g_free(osc_websocket_connection->resource_id);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_websocket_connection_parent_class)->finalize(gobject);
 }
@@ -540,6 +591,14 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
 
   GRecMutex *osc_response_mutex;
 
+  g_object_get(osc_websocket_connection,
+	       "websocket-connection", &websocket_connection,
+	       NULL);
+  
+  if(websocket_connection == NULL){
+    return(-1);
+  }
+  
   /* get osc response mutex */
   osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
@@ -578,10 +637,6 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
   
   /* write stream */
-  g_object_get(osc_websocket_connection,
-	       "websocket-connection", &websocket_connection,
-	       NULL);
-  
   stream = soup_websocket_connection_get_io_stream(websocket_connection);
   output_stream = g_io_stream_get_output_stream(stream);
   
@@ -603,6 +658,50 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   xmlFree(buffer);
 	    
   return((gint64) buffer_length);
+}
+
+/**
+ * ags_osc_websocket_connection_find_resource_id:
+ * @osc_websocket_connection: the #GList-struct containing #AgsOscWebsocketConnection
+ * @resource_id: the resource id
+ * 
+ * Find @resource_id in @osc_websocket_connection.
+ *
+ * Returns: the next matchine #GList-struct or %NULL
+ * 
+ * Since: 3.0.0
+ */
+GList*
+ags_osc_websocket_connection_find_resource_id(GList *osc_websocket_connection,
+					      gchar *resource_id)
+{
+  gchar *current_resource_id;
+  
+  gboolean success;
+  
+  if(osc_websocket_connection == NULL ||
+     resource_id == NULL){
+    return(NULL);
+  }
+  
+  while(osc_websocket_connection != NULL){    
+    g_object_get(osc_websocket_connection->data,
+		 "resource-id", &current_resource_id,
+		 NULL);
+
+    success = (!g_strcmp0(resource_id, current_resource_id)) ? TRUE: FALSE;
+    
+    g_free(current_resource_id);
+
+    if(success){
+      break;
+    }
+
+    /* iterate */
+    osc_websocket_connection = osc_websocket_connection->next;
+  }
+
+  return(osc_websocket_connection);
 }
 
 /**

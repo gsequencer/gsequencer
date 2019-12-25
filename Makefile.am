@@ -88,6 +88,8 @@ EXTRA_DIST = config.rpath \
 	ags_password_store_test.xml \
 	ags_functional_server_test_authentication.xml \
 	ags_functional_server_test_password_store.xml \
+	ags_functional_osc_xmlrpc_server_test_authentication.xml \
+	ags_functional_osc_xmlrpc_server_test_password_store.xml \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml \
 	mkinstalldirs \
@@ -1095,7 +1097,6 @@ libags_audio_osc_h_sources = \
 	ags/audio/osc/ags_osc_server.h \
 	ags/audio/osc/ags_osc_util.h \
 	ags/audio/osc/ags_osc_websocket_connection.h \
-	ags/audio/osc/ags_osc_xmlrpc_connection.h \
 	ags/audio/osc/ags_osc_xmlrpc_message.h \
 	ags/audio/osc/ags_osc_xmlrpc_server.h
 
@@ -1113,7 +1114,6 @@ libags_audio_osc_c_sources = \
 	ags/audio/osc/ags_osc_server.c \
 	ags/audio/osc/ags_osc_util.c \
 	ags/audio/osc/ags_osc_websocket_connection.c \
-	ags/audio/osc/ags_osc_xmlrpc_connection.c \
 	ags/audio/osc/ags_osc_xmlrpc_message.c \
 	ags/audio/osc/ags_osc_xmlrpc_server.c
 

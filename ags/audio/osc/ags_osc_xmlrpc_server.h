@@ -61,11 +61,6 @@ struct _AgsOscXmlrpcServerClass
 
 GType ags_osc_xmlrpc_server_get_type(void);
 
-GObject* ags_osc_xmlrpc_server_find_xmlrpc_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
-						      SoupClientContext *client);
-GObject* ags_osc_xmlrpc_server_find_websocket_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
-							 SoupWebsocketConnection *websocket_connection);
-
 void ags_osc_xmlrpc_server_add_websocket_handler(AgsOscXmlrpcServer *osc_xmlrpc_server,
 						 char *path,
 						 char *origin,

@@ -20,7 +20,6 @@
 #include <ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.h>
 
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
-#include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
 #include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 #include <ags/audio/osc/ags_osc_message.h>
 #include <ags/audio/osc/ags_osc_response.h>
@@ -61,13 +60,13 @@ void ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_x
 void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
 
 gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
-					    AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					    AgsOscWebsocketConnection *osc_websocket_connection,
 					    SoupMessage *msg,
 					    GHashTable *query,
 					    guchar *packet, gsize packet_size,
 					    gsize offset);
 gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
-					     AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+					     AgsOscWebsocketConnection *osc_websocket_connection,
 					     SoupMessage *msg,
 					     GHashTable *query,
 					     guchar *packet, gsize packet_size,
@@ -262,6 +261,8 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
   osc_xmlrpc_controller->delegate_thread = NULL;
 
   osc_xmlrpc_controller->message = NULL;
+
+  osc_xmlrpc_controller->queued_response = NULL;
 }
 
 void
@@ -420,9 +421,13 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 				      AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING);
   
   while(ags_osc_xmlrpc_controller_test_flags(osc_xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING)){
+    AgsOscMessage *current;
+
+    GList *start_osc_response, *osc_response;      
     GList *start_message, *message;
     GList *start_list, *list;
-    
+
+    /*  */
     g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
 
     time_now = g_get_monotonic_time();
@@ -443,6 +448,46 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
     
     g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
 
+
+    /* check queued response */
+    g_rec_mutex_lock(controller_mutex);
+
+    start_osc_response = g_list_copy_deep(osc_xmlrpc_controller->queued_response,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+	      
+    g_rec_mutex_unlock(controller_mutex);
+    
+    osc_response = start_osc_response;
+      
+    while(osc_response != NULL){
+      gint64 num_written;
+
+      g_object_get(osc_response->data,
+		   "osc-message", &current,
+		   NULL);
+	    
+      num_written = ags_osc_connection_write_response(current->osc_connection,
+						      osc_response->data);
+
+      g_object_unref(current);
+      
+      if(num_written != -1){	      
+	g_rec_mutex_lock(controller_mutex);
+
+	osc_xmlrpc_controller->queued_response = g_list_remove(osc_xmlrpc_controller->queued_response,
+							       osc_response->data);
+	g_object_unref(osc_response->data);
+	      
+	g_rec_mutex_unlock(controller_mutex);
+      }
+	    
+      osc_response = osc_response->next;
+    }    
+	    
+    g_list_free_full(start_osc_response,
+		     g_object_unref);
+    
     /* check delegate */
     g_rec_mutex_lock(controller_mutex);
 
@@ -501,15 +546,13 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
       start_message = g_list_reverse(start_message);
 
     while(message != NULL){
-      GList *start_osc_response, *osc_response;
-
-      AgsOscMessage *current;
-      
       gchar *path;
 
       ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
 				     &path, NULL);
 
+      g_message("-- %s", path);
+      
       controller = start_controller;
       start_osc_response = NULL;
       
@@ -546,57 +589,9 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 								  current->osc_connection,
 								  current->message, current->message_size);
 	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
-	    xmlDoc *doc;
-	    xmlNode *root_node;
-	    xmlNode *redirect_node;
-	    
-	    xmlChar *buffer;
-	    gchar *osc_monitor_path;
-	    gchar *resource_id;
-
-	    int buffer_length;
-	    
-	    doc = xmlNewDoc("1.0");
-	    
-	    root_node = xmlNewNode(NULL, "ags-osc-over-xmlrpc");
-	    xmlDocSetRootElement(doc, root_node);
-
-	    redirect_node = xmlNewNode(NULL, "ags-srv-redirect");
-
-	    resource_id = g_uuid_string_random();
-	    
-	    xmlNewProp(redirect_node,
-		       "resource-id",
-		       resource_id);
-
-	    xmlAddChild(root_node,
-			redirect_node);
-
-	    /* set resource id */
-	    g_object_set(current,
-			 "resource-id", resource_id,
-			 NULL);
-	    
-	    /* set redirect */
-	    osc_monitor_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/monitor",
-					       AGS_CONTROLLER_BASE_PATH);
-
-	    soup_message_set_redirect(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
-				      303,
-				      osc_monitor_path);
-
-	    g_free(osc_monitor_path);
-
-	    /* set response */
-	    xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
-
-	    soup_message_set_response(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
-				      "application/xml",
-				      SOUP_MEMORY_COPY,
-				      buffer,
-				      (gsize) buffer_length);
-
-	    xmlFree(buffer);
+	    start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+									current->osc_connection,
+									current->message, current->message_size);
 	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
 	    start_osc_response = ags_osc_node_controller_get_data(controller->data,
 								  current->osc_connection,
@@ -616,74 +611,33 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 	  }
 
 	  /* write response */
-	  if(start_osc_response != NULL){
-	    xmlDoc *doc;
-	    xmlNode *root_node;
-	    xmlNode *osc_packet_node_list;
-	    xmlNode *osc_packet_node;
-  
-	    gchar *data;
-	    xmlChar *buffer;
-
-	    int buffer_length;
-
-	    GRecMutex *osc_response_mutex;
-
-	    /* create XML doc */
-	    doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
-
-	    root_node = xmlNewNode(NULL,
-				   BAD_CAST "ags-osc-over-xmlrpc");
-
-	    xmlDocSetRootElement(doc,
-				 root_node);
-
-	    osc_packet_node_list = xmlNewNode(NULL,
-					      BAD_CAST "ags-osc-packet-list");
-  
-	    xmlAddChild(root_node,
-			osc_packet_node_list);
-
-	    osc_response = start_osc_response;
+	  osc_response = start_osc_response;
       
-	    while(osc_response != NULL){
-	      /* get osc response mutex */
-	      osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
-
-	      osc_packet_node = xmlNewNode(NULL,
-					   BAD_CAST "ags-osc-packet");
-
-	      /* encode OSC packet */
-	      g_rec_mutex_lock(osc_response_mutex);
-
-	      data = g_base64_encode(AGS_OSC_RESPONSE(osc_response->data)->packet,
-				     AGS_OSC_RESPONSE(osc_response->data)->packet_size);
-
-	      g_rec_mutex_unlock(osc_response_mutex);
-
-	      xmlNodeSetContent(osc_packet_node,
-				data);
-  
-	      xmlAddChild(osc_packet_node_list,
-			  osc_packet_node);
-
-	      /* iterate */
-	      osc_response = osc_response->next;
-	    }
-
-	    xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
-
-	    soup_message_set_response(AGS_OSC_XMLRPC_MESSAGE(current)->msg,
-				      "application/xml",
-				      SOUP_MEMORY_COPY,
-				      buffer,
-				      buffer_length);
-
-	    xmlFree(buffer);
+	  while(osc_response != NULL){
+	    gint64 num_written;
 	    
-	    g_list_free_full(start_osc_response,
-			     g_object_unref);
-	  }      
+	    num_written = ags_osc_connection_write_response(current->osc_connection,
+							    osc_response->data);
+
+	    if(num_written == -1){
+	      g_object_set(osc_response->data,
+			   "osc-message", current,
+			   NULL);
+	      
+	      g_rec_mutex_lock(controller_mutex);
+
+	      osc_xmlrpc_controller->queued_response = g_list_prepend(osc_xmlrpc_controller->queued_response,
+								      osc_response->data);
+	      g_object_ref(osc_response->data);
+	      
+	      g_rec_mutex_unlock(controller_mutex);
+	    }
+	    
+	    osc_response = osc_response->next;
+	  }
+	    
+	  g_list_free_full(start_osc_response,
+			   g_object_unref);
 	  
 	  break;
 	}
@@ -831,7 +785,7 @@ ags_osc_xmlrpc_controller_add_message(AgsOscXmlrpcController *osc_xmlrpc_control
   GRecMutex *controller_mutex;
 
   if(!AGS_IS_OSC_XMLRPC_CONTROLLER(osc_xmlrpc_controller) ||
-     message == NULL){
+     !AGS_IS_OSC_MESSAGE(message)){
     return;
   }
 
@@ -867,7 +821,7 @@ ags_osc_xmlrpc_controller_remove_message(AgsOscXmlrpcController *osc_xmlrpc_cont
   GRecMutex *controller_mutex;
 
   if(!AGS_IS_OSC_XMLRPC_CONTROLLER(osc_xmlrpc_controller) ||
-     message == NULL){
+     !AGS_IS_OSC_MESSAGE(message)){
     return;
   }
 
@@ -970,7 +924,7 @@ ags_osc_xmlrpc_controller_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_contr
 
 gsize
 ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
-				      AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				      AgsOscWebsocketConnection *osc_websocket_connection,
 				      SoupMessage *msg,
 				      GHashTable *query,
 				      guchar *packet, gsize packet_size,
@@ -995,7 +949,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 
     if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
       ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
-					    osc_xmlrpc_connection,
+					    osc_websocket_connection,
 					    msg,
 					    query,
 					    packet, packet_size,
@@ -1004,7 +958,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
       read_count += ((gsize) 4 * ceil((double) length / 4.0));
     }else if(packet[offset + read_count] == '/'){
       ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
-					     osc_xmlrpc_connection,
+					     osc_websocket_connection,
 					     msg,
 					     query,
 					     packet, packet_size,
@@ -1024,7 +978,7 @@ ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_control
 
 gsize
 ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
-				       AgsOscXmlrpcConnection *osc_xmlrpc_connection,
+				       AgsOscWebsocketConnection *osc_websocket_connection,
 				       SoupMessage *msg,
 				       GHashTable *query,
 				       guchar *packet, gsize packet_size,
@@ -1133,7 +1087,7 @@ ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_contro
 	 read_count * sizeof(guchar));
 
   g_object_set(osc_message,
-	       "osc-connection", osc_xmlrpc_connection,
+	       "osc-connection", osc_websocket_connection,
 	       "tv-sec", tv_sec,
 	       "tv-fraction", tv_fraction,
 	       "immediately", immediately,
@@ -1161,17 +1115,23 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 {
   AgsOscXmlrpcServer *osc_xmlrpc_server;
   AgsOscXmlrpcController *osc_xmlrpc_controller;
-  AgsOscXmlrpcConnection *osc_xmlrpc_connection;
+  AgsOscWebsocketConnection *osc_websocket_connection;
   
   xmlDoc *doc;
+  xmlDoc *response_doc;
   xmlNode *root_node;
   xmlNode *osc_packet_node_list;
   xmlNode *osc_packet_node;
+  xmlNode *response_root_node;
+  xmlNode *response_redirect_node;
   
   GBytes *request_body_data;
 
   gchar *data;
   guchar *packet;
+  xmlChar *response_buffer;
+  gchar *response_path;
+  gchar *response_resource_id;
 
   gsize data_size;
   gsize packet_size;
@@ -1179,7 +1139,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
   gint32 tv_fraction;
   gboolean immediately;
   gsize offset;
-
+  int response_buffer_length;
+  
   if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
      path == NULL ||
      login == NULL ||
@@ -1195,6 +1156,8 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 			  &data_size);
 
   /* parse XML doc */
+  g_message("!! %s", data);
+  
   doc = xmlParseDoc(data);
 
   if(doc == NULL){
@@ -1214,22 +1177,20 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 	       "osc-xmlrpc-server", &osc_xmlrpc_server,
 	       NULL);
   
-  osc_xmlrpc_connection = ags_osc_xmlrpc_server_find_xmlrpc_connection(osc_xmlrpc_server,
-								       client);
+  response_resource_id = g_uuid_string_random();	    
 
-  if(osc_xmlrpc_connection == NULL){
-    osc_xmlrpc_connection = ags_osc_xmlrpc_connection_new(osc_xmlrpc_server);
-    g_object_set(osc_xmlrpc_connection,
-		 "client", client,
-		 "security-context", security_context,
-		 "login", login,
-		 "security-token", security_token,
-		 NULL);
+  osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
+  g_object_set(osc_websocket_connection,
+	       "client", client,
+	       "security-context", security_context,
+	       "path", path,
+	       "login", login,
+	       "security-token", security_token,
+	       "resource-id", response_resource_id,
+	       NULL);
 
-    ags_osc_server_add_connection(osc_xmlrpc_server,
-				  osc_xmlrpc_connection);
-  }
-
+  g_free(response_resource_id);
+  
   osc_packet_node_list = root_node->children;
 
   while(osc_packet_node_list != NULL){
@@ -1265,14 +1226,14 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     
 		if(!g_strcmp0(packet + offset, "#bundle")){      
 		  read_count = ags_osc_xmlrpc_controller_read_bundle(osc_xmlrpc_controller,
-								     osc_xmlrpc_connection,
+								     osc_websocket_connection,
 								     msg,
 								     query,
 								     packet, packet_size,
 								     offset);
 		}else if(packet[offset] == '/'){
 		  read_count = ags_osc_xmlrpc_controller_read_message(osc_xmlrpc_controller,
-								      osc_xmlrpc_connection,
+								      osc_websocket_connection,
 								      msg,
 								      query,
 								      packet, packet_size,
@@ -1305,9 +1266,46 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
     osc_packet_node_list = osc_packet_node_list->next;
   }
 
+  xmlFreeDoc(doc);
+
+  /* response */
+  response_doc = xmlNewDoc("1.0");
+	    
+  response_root_node = xmlNewNode(NULL, "ags-osc-over-xmlrpc");
+  xmlDocSetRootElement(response_doc, response_root_node);
+
+  response_redirect_node = xmlNewNode(NULL,
+				      "ags-srv-redirect");
+
+  xmlNewProp(response_redirect_node,
+	     "resource-id",
+	     response_resource_id);
+
   soup_message_set_status(msg,
-			  200);
-    
+			  303);
+
+  /* set redirect */
+  response_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/response",
+				  AGS_CONTROLLER_BASE_PATH);
+
+  soup_message_set_redirect(msg,
+			    303,
+			    response_path);
+
+  g_free(response_path);
+  
+  /* set body */
+  xmlDocDumpFormatMemoryEnc(response_doc, &response_buffer, &response_buffer_length, "UTF-8", TRUE);
+
+  soup_message_set_response(msg,
+			    "application/xml",
+			    SOUP_MEMORY_COPY,
+			    response_buffer,
+			    response_buffer_length);
+
+  xmlFree(response_buffer);
+  xmlFreeDoc(response_doc);
+  
   return(NULL);
 }
 

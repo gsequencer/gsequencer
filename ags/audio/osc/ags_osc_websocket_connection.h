@@ -57,6 +57,8 @@ struct _AgsOscWebsocketConnection
   
   gchar *login;
   gchar *security_token;
+
+  gchar *resource_id;
 };
 
 struct _AgsOscWebsocketConnectionClass
@@ -65,6 +67,9 @@ struct _AgsOscWebsocketConnectionClass
 };
 
 GType ags_osc_websocket_connection_get_type(void);
+
+GList* ags_osc_websocket_connection_find_resource_id(GList *osc_websocket_connection,
+						     gchar *resource_id);
 
 /* instance */
 AgsOscWebsocketConnection* ags_osc_websocket_connection_new(GObject *osc_server);

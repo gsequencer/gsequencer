@@ -66,6 +66,8 @@ struct _AgsOscResponse
   guint packet_size;
 
   gchar *error_message;
+
+  GObject *osc_message;
 };
 
 struct _AgsOscResponseClass

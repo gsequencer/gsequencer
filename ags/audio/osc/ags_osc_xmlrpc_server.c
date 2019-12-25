@@ -19,9 +19,8 @@
 
 #include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
-#include <ags/audio/osc/ags_osc_xmlrpc_connection.h>
-#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 #include <ags/audio/osc/ags_osc_websocket_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
@@ -427,118 +426,6 @@ ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server)
 }
 
 /**
- * ags_osc_xmlrpc_server_find_xmlrpc_connection:
- * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
- * @client: the #SoupeClientContext-struct
- * 
- * Find @client in @osc_xmlrpc_server's connection property.
- * 
- * Returns: the matching #GObject or %NULL
- * 
- * Since: 3.0.0
- */
-GObject*
-ags_osc_xmlrpc_server_find_xmlrpc_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
-					     SoupClientContext *client)
-{
-  AgsOscXmlrpcConnection *osc_xmlrpc_connection;
-
-  GList *start_list, *list;
-
-  if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
-    return(NULL);
-  }
-  
-  osc_xmlrpc_connection = NULL;
-
-  g_object_get(osc_xmlrpc_server,
-	       "connection", &start_list,
-	       NULL);
-
-  list = start_list;
-
-  while(list != NULL){
-    SoupClientContext *current;
-
-    g_object_get(list->data,
-		 "client", &current,
-		 NULL);
-
-    if(current == client){
-      osc_xmlrpc_connection = list->data;
-    }
-
-    if(osc_xmlrpc_connection != NULL){
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
-  
-  return(osc_xmlrpc_connection);
-}
-
-/**
- * ags_osc_xmlrpc_server_find_websocket_connection:
- * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
- * @websocket_connection: the #SoupWebsocketConnection
- * 
- * Find @websocket_connection in @osc_xmlrpc_server's connection property.
- * 
- * Returns: the matching #GObject or %NULL
- * 
- * Since: 3.0.0
- */
-GObject*
-ags_osc_xmlrpc_server_find_websocket_connection(AgsOscXmlrpcServer *osc_xmlrpc_server,
-						SoupWebsocketConnection *websocket_connection)
-{
-  AgsOscWebsocketConnection *osc_websocket_connection;
-
-  GList *start_list, *list;
-
-  if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
-    return(NULL);
-  }
-  
-  osc_websocket_connection = NULL;
-
-  g_object_get(osc_xmlrpc_server,
-	       "connection", &start_list,
-	       NULL);
-
-  list = start_list;
-
-  while(list != NULL){
-    SoupWebsocketConnection *current;
-
-    g_object_get(list->data,
-		 "websocket-connection", &current,
-		 NULL);
-
-    if(current == websocket_connection){
-      osc_websocket_connection = list->data;
-    }
-
-    g_object_unref(current);
-
-    if(osc_websocket_connection != NULL){
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
-  
-  return(osc_websocket_connection);
-}
-
-/**
  * ags_osc_xmlrpc_server_add_websocket_handler:
  * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
  * @path: the path
@@ -609,7 +496,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
   AgsServer *xmlrpc_server;  
   AgsOscXmlrpcController *osc_xmlrpc_controller;
 
-  gchar *osc_monitor_path;
+  gchar *response_path;
   
   if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
     return;
@@ -700,17 +587,19 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
   ags_osc_server_add_controller(osc_xmlrpc_server,
 				(GObject *) status_controller);
 
-  /* OSC monitor websocket handler */
-  osc_monitor_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/monitor",
-				     AGS_CONTROLLER_BASE_PATH);
+  /* OSC response websocket handler */
+  response_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/response",
+				  AGS_CONTROLLER_BASE_PATH);
   
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,
-					      osc_monitor_path,
+					      response_path,
 					      NULL,
 					      NULL,
 					      ags_osc_xmlrpc_server_websocket_callback,
 					      osc_xmlrpc_server,
 					      NULL);
+
+  g_free(response_path);
 }
 
 void
@@ -720,9 +609,6 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					 SoupClientContext *client,
 					 AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
-  AgsOscXmlrpcController *osc_xmlrpc_controller;
-  AgsOscXmlrpcMessage *osc_xmlrpc_message;
-
   AgsAuthenticationManager *authentication_manager;
   AgsSecurityContext *security_context;
 
@@ -752,16 +638,6 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   
   GRecMutex *controller_mutex;
   GRecMutex *authentication_manager_mutex;
-
-  g_object_get(osc_xmlrpc_server,
-	       "osc-xmlrpc-controller", &osc_xmlrpc_controller,
-	       NULL);
-
-  if(osc_xmlrpc_controller == NULL){
-    return;
-  }
-  
-  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(osc_xmlrpc_controller);
 
   authentication_manager = ags_authentication_manager_get_instance();
   
@@ -917,72 +793,27 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 						    security_context,
 						    user_uuid,
 						    security_token)){
-      AgsOscWebsocketConnection *osc_websocket_connection;
+      GList *start_connection, *connection;
 
-      GList *start_controller, *controller;
-      GList *start_message, *message;
-
-      gpointer start_osc_response;
-
-      g_rec_mutex_lock(controller_mutex);
-
-      start_message = g_list_copy_deep(osc_xmlrpc_controller->message,
-				       (GCopyFunc) g_object_ref,
-				       NULL);
+      g_object_get(osc_xmlrpc_server,
+		   "connection", &start_connection,
+		   NULL);
       
-      g_rec_mutex_unlock(controller_mutex);
+      connection = ags_osc_websocket_connection_find_resource_id(start_connection,
+								 resource_id);
 
-      message = ags_osc_xmlrpc_message_find_resource_id(start_message,
-							resource_id);
-
-      if(message != NULL){
-	AgsOscMessage *current;
-
-	current = message->data;
-	
-	osc_websocket_connection = ags_osc_xmlrpc_server_find_websocket_connection(osc_xmlrpc_server,
-										   websocket_connection);
-
-	if(osc_websocket_connection == NULL){
-	  osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
-	  g_object_set(osc_websocket_connection,
-		       "websocket-connection", websocket_connection,
-		       "client", client,
-		       "security-context", security_context,
-		       "path", path,
-		       "login", login,
-		       "security-token", security_token,
-		       NULL);
-	
-	  ags_osc_server_add_connection(osc_xmlrpc_server,
-					osc_websocket_connection);
-
-	  g_object_set(current,
-		       "osc-connection", osc_websocket_connection,
-		       NULL);	  
-	}
-
-	g_object_get(osc_xmlrpc_server,
-		     "controller", &start_controller,
+      if(connection != NULL){
+	g_object_set(connection->data,
+		     "websocket-connection", websocket_connection,
+		     "client", client,
+		     "security-context", security_context,
+		     "path", path,
+		     "login", login,
+		     "security-token", security_token,
 		     NULL);
-
-	controller = ags_list_util_find_type(start_controller,
-					     AGS_TYPE_OSC_METER_CONTROLLER);
-
-	if(controller != NULL){
-	  start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
-								      current->osc_connection,
-								      current->message, current->message_size);
-
-	  g_list_free_full(start_osc_response,
-			   g_object_unref);
-	}
-
-	g_list_free_full(start_controller,
-			 g_object_unref);
       }
       
-      g_list_free_full(start_message,
+      g_list_free_full(start_connection,
 		       g_object_unref);
     }
     

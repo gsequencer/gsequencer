@@ -30,6 +30,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_message.h>
+#include <ags/audio/osc/ags_osc_websocket_connection.h>
 
 G_BEGIN_DECLS
 
@@ -46,11 +47,11 @@ typedef struct _AgsOscXmlrpcMessageClass AgsOscXmlrpcMessageClass;
 struct _AgsOscXmlrpcMessage
 {
   AgsOscMessage osc_message;
-
+  
   SoupMessage *msg;
   GHashTable *query;
 
-  gchar *resource_id;
+  AgsOscWebsocketConnection *websocket_connection;
 };
 
 struct _AgsOscXmlrpcMessageClass
@@ -59,9 +60,6 @@ struct _AgsOscXmlrpcMessageClass
 };
 
 GType ags_osc_xmlrpc_message_get_type(void);
-
-GList* ags_osc_xmlrpc_message_find_resource_id(GList *osc_xmlrpc_message,
-					       gchar *resource_id);
 
 /* instance */
 AgsOscXmlrpcMessage* ags_osc_xmlrpc_message_new();

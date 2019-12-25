@@ -65,6 +65,8 @@ struct _AgsOscXmlrpcController
   GThread *delegate_thread;
 
   GList *message;
+  
+  GList *queued_response;
 };
 
 struct _AgsOscXmlrpcControllerClass
