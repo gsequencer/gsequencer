@@ -119,9 +119,6 @@ gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
 
-gboolean ags_osc_client_timeout_expired(struct timespec *start_time,
-					struct timespec *timeout_delay);
-
 void ags_osc_client_resolve(AgsOscClient *osc_client);
 void ags_osc_client_connect(AgsOscClient *osc_client);
 

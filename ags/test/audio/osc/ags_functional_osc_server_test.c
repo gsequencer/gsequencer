@@ -602,8 +602,8 @@ ags_functional_osc_server_test_meter_controller()
   meter_packet_count = 0;
   i = 0;
   
-  while(!ags_osc_client_timeout_expired(&start_time,
-					&timeout_delay)){
+  while(!ags_time_timeout_expired(&start_time,
+				  &timeout_delay)){
     guchar *current_data;
     guchar *current_packet;
     gchar *address_pattern;
@@ -718,8 +718,8 @@ ags_functional_osc_server_test_node_controller()
 
   success = FALSE;
   
-  while(!ags_osc_client_timeout_expired(&start_time,
-					&timeout_delay)){
+  while(!ags_time_timeout_expired(&start_time,
+				  &timeout_delay)){
     guchar *current_data;
     guchar *current_packet;
     gchar *address_pattern;

@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <time.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_RESPONSE                (ags_osc_response_get_type ())
@@ -68,6 +70,8 @@ struct _AgsOscResponse
   gchar *error_message;
 
   GObject *osc_message;
+
+  struct timespec *creation_time;
 };
 
 struct _AgsOscResponseClass

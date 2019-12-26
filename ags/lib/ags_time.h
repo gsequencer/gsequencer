@@ -35,6 +35,9 @@ gchar* ags_time_get_uptime_from_offset(guint offset,
 				       gdouble delay,
 				       gdouble delay_factor);
 
+gboolean ags_time_timeout_expired(struct timespec *start_time,
+				  struct timespec *timeout_delay);
+
 G_END_DECLS
 
 #endif /*__AGS_TIME__*/

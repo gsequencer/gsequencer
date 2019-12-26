@@ -463,6 +463,15 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
     while(osc_response != NULL){
       gint64 num_written;
 
+      gboolean has_expired;
+
+      GRecMutex *response_mutex;
+      
+      static const struct timespec timeout_delay = {
+	30,
+	0,
+      };
+      
       g_object_get(osc_response->data,
 		   "osc-message", &current,
 		   NULL);
@@ -471,8 +480,17 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 						      osc_response->data);
 
       g_object_unref(current);
+
+      response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
+
+      g_rec_mutex_lock(response_mutex);
       
-      if(num_written != -1){	      
+      has_expired = ags_time_timeout_expired(AGS_OSC_RESPONSE(osc_response->data)->creation_time, &timeout_delay);
+
+      g_rec_mutex_unlock(response_mutex);
+      
+      if(num_written != -1 ||
+	 has_expired){
 	g_rec_mutex_lock(controller_mutex);
 
 	osc_xmlrpc_controller->queued_response = g_list_remove(osc_xmlrpc_controller->queued_response,
@@ -613,11 +631,38 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
       
 	  while(osc_response != NULL){
 	    gint64 num_written;
+
+#ifdef __APPLE__
+	    clock_serv_t cclock;
+	    mach_timespec_t mts;
+#endif
 	    
+	    GRecMutex *response_mutex;
+      
 	    num_written = ags_osc_connection_write_response(current->osc_connection,
 							    osc_response->data);
 
 	    if(num_written == -1){
+	      response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
+
+	      g_rec_mutex_lock(response_mutex);
+      
+	      AGS_OSC_RESPONSE(osc_response->data)->creation_time = (struct timespec *) malloc(sizeof(struct timespec));
+
+#ifdef __APPLE__
+	      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+	      clock_get_time(cclock, &mts);
+	      mach_port_deallocate(mach_task_self(), cclock);
+      
+	      AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_sec = mts.tv_sec;
+	      AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_nsec = mts.tv_nsec;
+#else
+	      clock_gettime(CLOCK_MONOTONIC, AGS_OSC_RESPONSE(osc_response->data)->creation_time);
+#endif
+
+	      g_rec_mutex_unlock(response_mutex);
+	      
 	      g_object_set(osc_response->data,
 			   "osc-message", current,
 			   NULL);

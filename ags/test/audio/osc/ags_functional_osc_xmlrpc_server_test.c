@@ -519,8 +519,8 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
 
   i = 0;
   
-  while(!ags_osc_client_timeout_expired(&start_time,
-					&timeout_delay)){
+  while(!ags_time_timeout_expired(&start_time,
+				  &timeout_delay)){
     error = NULL;
     num_read = g_input_stream_read(input_stream,
 				   data + i,
@@ -1379,8 +1379,8 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 				       ags_functional_osc_xmlrpc_server_test_websocket_callback,
 				       &meter_data);
   
-  while(!ags_osc_client_timeout_expired(&start_time,
-					&timeout_delay)){
+  while(!ags_time_timeout_expired(&start_time,
+				  &timeout_delay)){
     //empty
 
     nanosleep(&idle_delay,

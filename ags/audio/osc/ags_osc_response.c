@@ -187,6 +187,8 @@ ags_osc_response_init(AgsOscResponse *osc_response)
   osc_response->error_message = NULL;
 
   osc_response->osc_message = NULL;
+
+  osc_response->creation_time = NULL;
 }
 
 void

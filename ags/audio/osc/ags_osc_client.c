@@ -616,66 +616,6 @@ ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
   g_rec_mutex_unlock(osc_client_mutex);
 }
 
-/**
- * ags_osc_client_timeout_expired:
- * @start_time: the start time #timespec-struct
- * @timeout_delay: the delay #timespec-struct
- * 
- * Check @start_time plus @timeout_delay against current time.
- * 
- * Returns: %TRUE if timeout expired, otherwise %FALSE
- * 
- * Since: 2.1.11
- */
-gboolean
-ags_osc_client_timeout_expired(struct timespec *start_time,
-			       struct timespec *timeout_delay)
-{
-  struct timespec current_time;
-  struct timespec deadline;
-
-#ifdef __APPLE__
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-#endif
-  
-  if(start_time == NULL ||
-     timeout_delay == NULL){
-    return(TRUE);
-  }
-
-#ifdef __APPLE__
-  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
-      
-  current_time.tv_sec = mts.tv_sec;
-  current_time.tv_nsec = mts.tv_nsec;
-#else
-  clock_gettime(CLOCK_MONOTONIC, &current_time);
-#endif
-
-  if(start_time->tv_nsec + timeout_delay->tv_nsec > NSEC_PER_SEC){
-    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec + 1;
-    deadline.tv_nsec = (start_time->tv_nsec + timeout_delay->tv_nsec) - NSEC_PER_SEC;
-  }else{
-    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec;
-    deadline.tv_nsec = start_time->tv_nsec + timeout_delay->tv_nsec;
-  }
-  
-  if(current_time.tv_sec > deadline.tv_sec){
-    return(TRUE);
-  }else{
-    if(current_time.tv_sec == deadline.tv_sec &&
-       current_time.tv_nsec > deadline.tv_nsec){
-      return(TRUE);
-    }
-  }
-
-  return(FALSE);
-}
-
 void
 ags_osc_client_real_resolve(AgsOscClient *osc_client)
 {
@@ -1106,8 +1046,20 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 
   j = 0;
   
-  while(!ags_osc_client_timeout_expired(osc_client->start_time,
-					osc_client->timeout_delay)){
+  while(TRUE){
+    gboolean has_expired;
+    
+    g_rec_mutex_lock(osc_client_mutex);
+    
+    has_expired = ags_time_timeout_expired(osc_client->start_time,
+					   osc_client->timeout_delay);
+
+    g_rec_mutex_unlock(osc_client_mutex);
+    
+    if(has_expired){
+      break;
+    }
+    
     available_data_length = 0;
     
     if(osc_client->cache_data_length > 0){
@@ -1212,12 +1164,20 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
 	end_data = i;
 
 	if(start_data + 1 == end_data){
+	  gboolean has_expired;
+	  
 	  start_data = end_data;
 	  j++;
+
+	  g_rec_mutex_lock(osc_client_mutex);
+	  
+	  has_expired = ags_time_timeout_expired(osc_client->start_time,
+						 osc_client->timeout_delay);
+
+	  g_rec_mutex_unlock(osc_client_mutex);
 	  
 	  if(j < 2 ||
-	     !ags_osc_client_timeout_expired(osc_client->start_time,
-					     osc_client->timeout_delay)){
+	     !has_expired){
 	    goto ags_osc_client_read_bytes_REPEAT_0;
 	  }else{
 	    break;
