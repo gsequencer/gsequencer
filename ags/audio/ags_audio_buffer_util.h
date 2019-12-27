@@ -463,6 +463,63 @@ void* ags_audio_buffer_util_resample(void *buffer, guint channels,
 				     guint buffer_length,
 				     guint target_samplerate);
 
+/* resample with buffer */
+void ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
+						   guint samplerate,
+						   guint buffer_length,
+						   guint target_samplerate,
+						   guint target_buffer_length,
+						   gint8 *target_buffer);
+void ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint16 *target_buffer);
+void ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint32 *target_buffer);
+void ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint32 *target_buffer);
+void ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint64 *target_buffer);
+void ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
+						      guint samplerate,
+						      guint buffer_length,
+						      guint target_samplerate,
+						      guint target_buffer_length,
+						      gfloat *target_buffer);
+void ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
+						       guint samplerate,
+						       guint buffer_length,
+						       guint target_samplerate,
+						       guint target_buffer_length,
+						       gdouble *target_buffer);
+void ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
+							guint samplerate,
+							guint buffer_length,
+							guint target_samplerate,
+							guint target_buffer_length,
+							AgsComplex *target_buffer);
+
+void ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
+						guint format,  guint samplerate,
+						guint buffer_length,
+						guint target_samplerate,
+						guint target_buffer_length,
+						void *target_buffer);
+
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
 					 gint8 *source, guint schannels,

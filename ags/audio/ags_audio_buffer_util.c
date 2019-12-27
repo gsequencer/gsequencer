@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #include <samplerate.h>
@@ -3768,11 +3770,11 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint8 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint8));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint8));
+  ret_buffer = (gint8 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint8));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint8));
   ags_audio_buffer_util_copy_float_to_s8(ret_buffer, channels,
 					 secret_rabbit.data_out, channels,
-					 secret_rabbit.output_frames);
+					 (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -3818,11 +3820,11 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint16 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint16));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint16));
+  ret_buffer = (gint16 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint16));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint16));
   ags_audio_buffer_util_copy_float_to_s16(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -3868,11 +3870,11 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint32 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint32));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint32));
+  ret_buffer = (gint32 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
   ags_audio_buffer_util_copy_float_to_s24(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -3918,11 +3920,11 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint32 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint32));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint32));
+  ret_buffer = (gint32 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
   ags_audio_buffer_util_copy_float_to_s32(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -3968,11 +3970,11 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint64 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint64));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint64));
+  ret_buffer = (gint64 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint64));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint64));
   ags_audio_buffer_util_copy_float_to_s64(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -3999,6 +4001,8 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  gfloat *ret_buffer;
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
@@ -4011,7 +4015,14 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  return(secret_rabbit.data_out);
+  ret_buffer = (gdouble *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gdouble));
+  ags_audio_buffer_util_clear_double(ret_buffer, channels,
+				     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+  ags_audio_buffer_util_copy_float_to_float(ret_buffer, channels,
+					    secret_rabbit.data_out, channels,
+					    (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+  
+  return(ret_buffer);
 }
 
 /**
@@ -4057,12 +4068,12 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gdouble *) malloc(channels * secret_rabbit.output_frames * sizeof(gdouble));
+  ret_buffer = (gdouble *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gdouble));
   ags_audio_buffer_util_clear_double(ret_buffer, channels,
-				     channels * secret_rabbit.output_frames);
+				     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
   ags_audio_buffer_util_copy_float_to_double(ret_buffer, channels,
 					     secret_rabbit.data_out, channels,
-					     secret_rabbit.output_frames);
+					     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
   return(ret_buffer);
 }
@@ -4236,6 +4247,375 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
   }
 
   return(retval);
+}
+
+void
+ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
+					      guint samplerate,
+					      guint buffer_length,
+					      guint target_samplerate,
+					      guint target_buffer_length,
+					      gint8 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s8_to_float(secret_rabbit.data_in, channels,
+					 buffer, channels,
+					 buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s8(target_buffer, channels,
+					 secret_rabbit.data_out, channels,
+					 ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint16 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s16_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s16(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint32 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s24_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s24(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint32 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s32_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s32(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint64 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s64_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s64(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
+						 guint samplerate,
+						 guint buffer_length,
+						 guint target_samplerate,
+						 guint target_buffer_length,
+						 gfloat *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = buffer;
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_float(target_buffer, channels,
+					    secret_rabbit.data_out, channels,
+					    ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
+						  guint samplerate,
+						  guint buffer_length,
+						  guint target_samplerate,
+						  guint target_buffer_length,
+						  gdouble *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_double_to_float(secret_rabbit.data_in, channels,
+					     buffer, channels,
+					     buffer_length);
+  
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_double(target_buffer, channels,
+					     secret_rabbit.data_out, channels,
+					     ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+}
+
+void
+ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
+						   guint samplerate,
+						   guint buffer_length,
+						   guint target_samplerate,
+						   guint target_buffer_length,
+						   AgsComplex *target_buffer)
+{
+  complex **z_ptr_ptr;
+  complex *z_ptr;
+  gdouble **y_ptr_ptr;
+  gdouble *y_ptr;
+
+  complex z;
+  gdouble y;
+  gdouble delay_factor;
+  gdouble delay;
+  guint output_frames;
+  guint i, n;
+
+  delay_factor = 1.0 / (gdouble) target_samplerate * (gdouble) samplerate;
+  
+  output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
+
+  z_ptr = &z;
+  z_ptr_ptr = &z_ptr;
+  
+  y_ptr = &y;
+  y_ptr_ptr = &y_ptr;
+  
+  for(i = 0, n = 0, delay = 0.0; i < output_frames && i < target_buffer_length; i++){
+    /* get y */
+    //TODO:JK: improve me
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer + n, channels, n, buffer_length, y_ptr_ptr);
+
+    /* put z */
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, channels, i, output_frames, z_ptr_ptr);
+    
+    ags_complex_set(target_buffer + i,
+		    z);
+    
+    delay += delay_factor;
+    
+    if(delay_factor < 1.0){
+      if(delay >= 1.0){
+	n += floor(delay);
+	
+	delay -= floor(delay);
+      }
+    }else{
+      n += floor(delay);
+      delay -= floor(delay);
+    }
+  }
+}
+
+void
+ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
+					   guint format,  guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate,
+					   guint target_buffer_length,
+					   void *target_buffer)
+{
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_audio_buffer_util_resample_s8_with_buffer((gint8 *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate,
+						  target_buffer_length,
+						  (gint8 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_audio_buffer_util_resample_s16_with_buffer((gint16 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint16 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_audio_buffer_util_resample_s24_with_buffer((gint32 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint32 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_audio_buffer_util_resample_s32_with_buffer((gint32 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint32 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_audio_buffer_util_resample_s64_with_buffer((gint64 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint64 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_audio_buffer_util_resample_float_with_buffer((gfloat *) buffer, channels,
+						     samplerate,
+						     buffer_length,
+						     target_samplerate,
+						     target_buffer_length,
+						     (gfloat *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_audio_buffer_util_resample_double_with_buffer((gdouble *) buffer, channels,
+						      samplerate,
+						      buffer_length,
+						      target_samplerate,
+						      target_buffer_length,
+						      (gdouble *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_audio_buffer_util_resample_complex_with_buffer((AgsComplex *) buffer, channels,
+						       samplerate,
+						       buffer_length,
+						       target_samplerate,
+						       target_buffer_length,
+						       (AgsComplex *) target_buffer);
+  }
+  break;
+  default:
+    g_warning("ags_audio_buffer_util_resample_with_buffer() - unknown format");
+  }
 }
 
 /**
