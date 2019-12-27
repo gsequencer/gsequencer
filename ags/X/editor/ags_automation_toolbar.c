@@ -1206,6 +1206,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* unset bypass */
+    ags_audio_add_automation_port(machine->audio, control_name);
+    
     automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,
@@ -1276,6 +1278,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* set bypass */
+    ags_audio_remove_automation_port(machine->audio, control_name);
+
     automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,

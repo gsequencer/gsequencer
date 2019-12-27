@@ -168,6 +168,8 @@ struct _AgsAudio
   GList *cursor;
   
   GList *notation;
+
+  gchar **automation_port;
   GList *automation;
   
   GList *wave;
@@ -307,6 +309,9 @@ void ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor);
 
 void ags_audio_add_notation(AgsAudio *audio, GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio, GObject *notation);
+
+void ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name);
+void ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name);
 
 void ags_audio_add_automation(AgsAudio *audio, GObject *automation);
 void ags_audio_remove_automation(AgsAudio *audio, GObject *automation);

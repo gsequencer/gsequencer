@@ -1700,6 +1700,8 @@ ags_audio_init(AgsAudio *audio)
   audio->notation = NULL;
 
   /* automation */
+  audio->automation_port = NULL;
+  
   audio->automation = NULL;
   
   /* wave */
@@ -8594,6 +8596,120 @@ ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
     
     g_object_unref(notation);
   }
+}
+
+/**
+ * ags_audio_add_automation_port:
+ * @audio: the #AgsAudio
+ * @control_name: the control name
+ *
+ * Adds an automation port.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
+{
+  guint length;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     control_name == NULL){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  if(g_strv_contains(audio->automation_port, control_name)){
+    g_rec_mutex_unlock(audio_mutex);
+
+    return;
+  }
+
+  if(audio->automation_port == NULL){
+    audio->automation_port = malloc(2 * sizeof(gchar **));
+
+    audio->automation_port[0] = g_strdup(control_name);
+    audio->automation_port[1] = NULL;
+  }else{
+    length = g_strv_length(audio->automation_port);
+
+    audio->automation_port = (gchar **) realloc(audio->automation_port,
+						(length + 2) * sizeof(gchar **));
+
+    audio->automation_port[length] = g_strdup(control_name);
+    audio->automation_port[length + 1] = NULL;
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_remove_automation_port:
+ * @audio: the #AgsAudio
+ * @control_name: the control name
+ *
+ * Removes an automation port.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
+{
+  gchar **automation_port;
+
+  guint length;
+  guint i, j;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     control_name == NULL){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  if(!g_strv_contains(audio->automation_port, control_name)){
+    g_rec_mutex_unlock(audio_mutex);
+
+    return;
+  }
+
+  length = g_strv_length(audio->automation_port);
+
+  if(length == 1){
+    g_strfreev(audio->automation_port);
+
+    audio->automation_port = NULL;
+  }else{
+    automation_port = (gchar **) malloc((length) * sizeof(gchar *));
+    
+    for(i = 0, j = 0; i < length; i++){
+      if(!g_strcmp0(audio->automation_port[i], control_name)){
+	g_free(audio->automation_port[i]);
+      }else{
+	automation_port[j] = audio->automation_port[i];
+	
+	j++;
+      }
+    }
+
+    automation_port[j] = NULL;
+
+    g_strfreev(audio->automation_port);
+
+    audio->automation_port = automation_port;
+  }
+  
+  g_rec_mutex_unlock(audio_mutex);
 }
 
 /**

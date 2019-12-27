@@ -816,6 +816,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
   GRecMutex *thread_mutex;
 
+#if 0  
   static const guint playback_staging_flags = (AGS_SOUND_STAGING_RESET |
 					       AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 					       AGS_SOUND_STAGING_AUTOMATE |
@@ -824,6 +825,12 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 					       AGS_SOUND_STAGING_RUN_POST |
 					       AGS_SOUND_STAGING_DO_FEEDBACK |
 					       AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE);
+#else
+  static const guint playback_staging_flags = (AGS_SOUND_STAGING_AUTOMATE |
+					       AGS_SOUND_STAGING_RUN_PRE |
+					       AGS_SOUND_STAGING_RUN_INTER |
+					       AGS_SOUND_STAGING_RUN_POST);
+#endif
   
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
 
@@ -1087,6 +1094,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
 	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
+#if 0
 	  ags_audio_recursive_run_stage(audio,
 					sound_scope, (AGS_SOUND_STAGING_RESET |
 						      AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
@@ -1100,7 +1108,14 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
 						      AGS_SOUND_STAGING_DO_FEEDBACK |
 						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
-
+#else
+	  ags_audio_recursive_run_stage(audio,
+					sound_scope, (AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE |
+						      AGS_SOUND_STAGING_RUN_INTER |
+						      AGS_SOUND_STAGING_RUN_POST));
+#endif
+	  
 	  g_list_free_full(recall_id,
 			   g_object_unref);
 	}
