@@ -526,7 +526,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     ags_stream_free(sfz_sample->buffer);
 
     sfz_sample->buffer_size = buffer_size;
-    sfz_sample->buffer = ags_stream_alloc(sfz_sample->buffer_size,
+    sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * sfz_sample->buffer_size,
 					  sfz_sample->format);
 
     pthread_mutex_unlock(sfz_sample_mutex);
@@ -549,7 +549,7 @@ ags_sfz_sample_set_property(GObject *gobject,
     ags_stream_free(sfz_sample->buffer);
 
     sfz_sample->format = format;
-    sfz_sample->buffer = ags_stream_alloc(sfz_sample->buffer_size,
+    sfz_sample->buffer = ags_stream_alloc(sfz_sample->audio_channels * sfz_sample->buffer_size,
 					  sfz_sample->format);
 
     pthread_mutex_unlock(sfz_sample_mutex);

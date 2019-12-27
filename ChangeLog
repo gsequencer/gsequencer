@@ -1,3 +1,10 @@
+ags (2.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_audio_buffer_util_resample_with_buffer() and related
+	* fixed potential buffer-overflow in ags_sfz_sample.c
+	* fixed potential SIGSEGV in ags_sound_resource.c doing resample
+
 ags (2.4.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
