@@ -462,6 +462,8 @@ ags_recall_channel_automate(AgsRecall *recall)
   GList *automation_start, *automation;
   GList *port_start, *port;
 
+  gchar **automation_port;
+  
   gdouble delay;
   guint note_offset, delay_counter;
   
@@ -471,6 +473,8 @@ ags_recall_channel_automate(AgsRecall *recall)
   double x, step;
   guint ret_x;
   gboolean return_prev_on_failure;
+
+  pthread_mutex_t *audio_mutex;
   
   g_object_get(recall,
 	       "source", &channel,
@@ -479,6 +483,19 @@ ags_recall_channel_automate(AgsRecall *recall)
   g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
+
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* check automation port */
+  pthread_mutex_lock(audio_mutex);
+
+  automation_port = g_strdupv(audio->automation_port);
+  
+  pthread_mutex_unlock(audio_mutex);
+  
+  if(automation_port == NULL){
+    return;
+  }
   
   g_object_get(audio,
 	       "output-soundcard", &soundcard,
@@ -515,6 +532,25 @@ ags_recall_channel_automate(AgsRecall *recall)
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
+    gchar *specifier;
+
+    gboolean success;
+    
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 NULL);
+
+    success = (g_strv_contains(automation_port, specifier)) ? TRUE: FALSE;
+    
+    g_free(specifier);
+    
+    if(!success){
+      /* iterate */
+      port = port->next;
+
+      continue;
+    }
+    
     g_object_get(AGS_PORT(port->data),
 		 "automation", &automation_start,
 		 NULL);
@@ -588,6 +624,8 @@ ags_recall_channel_automate(AgsRecall *recall)
 
   g_list_free_full(port_start,
 		   g_object_unref);
+
+  g_strfreev(automation_port);
 }
 
 AgsRecall*

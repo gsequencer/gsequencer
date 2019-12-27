@@ -1488,6 +1488,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
 	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
+#if 0
 	  ags_audio_recursive_run_stage(audio,
 					sound_scope, (AGS_SOUND_STAGING_RESET |
 						      AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
@@ -1501,7 +1502,14 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
 						      AGS_SOUND_STAGING_DO_FEEDBACK |
 						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
-
+#else
+	  ags_audio_recursive_run_stage(audio,
+					sound_scope, (AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE |
+						      AGS_SOUND_STAGING_RUN_INTER |
+						      AGS_SOUND_STAGING_RUN_POST));
+#endif
+	  
 	  g_list_free_full(recall_id,
 			   g_object_unref);
 	}

@@ -35,6 +35,12 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.4.8" date="2019-12-27">
+      <description>
+	<p>Improved performance.</p>
+      </description>
+    </release>
+
     <release version="2.4.6" date="2019-12-27">
       <description>
 	<p>Implemented ags_audio_buffer_resample_with_buffer() and related.</p>

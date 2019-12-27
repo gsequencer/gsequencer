@@ -790,6 +790,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   gboolean contains_specifier;
   gboolean is_active;
 
+  pthread_mutex_t *audio_mutex;
+  
   if(!g_ascii_strncasecmp(control_name,
 			  "",
 			  1)){
@@ -996,6 +998,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 															  channel_type, control_name));
   }
 
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
+
   g_object_get(machine->audio,
 	       "automation", &start_automation,
 	       NULL);
@@ -1131,6 +1135,22 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* unset bypass */
+    pthread_mutex_lock(audio_mutex);
+
+    if(!g_strv_contains(machine->audio->automation_port, control_name)){
+      guint length;
+
+      length = g_strv_length(machine->audio->automation_port);
+
+      machine->audio->automation_port = (gchar **) realloc(machine->audio->automation_port,
+							   (length + 2) * sizeof(gchar *));
+
+      machine->audio->automation_port[length] = g_strdup(control_name);
+      machine->audio->automation_port[length + 1] = NULL;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
     automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,
@@ -1201,6 +1221,43 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* set bypass */
+    pthread_mutex_lock(audio_mutex);
+
+    if(g_strv_contains(machine->audio->automation_port, control_name)){
+      gchar **automation_port;
+      
+      guint length;
+      guint i, j;
+
+      length = g_strv_length(machine->audio->automation_port);
+
+      if(length == 1){
+	g_strfreev(machine->audio->automation_port);
+
+	machine->audio->automation_port = NULL;
+      }else{
+	automation_port = (gchar **) malloc((length) * sizeof(gchar *));
+
+	for(i = 0, j = 0; i < length; i++){
+	  if(!g_strcmp0(machine->audio->automation_port[i], control_name)){
+	    g_free(machine->audio->automation_port[i]);
+	  }else{
+	    automation_port[j] = machine->audio->automation_port[i];
+	  
+	    j++;
+	  }
+	}
+
+	automation_port[j] = NULL;
+      
+	g_strfreev(machine->audio->automation_port);
+      
+	machine->audio->automation_port = automation_port;
+      }
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
     automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,

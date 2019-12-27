@@ -1,3 +1,8 @@
+ags (2.4.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved performance by omitting determinism
+
 ags (2.4.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

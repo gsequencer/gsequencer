@@ -1664,6 +1664,8 @@ ags_audio_init(AgsAudio *audio)
   audio->notation = NULL;
 
   /* automation */
+  audio->automation_port = NULL;
+  
   audio->automation = NULL;
   
   /* wave */
@@ -9703,6 +9705,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
   }
 
   /* automate and play  */
+#if 0
   staging_flags = staging_mask & staging_flags;
   
   if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
@@ -9722,6 +9725,8 @@ ags_audio_real_play_recall(AgsAudio *audio,
   }
 
   staging_flags &= (~AGS_SOUND_STAGING_AUTOMATE);
+#endif
+  
   list = list_start;
 
   while((list = ags_recall_find_recycling_context(list,

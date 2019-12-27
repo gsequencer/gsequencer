@@ -169,6 +169,8 @@ struct _AgsAudio
   GList *cursor;
   
   GList *notation;
+
+  gchar **automation_port;
   GList *automation;
   
   GList *wave;
