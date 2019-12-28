@@ -94,7 +94,6 @@ AGS_DIAL_DEFAULT_HEIGHT
 AGS_DIAL_DEFAULT_WIDTH
 AgsDialFlags
 AgsDialAction
-ags_dial_draw
 ags_dial_value_changed
 ags_dial_set_value
 ags_dial_new

@@ -359,18 +359,7 @@
 	The persistency layer.
       </para>
       
-      <xi:include href="xml/ags_gui_file_xml.xml"/>
       <xi:include href="xml/ags_simple_file.xml"/>
-    </chapter>
-
-    <chapter id="thread">
-      <title>GUI threads</title>
-      <para>
-	Threads related to UI.
-      </para>
-      
-      <xi:include href="xml/ags_gui_thread.xml"/>
-      <xi:include href="xml/ags_simple_autosave_thread.xml"/>
     </chapter>
 
     <chapter id="task">

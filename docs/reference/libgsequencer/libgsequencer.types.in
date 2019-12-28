@@ -61,7 +61,6 @@ ags_fm_synth_get_type
 ags_fm_synth_input_line_get_type
 ags_fm_synth_input_pad_get_type
 ags_generic_preferences_get_type
-ags_gui_thread_get_type
 ags_history_browser_get_type
 ags_inline_player_get_type
 ags_input_collection_editor_get_type
@@ -141,7 +140,6 @@ ags_sheet_edit_get_type
 ags_sheet_editor_get_type
 ags_sheet_toolbar_get_type
 ags_sheet_window_get_type
-ags_simple_autosave_thread_get_type
 ags_simple_file_get_type
 ags_simple_file_read_get_type
 ags_simple_file_write_get_type
@@ -153,6 +151,7 @@ ags_synth_input_line_get_type
 ags_synth_input_pad_get_type
 ags_track_collection_get_type
 ags_track_collection_mapper_get_type
+ags_ui_osc_renew_controller_get_type
 ags_ui_provider_get_type
 ags_vautomation_edit_box_get_type
 ags_vwave_edit_box_get_type

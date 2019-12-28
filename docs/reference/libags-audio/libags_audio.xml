@@ -290,6 +290,7 @@
 
       <xi:include href="xml/ags_osc_server.xml"/>
       <xi:include href="xml/ags_osc_connection.xml"/>
+      <xi:include href="xml/ags_osc_message.xml"/>
       <xi:include href="xml/ags_osc_response.xml"/>
 
       <xi:include href="xml/ags_osc_controller.xml"/>	
@@ -303,7 +304,20 @@
       <xi:include href="xml/ags_osc_renew_controller.xml"/>
       <xi:include href="xml/ags_osc_status_controller.xml"/>
     </chapter>
-        
+
+    <chapter id="audio-osc-over-xmlrpc-server">
+      <title>Audio OSC XMLRPC - OSC over XMLRPC server</title>
+      <para>
+	The Open Sound Control server throught XMLRPC server.
+      </para>
+
+      <xi:include href="xml/ags_osc_xmlrpc_server.xml"/>
+      <xi:include href="xml/ags_osc_websocket_connection.xml"/>
+      <xi:include href="xml/ags_osc_xmlrpc_message.xml"/>
+
+      <xi:include href="xml/ags_osc_xmlrpc_controller.xml"/>	
+    </chapter>
+    
     <chapter id="audio-file">
       <title>Audio files - Reading/Writing audio data from disk</title>
       <para>
@@ -313,7 +327,6 @@
       <xi:include href="xml/ags_audio_container.xml"/>
       <xi:include href="xml/ags_audio_file.xml"/>
       <xi:include href="xml/ags_audio_file_link.xml"/>
-      <xi:include href="xml/ags_audio_file_xml.xml"/>
       <xi:include href="xml/ags_ipatch.xml"/>
       <xi:include href="xml/ags_ipatch_gig_reader.xml"/>
       <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
@@ -515,7 +528,6 @@
       <xi:include href="xml/ags_free_selection.xml"/>
       <xi:include href="xml/ags_link_channel.xml"/>
       <xi:include href="xml/ags_move_note.xml"/>
-      <xi:include href="xml/ags_notify_soundcard.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
       <xi:include href="xml/ags_open_single_file.xml"/>
       <xi:include href="xml/ags_open_sf2_instrument.xml"/>
