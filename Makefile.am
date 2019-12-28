@@ -1672,8 +1672,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_export_window.h \
 	ags/X/ags_generic_preferences_callbacks.h \
 	ags/X/ags_generic_preferences.h \
-	ags/X/ags_history_browser_callbacks.h \
-	ags/X/ags_history_browser.h \
 	ags/X/ags_input_collection_editor_callbacks.h \
 	ags/X/ags_input_collection_editor.h \
 	ags/X/ags_input_editor_callbacks.h \
@@ -1792,8 +1790,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_export_window_callbacks.c \
 	ags/X/ags_generic_preferences.c \
 	ags/X/ags_generic_preferences_callbacks.c \
-	ags/X/ags_history_browser.c \
-	ags/X/ags_history_browser_callbacks.c \
 	ags/X/ags_ladspa_browser.c \
 	ags/X/ags_ladspa_browser_callbacks.c \
 	ags/X/ags_lv2_browser.c \
@@ -2165,10 +2161,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_envelope_editor.h \
 	ags/X/editor/ags_envelope_info_callbacks.h \
 	ags/X/editor/ags_envelope_info.h \
-	ags/X/editor/ags_file_selection_callbacks.h \
-	ags/X/editor/ags_file_selection.h \
-	ags/X/editor/ags_inline_player_callbacks.h \
-	ags/X/editor/ags_inline_player.h \
 	ags/X/editor/ags_machine_radio_button.h \
 	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
@@ -2192,8 +2184,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_scrolled_automation_edit_box.h \
 	ags/X/editor/ags_scrolled_wave_edit_box.h \
-	ags/X/editor/ags_sf2_chooser_callbacks.h \
-	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_select_buffer_dialog.h \
@@ -2229,10 +2219,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_envelope_editor.c \
 	ags/X/editor/ags_envelope_info_callbacks.c \
 	ags/X/editor/ags_envelope_info.c \
-	ags/X/editor/ags_file_selection_callbacks.c \
-	ags/X/editor/ags_file_selection.c \
-	ags/X/editor/ags_inline_player.c \
-	ags/X/editor/ags_inline_player_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
 	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
@@ -2262,8 +2248,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_buffer_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
-	ags/X/editor/ags_sf2_chooser.c \
-	ags/X/editor/ags_sf2_chooser_callbacks.c \
 	ags/X/editor/ags_sheet_edit.c \
 	ags/X/editor/ags_sheet_edit_callbacks.c \
 	ags/X/editor/ags_sheet_toolbar.c \

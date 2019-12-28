@@ -294,7 +294,6 @@ ags_window_init(AgsWindow *window)
   window->midi_file_chooser = NULL;
   
   window->preferences = NULL;
-  window->history_browser = NULL;
 
   /* load file */
   if(ags_window_load_file == NULL){

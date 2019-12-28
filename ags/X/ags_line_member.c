@@ -48,7 +48,12 @@ void ags_line_member_disconnect(AgsConnectable *connectable);
 
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
+
+AgsPort* ags_line_member_find_specifier(GList *recall,
+					gchar *specifier);
+
 GList* ags_line_member_real_find_port(AgsLineMember *line_member);
+
 
 /**
  * SECTION:ags_line_member
@@ -1436,6 +1441,52 @@ ags_line_member_change_port(AgsLineMember *line_member,
   g_object_unref((GObject *) line_member);
 }
 
+AgsPort*
+ags_line_member_find_specifier(GList *recall,
+			       gchar *specifier)
+{
+  AgsPort *current_port;
+    
+  GList *start_port, *port;
+
+  current_port = NULL;
+    
+  while(recall != NULL){
+    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      recall = recall->next;
+	
+      continue;
+    }
+
+    g_object_get(recall->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   specifier);
+    
+#ifdef AGS_DEBUG
+    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+#endif
+
+    if(port != NULL){
+      current_port = port->data;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+
+    if(current_port != NULL){
+      break;
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  return(current_port);
+}
+
 GList*
 ags_line_member_real_find_port(AgsLineMember *line_member)
 {
@@ -1452,51 +1503,6 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   GList *list_start;
   
   gchar *specifier;
-
-  auto AgsPort* ags_line_member_find_specifier(GList *recall);
-
-  AgsPort* ags_line_member_find_specifier(GList *recall){
-    AgsPort *current_port;
-    
-    GList *start_port, *port;
-
-    current_port = NULL;
-    
-    while(recall != NULL){
-      if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-	recall = recall->next;
-	
-	continue;
-      }
-
-      g_object_get(recall->data,
-		   "port", &start_port,
-		   NULL);
-
-      port = ags_port_find_specifier(start_port,
-				     specifier);
-    
-#ifdef AGS_DEBUG
-      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
-#endif
-
-      if(port != NULL){
-	current_port = port->data;
-      }
-
-      g_list_free_full(start_port,
-		       g_object_unref);
-
-      if(current_port != NULL){
-	break;
-      }
-
-      /* iterate */
-      recall = recall->next;
-    }
-
-    return(current_port);
-  }
 
   if(!AGS_IS_LINE_MEMBER(line_member)){
     return(NULL);
@@ -1541,7 +1547,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 	       "play", &list_start,
 	       NULL);
 
-  channel_port = ags_line_member_find_specifier(list_start);
+  channel_port = ags_line_member_find_specifier(list_start,
+						specifier);
 
   g_list_free_full(list_start,
 		   g_object_unref);  
@@ -1551,7 +1558,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 	       "recall", &list_start,
 	       NULL);
     
-  recall_channel_port = ags_line_member_find_specifier(list_start);
+  recall_channel_port = ags_line_member_find_specifier(list_start,
+						       specifier);
 
   g_list_free_full(list_start,
 		   g_object_unref);
@@ -1576,7 +1584,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		 "play", &list_start,
 		 NULL);
 
-    audio_port = ags_line_member_find_specifier(list_start);
+    audio_port = ags_line_member_find_specifier(list_start,
+						specifier);
 
     g_list_free_full(list_start,
 		     g_object_unref);
@@ -1586,7 +1595,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		 "recall", &list_start,
 		 NULL);
 
-    recall_audio_port = ags_line_member_find_specifier(list_start);
+    recall_audio_port = ags_line_member_find_specifier(list_start,
+						       specifier);
 
     g_list_free_full(list_start,
 		     g_object_unref);

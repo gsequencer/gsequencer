@@ -38,7 +38,7 @@
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_preferences.h>
-#include <ags/X/ags_history_browser.h>
+
 
 G_BEGIN_DECLS
 
@@ -97,7 +97,6 @@ struct _AgsWindow
   GtkWidget *midi_file_chooser;
   
   AgsPreferences *preferences;
-  AgsHistoryBrowser *history_browser;
 };
 
 struct _AgsWindowClass

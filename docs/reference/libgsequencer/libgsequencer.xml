@@ -372,19 +372,6 @@
       <xi:include href="xml/ags_simple_file_write.xml"/>
     </chapter>
 
-    <chapter id="various">
-      <title>Various</title>
-      <para>
-	Unrelated/unimplemented widgets.
-      </para>
-      
-      <xi:include href="xml/ags_file_selection.xml"/>
-      <xi:include href="xml/ags_file_selection_callbacks.xml"/>
-      <xi:include href="xml/ags_history_browser.xml"/>
-      <xi:include href="xml/ags_inline_player.xml"/>    
-      <xi:include href="xml/ags_sf2_chooser.xml"/>
-      <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>  
-    </chapter>
   </part>
   
   <chapter id="object-tree">

@@ -53,8 +53,6 @@
 #include <ags/X/ags_export_window_callbacks.h>
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
-#include <ags/X/ags_history_browser.h>
-#include <ags/X/ags_history_browser_callbacks.h>
 #include <ags/X/ags_input_collection_editor.h>
 #include <ags/X/ags_input_collection_editor_callbacks.h>
 #include <ags/X/ags_input_editor.h>
@@ -147,10 +145,6 @@
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 #include <ags/X/editor/ags_envelope_info.h>
 #include <ags/X/editor/ags_envelope_info_callbacks.h>
-#include <ags/X/editor/ags_file_selection.h>
-#include <ags/X/editor/ags_file_selection_callbacks.h>
-#include <ags/X/editor/ags_inline_player.h>
-#include <ags/X/editor/ags_inline_player_callbacks.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_machine_radio_button_callbacks.h>
 #include <ags/X/editor/ags_machine_selection.h>
@@ -180,8 +174,6 @@
 #include <ags/X/editor/ags_select_buffer_dialog_callbacks.h>
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
-#include <ags/X/editor/ags_sf2_chooser.h>
-#include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 #include <ags/X/editor/ags_vautomation_edit_box.h>
 #include <ags/X/editor/ags_vwave_edit_box.h>
 #include <ags/X/editor/ags_wave_edit.h>
