@@ -97,21 +97,18 @@ EXTRA_DIST = config.rpath \
 	m4/Makefile.in \
 	ags/i18n.h \
 	ags/gettext.h \
+	ags/README \
 	ags/lib/AUTHORS \
-	ags/object/README \
 	ags/server/security/AUTHORS \
 	ags/audio/AUTHORS \
 	ags/audio/recall/AUTHORS \
-	ags/widget/README \
 	docs/images/README \
-	docs/listings/README \
 	docs/reference/libags-audio/README \
 	docs/reference/libags-gui/README \
 	docs/reference/libags/README \
 	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README \
 	gsequencer.share/images/README \
-	gsequencer.share/styles/README \
 	m4/README \
 	po/README
 
@@ -2391,7 +2388,6 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/gsequencer-128x128.png $(DESTDIR)/$(datadir)/icons/hicolor/128x128/apps/gsequencer.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
-	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
 	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
