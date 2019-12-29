@@ -29,7 +29,7 @@ ags (3.0.0)
        * TODO:JK: strip AgsPlugin from machines
        * TODO:JK: removed AgsMenuBar
        * removed barriers of AgsThread
-       * TODO:JK: removed nested functions
+       * replaced nested functions
 
 ags (2.4.8)
 

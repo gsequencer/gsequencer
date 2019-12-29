@@ -56,6 +56,8 @@ struct _AgsFunctionalTestUtilContainerTest
 
 GThread* ags_functional_test_util_test_runner_thread();
 
+struct timespec* ags_functional_test_util_get_default_timeout();
+
 /* legacy setup */
 void ags_functional_test_util_setup_and_launch();
 void ags_functional_test_util_setup_and_launch_filename(gchar *filename);

@@ -150,6 +150,8 @@ ags_functional_line_member_add_and_destroy_test_panel()
   AgsPluginBrowser *plugin_browser;
 
   GList *list_start, *list;
+
+  struct _AgsFunctionalTestUtilContainerTest container_test;
   
   guint nth_machine;
   guint nth_pad, nth_audio_channel;
@@ -166,6 +168,15 @@ ags_functional_line_member_add_and_destroy_test_panel()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+  
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -186,8 +197,6 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /*
    *  add line member to input
    */
-
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -368,7 +377,6 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /*
    * destroy effects
    */  
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -428,6 +436,8 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   
   GList *list_start, *list;
 
+  struct _AgsFunctionalTestUtilContainerTest container_test;
+
   guint nth_machine;
   guint nth_pad, nth_audio_channel;
   gboolean success;
@@ -443,6 +453,15 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+  
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -463,8 +482,6 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /*
    *  add line member to input
    */
-
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -645,7 +662,6 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /*
    * destroy effects
    */  
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -705,6 +721,8 @@ ags_functional_line_member_add_and_destroy_test_drum()
   
   GList *list_start, *list;
 
+  struct _AgsFunctionalTestUtilContainerTest container_test;
+
   guint nth_machine;
   guint nth_pad, nth_audio_channel;
   gboolean success;
@@ -720,6 +738,15 @@ ags_functional_line_member_add_and_destroy_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+  
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -741,7 +768,6 @@ ags_functional_line_member_add_and_destroy_test_drum()
    *  add line member to input
    */
 
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -922,7 +948,6 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /*
    * destroy effects
    */  
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -979,6 +1004,8 @@ ags_functional_line_member_add_and_destroy_test_matrix()
 
   GList *list_start, *list;
 
+  struct _AgsFunctionalTestUtilContainerTest container_test;
+
   guint nth_machine;
   gboolean success;
 
@@ -993,6 +1020,15 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+  
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -1011,7 +1047,6 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   CU_ASSERT(machine != NULL);
 
   //TODO:JK: 
-  nth_machine = 0;
   
   /* destroy matrix */
   success = ags_functional_test_util_machine_destroy(nth_machine);
@@ -1027,6 +1062,8 @@ ags_functional_line_member_add_and_destroy_test_synth()
   
   GList *list_start, *list;
 
+  struct _AgsFunctionalTestUtilContainerTest container_test;
+
   guint nth_machine;
   gboolean success;
 
@@ -1041,6 +1078,15 @@ ags_functional_line_member_add_and_destroy_test_synth()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+  
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -1059,7 +1105,6 @@ ags_functional_line_member_add_and_destroy_test_synth()
   CU_ASSERT(machine != NULL);
 
   //TODO:JK: 
-  nth_machine = 0;
   
   /* destroy synth */
   success = ags_functional_test_util_machine_destroy(nth_machine);
@@ -1079,6 +1124,8 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   
   GList *list_start, *list;
 
+  struct _AgsFunctionalTestUtilContainerTest container_test;
+
   guint nth_machine;
   guint nth_pad, nth_audio_channel;
   gboolean success;
@@ -1094,6 +1141,15 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
+  nth_machine = 0;
+  
+  container_test.container = &(AGS_WINDOW(xorg_application_context->window)->machines);
+  container_test.count = nth_machine + 1;
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      ags_functional_test_util_get_default_timeout(),
+						      &container_test);
+
   ags_test_enter();
 
   list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
@@ -1114,8 +1170,6 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /*
    *  add line member to input
    */
-
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);
@@ -1292,11 +1346,6 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
   CU_ASSERT(success == TRUE);
-
-  /*
-   * destroy effects
-   */  
-  nth_machine = 0;
 
   /* open properties */
   success = ags_functional_test_util_machine_properties_open(nth_machine);

@@ -40,8 +40,11 @@ void ags_functional_audio_test_playback();
 void ags_functional_audio_test_playback_add_sink(AgsAudio *audio);
 void ags_functional_audio_test_playback_add_mixer(AgsAudio *audio);
 void ags_functional_audio_test_playback_add_playback(AgsAudio *audio);
-void ags_functional_audio_test_playback_start_audio(AgsAudio *audio);
-void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio);
+void ags_functional_audio_test_playback_start_audio(AgsAudio *audio,
+						    AgsTaskLauncher *task_launcher);
+void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio,
+						   AgsTaskLauncher *task_launcher,
+						   struct timespec *start_time);
 
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS (2)
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_PADS (78)
@@ -490,7 +493,8 @@ ags_functional_audio_test_playback_add_playback(AgsAudio *audio)
 }
 
 void
-ags_functional_audio_test_playback_start_audio(AgsAudio *audio)
+ags_functional_audio_test_playback_start_audio(AgsAudio *audio,
+					       AgsTaskLauncher *task_launcher)
 {
   AgsStartAudio *start_audio;
   AgsStartSoundcard *start_soundcard;
@@ -512,7 +516,9 @@ ags_functional_audio_test_playback_start_audio(AgsAudio *audio)
 }
   
 void
-ags_functional_audio_test_playback_stop_audio(AgsAudio *audio)
+ags_functional_audio_test_playback_stop_audio(AgsAudio *audio,
+					      AgsTaskLauncher *task_launcher,
+					      struct timespec *start_time)
 {
   AgsCancelAudio *cancel_audio;
 
@@ -520,12 +526,12 @@ ags_functional_audio_test_playback_stop_audio(AgsAudio *audio)
     
   clock_gettime(CLOCK_MONOTONIC, &sleep_time);
 
-  while(sleep_time.tv_sec < start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY){
+  while(sleep_time.tv_sec < start_time->tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY){
     usleep(USEC_PER_SEC);
     clock_gettime(CLOCK_MONOTONIC, &sleep_time);
 
     g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]",
-	      start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY - sleep_time.tv_sec,
+	      start_time->tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY - sleep_time.tv_sec,
 	      audio);
   }
     
@@ -836,14 +842,17 @@ ags_functional_audio_test_playback()
   g_message("start playback");
   
   for(i = 0; i < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO; i++){
-    ags_functional_audio_test_playback_start_audio(audio[i]);
+    ags_functional_audio_test_playback_start_audio(audio[i],
+						   task_launcher);
   }
 
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 
   /* stop playback */
   for(i = 0; i < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO; i++){
-    ags_functional_audio_test_playback_stop_audio(audio[i]);
+    ags_functional_audio_test_playback_stop_audio(audio[i],
+						  task_launcher,
+						  &start_time);
   }
 
   g_message("playback stopped");

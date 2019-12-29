@@ -114,6 +114,12 @@ ags_functional_test_util_test_runner_thread()
   return(ags_functional_test_util_thread);
 }
 
+struct timespec*
+ags_functional_test_util_get_default_timeout()
+{
+  return(&ags_functional_test_util_default_timeout);
+}
+
 void*
 ags_functional_test_util_add_test_thread(void *ptr)
 {
