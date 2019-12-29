@@ -240,6 +240,9 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
   child_allocation.x = allocation.x;
   child_allocation.y = allocation.y;
 
+  width = 1;
+  height = 1;
+  
   if(scrolled_piano->piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     height = allocation.height;
   }else{

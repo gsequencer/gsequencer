@@ -37,6 +37,12 @@ int ags_functional_audio_test_clean_suite();
 
 void ags_functional_audio_test_playback();
 
+void ags_functional_audio_test_playback_add_sink(AgsAudio *audio);
+void ags_functional_audio_test_playback_add_mixer(AgsAudio *audio);
+void ags_functional_audio_test_playback_add_playback(AgsAudio *audio);
+void ags_functional_audio_test_playback_start_audio(AgsAudio *audio);
+void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio);
+
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS (2)
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_PADS (78)
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO (4)
@@ -109,6 +115,430 @@ ags_functional_audio_test_clean_suite()
 }
 
 void
+ags_functional_audio_test_playback_add_sink(AgsAudio *audio)
+{
+  AgsChannel *channel;
+  AgsPlayChannel *play_channel;
+  AgsPlayChannelRunMaster *play_channel_run;
+
+  GList *list;
+
+  guint n_recall;
+    
+  channel = audio->input;
+
+  while(channel != NULL){
+    /* ags-play */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play-master",
+			      channel->audio_channel, channel->audio_channel + 1,
+			      channel->pad, channel->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT,
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    /* set audio channel */
+    list = channel->play;
+    n_recall = 0;
+      
+    while((list = ags_recall_template_find_type(list,
+						AGS_TYPE_PLAY_CHANNEL)) != NULL){
+      GValue audio_channel_value = {0,};
+
+      CU_ASSERT(AGS_IS_PLAY_CHANNEL(list->data));
+
+      play_channel = AGS_PLAY_CHANNEL(list->data);
+
+      CU_ASSERT(AGS_IS_PORT(play_channel->audio_channel));
+
+      g_value_init(&audio_channel_value, G_TYPE_UINT64);
+      g_value_set_uint64(&audio_channel_value,
+			 channel->audio_channel);
+      ags_port_safe_write(play_channel->audio_channel,
+			  &audio_channel_value);
+      g_value_unset(&audio_channel_value);
+	
+      list = list->next;
+      n_recall++;
+    }
+
+    CU_ASSERT(n_recall == 1);
+
+    channel = channel->next;
+  }
+}
+  
+void
+ags_functional_audio_test_playback_add_mixer(AgsAudio *audio)
+{
+  AgsChannel *channel;
+
+  GList *list;
+
+  guint n_recall;
+    
+  channel = audio->input;
+
+  while(channel != NULL){
+    /* ags-mute */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-mute",
+			      channel->audio_channel, channel->audio_channel + 1,
+			      channel->pad, channel->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    list = channel->play;
+    n_recall = 0;
+      
+    while((list = ags_recall_template_find_type(list,
+						AGS_TYPE_MUTE_CHANNEL)) != NULL){
+      CU_ASSERT(AGS_IS_MUTE_CHANNEL(list->data));
+
+      CU_ASSERT(AGS_IS_PORT(AGS_MUTE_CHANNEL(list->data)->muted));
+
+      list = list->next;
+      n_recall++;
+    }
+
+    CU_ASSERT(n_recall == 1);
+
+    list = channel->recall;
+    n_recall = 0;
+      
+    while((list = ags_recall_template_find_type(list,
+						AGS_TYPE_MUTE_CHANNEL)) != NULL){
+      CU_ASSERT(AGS_IS_MUTE_CHANNEL(list->data));
+
+      CU_ASSERT(AGS_IS_PORT(AGS_MUTE_CHANNEL(list->data)->muted));
+
+      list = list->next;
+      n_recall++;
+    }
+
+    CU_ASSERT(n_recall == 1);
+
+    /* ags-volume */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-volume",
+			      channel->audio_channel, channel->audio_channel + 1,
+			      channel->pad, channel->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+
+    list = channel->play;
+    n_recall = 0;
+      
+    while((list = ags_recall_template_find_type(list,
+						AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+      CU_ASSERT(AGS_IS_VOLUME_CHANNEL(list->data));
+
+      CU_ASSERT(AGS_IS_PORT(AGS_VOLUME_CHANNEL(list->data)->volume));
+
+      list = list->next;
+      n_recall++;
+    }
+
+    CU_ASSERT(n_recall == 1);
+
+    list = channel->recall;
+    n_recall = 0;
+      
+    while((list = ags_recall_template_find_type(list,
+						AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+      CU_ASSERT(AGS_IS_VOLUME_CHANNEL(list->data));
+
+      CU_ASSERT(AGS_IS_PORT(AGS_VOLUME_CHANNEL(list->data)->volume));
+
+      list = list->next;
+      n_recall++;
+    }
+
+    CU_ASSERT(n_recall == 1);
+
+    channel = channel->next;
+  }
+}
+  
+void
+ags_functional_audio_test_playback_add_playback(AgsAudio *audio)
+{
+  AgsChannel *channel, *input;
+
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
+
+  GList *list;
+
+  guint n_recall;
+    
+  /* ags-delay */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-delay",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
+  play_delay_audio = NULL;
+  play_delay_audio_run = NULL;
+    
+  list = audio->play;
+  n_recall = 0;
+      
+  while((list = ags_recall_template_find_type(list,
+					      AGS_TYPE_DELAY_AUDIO)) != NULL){
+    CU_ASSERT(AGS_IS_DELAY_AUDIO(list->data));
+
+    play_delay_audio = list->data;
+      
+    CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->notation_delay));
+    CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->sequencer_delay));
+
+    CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->notation_duration));
+    CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->sequencer_duration));
+
+    list = list->next;
+    n_recall++;
+  }
+
+  CU_ASSERT(n_recall == 1);
+
+  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+
+  if(list != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  }    
+
+  /* ags-count-beats */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-count-beats",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
+  play_count_beats_audio = NULL;
+  play_count_beats_audio_run = NULL;
+    
+  list = audio->play;
+  n_recall = 0;
+      
+  while((list = ags_recall_template_find_type(list,
+					      AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+    CU_ASSERT(AGS_IS_COUNT_BEATS_AUDIO(list->data));
+
+    play_count_beats_audio = list->data;
+      
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop));
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop_start));
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop_end));
+
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop));
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop_start));
+    CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop_end));
+
+    list = list->next;
+    n_recall++;
+  }
+
+  CU_ASSERT(n_recall == 1);
+  
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+  if(list != NULL){
+    GValue value = {0,};
+
+    CU_ASSERT(AGS_IS_COUNT_BEATS_AUDIO_RUN(list->data));
+
+    play_count_beats_audio_run = list->data;
+      
+    /* set dependency */  
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run", play_delay_audio_run,
+		 NULL);
+
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      0,
+		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, FALSE);
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
+    g_value_unset(&value);
+  }
+
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  recall_notation_audio = NULL;
+  recall_notation_audio_run = NULL;
+    
+  list = audio->recall;
+  n_recall = 0;
+      
+  while((list = ags_recall_template_find_type(list,
+					      AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
+    CU_ASSERT(AGS_IS_PLAY_NOTATION_AUDIO(list->data));
+
+    list = list->next;
+    n_recall++;
+  }
+
+  CU_ASSERT(n_recall == 1);
+  
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run", play_count_beats_audio_run,
+		 NULL);
+  }
+
+  channel = audio->output;
+
+  while(channel != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      channel->audio_channel, channel->audio_channel + 1, 
+			      channel->pad, channel->pad + 1,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+      
+    input = ags_channel_pad_nth(audio->input,
+				channel->pad);
+
+    while(input != NULL){
+      /* ags-buffer */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-buffer",
+				0, audio->audio_channels, 
+				input->pad, input->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      input = input->next_pad;
+    }
+
+    channel = channel->next;
+  }
+
+  channel = audio->input;
+
+  while(channel != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      channel->audio_channel, channel->audio_channel + 1, 
+			      channel->pad, channel->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  
+    channel = channel->next;
+  }
+}
+
+void
+ags_functional_audio_test_playback_start_audio(AgsAudio *audio)
+{
+  AgsStartAudio *start_audio;
+  AgsStartSoundcard *start_soundcard;
+
+  GList *task;
+
+  task = NULL;    
+  start_audio = ags_start_audio_new(audio,
+				    AGS_SOUND_SCOPE_NOTATION);
+  task = g_list_prepend(task,
+			start_audio);
+    
+  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  task = g_list_prepend(task,
+			start_soundcard);
+    
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
+}
+  
+void
+ags_functional_audio_test_playback_stop_audio(AgsAudio *audio)
+{
+  AgsCancelAudio *cancel_audio;
+
+  struct timespec sleep_time;
+    
+  clock_gettime(CLOCK_MONOTONIC, &sleep_time);
+
+  while(sleep_time.tv_sec < start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY){
+    usleep(USEC_PER_SEC);
+    clock_gettime(CLOCK_MONOTONIC, &sleep_time);
+
+    g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]",
+	      start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY - sleep_time.tv_sec,
+	      audio);
+  }
+    
+  /* create cancel task */
+  cancel_audio = ags_cancel_audio_new(audio,
+				      AGS_SOUND_SCOPE_NOTATION);
+    
+  /* append AgsCancelAudio */
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);
+}
+
+void
 ags_functional_audio_test_playback()
 {
   AgsAudio *panel, *mixer;
@@ -129,426 +559,6 @@ ags_functional_audio_test_playback()
   guint i, j, k;
   
   GError *error;
-
-  auto void ags_functional_audio_test_playback_add_sink(AgsAudio *audio);
-  auto void ags_functional_audio_test_playback_add_mixer(AgsAudio *audio);
-  auto void ags_functional_audio_test_playback_add_playback(AgsAudio *audio);
-  auto void ags_functional_audio_test_playback_start_audio(AgsAudio *audio);
-  auto void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio);
-
-  void ags_functional_audio_test_playback_add_sink(AgsAudio *audio){
-    AgsChannel *channel;
-    AgsPlayChannel *play_channel;
-    AgsPlayChannelRunMaster *play_channel_run;
-
-    GList *list;
-
-    guint n_recall;
-    
-    channel = audio->input;
-
-    while(channel != NULL){
-      /* ags-play */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-play-master",
-				channel->audio_channel, channel->audio_channel + 1,
-				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT,
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      /* set audio channel */
-      list = channel->play;
-      n_recall = 0;
-      
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_PLAY_CHANNEL)) != NULL){
-	GValue audio_channel_value = {0,};
-
-	CU_ASSERT(AGS_IS_PLAY_CHANNEL(list->data));
-
-	play_channel = AGS_PLAY_CHANNEL(list->data);
-
-	CU_ASSERT(AGS_IS_PORT(play_channel->audio_channel));
-
-	g_value_init(&audio_channel_value, G_TYPE_UINT64);
-	g_value_set_uint64(&audio_channel_value,
-			   channel->audio_channel);
-	ags_port_safe_write(play_channel->audio_channel,
-			    &audio_channel_value);
-	g_value_unset(&audio_channel_value);
-	
-	list = list->next;
-	n_recall++;
-      }
-
-      CU_ASSERT(n_recall == 1);
-
-      channel = channel->next;
-    }
-  }
-  
-  void ags_functional_audio_test_playback_add_mixer(AgsAudio *audio){
-    AgsChannel *channel;
-
-    GList *list;
-
-    guint n_recall;
-    
-    channel = audio->input;
-
-    while(channel != NULL){
-      /* ags-mute */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-mute",
-				channel->audio_channel, channel->audio_channel + 1,
-				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      list = channel->play;
-      n_recall = 0;
-      
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_MUTE_CHANNEL)) != NULL){
-	CU_ASSERT(AGS_IS_MUTE_CHANNEL(list->data));
-
-      	CU_ASSERT(AGS_IS_PORT(AGS_MUTE_CHANNEL(list->data)->muted));
-
-	list = list->next;
-	n_recall++;
-      }
-
-      CU_ASSERT(n_recall == 1);
-
-      list = channel->recall;
-      n_recall = 0;
-      
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_MUTE_CHANNEL)) != NULL){
-	CU_ASSERT(AGS_IS_MUTE_CHANNEL(list->data));
-
-      	CU_ASSERT(AGS_IS_PORT(AGS_MUTE_CHANNEL(list->data)->muted));
-
-	list = list->next;
-	n_recall++;
-      }
-
-      CU_ASSERT(n_recall == 1);
-
-      /* ags-volume */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-volume",
-				channel->audio_channel, channel->audio_channel + 1,
-				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-
-      list = channel->play;
-      n_recall = 0;
-      
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_VOLUME_CHANNEL)) != NULL){
-	CU_ASSERT(AGS_IS_VOLUME_CHANNEL(list->data));
-
-      	CU_ASSERT(AGS_IS_PORT(AGS_VOLUME_CHANNEL(list->data)->volume));
-
-	list = list->next;
-	n_recall++;
-      }
-
-      CU_ASSERT(n_recall == 1);
-
-      list = channel->recall;
-      n_recall = 0;
-      
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_VOLUME_CHANNEL)) != NULL){
-	CU_ASSERT(AGS_IS_VOLUME_CHANNEL(list->data));
-
-      	CU_ASSERT(AGS_IS_PORT(AGS_VOLUME_CHANNEL(list->data)->volume));
-
-	list = list->next;
-	n_recall++;
-      }
-
-      CU_ASSERT(n_recall == 1);
-
-      channel = channel->next;
-    }
-  }
-  
-  void ags_functional_audio_test_playback_add_playback(AgsAudio *audio){
-    AgsChannel *channel, *input;
-
-    AgsDelayAudio *play_delay_audio;
-    AgsDelayAudioRun *play_delay_audio_run;
-    AgsCountBeatsAudio *play_count_beats_audio;
-    AgsCountBeatsAudioRun *play_count_beats_audio_run;
-    AgsPlayNotationAudio *recall_notation_audio;
-    AgsPlayNotationAudioRun *recall_notation_audio_run;
-
-    GList *list;
-
-    guint n_recall;
-    
-    /* ags-delay */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-delay",
-			      0, 0,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_OUTPUT |
-			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_PLAY),
-			      0);
-
-    play_delay_audio = NULL;
-    play_delay_audio_run = NULL;
-    
-    list = audio->play;
-    n_recall = 0;
-      
-    while((list = ags_recall_template_find_type(list,
-						AGS_TYPE_DELAY_AUDIO)) != NULL){
-      CU_ASSERT(AGS_IS_DELAY_AUDIO(list->data));
-
-      play_delay_audio = list->data;
-      
-      CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->notation_delay));
-      CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->sequencer_delay));
-
-      CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->notation_duration));
-      CU_ASSERT(AGS_IS_PORT(AGS_DELAY_AUDIO(list->data)->sequencer_duration));
-
-      list = list->next;
-      n_recall++;
-    }
-
-    CU_ASSERT(n_recall == 1);
-
-    list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
-
-    if(list != NULL){
-      play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    }    
-
-    /* ags-count-beats */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-count-beats",
-			      0, 0,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_OUTPUT |
-			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_PLAY),
-			      0);
-
-    play_count_beats_audio = NULL;
-    play_count_beats_audio_run = NULL;
-    
-    list = audio->play;
-    n_recall = 0;
-      
-    while((list = ags_recall_template_find_type(list,
-						AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
-      CU_ASSERT(AGS_IS_COUNT_BEATS_AUDIO(list->data));
-
-      play_count_beats_audio = list->data;
-      
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop));
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop_start));
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->notation_loop_end));
-
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop));
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop_start));
-      CU_ASSERT(AGS_IS_PORT(AGS_COUNT_BEATS_AUDIO(list->data)->sequencer_loop_end));
-
-      list = list->next;
-      n_recall++;
-    }
-
-    CU_ASSERT(n_recall == 1);
-  
-    list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-    if(list != NULL){
-      GValue value = {0,};
-
-      CU_ASSERT(AGS_IS_COUNT_BEATS_AUDIO_RUN(list->data));
-
-      play_count_beats_audio_run = list->data;
-      
-      /* set dependency */  
-      g_object_set(G_OBJECT(play_count_beats_audio_run),
-		   "delay-audio-run", play_delay_audio_run,
-		   NULL);
-
-      ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-			0,
-			TRUE);
-
-      g_value_init(&value, G_TYPE_BOOLEAN);
-      g_value_set_boolean(&value, FALSE);
-      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			  &value);
-      g_value_unset(&value);
-    }
-
-    /* ags-play-notation */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play-notation",
-			      0, 0,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-
-    recall_notation_audio = NULL;
-    recall_notation_audio_run = NULL;
-    
-    list = audio->recall;
-    n_recall = 0;
-      
-    while((list = ags_recall_template_find_type(list,
-						AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
-      CU_ASSERT(AGS_IS_PLAY_NOTATION_AUDIO(list->data));
-
-      list = list->next;
-      n_recall++;
-    }
-
-    CU_ASSERT(n_recall == 1);
-  
-
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-    if(list != NULL){
-      recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
-    
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "delay-audio-run", play_delay_audio_run,
-		   NULL);
-
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "count-beats-audio-run", play_count_beats_audio_run,
-		   NULL);
-    }
-
-    channel = audio->output;
-
-    while(channel != NULL){
-      /* ags-stream */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				channel->audio_channel, channel->audio_channel + 1, 
-				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-      
-      input = ags_channel_pad_nth(audio->input,
-				  channel->pad);
-
-      while(input != NULL){
-	/* ags-buffer */
-	ags_recall_factory_create(audio,
-				  NULL, NULL,
-				  "ags-buffer",
-				  0, audio->audio_channels, 
-				  input->pad, input->pad + 1,
-				  (AGS_RECALL_FACTORY_INPUT |
-				   AGS_RECALL_FACTORY_RECALL |
-				   AGS_RECALL_FACTORY_ADD),
-				  0);
-
-	input = input->next_pad;
-      }
-
-      channel = channel->next;
-    }
-
-    channel = audio->input;
-
-    while(channel != NULL){
-      /* ags-stream */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				channel->audio_channel, channel->audio_channel + 1, 
-				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-  
-      channel = channel->next;
-    }
-  }
-
-  void ags_functional_audio_test_playback_start_audio(AgsAudio *audio){
-    AgsStartAudio *start_audio;
-    AgsStartSoundcard *start_soundcard;
-
-    GList *task;
-
-    task = NULL;    
-    start_audio = ags_start_audio_new(audio,
-				      AGS_SOUND_SCOPE_NOTATION);
-    task = g_list_prepend(task,
-			  start_audio);
-    
-    start_soundcard = ags_start_soundcard_new(audio_application_context);
-    task = g_list_prepend(task,
-			  start_soundcard);
-    
-    ags_task_launcher_add_task_all(task_launcher,
-				   task);
-  }
-  
-  void ags_functional_audio_test_playback_stop_audio(AgsAudio *audio){
-    AgsCancelAudio *cancel_audio;
-
-    struct timespec sleep_time;
-    
-    clock_gettime(CLOCK_MONOTONIC, &sleep_time);
-
-    while(sleep_time.tv_sec < start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY){
-      usleep(USEC_PER_SEC);
-      clock_gettime(CLOCK_MONOTONIC, &sleep_time);
-
-      g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]",
-		start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY - sleep_time.tv_sec,
-		audio);
-    }
-    
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(audio,
-					AGS_SOUND_SCOPE_NOTATION);
-    
-    /* append AgsCancelAudio */
-    ags_task_launcher_add_task(task_launcher,
-			       (AgsTask *) cancel_audio);
-  }
 
   /*
    * Setup audio tree sink, mixer and notation player as source

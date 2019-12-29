@@ -410,6 +410,9 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   }
   
   /* set size request if needed */
+  start_output = NULL;
+  start_input = NULL;
+  
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     gtk_adjustment_set_upper(gtk_range_get_adjustment(GTK_RANGE(matrix->cell_pattern->vscrollbar)),
 			     (double) pads);

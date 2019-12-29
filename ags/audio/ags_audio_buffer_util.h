@@ -282,7 +282,6 @@ typedef gint32 v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
 typedef gint64 v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
 typedef gfloat v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
-typedef AgsComplex v8complex __attribute__ ((vector_size(8 * sizeof(AgsComplex))));
 
 guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,

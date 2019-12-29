@@ -879,6 +879,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 		   NULL);
      
       //FIXME:JK: use filename and effect to identify
+      start_generic_channel_recall = NULL;
+      
       list_recall = ags_recall_template_find_type(start_list_recall,
 						  AGS_TYPE_RECALL_LV2);
       

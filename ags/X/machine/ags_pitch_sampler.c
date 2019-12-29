@@ -1650,7 +1650,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
       
 	  str_key = ags_sfz_group_lookup_control(group,
 						 "key");
-
+	  
 	  if(str_pitch_keycenter != NULL){
 	    retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
@@ -1668,7 +1668,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
-	      pitch_keycenter = current_key;
+	      pitch_keycenter = current_pitch_keycenter;
 	    }else{
 	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
 							   &current_key);

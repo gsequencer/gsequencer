@@ -2349,6 +2349,10 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     return;
   }
 
+  g_object_get(notation,
+	       "audio-channel", &current_audio_channel,
+	       NULL);
+
   match_timestamp = TRUE;
   
   if(!xmlStrncmp("0.3.12", version, 7)){
@@ -2375,10 +2379,6 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   }else if(!xmlStrncmp("1.2.0", version, 6)){
     /* changes contain only optional informations */
     match_timestamp = TRUE;
-
-    g_object_get(notation,
-		 "audio-channel", &current_audio_channel,
-		 NULL);
 
     if(match_channel &&
        current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,

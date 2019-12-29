@@ -39,6 +39,8 @@ void ags_thread_test_add_child();
 void ags_thread_test_is_current_ready();
 void ags_thread_test_stop();
 
+void* ags_thread_test_lock_assert_locked(void *ptr);
+
 #define AGS_THREAD_TEST_LOCK_N_THREADS (4)
 
 #define AGS_THREAD_TEST_GET_TOPLEVEL_N_LEVELS (7)
@@ -90,6 +92,24 @@ ags_thread_test_clean_suite()
   return(0);
 }
 
+void*
+ags_thread_test_lock_assert_locked(void *ptr)
+{
+  AgsThread **thread;
+
+  guint i;
+
+  thread = (AgsThread **) ptr;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
+    CU_ASSERT(ags_thread_trylock(thread[i]) == FALSE);
+  }
+
+  g_thread_exit(NULL);
+
+  return(NULL);
+}
+
 void
 ags_thread_test_lock()
 {
@@ -99,24 +119,6 @@ ags_thread_test_lock()
   
   GThread *assert_thread;
   
-  auto void* ags_thread_test_lock_assert_locked(void *ptr);
-
-  void* ags_thread_test_lock_assert_locked(void *ptr){
-    AgsThread **thread;
-
-    guint i;
-
-    thread = (AgsThread **) ptr;
-
-    for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
-      CU_ASSERT(ags_thread_trylock(thread[i]) == FALSE);
-    }
-
-    g_thread_exit(NULL);
-
-    return(NULL);
-  }
-
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_LOCK_N_THREADS * sizeof(AgsThread*));
   
   for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){

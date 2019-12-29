@@ -619,17 +619,6 @@ void
 ags_file_finalize(GObject *gobject)
 {
   AgsFile *file;
-  void ags_file_destroy_node(xmlNodePtr node){
-    xmlNodePtr child;
-
-    child = node->children;
-
-    while(child != NULL){
-      ags_file_destroy_node(child);
-      
-      child = child->next;
-    }
-  }
 
   file = (AgsFile *) gobject;
 

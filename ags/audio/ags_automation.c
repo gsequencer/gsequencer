@@ -2730,6 +2730,10 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     return;
   }  
 
+  g_object_get(automation,
+	       "line", &current_line,
+	       NULL);
+  
   match_timestamp = TRUE;
   
   if(!xmlStrncmp("0.4.3", version, 6)){
@@ -2743,10 +2747,6 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						       match_timestamp);
   }else if(!xmlStrncmp("1.3.0", version, 6)){
     match_timestamp = TRUE;
-
-    g_object_get(automation,
-		 "line", &current_line,
-		 NULL);
     
     if(match_line &&
        current_line != g_ascii_strtoull(xmlGetProp(root_node,
