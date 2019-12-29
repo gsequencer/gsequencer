@@ -121,6 +121,8 @@ GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *e
 
 GList* ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, guint ui_effect_index);
 
+gint ags_base_plugin_sort_func(gpointer a, gpointer b);
+
 GList* ags_base_plugin_sort(GList *base_plugin);
 
 void ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin);

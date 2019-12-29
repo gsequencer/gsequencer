@@ -46,6 +46,11 @@ void ags_cartesian_get_preferred_height(GtkWidget *widget,
 					gint *minimum_height,
 					gint *natural_height);
 
+void ags_cartesian_draw_putpixel(unsigned char *data,
+				 gdouble width, gdouble height,
+				 guint stride,
+				 int x, int y, unsigned long int pixel);
+
 void ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
 
 /**
@@ -936,6 +941,37 @@ ags_cartesian_get_preferred_height(GtkWidget *widget,
 }
 
 void
+ags_cartesian_draw_putpixel(unsigned char *data,
+			    gdouble width, gdouble height,
+			    guint stride,
+			    int x, int y, unsigned long int pixel)
+{
+  int bpp = stride / width;
+  /* Here p is the address to the pixel we want to set */
+  unsigned char *p = data + y * stride + x * bpp;
+
+  switch(bpp) {
+  case 1:
+    *p = pixel;
+    break;
+
+  case 2:
+    *(gint16 *)p = pixel;
+    break;
+
+  case 3:
+    p[0] = pixel & 0xff;
+    p[1] = (pixel >> 8) & 0xff;
+    p[2] = (pixel >> 16) & 0xff;
+    break;
+
+  case 4:
+    *(gint32 *)p = pixel;
+    break;
+  }
+}
+
+void
 ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 {
   GtkWidget *widget;
@@ -966,23 +1002,218 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
   guint i_stop;
   guint i;
 
-  GValue value = {0,};
+  GValue value = {0,};  
   
-  auto void ags_cartesian_draw_area();
+  /* entry point */
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+  
+  widget = GTK_WIDGET(cartesian);
 
-  auto void ags_cartesian_draw_x_label();
-  auto void ags_cartesian_draw_y_label();
-  
-  auto void ags_cartesian_draw_x_small_scale();
-  auto void ags_cartesian_draw_x_big_scale();
+  gtk_widget_get_allocation(GTK_WIDGET(cartesian),
+			    &allocation);
 
-  auto void ags_cartesian_draw_y_small_scale();
-  auto void ags_cartesian_draw_y_big_scale();
+  /* style context */
+  cartesian_style_context = gtk_widget_get_style_context(GTK_WIDGET(cartesian));
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_ACTIVE,
+				 &value);
+
+  fg_color_active = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "border-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  border_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
-  auto void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel);
-  auto void ags_cartesian_draw_plot(AgsPlot *plot);
+  /* clear bg */
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  allocation.width, allocation.height);
+  cairo_fill(cr);
   
-  void ags_cartesian_draw_area(){
+  /* cartesian offset, width and height */
+  width = (cartesian->x_end - cartesian->x_start);
+  height = (cartesian->y_end - cartesian->y_start);
+
+  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
+  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
+  
+  /* clear surface */
+  data = cairo_image_surface_get_data(cartesian->surface);
+  stride = cairo_image_surface_get_stride(cartesian->surface);
+
+  data_ptr = data;
+  
+  clear_color = (((guint) (255.0 * bg_color->red) << 16) |
+		 ((guint) (255.0 * bg_color->green) << 8) |
+		 ((guint) (255.0 * bg_color->blue)));
+  
+  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
+  for(i = 0; i < width * height; i++){
+    data_ptr[i] = clear_color;
+  }
+  
+//  cairo_surface_flush(cartesian->surface);
+
+  /* surface */
+  cairo_set_source_surface(cr,
+  			   cartesian->surface,
+  			   cartesian->x_margin, cartesian->y_margin);
+  cairo_surface_mark_dirty(cartesian->surface);
+
+  cairo_paint(cr);
+
+  /* draw plot */
+  list = cartesian->plot;
+
+  while(list != NULL){
+    AgsPlot *plot;
+      
+    guint i;
+
+    plot = list->data;
+      
+    cairo_set_source_rgba(cr,
+			  fg_color_active->red,
+			  fg_color_active->blue,
+			  fg_color_active->green,
+			  fg_color_active->alpha);
+
+    /* points */
+    for(i = 0; i < plot->n_points; i++){
+      if(plot->point[i] != NULL){
+	if(plot->point_color != NULL &&
+	   plot->point_color[i] != NULL){
+	  cairo_set_source_rgb(cr,
+			       plot->point_color[i][0],
+			       plot->point_color[i][1],
+			       plot->point_color[i][2]);
+	}
+	
+#ifdef AGS_DEBUG
+	g_message("%f %f", plot->point[i][0], plot->point[i][1]);
+#endif
+	
+	cairo_arc(cr,
+		  x_offset + plot->point[i][0] - cartesian->point_radius,
+		  y_offset - (plot->point[i][1] - cartesian->point_radius),
+		  cartesian->point_radius,
+		  -1.0 * M_PI,
+		  1.0 * M_PI);
+
+	if(plot->join_points){
+	  if(i == 0){
+	    cairo_move_to(cr,
+			  x_offset, y_offset);
+	    
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }else{
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }
+	}
+      }
+    }
+    
+    cairo_stroke(cr);
+    cairo_fill(cr);
+
+    /* bitmaps */
+    for(i = 0; i < plot->n_bitmaps; i++){
+      if(plot->bitmap[i] != NULL){
+	unsigned long int pixel;
+	guint nth;
+	guint x, y;
+
+	if(plot->bitmap_color != NULL &&
+	   plot->bitmap_color[i] != NULL){
+	  pixel = ((255 << 16) * plot->bitmap_color[i][0] +
+		   (255 << 8) * plot->bitmap_color[i][1] +
+		   255 * plot->bitmap_color[i][0]);
+	}else{
+	  pixel = 0xffffff;
+	}
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(((1 << (nth % 8)) & (plot->bitmap[i][(guint) floor(nth / 8.0)])) != 0){
+	      ags_cartesian_draw_putpixel(data,
+					  width, height,
+					  stride,
+					  x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+
+    /* pixmaps */
+    for(i = 0; i < plot->n_pixmaps; i++){
+      if(plot->pixmap[i] != NULL){
+	guint nth;
+	guint x, y;
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(plot->pixmap[i][nth] != NULL){
+	      unsigned long int pixel;
+
+	      pixel = ((255 << 16) * plot->pixmap[i][nth][0] +
+		       (255 << 8) * plot->pixmap[i][nth][1] +
+		       255 * plot->pixmap[i][nth][0]);
+	      
+	      ags_cartesian_draw_putpixel(data,
+					  width, height,
+					  stride,
+					  x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+
+    list = list->next;
+  }
+
+  /* push group */
+  cairo_push_group(cr);
+
+  {
     static const double dashes[] = {
       2.0,
       3.0
@@ -1128,7 +1359,209 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
     }
   }
 
-  void ags_cartesian_draw_x_label(){
+  /* abscissae */
+  if((AGS_CARTESIAN_ABSCISSAE & (cartesian->flags)) != 0){
+    if((cartesian->x_end == 0.0) ||
+       (cartesian->x_start == 0.0) ||
+       (cartesian->x_start < 0.0 &&
+	cartesian->x_end > 0.0)){
+      /* small scale */
+      {
+	/*  line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+    
+	/* draw line */
+	cairo_move_to(cr,
+		      x_offset + cartesian->x_start,
+		      y_offset);
+	cairo_line_to(cr,
+		      x_offset + cartesian->x_start + width,
+		      y_offset);
+	cairo_stroke(cr);
+    
+	/* draw small scale steps */
+	factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
+      
+	for(x = cartesian->x_start; ; ){
+	  scale_point = cartesian->x_small_scale_func(x,
+						      cartesian->x_scale_data);
+
+	  if(scale_point < factor * cartesian->x_start){
+	    x += cartesian->x_step_width;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset + scale_point,
+			  y_offset - 4.0);
+	    cairo_line_to(cr,
+			  x_offset + scale_point,
+			  y_offset + 4.0);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  x += cartesian->x_step_width;
+	}
+      }
+
+      /* big scale */
+      {
+	/* line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+
+	/* draw big scale steps */
+	factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
+      
+	for(x = cartesian->x_start; ; ){
+	  scale_point = cartesian->x_big_scale_func(x,
+						    cartesian->x_scale_data);
+
+	  if(scale_point < factor * cartesian->x_start){
+	    x += cartesian->x_step_width;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset + scale_point,
+			  y_offset - 6.0);
+	    cairo_line_to(cr,
+			  x_offset + scale_point,
+			  y_offset + 6.0);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  x += cartesian->x_step_width;
+	}
+      }
+    }
+  }
+
+  /* ordinate */
+  if((AGS_CARTESIAN_ORDINATE & (cartesian->flags)) != 0){
+    if((cartesian->y_end == 0.0) ||
+       (cartesian->y_start == 0.0) ||
+       (cartesian->y_start < 0.0 &&
+	cartesian->y_end > 0.0)){
+      /* small scale */
+      {
+	/* color and line width */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+    
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* draw line */
+	cairo_move_to(cr,
+		      x_offset,
+		      y_offset - cartesian->y_start);
+	cairo_line_to(cr,
+		      x_offset,
+		      y_offset - cartesian->y_start - height);
+	cairo_stroke(cr);
+
+	/* draw small scale steps */
+	factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
+      
+	for(y = cartesian->y_start; ; ){
+	  scale_point = cartesian->y_small_scale_func(y,
+						      cartesian->y_scale_data);
+
+	  if(scale_point < factor * cartesian->y_start){
+	    y += cartesian->y_step_height;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset - 4.0,
+			  y_offset - scale_point);
+	    cairo_line_to(cr,
+			  x_offset + 4.0,
+			  y_offset - scale_point);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  y += cartesian->y_step_height;
+	}
+      }
+
+      /* big scale */
+      {
+	/* line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+
+	/* draw big scale steps */
+	factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
+      
+	for(y = cartesian->y_start; ; ){
+	  scale_point = cartesian->y_big_scale_func(y,
+						    cartesian->y_scale_data);
+
+	  if(scale_point < factor * cartesian->y_start){
+	    y += cartesian->y_step_height;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset - 6.0,
+			  y_offset - scale_point);
+	    cairo_line_to(cr,
+			  x_offset + 6.0,
+			  y_offset - scale_point);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  y += cartesian->y_step_height;
+	}
+      }
+    }
+  }
+
+  /* x and y label */
+  if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
     guint i;
 
     for(i = 0; i < width / cartesian->x_label_step_width; i++){
@@ -1166,8 +1599,8 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
       g_object_unref(layout);
     }
   }
-
-  void ags_cartesian_draw_y_label(){
+  
+  if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
     guint i;
 
     for(i = 0; i < height / cartesian->y_label_step_height; i++){
@@ -1206,450 +1639,6 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
     }
 
     cairo_stroke(cr);
-  }
-    
-  void ags_cartesian_draw_x_small_scale(){
-    /*  line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  fg_color->alpha);
-    
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset + cartesian->x_start,
-		  y_offset);
-    cairo_line_to(cr,
-		  x_offset + cartesian->x_start + width,
-		  y_offset);
-    cairo_stroke(cr);
-    
-    /* draw small scale steps */
-    factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
-      
-    for(x = cartesian->x_start; ; ){
-      scale_point = cartesian->x_small_scale_func(x,
-						  cartesian->x_scale_data);
-
-      if(scale_point < factor * cartesian->x_start){
-	x += cartesian->x_step_width;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset + scale_point,
-		      y_offset - 4.0);
-	cairo_line_to(cr,
-		      x_offset + scale_point,
-		      y_offset + 4.0);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      x += cartesian->x_step_width;
-    }
-  }
-
-  void ags_cartesian_draw_x_big_scale(){
-    /* line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  fg_color->alpha);
-
-    /* draw big scale steps */
-    factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
-      
-    for(x = cartesian->x_start; ; ){
-      scale_point = cartesian->x_big_scale_func(x,
-						cartesian->x_scale_data);
-
-      if(scale_point < factor * cartesian->x_start){
-	x += cartesian->x_step_width;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset + scale_point,
-		      y_offset - 6.0);
-	cairo_line_to(cr,
-		      x_offset + scale_point,
-		      y_offset + 6.0);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      x += cartesian->x_step_width;
-    }
-  }
-
-  void ags_cartesian_draw_y_small_scale(){
-    /* color and line width */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  fg_color->alpha);
-    
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset,
-		  y_offset - cartesian->y_start);
-    cairo_line_to(cr,
-		  x_offset,
-		  y_offset - cartesian->y_start - height);
-    cairo_stroke(cr);
-
-    /* draw small scale steps */
-    factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
-      
-    for(y = cartesian->y_start; ; ){
-      scale_point = cartesian->y_small_scale_func(y,
-						  cartesian->y_scale_data);
-
-      if(scale_point < factor * cartesian->y_start){
-	y += cartesian->y_step_height;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset - 4.0,
-		      y_offset - scale_point);
-	cairo_line_to(cr,
-		      x_offset + 4.0,
-		      y_offset - scale_point);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      y += cartesian->y_step_height;
-    }
-  }
-
-  void ags_cartesian_draw_y_big_scale(){
-    /* line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgba(cr,
-			  fg_color->red,
-			  fg_color->blue,
-			  fg_color->green,
-			  fg_color->alpha);
-
-    /* draw big scale steps */
-    factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
-      
-    for(y = cartesian->y_start; ; ){
-      scale_point = cartesian->y_big_scale_func(y,
-						cartesian->y_scale_data);
-
-      if(scale_point < factor * cartesian->y_start){
-	y += cartesian->y_step_height;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset - 6.0,
-		      y_offset - scale_point);
-	cairo_line_to(cr,
-		      x_offset + 6.0,
-		      y_offset - scale_point);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      y += cartesian->y_step_height;
-    }
-  }
-
-  void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel){
-    int bpp = stride / width;
-    /* Here p is the address to the pixel we want to set */
-    unsigned char *p = data + y * stride + x * bpp;
-
-    switch(bpp) {
-    case 1:
-      *p = pixel;
-      break;
-
-    case 2:
-      *(gint16 *)p = pixel;
-      break;
-
-    case 3:
-      p[0] = pixel & 0xff;
-      p[1] = (pixel >> 8) & 0xff;
-      p[2] = (pixel >> 16) & 0xff;
-      break;
-
-    case 4:
-      *(gint32 *)p = pixel;
-      break;
-    }
-  }
-  
-  void ags_cartesian_draw_plot(AgsPlot *plot){
-    unsigned char *data;
-    guint i;
-
-    cairo_set_source_rgba(cr,
-			  fg_color_active->red,
-			  fg_color_active->blue,
-			  fg_color_active->green,
-			  fg_color_active->alpha);
-
-    /* points */
-    for(i = 0; i < plot->n_points; i++){
-      if(plot->point[i] != NULL){
-	if(plot->point_color != NULL &&
-	   plot->point_color[i] != NULL){
-	  cairo_set_source_rgb(cr,
-			       plot->point_color[i][0],
-			       plot->point_color[i][1],
-			       plot->point_color[i][2]);
-	}
-	
-#ifdef AGS_DEBUG
-	g_message("%f %f", plot->point[i][0], plot->point[i][1]);
-#endif
-	
-	cairo_arc(cr,
-		  x_offset + plot->point[i][0] - cartesian->point_radius,
-		  y_offset - (plot->point[i][1] - cartesian->point_radius),
-		  cartesian->point_radius,
-		  -1.0 * M_PI,
-		  1.0 * M_PI);
-
-	if(plot->join_points){
-	  if(i == 0){
-	    cairo_move_to(cr,
-			  x_offset, y_offset);
-	    
-	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
-	  }else{
-	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
-	  }
-	}
-      }
-    }
-    
-    cairo_stroke(cr);
-    cairo_fill(cr);
-
-    /* bitmaps */
-    for(i = 0; i < plot->n_bitmaps; i++){
-      if(plot->bitmap[i] != NULL){
-	unsigned long int pixel;
-	guint nth;
-	guint x, y;
-
-	if(plot->bitmap_color != NULL &&
-	   plot->bitmap_color[i] != NULL){
-	  pixel = ((255 << 16) * plot->bitmap_color[i][0] +
-		   (255 << 8) * plot->bitmap_color[i][1] +
-		   255 * plot->bitmap_color[i][0]);
-	}else{
-	  pixel = 0xffffff;
-	}
-	
-	for(y = 0, nth = 0; y < height; y++){
-	  for(x = 0; x < width; x++, nth++){
-	    if(((1 << (nth % 8)) & (plot->bitmap[i][(guint) floor(nth / 8.0)])) != 0){
-	      ags_cartesian_draw_putpixel(x, y, pixel);
-	    }
-	  }
-	}
-      }
-    }
-
-    /* pixmaps */
-    for(i = 0; i < plot->n_pixmaps; i++){
-      if(plot->pixmap[i] != NULL){
-	guint nth;
-	guint x, y;
-	
-	for(y = 0, nth = 0; y < height; y++){
-	  for(x = 0; x < width; x++, nth++){
-	    if(plot->pixmap[i][nth] != NULL){
-	      unsigned long int pixel;
-
-	      pixel = ((255 << 16) * plot->pixmap[i][nth][0] +
-		       (255 << 8) * plot->pixmap[i][nth][1] +
-		       255 * plot->pixmap[i][nth][0]);
-	      
-	      ags_cartesian_draw_putpixel(x, y, pixel);
-	    }
-	  }
-	}
-      }
-    }
-  }
-  
-  /* entry point */
-  if(!AGS_IS_CARTESIAN(cartesian)){
-    return;
-  }
-  
-  widget = GTK_WIDGET(cartesian);
-
-  gtk_widget_get_allocation(GTK_WIDGET(cartesian),
-			    &allocation);
-
-  /* style context */
-  cartesian_style_context = gtk_widget_get_style_context(GTK_WIDGET(cartesian));
-
-  gtk_style_context_get_property(cartesian_style_context,
-				 "color",
-				 GTK_STATE_FLAG_NORMAL,
-				 &value);
-
-  fg_color = g_value_dup_boxed(&value);
-  g_value_unset(&value);
-
-  gtk_style_context_get_property(cartesian_style_context,
-				 "color",
-				 GTK_STATE_FLAG_ACTIVE,
-				 &value);
-
-  fg_color_active = g_value_dup_boxed(&value);
-  g_value_unset(&value);
-
-  gtk_style_context_get_property(cartesian_style_context,
-				 "background-color",
-				 GTK_STATE_FLAG_NORMAL,
-				 &value);
-
-  bg_color = g_value_dup_boxed(&value);
-  g_value_unset(&value);
-
-  gtk_style_context_get_property(cartesian_style_context,
-				 "border-color",
-				 GTK_STATE_FLAG_NORMAL,
-				 &value);
-
-  border_color = g_value_dup_boxed(&value);
-  g_value_unset(&value);
-
-  g_object_get(gtk_settings_get_default(),
-	       "gtk-font-name", &font_name,
-	       NULL);
-  
-  /* clear bg */
-  cairo_set_source_rgba(cr,
-			bg_color->red,
-			bg_color->green,
-			bg_color->blue,
-			bg_color->alpha);
-
-  cairo_rectangle(cr,
-		  0.0, 0.0,
-		  allocation.width, allocation.height);
-  cairo_fill(cr);
-  
-  /* cartesian offset, width and height */
-  width = (cartesian->x_end - cartesian->x_start);
-  height = (cartesian->y_end - cartesian->y_start);
-
-  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
-  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
-  
-  /* clear surface */
-  data = cairo_image_surface_get_data(cartesian->surface);
-  stride = cairo_image_surface_get_stride(cartesian->surface);
-
-  data_ptr = data;
-  
-  clear_color = (((guint) (255.0 * bg_color->red) << 16) |
-		 ((guint) (255.0 * bg_color->green) << 8) |
-		 ((guint) (255.0 * bg_color->blue)));
-  
-  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
-  for(i = 0; i < width * height; i++){
-    data_ptr[i] = clear_color;
-  }
-  
-//  cairo_surface_flush(cartesian->surface);
-
-  /* surface */
-  cairo_set_source_surface(cr,
-  			   cartesian->surface,
-  			   cartesian->x_margin, cartesian->y_margin);
-  cairo_surface_mark_dirty(cartesian->surface);
-
-  cairo_paint(cr);
-
-  /* draw plot */
-  list = cartesian->plot;
-
-  while(list != NULL){
-    ags_cartesian_draw_plot(list->data);
-
-    list = list->next;
-  }
-
-  /* push group */
-  cairo_push_group(cr);
-
-  ags_cartesian_draw_area();
-
-  /* abscissae */
-  if((AGS_CARTESIAN_ABSCISSAE & (cartesian->flags)) != 0){
-    if((cartesian->x_end == 0.0) ||
-       (cartesian->x_start == 0.0) ||
-       (cartesian->x_start < 0.0 &&
-	cartesian->x_end > 0.0)){
-      ags_cartesian_draw_y_small_scale();
-      ags_cartesian_draw_y_big_scale();
-    }
-  }
-
-  /* ordinate */
-  if((AGS_CARTESIAN_ORDINATE & (cartesian->flags)) != 0){
-    if((cartesian->y_end == 0.0) ||
-       (cartesian->y_start == 0.0) ||
-       (cartesian->y_start < 0.0 &&
-	cartesian->y_end > 0.0)){
-      ags_cartesian_draw_x_small_scale();
-      ags_cartesian_draw_x_big_scale();
-    }
-  }
-
-  /* x and y label */
-  if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
-    ags_cartesian_draw_x_label();
-  }
-  
-  if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
-    ags_cartesian_draw_y_label();
   }
 
   /* x unit */
