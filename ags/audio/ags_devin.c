@@ -121,12 +121,18 @@ void ags_devin_delegate_stop(AgsSoundcard *soundcard);
 
 void ags_devin_oss_init(AgsSoundcard *soundcard,
 			GError **error);
+
+void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+
 void ags_devin_oss_record(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devin_oss_free(AgsSoundcard *soundcard);
 
 void ags_devin_alsa_init(AgsSoundcard *soundcard,
 			 GError **error);
+
+void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+
 void ags_devin_alsa_record(AgsSoundcard *soundcard,
 			   GError **error);
 void ags_devin_alsa_free(AgsSoundcard *soundcard);
@@ -2215,6 +2221,91 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
 }
 
 void
+ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size)
+{
+  int format_bits;
+  guint word_size;
+
+  int bps;
+  int res;
+  guint chn;
+  guint count, i;
+    
+  switch(ags_format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    word_size = sizeof(char);
+    bps = 1;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    word_size = sizeof(short);
+    bps = 2;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    word_size = sizeof(long);
+    bps = 3;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    word_size = sizeof(long);
+    bps = 4;
+  }
+  break;
+  default:
+    g_warning("ags_devin_oss_record(): unsupported word size");
+    return;
+  }
+
+  /* fill the channel areas */
+  for(count = 0; count < buffer_size; count++){
+    for(chn = 0; chn < channels; chn++){
+      /* Generate data in native endian format */
+      res = 0;
+	
+      if(ags_endian_host_is_be()){
+	for(i = 0; i < bps; i++){
+	  res |= (int) (*(ring_buffer + chn * bps + word_size - 1 - i)) << (i * 8);
+	}
+      }else{
+	for(i = 0; i < bps; i++){
+	  res |= (int) (*(ring_buffer + chn * bps + i)) << (i * 8);
+	}
+      }	
+
+      switch(ags_format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	((gint8 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	((gint16 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	((gint32 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	((gint32 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      }
+    }
+
+    ring_buffer += channels * bps;
+  }
+}
+
+void
 ags_devin_oss_record(AgsSoundcard *soundcard,
 		     GError **error)
 {
@@ -2239,91 +2330,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   int n_write;
   
   GRecMutex *devin_mutex;
-
-  auto void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
-
-  void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
-    int format_bits;
-    guint word_size;
-
-    int bps;
-    int res;
-    guint chn;
-    guint count, i;
-    
-    switch(ags_format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(char);
-	bps = 1;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(short);
-	bps = 2;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	word_size = sizeof(long);
-	bps = 3;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(long);
-	bps = 4;
-      }
-      break;
-    default:
-      g_warning("ags_devin_oss_record(): unsupported word size");
-      return;
-    }
-
-    /* fill the channel areas */
-    for(count = 0; count < buffer_size; count++){
-      for(chn = 0; chn < channels; chn++){
-	/* Generate data in native endian format */
-	res = 0;
-	
-	if(ags_endian_host_is_be()){
-	  for(i = 0; i < bps; i++){
-	    res |= (int) (*(ring_buffer + chn * bps + word_size - 1 - i)) << (i * 8);
-	  }
-	}else{
-	  for(i = 0; i < bps; i++){
-	    res |= (int) (*(ring_buffer + chn * bps + i)) << (i * 8);
-	  }
-	}	
-
-	switch(ags_format){
-	case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    ((gint8 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    ((gint16 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    ((gint32 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    ((gint32 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	}
-      }
-
-      ring_buffer += channels * bps;
-    }
-  }
   
   devin = AGS_DEVIN(soundcard);
 
@@ -2969,6 +2975,111 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 }
 
 void
+ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size)
+{
+#ifdef AGS_WITH_ALSA
+  snd_pcm_format_t format;
+
+  int format_bits;
+
+  unsigned int max_val;
+    
+  int bps; /* bytes per sample */
+  int phys_bps;
+
+  int big_endian;
+  int to_unsigned;
+
+  int res;
+
+  gint count;
+  guint i, chn;
+    
+  switch(ags_format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+  {
+    format = SND_PCM_FORMAT_S8;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+  {
+    format = SND_PCM_FORMAT_S16;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+  {
+    format = SND_PCM_FORMAT_S24;
+  }
+  break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+  {
+    format = SND_PCM_FORMAT_S32;
+  }
+  break;
+  default:
+    g_warning("ags_devin_alsa_record(): unsupported word size");
+    return;
+  }
+
+  count = buffer_size;
+  format_bits = snd_pcm_format_width(format);
+
+  max_val = (1 << (format_bits - 1)) - 1;
+
+  bps = format_bits / 8;
+  phys_bps = snd_pcm_format_physical_width(format) / 8;
+    
+  big_endian = snd_pcm_format_big_endian(format) == 1;
+  to_unsigned = snd_pcm_format_unsigned(format) == 1;
+
+  /* fill the channel areas */
+  for(count = 0; count < buffer_size; count++){
+    for(chn = 0; chn < channels; chn++){	
+      /* Generate data in native endian format */
+      res = 0;
+	
+      if (big_endian) {
+	for (i = 0; i < bps; i++)
+	  res |= (int) (*(ring_buffer + chn * bps + phys_bps - 1 - i) << (i * 8));
+      } else {
+	for (i = 0; i < bps; i++)
+	  res |= (int) (*(ring_buffer + chn * bps + i) << (i * 8));
+      }	
+
+      if(to_unsigned){
+	res |= 1U << (format_bits - 1);
+      }
+	
+      switch(ags_format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	((gint8 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	((gint16 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	((gint32 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	((gint32 *) buffer)[count * channels + chn] = res;
+      }
+      break;
+      }
+    }
+
+    ring_buffer += channels * bps;
+  }
+#endif
+}
+
+void
 ags_devin_alsa_record(AgsSoundcard *soundcard,
 		      GError **error)
 {
@@ -2991,111 +3102,6 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   guint nth_buffer;
   
   GRecMutex *devin_mutex;
-
-#ifdef AGS_WITH_ALSA
-  auto void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
-
-  void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
-    snd_pcm_format_t format;
-
-    int format_bits;
-
-    unsigned int max_val;
-    
-    int bps; /* bytes per sample */
-    int phys_bps;
-
-    int big_endian;
-    int to_unsigned;
-
-    int res;
-
-    gint count;
-    guint i, chn;
-    
-    switch(ags_format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	format = SND_PCM_FORMAT_S8;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	format = SND_PCM_FORMAT_S16;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	format = SND_PCM_FORMAT_S24;
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	format = SND_PCM_FORMAT_S32;
-      }
-      break;
-    default:
-      g_warning("ags_devin_alsa_record(): unsupported word size");
-      return;
-    }
-
-    count = buffer_size;
-    format_bits = snd_pcm_format_width(format);
-
-    max_val = (1 << (format_bits - 1)) - 1;
-
-    bps = format_bits / 8;
-    phys_bps = snd_pcm_format_physical_width(format) / 8;
-    
-    big_endian = snd_pcm_format_big_endian(format) == 1;
-    to_unsigned = snd_pcm_format_unsigned(format) == 1;
-
-    /* fill the channel areas */
-    for(count = 0; count < buffer_size; count++){
-      for(chn = 0; chn < channels; chn++){	
-	/* Generate data in native endian format */
-	res = 0;
-	
-	if (big_endian) {
-	  for (i = 0; i < bps; i++)
-	    res |= (int) (*(ring_buffer + chn * bps + phys_bps - 1 - i) << (i * 8));
-	} else {
-	  for (i = 0; i < bps; i++)
-	    res |= (int) (*(ring_buffer + chn * bps + i) << (i * 8));
-	}	
-
-	if(to_unsigned){
-	  res |= 1U << (format_bits - 1);
-	}
-	
-	switch(ags_format){
-	case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    ((gint8 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    ((gint16 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    ((gint32 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    ((gint32 *) buffer)[count * channels + chn] = res;
-	  }
-	  break;
-	}
-      }
-
-      ring_buffer += channels * bps;
-    }
-  }
-#endif
   
   devin = AGS_DEVIN(soundcard);
 

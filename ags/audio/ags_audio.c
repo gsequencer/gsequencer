@@ -195,6 +195,16 @@ void ags_audio_real_stop(AgsAudio *audio,
 
 GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope);
 
+void ags_audio_set_property_all(AgsAudio *audio,
+				gint n_params,
+				const gchar *parameter_name[], const GValue value[]);
+void ags_audio_recursive_set_property_down(AgsChannel *channel,
+					   gint n_params,
+					   const gchar *parameter_name[], const GValue value[]);
+void ags_audio_recursive_set_property_down_input(AgsChannel *channel,
+						 gint n_params,
+						 const gchar *parameter_name[], const GValue value[]);
+
 void ags_audio_real_recursive_run_stage(AgsAudio *audio,
 					gint sound_scope, guint stage);
 
@@ -11834,6 +11844,68 @@ ags_audio_open_midi_file_as_notation(AgsAudio *audio,
   //TODO:JK: implement me
 }
 
+void
+ags_audio_set_property_all(AgsAudio *audio,
+			   gint n_params,
+			   const gchar *parameter_name[], const GValue value[])
+{
+  guint i;
+
+  for(i = 0; i < n_params; i++){
+    g_object_set_property(G_OBJECT(audio),
+			  parameter_name[i], &(value[i]));
+  }
+}
+  
+void
+ags_audio_recursive_set_property_down(AgsChannel *channel,
+				      gint n_params,
+				      const gchar *parameter_name[], const GValue value[])
+{
+  if(channel == NULL){
+    return;
+  }
+
+  ags_audio_set_property_all(AGS_AUDIO(channel->audio),
+			     n_params,
+			     parameter_name, value);
+    
+  ags_audio_recursive_set_property_down_input(channel,
+					      n_params,
+					      parameter_name, value);
+}
+    
+void
+ags_audio_recursive_set_property_down_input(AgsChannel *channel,
+					    gint n_params,
+					    const gchar *parameter_name[], const GValue value[])
+{
+  AgsAudio *audio;
+  AgsChannel *input;
+    
+  if(channel == NULL){
+    return;
+  }
+
+  audio = (AgsAudio *) channel->audio;
+
+  if(audio == NULL){
+    return;
+  }
+    
+  input = ags_channel_nth(audio->input,
+			  channel->audio_channel);
+  g_object_unref(input);
+    
+  while(input != NULL){      
+    ags_audio_recursive_set_property_down(input->link,
+					  n_params,
+					  parameter_name, value);
+
+    input = input->next;
+  }
+}
+
 /**
  * ags_audio_recursive_set_property:
  * @audio: the #AgsAudio
@@ -11852,79 +11924,13 @@ ags_audio_recursive_set_property(AgsAudio *audio,
 {
   AgsChannel *channel;
   
-  auto void ags_audio_set_property(AgsAudio *audio,
-				   gint n_params,
-				   const gchar *parameter_name[], const GValue value[]);
-  auto void ags_audio_recursive_set_property_down(AgsChannel *channel,
-						  gint n_params,
-						  const gchar *parameter_name[], const GValue value[]);
-  auto void ags_audio_recursive_set_property_down_input(AgsChannel *channel,
-							gint n_params,
-							const gchar *parameter_name[], const GValue value[]);
-
-  void ags_audio_set_property(AgsAudio *audio,
-			      gint n_params,
-			      const gchar *parameter_name[], const GValue value[]){
-    guint i;
-
-    for(i = 0; i < n_params; i++){
-      g_object_set_property(G_OBJECT(audio),
-			    parameter_name[i], &(value[i]));
-    }
-  }
-  
-  void ags_audio_recursive_set_property_down(AgsChannel *channel,
-					     gint n_params,
-					     const gchar *parameter_name[], const GValue value[]){
-    if(channel == NULL){
-      return;
-    }
-
-    ags_audio_set_property(AGS_AUDIO(channel->audio),
-			   n_params,
-			   parameter_name, value);
-    
-    ags_audio_recursive_set_property_down_input(channel,
-						n_params,
-						parameter_name, value);
-  }
-    
-  void ags_audio_recursive_set_property_down_input(AgsChannel *channel,
-						   gint n_params,
-						   const gchar *parameter_name[], const GValue value[]){
-    AgsAudio *audio;
-    AgsChannel *input;
-    
-    if(channel == NULL){
-      return;
-    }
-
-    audio = (AgsAudio *) channel->audio;
-
-    if(audio == NULL){
-      return;
-    }
-    
-    input = ags_channel_nth(audio->input,
-			    channel->audio_channel);
-    g_object_unref(input);
-    
-    while(input != NULL){      
-      ags_audio_recursive_set_property_down(input->link,
-					    n_params,
-					    parameter_name, value);
-
-      input = input->next;
-    }
-  }
-
-  if(audio == NULL){
+  if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  ags_audio_set_property(audio,
-			 n_params,
-			 parameter_name, value);
+  ags_audio_set_property_all(audio,
+			     n_params,
+			     parameter_name, value);
 
   if(audio->input != NULL){
     channel = audio->input;
