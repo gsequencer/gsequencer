@@ -895,7 +895,7 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
   
   /* sequencer */
   sequencer = 
-    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(xorg_application_context->sequencer));
+    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(xorg_application_context));
 
   while(sequencer != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(sequencer->data));

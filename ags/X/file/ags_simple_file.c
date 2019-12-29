@@ -513,7 +513,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Since: 2.0.0
    */
   simple_file_signals[WRITE_RESOLVE] =
-    g_signal_new("write_resolve",
+    g_signal_new("write-resolve",
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, write_resolve),
@@ -548,10 +548,27 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Since: 2.0.0
    */
   simple_file_signals[READ_RESOLVE] =
-    g_signal_new("read_resolve",
+    g_signal_new("read-resolve",
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_resolve),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsSimpleFile::read-start:
+   * @simple_file: the #AgsSimpleFile
+   *
+   * Start assigning resources.
+   * 
+   * Since: 2.0.0
+   */
+  simple_file_signals[READ_START] =
+    g_signal_new("read-start",
+		 G_TYPE_FROM_CLASS(simple_file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_start),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -3975,8 +3992,10 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
     child = child->next;
   }
 
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
-
+  if(AGS_IS_CONNECTABLE(gobject)){
+    ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  }
+  
   /* launch AgsPad */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node", node,
