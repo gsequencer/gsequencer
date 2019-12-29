@@ -1,6 +1,6 @@
 Derived files of gsequencer licensed under the terms of GNU GPLv3+, copyright provided by http://www.nongnu.org/gsequencer:
 
-* gsequencer.pot (GPLv3+)
+* gsequencer.pot (Copyright (C) 2005-2019 Joël Krähemann, GPLv3+)
 
 Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
 
@@ -10,37 +10,17 @@ Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
 
 Third-party files of Ulrich Drepper (gettext) permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
 
-* Makefile.in.in
-* remove-potcdate.sin
+* remove-potcdate.sin (Copyright (C) Ulrich Drepper, permissive)
 
 Third-party files of Ulrich Drepper (gettext) free software licensed, copyright provided by http://www.fsf.org:
 
-* Makevars.template
-* Makevars
-* Rules-quot
+* Makevars.template (Copyright (C) Ulrich Drepper)
+* Rules-quot (Copyright (C) Ulrich Drepper)
 
 Third-party files of Ulrich Drepper (gettext) all-permissive licensed, copyright provided by http://www.fsf.org:
 
-* quot.sed
-* boldquot.sed
-* en@quot.header
-* en@boldquot.header
-* insert-header.sin
-
-All files listed:
-
-* '*.po' (FIXME:JK: unsure)
-* ChangeLog (see above)
-* Makefile.in.in (see above)
-* Makevars (see above)
-* Makevars.template (see above)
-* POTFILES.in (see above)
-* Rules-quot (see above)
-* boldquot.sed (see above)
-* en@boldquot.header (see above)
-* en@quot.header (see above)
-* gsequencer.pot (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
-* insert-header.sin (see above)
-* quot.sed (see above)
-* remove-potcdate.sin (see above)
-* stamp-po (see above)
+* quot.sed (Copyright (C) Ulrich Drepper, all-permissive)
+* boldquot.sed (Copyright (C) Ulrich Drepper, all-permissive)
+* en@quot.header (Copyright (C) Ulrich Drepper, all-permissive)
+* en@boldquot.header (Copyright (C) Ulrich Drepper, all-permissive)
+* insert-header.sin (Copyright (C) Ulrich Drepper, all-permissive)

@@ -109,7 +109,6 @@ EXTRA_DIST = config.rpath \
 	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README \
 	gsequencer.share/images/README \
-	m4/README \
 	po/README
 
 EXTRA_DIST += \
