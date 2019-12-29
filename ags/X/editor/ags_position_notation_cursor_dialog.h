@@ -53,8 +53,6 @@ struct _AgsPositionNotationCursorDialog
   GtkDialog dialog;
 
   guint flags;
-
-  GObject *application_context;
   
   GtkWidget *main_window;
 

@@ -54,8 +54,6 @@ struct _AgsSelectNoteDialog
 
   guint flags;
 
-  GObject *application_context;
-  
   GtkWidget *main_window;
 
   GtkCheckButton *copy_selection;

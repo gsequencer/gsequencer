@@ -58,7 +58,6 @@ gboolean ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *eve
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -133,22 +132,6 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
   gobject->finalize = ags_select_note_dialog_finalize;
 
   /* properties */
-  /**
-   * AgsSelectNoteDialog:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsSelectNoteDialog:main-window:
    *
@@ -335,27 +318,6 @@ ags_select_note_dialog_set_property(GObject *gobject,
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) select_note_dialog->application_context == application_context){
-	return;
-      }
-      
-      if(select_note_dialog->application_context != NULL){
-	g_object_unref(select_note_dialog->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      select_note_dialog->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -394,11 +356,6 @@ ags_select_note_dialog_get_property(GObject *gobject,
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, select_note_dialog->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, select_note_dialog->main_window);
@@ -453,10 +410,6 @@ ags_select_note_dialog_finalize(GObject *gobject)
   AgsSelectNoteDialog *select_note_dialog;
 
   select_note_dialog = (AgsSelectNoteDialog *) gobject;
-
-  if(select_note_dialog->application_context != NULL){
-    g_object_unref(select_note_dialog->application_context);
-  }
   
   G_OBJECT_CLASS(ags_select_note_dialog_parent_class)->finalize(gobject);
 }

@@ -1366,37 +1366,39 @@ ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
 									   recall_id);
 
-      delay_audio = NULL;
-      sequencer_duration = NULL;
+      if(delay_audio_run != NULL){
+	delay_audio = NULL;
+	sequencer_duration = NULL;
       
-      g_object_get(delay_audio_run,
-		   "recall-audio", &delay_audio,
-		   NULL);
+	g_object_get(delay_audio_run,
+		     "recall-audio", &delay_audio,
+		     NULL);
 
-      note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+	note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
 
-      g_object_get(delay_audio,
-		   "sequencer-duration", &sequencer_duration,
-		   NULL);
+	g_object_get(delay_audio,
+		     "sequencer-duration", &sequencer_duration,
+		     NULL);
 
-      g_value_init(&value, G_TYPE_UINT64);
-      ags_port_safe_read(sequencer_duration, &value);
+	g_value_init(&value, G_TYPE_UINT64);
+	ags_port_safe_read(sequencer_duration, &value);
       
-      g_rec_mutex_lock(recall_mutex);
+	g_rec_mutex_lock(recall_mutex);
       
-      AGS_COUNT_BEATS_AUDIO_RUN(recall)->sequencer_counter = note_offset % g_value_get_uint64(&value);
-      AGS_COUNT_BEATS_AUDIO_RUN(recall)->notation_counter = note_offset;
-      AGS_COUNT_BEATS_AUDIO_RUN(recall)->wave_counter = note_offset;
-      AGS_COUNT_BEATS_AUDIO_RUN(recall)->midi_counter = note_offset;
+	AGS_COUNT_BEATS_AUDIO_RUN(recall)->sequencer_counter = note_offset % g_value_get_uint64(&value);
+	AGS_COUNT_BEATS_AUDIO_RUN(recall)->notation_counter = note_offset;
+	AGS_COUNT_BEATS_AUDIO_RUN(recall)->wave_counter = note_offset;
+	AGS_COUNT_BEATS_AUDIO_RUN(recall)->midi_counter = note_offset;
 
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
-      g_value_unset(&value);
+	g_value_unset(&value);
 
-      /* unref */
-      g_object_unref(sequencer_duration);
+	/* unref */
+	g_object_unref(sequencer_duration);
       
-      g_object_unref(delay_audio);
+	g_object_unref(delay_audio);
+      }
       
       i++;
     }
@@ -2281,7 +2283,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }else{      
     if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
       count_beats_audio_run->sequencer_counter = 0;
-//      is_done = TRUE;
+      is_done = TRUE;
     }else{
       count_beats_audio_run->sequencer_counter += 1;
     }

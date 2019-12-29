@@ -3136,10 +3136,10 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
     ags_audio_signal_stream_safe_resize(audio_signal,
 					(guint) ceil(frame_count / buffer_size));
   }else{
+    loop_frame_count = 0;
+
     ags_audio_signal_stream_safe_resize(audio_signal,
 					(guint) ceil(frame_count / buffer_size));
-    
-    return;
   }
   
   if(template_buffer_size != buffer_size ||

@@ -193,7 +193,6 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
     AgsSimpleFile *simple_file;
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context", application_context,
 						 "filename", window->name,
 						 NULL);
       
@@ -216,7 +215,6 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
     AgsFile *file;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context", application_context,
 				    "filename", window->name,
 				    NULL);
       
@@ -277,7 +275,6 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
       AgsSimpleFile *simple_file;
 
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "application-context", application_context,
 						   "filename", filename,
 						   NULL);
       
@@ -300,7 +297,6 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
       AgsFile *file;
 
       file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "application-context", application_context,
 				      "filename", filename,
 				      NULL);
       
@@ -377,7 +373,6 @@ ags_menu_action_quit_callback(GtkWidget *menu_item, gpointer data)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context", application_context,
 				    "filename", window->name,
 				    NULL);
 
@@ -1456,7 +1451,6 @@ ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data)
 
   window->midi_import_wizard = (GtkWidget *) ags_midi_import_wizard_new();
   g_object_set(window->midi_import_wizard,
-	       "application-context", application_context,
 	       "main-window", window,
 	       NULL);
 
@@ -1482,7 +1476,6 @@ ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data)
 
   window->midi_export_wizard = (GtkWidget *) ags_midi_export_wizard_new((GtkWidget *) window);
   g_object_set(window->midi_export_wizard,
-	       "application-context", application_context,
 	       NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->midi_export_wizard));

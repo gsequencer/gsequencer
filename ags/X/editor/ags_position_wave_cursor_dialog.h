@@ -53,8 +53,6 @@ struct _AgsPositionWaveCursorDialog
 
   guint flags;
 
-  GObject *application_context;
-  
   GtkWidget *main_window;
 
   GtkCheckButton *set_focus;

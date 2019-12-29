@@ -1660,7 +1660,6 @@ ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *config)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", ags_application_context_get_instance(),
 				   "file", file,
 				   "node", node,
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),

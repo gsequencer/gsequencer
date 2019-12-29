@@ -2313,9 +2313,6 @@ ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
   /*  */
   devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
 			NULL);
-  g_object_set(devout,
-	       "application-context", application_context,
-	       NULL);
 
   card_id = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
@@ -2382,9 +2379,6 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 			NULL);
   devout->flags &= (~AGS_DEVOUT_OSS);
   devout->flags |= AGS_DEVOUT_ALSA;
-  g_object_set(devout,
-	       "application-context", application_context,
-	       NULL);
 
   card_id = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(devout),
@@ -2445,9 +2439,6 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 			NULL);
   devout->flags &= (~AGS_DEVOUT_ALSA);
   devout->flags |= AGS_DEVOUT_OSS;
-  g_object_set(devout,
-	       "application-context", application_context,
-	       NULL);
 
   card_id = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(devout),

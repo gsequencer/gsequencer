@@ -61,8 +61,6 @@ struct _AgsMidiExportWizard
 
   guint flags;
 
-  GObject *application_context;
-
   GtkWidget *main_window;
 
   AgsMidiBuilder *midi_builder;

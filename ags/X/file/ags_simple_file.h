@@ -52,7 +52,7 @@ G_BEGIN_DECLS
 #define AGS_SIMPLE_FILE_NAME_PROP "name"
 #define AGS_SIMPLE_FILE_TYPE_PROP "type"
 #define AGS_SIMPLE_FILE_VERSION_PROP "version"
-#define AGS_SIMPLE_FILE_BUILD_ID_PROP "version"
+#define AGS_SIMPLE_FILE_BUILD_ID_PROP "build-id"
 #define AGS_SIMPLE_FILE_TRUE "true"
 #define AGS_SIMPLE_FILE_FALSE "false"
 

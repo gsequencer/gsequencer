@@ -51,8 +51,6 @@ struct _AgsPlaybackWindow
 
   guint flags;
 
-  GObject *application_context;
-
   GtkWidget *main_window;
 };
 

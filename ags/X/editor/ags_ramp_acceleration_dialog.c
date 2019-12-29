@@ -61,7 +61,6 @@ gboolean ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAn
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -136,22 +135,6 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
   gobject->finalize = ags_ramp_acceleration_dialog_finalize;
 
   /* properties */
-  /**
-   * AgsRampAccelerationDialog:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsRampAccelerationDialog:main-window:
    *
@@ -366,27 +349,6 @@ ags_ramp_acceleration_dialog_set_property(GObject *gobject,
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) ramp_acceleration_dialog->application_context == application_context){
-	return;
-      }
-      
-      if(ramp_acceleration_dialog->application_context != NULL){
-	g_object_unref(ramp_acceleration_dialog->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      ramp_acceleration_dialog->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -425,11 +387,6 @@ ags_ramp_acceleration_dialog_get_property(GObject *gobject,
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, ramp_acceleration_dialog->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, ramp_acceleration_dialog->main_window);
@@ -509,10 +466,6 @@ ags_ramp_acceleration_dialog_finalize(GObject *gobject)
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   ramp_acceleration_dialog = (AgsRampAccelerationDialog *) gobject;
-
-  if(ramp_acceleration_dialog->application_context != NULL){
-    g_object_unref(ramp_acceleration_dialog->application_context);
-  }
   
   G_OBJECT_CLASS(ags_ramp_acceleration_dialog_parent_class)->finalize(gobject);
 }

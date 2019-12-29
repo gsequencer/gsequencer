@@ -64,7 +64,6 @@ gboolean ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEven
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -139,22 +138,6 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
   gobject->finalize = ags_position_wave_cursor_dialog_finalize;
 
   /* properties */
-  /**
-   * AgsPositionWaveCursorDialog:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
   /**
    * AgsPositionWaveCursorDialog:main-window:
    *
@@ -266,27 +249,6 @@ ags_position_wave_cursor_dialog_set_property(GObject *gobject,
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) position_wave_cursor_dialog->application_context == application_context){
-	return;
-      }
-      
-      if(position_wave_cursor_dialog->application_context != NULL){
-	g_object_unref(position_wave_cursor_dialog->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      position_wave_cursor_dialog->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -325,11 +287,6 @@ ags_position_wave_cursor_dialog_get_property(GObject *gobject,
   position_wave_cursor_dialog = AGS_POSITION_WAVE_CURSOR_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, position_wave_cursor_dialog->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, position_wave_cursor_dialog->main_window);
@@ -384,10 +341,6 @@ ags_position_wave_cursor_dialog_finalize(GObject *gobject)
   AgsPositionWaveCursorDialog *position_wave_cursor_dialog;
 
   position_wave_cursor_dialog = (AgsPositionWaveCursorDialog *) gobject;
-
-  if(position_wave_cursor_dialog->application_context != NULL){
-    g_object_unref(position_wave_cursor_dialog->application_context);
-  }
   
   G_OBJECT_CLASS(ags_position_wave_cursor_dialog_parent_class)->finalize(gobject);
 }

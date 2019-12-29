@@ -2141,6 +2141,8 @@ ags_thread_real_clock(AgsThread *thread)
   GRecMutex *thread_mutex;
   GRecMutex *main_loop_mutex;
   GRecMutex *tree_mutex;
+  GMutex *thread_start_mutex;
+  GCond *thread_start_cond;
   GMutex *wait_mutex;
   GCond *wait_cond;
   
@@ -2171,6 +2173,20 @@ ags_thread_real_clock(AgsThread *thread)
     /* increment queued critical region */
     ags_main_loop_inc_queued_critical_region(AGS_MAIN_LOOP(main_loop));
   }
+
+  thread_start_mutex = AGS_THREAD_GET_START_MUTEX(thread);
+  thread_start_cond = AGS_THREAD_GET_START_COND(thread);
+
+  /* notify start */
+  g_mutex_lock(thread_start_mutex);
+      
+  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_START_DONE);
+      
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_START_WAIT)){
+    g_cond_broadcast(thread_start_cond);
+  }
+      
+  g_mutex_unlock(thread_start_mutex);
 
   g_rec_mutex_lock(tree_mutex);
 
@@ -2558,8 +2574,6 @@ ags_thread_loop(void *ptr)
 
   GRecMutex *tree_mutex;
   GRecMutex *thread_mutex;
-  GMutex *thread_start_mutex;
-  GCond *thread_start_cond;
   
   thread = (AgsThread *) ptr;
 
@@ -2612,20 +2626,6 @@ ags_thread_loop(void *ptr)
 
   /* get thread mutex */
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
-
-  thread_start_mutex = AGS_THREAD_GET_START_MUTEX(thread);
-  thread_start_cond = AGS_THREAD_GET_START_COND(thread);
-
-  /* notify start */
-  g_mutex_lock(thread_start_mutex);
-      
-  ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_START_DONE);
-      
-  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_START_WAIT)){
-    g_cond_broadcast(thread_start_cond);
-  }
-      
-  g_mutex_unlock(thread_start_mutex);
 
   while(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
     /* start queue */

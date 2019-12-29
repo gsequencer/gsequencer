@@ -979,9 +979,6 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 			NULL);
   midiin->flags &= (~AGS_MIDIIN_OSS);
   midiin->flags |= AGS_MIDIIN_ALSA;
-  g_object_set(midiin,
-	       "application-context", application_context,
-	       NULL);
 
   card_id = NULL;
   ags_sequencer_list_cards(AGS_SEQUENCER(midiin),
@@ -1031,9 +1028,6 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 			NULL);
   midiin->flags &= (~AGS_MIDIIN_ALSA);
   midiin->flags |= AGS_MIDIIN_OSS;
-  g_object_set(midiin,
-	       "application-context", application_context,
-	       NULL);
 
   card_id = NULL;
   ags_sequencer_list_cards(AGS_SEQUENCER(midiin),
