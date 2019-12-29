@@ -41,6 +41,12 @@ void ags_envelope_audio_signal_connectable_interface_init(AgsConnectableInterfac
 void ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal);
 void ags_envelope_audio_signal_finalize(GObject *gobject);
 
+gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+						      guint x1, gdouble y1);
+gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+						       guint start_x, guint current_x,
+						       guint length);
+
 void ags_envelope_audio_signal_run_inter(AgsRecall *recall);
 
 /**
@@ -143,6 +149,37 @@ ags_envelope_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_audio_signal_parent_class)->finalize(gobject);
 }
 
+gdouble
+ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+					      guint x1, gdouble y1)
+{
+  if(x1 - x0 == 0){
+    return(0.0);
+  }else{
+    return((y1 - y0) / (x1 - x0));
+  }
+}
+
+gdouble
+ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+					       guint start_x, guint current_x,
+					       guint length)
+{
+  gdouble current_volume;
+    
+  if(length == 0){
+    return(volume);
+  }else{
+    current_volume = volume + (ratio * (current_x - start_x));
+
+#if 0
+    g_message("envelope get volume %f %f -> %f", volume, ratio, current_volume);
+#endif
+      
+    return(current_volume);
+  }
+}
+
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
@@ -178,41 +215,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);
   
-  auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
-							     guint x1, gdouble y1);
-  auto gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
-							      guint start_x, guint current_x,
-							      guint length);
-    
-  gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
-							guint x1, gdouble y1)
-  {
-    if(x1 - x0 == 0){
-      return(0.0);
-    }else{
-      return((y1 - y0) / (x1 - x0));
-    }
-  }
-
-  gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
-							 guint start_x, guint current_x,
-							 guint length)
-  {
-    gdouble current_volume;
-    
-    if(length == 0){
-      return(volume);
-    }else{
-      current_volume = volume + (ratio * (current_x - start_x));
-
-#if 0
-      g_message("envelope get volume %f %f -> %f", volume, ratio, current_volume);
-#endif
-      
-      return(current_volume);
-    }
-  }
-
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
   /* get parent class */

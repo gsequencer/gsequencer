@@ -112,6 +112,9 @@ GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 GList* ags_notation_add(GList *notation,
 			AgsNotation *new_notation);
 
+gint ags_notation_sort_func(gconstpointer a,
+			    gconstpointer b);
+
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
 			   gboolean use_selection_list);

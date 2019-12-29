@@ -52,6 +52,14 @@ void ags_play_wave_channel_run_seek(AgsSeekable *seekable,
 				    gint64 offset,
 				    guint whence);
 
+void ags_play_wave_channel_run_run_inter_add_audio_signal(AgsPlayWaveChannelRun *play_wave_channel_run,
+							  AgsChannel *channel,
+							  GObject *output_soundcard,
+							  AgsRecallID *recall_id,
+							  guint samplerate,
+							  guint buffer_size,
+							  guint format);
+
 void ags_play_wave_channel_run_run_inter(AgsRecall *recall);
 
 /**
@@ -339,6 +347,42 @@ ags_play_wave_channel_run_seek(AgsSeekable *seekable,
 }
 
 void
+ags_play_wave_channel_run_run_inter_add_audio_signal(AgsPlayWaveChannelRun *play_wave_channel_run,
+						     AgsChannel *channel,
+						     GObject *output_soundcard,
+						     AgsRecallID *recall_id,
+						     guint samplerate,
+						     guint buffer_size,
+						     guint format)
+{
+  AgsChannel *output;
+  AgsRecycling *first_recycling;
+
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       NULL);
+  g_object_unref(first_recycling);
+    
+  play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
+							     (GObject *) first_recycling,
+							     (GObject *) recall_id);
+  g_object_set(play_wave_channel_run->audio_signal,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
+  ags_audio_signal_stream_resize(play_wave_channel_run->audio_signal,
+				 3);
+
+  play_wave_channel_run->audio_signal->stream_current = play_wave_channel_run->audio_signal->stream;
+
+  ags_recycling_add_audio_signal(first_recycling,
+				 play_wave_channel_run->audio_signal);	  
+
+  ags_connectable_connect(AGS_CONNECTABLE(play_wave_channel_run->audio_signal));
+}
+
+void
 ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 {
   AgsAudio *audio;
@@ -375,36 +419,6 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   GRecMutex *audio_mutex;
   GRecMutex *channel_mutex;
-
-  auto void ags_play_wave_channel_run_run_inter_add_audio_signal();
-
-  void ags_play_wave_channel_run_run_inter_add_audio_signal(){
-    AgsChannel *output;
-    AgsRecycling *first_recycling;
-
-    g_object_get(channel,
-		 "first-recycling", &first_recycling,
-		 NULL);
-    g_object_unref(first_recycling);
-    
-    play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
-							       (GObject *) first_recycling,
-							       (GObject *) recall_id);
-    g_object_set(play_wave_channel_run->audio_signal,
-		 "samplerate", samplerate,
-		 "buffer-size", buffer_size,
-		 "format", format,
-		 NULL);
-    ags_audio_signal_stream_resize(play_wave_channel_run->audio_signal,
-				   3);
-
-    play_wave_channel_run->audio_signal->stream_current = play_wave_channel_run->audio_signal->stream;
-
-    ags_recycling_add_audio_signal(first_recycling,
-				   play_wave_channel_run->audio_signal);	  
-
-    ags_connectable_connect(AGS_CONNECTABLE(play_wave_channel_run->audio_signal));
-  }
     
   play_wave_channel_run = (AgsPlayWaveChannelRun *) recall;
   
@@ -518,7 +532,13 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		   NULL);
 	
       if(play_wave_channel_run->audio_signal == NULL){
-	ags_play_wave_channel_run_run_inter_add_audio_signal();
+	ags_play_wave_channel_run_run_inter_add_audio_signal(play_wave_channel_run,
+							     channel,
+							     output_soundcard,
+							     recall_id,
+							     samplerate,
+							     buffer_size,
+							     format);
       }
 
       copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
@@ -559,7 +579,13 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		     NULL);
 	
 	if(play_wave_channel_run->audio_signal == NULL){
-	  ags_play_wave_channel_run_run_inter_add_audio_signal();
+	  ags_play_wave_channel_run_run_inter_add_audio_signal(play_wave_channel_run,
+							       channel,
+							       output_soundcard,
+							       recall_id,
+							       samplerate,
+							       buffer_size,
+							       format);
 	}
 
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),

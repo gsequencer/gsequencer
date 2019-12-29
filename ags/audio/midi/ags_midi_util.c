@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length);
+
 /**
  * SECTION:ags_midi_util
  * @short_description: MIDI util
@@ -33,6 +35,7 @@
  *
  * Utility functions for MIDI.
  */
+
 
 /**
  * ags_midi_util_is_key_on:
@@ -268,6 +271,19 @@ ags_midi_util_is_meta_event(unsigned char *buffer)
   return(retval);
 }
 
+unsigned char*
+ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length)
+{
+  if(smf_buffer == NULL){
+    smf_buffer = (unsigned char *) malloc(smf_buffer_length * sizeof(unsigned char));
+  }else{
+    smf_buffer = (unsigned char *) realloc(smf_buffer,
+					   smf_buffer_length * sizeof(unsigned char));
+  }
+
+  return(smf_buffer);
+}
+
 /**
  * ags_midi_util_to_smf:
  * @midi_buffer: the midi buffer
@@ -290,20 +306,7 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
   unsigned char *smf_buffer;
   
   guint ret_smf_buffer_length;
-  
-  auto unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length);
-
-  unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length){
-    if(smf_buffer == NULL){
-      smf_buffer = (unsigned char *) malloc(smf_buffer_length * sizeof(unsigned char));
-    }else{
-      smf_buffer = (unsigned char *) realloc(smf_buffer,
-					     smf_buffer_length * sizeof(unsigned char));
-    }
-
-    return(smf_buffer);
-  }
-  
+    
   if(midi_buffer == NULL){
     return(NULL);
   }

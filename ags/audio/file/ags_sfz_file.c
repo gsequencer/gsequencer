@@ -83,6 +83,9 @@ GList* ags_sfz_file_get_resource_by_index(AgsSoundContainer *sound_container,
 GList* ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container);
 void ags_sfz_file_close(AgsSoundContainer *sound_container);
 
+gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
+						   gchar **iter);
+
 /**
  * SECTION:ags_sfz_file
  * @short_description: SFZ file
@@ -1536,6 +1539,65 @@ ags_sfz_file_check_suffix(gchar *filename)
   return(FALSE);
 }
 
+gchar*
+ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
+					    gchar **iter)
+{
+  gchar *look_ahead;
+  gchar *next;
+    
+  if(iter == NULL){
+    return(NULL);
+  }
+
+  look_ahead = *iter;
+
+  if(look_ahead == NULL){
+    return(NULL);
+  }
+    
+  /* skip whitespaces and comments */
+  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0';){
+    /* skip comments */
+    if(buffer == look_ahead){
+      if(look_ahead + 1 < &(buffer[buffer_length]) && buffer[0] == '/' && buffer[1] == '/'){
+	next = strchr(look_ahead, '\n');
+
+	if(next != NULL){
+	  look_ahead = next + 1;
+	}else{
+	  look_ahead = &(buffer[buffer_length]);
+
+	  break;
+	}
+	  
+	continue;
+      }
+    }else if(buffer[look_ahead - buffer - 1] == '\n' && look_ahead + 1 < &(buffer[buffer_length]) && look_ahead[0] == '/' && look_ahead[1] == '/'){
+      next = strchr(look_ahead, '\n');
+      
+      if(next != NULL){
+	look_ahead = next + 1;
+      }else{
+	look_ahead = &(buffer[buffer_length]);
+
+	break;
+      }
+	
+      continue;
+    }
+
+    /* spaces */
+    if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n' || look_ahead[0] == '\r')){
+      break;
+    }else{
+      look_ahead++;
+    }
+  }
+
+  return(look_ahead);
+}
+
 /**
  * ags_sfz_file_parse:
  * @sfz_file: the #AgsSFZFile
@@ -1579,64 +1641,6 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 
   static const size_t max_matches = 2;
   static gboolean regex_compiled = FALSE;
-
-  auto gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar **iter);
-
-  gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar **iter){
-    gchar *look_ahead;
-    gchar *next;
-    
-    if(iter == NULL){
-      return(NULL);
-    }
-
-    look_ahead = *iter;
-
-    if(look_ahead == NULL){
-      return(NULL);
-    }
-    
-    /* skip whitespaces and comments */
-    for(; (look_ahead < &(buffer[sb->st_size])) && *look_ahead != '\0';){
-      /* skip comments */
-      if(buffer == look_ahead){
-	if(look_ahead + 1 < &(buffer[sb->st_size]) && buffer[0] == '/' && buffer[1] == '/'){
-	  next = strchr(look_ahead, '\n');
-
-	  if(next != NULL){
-	    look_ahead = next + 1;
-	  }else{
-	    look_ahead = &(buffer[sb->st_size]);
-
-	    break;
-	  }
-	  
-	  continue;
-	}
-      }else if(buffer[look_ahead - buffer - 1] == '\n' && look_ahead + 1 < &(buffer[sb->st_size]) && look_ahead[0] == '/' && look_ahead[1] == '/'){
-	next = strchr(look_ahead, '\n');
-      
-	if(next != NULL){
-	  look_ahead = next + 1;
-	}else{
-	  look_ahead = &(buffer[sb->st_size]);
-
-	  break;
-	}
-	
-	continue;
-      }
-
-      /* spaces */
-      if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n' || look_ahead[0] == '\r')){
-	break;
-      }else{
-	look_ahead++;
-      }
-    }
-
-    return(look_ahead);
-  }
 
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return;
@@ -1715,7 +1719,8 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   
   do{    
     /* skip blanks and comments */
-    iter = ags_sfz_file_parse_skip_comments_and_blanks(&iter);
+    iter = ags_sfz_file_parse_skip_comments_and_blanks(buffer, sb->st_size,
+						       &iter);
 
     if(iter >= &(buffer[sb->st_size])){
       break;

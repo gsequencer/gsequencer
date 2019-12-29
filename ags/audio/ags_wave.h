@@ -114,6 +114,9 @@ void ags_wave_set_format(AgsWave *wave,
 GList* ags_wave_find_near_timestamp(GList *wave, guint line,
 				    AgsTimestamp *timestamp);
 
+gint ags_wave_sort_func(gconstpointer a,
+			gconstpointer b);
+
 GList* ags_wave_add(GList *wave,
 		    AgsWave *new_wave);
 

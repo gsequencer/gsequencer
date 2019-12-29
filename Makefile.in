@@ -6568,15 +6568,13 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	ags_functional_notation_edit_test.xml \
 	ags_functional_audio_config_test.xml mkinstalldirs \
 	m4/Makefile.am m4/Makefile.in ags/i18n.h ags/gettext.h \
-	ags/lib/AUTHORS ags/object/README ags/server/security/AUTHORS \
-	ags/audio/AUTHORS ags/audio/recall/AUTHORS ags/widget/README \
-	docs/images/README docs/listings/README \
+	ags/README ags/lib/AUTHORS ags/server/security/AUTHORS \
+	ags/audio/AUTHORS ags/audio/recall/AUTHORS docs/images/README \
 	docs/reference/libags-audio/README \
 	docs/reference/libags-gui/README docs/reference/libags/README \
 	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README gsequencer.share/images/README \
-	gsequencer.share/styles/README m4/README po/README \
-	license-notice-gnu-agpl-3-0+-c.txt \
+	po/README license-notice-gnu-agpl-3-0+-c.txt \
 	license-notice-gnu-fdl-1-3-xml.txt \
 	license-notice-gnu-gpl-3-0+-c.txt \
 	license-notice-gnu-gpl-3-0+-sym.txt \

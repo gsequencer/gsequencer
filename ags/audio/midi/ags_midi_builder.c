@@ -130,6 +130,19 @@ void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 					     guint delta_time,
 					     gchar *text, guint length);
 
+void ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
+					     xmlNode *node);
+void ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
+					     xmlNode *node);
+void ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
+					    xmlNode *node);
+void ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
+					      xmlNode *node);
+void ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
+						    xmlNode *node);
+void ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
+						 xmlNode *node);
+
 /**
  * SECTION:ags_midi_builder
  * @short_description: MIDI builder
@@ -2253,6 +2266,755 @@ ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
   g_object_unref((GObject *) midi_builder);
 }
 
+void
+ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
+					xmlNode *node)
+{
+  xmlChar *str;
+    
+  guint offset;
+  guint format;
+  guint track_count;
+  guint division;
+
+  /* offset */
+  str = xmlGetProp(node,
+		   "offset");
+  offset = 0;
+    
+  if(str != NULL){
+    offset = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+  }
+
+  /* format */
+  str = xmlGetProp(node,
+		   "format");
+  format = 0;
+    
+  if(str != NULL){
+    format = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+  }
+
+  /* track-count */
+  str = xmlGetProp(node,
+		   "track-count");
+  track_count = 0;
+    
+  if(str != NULL){
+    track_count = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+  }
+
+  /* division */
+  str = xmlGetProp(node,
+		   "division");
+  division = 0;
+    
+  if(str != NULL){
+    division = g_ascii_strtoull(str,
+				NULL,
+				10);
+  }
+
+  /* append header */
+  ags_midi_builder_append_header(midi_builder,
+				 offset, format,
+				 track_count, division,
+				 0, 0,
+				 0);
+}
+  
+void
+ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
+					xmlNode *node)
+{
+  xmlNode *child;
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "midi-track",
+		     11)){
+	ags_midi_builder_append_xml_node_track(midi_builder,
+					       child);
+      }
+    }
+      
+    child = child->next;
+  }
+}
+    
+void
+ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
+				       xmlNode *node)
+{
+  xmlNode *child;
+
+  xmlChar *str;
+
+  guint offset;
+
+  /* offset */
+  str = xmlGetProp(node,
+		   "offset");
+  offset = 0;
+    
+  if(str != NULL){
+    offset = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+  }
+
+  ags_midi_builder_append_track(midi_builder,
+				NULL);
+  midi_builder->current_midi_track->offset = offset;
+  ags_midi_buffer_util_put_track(midi_builder->current_midi_track->data,
+				 0);
+
+  /* child nodes */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "midi-message",
+		     13)){
+	ags_midi_builder_append_xml_node_message(midi_builder,
+						 child);
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "midi-system-common",
+			   19)){
+	ags_midi_builder_append_xml_node_system_common(midi_builder,
+						       child);
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "meta-event",
+			   11)){
+	ags_midi_builder_append_xml_node_meta_event(midi_builder,
+						    child);
+      }
+    }
+      
+    child = child->next;
+  }
+}
+  
+void
+ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
+					 xmlNode *node)
+{
+  xmlChar *event;
+  xmlChar *str;
+    
+  guint delta_time;
+
+    
+  /* get event */
+  event = xmlGetProp(node,
+		     "event");
+
+  if(event == NULL){
+    return;
+  }
+
+  /* get event */
+  delta_time = 0;
+  str = xmlGetProp(node,
+		   "delta-time");
+
+  if(str != NULL){
+    delta_time = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+  }
+    
+  /* compute event */
+  if(!xmlStrncmp(event,
+		 "note-on",
+		 8)){
+    guint key, note, velocity;
+
+    /* key */
+    key = 0;
+    str = xmlGetProp(node,
+		     "key");
+      
+    if(str != NULL){
+      key = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+    }
+
+    /* note */
+    note = 0;
+    str = xmlGetProp(node,
+		     "note");
+      
+    if(str != NULL){
+      note = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    }
+
+    /* velocity */
+    velocity = 0;
+    str = xmlGetProp(node,
+		     "velocity");
+      
+    if(str != NULL){
+      velocity = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    }
+
+    /* append */
+    ags_midi_builder_append_key_on(midi_builder,
+				   delta_time,
+				   key,
+				   note,
+				   velocity);
+  }else if(!xmlStrncmp(event,
+		       "note-off",
+		       9)){
+    guint key, note, velocity;
+
+    /* key */
+    key = 0;
+    str = xmlGetProp(node,
+		     "key");
+      
+    if(str != NULL){
+      key = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+    }
+
+    /* note */
+    note = 0;
+    str = xmlGetProp(node,
+		     "note");
+      
+    if(str != NULL){
+      note = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    }
+
+    /* velocity */
+    velocity = 0;
+    str = xmlGetProp(node,
+		     "velocity");
+      
+    if(str != NULL){
+      velocity = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    }
+
+    /* append */
+    ags_midi_builder_append_key_off(midi_builder,
+				    delta_time,
+				    key,
+				    note,
+				    velocity);
+  }else if(!xmlStrncmp(event,
+		       "polyphonic",
+		       11)){
+    guint key, note, pressure;
+
+    /* key */
+    key = 0;
+    str = xmlGetProp(node,
+		     "key");
+      
+    if(str != NULL){
+      key = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+    }
+
+    /* note */
+    note = 0;
+    str = xmlGetProp(node,
+		     "note");
+      
+    if(str != NULL){
+      note = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    }
+
+    /* pressure */
+    pressure = 0;
+    str = xmlGetProp(node,
+		     "pressure");
+      
+    if(str != NULL){
+      pressure = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    }
+
+    /* append */
+    ags_midi_builder_append_key_pressure(midi_builder,
+					 delta_time,
+					 key,
+					 note,
+					 pressure);
+  }else if(!xmlStrncmp(event,
+		       "change-parameter",
+		       11)){
+    guint channel, control, value;
+      
+    /* channel */
+    channel = 0;
+    str = xmlGetProp(node,
+		     "channel");
+      
+    if(str != NULL){
+      channel = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* control */
+    control = 0;
+    str = xmlGetProp(node,
+		     "control");
+      
+    if(str != NULL){
+      control = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* value */
+    value = 0;
+    str = xmlGetProp(node,
+		     "value");
+      
+    if(str != NULL){
+      value = g_ascii_strtoull(str,
+			       NULL,
+			       10);
+    }
+
+    /* append */
+    ags_midi_builder_append_change_parameter(midi_builder,
+					     delta_time,
+					     channel,
+					     control,
+					     value);
+  }else if(!xmlStrncmp(event,
+		       "pitch-bend",
+		       11)){
+    guint channel, pitch, transmitter;
+
+    /* channel */
+    channel = 0;
+    str = xmlGetProp(node,
+		     "channel");
+      
+    if(str != NULL){
+      channel = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* pitch */
+    pitch = 0;
+    str = xmlGetProp(node,
+		     "pitch-bend");
+      
+    if(str != NULL){
+      pitch = g_ascii_strtoull(str,
+			       NULL,
+			       10);
+    }
+
+    /* transmitter */
+    transmitter = 0;
+    str = xmlGetProp(node,
+		     "transmitter");
+      
+    if(str != NULL){
+      transmitter = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+    }
+
+    /* append */
+    ags_midi_builder_append_change_pitch_bend(midi_builder,
+					      delta_time,
+					      channel,
+					      pitch,
+					      transmitter);
+  }else if(!xmlStrncmp(event,
+		       "program-change",
+		       15)){
+    guint channel, program;
+
+    /* channel */
+    channel = 0;
+    str = xmlGetProp(node,
+		     "channel");
+      
+    if(str != NULL){
+      channel = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* program */
+    program = 0;
+    str = xmlGetProp(node,
+		     "program");
+      
+    if(str != NULL){
+      program = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* append */
+    ags_midi_builder_append_change_program(midi_builder,
+					   delta_time,
+					   channel,
+					   program);
+  }else if(!xmlStrncmp(event,
+		       "channel-pressure",
+		       17)){
+    guint channel, pressure;
+      
+    /* channel */
+    channel = 0;
+    str = xmlGetProp(node,
+		     "channel");
+      
+    if(str != NULL){
+      channel = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+    }
+
+    /* pressure */
+    pressure = 0;
+    str = xmlGetProp(node,
+		     "pressure");
+      
+    if(str != NULL){
+      pressure = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    }
+
+    /* append */
+    ags_midi_builder_append_change_pressure(midi_builder,
+					    delta_time,
+					    channel,
+					    pressure);
+  }else if(!xmlStrncmp(event,
+		       "misc",
+		       5)){
+    g_warning("not supported MIDI message misc");
+  }else if(!xmlStrncmp(event,
+		       "sequence-number",
+		       16)){
+    guint sequence;
+
+    /* sequence */
+    sequence = 0;
+    str = xmlGetProp(node,
+		     "sequence");
+      
+    if(str != NULL){
+      sequence = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    }
+
+    /* append */
+    ags_midi_builder_append_sequence_number(midi_builder,
+					    delta_time,
+					    sequence);
+  }else if(!xmlStrncmp(event,
+		       "end-of-track",
+		       13)){
+    g_warning("not supported MIDI message end-of-track");      
+  }else if(!xmlStrncmp(event,
+		       "smtpe",
+		       6)){
+    guint rr, hr, mn, se, fr;
+
+    /* timestamp */
+    rr = 0;
+    hr = 0;
+    mn = 0;
+    se = 0;
+    fr = 0;
+
+    str = xmlGetProp(node,
+		     "rate");
+      
+    if(str != NULL){
+      sscanf(str,
+	     "%d", &rr);
+    }
+      
+    str = xmlGetProp(node,
+		     "timestamp");
+      
+    if(str != NULL){
+      sscanf(str,
+	     "%d %d %d %d", &hr, &mn, &se, &fr);
+    }
+
+    /* append */
+    ags_midi_builder_append_smtpe(midi_builder,
+				  delta_time,
+				  rr, hr, mn, se, fr);
+  }else if(!xmlStrncmp(event,
+		       "tempo-number",
+		       13)){
+    gint tempo;
+
+    /* tempo */
+    tempo = 0;
+    str = xmlGetProp(node,
+		     "tempo");
+      
+    if(str != NULL){
+      tempo = g_ascii_strtoull(str,
+			       NULL,
+			       10);
+    }
+
+    /* append */
+    ags_midi_builder_append_tempo(midi_builder,
+				  delta_time,
+				  tempo);
+  }else if(!xmlStrncmp(event,
+		       "time-signature",
+		       16)){
+    guint nn, dd, cc, bb;
+    guint denom = 1;
+
+    /* timesig */
+    nn = 0;
+    dd = 0;
+    cc = 0;
+    bb = 0;
+      
+    str = xmlGetProp(node,
+		     "timesign");
+      
+    if(str != NULL){
+      sscanf(str,
+	     "%d/%d %d %d", &nn, &denom, &cc, &bb);
+    }
+
+    while(denom != 1){
+      dd++;
+	
+      denom /= 2;
+    }
+      
+    /* append */
+    ags_midi_builder_append_time_signature(midi_builder,
+					   delta_time,
+					   nn, dd, cc, bb);
+  }else if(!xmlStrncmp(event,
+		       "key-signature",
+		       14)){
+    xmlChar *minor;
+
+    gint sf;
+    guint mi;
+
+    /* keysig */
+    minor = NULL;
+
+    sf = 0;
+    mi = 1;
+
+    str = xmlGetProp(node,
+		     "timesign");
+      
+    if(str != NULL){
+      sscanf(str,
+	     "%d %ms", &sf, &minor);
+    }
+
+    /* sharp flats */
+    if(sf < 0){
+      sf += 256;
+    }
+      
+    /* minor */
+    if(!g_ascii_strncasecmp(minor,
+			    "minor",
+			    6)){
+      mi = 1;
+    }else{
+      mi = 0;
+    }
+
+    /* append */
+    ags_midi_builder_append_key_signature(midi_builder,
+					  delta_time,
+					  sf, mi);
+  }
+}
+  
+void
+ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
+					       xmlNode *node)
+{
+  xmlChar *str;
+
+  guint delta_time;
+
+  /* get delta-time */
+  delta_time = 0;
+  str = xmlGetProp(node,
+		   "delta-time");
+
+  if(str != NULL){
+    delta_time = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+  }
+    
+  /* parse node */
+  if((str = xmlGetProp(node,
+		       "quarter-frame")) != NULL){
+    guint quarter_frame;
+    guint message_type, values;
+      
+    /* get quarter frame */
+    quarter_frame = 0;
+    str = xmlGetProp(node,
+		     "quarter-frame");
+
+    if(str != NULL){
+      quarter_frame = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+    }
+
+    message_type = 0x70 & quarter_frame;
+    values = 0x0f & quarter_frame;
+      
+    /* append */
+    ags_midi_builder_append_quarter_frame(midi_builder,
+					  delta_time,
+					  message_type, values);
+  }else if((str = xmlGetProp(node,
+			     "song-position")) != NULL){
+    guint song_position;
+
+    /* get song position */
+    song_position = 0;
+    str = xmlGetProp(node,
+		     "song-position");
+
+    if(str != NULL){
+      song_position = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+    }
+          
+    /* append */
+    ags_midi_builder_append_song_position(midi_builder,
+					  delta_time,
+					  song_position);
+  }else if((str = xmlGetProp(node,
+			     "song-select")) != NULL){
+    guint song_select;
+    
+    /* get song select */
+    song_select = 0;
+    str = xmlGetProp(node,
+		     "song-select");
+
+    if(str != NULL){
+      song_select = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+    }
+
+    /* append */
+    ags_midi_builder_append_song_select(midi_builder,
+					delta_time,
+					song_select);
+  }
+}
+  
+void
+ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
+					    xmlNode *node)
+{
+  xmlChar *str;
+    
+  guint delta_time;
+  guint len, id, data;
+
+  /* get delta-time */
+  delta_time = 0;
+  str = xmlGetProp(node,
+		   "delta-time");
+
+  if(str != NULL){
+    delta_time = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+  }
+    
+  /* length */
+  len = 0;
+  str = xmlGetProp(node,
+		   "length");
+      
+  if(str != NULL){
+    len = g_ascii_strtoull(str,
+			   NULL,
+			   10);
+  }
+
+  /* id */
+  id = 0;
+  str = xmlGetProp(node,
+		   "id");
+      
+  if(str != NULL){
+    id = g_ascii_strtoull(str,
+			  NULL,
+			  10);
+  }
+
+  /* data */
+  data = 0;
+  str = xmlGetProp(node,
+		   "data");
+      
+  if(str != NULL){
+    data = g_ascii_strtoull(str,
+			    NULL,
+			    10);
+  }
+
+  /* append */
+  ags_midi_builder_append_sequencer_meta_event(midi_builder,
+					       delta_time,
+					       len, id, data);
+}
+
 /**
  * ags_midi_builder_append_xml_node:
  * @midi_builder: the #AgsMidiBuilder
@@ -2265,757 +3027,7 @@ ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
 				 xmlNode *node)
-{
-  auto void ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
-						    xmlNode *node);
-  auto void ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
-						    xmlNode *node);
-  auto void ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
-						   xmlNode *node);
-  auto void ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
-						     xmlNode *node);
-  auto void ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
-							   xmlNode *node);
-  auto void ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
-							xmlNode *node);
-
-  void ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
-					       xmlNode *node){
-    xmlChar *str;
-    
-    guint offset;
-    guint format;
-    guint track_count;
-    guint division;
-
-    /* offset */
-    str = xmlGetProp(node,
-		     "offset");
-    offset = 0;
-    
-    if(str != NULL){
-      offset = g_ascii_strtoull(str,
-				NULL,
-				10);
-    }
-
-    /* format */
-    str = xmlGetProp(node,
-		     "format");
-    format = 0;
-    
-    if(str != NULL){
-      format = g_ascii_strtoull(str,
-				NULL,
-				10);
-    }
-
-    /* track-count */
-    str = xmlGetProp(node,
-		     "track-count");
-    track_count = 0;
-    
-    if(str != NULL){
-      track_count = g_ascii_strtoull(str,
-				     NULL,
-				     10);
-    }
-
-    /* division */
-    str = xmlGetProp(node,
-		     "division");
-    division = 0;
-    
-    if(str != NULL){
-      division = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    }
-
-    /* append header */
-    ags_midi_builder_append_header(midi_builder,
-				   offset, format,
-				   track_count, division,
-				   0, 0,
-				   0);
-  }
-  
-  void ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
-					       xmlNode *node){
-    xmlNode *child;
-
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       (xmlChar *) "midi-track",
-		       11)){
-	  ags_midi_builder_append_xml_node_track(midi_builder,
-						 child);
-	}
-      }
-      
-      child = child->next;
-    }
-  }
-    
-  void ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
-					      xmlNode *node){
-    xmlNode *child;
-
-    xmlChar *str;
-
-    guint offset;
-
-    /* offset */
-    str = xmlGetProp(node,
-		     "offset");
-    offset = 0;
-    
-    if(str != NULL){
-      offset = g_ascii_strtoull(str,
-				NULL,
-				10);
-    }
-
-    ags_midi_builder_append_track(midi_builder,
-				  NULL);
-    midi_builder->current_midi_track->offset = offset;
-    ags_midi_buffer_util_put_track(midi_builder->current_midi_track->data,
-				   0);
-
-    /* child nodes */
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       (xmlChar *) "midi-message",
-		       13)){
-	  ags_midi_builder_append_xml_node_message(midi_builder,
-						   child);
-	}else if(!xmlStrncmp(child->name,
-		       (xmlChar *) "midi-system-common",
-		       19)){
-	  ags_midi_builder_append_xml_node_system_common(midi_builder,
-							 child);
-	}else if(!xmlStrncmp(child->name,
-		       (xmlChar *) "meta-event",
-		       11)){
-	  ags_midi_builder_append_xml_node_meta_event(midi_builder,
-						      child);
-	}
-      }
-      
-      child = child->next;
-    }
-  }
-  
-  void ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
-						xmlNode *node){
-    xmlChar *event;
-    xmlChar *str;
-    
-    guint delta_time;
-
-    
-    /* get event */
-    event = xmlGetProp(node,
-		       "event");
-
-    if(event == NULL){
-      return;
-    }
-
-    /* get event */
-    delta_time = 0;
-    str = xmlGetProp(node,
-		     "delta-time");
-
-    if(str != NULL){
-      delta_time = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-    }
-    
-    /* compute event */
-    if(!xmlStrncmp(event,
-		   "note-on",
-		   8)){
-      guint key, note, velocity;
-
-      /* key */
-      key = 0;
-      str = xmlGetProp(node,
-		       "key");
-      
-      if(str != NULL){
-	key = g_ascii_strtoull(str,
-			       NULL,
-			       10);
-      }
-
-      /* note */
-      note = 0;
-      str = xmlGetProp(node,
-		       "note");
-      
-      if(str != NULL){
-	note = g_ascii_strtoull(str,
-				NULL,
-				10);
-      }
-
-      /* velocity */
-      velocity = 0;
-      str = xmlGetProp(node,
-		       "velocity");
-      
-      if(str != NULL){
-	velocity = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_key_on(midi_builder,
-				     delta_time,
-				     key,
-				     note,
-				     velocity);
-    }else if(!xmlStrncmp(event,
-			 "note-off",
-			 9)){
-      guint key, note, velocity;
-
-      /* key */
-      key = 0;
-      str = xmlGetProp(node,
-		       "key");
-      
-      if(str != NULL){
-	key = g_ascii_strtoull(str,
-			       NULL,
-			       10);
-      }
-
-      /* note */
-      note = 0;
-      str = xmlGetProp(node,
-		       "note");
-      
-      if(str != NULL){
-	note = g_ascii_strtoull(str,
-				NULL,
-				10);
-      }
-
-      /* velocity */
-      velocity = 0;
-      str = xmlGetProp(node,
-		       "velocity");
-      
-      if(str != NULL){
-	velocity = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_key_off(midi_builder,
-				      delta_time,
-				      key,
-				      note,
-				      velocity);
-    }else if(!xmlStrncmp(event,
-			 "polyphonic",
-			 11)){
-      guint key, note, pressure;
-
-      /* key */
-      key = 0;
-      str = xmlGetProp(node,
-		       "key");
-      
-      if(str != NULL){
-	key = g_ascii_strtoull(str,
-			       NULL,
-			       10);
-      }
-
-      /* note */
-      note = 0;
-      str = xmlGetProp(node,
-		       "note");
-      
-      if(str != NULL){
-	note = g_ascii_strtoull(str,
-				NULL,
-				10);
-      }
-
-      /* pressure */
-      pressure = 0;
-      str = xmlGetProp(node,
-		       "pressure");
-      
-      if(str != NULL){
-	pressure = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_key_pressure(midi_builder,
-					   delta_time,
-					   key,
-					   note,
-					   pressure);
-    }else if(!xmlStrncmp(event,
-			 "change-parameter",
-			 11)){
-      guint channel, control, value;
-      
-      /* channel */
-      channel = 0;
-      str = xmlGetProp(node,
-		       "channel");
-      
-      if(str != NULL){
-	channel = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* control */
-      control = 0;
-      str = xmlGetProp(node,
-		       "control");
-      
-      if(str != NULL){
-	control = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* value */
-      value = 0;
-      str = xmlGetProp(node,
-		       "value");
-      
-      if(str != NULL){
-	value = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-      }
-
-      /* append */
-      ags_midi_builder_append_change_parameter(midi_builder,
-					       delta_time,
-					       channel,
-					       control,
-					       value);
-    }else if(!xmlStrncmp(event,
-			 "pitch-bend",
-			 11)){
-      guint channel, pitch, transmitter;
-
-      /* channel */
-      channel = 0;
-      str = xmlGetProp(node,
-		       "channel");
-      
-      if(str != NULL){
-	channel = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* pitch */
-      pitch = 0;
-      str = xmlGetProp(node,
-		       "pitch-bend");
-      
-      if(str != NULL){
-	pitch = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* transmitter */
-      transmitter = 0;
-      str = xmlGetProp(node,
-		       "transmitter");
-      
-      if(str != NULL){
-	transmitter = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* append */
-      ags_midi_builder_append_change_pitch_bend(midi_builder,
-						delta_time,
-						channel,
-						pitch,
-						transmitter);
-    }else if(!xmlStrncmp(event,
-			 "program-change",
-			 15)){
-      guint channel, program;
-
-      /* channel */
-      channel = 0;
-      str = xmlGetProp(node,
-		       "channel");
-      
-      if(str != NULL){
-	channel = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* program */
-      program = 0;
-      str = xmlGetProp(node,
-		       "program");
-      
-      if(str != NULL){
-	program = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* append */
-      ags_midi_builder_append_change_program(midi_builder,
-					     delta_time,
-					     channel,
-					     program);
-    }else if(!xmlStrncmp(event,
-			 "channel-pressure",
-			 17)){
-      guint channel, pressure;
-      
-      /* channel */
-      channel = 0;
-      str = xmlGetProp(node,
-		       "channel");
-      
-      if(str != NULL){
-	channel = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      }
-
-      /* pressure */
-      pressure = 0;
-      str = xmlGetProp(node,
-		       "pressure");
-      
-      if(str != NULL){
-	pressure = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_change_pressure(midi_builder,
-					      delta_time,
-					      channel,
-					      pressure);
-    }else if(!xmlStrncmp(event,
-			 "misc",
-			 5)){
-      g_warning("not supported MIDI message misc");
-    }else if(!xmlStrncmp(event,
-			 "sequence-number",
-			 16)){
-      guint sequence;
-
-      /* sequence */
-      sequence = 0;
-      str = xmlGetProp(node,
-		       "sequence");
-      
-      if(str != NULL){
-	sequence = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_sequence_number(midi_builder,
-					      delta_time,
-					      sequence);
-    }else if(!xmlStrncmp(event,
-			 "end-of-track",
-			 13)){
-      g_warning("not supported MIDI message end-of-track");      
-    }else if(!xmlStrncmp(event,
-			 "smtpe",
-			 6)){
-      guint rr, hr, mn, se, fr;
-
-      /* timestamp */
-      rr = 0;
-      hr = 0;
-      mn = 0;
-      se = 0;
-      fr = 0;
-
-      str = xmlGetProp(node,
-		       "rate");
-      
-      if(str != NULL){
-	sscanf(str,
-	       "%d", &rr);
-      }
-      
-      str = xmlGetProp(node,
-		       "timestamp");
-      
-      if(str != NULL){
-	sscanf(str,
-	       "%d %d %d %d", &hr, &mn, &se, &fr);
-      }
-
-      /* append */
-      ags_midi_builder_append_smtpe(midi_builder,
-				    delta_time,
-				    rr, hr, mn, se, fr);
-    }else if(!xmlStrncmp(event,
-			 "tempo-number",
-			 13)){
-      gint tempo;
-
-      /* tempo */
-      tempo = 0;
-      str = xmlGetProp(node,
-		       "tempo");
-      
-      if(str != NULL){
-	tempo = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-      }
-
-      /* append */
-      ags_midi_builder_append_tempo(midi_builder,
-				    delta_time,
-				    tempo);
-    }else if(!xmlStrncmp(event,
-			 "time-signature",
-			 16)){
-      guint nn, dd, cc, bb;
-      guint denom = 1;
-
-      /* timesig */
-      nn = 0;
-      dd = 0;
-      cc = 0;
-      bb = 0;
-      
-      str = xmlGetProp(node,
-		       "timesign");
-      
-      if(str != NULL){
-	sscanf(str,
-	       "%d/%d %d %d", &nn, &denom, &cc, &bb);
-      }
-
-      while(denom != 1){
-	dd++;
-	
-	denom /= 2;
-      }
-      
-      /* append */
-      ags_midi_builder_append_time_signature(midi_builder,
-					     delta_time,
-					     nn, dd, cc, bb);
-    }else if(!xmlStrncmp(event,
-			 "key-signature",
-			 14)){
-      xmlChar *minor;
-
-      gint sf;
-      guint mi;
-
-      /* keysig */
-      minor = NULL;
-
-      sf = 0;
-      mi = 1;
-
-      str = xmlGetProp(node,
-		       "timesign");
-      
-      if(str != NULL){
-	sscanf(str,
-	       "%d %ms", &sf, &minor);
-      }
-
-      /* sharp flats */
-      if(sf < 0){
-	sf += 256;
-      }
-      
-      /* minor */
-      if(!g_ascii_strncasecmp(minor,
-			      "minor",
-			      6)){
-	mi = 1;
-      }else{
-	mi = 0;
-      }
-
-      /* append */
-      ags_midi_builder_append_key_signature(midi_builder,
-					    delta_time,
-					    sf, mi);
-    }
-  }
-  
-  void ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
-						      xmlNode *node){
-    xmlChar *str;
-
-    guint delta_time;
-
-    /* get delta-time */
-    delta_time = 0;
-    str = xmlGetProp(node,
-		     "delta-time");
-
-    if(str != NULL){
-      delta_time = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-    }
-    
-    /* parse node */
-    if((str = xmlGetProp(node,
-			 "quarter-frame")) != NULL){
-      guint quarter_frame;
-      guint message_type, values;
-      
-      /* get quarter frame */
-      quarter_frame = 0;
-      str = xmlGetProp(node,
-		       "quarter-frame");
-
-      if(str != NULL){
-	quarter_frame = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-      }
-
-      message_type = 0x70 & quarter_frame;
-      values = 0x0f & quarter_frame;
-      
-      /* append */
-      ags_midi_builder_append_quarter_frame(midi_builder,
-					    delta_time,
-					    message_type, values);
-    }else if((str = xmlGetProp(node,
-			       "song-position")) != NULL){
-      guint song_position;
-
-      /* get song position */
-      song_position = 0;
-      str = xmlGetProp(node,
-		       "song-position");
-
-      if(str != NULL){
-	song_position = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-      }
-          
-      /* append */
-      ags_midi_builder_append_song_position(midi_builder,
-					    delta_time,
-					    song_position);
-    }else if((str = xmlGetProp(node,
-			       "song-select")) != NULL){
-      guint song_select;
-    
-      /* get song select */
-      song_select = 0;
-      str = xmlGetProp(node,
-		       "song-select");
-
-      if(str != NULL){
-	song_select = g_ascii_strtoull(str,
-				       NULL,
-				       10);
-      }
-
-      /* append */
-      ags_midi_builder_append_song_select(midi_builder,
-					  delta_time,
-					  song_select);
-    }
-  }
-  
-  void ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
-						   xmlNode *node){
-    xmlChar *str;
-    
-    guint delta_time;
-    guint len, id, data;
-
-    /* get delta-time */
-    delta_time = 0;
-    str = xmlGetProp(node,
-		     "delta-time");
-
-    if(str != NULL){
-      delta_time = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-    }
-    
-    /* length */
-    len = 0;
-    str = xmlGetProp(node,
-		     "length");
-      
-    if(str != NULL){
-      len = g_ascii_strtoull(str,
-			     NULL,
-			     10);
-    }
-
-    /* id */
-    id = 0;
-    str = xmlGetProp(node,
-		     "id");
-      
-    if(str != NULL){
-      id = g_ascii_strtoull(str,
-			    NULL,
-			    10);
-    }
-
-    /* data */
-    data = 0;
-    str = xmlGetProp(node,
-		     "data");
-      
-    if(str != NULL){
-      data = g_ascii_strtoull(str,
-			      NULL,
-			      10);
-    }
-
-    /* append */
-    ags_midi_builder_append_sequencer_meta_event(midi_builder,
-						 delta_time,
-						 len, id, data);
-  }
-  
+{  
   if(!xmlStrncmp(node->name,
 		 "midi-header",
 		 12)){

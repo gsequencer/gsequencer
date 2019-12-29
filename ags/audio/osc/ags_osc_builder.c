@@ -68,6 +68,15 @@ void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 					  AgsOscBuilderMessage *message,
 					  gsize append_size);
 
+void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+				  AgsOscBuilderBundle *bundle,
+				  unsigned char *data,
+				  gsize *offset);
+void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+				   AgsOscBuilderMessage *message,
+				   unsigned char *data,
+				   gsize *offset);
+
 /**
  * SECTION:ags_osc_builder
  * @short_description: OSC builder
@@ -1131,6 +1140,101 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
   g_object_unref((GObject *) osc_builder);
 }
 
+void
+ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+			     AgsOscBuilderBundle *current_bundle,
+			     unsigned char *data,
+			     gsize *offset)
+{
+  GList *message_start, *message;
+  GList *bundle_start, *bundle;
+
+  /* #bundle */
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 "#bundle",
+				 -1);
+    
+  offset[0] += 8;
+
+  /* time tag */
+  ags_osc_buffer_util_put_timetag(data + offset[0],
+				  current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
+    
+  offset[0] += 8;
+
+  /* content */
+  message_start = g_list_copy(current_bundle->message);
+  message_start = g_list_reverse(message_start);
+
+  bundle_start = g_list_copy(current_bundle->bundle);
+  bundle_start = g_list_reverse(bundle_start);
+
+  message = message_start;
+  bundle = bundle_start;
+
+  while(message != NULL || bundle != NULL){
+    if(bundle == NULL ||
+       (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
+      ags_osc_builder_build_message(osc_builder,
+				    message->data,
+				    data,
+				    offset);	
+    }else{
+      ags_osc_builder_build_bundle(osc_builder,
+				   bundle->data,
+				   data,
+				   offset);	
+    }
+      
+    /* iterate */
+    if(message != NULL){
+      message = message->next;
+    }
+
+    if(bundle != NULL){
+      bundle = bundle->next;
+    }
+  }
+    
+  g_list_free(message_start);
+  g_list_free(bundle_start);
+}
+
+void
+ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+			      AgsOscBuilderMessage *message,
+			      unsigned char *data,
+			      gsize *offset)
+{
+  guint64 address_pattern_length;
+  guint64 type_tag_length;
+
+  /* address pattern */
+  address_pattern_length = strlen(message->address_pattern);
+
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 message->address_pattern,
+				 -1);
+
+  offset[0] += (address_pattern_length + 1);
+
+  /* type tag */
+  type_tag_length = strlen(message->type_tag);
+
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 message->type_tag,
+				 -1);
+
+  offset[0] += (type_tag_length + 1);
+
+  /* data */
+  memcpy(data + offset[0],
+	 message->data,
+	 message->data_length * sizeof(unsigned char));
+
+  offset[0] += message->data_length;
+}
+
 /**
  * ags_osc_builder_build:
  * @osc_builder: the #AgsOscBuilder
@@ -1148,96 +1252,6 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
 
   gsize data_length;
   gsize offset;
-
-  auto void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-					 AgsOscBuilderBundle *bundle);
-  auto void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
-					  AgsOscBuilderMessage *message);
-
-  void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-				    AgsOscBuilderBundle *current_bundle)
-  {
-    GList *message_start, *message;
-    GList *bundle_start, *bundle;
-
-    /* #bundle */
-    ags_osc_buffer_util_put_string(data + offset,
-				   "#bundle",
-				   -1);
-    
-    offset += 8;
-
-    /* time tag */
-    ags_osc_buffer_util_put_timetag(data + offset,
-				    current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
-    
-    offset += 8;
-
-    /* content */
-    message_start = g_list_copy(current_bundle->message);
-    message_start = g_list_reverse(message_start);
-
-    bundle_start = g_list_copy(current_bundle->bundle);
-    bundle_start = g_list_reverse(bundle_start);
-
-    message = message_start;
-    bundle = bundle_start;
-
-    while(message != NULL || bundle != NULL){
-      if(bundle == NULL ||
-	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
-	ags_osc_builder_build_message(osc_builder,
-				      message->data);	
-      }else{
-	ags_osc_builder_build_bundle(osc_builder,
-				     bundle->data);	
-      }
-      
-      /* iterate */
-      if(message != NULL){
-	message = message->next;
-      }
-
-      if(bundle != NULL){
-	bundle = bundle->next;
-      }
-    }
-    
-    g_list_free(message_start);
-    g_list_free(bundle_start);
-  }
-
-  void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
-				     AgsOscBuilderMessage *message)
-  {
-    guint64 address_pattern_length;
-    guint64 type_tag_length;
-
-    /* address pattern */
-    address_pattern_length = strlen(message->address_pattern);
-
-    ags_osc_buffer_util_put_string(data + offset,
-				   message->address_pattern,
-				   -1);
-
-    offset += (address_pattern_length + 1);
-
-    /* type tag */
-    type_tag_length = strlen(message->type_tag);
-
-    ags_osc_buffer_util_put_string(data + offset,
-				   message->type_tag,
-				   -1);
-
-    offset += (type_tag_length + 1);
-
-    /* data */
-    memcpy(data + offset,
-	   message->data,
-	   message->data_length * sizeof(unsigned char));
-
-    offset += message->data_length;
-  }
   
   if(!AGS_IS_OSC_BUILDER(osc_builder)){
     return;
@@ -1287,10 +1301,14 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
       if(bundle == NULL ||
 	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
 	ags_osc_builder_build_message(osc_builder,
-				      message->data);	
+				      message->data,
+				      data,
+				      &offset);	
       }else{
 	ags_osc_builder_build_bundle(osc_builder,
-				     bundle->data);	
+				     bundle->data,
+				     data,
+				     &offset);	
       }
       
       /* iterate */

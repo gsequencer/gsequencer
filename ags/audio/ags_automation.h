@@ -122,6 +122,9 @@ GList* ags_automation_find_near_timestamp_extended(GList *automation, guint line
 						   GType channel_type, gchar *control_name,
 						   AgsTimestamp *timestamp);
 
+gint ags_automation_sort_func(gconstpointer a,
+			      gconstpointer b);
+
 GList* ags_automation_add(GList *automation,
 			  AgsAutomation *new_automation);
 

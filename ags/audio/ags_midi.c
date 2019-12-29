@@ -769,6 +769,39 @@ ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
   return(retval);
 }
 
+gint
+ags_midi_sort_func(gconstpointer a,
+		   gconstpointer b)
+{
+  AgsTimestamp *timestamp_a, *timestamp_b;
+  
+  guint64 offset_a, offset_b;
+
+  g_object_get(a,
+	       "timestamp", &timestamp_a,
+	       NULL);
+
+  g_object_get(b,
+	       "timestamp", &timestamp_b,
+	       NULL);
+    
+  offset_a = ags_timestamp_get_ags_offset(timestamp_a);
+  offset_b = ags_timestamp_get_ags_offset(timestamp_b);
+
+  g_object_unref(timestamp_a);
+  g_object_unref(timestamp_b);
+    
+  if(offset_a == offset_b){
+    return(0);
+  }else if(offset_a < offset_b){
+    return(-1);
+  }else if(offset_a > offset_b){
+    return(1);
+  }
+
+  return(0);
+}
+
 /**
  * ags_midi_add:
  * @midi: the #GList-struct containing #AgsMidi
@@ -783,49 +816,14 @@ ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 GList*
 ags_midi_add(GList *midi,
 	     AgsMidi *new_midi)
-{
-  auto gint ags_midi_add_compare(gconstpointer a,
-				 gconstpointer b);
-  
-  gint ags_midi_add_compare(gconstpointer a,
-			    gconstpointer b)
-  {
-    AgsTimestamp *timestamp_a, *timestamp_b;
-
-    guint64 offset_a, offset_b;
-
-    g_object_get(a,
-		 "timestamp", &timestamp_a,
-		 NULL);
-
-    g_object_get(b,
-		 "timestamp", &timestamp_b,
-		 NULL);
-    
-    offset_a = ags_timestamp_get_ags_offset(timestamp_a);
-    offset_b = ags_timestamp_get_ags_offset(timestamp_b);
-
-    g_object_unref(timestamp_a);
-    g_object_unref(timestamp_b);
-    
-    if(offset_a == offset_b){
-      return(0);
-    }else if(offset_a < offset_b){
-      return(-1);
-    }else if(offset_a > offset_b){
-      return(1);
-    }
-
-    return(0);
-  }
-  
+{    
   if(!AGS_IS_MIDI(new_midi)){
     return(midi);
   }
   
   midi = g_list_insert_sorted(midi,
 			      new_midi,
-			      ags_midi_add_compare);
+			      ags_midi_sort_func);
   
   return(midi);
 }

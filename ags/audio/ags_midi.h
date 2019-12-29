@@ -99,6 +99,9 @@ void ags_midi_unset_flags(AgsMidi *midi, guint flags);
 GList* ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 				    AgsTimestamp *timestamp);
 
+gint ags_midi_sort_func(gconstpointer a,
+			gconstpointer b);
+
 GList* ags_midi_add(GList *midi,
 		    AgsMidi *new_midi);
 
