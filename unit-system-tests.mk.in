@@ -4394,25 +4394,25 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
 # XML authentication unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_SOURCES = ags/test/server/security/ags_xml_authentication_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_LDFLAGS = -DSRCDIR=\"$(srcdir)\" -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_authentication_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML business group unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_SOURCES = ags/test/server/security/ags_xml_business_group_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_LDFLAGS = -DSRCDIR=\"$(srcdir)\" -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_business_group_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML certificate unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_SOURCES = ags/test/server/security/ags_xml_certificate_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_LDFLAGS = -DSRCDIR=\"$(srcdir)\" -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_certificate_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # XML password store unit test
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_SOURCES = ags/test/server/security/ags_xml_password_store_test.c
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
-@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_LDFLAGS = -pthread $(LDFLAGS)
+@WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_LDFLAGS = -DSRCDIR=\"$(srcdir)\" -pthread $(LDFLAGS)
 @WITH_SYSTEM_TESTS_TRUE@ags_check_system_xml_password_store_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # security context unit test
