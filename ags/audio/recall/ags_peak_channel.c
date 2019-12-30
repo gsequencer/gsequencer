@@ -856,7 +856,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
 
   current_scale_precision = g_value_get_float(&value);
 
-  current_value *= current_scale_precision;
+  current_value = current_scale_precision * current_value;
   
   if(current_value < 0.0){
     current_value *= -1.0;

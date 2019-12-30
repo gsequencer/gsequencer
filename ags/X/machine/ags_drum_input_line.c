@@ -127,7 +127,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
   AgsLineMember *line_member;
   GtkWidget *widget;
-  GtkAdjustment *adjustment;
 
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
@@ -147,11 +146,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   g_hash_table_insert(ags_line_indicator_queue_draw,
 		      widget, ags_line_indicator_queue_draw_timeout);
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
-
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
-  g_object_set(widget,
-	       "adjustment", adjustment,
-	       NULL);
 
   //TODO:JK: fix me
   //  g_object_set(G_OBJECT(line_member),

@@ -816,7 +816,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
   GRecMutex *thread_mutex;
 
-#if 0  
+#if 1  
   static const guint playback_staging_flags = (AGS_SOUND_STAGING_RESET |
 					       AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 					       AGS_SOUND_STAGING_AUTOMATE |
@@ -1094,7 +1094,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
 	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
-#if 0
+#if 1
 	  ags_audio_recursive_run_stage(audio,
 					sound_scope, (AGS_SOUND_STAGING_RESET |
 						      AGS_SOUND_STAGING_FEED_INPUT_QUEUE |

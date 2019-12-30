@@ -738,8 +738,8 @@ ags_task_launcher_add_cyclic_task(AgsTaskLauncher *task_launcher,
 
   g_rec_mutex_lock(task_launcher_mutex);
 
-  task_launcher->task = g_list_prepend(task_launcher->task,
-				       cyclic_task);
+  task_launcher->cyclic_task = g_list_prepend(task_launcher->cyclic_task,
+					      cyclic_task);
   g_object_ref(cyclic_task);
   
   g_rec_mutex_unlock(task_launcher_mutex);
@@ -770,8 +770,8 @@ ags_task_launcher_remove_cyclic_task(AgsTaskLauncher *task_launcher,
   g_rec_mutex_lock(task_launcher_mutex);
 
   if(g_list_find(task_launcher->task, cyclic_task) != NULL){
-    task_launcher->task = g_list_remove(task_launcher->task,
-					cyclic_task);
+    task_launcher->cyclic_task = g_list_remove(task_launcher->cyclic_task,
+					       cyclic_task);
     g_object_unref(cyclic_task);
   }
   

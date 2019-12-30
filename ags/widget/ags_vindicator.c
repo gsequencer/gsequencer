@@ -204,8 +204,6 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
   border_color = g_value_dup_boxed(&value);
   g_value_unset(&value);
 
-  //  g_message("draw %f", adjustment->value);
-  
   width = AGS_INDICATOR(vindicator)->segment_width;
   height = (AGS_INDICATOR(vindicator)->segment_count * AGS_INDICATOR(vindicator)->segment_height) + ((AGS_INDICATOR(vindicator)->segment_count - 1) * AGS_INDICATOR(vindicator)->segment_padding);
 
@@ -217,12 +215,13 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(vindicator)->segment_padding;
 
-//  cairo_surface_flush(cairo_get_target(cr));
+  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   for(i = 0; i < AGS_INDICATOR(vindicator)->segment_count; i++){
     if(gtk_adjustment_get_value(adjustment) > 0.0 &&
-       (1.0 / gtk_adjustment_get_value(adjustment) * i < AGS_INDICATOR(vindicator)->segment_count)){
+       gtk_adjustment_get_value(adjustment) > (gdouble) i){
+//      printf("#");
       /* active */
       cairo_set_source_rgba(cr,
 			    fg_color->red,
@@ -230,6 +229,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 			    fg_color->blue,
 			    fg_color->alpha);
     }else{
+//      printf(".");
       /* normal */
       cairo_set_source_rgba(cr,
 			    bg_color->red,
@@ -256,6 +256,8 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
     cairo_stroke(cr);
   }
 
+//  printf("\n");
+
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
@@ -263,7 +265,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
   g_boxed_free(GDK_TYPE_RGBA, bg_color);
   g_boxed_free(GDK_TYPE_RGBA, border_color);
 
-//  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**

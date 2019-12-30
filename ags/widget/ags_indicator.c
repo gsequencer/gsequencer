@@ -223,7 +223,7 @@ ags_indicator_init(AgsIndicator *indicator)
   indicator->segment_count = AGS_INDICATOR_DEFAULT_SEGMENT_COUNT;
 
   /* adjustment */
-  indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 0.01, 0.01, 0.01);
   g_object_ref(indicator->adjustment);
 }
 
