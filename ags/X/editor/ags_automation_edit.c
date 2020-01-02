@@ -1414,8 +1414,10 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
 
   /* reset value */
   if(old_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
+#endif
   }
 }
 

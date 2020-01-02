@@ -827,8 +827,10 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(audio_hscrollbar_adjustment,
 			     gtk_adjustment_get_value(audio_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 
@@ -920,8 +922,10 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   /* reset value */
   if(old_h_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(output_hscrollbar_adjustment,
 			     gtk_adjustment_get_value(output_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 
@@ -1013,8 +1017,10 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(input_hscrollbar_adjustment,
 			     gtk_adjustment_get_value(input_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 

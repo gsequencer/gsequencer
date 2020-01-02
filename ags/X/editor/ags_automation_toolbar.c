@@ -266,7 +266,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		     FALSE, FALSE,
 		     0);
 
-  automation_toolbar->zoom_history = 4;
+  automation_toolbar->zoom_history = 2;
   automation_toolbar->zoom = ags_zoom_combo_box_new();
   gtk_combo_box_set_active(GTK_COMBO_BOX(automation_toolbar->zoom),
 			   2);

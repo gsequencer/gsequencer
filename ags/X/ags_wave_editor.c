@@ -580,8 +580,10 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   /* reset value */
   if(old_h_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(hscrollbar_adjustment,
 			     gtk_adjustment_get_value(hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 

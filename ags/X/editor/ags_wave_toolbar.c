@@ -227,7 +227,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   gtk_container_add((GtkContainer *) tool_item,
 		    (GtkWidget *) hbox);
 
-  wave_toolbar->zoom_history = 4;
+  wave_toolbar->zoom_history = 2;
   
   label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_box_pack_start(hbox,
