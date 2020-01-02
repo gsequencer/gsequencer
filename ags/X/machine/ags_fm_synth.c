@@ -476,8 +476,8 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
       for(i = 0; i < sync_point_count; i++){
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
 	
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][0] = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i]);
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][1] = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i + 1]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].real = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].imag = gtk_spin_button_get_value(fm_oscillator->sync_point[2 * i + 1]);
       }
     }else{
       for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){

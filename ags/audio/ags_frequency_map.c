@@ -858,9 +858,9 @@ ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
   guint i;
 
   for(i = frequency_map->attack; i < frequency_map->frame_count; i++){
-    z = ags_complex_get(factorized_frequency_map->buffer[i]) * ags_complex_get(frequency_map->buffer[i]);
+    z = ags_complex_get(&(factorized_frequency_map->buffer[i])) * ags_complex_get(&(frequency_map->buffer[i]));
     
-    ags_complex_set(factorized_frequency_map->buffer[i],
+    ags_complex_set(&(factorized_frequency_map->buffer[i]),
 		    z);
   }
 }
@@ -896,9 +896,9 @@ ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
   guint i;
 
   for(i = 0; i < frequency_map->buffer_size; i++){
-    z = ags_complex_get(frequency_map->buffer[i]) * ags_complex_get(source[i]);
+    z = ags_complex_get(&(frequency_map->buffer[i])) * ags_complex_get(&(source[i]));
         
-    ags_complex_set(retval[0][i],
+    ags_complex_set(&(retval[0][i]),
 		    z);
   }
 }

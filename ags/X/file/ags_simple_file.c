@@ -1541,7 +1541,7 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
       g_value_init(&(pointer->value),
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z.real), &(z.imag));
       g_value_set_boxed(&(pointer->value),
 			&z);
     }else{
@@ -1676,7 +1676,7 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
       g_value_init(current,
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z.real), &(z.imag));
       g_value_set_boxed(current,
 			&z);
     }else{
@@ -6323,7 +6323,7 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 			 "attack");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
+	  sscanf(str, "%Lf %Lf", &(note->attack.real), &(note->attack.imag));
 
 	  xmlFree(str);
 	}
@@ -6332,7 +6332,7 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 			 "decay");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
+	  sscanf(str, "%Lf %Lf", &(note->decay.real), &(note->decay.imag));
 
 	  xmlFree(str);
 	}
@@ -6341,7 +6341,7 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 			 "sustain");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
+	  sscanf(str, "%Lf %Lf", &(note->sustain.real), &(note->sustain.imag));
 
 	  xmlFree(str);
 	}
@@ -6350,7 +6350,7 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 			 "release");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
+	  sscanf(str, "%Lf %Lf", &(note->release.real), &(note->release.imag));
 
 	  xmlFree(str);
 	}
@@ -6359,7 +6359,7 @@ ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNo
 			 "ratio");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
+	  sscanf(str, "%Lf %Lf", &(note->ratio.real), &(note->ratio.imag));
 
 	  xmlFree(str);
 	}
@@ -6570,7 +6570,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "attack");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
+	  sscanf(str, "%Lf %Lf", &(note->attack.real), &(note->attack.imag));
 
 	  xmlFree(str);
 	}
@@ -6579,7 +6579,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "decay");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
+	  sscanf(str, "%Lf %Lf", &(note->decay.real), &(note->decay.imag));
 
 	  xmlFree(str);
 	}
@@ -6588,7 +6588,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "sustain");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
+	  sscanf(str, "%Lf %Lf", &(note->sustain.real), &(note->sustain.imag));
 
 	  xmlFree(str);
 	}
@@ -6597,7 +6597,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "release");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
+	  sscanf(str, "%Lf %Lf", &(note->release.real), &(note->release.imag));
 
 	  xmlFree(str);
 	}
@@ -6606,7 +6606,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "ratio");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
+	  sscanf(str, "%Lf %Lf", &(note->ratio.real), &(note->ratio.imag));
 
 	  xmlFree(str);
 	}
@@ -7325,7 +7325,7 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
 
     z = g_value_get_boxed(&(property->value));
     val = g_strdup_printf("%Lf %Lf",
-			  z[0][0], z[0][1]);
+			  z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -7433,7 +7433,7 @@ ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue 
 
     z = g_value_get_boxed(value);
     val = g_strdup_printf("%Lf %Lf",
-			  z[0][0], z[0][1]);
+			  z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -10442,8 +10442,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     }
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->attack[0],
-			  AGS_NOTE(list->data)->attack[1]);
+			  AGS_NOTE(list->data)->attack.real,
+			  AGS_NOTE(list->data)->attack.imag);
     
     xmlNewProp(child,
 	       "attack",
@@ -10452,8 +10452,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
     
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->decay[0],
-			  AGS_NOTE(list->data)->decay[1]);
+			  AGS_NOTE(list->data)->decay.real,
+			  AGS_NOTE(list->data)->decay.imag);
     
     xmlNewProp(child,
 	       "decay",
@@ -10462,8 +10462,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->sustain[0],
-			  AGS_NOTE(list->data)->sustain[1]);
+			  AGS_NOTE(list->data)->sustain.real,
+			  AGS_NOTE(list->data)->sustain.imag);
     
     xmlNewProp(child,
 	       "sustain",
@@ -10472,8 +10472,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->release[0],
-			  AGS_NOTE(list->data)->release[1]);
+			  AGS_NOTE(list->data)->release.real,
+			  AGS_NOTE(list->data)->release.imag);
     
     xmlNewProp(child,
 	       "release",
@@ -10482,8 +10482,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->ratio[0],
-			  AGS_NOTE(list->data)->ratio[1]);
+			  AGS_NOTE(list->data)->ratio.real,
+			  AGS_NOTE(list->data)->ratio.imag);
     
     xmlNewProp(child,
 	       "ratio",

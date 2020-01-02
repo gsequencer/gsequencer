@@ -382,9 +382,7 @@ ags_function_finalize(GObject *gobject)
   if(function->pivot_table != NULL){
     for(i = 0; i < function->pivot_table_count; i++){
       for(j = 0; j < function->row_count[i]; j++){
-	for(k = 0; k < function->column_count[i]; k++){
-	  ags_complex_free(function->pivot_table[i][j][k]);
-	}
+	ags_complex_free(function->pivot_table[i][j]);
 
 	free(function->pivot_table[i][j]);
       }

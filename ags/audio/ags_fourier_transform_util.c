@@ -398,7 +398,7 @@ ags_fourier_transform_util_inverse_stft_s8(AgsComplex *buffer, guint channels,
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -442,7 +442,7 @@ ags_fourier_transform_util_inverse_stft_s16(AgsComplex *buffer, guint channels,
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -486,7 +486,7 @@ ags_fourier_transform_util_inverse_stft_s24(AgsComplex *buffer, guint channels,
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -530,7 +530,7 @@ ags_fourier_transform_util_inverse_stft_s32(AgsComplex *buffer, guint channels,
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -574,7 +574,7 @@ ags_fourier_transform_util_inverse_stft_s64(AgsComplex *buffer, guint channels,
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -616,7 +616,7 @@ ags_fourier_transform_util_inverse_stft_float(AgsComplex *buffer, guint channels
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 
@@ -658,7 +658,7 @@ ags_fourier_transform_util_inverse_stft_double(AgsComplex *buffer, guint channel
     gdouble k;
     gdouble y;
 
-    z = ags_complex_get(buffer[n]);
+    z = ags_complex_get(&(buffer[n]));
 
     k = (gdouble) n;
 

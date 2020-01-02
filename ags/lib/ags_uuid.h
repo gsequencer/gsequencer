@@ -30,7 +30,12 @@ G_BEGIN_DECLS
 #define AGS_UUID_DEFAULT_LENGTH (16)
 #define AGS_UUID_STRING_DEFAULT_LENGTH (36)
 
-typedef unsigned char AgsUUID[16];
+typedef struct _AgsUUID AgsUUID;
+
+struct _AgsUUID
+{
+  guchar data[16];
+};
 
 GType ags_uuid_get_type(void);
 

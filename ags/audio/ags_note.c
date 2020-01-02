@@ -708,7 +708,7 @@ ags_note_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, note->attack);
+      g_value_set_boxed(value, &(note->attack));
 
       g_rec_mutex_unlock(note_mutex);
     }
@@ -717,7 +717,7 @@ ags_note_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, note->sustain);
+      g_value_set_boxed(value, &(note->sustain));
 
       g_rec_mutex_unlock(note_mutex);
     }
@@ -726,7 +726,7 @@ ags_note_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, note->decay);
+      g_value_set_boxed(value, &(note->decay));
 
       g_rec_mutex_unlock(note_mutex);
     }
@@ -735,7 +735,7 @@ ags_note_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, note->release);
+      g_value_set_boxed(value, &(note->release));
 
       g_rec_mutex_unlock(note_mutex);
     }
@@ -744,7 +744,7 @@ ags_note_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, note->ratio);
+      g_value_set_boxed(value, &(note->ratio));
 
       g_rec_mutex_unlock(note_mutex);
     }
@@ -1533,20 +1533,20 @@ ags_note_duplicate(AgsNote *note)
   note_copy->stream_delay = note->stream_delay;
   note_copy->stream_attack = note->stream_attack;
   
-  note_copy->attack[0] = note->attack[0];
-  note_copy->attack[1] = note->attack[1];
+  note_copy->attack.real = note->attack.real;
+  note_copy->attack.imag = note->attack.imag;
 
-  note_copy->decay[0] = note->decay[0];
-  note_copy->decay[1] = note->decay[1];
+  note_copy->decay.real = note->decay.real;
+  note_copy->decay.imag = note->decay.imag;
 
-  note_copy->sustain[0] = note->sustain[0];
-  note_copy->sustain[1] = note->sustain[1];
+  note_copy->sustain.real = note->sustain.real;
+  note_copy->sustain.imag = note->sustain.imag;
 
-  note_copy->release[0] = note->release[0];
-  note_copy->release[1] = note->release[1];
+  note_copy->release.real = note->release.real;
+  note_copy->release.imag = note->release.imag;
 
-  note_copy->ratio[0] = note->ratio[0];
-  note_copy->ratio[1] = note->ratio[1];
+  note_copy->ratio.real = note->ratio.real;
+  note_copy->ratio.imag = note->ratio.imag;
 
   g_rec_mutex_unlock(note_mutex);
 

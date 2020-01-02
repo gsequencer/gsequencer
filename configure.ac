@@ -9,7 +9,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],[3.0.0-alpha3],[jkraehemann@gmail.com])
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_HEADERS([ags/ags_config.h])
@@ -324,6 +324,7 @@ AC_CHECK_LIB(glib-2.0, g_strv_contains,
 AC_CHECK_LIB(glib-2.0, g_object_setv,
 	     AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
 
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
@@ -352,10 +353,6 @@ AS_IF([test "x$enable_vst3" != xno],
       
       AC_MSG_NOTICE([VST3 enabled])],
       AC_MSG_NOTICE([VST3 disabled]))
-
-PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
-AC_SUBST(FONTCONFIG_CFLAGS)
-AC_SUBST(FONTCONFIG_LIBS)
 
 PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.32.2])
 AC_SUBST(GDKPIXBUF_CFLAGS)

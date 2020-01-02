@@ -615,37 +615,37 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
     for(; i < limit; i += 8){
       current_channel = 0;
 
-      buffer[0][0] = 0.0;
-      buffer[0][1] = 0.0;
+      buffer[0].real = 0.0;
+      buffer[0].imag = 0.0;
 
-      buffer[(current_channel = channels)][0] = 0.0;
-      buffer[(current_channel = channels)][1] = 0.0;
+      buffer[(current_channel = channels)].real = 0.0;
+      buffer[(current_channel = channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
       buffer += (current_channel + channels);
     }
   }
 
   for(; i < count; i++){
-    buffer[0][0] = 0.0;
-    buffer[0][1] = 0.0;
+    buffer[0].real = 0.0;
+    buffer[0].imag = 0.0;
 
     buffer += channels;
   }

@@ -526,7 +526,7 @@ ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_man
       for(k = 0; k < k_stop; k++){
 	static const complex z = 1.0 + I * 0.0;
 
-	ags_complex_set(factorized_frequency_map->buffer[k],
+	ags_complex_set(&(factorized_frequency_map->buffer[k]),
 			z);
       }
       

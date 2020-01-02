@@ -849,8 +849,8 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
   synth_generator->phase = samplerate * (synth_generator->phase / old_samplerate);
 
   for(i = 0; i < synth_generator->sync_point_count; i++){
-    synth_generator->sync_point[i][0][0] = samplerate * (synth_generator->sync_point[i][0][0] / old_samplerate);
-    synth_generator->sync_point[i][0][1] = samplerate * (synth_generator->sync_point[i][0][1] / old_samplerate);
+    synth_generator->sync_point[i][0].real = samplerate * (synth_generator->sync_point[i][0].real / old_samplerate);
+    synth_generator->sync_point[i][0].imag = samplerate * (synth_generator->sync_point[i][0].imag / old_samplerate);
   }
 }
 
@@ -1003,14 +1003,14 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
   if(sync_point != NULL){
     if(sync_point_count > 1 &&
-       floor(sync_point[1][0][0]) > 0.0){
-      if(sync_point[1][0][0] < current_count){
-	current_count = sync_point[1][0][0];
+       floor(sync_point[1][0].real) > 0.0){
+      if(sync_point[1][0].real < current_count){
+	current_count = sync_point[1][0].real;
       }
     }else{
-      if(sync_point[0][0][0] < current_count &&
-	 floor(sync_point[0][0][0]) > 0.0){
-	current_count = sync_point[0][0][0];
+      if(sync_point[0][0].real < current_count &&
+	 floor(sync_point[0][0].real) > 0.0){
+	current_count = sync_point[0][0].real;
       }
     }
   }
@@ -1233,9 +1233,9 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     }
     
     if(sync_point != NULL){
-      if(floor(sync_point[j][0][0]) > 0.0 &&
-	 last_sync + sync_point[j][0][0] < offset + current_count){
-	current_phase = sync_point[j][0][1];
+      if(floor(sync_point[j][0].real) > 0.0 &&
+	 last_sync + sync_point[j][0].real < offset + current_count){
+	current_phase = sync_point[j][0].imag;
 
 	synced = TRUE;
       }
@@ -1254,25 +1254,25 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
-	 floor(sync_point[j + 1][0][0]) > 0.0){
-	if(sync_point[j + 1][0][0] < current_count){
-	  current_count = sync_point[j + 1][0][0];
+	 floor(sync_point[j + 1][0].real) > 0.0){
+	if(sync_point[j + 1][0].real < current_count){
+	  current_count = sync_point[j + 1][0].real;
 	}
       }else{
-	if(floor(sync_point[0][0][0]) > 0.0 &&
-	   sync_point[0][0][0] < current_count){
-	  current_count = sync_point[0][0][0];
+	if(floor(sync_point[0][0].real) > 0.0 &&
+	   sync_point[0][0].real < current_count){
+	  current_count = sync_point[0][0].real;
 	}
       }
     }
     
     if(sync_point != NULL){
       if(synced){
-	last_sync = last_sync + sync_point[j][0][0];
+	last_sync = last_sync + sync_point[j][0].real;
 	j++;
 
 	if(j >= sync_point_count ||
-	   floor(sync_point[j][0][0]) == 0.0){
+	   floor(sync_point[j][0].real) == 0.0){
 	  j = 0;
 	}
 

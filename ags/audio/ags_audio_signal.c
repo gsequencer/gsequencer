@@ -1414,7 +1414,7 @@ ags_audio_signal_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(audio_signal_mutex);
 
-    g_value_set_boxed(value, audio_signal->damping);
+    g_value_set_boxed(value, &(audio_signal->damping));
 
     g_rec_mutex_unlock(audio_signal_mutex);
   }
@@ -1423,7 +1423,7 @@ ags_audio_signal_get_property(GObject *gobject,
   {
     g_rec_mutex_lock(audio_signal_mutex);
 
-    g_value_set_boxed(value, audio_signal->vibration);
+    g_value_set_boxed(value, &(audio_signal->vibration));
 
     g_rec_mutex_unlock(audio_signal_mutex);
   }
@@ -1985,8 +1985,8 @@ ags_stream_alloc(guint buffer_size,
       buffer = (AgsComplex *) malloc(buffer_size * sizeof(AgsComplex));
 
       for(i = 0; i < buffer_size; i++){
-	((AgsComplex *) buffer)[i][0] = 0.0;
-	((AgsComplex *) buffer)[i][1] = 0.0;
+	((AgsComplex *) buffer)[i].real = 0.0;
+	((AgsComplex *) buffer)[i].imag = 0.0;
       }
       
       return(buffer);

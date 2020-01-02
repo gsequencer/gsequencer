@@ -354,20 +354,20 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       /*  */
       g_rec_mutex_lock(note_mutex);
 
-      attack[0] = current->attack[0];
-      attack[1] = current->attack[1];
+      attack.real = current->attack.real;
+      attack.imag = current->attack.imag;
 
-      decay[0] = current->decay[0];
-      decay[1] = current->decay[1];
+      decay.real = current->decay.real;
+      decay.imag = current->decay.imag;
 
-      sustain[0] = current->sustain[0];
-      sustain[1] = current->sustain[1];
+      sustain.real = current->sustain.real;
+      sustain.imag = current->sustain.imag;
 
-      release[0] = current->release[0];
-      release[1] = current->release[1];
+      release.real = current->release.real;
+      release.imag = current->release.imag;
       
-      ratio[0] = current->ratio[0];
-      ratio[1] = current->ratio[1];
+      ratio.real = current->ratio.real;
+      ratio.imag = current->ratio.imag;
 
       g_rec_mutex_unlock(note_mutex);
 
@@ -393,13 +393,13 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       
       /* special case release - #0 key offset bigger than note offset */
       if(key_x1 < note_offset){
-	current_x = attack[0] + decay[0];
+	current_x = attack.real + decay.real;
 	
-	x0 = sustain[0];
-	y0 = sustain[1] + ratio[1];
+	x0 = sustain.real;
+	y0 = sustain.imag + ratio.imag;
 
-	x1 = release[0];
-	y1 = release[1] + ratio[1];
+	x1 = release.real;
+	y1 = release.imag + ratio.imag;
 
 	start_frame = (current_x + x0) * frame_count;
 	end_frame = (current_x + x0 + x1) * frame_count;
@@ -433,10 +433,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       
       /* attack */
       x0 = 0.0;
-      y0 = ratio[1];
+      y0 = ratio.imag;
 
-      x1 = attack[0];
-      y1 = attack[1] + ratio[1];
+      x1 = attack.real;
+      y1 = attack.imag + ratio.imag;
 
       start_frame = (current_x + x0) * frame_count;
       end_frame = (current_x + x0 + x1) * frame_count;
@@ -478,11 +478,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       current_x = 0.0;
 
       /* decay */
-      x0 = attack[0];
-      y0 = attack[1] + ratio[1];
+      x0 = attack.real;
+      y0 = attack.imag + ratio.imag;
 
-      x1 = decay[0];
-      y1 = decay[1] + ratio[1];
+      x1 = decay.real;
+      y1 = decay.imag + ratio.imag;
 
       start_frame = (current_x + x0) * frame_count;
       end_frame = (current_x + x0 + x1) * frame_count;
@@ -521,14 +521,14 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	continue;
       }
 
-      current_x = attack[0];
+      current_x = attack.real;
 
       /* sustain */
-      x0 = decay[0];
-      y0 = decay[1] + ratio[1];
+      x0 = decay.real;
+      y0 = decay.imag + ratio.imag;
 
-      x1 = sustain[0];
-      y1 = sustain[1] + ratio[1];
+      x1 = sustain.real;
+      y1 = sustain.imag + ratio.imag;
 
       start_frame = (current_x + x0) * frame_count;
       end_frame = (current_x + x0 + x1) * frame_count;
@@ -567,14 +567,14 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	continue;
       }
 
-      current_x = decay[0] + sustain[0];
+      current_x = decay.real + sustain.real;
 
       /* release */
-      x0 = sustain[0];
-      y0 = sustain[1] + ratio[1];
+      x0 = sustain.real;
+      y0 = sustain.imag + ratio.imag;
 
-      x1 = release[0];
-      y1 = release[1] + ratio[1];
+      x1 = release.real;
+      y1 = release.imag + ratio.imag;
 
       start_frame = (current_x + x0) * frame_count;
       end_frame = (current_x + x0 + x1) * frame_count;

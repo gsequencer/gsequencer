@@ -6,11 +6,11 @@
 # without any warranty.
 
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = po
+SUBDIRS = po m4
 
-# AM_DISTCHECK_CONFIGURE_FLAGS = 
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99 -include errno.h
 
 if WITH_W32API
@@ -95,6 +95,7 @@ EXTRA_DIST = config.rpath \
 	mkinstalldirs \
 	m4/Makefile.am \
 	m4/Makefile.in \
+	m4/introspection.m4 \
 	ags/i18n.h \
 	ags/gettext.h \
 	ags/README \
@@ -206,6 +207,44 @@ CLEANFILES = \
 	docs/reference/libgsequencer/libgsequencer-sections.txt \
 	docs/reference/libgsequencer/libgsequencer.types \
 	docs/reference/libgsequencer/libgsequencer.interfaces
+
+# gir - gobject introspection
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+
+if HAVE_INTROSPECTION
+introspection_sources = $(libags_la_SOURCES)
+
+Ags.gir: libags.la libags_thread.la libags_server.la
+Ags_gir_INCLUDES = GObject-2.0
+Ags_gir_C_INCLUDES = ags/libags.h
+Ags_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
+Ags_gir_LIBS = libags.la libags_thread.la libags_server.la
+Ags_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
+Ags_gir_NAMESPACE = Ags
+Ags_gir_VERSION = 3.0
+INTROSPECTION_GIRS += Ags.gir
+
+AgsAudio.gir: libags_audio.la $(top_builddir)/Ags.gir
+AgsAudio_gir_INCLUDES = GObject-2.0
+AgsAudio_gir_C_INCLUDES = ags/libags-audio.h
+AgsAudio_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
+AgsAudio_gir_LIBS = libags_audio.la
+AgsAudio_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
+AgsAudio_gir_NAMESPACE = AgsAudio
+AgsAudio_gir_VERSION = 3.0
+INTROSPECTION_GIRS += AgsAudio.gir
+
+girdir = $(datadir)/gir-1.0
+gir_DATA = $(INTROSPECTION_GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+
+CLEANFILES += $(gir_DATA) $(typelib_DATA)
+endif
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig

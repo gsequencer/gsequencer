@@ -85,7 +85,7 @@ ags_uuid_copy(AgsUUID *ptr)
   AgsUUID *new_ptr;
 
   new_ptr = (AgsUUID *) malloc(sizeof(AgsUUID));
-  memcpy(new_ptr, ptr, sizeof(AgsUUID));
+  memcpy(new_ptr->data, ptr->data, sizeof(AgsUUID));
 
   return(ptr);
 }
@@ -119,7 +119,7 @@ ags_uuid_generate(AgsUUID *ptr)
     return;
   }
 
-  uuid_generate_time_safe(ptr[0]);
+  uuid_generate_time_safe(ptr->data);
 }
 
 /**
@@ -139,8 +139,8 @@ ags_uuid_compare(AgsUUID *a,
 {
   gint retval;
   
-  retval = uuid_compare(a[0],
-			b[0]);
+  retval = uuid_compare(a->data,
+			b->data);
 
   return(retval);
 }
@@ -165,7 +165,7 @@ ags_uuid_to_string(AgsUUID *ptr)
   }
   
   uuid_str = (gchar *) malloc((AGS_UUID_STRING_DEFAULT_LENGTH + 1) * sizeof(gchar));
-  uuid_unparse(ptr[0],
+  uuid_unparse(ptr->data,
 	       uuid_str);
 
   return(uuid_str);
@@ -193,7 +193,7 @@ ags_uuid_from_string(gchar *str)
   }
 
   id = ags_uuid_alloc();
-  retval = uuid_parse(str, id[0]);
+  retval = uuid_parse(str, id->data);
 
   if(retval != 0){
     ags_uuid_free(id);

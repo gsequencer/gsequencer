@@ -164,7 +164,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = attack_x;
+  val[0].real = attack_x;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -219,7 +219,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = attack_y;
+  val[0].imag = attack_y;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -274,7 +274,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = decay_x;
+  val[0].real = decay_x;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -329,7 +329,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = decay_y;
+  val[0].imag = decay_y;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -384,7 +384,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = sustain_x;
+  val[0].real = sustain_x;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -439,7 +439,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = sustain_y;
+  val[0].imag = sustain_y;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -494,7 +494,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = release_x;
+  val[0].real = release_x;
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -549,7 +549,7 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = release_y;
+  val[0].imag = release_y;
   
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -604,7 +604,7 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = ratio;
+  val[0].imag = ratio;
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);

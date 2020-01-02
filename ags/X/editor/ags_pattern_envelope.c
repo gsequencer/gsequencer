@@ -1400,9 +1400,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
-		      val[0][0]);
+		      val[0].real);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
-		      val[0][1]);
+		      val[0].imag);
 
   /* decay */
   g_value_reset(&value);
@@ -1425,9 +1425,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
-		      val[0][0]);
+		      val[0].real);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
-		      val[0][1]);
+		      val[0].imag);
 
   /* sustain */
   g_value_reset(&value);
@@ -1450,9 +1450,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
-		      val[0][0]);
+		      val[0].real);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
-		      val[0][1]);
+		      val[0].imag);
 
   /* release */
   g_value_reset(&value);
@@ -1475,9 +1475,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
   gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
-		      val[0][0]);
+		      val[0].real);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
-		      val[0][1]);
+		      val[0].imag);
 
   /* ratio */
   g_value_reset(&value);
@@ -1500,7 +1500,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
-		      val[0][1]);
+		      val[0].imag);
 
   /* unset no update */
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
@@ -1715,10 +1715,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	}
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
-	ratio = val[0][1];
+	ratio = val[0].imag;
 	
 	plot->point[0][0] = 0.0;
-	plot->point[0][1] = default_height * val[0][1];
+	plot->point[0][1] = default_height * val[0].imag;
 
 	/* set plot points - attack */
 	g_value_reset(&value);
@@ -1738,10 +1738,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[1][0] = default_width * val[0][0];
-	plot->point[1][1] = default_height * (val[0][1] + ratio);
+	plot->point[1][0] = default_width * val[0].real;
+	plot->point[1][1] = default_height * (val[0].imag + ratio);
 
-	offset = default_width * val[0][0];
+	offset = default_width * val[0].real;
 	
 	/* set plot points - decay */
 	g_value_reset(&value);
@@ -1761,10 +1761,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[2][0] = offset + default_width * val[0][0];
-	plot->point[2][1] = default_height * (val[0][1] + ratio);
+	plot->point[2][0] = offset + default_width * val[0].real;
+	plot->point[2][1] = default_height * (val[0].imag + ratio);
 
-	offset += default_width * val[0][0];
+	offset += default_width * val[0].real;
 
 	/* set plot points - sustain */
 	g_value_reset(&value);
@@ -1784,10 +1784,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[3][0] = offset + default_width * val[0][0];
-	plot->point[3][1] = default_height * (val[0][1] + ratio);
+	plot->point[3][0] = offset + default_width * val[0].real;
+	plot->point[3][1] = default_height * (val[0].imag + ratio);
 
-	offset += default_width * val[0][0];
+	offset += default_width * val[0].real;
 
 	/* set plot points - release */
 	g_value_reset(&value);
@@ -1807,8 +1807,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[4][0] = offset + default_width * val[0][0];
-	plot->point[4][1] = default_height * (val[0][1] + ratio);
+	plot->point[4][0] = offset + default_width * val[0].real;
+	plot->point[4][1] = default_height * (val[0].imag + ratio);
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
