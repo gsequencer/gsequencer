@@ -590,7 +590,7 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 				(GObject *) status_controller);
 
   /* OSC response websocket handler */
-  response_path = g_strdup_printf("%s/ags-osc-over-websocket",
+  response_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/response",
 				  AGS_CONTROLLER_BASE_PATH);
   
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,

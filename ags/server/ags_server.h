@@ -141,9 +141,6 @@ struct _AgsServerInfo
 
 GType ags_server_get_type();
 
-void ags_server_threads_enter();
-void ags_server_threads_leave();
-
 gboolean ags_server_test_flags(AgsServer *server, guint flags);
 void ags_server_set_flags(AgsServer *server, guint flags);
 void ags_server_unset_flags(AgsServer *server, guint flags);

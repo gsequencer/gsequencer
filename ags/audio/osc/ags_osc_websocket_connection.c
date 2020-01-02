@@ -546,12 +546,8 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
   xmlFreeDoc(doc);
 
-  ags_server_threads_enter();
-  
   soup_websocket_connection_send_text(websocket_connection,
 				      buffer);
-
-  ags_server_threads_leave();
   
   g_object_unref(websocket_connection);
   

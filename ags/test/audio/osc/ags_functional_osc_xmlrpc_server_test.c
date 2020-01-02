@@ -517,8 +517,6 @@ ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketCo
        !g_ascii_strncasecmp(response_root_node->name,
 			    "ags-osc-over-xmlrpc",
 			    20)){
-      printf(".");
-      
       g_atomic_int_inc(meter_packet_count);
     }
     
@@ -1309,7 +1307,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   /* follow redirect */
   msg = soup_message_new("GET",
-			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-websocket");
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc/response");
   
   meter_data.meter_packet_count = &meter_packet_count;
   soup_session_websocket_connect_async(soup_session,
@@ -1331,8 +1329,6 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
     nanosleep(&idle_delay,
 	      NULL);
   }
-
-  printf("\n");
 
   g_message("Total received packets: %d", g_atomic_int_get(&meter_packet_count));
   

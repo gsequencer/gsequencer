@@ -106,8 +106,6 @@ enum{
 static gpointer ags_server_parent_class = NULL;
 static guint server_signals[LAST_SIGNAL];
 
-GRecMutex ags_server_mutex = {0,};
-
 GType
 ags_server_get_type()
 {
@@ -675,18 +673,6 @@ ags_server_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
-}
-
-void
-ags_server_threads_enter()
-{
-  g_rec_mutex_lock(&ags_server_mutex);
-}
-
-void
-ags_server_threads_leave()
-{
-  g_rec_mutex_unlock(&ags_server_mutex);
 }
 
 /**

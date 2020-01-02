@@ -59,10 +59,6 @@ struct _AgsOscMeterController
   AgsOscController osc_controller;
 
   guint flags;
-
-  struct timespec *monitor_timeout;
-  
-  GThread *monitor_thread;
   
   GList *monitor;
 };
