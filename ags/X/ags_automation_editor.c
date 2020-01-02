@@ -189,6 +189,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
 
+  GtkStyleContext *style_context;  
+
   GtkAdjustment *adjustment;
 
   AgsConfig *config;
@@ -595,6 +597,11 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* focused automation edit */
   automation_editor->focused_automation_edit = NULL;
+
+  /* style context */
+  style_context = gtk_widget_get_style_context(automation_editor);
+  gtk_style_context_add_class(style_context,
+			      "editor");
 }
 
 void

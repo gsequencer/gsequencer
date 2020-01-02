@@ -111,6 +111,8 @@ ags_setup(int argc, char **argv)
 int
 main(int argc, char **argv)
 {  
+  GtkCssProvider *css_provider;
+  
   AgsConfig *config;
   AgsPriority *priority;
   
@@ -138,7 +140,7 @@ main(int argc, char **argv)
   gchar *wdir;
   gchar *config_filename;
   gchar *priority_filename;
-  gchar *rc_filename;
+  gchar *css_filename;
   gchar *str;
   
   gboolean has_file;
@@ -260,6 +262,8 @@ main(int argc, char **argv)
     }
   }
 
+  css_filename = NULL;
+  
 #ifdef AGS_W32API
   if(!builtin_theme_disabled){
     app_dir = NULL;
@@ -269,32 +273,29 @@ main(int argc, char **argv)
 			  strlen(argv[0]) - strlen("\\gsequencer.exe"));
     }
     
-    if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-      rc_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.rc",
+    if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
+      css_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.css",
 				    g_get_current_dir());
     
-      if(!g_file_test(rc_filename,
+      if(!g_file_test(css_filename,
 		      G_FILE_TEST_IS_REGULAR)){
-	g_free(rc_filename);
+	g_free(css_filename);
 
 	if(g_path_is_absolute(app_dir)){
-	  rc_filename = g_strdup_printf("%s\\%s",
+	  css_filename = g_strdup_printf("%s\\%s",
 					app_dir,
-					"\\share\\gsequencer\\styles\\ags.rc");
+					"\\share\\gsequencer\\styles\\ags.css");
 	}else{
-	  rc_filename = g_strdup_printf("%s\\%s\\%s",
+	  css_filename = g_strdup_printf("%s\\%s\\%s",
 					g_get_current_dir(),
 					app_dir,
-					"\\share\\gsequencer\\styles\\ags.rc");
+					"\\share\\gsequencer\\styles\\ags.css");
 	}
       }
     }else{
-      rc_filename = g_strdup(rc_filename);
+      css_filename = g_strdup(css_filename);
     }
   
-    gtk_rc_parse(rc_filename);
-    
-    g_free(rc_filename);
     g_free(app_dir);
   }
 #else
@@ -303,29 +304,26 @@ main(int argc, char **argv)
   
   /* parse rc file */
   if(!builtin_theme_disabled){
-    rc_filename = g_strdup_printf("%s/%s/ags.rc",
-				  pw->pw_dir,
-				  AGS_DEFAULT_DIRECTORY);
+    css_filename = g_strdup_printf("%s/%s/ags.css",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
 
-    if(!g_file_test(rc_filename,
+    if(!g_file_test(css_filename,
 		    G_FILE_TEST_IS_REGULAR)){
-      g_free(rc_filename);
+      g_free(css_filename);
 
-#ifdef AGS_RC_FILENAME
-      rc_filename = g_strdup(AGS_RC_FILENAME);
+#ifdef AGS_CSS_FILENAME
+      css_filename = g_strdup(AGS_CSS_FILENAME);
 #else
-      if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-	rc_filename = g_strdup_printf("%s%s",
-				      DESTDIR,
-				      "/gsequencer/styles/ags.rc");
+      if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
+	css_filename = g_strdup_printf("%s%s",
+				       DESTDIR,
+				       "/gsequencer/styles/ags.css");
       }else{
-	rc_filename = g_strdup(rc_filename);
+	css_filename = g_strdup(css_filename);
       }
 #endif
     }
-  
-    gtk_rc_parse(rc_filename);
-    g_free(rc_filename);
   }
 #endif
   
@@ -340,9 +338,11 @@ main(int argc, char **argv)
   gtk_init(&argc, &argv);
 
   if(!builtin_theme_disabled){
+#if 0
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
 		 NULL);
+
     g_signal_handlers_block_matched(gtk_settings_get_default(),
 				    G_SIGNAL_MATCH_DETAIL,
 				    g_signal_lookup("set-property",
@@ -351,6 +351,7 @@ main(int argc, char **argv)
 				    NULL,
 				    NULL,
 				    NULL);
+#endif
   }
   
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -376,8 +377,18 @@ main(int argc, char **argv)
 
   g_set_application_name(i18n("Advanced Gtk+ Sequencer"));
   gtk_window_set_default_icon_name("gsequencer");
-  g_setenv("PULSE_PROP_media.role", "production", TRUE);
+  g_setenv("PULSE_PROP_media.role", "production", TRUE);  
   
+  css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(css_provider,
+				  css_filename,
+				  NULL);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+					    GTK_STYLE_PROVIDER(css_provider),
+					    GTK_STYLE_PROVIDER_PRIORITY_USER);    
+    
+  g_free(css_filename);
+
   /* setup */
   if(!has_file){
 #ifdef AGS_W32API

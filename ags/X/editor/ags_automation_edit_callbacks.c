@@ -1131,9 +1131,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
-	if(x0_offset < gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))){
+	if(x0_offset / zoom_factor < gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar))){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
-			      x0_offset);
+			      x0_offset / zoom_factor);
 	}
       }
       break;
@@ -1149,9 +1149,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
-	if(x0_offset + automation_edit->control_width > gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) + allocation.width){
+	if((x0_offset + automation_edit->control_width) / zoom_factor > gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar)) + allocation.width){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
-			      x0_offset);
+			      x0_offset / zoom_factor);
 	}
       }
       break;

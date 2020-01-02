@@ -189,6 +189,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   GtkScrolledWindow *scrolled_window;  
   GtkTable *table;
   
+  GtkStyleContext *style_context;
+  
   GtkAdjustment *adjustment;
 
   AgsConfig *config;
@@ -382,6 +384,11 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   /* focused wave edit */
   wave_editor->focused_wave_edit = NULL;
+
+  /* style context */
+  style_context = gtk_widget_get_style_context(wave_editor);
+  gtk_style_context_add_class(style_context,
+			      "editor");
 }
 
 void

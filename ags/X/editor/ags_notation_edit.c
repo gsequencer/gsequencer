@@ -206,6 +206,8 @@ ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_notation_edit_init(AgsNotationEdit *notation_edit)
 {
+  GtkStyleContext *style_context;
+  
   GtkAdjustment *adjustment;
 
   AgsConfig *config;
@@ -319,6 +321,11 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* style context */
+  style_context = gtk_widget_get_style_context(notation_edit);
+  gtk_style_context_add_class(style_context,
+			      "editor");
 
   /* auto-scroll */
   if(ags_notation_edit_auto_scroll == NULL){
