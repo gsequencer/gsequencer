@@ -63,9 +63,7 @@ gint64 ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *os
 enum{
   PROP_0,
   PROP_WEBSOCKET_CONNECTION,
-  PROP_CLIENT,
   PROP_SECURITY_CONTEXT,
-  PROP_PATH,
   PROP_LOGIN,
   PROP_SECURITY_TOKEN,
   PROP_RESOURCE_ID,
@@ -140,22 +138,6 @@ ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_webs
 				  param_spec);
 
   /**
-   * AgsOscWebsocketConnection:client:
-   *
-   * The assigned #SoupClientContext-struct.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_boxed("client",
-				  i18n_pspec("assigned client"),
-				  i18n_pspec("The assigned client"),
-				  SOUP_TYPE_CLIENT_CONTEXT,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CLIENT,
-				  param_spec);
-
-  /**
    * AgsOscWebsocketConnection:security-context:
    *
    * The assigned #AgsSecurityContext.
@@ -169,22 +151,6 @@ ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_webs
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SECURITY_CONTEXT,
-				  param_spec);
-
-  /**
-   * AgsOscWebsocketConnection:path:
-   *
-   * The current path.
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_string("path",
-				   i18n_pspec("path"),
-				   i18n_pspec("The current path"),
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PATH,
 				  param_spec);
 
   /**
@@ -251,11 +217,7 @@ ags_osc_websocket_connection_init(AgsOscWebsocketConnection *osc_websocket_conne
 {
   osc_websocket_connection->websocket_connection = NULL;
 
-  osc_websocket_connection->client = NULL;
-
   osc_websocket_connection->security_context = NULL;
-
-  osc_websocket_connection->path = NULL;
 
   osc_websocket_connection->login = NULL;
   osc_websocket_connection->security_token = NULL;
@@ -306,19 +268,6 @@ ags_osc_websocket_connection_set_property(GObject *gobject,
     g_rec_mutex_unlock(osc_connection_mutex);
   }
   break;
-  case PROP_CLIENT:
-  {
-    SoupClientContext *client;
-
-    client = g_value_get_boxed(value);
-
-    g_rec_mutex_lock(osc_connection_mutex);
-      
-    osc_websocket_connection->client = client;
-
-    g_rec_mutex_unlock(osc_connection_mutex);
-  }
-  break;
   case PROP_SECURITY_CONTEXT:
   {
     GObject *security_context;
@@ -342,27 +291,6 @@ ags_osc_websocket_connection_set_property(GObject *gobject,
     }
       
     osc_websocket_connection->security_context = security_context;
-
-    g_rec_mutex_unlock(osc_connection_mutex);
-  }
-  break;
-  case PROP_PATH:
-  {
-    gchar *path;
-
-    path = g_value_get_string(value);
-
-    g_rec_mutex_lock(osc_connection_mutex);
-
-    if(osc_websocket_connection->path == path){
-      g_rec_mutex_unlock(osc_connection_mutex);
-
-      return;
-    }
-
-    g_free(osc_websocket_connection->path);
-      
-    osc_websocket_connection->path = g_strdup(path);
 
     g_rec_mutex_unlock(osc_connection_mutex);
   }
@@ -461,29 +389,11 @@ ags_osc_websocket_connection_get_property(GObject *gobject,
     g_rec_mutex_unlock(osc_connection_mutex);
   }
   break;
-  case PROP_CLIENT:
-  {
-    g_rec_mutex_lock(osc_connection_mutex);
-
-    g_value_set_boxed(value, osc_websocket_connection->client);
-
-    g_rec_mutex_unlock(osc_connection_mutex);
-  }
-  break;
   case PROP_SECURITY_CONTEXT:
   {
     g_rec_mutex_lock(osc_connection_mutex);
 
     g_value_set_object(value, osc_websocket_connection->security_context);
-
-    g_rec_mutex_unlock(osc_connection_mutex);
-  }
-  break;
-  case PROP_PATH:
-  {
-    g_rec_mutex_lock(osc_connection_mutex);
-
-    g_value_set_string(value, osc_websocket_connection->path);
 
     g_rec_mutex_unlock(osc_connection_mutex);
   }
@@ -559,7 +469,6 @@ ags_osc_websocket_connection_finalize(GObject *gobject)
     g_object_unref(osc_websocket_connection->security_context);
   }
 
-  g_free(osc_websocket_connection->path);
   g_free(osc_websocket_connection->login);
   g_free(osc_websocket_connection->security_token);
   
@@ -590,7 +499,7 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   GError *error;
 
   GRecMutex *osc_response_mutex;
-
+  
   g_object_get(osc_websocket_connection,
 	       "websocket-connection", &websocket_connection,
 	       NULL);
@@ -635,24 +544,15 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
 	      osc_packet_node);
 
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
+  xmlFreeDoc(doc);
+
+  ags_server_threads_enter();
   
-  /* write stream */
-  stream = soup_websocket_connection_get_io_stream(websocket_connection);
-  output_stream = g_io_stream_get_output_stream(stream);
+  soup_websocket_connection_send_text(websocket_connection,
+				      buffer);
+
+  ags_server_threads_leave();
   
-  error = NULL;
-  g_output_stream_write(output_stream,
-			buffer,
-			(gsize) buffer_length,
-			NULL,
-			&error);
-
-  if(error != NULL){
-    g_warning("%s", error->message);
-
-    g_error_free(error);
-  }
-
   g_object_unref(websocket_connection);
   
   xmlFree(buffer);

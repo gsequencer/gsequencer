@@ -106,7 +106,7 @@ enum{
 static gpointer ags_server_parent_class = NULL;
 static guint server_signals[LAST_SIGNAL];
 
-static GList *ags_server_list = NULL;
+GRecMutex ags_server_mutex = {0,};
 
 GType
 ags_server_get_type()
@@ -677,6 +677,18 @@ ags_server_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
 }
 
+void
+ags_server_threads_enter()
+{
+  g_rec_mutex_lock(&ags_server_mutex);
+}
+
+void
+ags_server_threads_leave()
+{
+  g_rec_mutex_unlock(&ags_server_mutex);
+}
+
 /**
  * ags_server_test_flags:
  * @server: the #AgsServer
@@ -1026,7 +1038,7 @@ ags_server_real_start(AgsServer *server)
   soup_server_add_auth_domain(server->soup_server, server->auth_domain);
   
   soup_server_add_handler(server->soup_server,
-			  NULL,
+			  AGS_CONTROLLER_BASE_PATH,
 			  ags_server_xmlrpc_callback,
 			  server,
 			  NULL);
@@ -1119,42 +1131,6 @@ ags_server_stop(AgsServer *server)
   g_signal_emit(G_OBJECT(server),
 		server_signals[STOP], 0);
   g_object_unref((GObject *) server);
-}
-
-/**
- * ags_server_lookup:
- * @server_info: the #AgsServerInfo-struct
- *
- * Lookup #AgsServer by @server_info.
- *
- * Returns: the associated #AgsServer if found, else %NULL
- * 
- * Since: 3.0.0
- */
-AgsServer*
-ags_server_lookup(AgsServerInfo *server_info)
-{
-  GList *current;
-
-  if(server_info == NULL){
-    return(NULL);
-  }
-  
-  current = ags_server_list;
-
-  while(current != NULL){
-    if(AGS_SERVER(current->data)->server_info != NULL &&
-       !g_ascii_strcasecmp(server_info->uuid,
-			   AGS_SERVER(current->data)->server_info->uuid) &&
-       !g_strcmp0(server_info->server_name,
-		  AGS_SERVER(current->data)->server_info->server_name)){
-      return(AGS_SERVER(current->data));
-    }
-
-    current = current->next;
-  }
-
-  return(NULL);
 }
 
 gboolean

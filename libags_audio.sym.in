@@ -119,6 +119,7 @@ ags_base_plugin_unset_flags
 ags_base_plugin_find_filename
 ags_base_plugin_find_effect
 ags_base_plugin_find_ui_effect_index
+ags_base_plugin_sort_func
 ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
@@ -295,6 +296,7 @@ ags_notation_set_flags
 ags_notation_unset_flags
 ags_notation_find_near_timestamp
 ags_notation_add
+ags_notation_sort_func
 ags_notation_add_note
 ags_notation_remove_note
 ags_notation_remove_note_at_position
@@ -964,6 +966,7 @@ ags_automation_unset_flags
 ags_automation_find_port
 ags_automation_find_near_timestamp
 ags_automation_find_near_timestamp_extended
+ags_automation_sort_func
 ags_automation_add
 ags_automation_add_acceleration
 ags_automation_remove_acceleration
@@ -1697,6 +1700,7 @@ ags_wave_set_samplerate
 ags_wave_set_buffer_size
 ags_wave_set_format
 ags_wave_find_near_timestamp
+ags_wave_sort_func
 ags_wave_add
 ags_wave_add_buffer
 ags_wave_remove_buffer
@@ -1744,6 +1748,7 @@ ags_midi_test_flags
 ags_midi_set_flags
 ags_midi_unset_flags
 ags_midi_find_near_timestamp
+ags_midi_sort_func
 ags_midi_add
 ags_midi_add_track
 ags_midi_remove_track

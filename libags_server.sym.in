@@ -130,6 +130,8 @@ ags_business_group_manager_remove_business_group
 ags_business_group_manager_get_instance
 ags_business_group_manager_new
 ags_server_get_type
+ags_server_threads_enter
+ags_server_threads_leave
 ags_server_test_flags
 ags_server_set_flags
 ags_server_unset_flags
@@ -139,7 +141,6 @@ ags_server_remove_controller
 ags_server_start
 ags_server_stop
 ags_server_listen
-ags_server_lookup
 ags_server_new
 ags_registry_get_type
 ags_registry_entry_alloc

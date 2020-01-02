@@ -189,6 +189,8 @@ void ags_audio_application_context_quit(AgsApplicationContext *application_conte
 void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						      AgsAudioApplicationContext *audio_application_context);
 
+gboolean ags_audio_application_context_server_threads_timeout(gpointer user_data);
+
 void* ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop);
 void* ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop);
 
@@ -1667,11 +1669,12 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   AgsTaskLauncher *task_launcher;
 
   GMainContext *server_main_context;
+  GSource *timeout_source;
   GMainContext *audio_main_context;
   GMainContext *osc_server_main_context;
   GMainLoop *main_loop;
   GThread *main_loop_thread;
-  
+
   GList *start_queue;
   
   audio_application_context = (AgsAudioApplicationContext *) application_context;
@@ -1690,9 +1693,17 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   g_main_context_ref(server_main_context);
 
   audio_application_context->server_main_context = server_main_context;
-
+  
   main_loop = g_main_loop_new(server_main_context,
 			      TRUE);
+
+  timeout_source = g_timeout_source_new(G_TIME_SPAN_MILLISECOND / 30);
+  g_source_set_callback(timeout_source,
+			ags_audio_application_context_server_threads_timeout,
+			NULL,
+			NULL);
+  g_source_attach(timeout_source,
+		  server_main_context);
 
   g_thread_new("Advanced Gtk+ Sequencer - server main loop",
 	       ags_audio_application_context_server_main_loop_thread,
@@ -3150,6 +3161,18 @@ ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *app
   return(node);
 }
 
+gboolean
+ags_audio_application_context_server_threads_timeout(gpointer user_data)
+{
+  ags_server_threads_leave();
+
+  g_usleep(4);
+  
+  ags_server_threads_enter();
+  
+  return(G_SOURCE_CONTINUE);
+}
+
 void*
 ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop)
 {
@@ -3179,7 +3202,11 @@ ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop)
   g_list_free_full(start_list,
 		   g_object_unref);
   
+  ags_server_threads_enter();
+  
   g_main_loop_run(main_loop);
+
+  ags_server_threads_leave();
 
   g_thread_exit(NULL);
 

@@ -1227,9 +1227,7 @@ ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
 
   osc_websocket_connection = ags_osc_websocket_connection_new(osc_xmlrpc_server);
   g_object_set(osc_websocket_connection,
-	       "client", client,
 	       "security-context", security_context,
-	       "path", path,
 	       "login", login,
 	       "security-token", security_token,
 	       "resource-id", response_resource_id,

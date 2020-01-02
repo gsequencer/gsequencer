@@ -60,12 +60,6 @@ void ags_osc_xmlrpc_server_finalize(GObject *gobject);
 void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
 void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 
-void ags_osc_xmlrpc_server_websocket_early_handler_callback(SoupServer *server,
-							    SoupMessage *msg,
-							    const char *path,
-							    GHashTable *query,
-							    SoupClientContext *client,
-							    gpointer user_data);
 void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 					      SoupWebsocketConnection *connection,
 					      const char *path,
@@ -476,16 +470,11 @@ ags_osc_xmlrpc_server_add_websocket_handler(AgsOscXmlrpcServer *osc_xmlrpc_serve
   g_message("add websocket handler");
   
   g_rec_mutex_lock(server_mutex);
-
-  soup_server_add_early_handler(xmlrpc_server->soup_server,
-				path,
-				ags_osc_xmlrpc_server_websocket_early_handler_callback,
-				NULL,
-				NULL);
+  
   soup_server_add_websocket_handler(xmlrpc_server->soup_server,
-				    path,
-				    origin,
-				    protocols,
+				    path, // path
+				    NULL, // origin
+				    NULL, // protocols
 				    callback,
 				    user_data,
 				    destroy);
@@ -511,12 +500,6 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 
   gchar *response_path;
 
-  static const char *protocols[] = {
-    "Sec-WebSocket-Protocol",
-    "ags-osc-over-xmlrpc.gsequencer.org",
-    NULL,
-  };
-    
   if(!AGS_IS_OSC_XMLRPC_SERVER(osc_xmlrpc_server)){
     return;
   }
@@ -607,13 +590,13 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 				(GObject *) status_controller);
 
   /* OSC response websocket handler */
-  response_path = g_strdup_printf("%s/ags-osc-over-xmlrpc/response",
+  response_path = g_strdup_printf("%s/ags-osc-over-websocket",
 				  AGS_CONTROLLER_BASE_PATH);
   
   ags_osc_xmlrpc_server_add_websocket_handler(osc_xmlrpc_server,
 					      response_path,
 					      NULL,
-					      protocols,
+					      NULL,
 					      ags_osc_xmlrpc_server_websocket_callback,
 					      osc_xmlrpc_server,
 					      NULL);
@@ -622,32 +605,10 @@ ags_osc_xmlrpc_server_add_default_controller(AgsOscXmlrpcServer *osc_xmlrpc_serv
 }
 
 void
-ags_osc_xmlrpc_server_websocket_early_handler_callback(SoupServer *server,
-						       SoupMessage *msg,
-						       const char *path,
-						       GHashTable *query,
-						       SoupClientContext *client,
-						       gpointer user_data)
-{
-  static const char *protocols[] = {
-    "Sec-WebSocket-Protocol",
-    "ags-osc-over-xmlrpc.gsequencer.org",
-    NULL,
-  };
-
-  g_message("MSG websocket PATH=%s", path);
-
-  soup_websocket_server_process_handshake(msg,
-					  NULL,
-					  protocols);
-}
-
-void
-ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
-					 SoupWebsocketConnection *websocket_connection,
-					 const char *path,
-					 SoupClientContext *client,
-					 AgsOscXmlrpcServer *osc_xmlrpc_server)
+ags_osc_xmlrpc_server_websocket_message_callback(SoupWebsocketConnection *websocket_connection,
+						 gint type,
+						 GBytes *message,
+						 AgsOscXmlrpcServer *osc_xmlrpc_server)
 {
   AgsAuthenticationManager *authentication_manager;
   AgsSecurityContext *security_context;
@@ -655,9 +616,6 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   AgsLoginInfo *login_info;
 
   xmlDoc *doc;
-
-  GIOStream *stream;
-  GInputStream *input_stream;
 
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
@@ -683,45 +641,11 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   authentication_manager = ags_authentication_manager_get_instance();
   
   authentication_manager_mutex = AGS_AUTHENTICATION_MANAGER_GET_OBJ_MUTEX(authentication_manager);
-  
-  stream = soup_websocket_connection_get_io_stream(websocket_connection);
-  input_stream = g_io_stream_get_input_stream(stream);
 
   doc = NULL;
   root_node = NULL;
-  
-  for(i = 0, n_attempts = 0; i < AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE - 1 && (doc == NULL || root_node == NULL) && n_attempts < 100; n_attempts++){
-    error = NULL;
-    num_read = g_input_stream_read(input_stream,
-				   buffer + i,
-				   AGS_OSC_XMLRPC_SERVER_DEFAULT_CHUNK_SIZE - i,
-				   NULL,
-				   &error);
 
-    if(error != NULL){
-      g_warning("%s", error->message);
-
-      g_error_free(error);
-    }
-
-    if(num_read <= 0){
-      g_usleep(125000);
-    }else{
-      i += num_read;
-      
-      buffer[i] = '\0';
-      
-      doc = xmlParseDoc(buffer);
-
-      if(doc != NULL){
-	root_node = xmlDocGetRootElement(doc);
-
-	if(root_node == NULL){
-	  xmlFreeDoc(doc);
-	}
-      }
-    }
-  }
+  doc = xmlParseDoc(g_bytes_get_data(message, NULL));
 
   if(doc == NULL){
     return;
@@ -803,7 +727,7 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   xpath_object = xmlXPathNodeEval(root_node,
 				  xpath,
 				  xpath_context);
-  
+   
   if(xpath_object->nodesetval != NULL){
     node = xpath_object->nodesetval->nodeTab;
 
@@ -826,9 +750,16 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
   xmlXPathFreeObject(xpath_object);
   xmlXPathFreeContext(xpath_context);
 
+  xmlFreeDoc(doc);
+  
   if(login == NULL ||
      security_token == NULL ||
      resource_id == NULL){
+    g_free(login);
+    g_free(security_token);
+
+    g_free(resource_id);
+
     return;
   }
   
@@ -840,11 +771,11 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 
     security_context = login_info->security_context;
     g_object_ref(security_context);
-
+ 
     user_uuid = g_strdup(login_info->user_uuid);
     
     g_rec_mutex_unlock(authentication_manager_mutex);
-  
+   
     if(ags_authentication_manager_is_session_active(authentication_manager,
 						    security_context,
 						    user_uuid,
@@ -861,9 +792,7 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
       if(connection != NULL){
 	g_object_set(connection->data,
 		     "websocket-connection", websocket_connection,
-		     "client", client,
 		     "security-context", security_context,
-		     "path", path,
 		     "login", login,
 		     "security-token", security_token,
 		     NULL);
@@ -882,6 +811,21 @@ ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 
   g_free(login);
   g_free(security_token);
+
+  g_free(resource_id);
+}
+
+void
+ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
+					 SoupWebsocketConnection *websocket_connection,
+					 const char *path,
+					 SoupClientContext *client,
+					 AgsOscXmlrpcServer *osc_xmlrpc_server)
+{
+  g_signal_connect(websocket_connection, "message",
+		   ags_osc_xmlrpc_server_websocket_message_callback, osc_xmlrpc_server);
+
+  g_object_ref(websocket_connection);
 }
 
 /**

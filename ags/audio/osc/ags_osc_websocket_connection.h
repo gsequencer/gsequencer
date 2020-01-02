@@ -48,12 +48,8 @@ struct _AgsOscWebsocketConnection
   AgsOscConnection connection;
 
   SoupWebsocketConnection *websocket_connection;
-  
-  SoupClientContext *client;
-  
+    
   GObject *security_context;
-  
-  gchar *path;
   
   gchar *login;
   gchar *security_token;

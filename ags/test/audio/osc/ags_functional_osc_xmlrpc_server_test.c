@@ -55,10 +55,17 @@ void ags_functional_osc_xmlrpc_server_test_authenticate_authenticate_callback(So
 									      SoupAuth *auth,
 									      gboolean retrying,
 									      gpointer user_data);
+
 void ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
 							      GAsyncResult *res,
 							      gpointer user_data);
-
+void ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketConnection *websocket_connection,
+								      gint type,
+								      GBytes *message,
+								      gpointer user_data);
+void ags_functional_osc_xmlrpc_server_test_websocket_error_callback(SoupWebsocketConnection *websocket_connection,
+								    GError *error,
+								    gpointer user_data);
 
 #define AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"					\
@@ -139,6 +146,9 @@ void ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_ob
 
 GThread *add_thread = NULL;
 
+GMainLoop *test_main_loop;
+GMainContext *test_main_context;  
+
 AgsApplicationContext *application_context;
 
 AgsAudio *drum;
@@ -147,6 +157,8 @@ AgsOscXmlrpcServer *osc_xmlrpc_server;
 
 SoupSession *soup_session;
 SoupCookieJar *jar;
+
+SoupWebsocketConnection *websocket_connection;
 
 GObject *default_soundcard;
 
@@ -169,6 +181,9 @@ ags_functional_osc_xmlrpc_server_test_add_thread(gpointer data)
   putenv("LADSPA_PATH=\"\"");
   putenv("DSSI_PATH=\"\"");
   putenv("LV2_PATH=\"\"");
+
+  test_main_context = g_main_context_new();
+  test_main_loop = g_main_loop_new(test_main_context, FALSE);
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -395,53 +410,38 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
 							 GAsyncResult *res,
 							 gpointer user_data)
 {
-  SoupWebsocketConnection *websocket_connection;
-
-  GIOStream *io_stream;
-  GInputStream *output_stream;
-  GInputStream *input_stream;
-
   xmlDoc *doc;
-  xmlDoc *response_doc;
   xmlNode *root_node;
-  xmlNode *response_root_node;
   xmlNode *login_node;
   xmlNode *security_token_node;
   xmlNode *redirect_node;
 
-  struct timespec start_time;
-  struct timespec timeout_delay;
-  struct timespec idle_delay;  
-
   xmlChar *buffer;
-  guchar *data;
-  volatile gint *meter_packet_count;
 
   int buffer_length;
-  gsize num_read;
-  guint i;
-  
+    
   GError *error;
-  
-  g_message("websocket ...");
   
   error = NULL;
   websocket_connection = soup_session_websocket_connect_finish(SOUP_SESSION(source_object),
 							       res,
 							       &error);
-
+    
   if(error != NULL){
     g_critical("%s", error->message);
     
     g_error_free(error);
   }
+  
+  g_message("websocket ...");
 
-  sleep(5);
+  g_signal_connect(websocket_connection, "message",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_websocket_message_callback), NULL);
   
-  io_stream = soup_websocket_connection_get_io_stream(websocket_connection);
-  
-  output_stream = g_io_stream_get_output_stream(io_stream);
-  
+  g_signal_connect(websocket_connection, "error",
+		   G_CALLBACK(ags_functional_osc_xmlrpc_server_test_websocket_error_callback), NULL);
+
+    
   /* websocket */
   doc = xmlNewDoc("1.0");
 	    
@@ -467,7 +467,7 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
 	      security_token_node);
 
   redirect_node = xmlNewNode(NULL,
-			  BAD_CAST "ags-srv-redirect");
+			     BAD_CAST "ags-srv-redirect");
 
   xmlNewProp(redirect_node,
 	     "resource-id",
@@ -476,115 +476,62 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
   xmlAddChild(root_node,
 	      redirect_node);
 
+  buffer = NULL;
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
 
-  /* write out */
-  error = NULL;
-  g_output_stream_write(output_stream,
-			buffer,
-			buffer_length,
-			NULL,
-			&error);
+  sleep(5);
   
-  if(error != NULL){
-    g_critical("%s", error->message);
-    
-    g_error_free(error);
-  }
+  soup_websocket_connection_send_text(websocket_connection,
+				      buffer);
+}
 
-  /* response */
-  input_stream = g_io_stream_get_input_stream(io_stream);
+void
+ags_functional_osc_xmlrpc_server_test_websocket_message_callback(SoupWebsocketConnection *websocket_connection,
+								 gint type,
+								 GBytes *message,
+								 gpointer user_data)
+{
+  xmlDoc *response_doc;
+  xmlNode *response_root_node;
 
-#ifdef __APPLE__
-  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
-      
-  start_time.tv_sec = mts.tv_sec;
-  start_time.tv_nsec = mts.tv_nsec;
-#else
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-#endif
+  volatile gint *meter_packet_count;
+  guchar *data;
 
-  timeout_delay.tv_sec = 180;
-  timeout_delay.tv_nsec = 0;
+  gsize data_length;
   
-  idle_delay.tv_sec = 0;
-  idle_delay.tv_nsec = NSEC_PER_SEC / 30;
+  GError *error;
 
+  data = g_bytes_get_data(message,
+			  &data_length);
+
+  
   meter_packet_count = meter_data.meter_packet_count;
 
-  data = g_malloc(65535 * sizeof(guchar));
+  response_doc = xmlParseDoc(data);
+  response_root_node = NULL;  
 
-  i = 0;
-  
-  while(!ags_time_timeout_expired(&start_time,
-				  &timeout_delay)){
-    error = NULL;
-    num_read = g_input_stream_read(input_stream,
-				   data + i,
-				   65535 - i - 1,
-				   NULL,
-				   &error);
-
-    if(error != NULL){
-      g_critical("%s", error->message);
+  if(response_doc != NULL){
+    response_root_node = xmlDocGetRootElement(response_doc);
     
-      g_error_free(error);
-    }
-
-    if(num_read > 0){
-      guint j;
-
-      response_doc = NULL;
-      response_root_node = NULL;
-
-      for(j = 0; j < num_read; ){
-	gchar *offset, *end_offset;
-
-	offset = strstr(data + j, "</ags-osc-over-xmlrpc>");
-
-	if(offset != NULL){
-	  end_offset = offset + strlen("</ags-osc-over-xmlrpc>");
-	  end_offset[0] = '\0';
-
-	  i += (end_offset - ((gchar *) data + j));
-
-	  response_doc = xmlParseDoc(data + j);
-
-	  if(response_doc != NULL){
-	    response_root_node = xmlDocGetRootElement(response_doc);
-
-	    if(response_root_node != NULL){
-	      g_atomic_int_inc(&(meter_packet_count[0]));
-
-	      j = i + 1;
-	    }
-
-	    xmlFreeDoc(response_doc);
-	  }else{
-	    break;
-	  }
-	}
-
-	i = num_read - j;
-
-	if(i != 0){
-	  memcpy(data, data + j, num_read - j);
-	}
-      }
+    if(response_root_node != NULL &&
+       !g_ascii_strncasecmp(response_root_node->name,
+			    "ags-osc-over-xmlrpc",
+			    20)){
+      printf(".");
       
-      if(i >= 65534){
-	i = 0;
-      }
+      g_atomic_int_inc(meter_packet_count);
     }
-
-    nanosleep(&idle_delay,
-	      NULL);
+    
+    xmlFreeDoc(response_doc);
   }
+}
 
-  g_message("Total received packets: %d", g_atomic_int_get(&(meter_packet_count[0])));
+void
+ags_functional_osc_xmlrpc_server_test_websocket_error_callback(SoupWebsocketConnection *websocket_connection,
+							       GError *error,
+							       gpointer user_data)
+{
+  g_message("%s", error->message);
 }
 
 void
@@ -1208,12 +1155,6 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   static const guint enable_peak_message_size = 112;
   static const guint disable_peak_message_size = 112;
 
-  static const char *protocols[] = {
-    "Sec-WebSocket-Protocol",
-    "ags-osc-over-xmlrpc.gsequencer.org",
-    NULL,
-  };
-
   /* meter */
   doc = xmlNewDoc("1.0");
 	    
@@ -1262,7 +1203,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   status = soup_session_send_message(soup_session,
 				     msg);
 
-  sleep(60);
+  sleep(5);
   
   g_object_get(msg,
 	       "response-headers", &response_headers,
@@ -1368,24 +1309,32 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
 
   /* follow redirect */
   msg = soup_message_new("GET",
-			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-xmlrpc/response");
-
+			 "http://127.0.0.1:8080/ags-xmlrpc/ags-osc-over-websocket");
+  
   meter_data.meter_packet_count = &meter_packet_count;
   soup_session_websocket_connect_async(soup_session,
 				       msg,
 				       NULL,
-				       protocols,
+				       NULL,
 				       NULL,
 				       ags_functional_osc_xmlrpc_server_test_websocket_callback,
-				       &meter_data);
+				       NULL);
+
+  g_message("wait for websocket");
   
   while(!ags_time_timeout_expired(&start_time,
 				  &timeout_delay)){
+    g_main_context_iteration(test_main_context,
+			     FALSE);
     //empty
 
     nanosleep(&idle_delay,
 	      NULL);
   }
+
+  printf("\n");
+
+  g_message("Total received packets: %d", g_atomic_int_get(&meter_packet_count));
   
   CU_ASSERT(g_atomic_int_get(&(meter_packet_count)) >= AGS_FUNCTIONAL_OSC_XMLRPC_SERVER_TEST_METER_PACKET_COUNT);
 

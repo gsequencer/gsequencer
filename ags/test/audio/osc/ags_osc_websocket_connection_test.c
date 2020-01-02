@@ -38,11 +38,9 @@ int ags_osc_websocket_connection_test_clean_suite();
 void ags_osc_websocket_connection_test_set_property();
 void ags_osc_websocket_connection_test_get_property();
 
-#define AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_PATH "/ags-test-path"
 #define AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_LOGIN "ags-test-login"
 #define AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_SECURITY_TOKEN "ags-test-security-token"
 
-#define AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_PATH "/ags-test-path"
 #define AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_LOGIN "ags-test-login"
 #define AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_SECURITY_TOKEN "ags-test-security-token"
 
@@ -89,7 +87,6 @@ ags_osc_websocket_connection_test_set_property()
   g_object_set(osc_websocket_connection,
 	       "websocket-connection", websocket_connection,
 	       "security-context", security_context,
-	       "path", AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_PATH,
 	       "login", AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_LOGIN,
 	       "security-token", AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_SECURITY_TOKEN,
 	       NULL);
@@ -98,7 +95,6 @@ ags_osc_websocket_connection_test_set_property()
 
   CU_ASSERT(osc_websocket_connection->security_context == security_context);
 
-  CU_ASSERT((!g_strcmp0(osc_websocket_connection->path, AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_PATH)) == TRUE);
   CU_ASSERT((!g_strcmp0(osc_websocket_connection->login, AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_LOGIN)) == TRUE);
   CU_ASSERT((!g_strcmp0(osc_websocket_connection->security_token, AGS_OSC_WEBSOCKET_CONNECTION_TEST_SET_PROPERTY_SECURITY_TOKEN)) == TRUE);
 }
@@ -112,7 +108,6 @@ ags_osc_websocket_connection_test_get_property()
 
   SoupWebsocketConnection *websocket_connection;
 
-  gchar *path;
   gchar *login;
   gchar *security_token;
   
@@ -127,14 +122,12 @@ ags_osc_websocket_connection_test_get_property()
 
   osc_websocket_connection->security_context = ags_security_context_new();
 
-  osc_websocket_connection->path = AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_PATH;
   osc_websocket_connection->login = AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_LOGIN;
   osc_websocket_connection->security_token = AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_SECURITY_TOKEN;
   
   g_object_get(osc_websocket_connection,
 	       "websocket-connection", &websocket_connection,
 	       "security-context", &security_context,
-	       "path", &path,
 	       "login", &login,
 	       "security-token", &security_token,
 	       NULL);
@@ -143,7 +136,6 @@ ags_osc_websocket_connection_test_get_property()
 
   CU_ASSERT(osc_websocket_connection->security_context == security_context);
 
-  CU_ASSERT((!g_strcmp0(path, AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_PATH)) == TRUE);
   CU_ASSERT((!g_strcmp0(login, AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_LOGIN)) == TRUE);
   CU_ASSERT((!g_strcmp0(security_token, AGS_OSC_WEBSOCKET_CONNECTION_TEST_GET_PROPERTY_SECURITY_TOKEN)) == TRUE);
 }
