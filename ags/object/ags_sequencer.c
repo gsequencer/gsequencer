@@ -144,8 +144,8 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
 /**
  * ags_sequencer_list_cards:
  * @sequencer: the #AgsSequencer
- * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card ids
- * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card names
+ * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (transfer full): a list containing card ids
+ * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (transfer full): a list containing card names
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *

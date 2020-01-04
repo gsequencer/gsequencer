@@ -235,8 +235,8 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_list_cards:
  * @soundcard: the #AgsSoundcard
- * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card ids
- * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card names
+ * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (transfer full): a list containing card ids
+ * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (transfer full): a list containing card names
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *

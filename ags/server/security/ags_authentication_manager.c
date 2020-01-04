@@ -213,7 +213,7 @@ ags_login_info_unref(AgsLoginInfo *login_info)
  * 
  * Get authentication.
  * 
- * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsAuthentication
+ * Returns: (element-type G.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsAuthentication
  * 
  * Since: 3.0.0
  */

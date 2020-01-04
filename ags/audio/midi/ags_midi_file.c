@@ -143,7 +143,7 @@ ags_midi_file_init(AgsMidiFile *midi_file)
   midi_file->offset = AGS_MIDI_FILE_DEFAULT_OFFSET;
   midi_file->format = AGS_MIDI_FILE_DEFAULT_FORMAT;
   midi_file->count = 0;
-  midi_file->division = (60 * USEC_PER_SEC) / AGS_MIDI_FILE_DEFAULT_BEATS;
+  midi_file->division = (60 * AGS_USEC_PER_SEC) / AGS_MIDI_FILE_DEFAULT_BEATS;
   midi_file->times = 0;
   midi_file->beat = AGS_MIDI_FILE_DEFAULT_BEATS;
   midi_file->clicks = AGS_MIDI_FILE_DEFAULT_TICKS;

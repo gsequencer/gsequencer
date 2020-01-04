@@ -505,7 +505,7 @@ ags_midiin_init(AgsMidiin *midiin)
     g_free(segmentation);
   }
   
-  midiin->latency = NSEC_PER_SEC / 4000.0;
+  midiin->latency = AGS_NSEC_PER_SEC / 4000.0;
   
   /* counters */
   midiin->start_note_offset = 0;

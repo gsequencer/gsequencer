@@ -92,9 +92,9 @@ void ags_task_launcher_add_task_all(AgsTaskLauncher *task_launcher,
 				    GList *list);
 
 void ags_task_launcher_add_cyclic_task(AgsTaskLauncher *task_launcher,
-				       AgsTask *task);
+				       AgsTask *cyclic_task);
 void ags_task_launcher_remove_cyclic_task(AgsTaskLauncher *task_launcher,
-					  AgsTask *task);
+					  AgsTask *cyclic_task);
 
 void ags_task_launcher_run(AgsTaskLauncher *task_launcher);
 

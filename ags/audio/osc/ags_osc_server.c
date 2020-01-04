@@ -356,12 +356,12 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->accept_delay->tv_sec = 0;
-  osc_server->accept_delay->tv_nsec = NSEC_PER_SEC / 1000;
+  osc_server->accept_delay->tv_nsec = AGS_NSEC_PER_SEC / 1000;
 
   osc_server->dispatch_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->dispatch_delay->tv_sec = 0;
-  osc_server->dispatch_delay->tv_nsec = NSEC_PER_SEC / 1000;
+  osc_server->dispatch_delay->tv_nsec = AGS_NSEC_PER_SEC / 1000;
 
   osc_server->listen_thread = NULL;
   osc_server->dispatch_thread = NULL;

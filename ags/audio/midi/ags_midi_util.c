@@ -642,10 +642,10 @@ ags_midi_util_delta_time_to_offset(glong division,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    offset = (16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) USEC_PER_SEC));
+    offset = (16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC));
   }else{
     /* SMTPE */
-    offset = (16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) USEC_PER_SEC));
+    offset = (16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC));
   }
 
   return(offset);
@@ -674,10 +674,10 @@ ags_midi_util_offset_to_delta_time(glong division,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    delta_time = x / (16.0 * bpm / 60.0) / (tempo / division / ((gdouble) USEC_PER_SEC));
+    delta_time = x / (16.0 * bpm / 60.0) / (tempo / division / ((gdouble) AGS_USEC_PER_SEC));
   }else{
     /* SMTPE */
-    delta_time = x / (16.0 * bpm / 60.0) * (((division * division) / 256.0) / ((gdouble) USEC_PER_SEC));
+    delta_time = x / (16.0 * bpm / 60.0) * (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC));
   }
 
   return(delta_time);

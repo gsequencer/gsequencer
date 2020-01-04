@@ -1258,7 +1258,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
   /*  */
   x = (((notation_counter * notation_delay) + notation_counter) * buffer_size);
   
-  route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
+  route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
 
   /* unref */
   g_object_unref(audio);

@@ -131,9 +131,9 @@ ags_time_timeout_expired(struct timespec *start_time,
   clock_gettime(CLOCK_MONOTONIC, &current_time);
 #endif
 
-  if(start_time->tv_nsec + timeout_delay->tv_nsec > NSEC_PER_SEC){
+  if(start_time->tv_nsec + timeout_delay->tv_nsec > AGS_NSEC_PER_SEC){
     deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec + 1;
-    deadline.tv_nsec = (start_time->tv_nsec + timeout_delay->tv_nsec) - NSEC_PER_SEC;
+    deadline.tv_nsec = (start_time->tv_nsec + timeout_delay->tv_nsec) - AGS_NSEC_PER_SEC;
   }else{
     deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec;
     deadline.tv_nsec = start_time->tv_nsec + timeout_delay->tv_nsec;

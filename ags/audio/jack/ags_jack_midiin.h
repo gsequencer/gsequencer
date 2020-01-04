@@ -165,8 +165,6 @@ void ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags);
 
 void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 
-void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
-
 AgsJackMidiin* ags_jack_midiin_new();
 
 G_END_DECLS

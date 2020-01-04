@@ -257,7 +257,7 @@ gdouble ags_thread_get_frequency(AgsThread *thread);
 void ags_thread_set_max_precision(AgsThread *thread, gdouble max_precision);
 gdouble ags_thread_get_max_precision(AgsThread *thread);
 
-AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
+AgsThread* ags_thread_find_type(AgsThread *thread, GType gtype);
 AgsThread* ags_thread_self(void);
 
 AgsThread* ags_thread_parent(AgsThread *thread);
