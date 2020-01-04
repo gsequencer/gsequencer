@@ -430,9 +430,9 @@ ags_turtle_read_iriref(gchar *offset,
  *
  * Read prefixed-name namespace value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: (transfer full): 3.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pname_ns(gchar *offset,
