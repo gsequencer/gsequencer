@@ -132,7 +132,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The filename this #AgsFileLink refers.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -148,7 +148,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The data this #AgsFileLink contains.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("data",
 				   i18n_pspec("the data"),
@@ -421,7 +421,7 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsFileLink
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFileLink*
 ags_file_link_new()

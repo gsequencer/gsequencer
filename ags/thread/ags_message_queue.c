@@ -364,7 +364,7 @@ ags_message_queue_remove_message_envelope(AgsMessageQueue *message_queue,
  * 
  * Find @sender in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */
@@ -421,7 +421,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
  * 
  * Find @recipient in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */
@@ -478,7 +478,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
  * 
  * Query @xpath in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */

@@ -141,7 +141,7 @@ ags_task_completion_class_init(AgsTaskCompletionClass *task_completion)
    *
    * The assigned task.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("task",
 				   i18n_pspec("assigned task"),
@@ -162,7 +162,7 @@ ags_task_completion_class_init(AgsTaskCompletionClass *task_completion)
    *
    * The ::complete signal is emited as a task was finished
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   task_completion_signals[COMPLETE] =
     g_signal_new("complete",
@@ -493,7 +493,7 @@ ags_task_completion_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
@@ -526,7 +526,7 @@ ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
  *
  * Enable a feature of #AgsTaskCompletion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
@@ -557,7 +557,7 @@ ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
  *
  * Disable a feature of AgsTaskCompletion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
@@ -587,7 +587,7 @@ ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
  * 
  * Emit ::complete signal
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_complete(AgsTaskCompletion *task_completion)
@@ -621,7 +621,7 @@ ags_task_completion_launch_callback(AgsTask *task,
  *
  * Returns: the new #AgsTaskCompletion
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTaskCompletion*
 ags_task_completion_new(GObject *task,

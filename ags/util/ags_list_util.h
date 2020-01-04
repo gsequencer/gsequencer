@@ -27,7 +27,6 @@ G_BEGIN_DECLS
 
 GList* ags_list_util_find_type(GList *list,
 			       GType gtype);
-GList* ags_list_util_copy_and_ref(GList *list);
 
 G_END_DECLS
 

@@ -350,7 +350,7 @@ ags_generic_main_loop_start(AgsThread *thread)
  *
  * Returns: the new #AgsGenericMainLoop
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericMainLoop*
 ags_generic_main_loop_new()

@@ -122,7 +122,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of unused threads available.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("max-unused-threads",
 				 i18n_pspec("maximum unused threads"),
@@ -139,7 +139,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of threads available.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("max-threads",
 				 i18n_pspec("maximum threads to use"),
@@ -161,7 +161,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The ::start() signal is invoked in order to started the pool.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   thread_pool_signals[START] =
     g_signal_new("start",
@@ -479,7 +479,7 @@ ags_thread_pool_creation_thread(void *ptr)
  *
  * Returns: a new #AgsThread
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
@@ -603,7 +603,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
  *
  * Start the thread pool.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_thread_pool_start(AgsThreadPool *thread_pool)
@@ -624,7 +624,7 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
  *
  * Returns: the new #AgsThreadPool
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsThreadPool*
 ags_thread_pool_new(AgsThread *parent)

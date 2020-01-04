@@ -111,7 +111,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The assigned xmlNode being referred by this #AgsFileLaunch.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("the node"),
@@ -126,7 +126,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The object referred by this #AgsFileLaunch.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("the reference"),
@@ -141,7 +141,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The #AgsFile this #AgsFileLaunch belongs to.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file assigned to"),
@@ -161,7 +161,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    * 
    * Signal ::start to notify about start :reference.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_launch_signals[START] =
     g_signal_new("start",
@@ -324,7 +324,7 @@ ags_file_launch_finalize(GObject *gobject)
  * 
  * Start #AgsFileLaunch to fulfill a task.
  * 
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_launch_start(AgsFileLaunch *file_launch)
@@ -344,7 +344,7 @@ ags_file_launch_start(AgsFileLaunch *file_launch)
  *
  * Returns: the new #AgsFileLaunch
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFileLaunch*
 ags_file_launch_new()

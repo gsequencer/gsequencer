@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,11 +31,11 @@
 
 /**
  * ags_destroy_util_dispose_and_unref:
- * @gobject: the #GObject to destroy
+ * @gobject: (transfer full): the #GObject to destroy
  * 
  * Run dispose and unref @gobject.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_destroy_util_dispose_and_unref(GObject *gobject)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -900,7 +900,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Retrieve config by @group and @key.
  *
- * Returns: the property's value
+ * Returns: (transfer full): the property's value
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,7 +145,9 @@ ags_turtle_manager_finalize(GObject *gobject)
  * 
  * Find @filename in @turtle_manager.
  *
- * Since: 2.0.0
+ * Returns: the matching #AgsTurtle, or %NULL
+ * 
+ * Since: 3.0.0
  */
 GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
@@ -179,7 +181,7 @@ ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
  * 
  * Adds @turtle to @turtle_manager.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
@@ -205,7 +207,7 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
  *
  * Returns: the #AgsTurtleManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_get_instance()
@@ -230,7 +232,7 @@ ags_turtle_manager_get_instance()
  *
  * Returns: a new #AgsTurtleManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_new()

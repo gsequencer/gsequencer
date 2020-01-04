@@ -1060,8 +1060,10 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
 
   /* reset value */
   if(old_upper != 0.0){
+#if 0
     gtk_adjustment_set_value(adjustment,
 			     gtk_adjustment_get_value(adjustment) / old_upper * upper);
+#endif
   }
 }
 

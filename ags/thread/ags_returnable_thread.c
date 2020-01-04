@@ -133,7 +133,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    *
    * The assigned #AgsThreadPool providing default settings.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("thread-pool",
 				   i18n_pspec("assigned thread pool"),
@@ -162,7 +162,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    * The ::safe-run is invoked durin AgsThread::run as
    * a context safe wrapper.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   returnable_thread_signals[SAFE_RUN] =
     g_signal_new("safe-run",
@@ -378,7 +378,7 @@ ags_returnable_thread_resume(AgsThread *thread)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -401,7 +401,7 @@ ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint f
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -420,7 +420,7 @@ ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint fl
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -439,7 +439,7 @@ ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint 
  *
  * Connects @callback to @thread.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
@@ -458,7 +458,7 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
  *
  * Disconnects callback of @thread.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
@@ -481,7 +481,7 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
  *
  * Returns: the new #AgsReturnableThread
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)

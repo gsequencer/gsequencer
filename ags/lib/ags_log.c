@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,9 +117,9 @@ ags_log_finalize(GObject *gobject)
  * 
  * Get your logging instance.
  *
- * Returns: the #AgsLog instance
+ * Returns: (transfer none): the #AgsLog instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLog*
 ags_log_get_instance()
@@ -140,11 +140,11 @@ ags_log_get_instance()
 /**
  * ags_log_add_message:
  * @log: the #AgsLog
- * @str: the message
+ * @str: (transfer full): the message
  * 
  * Add a message to @log.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_log_add_message(AgsLog *log,
@@ -165,9 +165,9 @@ ags_log_add_message(AgsLog *log,
  * 
  * Get log messages as #GList-struct containing strings.
  *
- * Returns: the #GList-struct containing log messages
+ * Returns: (element-type utf8) (transfer none): the #GList-struct containing log messages
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_log_get_messages(AgsLog *log)
@@ -182,7 +182,7 @@ ags_log_get_messages(AgsLog *log)
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLog*
 ags_log_new()

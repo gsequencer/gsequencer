@@ -185,7 +185,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The source function.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("source-function",
 				   i18n_pspec("function as string"),
@@ -201,7 +201,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The normalized function.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("normalized-function",
 				   i18n_pspec("normalized form of function as string"),
@@ -217,7 +217,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The pivot table.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("pivot-table",
 				    i18n_pspec("pivot table representation"),
@@ -406,7 +406,7 @@ ags_function_finalize(GObject *gobject)
  * 
  * Returns: the one-dimensional array of possible functions as strings
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_function_collapse_parantheses(AgsFunction *function,
@@ -430,7 +430,7 @@ ags_function_collapse_parantheses(AgsFunction *function,
  *
  * Returns: The string vector containing symbols
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_function_find_literals(AgsFunction *function,
@@ -641,7 +641,7 @@ ags_function_literal_solve_find_max_exponent(gchar *transformed_function)
  * Solves :source-function literally, allocates the pivot table and
  * creates the normalized function.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_function_literal_solve(AgsFunction *function)
@@ -695,7 +695,7 @@ ags_function_literal_solve(AgsFunction *function)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_function_push_equation(AgsFunction *function,
@@ -779,7 +779,7 @@ ags_function_push_equation(AgsFunction *function,
  * Pops the functions of the equation stack. Call this function as you're
  * finished with pushing equations.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_function_pop_equation(AgsFunction *function,
@@ -860,7 +860,7 @@ ags_function_pop_equation(AgsFunction *function,
  *
  * Returns: the normalized form as string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_function_get_expanded(AgsFunction *function,
@@ -880,7 +880,7 @@ ags_function_get_expanded(AgsFunction *function,
  *
  * Returns: the normalized string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_function_get_normalized(AgsFunction *function)
@@ -903,7 +903,7 @@ ags_function_get_normalized(AgsFunction *function)
  * 
  * Returns: the #AgsComplex value resulted by substitution
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_function_compute_term(gchar *term,
@@ -929,7 +929,7 @@ ags_function_compute_term(gchar *term,
  * 
  * Returns: the new #AgsComplex vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex**
 ags_function_symbolic_translate_value(AgsFunction *function,
@@ -951,7 +951,7 @@ ags_function_symbolic_translate_value(AgsFunction *function,
  *
  * Returns: %TRUE if function evaluates, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_function_substitute_values(AgsFunction *function,
@@ -971,7 +971,7 @@ ags_function_substitute_values(AgsFunction *function,
  * 
  * Returns: the solution as #AgsComplex boxed-type.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_function_translate_value(AgsFunction *function,
@@ -994,7 +994,7 @@ ags_function_translate_value(AgsFunction *function,
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFunction*
 ags_function_new(gchar *source_function)

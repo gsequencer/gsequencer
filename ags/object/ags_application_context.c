@@ -1076,8 +1076,8 @@ ags_application_context_get_instance()
 
 /**
  * ags_application_context_new:
- * @main_loop: the #AgsMainLoop
- * @config: the #AgsConfig
+ * @main_loop: (nullable): the #AgsMainLoop
+ * @config: (nullable): the #AgsConfig
  *
  * Create a new instance of #AgsApplicationContext
  * 

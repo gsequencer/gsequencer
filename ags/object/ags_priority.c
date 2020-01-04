@@ -579,7 +579,7 @@ ags_priority_real_get_value(AgsPriority *priority, gchar *group, gchar *key)
  *
  * Retrieve priority by @group and @key.
  *
- * Returns: the property's value
+ * Returns: (transfer full): the property's value
  *
  * Since: 3.0.0
  */

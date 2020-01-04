@@ -114,7 +114,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The assigned xmlNode being referred by this #AgsFileIdRef.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("the node"),
@@ -129,7 +129,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The XPath short-cut that can be used with this #AgsFileIdRef.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("xpath",
 				   i18n_pspec("the xpath"),
@@ -145,7 +145,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The object referred by this #AgsFileIdRef.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("reference of the locator"),
@@ -161,7 +161,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The #AgsFile this #AgsFileIdRef belongs to.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file assigned to"),
@@ -179,7 +179,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    * 
    * Signal ::resolved to notify about resolved :reference.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_id_ref_signals[RESOLVED] = 
     g_signal_new("resolved",
@@ -378,7 +378,7 @@ ags_file_id_ref_finalize(GObject *gobject)
  *
  * Notify about resolved reference.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
@@ -399,7 +399,7 @@ ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
  *
  * Returns: a new #AgsFileIdRef
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFileIdRef*
 ags_file_id_ref_new()

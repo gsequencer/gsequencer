@@ -41,10 +41,10 @@
  * Calculates uptime from @offset by applying factors @bpm, @delay and @delay_factor
  * giving you the result as string.
  *
- * Returns: the string containing the time, a minus sign is prepend if factors
+ * Returns: (transfer full): the string containing the time, a minus sign is prepend if factors
  *   are invalid
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_time_get_uptime_from_offset(guint offset,
@@ -100,7 +100,7 @@ ags_time_get_uptime_from_offset(guint offset,
  * 
  * Returns: %TRUE if timeout expired, otherwise %FALSE
  * 
- * Since: 2.1.11
+ * Since: 3.0.0
  */
 gboolean
 ags_time_timeout_expired(struct timespec *start_time,

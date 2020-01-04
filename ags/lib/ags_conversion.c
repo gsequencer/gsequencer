@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,7 +119,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The name of the conversion.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("name",
 				   i18n_pspec("name of conversion"),
@@ -135,7 +135,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The description of the conversion.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("description",
 				   i18n_pspec("description of conversion"),
@@ -161,7 +161,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * Returns: the converted value
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert",
@@ -332,7 +332,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
  *
  * Returns: the converted value as gdouble
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
@@ -362,7 +362,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsConversion*
 ags_conversion_new()

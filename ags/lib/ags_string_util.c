@@ -39,9 +39,9 @@
  * 
  * Escape all occurence of single quotes.
  * 
- * Returns: the newly allocated string
+ * Returns: (transfer full): the newly allocated string
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_string_util_escape_single_quote(gchar *str)
@@ -100,7 +100,7 @@ ags_string_util_escape_single_quote(gchar *str)
  * 
  * Returns: the length of the vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_strv_length(gchar **str_array)
@@ -125,7 +125,7 @@ ags_strv_length(gchar **str_array)
  * 
  * Returns: %TRUE if found, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_strv_contains(gchar **str_array,
@@ -157,7 +157,7 @@ ags_strv_contains(gchar **str_array,
  * 
  * Returns: the first matching position or -1, if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_strv_index(gchar **str_array,

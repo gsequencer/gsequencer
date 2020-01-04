@@ -206,7 +206,7 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of turtle"),
@@ -222,7 +222,7 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    *
    * The assigned xml-doc.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    i18n_pspec("xml document of turtle"),
@@ -378,9 +378,9 @@ ags_turtle_finalize(GObject *gobject)
  *
  * Read iriref value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_iriref(gchar *offset,
@@ -432,7 +432,7 @@ ags_turtle_read_iriref(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: (transfer full): 3.0.0
  */
 gchar*
 ags_turtle_read_pname_ns(gchar *offset,
@@ -471,9 +471,9 @@ ags_turtle_read_pname_ns(gchar *offset,
  *
  * Read prefixed-name localized name value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pname_ln(gchar *offset,
@@ -519,9 +519,9 @@ ags_turtle_read_pname_ln(gchar *offset,
  *
  * Read blank node label value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_blank_node_label(gchar *offset,
@@ -624,9 +624,9 @@ ags_turtle_read_blank_node_label(gchar *offset,
  *
  * Read langtag value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_langtag(gchar *offset,
@@ -673,9 +673,9 @@ ags_turtle_read_langtag(gchar *offset,
  *
  * Read boolean value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_boolean(gchar *offset,
@@ -720,9 +720,9 @@ ags_turtle_read_boolean(gchar *offset,
  *
  * Read integer value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_integer(gchar *offset,
@@ -767,9 +767,9 @@ ags_turtle_read_integer(gchar *offset,
  *
  * Read decimal value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_decimal(gchar *offset,
@@ -814,9 +814,9 @@ ags_turtle_read_decimal(gchar *offset,
  *
  * Read double value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_double(gchar *offset,
@@ -861,9 +861,9 @@ ags_turtle_read_double(gchar *offset,
  *
  * Read exponent value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_exponent(gchar *offset,
@@ -908,9 +908,9 @@ ags_turtle_read_exponent(gchar *offset,
  *
  * Read string value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_string(gchar *offset,
@@ -956,9 +956,9 @@ ags_turtle_read_string(gchar *offset,
  *
  * Read string literal quote value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_string_literal_quote(gchar *offset,
@@ -1007,9 +1007,9 @@ ags_turtle_read_string_literal_quote(gchar *offset,
  *
  * Read string literal single quote value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_string_literal_single_quote(gchar *offset,
@@ -1058,9 +1058,9 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
  *
  * Read string literal long quote value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_string_literal_long_quote(gchar *offset,
@@ -1097,9 +1097,9 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
  *
  * Read string literal long single quote value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_string_literal_long_single_quote(gchar *offset,
@@ -1136,9 +1136,9 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
  *
  * Read uchar value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_uchar(gchar *offset,
@@ -1191,9 +1191,9 @@ ags_turtle_read_uchar(gchar *offset,
  *
  * Read echar value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_echar(gchar *offset,
@@ -1227,9 +1227,9 @@ ags_turtle_read_echar(gchar *offset,
  *
  * Read ws value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_ws(gchar *offset,
@@ -1257,9 +1257,9 @@ ags_turtle_read_ws(gchar *offset,
  *
  * Read anon value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_anon(gchar *offset,
@@ -1343,9 +1343,9 @@ ags_turtle_read_anon(gchar *offset,
  *
  * Read prefixed-name chars base value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
@@ -1495,9 +1495,9 @@ ags_turtle_read_pn_chars_base(gchar *offset,
  *
  * Read prefixed-name chars underscore value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_chars_u(gchar *offset,
@@ -1524,9 +1524,9 @@ ags_turtle_read_pn_chars_u(gchar *offset,
  *
  * Read prefixed-name chars value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_chars(gchar *offset,
@@ -1581,9 +1581,9 @@ ags_turtle_read_pn_chars(gchar *offset,
  *
  * Read prefixe-name prefix value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_prefix(gchar *offset,
@@ -1646,9 +1646,9 @@ ags_turtle_read_pn_prefix(gchar *offset,
  *
  * Read prefixed-name local value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_local(gchar *offset,
@@ -1753,9 +1753,9 @@ ags_turtle_read_pn_local(gchar *offset,
  *
  * Read plx value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_plx(gchar *offset,
@@ -1781,9 +1781,9 @@ ags_turtle_read_plx(gchar *offset,
  *
  * Read percent value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_percent(gchar *offset,
@@ -1812,9 +1812,9 @@ ags_turtle_read_percent(gchar *offset,
  *
  * Read hex value.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_hex(gchar *offset,
@@ -1839,9 +1839,9 @@ ags_turtle_read_hex(gchar *offset,
  *
  * Read prefixed name local escapes.
  *
- * Returns: a string on success otherwise %NULL
+ * Returns: (transfer full): a string on success otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_turtle_read_pn_local_esc(gchar *offset,
@@ -1871,9 +1871,9 @@ ags_turtle_read_pn_local_esc(gchar *offset,
  *
  * Lookup XPath expression withing @turtle.
  *
- * Returns: a #GList-struct containing xmlNode
+ * Returns: (element-type libxml2.Node) (transfer container): a #GList-struct containing xmlNode
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_turtle_find_xpath(AgsTurtle *turtle,
@@ -1919,9 +1919,9 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
  *
  * Lookup XPath expression from @context_node withing @turtle.
  *
- * Returns: a #GList-struct containing xmlNode
+ * Returns: (element-type libxml2.Node) (transfer container): a #GList-struct containing xmlNode
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
@@ -3623,9 +3623,9 @@ ags_turtle_load_read_blank_node_property_list(AgsTurtle *turtle,
  *
  * Loads a RDF triple file into an XML Document.
  *
- * Returns: a #xmlDoc pointer
+ * Returns: (transfer none): a #xmlDoc pointer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlDoc*
 ags_turtle_load(AgsTurtle *turtle,
@@ -3722,13 +3722,13 @@ ags_turtle_load(AgsTurtle *turtle,
 
 /**
  * ags_turtle_new:
- * @filename: the filename as string
+ * @filename: (nullable): the filename as string
  *
  * Instantiate a new #AgsTurtle.
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTurtle*
 ags_turtle_new(gchar *filename)

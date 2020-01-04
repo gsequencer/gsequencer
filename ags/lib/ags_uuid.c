@@ -56,7 +56,7 @@ ags_uuid_get_type(void)
  * 
  * Returns: a new #AgsUUID
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsUUID*
 ags_uuid_alloc()
@@ -77,7 +77,7 @@ ags_uuid_alloc()
  *
  * Returns: a pointer of the new #AgsUUID
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gpointer
 ags_uuid_copy(AgsUUID *ptr)
@@ -96,7 +96,7 @@ ags_uuid_copy(AgsUUID *ptr)
  *
  * Free the memory of @ptr.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_uuid_free(AgsUUID *ptr)
@@ -110,7 +110,7 @@ ags_uuid_free(AgsUUID *ptr)
  * 
  * Generate random UUID.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_uuid_generate(AgsUUID *ptr)
@@ -131,7 +131,7 @@ ags_uuid_generate(AgsUUID *ptr)
  *
  * Returns: 0 on success, otherwise a value less or greater than 0
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_uuid_compare(AgsUUID *a,
@@ -151,9 +151,9 @@ ags_uuid_compare(AgsUUID *a,
  * 
  * Get string representation of @ptr.
  * 
- * Returns: the UUID as string if @ptr not %NULL, else %NULL
+ * Returns: (transfer full): the UUID as string if @ptr not %NULL, else %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_uuid_to_string(AgsUUID *ptr)
@@ -179,7 +179,7 @@ ags_uuid_to_string(AgsUUID *ptr)
  * 
  * Returns: the new #AgsUUID on success, otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsUUID*
 ags_uuid_from_string(gchar *str)

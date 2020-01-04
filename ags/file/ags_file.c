@@ -160,7 +160,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The assigned filename to open and read from.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename to read or write"),
@@ -176,7 +176,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The charset encoding to use.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("encoding",
 				   i18n_pspec("encoding to use"),
@@ -192,7 +192,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The format of embedded audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-format",
 				   i18n_pspec("audio format to use"),
@@ -208,7 +208,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The encoding to use for embedding audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-encoding",
 				   i18n_pspec("audio encoding to use"),
@@ -224,7 +224,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The assigned xml-doc.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    i18n_pspec("xml document of file"),
@@ -254,7 +254,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file with appropriate filename.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[OPEN] =
     g_signal_new("open",
@@ -275,7 +275,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file from a buffer containing the file.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data",
@@ -297,7 +297,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file in read-write mode.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[RW_OPEN] =
     g_signal_new("rw-open",
@@ -316,7 +316,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Write XML Document to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[WRITE] =
     g_signal_new("write",
@@ -328,7 +328,7 @@ ags_file_class_init(AgsFileClass *file)
 		 G_TYPE_NONE, 0);
 
   file_signals[WRITE_CONCURRENT] =
-    g_signal_new("write_concurrent",
+    g_signal_new("write-concurrent",
 		 G_TYPE_FROM_CLASS(file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, write_concurrent),
@@ -343,10 +343,10 @@ ags_file_class_init(AgsFileClass *file)
    * Resolve references and generate thus XPath expressions just
    * before writing to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[WRITE_RESOLVE] =
-    g_signal_new("write_resolve",
+    g_signal_new("write-resolve",
 		 G_TYPE_FROM_CLASS(file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, write_resolve),
@@ -360,7 +360,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * Read a XML document from disk with specified filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[READ] =
     g_signal_new("read",
@@ -378,10 +378,10 @@ ags_file_class_init(AgsFileClass *file)
    * Resolve XPath expressions to their counterpart the newly created
    * instances refering to.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[READ_RESOLVE] =
-    g_signal_new("read_resolve",
+    g_signal_new("read-resolve",
 		 G_TYPE_FROM_CLASS(file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, read_resolve),
@@ -395,10 +395,10 @@ ags_file_class_init(AgsFileClass *file)
    *
    * Hook after reading XML document to update or start the application.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_signals[READ_START] =
-    g_signal_new("read_start",
+    g_signal_new("read-start",
 		 G_TYPE_FROM_CLASS(file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, read_start),
@@ -642,9 +642,9 @@ ags_file_finalize(GObject *gobject)
  *
  * Compute MD5 sums of a buffer.
  *
- * Returns: the md5 checksum
+ * Returns: (transfer full): the md5 checksum
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_file_str2md5(gchar *content, guint content_length)
@@ -666,7 +666,7 @@ ags_file_str2md5(gchar *content, guint content_length)
  *
  * Adds @id_ref to @file.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
@@ -703,7 +703,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
  * 
  * Returns: the matching #GObject
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
@@ -762,7 +762,7 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
  * 
  * Returns: the matching #GObject
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
@@ -825,7 +825,7 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
  * 
  * Returns: the matching #GObject
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
@@ -881,7 +881,7 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
  *
  * Add @file_lookup for later invoking.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
@@ -916,7 +916,7 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
  *
  * Add @file_launch for later invoking.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_add_launch(AgsFile *file, GObject *file_launch)
@@ -991,7 +991,7 @@ ags_file_real_open(AgsFile *file,
  *
  * Opens the file specified by :filename property.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_open(AgsFile *file,
@@ -1056,7 +1056,7 @@ ags_file_real_open_from_data(AgsFile *file,
  *
  * Opens the file provided by @data.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_open_from_data(AgsFile *file,
@@ -1107,7 +1107,7 @@ ags_file_real_rw_open(AgsFile *file,
  *
  * Opens the file specified by :filename property in read-write mode.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_rw_open(AgsFile *file,
@@ -1131,7 +1131,7 @@ ags_file_rw_open(AgsFile *file,
  *
  * Opens the file specified by @filename property.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_open_filename(AgsFile *file,
@@ -1182,7 +1182,7 @@ ags_file_open_filename(AgsFile *file,
  *
  * Closes @file.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_file_close(AgsFile *file)
@@ -1287,7 +1287,7 @@ ags_file_real_write(AgsFile *file)
  *
  * Write the XML document to disk.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_write(AgsFile *file)
@@ -1429,7 +1429,7 @@ ags_file_real_write_resolve(AgsFile *file)
  *
  * Resolve references to XPath expressions.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_write_resolve(AgsFile *file)
@@ -1512,7 +1512,7 @@ ags_file_real_read(AgsFile *file)
  *
  * Read XML document from disk.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_read(AgsFile *file)
@@ -1560,7 +1560,7 @@ ags_file_real_read_resolve(AgsFile *file)
  *
  * Resolve XPath expressions to references.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_read_resolve(AgsFile *file)
@@ -1606,7 +1606,7 @@ ags_file_real_read_start(AgsFile *file)
  *
  * Update or start the application.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_read_start(AgsFile *file)
@@ -1729,7 +1729,7 @@ ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *appl
  *
  * Returns: a new #AgsFile
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFile*
 ags_file_new()
