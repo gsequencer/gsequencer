@@ -71,7 +71,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *ginterface)
  *
  * Get group UUID as string vector.
  * 
- * Returns: the group UUIDs as %NULL terminated string array
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the group UUIDs as %NULL terminated string array
  * 
  * Since: 3.0.0
  */
@@ -176,7 +176,7 @@ ags_business_group_get_group_name(AgsBusinessGroup *business_group,
  * @user_uuid: the user's UUID
  * @security_token: the security token
  * @group_uuid: the business group's UUID
- * @user: the string array containing user names
+ * @user: (element-type utf8) (array zero-terminated=1): the string array containing user names
  * @error: the #GError-struct
  *
  * Set business group of user names as %NULL terminated string array.
@@ -217,7 +217,7 @@ ags_business_group_set_user(AgsBusinessGroup *business_group,
  *
  * Get business group name as %NULL terminated string array.
  *
- * Returns: the business group's user names as string vector
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the business group's user names as string vector
  * 
  * Since: 3.0.0
  */

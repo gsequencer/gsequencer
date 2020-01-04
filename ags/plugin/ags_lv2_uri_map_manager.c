@@ -131,7 +131,7 @@ ags_lv2_uri_map_manager_destroy_data(gpointer data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
@@ -168,7 +168,7 @@ ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
@@ -210,7 +210,7 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
  *
  * Returns: the id on success, else G_MAXUINT32
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GValue*
 ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
@@ -312,7 +312,7 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
  *
  * Returns: an instance of #AgsLv2UriMapManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UriMapManager*
 ags_lv2_uri_map_manager_get_instance()
@@ -339,7 +339,7 @@ ags_lv2_uri_map_manager_get_instance()
  *
  * Returns: a new #AgsLv2UriMapManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UriMapManager*
 ags_lv2_uri_map_manager_new()

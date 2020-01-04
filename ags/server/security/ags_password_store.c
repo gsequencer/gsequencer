@@ -105,7 +105,7 @@ ags_password_store_set_login_name(AgsPasswordStore *password_store,
  *
  * Get login name.
  * 
- * Returns: the login name
+ * Returns: (transfer full): the login name
  * 
  * Since: 3.0.0
  */
@@ -173,7 +173,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  *
  * Get password.
  * 
- * Returns: the password
+ * Returns: (transfer full): the password
  * 
  * Since: 3.0.0
  */
@@ -206,7 +206,7 @@ ags_password_store_get_password(AgsPasswordStore *password_store,
  *
  * Encrypt password.
  *
- * Returns: the encrypted bytes
+ * Returns: (transfer full): the encrypted bytes
  *
  * Since: 3.0.0
  */

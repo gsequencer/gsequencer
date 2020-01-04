@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,7 +112,7 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
    *
    * The lower to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   i18n_pspec("using lower"),
@@ -130,7 +130,7 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
    *
    * The upper to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   i18n_pspec("using upper"),
@@ -148,7 +148,7 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
    *
    * The step count to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("step-count",
 				   i18n_pspec("using step count"),
@@ -305,7 +305,7 @@ ags_lv2_conversion_get_property(GObject *gobject,
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
@@ -338,7 +338,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
@@ -367,7 +367,7 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
@@ -440,7 +440,7 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new #AgsLv2Conversion
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2Conversion*
 ags_lv2_conversion_new()

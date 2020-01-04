@@ -154,7 +154,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI URI.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("gui-uri",
 				   i18n_pspec("GUI URI of the plugin"),
@@ -170,7 +170,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the plugin"),
@@ -186,7 +186,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("gui-turtle",
 				   i18n_pspec("GUI turtle of the plugin"),
@@ -202,7 +202,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned LV2 plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   i18n_pspec("LV2 plugin of the plugin"),
@@ -823,7 +823,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.2.18
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
@@ -856,7 +856,7 @@ ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.2.18
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
@@ -885,7 +885,7 @@ ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.2.18
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
@@ -909,14 +909,14 @@ ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
 
 /**
  * ags_lv2ui_plugin_find_gui_uri:
- * @lv2ui_plugin: the #GList-struct containing #AgsLv2uiPlugin
+ * @lv2ui_plugin: (element-type AgsAudio.Lv2uiPlugin) (transfer none): the #GList-struct containing #AgsLv2uiPlugin
  * @gui_uri: the gui-uri as string
  * 
  * Find next matching gui-uri in @lv2ui_plugin.
  * 
- * Returns: the next matching #GList-struct
+ * Returns: (element-type AgsAudio.Lv2uiPlugin) (transfer none): the next matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
@@ -951,7 +951,7 @@ ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
  *
  * Returns: a new #AgsLv2uiPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_plugin_new(AgsTurtle *gui_turtle,

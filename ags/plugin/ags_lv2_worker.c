@@ -122,7 +122,7 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
    *
    * The assigned  #LV2_Handle-struct
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("handle",
 				    i18n_pspec("handle"),
@@ -137,7 +137,7 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
    *
    * The work size.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("work-size",
 				 i18n_pspec("work size"),
@@ -155,7 +155,7 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
    *
    * The assigned work data
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("work-data",
 				    i18n_pspec("work data"),
@@ -170,7 +170,7 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
    *
    * The assigned #GList-struct containing #AgsLv2WorkerResponseData-struct
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("response-data",
 				    i18n_pspec("response data"),
@@ -185,7 +185,7 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
    *
    * The assigned worker-thread.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("worker-thread",
 				   i18n_pspec("worker thread"),
@@ -434,7 +434,7 @@ ags_lv2_worker_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_worker_test_flags(AgsLv2Worker *lv2_worker, guint flags)
@@ -467,7 +467,7 @@ ags_lv2_worker_test_flags(AgsLv2Worker *lv2_worker, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_worker_set_flags(AgsLv2Worker *lv2_worker, guint flags)
@@ -496,7 +496,7 @@ ags_lv2_worker_set_flags(AgsLv2Worker *lv2_worker, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_worker_unset_flags(AgsLv2Worker *lv2_worker, guint flags)
@@ -525,7 +525,7 @@ ags_lv2_worker_unset_flags(AgsLv2Worker *lv2_worker, guint flags)
  * 
  * Returns: the new #AgsLv2WorkerResponseData-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2WorkerResponseData*
 ags_lv2_worker_alloc_response_data()
@@ -546,7 +546,7 @@ ags_lv2_worker_alloc_response_data()
  * 
  * Free @response_data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_worker_free_response_data(AgsLv2WorkerResponseData *response_data)
@@ -564,7 +564,7 @@ ags_lv2_worker_free_response_data(AgsLv2WorkerResponseData *response_data)
  * 
  * Returns: LV2_Worker_Status
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 LV2_Worker_Status
 ags_lv2_worker_respond(LV2_Worker_Respond_Handle handle,
@@ -607,7 +607,7 @@ ags_lv2_worker_respond(LV2_Worker_Respond_Handle handle,
  * 
  * Returns: LV2_Worker_Status
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 LV2_Worker_Status
 ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
@@ -644,7 +644,7 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
  * 
  * Safe run callback.
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
@@ -753,7 +753,7 @@ ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
  *
  * Returns: the new #AgsLv2Worker
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 AgsLv2Worker*
 ags_lv2_worker_new(AgsThread *returnable_thread)

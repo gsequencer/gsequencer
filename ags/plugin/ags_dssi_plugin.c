@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,7 +147,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -165,7 +165,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("program",
 				   i18n_pspec("program of the plugin"),
@@ -202,7 +202,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -774,7 +774,7 @@ ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
  *
  * Returns: the new #AgsDssiPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiPlugin*
 ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index)

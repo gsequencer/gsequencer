@@ -110,7 +110,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The assigned #AgsServer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("server",
 				   i18n("assigned server"),
@@ -126,7 +126,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The context path provided.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("context-path",
 				   i18n_pspec("context path to provide"),

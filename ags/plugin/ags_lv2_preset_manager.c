@@ -193,7 +193,7 @@ ags_lv2_preset_manager_finalize(GObject *gobject)
  *
  * Returns: the #AgsLv2PresetManager
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsLv2PresetManager*
 ags_lv2_preset_manager_get_instance()
@@ -218,7 +218,7 @@ ags_lv2_preset_manager_get_instance()
  *
  * Returns: the new #AgsLv2PresetManager
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsLv2PresetManager*
 ags_lv2_preset_manager_new()

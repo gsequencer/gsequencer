@@ -67,7 +67,7 @@ ags_authentication_base_init(AgsAuthenticationInterface *ginterface)
  * 
  * Available authentication modules.
  *
- * Returns: a %NULL terminated array of strings of available authentication modules
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated array of strings of available authentication modules
  *
  * Since: 3.0.0
  */
@@ -88,8 +88,8 @@ ags_authentication_get_authentication_module(AgsAuthentication *authentication)
  * @authentication: the #AgsAuthentication
  * @login: the login
  * @password: the password
- * @user_uuid: return location of the user's uuid
- * @security_token: return location of the security token
+ * @user_uuid: (out) (transfer full): return location of the user's uuid
+ * @security_token: (out) (transfer full): return location of the security token
  * @error: the #GError-struct
  * 
  * Login.
@@ -130,7 +130,7 @@ ags_authentication_login(AgsAuthentication *authentication,
  * 
  * Get digest of @login.
  *
- * Returns: the encrypted password
+ * Returns: (transfer full): the encrypted password
  *
  * Since: 3.0.0
  */
@@ -195,7 +195,7 @@ ags_authentication_logout(AgsAuthentication *authentication,
  * 
  * Generate token.
  *
- * Returns: the generated token
+ * Returns: (transfer full): the generated token
  * 
  * Since: 3.0.0
  */

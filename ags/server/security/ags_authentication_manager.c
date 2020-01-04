@@ -213,7 +213,7 @@ ags_login_info_unref(AgsLoginInfo *login_info)
  * 
  * Get authentication.
  * 
- * Returns: the #GList-struct containing #GObject implementing #AgsAuthentication
+ * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsAuthentication
  * 
  * Since: 3.0.0
  */
@@ -313,6 +313,16 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
   g_rec_mutex_unlock(authentication_manager_mutex);
 }
 
+/**
+ * ags_authentication_manager_get_session_timeout:
+ * @authentication_manager: the #AgsAuthenticationManager
+ * 
+ * Get session timeout.
+ * 
+ * Returns: the session timeout
+ * 
+ * Since: 3.0.0
+ */
 gint64
 ags_authentication_manager_get_session_timeout(AgsAuthenticationManager *authentication_manager)
 {
@@ -455,8 +465,8 @@ ags_authentication_manager_remove_login(AgsAuthenticationManager *authentication
  * @authentication_module: the authentication module
  * @login: the login
  * @password: the password
- * @user_uuid: return location of user UUID
- * @security_token: return location of security token
+ * @user_uuid: (out) (transfer full): return location of user UUID
+ * @security_token: (out) (transfer full): return location of security token
  * 
  * Login.
  *
@@ -661,7 +671,7 @@ ags_authentication_manager_logout(AgsAuthenticationManager *authentication_manag
  * 
  * Get digest of @login.
  * 
- * Returns: the digest as string, or %NULL if not available
+ * Returns: (transfer full): the digest as string, or %NULL if not available
  * 
  * Since: 3.0.0
  */

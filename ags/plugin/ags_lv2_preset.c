@@ -114,7 +114,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned lv2 plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   i18n_pspec("lv2 plugin of the preset"),
@@ -130,7 +130,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned uri.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the preset"),
@@ -146,7 +146,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned applies to.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("applies-to",
 				   i18n_pspec("applies to plugin"),
@@ -162,7 +162,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned bank.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("bank",
 				   i18n_pspec("bank of the preset"),
@@ -178,7 +178,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The preset label.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("preset-label",
 				   i18n_pspec("preset label"),
@@ -194,7 +194,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned manifest.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the preset"),
@@ -210,7 +210,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the preset"),
@@ -605,7 +605,7 @@ ags_lv2_preset_finalize(GObject *gobject)
  * 
  * Returns: the new #AgsLv2PortPreset-struct.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2PortPreset*
 ags_lv2_port_preset_alloc(gchar *port_symbol,
@@ -634,7 +634,7 @@ ags_lv2_port_preset_alloc(gchar *port_symbol,
  * 
  * Free @lv2_port_preset.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
@@ -662,7 +662,7 @@ ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
  * 
  * Parse @lv2_preset.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
@@ -672,14 +672,14 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
 /**
  * ags_lv2_preset_find_preset_uri:
- * @lv2_preset: the #GList-struct containing #AgsLv2Preset
+ * @lv2_preset: (element-type AgsAudio.Lv2Preset) (transfer none): the #GList-struct containing #AgsLv2Preset
  * @preset_uri: the preset URI
  * 
  * Find @preset_uri within @lv2_preset.
  * 
- * Returns: the matching #GList-struct containing #AgsLv2Preset
+ * Returns: (element-type AgsAudio.Lv2Preset) (transfer none): the matching #GList-struct containing #AgsLv2Preset
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 GList*
 ags_lv2_preset_find_preset_uri(GList *lv2_preset,
@@ -704,14 +704,14 @@ ags_lv2_preset_find_preset_uri(GList *lv2_preset,
 
 /**
  * ags_lv2_preset_find_preset_label:
- * @lv2_preset: the #GList-struct containing #AgsLv2Preset
+ * @lv2_preset: (element-type AgsAudio.Lv2Preset) (transfer none): the #GList-struct containing #AgsLv2Preset
  * @preset_label: the preset label
  * 
  * Find @preset_label within @lv2_preset.
  * 
- * Returns: the matching #GList-struct containing #AgsLv2Preset
+ * Returns: (element-type AgsAudio.Lv2Preset) (transfer none): the matching #GList-struct containing #AgsLv2Preset
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_lv2_preset_find_preset_label(GList *lv2_preset,
@@ -743,7 +743,7 @@ ags_lv2_preset_find_preset_label(GList *lv2_preset,
  *
  * Returns: the new #AgsLv2Preset
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 AgsLv2Preset*
 ags_lv2_preset_new(GObject *lv2_plugin,

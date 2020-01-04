@@ -114,7 +114,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
    *
    * The samplerate to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -132,7 +132,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
    *
    * The lower to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   i18n_pspec("using lower"),
@@ -150,7 +150,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
    *
    * The upper to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   i18n_pspec("using upper"),
@@ -168,7 +168,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
    *
    * The step count to be used.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("step-count",
 				   i18n_pspec("using step count"),
@@ -352,7 +352,7 @@ ags_ladspa_conversion_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
@@ -385,7 +385,7 @@ ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint f
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
@@ -414,7 +414,7 @@ ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint fl
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
@@ -507,7 +507,7 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new #AgsLadspaConversion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaConversion*
 ags_ladspa_conversion_new()

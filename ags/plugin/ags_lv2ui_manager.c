@@ -297,7 +297,7 @@ ags_lv2ui_manager_finalize(GObject *gobject)
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 2.0.0
+ * Since: (element-type utf8) (array zero-terminated=1) (transfer none): 3.0.0
  */
 gchar**
 ags_lv2ui_manager_get_default_path()
@@ -307,11 +307,11 @@ ags_lv2ui_manager_get_default_path()
 
 /**
  * ags_lv2ui_manager_set_default_path:
- * @default_path: the string vector array to use as default path
+ * @default_path: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector array to use as default path
  * 
  * Set lv2ui manager default plugin path.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_manager_set_default_path(gchar** default_path)
@@ -327,7 +327,7 @@ ags_lv2ui_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
@@ -423,7 +423,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
  *
  * Returns: the #AgsLv2uiPlugin-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
@@ -497,7 +497,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
  *
  * Returns: the #AgsLv2uiPlugin-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
@@ -571,7 +571,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
@@ -621,7 +621,7 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
@@ -638,7 +638,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
@@ -652,7 +652,7 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
  *
  * Returns: the #AgsLv2uiManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2uiManager*
 ags_lv2ui_manager_get_instance()
@@ -677,7 +677,7 @@ ags_lv2ui_manager_get_instance()
  *
  * Returns: a new #AgsLv2uiManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2uiManager*
 ags_lv2ui_manager_new()

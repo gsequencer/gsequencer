@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -275,9 +275,9 @@ ags_dssi_manager_finalize(GObject *gobject)
  * 
  * Get dssi manager default plugin path.
  *
- * Returns: the plugin default search path as a string vector
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer none): the plugin default search path as a string vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_dssi_manager_get_default_path()
@@ -287,11 +287,11 @@ ags_dssi_manager_get_default_path()
 
 /**
  * ags_dssi_manager_set_default_path:
- * @default_path: the string vector array to use as default path
+ * @default_path: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector array to use as default path
  * 
  * Set dssi manager default plugin path.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dssi_manager_set_default_path(gchar** default_path)
@@ -305,9 +305,9 @@ ags_dssi_manager_set_default_path(gchar** default_path)
  * 
  * Retrieve all filenames
  *
- * Returns: a %NULL-terminated array of filenames
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL-terminated array of filenames
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
@@ -400,9 +400,9 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the #AgsDssiPlugin-struct
+ * Returns: the matching #AgsDssiPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiPlugin*
 ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
@@ -473,7 +473,7 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
@@ -521,7 +521,7 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
@@ -619,7 +619,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
@@ -685,7 +685,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
  *
  * Returns: the #AgsDssiManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiManager*
 ags_dssi_manager_get_instance()
@@ -710,7 +710,7 @@ ags_dssi_manager_get_instance()
  *
  * Returns: the new #AgsDssiManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiManager*
 ags_dssi_manager_new()

@@ -115,7 +115,7 @@ ags_password_store_manager_finalize(GObject *gobject)
  * 
  * Get password_store.
  * 
- * Returns: the #GList-struct containing #GObject implementing #AgsPasswordStore
+ * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsPasswordStore
  * 
  * Since: 3.0.0
  */

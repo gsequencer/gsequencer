@@ -142,7 +142,7 @@ ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user_data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
@@ -179,7 +179,7 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
@@ -217,7 +217,7 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
  *
  * Returns: the id on success, else the newly created id
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GValue*
 ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
@@ -345,7 +345,7 @@ ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
  *
  * Returns: an instance of #AgsLv2UridManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UridManager*
 ags_lv2_urid_manager_get_instance()
@@ -372,7 +372,7 @@ ags_lv2_urid_manager_get_instance()
  *
  * Returns: a new #AgsLv2UridManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UridManager*
 ags_lv2_urid_manager_new()

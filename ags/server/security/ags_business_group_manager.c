@@ -113,7 +113,7 @@ ags_business_group_manager_finalize(GObject *gobject)
  * 
  * Get business_group.
  * 
- * Returns: the #GList-struct containing #GObject implementing #AgsBusinessGroup
+ * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsBusinessGroup
  * 
  * Since: 3.0.0
  */

@@ -1055,6 +1055,15 @@ ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop)
   return(NULL);
 }
 
+/**
+ * ags_server_application_context_new:
+ * 
+ * Instantiate server application context.
+ * 
+ * Returns: the new #AgsServerApplicationContext
+ * 
+ * Since: 3.0.0
+ */
 AgsServerApplicationContext*
 ags_server_application_context_new()
 {

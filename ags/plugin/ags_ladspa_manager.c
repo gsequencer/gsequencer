@@ -280,9 +280,9 @@ ags_ladspa_manager_finalize(GObject *gobject)
  * 
  * Get ladspa manager default plugin path.
  *
- * Returns: the plugin default search path as a string vector
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer none): the plugin default search path as a string vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_ladspa_manager_get_default_path()
@@ -292,11 +292,11 @@ ags_ladspa_manager_get_default_path()
 
 /**
  * ags_ladspa_manager_set_default_path:
- * @default_path: the string vector array to use as default path
+ * @default_path: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector array to use as default path
  * 
  * Set ladspa manager default plugin path.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_manager_set_default_path(gchar** default_path)
@@ -310,9 +310,9 @@ ags_ladspa_manager_set_default_path(gchar** default_path)
  * 
  * Retrieve all filenames
  *
- * Returns: a %NULL-terminated array of filenames
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL-terminated array of filenames
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
@@ -404,9 +404,9 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the #AgsLadspaPlugin-struct
+ * Returns: the #AgsLadspaPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
@@ -477,7 +477,7 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
@@ -525,7 +525,7 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
@@ -623,7 +623,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
@@ -689,7 +689,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
  *
  * Returns: the #AgsLadspaManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_get_instance()
@@ -714,7 +714,7 @@ ags_ladspa_manager_get_instance()
  *
  * Returns: the new #AgsLadspaManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_new()

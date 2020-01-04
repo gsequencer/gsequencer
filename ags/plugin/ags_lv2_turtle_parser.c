@@ -171,7 +171,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsTurtle.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("turtle",
 				    i18n_pspec("related turtles"),
@@ -186,7 +186,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsLv2Plugin.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("plugin",
 				    i18n_pspec("lv2 plugins"),
@@ -201,7 +201,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsLv2uiPlugin.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("ui-plugin",
 				    i18n_pspec("lv2 UI plugins"),
@@ -216,7 +216,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsLv2Preset.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("preset",
 				    i18n_pspec("lv2 presets"),
@@ -1229,7 +1229,7 @@ ags_lv2_turtle_parser_parse_names_blank_node_property_list(AgsLv2TurtleParser *l
  * 
  * Parse names only from manifest and referred turtles. 
  * 
- * Since: 2.2.6
+ * Since: 3.0.0
  */
 void
 ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
@@ -4458,12 +4458,12 @@ ags_lv2_turtle_parser_parse_blank_node_property_list(AgsLv2TurtleParser *lv2_tur
 /**
  * ags_lv2_turtle_parser_parse:
  * @lv2_turtle_parser: the #AgsLv2TurtleParser
- * @turtle: the %NULL terminated array of #AgsTurtle
+ * @turtle: (element-type Ags.Turtle) (array zero-terminated=1) (inout): the %NULL terminated array of #AgsTurtle
  * @n_turtle: the turtle count
  * 
  * Parse manifest and referred turtles. 
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
@@ -4650,7 +4650,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
  *
  * Returns: a new #AgsLv2TurtleParser
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsLv2TurtleParser*
 ags_lv2_turtle_parser_new(AgsTurtle *manifest)

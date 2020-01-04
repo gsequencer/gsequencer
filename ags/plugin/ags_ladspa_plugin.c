@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,7 +140,7 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -619,7 +619,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsLadspaPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)

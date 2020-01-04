@@ -72,7 +72,7 @@ ags_certificate_base_init(AgsCertificateInterface *ginterface)
  *
  * Get cert UUID as string vector.
  * 
- * Returns: the cert UUIDs as %NULL terminated string array
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the cert UUIDs as %NULL terminated string array
  * 
  * Since: 3.0.0
  */
@@ -144,7 +144,7 @@ ags_certificate_set_domain(AgsCertificate *certificate,
  *
  * Get domain.
  * 
- * Returns: the domain
+ * Returns: (transfer full): the domain
  * 
  * Since: 3.0.0
  */
@@ -218,7 +218,7 @@ ags_certificate_set_key_type(AgsCertificate *certificate,
  *
  * Get key type.
  * 
- * Returns: the key type
+ * Returns: (transfer full): the key type
  * 
  * Since: 3.0.0
  */
@@ -292,7 +292,7 @@ ags_certificate_set_public_key_file(AgsCertificate *certificate,
  *
  * Get public key file.
  * 
- * Returns: the public key file
+ * Returns: (transfer full): the public key file
  * 
  * Since: 3.0.0
  */
@@ -366,7 +366,7 @@ ags_certificate_set_private_key_file(AgsCertificate *certificate,
  *
  * Get private key file.
  * 
- * Returns: the private key file
+ * Returns: (transfer full): the private key file
  * 
  * Since: 3.0.0
  */

@@ -352,7 +352,7 @@ ags_security_context_parse_business_group(AgsSecurityContext *security_context,
  * 
  * Get business group of @security_context.
  * 
- * Returns: the string vector containing business group or %NULL
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing business group or %NULL
  * 
  * Since: 3.0.0
  */
@@ -510,7 +510,7 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
  * 
  * Get business group of @security_context.
  * 
- * Returns: the string vector containing business group or %NULL
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing business group or %NULL
  * 
  * Since: 3.0.0
  */

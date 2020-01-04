@@ -108,7 +108,7 @@ ags_lv2_log_manager_finalize(GObject *gobject)
  * 
  * Returns: 0
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_lv2_log_manager_printf(LV2_Log_Handle handle,
@@ -138,7 +138,7 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
  *
  * Returns: 0
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
@@ -161,7 +161,7 @@ ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
  *
  * Returns: an instance of #AgsLv2LogManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_get_instance()
@@ -182,7 +182,7 @@ ags_lv2_log_manager_get_instance()
  *
  * Returns: a new #AgsLv2LogManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_new()

@@ -135,7 +135,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned AgsUUID
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("uuid",
 				    i18n_pspec("UUID"),
@@ -150,7 +150,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of the plugin"),
@@ -166,7 +166,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned effect.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect of the plugin"),
@@ -182,7 +182,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned #GList-struct containing #AgsPluginPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("plugin-port",
 				    i18n_pspec("plugin port of base plugin"),
@@ -197,7 +197,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned effect-index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("effect-index",
 				 i18n_pspec("effect index of the plugin"),
@@ -215,7 +215,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned plugin.so
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("plugin-so",
 				    i18n_pspec("plugin.so"),
@@ -230,7 +230,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned UI filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ui-filename",
 				   i18n_pspec("UI filename of the plugin"),
@@ -246,7 +246,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-effect.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ui-effect",
 				   i18n_pspec("UI effect of the plugin"),
@@ -262,7 +262,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-effect-index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("ui-effect-index",
 				 i18n_pspec("UI effect-index of the plugin"),
@@ -280,7 +280,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui_plugin.so
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("ui-plugin-so",
 				    i18n_pspec("ui_plugin.so"),
@@ -295,7 +295,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ui-plugin",
 				   i18n_pspec("ui-plugin of the plugin"),
@@ -330,7 +330,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Returns: the new plugin instance
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[INSTANTIATE] =
     g_signal_new("instantiate",
@@ -354,7 +354,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Returns: the new plugin instance
    * 
-   * Since: 2.2.18
+   * Since: 3.0.0
    */
   base_plugin_signals[INSTANTIATE_WITH_PARAMS] =
     g_signal_new("instantiate-with-params",
@@ -377,7 +377,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::connect-port signal creates a new instance of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[CONNECT_PORT] =
     g_signal_new("connect-port",
@@ -398,7 +398,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::activate signal creates a new instance of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[ACTIVATE] =
     g_signal_new("activate",
@@ -417,7 +417,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::deactivate signal creates a new instance of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[DEACTIVATE] =
     g_signal_new("deactivate",
@@ -438,7 +438,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::run signal creates a new instance of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[RUN] =
     g_signal_new("run",
@@ -453,15 +453,15 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_TYPE_UINT);
 
   /**
-   * AgsBasePlugin::load_plugin:
+   * AgsBasePlugin::load-plugin:
    * @base_plugin: the plugin to load_plugin
    *
-   * The ::load_plugin signal creates a new instance of plugin.
+   * The ::load-plugin signal creates a new instance of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   base_plugin_signals[LOAD_PLUGIN] =
-    g_signal_new("load_plugin",
+    g_signal_new("load-plugin",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, load_plugin),
@@ -910,7 +910,7 @@ ags_base_plugin_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
@@ -943,7 +943,7 @@ ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
@@ -972,7 +972,7 @@ ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
@@ -996,14 +996,14 @@ ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
 
 /**
  * ags_base_plugin_find_filename:
- * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @base_plugin: (element-type AgsAudio.BasePlugin): the #GList-struct containing #AgsBasePlugin
  * @filename: the filename as string
  * 
  * Find filename in @base_plugin #GList-struct of #AgsBasePlugin.
  *
- * Returns: the next matching #GList-struct
+ * Returns: (element-type AgsAudio.BasePlugin) (transfer none): the next matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
@@ -1045,15 +1045,15 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
 
 /**
  * ags_base_plugin_find_effect:
- * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @base_plugin: (element-type AgsAudio.BasePlugin): the #GList-struct containing #AgsBasePlugin
  * @filename: the filename as string
  * @effect: the effect as string
  * 
  * Find @filename and @effect in @base_plugin #GList-struct of #AgsBasePlugin.
  *
- * Returns: the next matching #GList-struct
+ * Returns: (element-type AgsAudio.BasePlugin) (transfer none): the next matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
@@ -1092,15 +1092,15 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
 
 /**
  * ags_base_plugin_find_ui_effect_index:
- * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @base_plugin: (element-type AgsAudio.BasePlugin): the #GList-struct containing #AgsBasePlugin
  * @ui_filename: the UI filename as string
  * @ui_effect_index: the UI effect index
  * 
  * Find @ui_filename and @ui_effect_index in @base_plugin #GList-struct of #AgsBasePlugin.
  *
- * Returns: the next matching #GList-struct
+ * Returns: (element-type AgsAudio.BasePlugin) (transfer none): the next matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, guint ui_effect_index)
@@ -1136,6 +1136,17 @@ ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, gui
   return(NULL);
 }
 
+/**
+ * ags_base_plugin_sort_func:
+ * @a: a #AgsBasePlugin
+ * @b: an other #AgsBasePlugin
+ *
+ * Sort function.
+ * 
+ * Returns: a value smaller to, equal to or greater to 0 like strcmp
+ *
+ * Since: 3.0.0
+ */
 gint
 ags_base_plugin_sort_func(gpointer a, gpointer b)
 {
@@ -1189,13 +1200,13 @@ ags_base_plugin_sort_func(gpointer a, gpointer b)
 
 /**
  * ags_base_plugin_sort:
- * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @base_plugin: (element-type AgsAudio.BasePlugin) (transfer none): the #GList-struct containing #AgsBasePlugin
  *
  * Sort @base_plugin alphabetically.
  * 
- * Returns: the sorted #GList-struct
+ * Returns: (element-type AgsAudio.BasePlugin) (transfer none): the sorted #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_base_plugin_sort(GList *base_plugin)
@@ -1235,7 +1246,7 @@ ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
  *
  * Returns: the new plugin instance handle
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gpointer
 ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
@@ -1267,7 +1278,7 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
  *
  * Returns: the new plugin instance handle
  *
- * Since: 2.2.18
+ * Since: 3.0.0
  */
 gpointer
 ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
@@ -1299,7 +1310,7 @@ ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
  *
  * Connect a plugin instance.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location)
@@ -1319,7 +1330,7 @@ ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle,
  *
  * Activate a plugin instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_activate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
@@ -1339,7 +1350,7 @@ ags_base_plugin_activate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
  *
  * Deactivat a plugin instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
@@ -1361,7 +1372,7 @@ ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
  *
  * Deactivat a plugin instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_run(AgsBasePlugin *base_plugin,
@@ -1386,7 +1397,7 @@ ags_base_plugin_run(AgsBasePlugin *base_plugin,
  *
  * Load the plugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin)
@@ -1409,7 +1420,7 @@ ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsBasePlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBasePlugin*
 ags_base_plugin_new(gchar *filename, gchar *effect, guint effect_index)

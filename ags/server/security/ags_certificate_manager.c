@@ -113,7 +113,7 @@ ags_certificate_manager_finalize(GObject *gobject)
  * 
  * Get certificate.
  * 
- * Returns: the #GList-struct containing #GObject implementing #AgsCertificate
+ * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsCertificate
  * 
  * Since: 3.0.0
  */
@@ -246,8 +246,8 @@ ags_certificate_manager_get_instance()
  * @security_token: the security token
  * @domain: the domain to find
  * @key_type: the key type to find
- * @public_key_file: return location of public key filename
- * @private_key_file: return location of private key filename
+ * @public_key_file: (out) (transfer full): return location of public key filename
+ * @private_key_file: (out) (transfer full): return location of private key filename
  * 
  * Get public and private key file.
  * 

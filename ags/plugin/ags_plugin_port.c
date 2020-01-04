@@ -114,7 +114,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The assigned port-index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("port-index",
 				 i18n_pspec("port index of the plugin"),
@@ -132,7 +132,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The port's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("name of the port"),
@@ -148,7 +148,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The port's symbol.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-symbol",
 				   i18n_pspec("symbol of the port"),
@@ -164,7 +164,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The number of scale steps.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("scale-steps",
 				i18n_pspec("port index of the plugin"),
@@ -182,7 +182,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The scale point string vector.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("scale-point",
 				    i18n_pspec("string vector of scale points"),
@@ -197,7 +197,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The scale value array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("scale-value",
 				    i18n_pspec("array of scale values"),
@@ -212,7 +212,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The lower value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("lower-value",
 				    i18n_pspec("lower value"),
@@ -227,7 +227,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The upper value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("upper-value",
 				    i18n_pspec("upper value"),
@@ -242,7 +242,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("default-value",
 				    i18n_pspec("default value"),
@@ -606,7 +606,7 @@ ags_plugin_port_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
@@ -639,7 +639,7 @@ ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
  * 
  * Set @flags on @plugin_port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
@@ -668,7 +668,7 @@ ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
  * 
  * Unset @flags on @plugin_port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
@@ -692,14 +692,14 @@ ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
 
 /**
  * ags_plugin_port_find_symbol:
- * @plugin_port: the #GList-struct containing #AgsPluginPort
+ * @plugin_port: (element-type AgsAudio.PluginPort) (transfer none): the #GList-struct containing #AgsPluginPort
  * @port_symbol: the port symbol
  * 
  * Find @port_symbol within @plugin_port.
  * 
- * Returns: the matching #GList-struct containing #AgsPluginPort
+ * Returns: (element-type AgsAudio.PluginPort) (transfer none): the matching #GList-struct containing #AgsPluginPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_plugin_port_find_symbol(GList *plugin_port,
@@ -741,14 +741,14 @@ ags_plugin_port_find_symbol(GList *plugin_port,
 
 /**
  * ags_plugin_port_find_port_index:
- * @plugin_port: the #GList-struct containing #AgsPluginPort
+ * @plugin_port: (element-type AgsAudio.PluginPort) (transfer none): the #GList-struct containing #AgsPluginPort
  * @port_index: the port index
  * 
  * Find @port_index within @plugin_port.
  * 
- * Returns: the matching #GList-struct containing #AgsPluginPort
+ * Returns: (element-type AgsAudio.PluginPort) (transfer none): the matching #GList-struct containing #AgsPluginPort
  * 
- * Since: 2.2.7
+ * Since: 3.0.0
  */
 GList*
 ags_plugin_port_find_port_index(GList *plugin_port,
@@ -790,7 +790,7 @@ ags_plugin_port_find_port_index(GList *plugin_port,
  *
  * Returns: a new #AgsPluginPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPluginPort*
 ags_plugin_port_new()

@@ -2853,7 +2853,7 @@ ags_thread_add_start_queue(AgsThread *thread,
 /**
  * ags_thread_add_start_queue_all:
  * @thread: the #AgsThread
- * @child: the children as #GList-struct containing #AgsThread to start
+ * @child: (element-type Ags.Thread): the children as #GList-struct containing #AgsThread to start
  *
  * Add @child to @thread's start queue.
  *
