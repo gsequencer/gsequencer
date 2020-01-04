@@ -129,7 +129,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
 /**
  * ags_soundcard_set_device:
  * @soundcard: the #AgsSoundcard
- * @device_id: the device to set
+ * @card_id: the device to set
  *
  * Set device.
  *
@@ -137,7 +137,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
  */
 void
 ags_soundcard_set_device(AgsSoundcard *soundcard,
-			 gchar *device_id)
+			 gchar *card_id)
 {
   AgsSoundcardInterface *soundcard_interface;
 
@@ -145,7 +145,7 @@ ags_soundcard_set_device(AgsSoundcard *soundcard,
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_if_fail(soundcard_interface->set_device);
   soundcard_interface->set_device(soundcard,
-				  device_id);
+				  card_id);
 }
 
 /**
@@ -235,8 +235,8 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_list_cards:
  * @soundcard: the #AgsSoundcard
- * @card_id: a list containing card ids
- * @card_name: a list containing card names
+ * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card ids
+ * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card names
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
@@ -1062,7 +1062,7 @@ ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
  *
  * Returns: the sub block count
  *
- * Since: 2.2.26
+ * Since: 3.0.0
  */
 guint
 ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard)
@@ -1086,7 +1086,7 @@ ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.2.26
+ * Since: 3.0.0
  */
 gboolean
 ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
@@ -1103,14 +1103,14 @@ ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
 }
 
 /**
- * ags_soundcard_trylock_sub_block:
+ * ags_soundcard_unlock_sub_block:
  * @soundcard: the #AgsSoundcard
  * @buffer: the buffer to lock
  * @sub_block: and its sub block
  *
  * Unlock sub block. 
  *
- * Since: 2.2.26
+ * Since: 3.0.0
  */
 void
 ags_soundcard_unlock_sub_block(AgsSoundcard *soundcard,

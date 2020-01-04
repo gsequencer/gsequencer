@@ -66,7 +66,7 @@ void ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *p
 
 /*  */
 gboolean ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
-						   gchar *login,
+						   gchar *user_uuid,
 						   gchar *password);
 
 /*  */

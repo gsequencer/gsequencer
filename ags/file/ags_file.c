@@ -269,7 +269,7 @@ ags_file_class_init(AgsFileClass *file)
   /**
    * AgsFile::open-from-data:
    * @file: the #AgsFile
-   * @buffer: the buffer containing the file
+   * @data: the buffer containing the file
    * @length: the buffer length
    * @error: a #GError-struct pointer to return error
    * 
@@ -290,7 +290,7 @@ ags_file_class_init(AgsFileClass *file)
 		 G_TYPE_POINTER);
 
   /**
-   * AgsFile::open-from-data:
+   * AgsFile::rw-data:
    * @file: the #AgsFile
    * @create: if %TRUE the file will be created if not exists
    * @error: a #GError-struct pointer to return error

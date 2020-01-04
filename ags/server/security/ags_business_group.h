@@ -64,7 +64,7 @@ struct _AgsBusinessGroupInterface
 		   gchar *user_uuid,
 		   gchar *security_token,
 		   gchar *group_uuid,
-		   gchar** user_id,
+		   gchar **user,
 		   GError **error);
   gchar** (*get_user)(AgsBusinessGroup *business_group,
 		      GObject *security_context,

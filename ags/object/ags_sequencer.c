@@ -100,7 +100,7 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 /**
  * ags_sequencer_set_device:
  * @sequencer: the #AgsSequencer
- * @device_id: the device to set
+ * @card_id: the device to set
  *
  * Set device.
  *
@@ -108,7 +108,7 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
  */
 void
 ags_sequencer_set_device(AgsSequencer *sequencer,
-			 gchar *device_id)
+			 gchar *card_id)
 {
   AgsSequencerInterface *sequencer_interface;
 
@@ -116,7 +116,7 @@ ags_sequencer_set_device(AgsSequencer *sequencer,
   sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
   g_return_if_fail(sequencer_interface->set_device);
   sequencer_interface->set_device(sequencer,
-				  device_id);
+				  card_id);
 }
 
 /**
@@ -144,8 +144,8 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
 /**
  * ags_sequencer_list_cards:
  * @sequencer: the #AgsSequencer
- * @card_id: a list containing card ids
- * @card_name: a list containing card names
+ * @card_id: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card ids
+ * @card_name: (element-type utf8) (out callee-allocates) (array zero-terminated=1) (out) (transfer full): a list containing card names
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
@@ -230,7 +230,7 @@ ags_sequencer_is_recording(AgsSequencer *sequencer)
 }
 
 /**
- * ags_sequencer_play:
+ * ags_sequencer_play_init:
  * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
@@ -274,7 +274,7 @@ ags_sequencer_play(AgsSequencer *sequencer,
 }
 
 /**
- * ags_sequencer_record:
+ * ags_sequencer_record_init:
  * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
@@ -356,7 +356,7 @@ ags_sequencer_tic(AgsSequencer *sequencer)
 }
 
 /**
- * ags_sequencer_tic:
+ * ags_sequencer_offset_changed:
  * @sequencer: the #AgsSequencer
  *
  * Callback when counter expires minor note offset.

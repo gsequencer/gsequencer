@@ -1036,7 +1036,9 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   g_rec_mutex_lock(notation_mutex);
 
   list =
-    start_list = ags_list_util_copy_and_ref(notation->note);
+    start_list = g_list_copy_deep(notation->note,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
   
   g_rec_mutex_unlock(notation_mutex);
 

@@ -47,10 +47,10 @@ struct _AgsTactableInterface
   gdouble (*get_bpm)(AgsTactable *tactable);
   gdouble (*get_tact)(AgsTactable *tactable);
     
-  void (*change_sequencer_duration)(AgsTactable *tactable, guint64 duration);
-  void (*change_notation_duration)(AgsTactable *tactable, guint64 duration);
-  void (*change_wave_duration)(AgsTactable *tactable, guint64 duration);
-  void (*change_midi_duration)(AgsTactable *tactable, guint64 duration);
+  void (*change_sequencer_duration)(AgsTactable *tactable, guint64 sequencer_duration);
+  void (*change_notation_duration)(AgsTactable *tactable, guint64 notation_duration);
+  void (*change_wave_duration)(AgsTactable *tactable, guint64 wave_duration);
+  void (*change_midi_duration)(AgsTactable *tactable, guint64 midi_duration);
 
   void (*change_bpm)(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
   void (*change_tact)(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
@@ -66,10 +66,10 @@ guint64 ags_tactable_get_midi_duration(AgsTactable *tactable);
 gdouble ags_tactable_get_bpm(AgsTactable *tactable);
 gdouble ags_tactable_get_tact(AgsTactable *tactable);
 
-void ags_tactable_change_sequencer_duration(AgsTactable *tactable, guint64 duration);
-void ags_tactable_change_notation_duration(AgsTactable *tactable, guint64 duration);
-void ags_tactable_change_wave_duration(AgsTactable *tactable, guint64 duration);
-void ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 duration);
+void ags_tactable_change_sequencer_duration(AgsTactable *tactable, guint64 sequencer_duration);
+void ags_tactable_change_notation_duration(AgsTactable *tactable, guint64 notation_duration);
+void ags_tactable_change_wave_duration(AgsTactable *tactable, guint64 wave_duration);
+void ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 midi_duration);
 
 void ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 void ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);

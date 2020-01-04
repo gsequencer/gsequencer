@@ -94,7 +94,7 @@ ags_string_util_escape_single_quote(gchar *str)
 
 /**
  * ags_strv_length:
- * @str_array: the string vector
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * 
  * Count the number of non-%NULL entries in the array.
  * 
@@ -118,7 +118,7 @@ ags_strv_length(gchar **str_array)
 
 /**
  * ags_strv_contains:
- * @str_array: the string vector
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * @str: the string to match
  * 
  * Check occurence of @str within @str_array
@@ -149,8 +149,8 @@ ags_strv_contains(gchar **str_array,
 }
 
 /**
- * ags_strv_contains:
- * @str_array: the string vector
+ * ags_strv_index:
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * @str: the string to match
  * 
  * Check by comparing @str against @str_array items.

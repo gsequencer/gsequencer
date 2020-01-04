@@ -727,7 +727,7 @@ ags_buffer_set_format(AgsBuffer *buffer,
 /**
  * ags_buffer_sort_func:
  * @a: an #AgsBuffer
- * @b: an #AgsBuffer
+ * @b: an other #AgsBuffer
  * 
  * Sort buffers.
  * 

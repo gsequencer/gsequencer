@@ -175,7 +175,7 @@ ags_business_group_get_group_name(AgsBusinessGroup *business_group,
  * @security_context: the #AgsSecurityContext
  * @user_uuid: the user's UUID
  * @security_token: the security token
- * @group_uuid: the business group's UUID
+ * @user: the business group's UUID
  * @user: (element-type utf8) (array zero-terminated=1): the string array containing user names
  * @error: the #GError-struct
  *

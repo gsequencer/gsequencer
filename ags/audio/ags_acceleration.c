@@ -394,7 +394,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
 /**
  * ags_acceleration_sort_func:
  * @a: an #AgsAcceleration
- * @b: an #AgsAcceleration
+ * @b: an other #AgsAcceleration
  * 
  * Sort accelerations.
  * 

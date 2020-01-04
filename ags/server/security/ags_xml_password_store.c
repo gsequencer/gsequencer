@@ -649,7 +649,7 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 }
 
 /**
- * ags_xml_password_store_find_login:
+ * ags_xml_password_store_open_filename:
  * @xml_password_store: the #AgsXmlPasswordStore
  * @filename: the filename
  * 

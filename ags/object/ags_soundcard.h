@@ -186,7 +186,7 @@ struct _AgsSoundcardInterface
   guint (*get_delay_counter)(AgsSoundcard *soundcard);
 
   void (*set_start_note_offset)(AgsSoundcard *soundcard,
-				guint note_offset);
+				guint start_note_offset);
   guint (*get_start_note_offset)(AgsSoundcard *soundcard);
   
   void (*set_note_offset)(AgsSoundcard *soundcard,
@@ -217,7 +217,7 @@ struct _AgsSoundcardInterface
 GType ags_soundcard_get_type();
 
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
-			      gchar *device_id);
+			      gchar *card_id);
 gchar* ags_soundcard_get_device(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_presets(AgsSoundcard *soundcard,

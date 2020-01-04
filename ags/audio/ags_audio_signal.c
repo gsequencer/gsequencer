@@ -3349,11 +3349,11 @@ ags_audio_signal_get_template(GList *audio_signal)
 
 /**
  * ags_audio_signal_get_rt_template:
- * @audio_signal: a #GList-struct containing #AgsAudioSignal
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer none): a #GList-struct containing #AgsAudioSignal
  *
  * Retrieve the realtime template audio signal.
  *
- * Returns: the rt-templates as #GList-struct containing #AgsAudioSignal
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer container): the rt-templates as #GList-struct containing #AgsAudioSignal
  *
  * Since: 3.0.0
  */
@@ -3384,12 +3384,12 @@ ags_audio_signal_get_rt_template(GList *audio_signal)
 
 /**
  * ags_audio_signal_find_by_recall_id:
- * @audio_signal: a #GList-struct containing #AgsAudioSignal
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer none): a #GList-struct containing #AgsAudioSignal
  * @recall_id: matching #AgsRecallID
  *
  * Retrieve next audio signal refering to @recall_id
  *
- * Returns: matching #AgsAudioSignal
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer none): matching #GList-struct containing #AgsAudioSignal
  *
  * Since: 3.0.0
  */
@@ -3429,13 +3429,13 @@ ags_audio_signal_find_by_recall_id(GList *audio_signal,
 
 /**
  * ags_audio_signal_find_stream_current:
- * @audio_signal: the #GList-struct containing #AgsAudioSignal
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer none): the #GList-struct containing #AgsAudioSignal
  * @recall_id: the matching #AgsRecallID
  * 
  * Retrieve next current stream of #AgsAudioSignal list. Warning this function does not
  * lock the stream mutex.
  *
- * Returns: next #GList-struct matching #AgsRecallID
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer none): next #GList-struct matching #AgsRecallID
  *
  * Since: 3.0.0
  */
@@ -3467,7 +3467,7 @@ ags_audio_signal_find_stream_current(GList *audio_signal,
 
 /**
  * ags_audio_signal_is_active:
- * @audio_signal: the #GList-struct containing #AgsAudioSignal
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer none): the #GList-struct containing #AgsAudioSignal
  * @recall_id: the #AgsRecallID
  * 
  * Check if is active.

@@ -119,7 +119,8 @@ host_triplet = @host@
 @WITH_W32API_TRUE@am__append_5 = -no-undefined
 @WITH_VST3_TRUE@am__append_6 = libags_vst.la 
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
-@HAVE_INTROSPECTION_TRUE@am__append_7 = Ags.gir AgsAudio.gir
+@HAVE_INTROSPECTION_TRUE@am__append_7 = Ags.gir AgsAudio.gir \
+@HAVE_INTROSPECTION_TRUE@	AgsGui.gir
 @HAVE_INTROSPECTION_TRUE@am__append_8 = $(gir_DATA) $(typelib_DATA)
 @WITH_W32API_FALSE@am__append_9 = -Wl,-soname,libags.so
 @WITH_W32API_FALSE@am__append_10 = -ldl -lcrypt
@@ -6701,6 +6702,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 @HAVE_INTROSPECTION_TRUE@Ags_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@Ags_gir_NAMESPACE = Ags
 @HAVE_INTROSPECTION_TRUE@Ags_gir_VERSION = 3.0
+@HAVE_INTROSPECTION_TRUE@Ags_gir_PREFIX = ags_
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_INCLUDES = GObject-2.0
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_C_INCLUDES = ags/libags-audio.h
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
@@ -6708,6 +6710,15 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_NAMESPACE = AgsAudio
 @HAVE_INTROSPECTION_TRUE@AgsAudio_gir_VERSION = 3.0
+@HAVE_INTROSPECTION_TRUE@AgsAudio_gir_PREFIX = ags_
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_INCLUDES = Gtk-3.0
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_C_INCLUDES = ags/libags-gui.h
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_LIBS = libags_gui.la
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_NAMESPACE = AgsGui
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_VERSION = 3.0
+@HAVE_INTROSPECTION_TRUE@AgsGui_gir_PREFIX = ags_
 @HAVE_INTROSPECTION_TRUE@girdir = $(datadir)/gir-1.0
 @HAVE_INTROSPECTION_TRUE@gir_DATA = $(INTROSPECTION_GIRS)
 @HAVE_INTROSPECTION_TRUE@typelibdir = $(libdir)/girepository-1.0
@@ -26338,6 +26349,8 @@ uninstall-man: uninstall-man1
 @HAVE_INTROSPECTION_TRUE@Ags.gir: libags.la libags_thread.la libags_server.la
 
 @HAVE_INTROSPECTION_TRUE@AgsAudio.gir: libags_audio.la $(top_builddir)/Ags.gir
+
+@HAVE_INTROSPECTION_TRUE@AgsGui.gir: libags_gui.la
 
 ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-tests

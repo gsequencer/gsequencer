@@ -4963,12 +4963,12 @@ ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 
 /**
  * ags_audio_find_name:
- * @audio: the #GList-struct containing #AgsAudio
+ * @audio: (element-type AgsAudio.Audio) (transfer none): the #GList-struct containing #AgsAudio
  * @audio_name: the audio name to find
  * 
  * Find @audio_name in @audio.
  *
- * Returns: the next matching #GList-struct containing #AgsAudio
+ * Returns: (element-type AgsAudio.Audio) (transfer none): the next matching #GList-struct containing #AgsAudio
  * 
  * Since: 3.0.0
  */
@@ -10873,7 +10873,7 @@ ags_audio_real_start(AgsAudio *audio,
  *
  * Is emitted as audio is started.
  *
- * Returns: the #GList-struct containing #AgsRecallID
+ * Returns: (element-type AgsAudio.RecallID) (transfer container): the #GList-struct containing #AgsRecallID
  * 
  * Since: 3.0.0
  */
@@ -11254,7 +11254,7 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
  *
  * Check scope's recall id.
  * 
- * Returns: the scope's recall id of @audio
+ * Returns: (element-type AgsAudio.RecallID) (transfer container): the scope's recall id of @audio
  * 
  * Since: 3.0.0
  */
@@ -11283,7 +11283,7 @@ ags_audio_check_scope(AgsAudio *audio, gint sound_scope)
  *
  * Retrieve all ports of #AgsAudio.
  *
- * Returns: a new #GList containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer container): a new #GList containing #AgsPort
  *
  * Since: 3.0.0
  */
@@ -11412,7 +11412,7 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
  *
  * Retrieve specified port of #AgsAudio
  *
- * Returns: a #GList-struct of #AgsPort if found, otherwise %NULL
+ * Returns: (element-type AgsAudio.Port) (transfer container): a #GList-struct of #AgsPort if found, otherwise %NULL
  *
  * Since: 3.0.0
  */

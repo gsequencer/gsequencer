@@ -114,7 +114,7 @@ struct _AgsSequencerInterface
 GType ags_sequencer_get_type();
 
 void ags_sequencer_set_device(AgsSequencer *sequencer,
-			      gchar *device_id);
+			      gchar *card_id);
 gchar* ags_sequencer_get_device(AgsSequencer *sequencer);
 
 void ags_sequencer_list_cards(AgsSequencer *sequencer,

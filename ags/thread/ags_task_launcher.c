@@ -675,9 +675,9 @@ ags_task_launcher_add_task(AgsTaskLauncher *task_launcher,
 }
 
 /**
- * ags_task_launcher_add_task:
+ * ags_task_launcher_add_task_all:
  * @task_launcher: the #AgsTaskLauncher
- * @list: the #GList-struct containing #AgsTask
+ * @list: (element-type Ags.Task) (transfer none): the #GList-struct containing #AgsTask
  * 
  * Add all @list to @task_launcher.
  * 

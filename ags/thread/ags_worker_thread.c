@@ -276,7 +276,7 @@ ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_
 }
 
 /**
- * ags_worker_thread_test_status_flags:
+ * ags_worker_thread_unset_status_flags:
  * @worker_thread: the #AgsWorkerThread
  * @status_flags: status flags
  * 

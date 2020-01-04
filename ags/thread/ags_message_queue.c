@@ -474,7 +474,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
 /**
  * ags_message_queue_query_message:
  * @message_queue: the #AgsMessageQueue
- * @recipient: the recipient as #GObject
+ * @xpath: the XPath as string
  * 
  * Query @xpath in @message_queue's messages.
  * 

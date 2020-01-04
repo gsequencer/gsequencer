@@ -1475,7 +1475,6 @@ ags_server_xmlrpc_callback(SoupServer *soup_server,
 
 /**
  * ags_server_new:
- * @application_context: the #AgsApplicationContext
  *
  * Instantiate #AgsServer.
  * 

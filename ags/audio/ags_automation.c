@@ -954,12 +954,12 @@ ags_automation_unset_flags(AgsAutomation *automation, guint flags)
 
 /**
  * ags_automation_find_port:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @port: the #AgsPort to match
  * 
  * Find automation by port.
  * 
- * Returns: next matching automation as #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Automation) (transfer none): next matching automation as #GList-struct or %NULL if not found
  * 
  * Since: 3.0.0
  */
@@ -997,13 +997,13 @@ ags_automation_find_port(GList *automation,
 
 /**
  * ags_automation_find_near_timestamp:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @timestamp: the matching timestamp
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Automation) (transfer none): Next matching #GList-struct or %NULL if not found
  *
  * Since: 3.0.0
  */
@@ -1242,7 +1242,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 
 /**
  * ags_automation_find_near_timestamp_extended:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @channel_type: the matching channel type
  * @control_name: the matching control name
@@ -1250,7 +1250,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Automation) (transfer none): Next matching #GList-struct or %NULL if not found
  *
  * Since: 3.0.0
  */
@@ -1532,6 +1532,17 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   return(retval);
 }
 
+/**
+ * ags_automation_sort_func:
+ * @a: an #AgsAutomation
+ * @b: an other #AgsAutomation
+ * 
+ * Compare @a to @b.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ * 
+ * Since: 3.0.0
+ */
 gint
 ags_automation_sort_func(gconstpointer a,
 			 gconstpointer b)
@@ -1567,12 +1578,12 @@ ags_automation_sort_func(gconstpointer a,
 
 /**
  * ags_automation_add:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @new_automation: the #AgsAutomation to add
  * 
  * Add @new_automation sorted to @automation
  * 
- * Returns: the new beginning of @automation
+ * Returns: (element-type AgsAudio.Automation) (transfer none): the new beginning of @automation
  * 
  * Since: 3.0.0
  */
@@ -1724,7 +1735,9 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
   lower = automation->lower;
   
   list =
-    start_list = ags_list_util_copy_and_ref(automation->acceleration);
+    start_list = g_list_copy_deep(automation->acceleration,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
   
   g_rec_mutex_unlock(automation_mutex);
 
@@ -1778,7 +1791,7 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Retrieve selection.
  *
- * Returns: the selection.
+ * Returns: (element-type AgsAudio.Acceleration) (transfer none): the selection.
  *
  * Since: 3.0.0
  */
@@ -1948,7 +1961,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Find acceleration by offset and value region.
  *
- * Returns: the matching accelerations as #GList-struct
+ * Returns: (element-type AgsAudio.Acceleration) (transfer container): the matching accelerations as #GList-struct
  *
  * Since: 3.0.0
  */
@@ -2863,7 +2876,7 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
  *
  * Retrieve automation port specifier.
  *
- * Returns: a %NULL terminated string array
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated string array
  *
  * Since: 3.0.0
  */
@@ -2934,7 +2947,7 @@ ags_automation_get_specifier_unique(GList *automation)
  *
  * Retrieve automation port specifier.
  *
- * Returns: a %NULL terminated string array
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated string array
  *
  * Since: 3.0.0
  */
@@ -3016,12 +3029,12 @@ ags_automation_get_specifier_unique_with_channel_type(GList *automation,
 
 /**
  * ags_automation_find_specifier:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  *
  * Find port specifier.
  *
- * Returns: Next matching #GList
+ * Returns: (element-type AgsAudio.Automation) (transfer none): Next matching #GList
  *
  * Since: 3.0.0
  */
@@ -3067,12 +3080,12 @@ ags_automation_find_specifier(GList *automation,
 
 /**
  * ags_automation_find_channel_type_with_control_name:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @channel_type: the #GType to match
  * 
  * Find automation by @channel_type.
  * 
- * Returns: next matching automation as #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Automation) (transfer none): next matching automation as #GList-struct or %NULL if not found
  * 
  * Since: 3.0.0
  */
@@ -3128,7 +3141,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
 
 /**
  * ags_automation_find_specifier_with_type_and_line:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  * @channel_type: the channel #GType
  * @line: the line
@@ -3137,7 +3150,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
  *
  * Returns: Next matching #GList-struct
  *
- * Since: 3.0.0
+ * Since: (element-type AgsAudio.Automation) (transfer none): 3.0.0
  */
 GList*
 ags_automation_find_specifier_with_type_and_line(GList *automation,
@@ -3200,7 +3213,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
  * @x: the x-offset
  * @x_end: the x-end-offset
  * @use_prev_on_failure: if %TRUE use previous value, else return G_MAXUINT
- * @value: the return location of value
+ * @value: (out caller-allocates): the return location of value
  *
  * Get automation value.
  *
