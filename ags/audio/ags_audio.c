@@ -11167,7 +11167,7 @@ ags_audio_real_stop(AgsAudio *audio,
 /**
  * ags_audio_stop:
  * @audio: the #AgsAudio
- * @recall_id: the current #AgsRecallID
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer none): the #GList-struct containing #AgsRecallID
  * @sound_scope: the scope
  *
  * Is emitted as playing audio is stopped.
@@ -11515,7 +11515,7 @@ ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
 /**
  * ags_audio_open_audio_file_as_channel:
  * @audio: the #AgsAudio
- * @filename: the files to open
+ * @filename: (element-type utf8) (transfer none): the files to open
  * @overwrite_channels: if existing channels should be assigned
  * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
  *

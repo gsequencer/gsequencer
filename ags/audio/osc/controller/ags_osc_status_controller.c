@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -224,7 +224,7 @@ ags_osc_status_controller_finalize(GObject *gobject)
 gpointer
 ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_controller,
 					  AgsOscConnection *osc_connection,
-					  unsigned char *message, guint message_size)
+					  guchar *message, guint message_size)
 {
   AgsOscServer *osc_server;
   AgsOscResponse *osc_response;
@@ -233,7 +233,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
 
   gchar *type_tag;
   gchar *status;
-  unsigned char *packet;
+  guchar *packet;
   
   guint real_packet_size;
   guint packet_size;
@@ -275,8 +275,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   real_packet_size = 0;
   packet_size = 0;
 
-  packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-  memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+  packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+  memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
   g_object_set(osc_response,
 	       "packet", packet,
@@ -341,7 +341,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
 gpointer
 ags_osc_status_controller_get_status(AgsOscStatusController *osc_status_controller,
 				     AgsOscConnection *osc_connection,
-				     unsigned char *message, guint message_size)
+				     guchar *message, guint message_size)
 {
   gpointer osc_response;
   

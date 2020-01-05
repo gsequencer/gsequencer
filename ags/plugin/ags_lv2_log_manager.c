@@ -159,7 +159,7 @@ ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2LogManager
+ * Returns: (transfer none): an instance of #AgsLv2LogManager
  *
  * Since: 3.0.0
  */

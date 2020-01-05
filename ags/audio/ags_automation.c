@@ -1892,7 +1892,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  *
  * Find acceleration by offset and acceleration.
  *
- * Returns: the matching acceleration.
+ * Returns: (transfer none): the matching acceleration.
  *
  * Since: 3.0.0
  */ 
@@ -2386,7 +2386,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as xmlNode
+ * Returns: (transfer none): the selection as xmlNode
  *
  * Since: 3.0.0
  */
@@ -2487,7 +2487,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as xmlNod
+ * Returns: (transfer none): the selection as xmlNod
  *
  * Since: 3.0.0
  */
@@ -2872,7 +2872,7 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 
 /**
  * ags_automation_get_specifier_unique:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  *
  * Retrieve automation port specifier.
  *
@@ -2942,7 +2942,7 @@ ags_automation_get_specifier_unique(GList *automation)
 
 /**
  * ags_automation_get_specifier_unique_with_channel_type:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @channel_type: the channel's #GType
  *
  * Retrieve automation port specifier.

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,14 +50,14 @@ struct _AgsOscInfoControllerClass
 
   gpointer (*get_info)(AgsOscInfoController *info_controller,
 		       AgsOscConnection *osc_connection,
-		       unsigned char *message, guint message_size);
+		       guchar *message, guint message_size);
 };
 
 GType ags_osc_info_controller_get_type();
 
-gpointer ags_osc_info_controller_get_info(AgsOscInfoController *info_controller,
+gpointer ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
 					  AgsOscConnection *osc_connection,
-					  unsigned char *message, guint message_size);
+					  guchar *message, guint message_size);
 
 AgsOscInfoController* ags_osc_info_controller_new();
 

@@ -40,7 +40,7 @@ G_BEGIN_DECLS
 
 #define AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE (16.0)
 
-typedef struct _AgsNote AgsNote;
+  typedef struct _AgsNote AgsNote;
 typedef struct _AgsNoteClass AgsNoteClass;
 
 /**
@@ -127,14 +127,14 @@ guint ags_note_smf_delta_time_to_length(glong delta_time,
 					glong tempo,
 					gdouble bpm, gdouble delay_factor);
 
-unsigned char* ags_note_to_raw_midi(AgsNote *note,
-				    gdouble bpm, gdouble delay_factor,
-				    guint *buffer_length);
-unsigned char* ags_note_to_raw_midi_extended(AgsNote *note,
-					     gdouble bpm, gdouble delay_factor,
-					     glong nn, glong dd, glong cc, glong bb,
-					     glong tempo,
-					     guint *buffer_length);
+guchar* ags_note_to_raw_midi(AgsNote *note,
+			     gdouble bpm, gdouble delay_factor,
+			     guint *buffer_length);
+guchar* ags_note_to_raw_midi_extended(AgsNote *note,
+				      gdouble bpm, gdouble delay_factor,
+				      glong nn, glong dd, glong cc, glong bb,
+				      glong tempo,
+				      guint *buffer_length);
 snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
 				       gdouble bpm, gdouble delay_factor,
 				       guint *n_events);
@@ -144,10 +144,10 @@ snd_seq_event_t* ags_note_to_seq_event_extended(AgsNote *note,
 						glong tempo,
 						guint *n_events);
 
-GList* ags_note_from_raw_midi(unsigned char *raw_midi,
+GList* ags_note_from_raw_midi(guchar *raw_midi,
 			      gdouble bpm, gdouble delay_factor,
 			      guint length);
-GList* ags_note_from_raw_midi_extended(unsigned char *raw_midi,
+GList* ags_note_from_raw_midi_extended(guchar *raw_midi,
 				       glong nn, glong dd, glong cc, glong bb,
 				       glong tempo,
 				       gdouble bpm, gdouble delay_factor,

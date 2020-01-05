@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,7 +55,7 @@ struct _AgsOscStatusControllerClass
 
 GType ags_osc_status_controller_get_type();
 
-gpointer ags_osc_status_controller_get_status(AgsOscStatusController *status_controller,
+gpointer ags_osc_status_controller_get_status(AgsOscStatusController *osc_status_controller,
 					      AgsOscConnection *osc_connection,
 					      guchar *message, guint message_size);
 

@@ -446,7 +446,7 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
  *
  * Set up DSSI ports.
  *
- * Returns: the #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
  * Since: 3.0.0
  */
@@ -719,13 +719,13 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
 /**
  * ags_recall_dssi_find:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve DSSI recall.
  *
- * Returns: Next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct or %NULL
  * 
  * Since: 3.0.0
  */

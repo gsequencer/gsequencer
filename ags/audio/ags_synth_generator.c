@@ -899,8 +899,6 @@ ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
  * @note: the note to compute
  * 
  * Compute synth for @note.
- *
- * Returns: an #AgsAudioSignal applied specified synth to stream
  * 
  * Since: 3.0.0
  */

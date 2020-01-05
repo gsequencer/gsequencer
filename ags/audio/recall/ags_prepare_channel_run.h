@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,7 @@ struct _AgsPrepareChannelRunClass
 
 GType ags_prepare_channel_run_get_type();
 
-AgsPrepareChannelRun* ags_prepare_channel_run_new(AgsChannel *sour);
+AgsPrepareChannelRun* ags_prepare_channel_run_new(AgsChannel *source);
 
 G_END_DECLS
 

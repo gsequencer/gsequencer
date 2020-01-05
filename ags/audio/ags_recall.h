@@ -240,14 +240,14 @@ gint ags_recall_get_sound_scope(AgsRecall *recall);
 gboolean ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope);
 
 /* staging flags */
-gboolean ags_recall_test_staging_flags(AgsRecall *recall, guint behaviour_flags);
+gboolean ags_recall_test_staging_flags(AgsRecall *recall, guint staging_flags);
 void ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags);
 void ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags);
 
 gboolean ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags);
 
 /* state flags */
-gboolean ags_recall_test_state_flags(AgsRecall *recall, guint behaviour_flags);
+gboolean ags_recall_test_state_flags(AgsRecall *recall, guint state_flags);
 void ags_recall_set_state_flags(AgsRecall *recall, guint state_flags);
 void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
 
@@ -311,10 +311,10 @@ void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean 
 void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
 
 /* query */
-gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
+gboolean ags_recall_is_done(GList *recall, GObject *recycling_context);
 
-GList* ags_recall_get_by_effect(GList *list, gchar *filename, gchar *effect);
-GList* ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
+GList* ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect);
+GList* ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gchar *filename, gchar *effect);
 
 GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_find_template(GList *recall);

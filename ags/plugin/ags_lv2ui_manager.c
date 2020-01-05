@@ -325,7 +325,7 @@ ags_lv2ui_manager_set_default_path(gchar** default_path)
  * 
  * Retrieve all filenames
  *
- * Returns: a %NULL-terminated array of filenames
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL-terminated array of filenames
  *
  * Since: 3.0.0
  */
@@ -421,7 +421,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
  *
  * Lookup UI filename in loaded plugins.
  *
- * Returns: the #AgsLv2uiPlugin-struct
+ * Returns: (transfer none): the #AgsLv2uiPlugin
  *
  * Since: 3.0.0
  */
@@ -495,7 +495,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
  *
  * Lookup @ui_filename with @ui_effect_index in loaded plugins.
  *
- * Returns: the #AgsLv2uiPlugin-struct
+ * Returns: (transfer none): the #AgsLv2uiPlugin
  *
  * Since: 3.0.0
  */
@@ -650,7 +650,7 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
  *
  * Get instance.
  *
- * Returns: the #AgsLv2uiManager
+ * Returns: (transfer none): the #AgsLv2uiManager
  *
  * Since: 3.0.0
  */

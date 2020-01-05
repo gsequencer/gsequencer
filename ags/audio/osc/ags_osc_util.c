@@ -251,7 +251,7 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 
 /**
  * ags_osc_util_timetag_now:
- * @tv_secs: the return location of number of seconds since midnight on January 1, 1900
+ * @tv_sec: the return location of number of seconds since midnight on January 1, 1900
  * @tv_fraction: the return location of fraction of seconds to a precision of about 200 picoseconds
  * 
  * Get current time.
@@ -259,7 +259,7 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
  * Since: 2.1.0
  */
 void
-ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
+ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction)
 {
   struct timespec time_now;
 
@@ -268,7 +268,7 @@ ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
   mach_timespec_t mts;
 #endif
   
-  static const guint secs_since_1900_to_1970 = 2208988800;
+  static const guint sec_since_1900_to_1970 = 2208988800;
   
 #ifdef __APPLE__
   host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -282,8 +282,8 @@ ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
   clock_gettime(CLOCK_MONOTONIC, &time_now);
 #endif
 
-  if(tv_secs != NULL){
-    tv_secs[0] = time_now.tv_sec + 2208988800;
+  if(tv_sec != NULL){
+    tv_sec[0] = time_now.tv_sec + 2208988800;
   }
 
   if(tv_fraction != NULL){

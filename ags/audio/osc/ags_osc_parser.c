@@ -155,7 +155,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The character read
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[OSC_GETC] =
     g_signal_new("osc-getc",
@@ -169,10 +169,11 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
   /**
    * AgsOscParser::on-error:
    * @osc_parser: the #AgsOscParser
+   * @error: the return location of #GError
    *
    * The ::on-error signal is emited as error occurs.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -192,7 +193,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The XML doc
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[PARSE_FULL] =
     g_signal_new("parse-full",
@@ -213,7 +214,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[PARSE_BYTES] =
     g_signal_new("parse-bytes",
@@ -234,7 +235,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The XML node representing packet
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[PACKET] =
     g_signal_new("packet",
@@ -253,7 +254,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The XML node representing bundle
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[BUNDLE] =
     g_signal_new("bundle",
@@ -272,7 +273,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
    *
    * Returns: The XML node representing message
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[MESSAGE] =
     g_signal_new("message",
@@ -286,12 +287,13 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
   /**
    * AgsOscParser::value:
    * @osc_parser: the #AgsOscParser
+   * @v_type: value type
    *
    * The ::value signal is emited during parsing.
    *
    * Returns: The XML node representing value
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_parser_signals[VALUE] =
     g_signal_new("value",
@@ -386,7 +388,7 @@ ags_osc_parser_finalize(GObject *gobject)
  * 
  * Returns: the gint32 read
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gint32
 ags_osc_parser_read_gint32(AgsOscParser *osc_parser)
@@ -415,7 +417,7 @@ ags_osc_parser_read_gint32(AgsOscParser *osc_parser)
  * 
  * Returns: the gint64 read
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gint64
 ags_osc_parser_read_gint64(AgsOscParser *osc_parser)
@@ -452,7 +454,7 @@ ags_osc_parser_read_gint64(AgsOscParser *osc_parser)
  * 
  * Returns: the gfloat read
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gfloat
 ags_osc_parser_read_gfloat(AgsOscParser *osc_parser)
@@ -484,7 +486,7 @@ ags_osc_parser_read_gfloat(AgsOscParser *osc_parser)
  * 
  * Returns: the gdouble read
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gdouble
 ags_osc_parser_read_gdouble(AgsOscParser *osc_parser)
@@ -525,7 +527,7 @@ ags_osc_parser_read_gdouble(AgsOscParser *osc_parser)
  * 
  * Returns: the text read as string
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gchar*
 ags_osc_parser_read_text(AgsOscParser *osc_parser,
@@ -583,7 +585,7 @@ ags_osc_parser_real_osc_getc(AgsOscParser *osc_parser)
  * 
  * Returns: the byte read
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 int
 ags_osc_parser_osc_getc(AgsOscParser *osc_parser)
@@ -615,7 +617,7 @@ ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
  * 
  * On error event.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_parser_on_error(AgsOscParser *osc_parser,
@@ -676,9 +678,9 @@ ags_osc_parser_real_parse_full(AgsOscParser *osc_parser)
  * 
  * Parse full document.
  * 
- * Returns: the parsed XML doc
+ * Returns: (transfer none): the parsed XML doc
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlDoc*
 ags_osc_parser_parse_full(AgsOscParser *osc_parser)
@@ -718,9 +720,9 @@ ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
  * 
  * Parse bytes.
  * 
- * Returns: the parsed XML node
+ * Returns: (transfer none): the parsed XML node
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,
@@ -788,9 +790,9 @@ ags_osc_parser_real_packet(AgsOscParser *osc_parser)
  * 
  * Parse OSC packet.
  * 
- * Returns: the parsed XML node
+ * Returns: (transfer none): the parsed XML node
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_osc_parser_packet(AgsOscParser *osc_parser)
@@ -887,9 +889,9 @@ ags_osc_parser_real_bundle(AgsOscParser *osc_parser)
  * 
  * Parse OSC bundle.
  * 
- * Returns: the parsed XML node
+ * Returns: (transfer none): the parsed XML node
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_osc_parser_bundle(AgsOscParser *osc_parser)
@@ -1028,9 +1030,9 @@ ags_osc_parser_real_message(AgsOscParser *osc_parser)
  * 
  * Parse OSC message.
  * 
- * Returns: the parsed XML node
+ * Returns: (transfer none): the parsed XML node
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_osc_parser_message(AgsOscParser *osc_parser)
@@ -1224,9 +1226,9 @@ ags_osc_parser_real_value(AgsOscParser *osc_parser,
  * 
  * Parse OSC value.
  * 
- * Returns: the parsed XML node
+ * Returns: (transfer none): the parsed XML node
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_osc_parser_value(AgsOscParser *osc_parser,
@@ -1253,7 +1255,7 @@ ags_osc_parser_value(AgsOscParser *osc_parser,
  *
  * Returns: the new #AgsOscParser
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscParser*
 ags_osc_parser_new()

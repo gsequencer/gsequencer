@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ void ags_osc_info_controller_finalize(GObject *gobject);
 
 gpointer ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 					       AgsOscConnection *osc_connection,
-					       unsigned char *message, guint message_size);
+					       guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_info_controller
@@ -222,17 +222,17 @@ ags_osc_info_controller_finalize(GObject *gobject)
 gpointer
 ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 				      AgsOscConnection *osc_connection,
-				      unsigned char *message, guint message_size)
+				      guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint packet_size;
   
-  static const unsigned char server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
+  static const guchar server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
 
   start_response = NULL;
 
@@ -241,7 +241,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 				  osc_response);
 
   /* create packet */
-  packet = (unsigned char *) malloc((4 * sizeof(unsigned char)) + sizeof(server_info_message));
+  packet = (guchar *) malloc((4 * sizeof(guchar)) + sizeof(server_info_message));
 
   ags_osc_buffer_util_put_int32(packet,
 				sizeof(server_info_message));
@@ -250,7 +250,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
   /* set response packet */
   g_object_set(osc_response,
 	       "packet", packet,
-	       "packet-size", (4 * sizeof(unsigned char)) + sizeof(server_info_message),
+	       "packet-size", (4 * sizeof(guchar)) + sizeof(server_info_message),
 	       NULL);
 
   return(start_response);
@@ -272,7 +272,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 gpointer
 ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
 				 AgsOscConnection *osc_connection,
-				 unsigned char *message, guint message_size)
+				 guchar *message, guint message_size)
 {
   gpointer osc_response;
   

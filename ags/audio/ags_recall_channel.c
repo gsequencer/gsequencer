@@ -634,12 +634,12 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_channel_find_channel:
- * @recall_channel: a #GList containing #AgsRecallChannel
+ * @recall_channel: (element-type AgsAudio.RecallChannel) (transfer none): the #GList-struct containing #AgsRecallChannel
  * @source: the #AgsChannel to find
  *
  * Retrieve next recall assigned to channel.
  *
- * Returns: next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.RecallChannel) (transfer none): next matching #GList-struct or %NULL
  *
  * Since: 3.0.0
  */

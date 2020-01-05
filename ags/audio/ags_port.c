@@ -329,6 +329,7 @@ ags_port_class_init(AgsPortClass *port)
   /**
    * AgsPort::safe-read:
    * @port: the object providing safe read
+   * @value: the #GValue-struct
    *
    * The ::safe-read signal is emited while doing safe read operation.
    * 
@@ -347,6 +348,7 @@ ags_port_class_init(AgsPortClass *port)
   /**
    * AgsPort::safe-write:
    * @port: the object providing safe write
+   * @value: the #GValue-struct
    *
    * The ::safe-write signal is emited while doing safe write operation.
    * 
@@ -365,6 +367,8 @@ ags_port_class_init(AgsPortClass *port)
   /**
    * AgsPort::safe-get-property:
    * @port: the object providing safe get property
+   * @property_name: the property name
+   * @value: the #GValue-struct
    *
    * The ::safe-get-property signal is emited while safe get property.
    * 
@@ -383,6 +387,8 @@ ags_port_class_init(AgsPortClass *port)
   /**
    * AgsPort::safe-set-property:
    * @port: the object providing safe set property
+   * @property_name: the property name
+   * @value: the #GValue-struct
    *
    * The ::safe-set-property signal is emited while safe set property.
    * 
@@ -1560,12 +1566,12 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 
 /**
  * ags_port_find_specifier:
- * @port: the #GList-struct containing #AgsPort
+ * @port: (element-type AgsAudio.Port) (transfer none): the #GList-struct containing #AgsPort
  * @specifier: the recall specifier to match
  *
  * Retrieve port by specifier.
  *
- * Returns: Next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.Port) (transfer none): Next matching #GList-struct or %NULL
  *
  * Since: 3.0.0
  */

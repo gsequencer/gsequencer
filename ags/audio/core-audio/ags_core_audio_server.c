@@ -182,7 +182,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The assigned URL.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -198,7 +198,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The default soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -214,7 +214,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The default core audio client.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-core-audio-client",
 				   i18n_pspec("default core audio client"),
@@ -230,7 +230,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The core audio client list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("core-audio-client",
 				    i18n_pspec("core audio client list"),
@@ -759,7 +759,7 @@ ags_core_audio_server_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint flags)
@@ -792,7 +792,7 @@ ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint fl
  *
  * Enable a feature of @core_audio_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint flags)
@@ -823,7 +823,7 @@ ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint fla
  *
  * Disable a feature of @core_audio_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_server_unset_flags(AgsCoreAudioServer *core_audio_server, guint flags)
@@ -1576,7 +1576,7 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
  * 
  * Returns: the instantiated #AgsCoreAudioDevout
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_server)
@@ -1692,14 +1692,14 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
 
 /**
  * ags_core_audio_server_find_url:
- * @core_audio_server: the #GList-struct containing #AgsCoreAudioServer
+ * @core_audio_server: (element-type AgsAudio.CoreAudioServer) (transfer none): the #GList-struct containing #AgsCoreAudioServer
  * @url: the url to find
  *
  * Find #AgsCoreAudioServer by url.
  *
- * Returns: the next matching #GList-struct containing a #AgsCoreAudioServer matching @url or %NULL
+ * Returns: (element-type AgsAudio.CoreAudioServer) (transfer none): the next matching #GList-struct containing a #AgsCoreAudioServer matching @url or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_core_audio_server_find_url(GList *core_audio_server,
@@ -1742,9 +1742,9 @@ ags_core_audio_server_find_url(GList *core_audio_server,
  *
  * Find #AgsCoreAudioClient by uuid.
  *
- * Returns: the #AgsCoreAudioClient found or %NULL
+ * Returns: (transfer none): the #AgsCoreAudioClient found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
@@ -1807,9 +1807,9 @@ ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
  *
  * Find #AgsCoreAudioPort by uuid.
  *
- * Returns: the #AgsCoreAudioPort found or %NULL
+ * Returns: (element-type AgsAudio.CoreAudioPort) (transfer none): the #AgsCoreAudioPort found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
@@ -1848,12 +1848,16 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
       g_rec_mutex_unlock(core_audio_port_mutex);
       
       if(success){
+	AgsCoreAudioPort *retval;
+	
+	retval = port->data;
+	
 	g_list_free_full(client_start,
 			 g_object_unref);
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(port->data);
+	return(retval);
       }
 
       /* iterate */
@@ -1880,7 +1884,7 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
  *
  * Add @core_audio_client to @core_audio_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_server_add_client(AgsCoreAudioServer *core_audio_server,
@@ -1915,7 +1919,7 @@ ags_core_audio_server_add_client(AgsCoreAudioServer *core_audio_server,
  *
  * Remove @core_audio_client to @core_audio_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_server_remove_client(AgsCoreAudioServer *core_audio_server,
@@ -1949,7 +1953,7 @@ ags_core_audio_server_remove_client(AgsCoreAudioServer *core_audio_server,
  *
  * Connect all clients.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
@@ -1999,7 +2003,7 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
  *
  * Returns: the new #AgsCoreAudioServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCoreAudioServer*
 ags_core_audio_server_new(gchar *url)

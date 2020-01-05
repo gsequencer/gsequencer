@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -654,13 +654,13 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
 /**
  * ags_recall_ladspa_run_new:
- * @audio_signal: the #AgsAudioSignal as source
+ * @source: the #AgsAudioSignal as source
  *
  * Creates a new instance of #AgsRecallLadspaRun
  *
  * Returns: the new #AgsRecallLadspaRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallLadspaRun*
 ags_recall_ladspa_run_new(AgsAudioSignal *source)

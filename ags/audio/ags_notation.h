@@ -173,12 +173,12 @@ void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 						 gboolean reset_y_offset, guint y_offset,
 						 gboolean match_channel, gboolean no_duplicates);
 
-unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,
-					gdouble bpm, gdouble delay_factor,
-					glong nn, glong dd, glong cc, glong bb,
-					glong tempo,
-					guint *buffer_length);
-AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
+guchar* ags_notation_to_raw_midi(AgsNotation *notation,
+				 gdouble bpm, gdouble delay_factor,
+				 glong nn, glong dd, glong cc, glong bb,
+				 glong tempo,
+				 guint *buffer_length);
+AgsNotation* ags_notation_from_raw_midi(guchar *raw_midi,
 					glong nn, glong dd, glong cc, glong bb,
 					glong tempo,
 					gdouble bpm, gdouble delay_factor,

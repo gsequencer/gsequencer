@@ -558,12 +558,12 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
 
 /**
  * ags_osc_websocket_connection_find_resource_id:
- * @osc_websocket_connection: the #GList-struct containing #AgsOscWebsocketConnection
+ * @osc_websocket_connection: (element-type AgsAudio.OscWebsocketConnection) (transfer none): the #GList-struct containing #AgsOscWebsocketConnection
  * @resource_id: the resource id
  * 
  * Find @resource_id in @osc_websocket_connection.
  *
- * Returns: the next matchine #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.OscWebsocketConnection) (transfer none): the next matchine #GList-struct or %NULL
  * 
  * Since: 3.0.0
  */

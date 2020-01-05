@@ -404,7 +404,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the #AgsLadspaPlugin
+ * Returns: (transfer none): the #AgsLadspaPlugin
  *
  * Since: 3.0.0
  */
@@ -687,7 +687,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
  *
  * Get instance.
  *
- * Returns: the #AgsLadspaManager
+ * Returns: (transfer none): the #AgsLadspaManager
  *
  * Since: 3.0.0
  */

@@ -479,7 +479,7 @@ ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
  * Find @sequencer as sibling of @sequencer_thread, if it was found on the returned
  * thread should be called g_object_unref().
  * 
- * Returns: the matching #AgsSequencerThread, if not
+ * Returns: (transfer full): the matching #AgsSequencerThread, if not
  * found %NULL.
  * 
  * Since: 3.0.0

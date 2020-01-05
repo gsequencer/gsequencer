@@ -343,7 +343,7 @@ ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2UridManager
+ * Returns: (transfer none): an instance of #AgsLv2UridManager
  *
  * Since: 3.0.0
  */

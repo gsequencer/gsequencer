@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -234,7 +234,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The plugin's filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the object file"),
@@ -250,7 +250,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The plugin's effect.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -266,7 +266,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The effect's index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("effect-index",
 				 i18n_pspec("index of effect"),
@@ -284,7 +284,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The #AgsRecallContainer packed into.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-container",
 				   i18n_pspec("container of recall"),
@@ -300,7 +300,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The assigned soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("output-soundcard",
 				   i18n_pspec("output soundcard"),
@@ -316,7 +316,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The output soundcard channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("output-soundcard-channel",
 				i18n_pspec("output soundcard channel"),
@@ -334,7 +334,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The assigned soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("input-soundcard",
 				   i18n_pspec("input soundcard"),
@@ -350,7 +350,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The input soundcard channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("input-soundcard-channel",
 				i18n_pspec("input soundcard channel"),
@@ -368,7 +368,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The samplerate.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -386,7 +386,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The buffer size.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -404,7 +404,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The format.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -422,7 +422,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The nth pad.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("pad",
 				  i18n_pspec("nth pad"),
@@ -440,7 +440,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The nth audio channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
 				  i18n_pspec("nth audio channel"),
@@ -458,7 +458,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The nth line.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("nth line"),
@@ -476,7 +476,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The assigned #AgsPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("port",
 				    i18n_pspec("port of recall"),
@@ -491,7 +491,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The #AgsPort doing automation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("autamation-port",
 				    i18n_pspec("automation port"),
@@ -506,7 +506,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The #AgsRecallID running in.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("run id of recall"),
@@ -522,7 +522,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The  #AgsRecall dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("recall-dependency",
 				    i18n_pspec("recall dependency"),
@@ -537,7 +537,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The parent #AgsRecall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   i18n_pspec("parent recall of this recall"),
@@ -553,7 +553,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The type of child #AgsRecall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("child-type",
 				  i18n_pspec("child type"),
@@ -569,7 +569,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The child #AgsRecall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("child",
 				    i18n_pspec("child of recall"),
@@ -615,7 +615,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::resolve-dependency signal notifies about resolving
    * dependency.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RESOLVE_DEPENDENCY] =
     g_signal_new("resolve-dependency",
@@ -633,7 +633,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::check-rt-data signal notifies about initializing
    * stage 0.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_CHECK_RT_DATA] =
     g_signal_new("check-rt-data",
@@ -651,7 +651,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-init-pre signal notifies about initializing
    * stage 0.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_INIT_PRE] =
     g_signal_new("run-init-pre",
@@ -669,7 +669,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-init-inter signal notifies about initializing
    * stage 1.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_INIT_INTER] =
     g_signal_new("run-init-inter",
@@ -687,7 +687,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-init-post signal notifies about initializing
    * stage 2.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_INIT_POST] =
     g_signal_new("run-init-post",
@@ -705,7 +705,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::feed-input-queue signal notifies about running
    * feed input queue.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_FEED_INPUT_QUEUE] =
     g_signal_new("feed-input-queue",
@@ -723,7 +723,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::automate signal notifies about running
    * automation and is normally called during ::run-pre.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_AUTOMATE] =
     g_signal_new("automate",
@@ -741,7 +741,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-pre signal notifies about running
    * stage 0.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_PRE] =
     g_signal_new("run-pre",
@@ -759,7 +759,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-inter signal notifies about running
    * stage 1.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_INTER] =
     g_signal_new("run-inter",
@@ -777,7 +777,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::run-post signal notifies about running
    * stage 2.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_RUN_POST] =
     g_signal_new("run-post",
@@ -795,7 +795,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::do-feedback signal notifies about running
    * stage 2.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_DO_FEEDBACK] =
     g_signal_new("do-feedback",
@@ -813,7 +813,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::feed-output-queue signal notifies about running
    * feed output queue.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_FEED_OUTPUT_QUEUE] =
     g_signal_new("feed-output-queue",
@@ -831,7 +831,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::stop-persistent signal notifies about definitively
    * stopping playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_STOP_PERSISTENT] =
     g_signal_new("stop_persistent",
@@ -848,7 +848,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The ::cancel signal notifies about cancelling playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_CANCEL] =
     g_signal_new("cancel",
@@ -865,7 +865,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The ::done signal notifies about stopping playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_DONE] =
     g_signal_new("done",
@@ -886,7 +886,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The ::duplicate signal notifies about instantiating.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_DUPLICATE] =
     g_signal_new("duplicate",
@@ -908,7 +908,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::notify-dependency signal notifies about dependency
    * added.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[PLAY_NOTIFY_DEPENDENCY] =
     g_signal_new("notify-dependency",
@@ -928,7 +928,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * The ::child-added signal notifies about children
    * added.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added",
@@ -2100,7 +2100,7 @@ ags_recall_disconnect(AgsConnectable *connectable)
  *
  * Returns: if %TRUE does lock free children, else not
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_global_get_children_lock_free()
@@ -2119,7 +2119,7 @@ ags_recall_global_get_children_lock_free()
  *
  * Returns: if %TRUE does omit events, else not
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_global_get_omit_event()
@@ -2138,7 +2138,7 @@ ags_recall_global_get_omit_event()
  *
  * Returns: if %TRUE does performance mode, else not
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_global_get_performance_mode()
@@ -2157,7 +2157,7 @@ ags_recall_global_get_performance_mode()
  *
  * Returns: if %TRUE does rt-safe strategy, else not
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_global_get_rt_safe()
@@ -2178,7 +2178,7 @@ ags_recall_global_get_rt_safe()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_test_flags(AgsRecall *recall, guint flags)
@@ -2211,7 +2211,7 @@ ags_recall_test_flags(AgsRecall *recall, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_flags(AgsRecall *recall, guint flags)
@@ -2240,7 +2240,7 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unset_flags(AgsRecall *recall, guint flags)
@@ -2271,7 +2271,7 @@ ags_recall_unset_flags(AgsRecall *recall, guint flags)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
@@ -2304,7 +2304,7 @@ ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
  *
  * Set ability flags recursively.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
@@ -2360,7 +2360,7 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
  *
  * Unset ability flags recursively.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
@@ -2418,7 +2418,7 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
  * 
  * Returns: %TRUE flags are set, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
@@ -2478,7 +2478,7 @@ ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
  * 
  * Returns: %TRUE if sound scope is available, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
@@ -2556,7 +2556,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
@@ -2589,7 +2589,7 @@ ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * 
  * Set behaviour flags of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
@@ -2618,7 +2618,7 @@ ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * 
  * Unset behaviour flags of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
@@ -2649,7 +2649,7 @@ ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * 
  * Returns: %TRUE flags are set, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
@@ -2752,7 +2752,7 @@ ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
  * 
  * Set @sound_scope for @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
@@ -2784,7 +2784,7 @@ ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
  * 
  * Returns: the used sound scope
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_recall_get_sound_scope(AgsRecall *recall)
@@ -2819,7 +2819,7 @@ ags_recall_get_sound_scope(AgsRecall *recall)
  * 
  * Returns: %TRUE if sound scope matches, otherwise  %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
@@ -2872,7 +2872,7 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_test_staging_flags(AgsRecall *recall,
@@ -2906,7 +2906,7 @@ ags_recall_test_staging_flags(AgsRecall *recall,
  * 
  * Set staging flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
@@ -3081,7 +3081,7 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
  * 
  * Unset staging flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
@@ -3112,7 +3112,7 @@ ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
  * 
  * Returns: %TRUE if all flags matched, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
@@ -3223,7 +3223,7 @@ ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_test_state_flags(AgsRecall *recall,
@@ -3257,7 +3257,7 @@ ags_recall_test_state_flags(AgsRecall *recall,
  * 
  * Set state flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
@@ -3286,7 +3286,7 @@ ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
  * 
  * Unset state flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
@@ -3317,7 +3317,7 @@ ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
  * 
  * Returns: %TRUE if all flags matched, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
@@ -3371,7 +3371,7 @@ ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
  *
  * Set @recall_id of @recall and all its children.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
@@ -3436,7 +3436,7 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
  *
  * Associate a new dependency for this recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
@@ -3468,7 +3468,7 @@ ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_
  *
  * Remove a prior associated dependency.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
@@ -3503,7 +3503,7 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
  *
  * Add @child to @parent.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
@@ -3634,31 +3634,31 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
 /**
  * ags_recall_remove_child:
- * @parent: the parent #AgsRecall
+ * @recall: the #AgsRecall
  * @child: the child #AgsRecall
  *
- * Remove @child from @parent.
+ * Remove @child from @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_recall_remove_child(AgsRecall *parent, AgsRecall *child)
+ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 {
-  GRecMutex *parent_mutex, *child_mutex;
+  GRecMutex *recall_mutex, *child_mutex;
   
   if(!AGS_IS_RECALL(child) ||
-     !AGS_IS_RECALL(parent)){
+     !AGS_IS_RECALL(recall)){
     return;
   }
 
-  /* get recall mutex - parent and child */
-  parent_mutex = AGS_RECALL_GET_OBJ_MUTEX(parent);
+  /* get recall mutex - recall and child */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   child_mutex = AGS_RECALL_GET_OBJ_MUTEX(child);
 
   /* check if not set */
   g_rec_mutex_lock(child_mutex);
 
-  if(child->parent != parent){
+  if(child->parent != recall){
     g_rec_mutex_unlock(child_mutex);
     
     return;
@@ -3666,22 +3666,22 @@ ags_recall_remove_child(AgsRecall *parent, AgsRecall *child)
 
   g_rec_mutex_unlock(child_mutex);
 
-  /* remove from parent */
-  g_rec_mutex_lock(parent_mutex);
+  /* remove from recall */
+  g_rec_mutex_lock(recall_mutex);
 
-  if(g_list_find(parent->children,
+  if(g_list_find(recall->children,
 		 child) != NULL){
-    parent->children = g_list_remove(parent->children,
+    recall->children = g_list_remove(recall->children,
 				     child);
     g_object_unref(child);
   }
     
-  g_rec_mutex_unlock(parent_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
-  /* unref parent */
+  /* unref recall */
   child->parent = NULL;
 
-  g_object_unref(parent);
+  g_object_unref(recall);
 }
 
 /**
@@ -3690,7 +3690,7 @@ ags_recall_remove_child(AgsRecall *parent, AgsRecall *child)
  *
  * Free @recall_hanlder. 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_handler_free(AgsRecallHandler *recall_handler)
@@ -3714,7 +3714,7 @@ ags_recall_handler_free(AgsRecallHandler *recall_handler)
  * 
  * Returns: the newly allocated #AgsRecallHandler-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallHandler*
 ags_recall_handler_alloc(const gchar *signal_name,
@@ -3739,7 +3739,7 @@ ags_recall_handler_alloc(const gchar *signal_name,
  *
  * Connect callback to @recall specified by @recall_handler.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_add_recall_handler(AgsRecall *recall,
@@ -3771,7 +3771,7 @@ ags_recall_add_recall_handler(AgsRecall *recall,
  *
  * Remove a #AgsRecallHandler-struct from @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_remove_recall_handler(AgsRecall *recall,
@@ -3803,7 +3803,7 @@ ags_recall_remove_recall_handler(AgsRecall *recall,
  * 
  * Set output soundcard of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
@@ -3844,7 +3844,7 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
  * 
  * Set input soundcard of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
@@ -3885,7 +3885,7 @@ ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
  * 
  * Set samplerate of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_samplerate(AgsRecall *recall, guint samplerate)
@@ -3914,7 +3914,7 @@ ags_recall_set_samplerate(AgsRecall *recall, guint samplerate)
  * 
  * Set buffer size of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size)
@@ -3943,7 +3943,7 @@ ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size)
  * 
  * Set format of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_set_format(AgsRecall *recall, guint format)
@@ -4016,7 +4016,7 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
  * A signal indicating that the inheriting object should resolve
  * it's dependency.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_resolve_dependency(AgsRecall *recall)
@@ -4092,7 +4092,7 @@ ags_recall_real_check_rt_data(AgsRecall *recall)
  *
  * Prepare for run, this is the pre stage within the preparation.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_check_rt_data(AgsRecall *recall)
@@ -4167,7 +4167,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
  *
  * Prepare for run, this is the pre stage within the preparation.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_init_pre(AgsRecall *recall)
@@ -4241,7 +4241,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
  *
  * Prepare for run, this is the inter stage within the preparation.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_init_inter(AgsRecall *recall)
@@ -4323,7 +4323,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
  *
  * Prepare for run, this is the post stage within the preparation.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_init_post(AgsRecall *recall)
@@ -4397,7 +4397,7 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
  *
  * Feed input queue of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_feed_input_queue(AgsRecall *recall)
@@ -4464,7 +4464,7 @@ ags_recall_real_automate(AgsRecall *recall)
  *
  * Automate port of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_automate(AgsRecall *recall)
@@ -4538,7 +4538,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
  *
  * This is the pre stage within a run.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_pre(AgsRecall *recall)
@@ -4612,7 +4612,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
  *
  * This is the inter stage within a run.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_inter(AgsRecall *recall)
@@ -4687,7 +4687,7 @@ ags_recall_real_run_post(AgsRecall *recall)
  *
  * This is the post stage within a run.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_run_post(AgsRecall *recall)
@@ -4761,7 +4761,7 @@ ags_recall_real_do_feedback(AgsRecall *recall)
  *
  * Do feedback of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_do_feedback(AgsRecall *recall)
@@ -4835,7 +4835,7 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
  *
  * Feed output queue of @recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_feed_output_queue(AgsRecall *recall)
@@ -4886,7 +4886,7 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
  * Unsets the %AGS_SOUND_BEHAVIOUR_PERSISTENT and related behaviour flags and
  * invokes ags_recall_done().
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_stop_persistent(AgsRecall *recall)
@@ -4941,7 +4941,7 @@ ags_recall_real_cancel(AgsRecall *recall)
  *
  * The #AgsRecall doesn't want to run anymore, it aborts further execution.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_cancel(AgsRecall *recall)
@@ -5000,7 +5000,7 @@ ags_recall_real_done(AgsRecall *recall)
  * The #AgsRecall doesn't want to run anymore, it has been done its
  * work.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_done(AgsRecall *recall)
@@ -5218,9 +5218,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
  * Should duplicate an #AgsRecall, so it can pass the run stages. Mainly used for
  * creating duplicates of templates, see %AGS_RECALL_TEMPLATE.
  * 
- * Returns: the duplicated #AgsRecall
+ * Returns: (transfer full): the duplicated #AgsRecall
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecall*
 ags_recall_duplicate(AgsRecall *recall,
@@ -5249,7 +5249,7 @@ ags_recall_duplicate(AgsRecall *recall,
  *
  * Notifies a recall that an other depends on it.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase)
@@ -5270,7 +5270,7 @@ ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean incre
  *
  * A signal indicating that the a child has been added.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
@@ -5285,14 +5285,14 @@ ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
 
 /**
  * ags_recall_is_done:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @recycling_context: the #AgsRecyclingContext
  *
  * Check if recall is over.
  * 
  * Returns: %TRUE if recall is done, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_is_done(GList *recall, GObject *recycling_context)
@@ -5364,15 +5364,15 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
 
 /**
  * ags_recall_get_by_effect:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: the filename containing @effect or %NULL
  * @effect: the effect name
  *
  * Finds all recalls matching @filename and @effect.
  *
- * Returns: a #GList-struct containing #AgsRecall, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer full): a #GList-struct containing #AgsRecall, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
@@ -5432,7 +5432,7 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 
 /**
  * ags_recall_find_recall_id_with_effect:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @recall_id: the #AgsRecallID, may be %NULL
  * @filename: the filename or %NULL
  * @effect: the effect name
@@ -5440,9 +5440,9 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
  * Finds next matching effect name. Intended to be used as
  * iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gchar *filename, gchar *effect)
@@ -5550,15 +5550,15 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
 
 /**
  * ags_recall_find_type:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @type: the #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_type(GList *recall, GType gtype)
@@ -5585,14 +5585,14 @@ ags_recall_find_type(GList *recall, GType gtype)
 
 /**
  * ags_recall_find_template:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  *
  * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
  * iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_template(GList *recall)
@@ -5630,15 +5630,15 @@ ags_recall_find_template(GList *recall)
 
 /**
  * ags_recall_template_find_type:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @type: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_template_find_type(GList *recall, GType gtype)
@@ -5662,15 +5662,15 @@ ags_recall_template_find_type(GList *recall, GType gtype)
 
 /**
  * ags_recall_template_find_all_type:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @...: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_template_find_all_type(GList *recall, ...)
@@ -5755,16 +5755,16 @@ ags_recall_template_find_all_type(GList *recall, ...)
 
 /**
  * ags_recall_find_type_with_recycling_context:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @type: the #GType
  * @recycling_context: the #AgsRecyclingContext
  * 
  * Finds next matching recall for type which has @recycling_context, see #AgsRecallId for further
  * details about #AgsRecyclingContext. Intended to be used as iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_type_with_recycling_context(GList *recall, GType gtype, GObject *recycling_context)
@@ -5818,15 +5818,15 @@ ags_recall_find_type_with_recycling_context(GList *recall, GType gtype, GObject 
 
 /**
  * ags_recall_find_recycling_context:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @recycling_context: the #AgsRecyclingContext
  * 
  * Finds next matching recall which has @recycling_context, see #AgsRecallId for further
  * details about #AgsRecyclingContext. Intended to be used as iteration function.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
@@ -5880,16 +5880,16 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
 
 /**
  * ags_recall_find_provider:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @provider: the #GObject, either #AgsAudio, #AgsChannel, #AgsRecycling or #AgsAudioSignal
  * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_provider(GList *recall, GObject *provider)
@@ -5996,14 +5996,14 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 
 /**
  * ags_recall_template_find_provider:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @provider: the #GObject as provider
  * 
  * Finds provider eg. #AgsAudio or #AgsChannel within @recall containig #AgsRecall.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_template_find_provider(GList *recall, GObject *provider)
@@ -6041,15 +6041,15 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 
 /**
  * ags_recall_find_provider_with_recycling_context:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @provider: the #GObject as provider
  * @recycling_context: the #AgsRecyclingContext
  * 
  * Like ags_recall_template_find_provider() but given additionally @recycling_context as search parameter.
  *
- * Returns: next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): next matching #GList-struct, or %NULL if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_find_provider_with_recycling_context(GList *recall, GObject *provider, GObject *recycling_context)
@@ -6144,7 +6144,7 @@ ags_recall_child_done(AgsRecall *child,
  *
  * Locks the ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lock_port(AgsRecall *recall)
@@ -6193,7 +6193,7 @@ ags_recall_lock_port(AgsRecall *recall)
  *
  * Unlocks the ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_unlock_port(AgsRecall *recall)
@@ -6243,7 +6243,7 @@ ags_recall_unlock_port(AgsRecall *recall)
  *
  * Returns: the new instance of #AgsRecall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecall*
 ags_recall_new()

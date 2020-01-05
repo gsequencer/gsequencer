@@ -181,7 +181,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The assigned URL.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -197,7 +197,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -213,7 +213,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default pulse client.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-pulse-client",
 				   i18n_pspec("default pulse client"),
@@ -229,7 +229,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The pulse client list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("pulse-client",
 				    i18n_pspec("pulse client list"),
@@ -767,7 +767,7 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags)
@@ -800,7 +800,7 @@ ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags)
  *
  * Enable a feature of @pulse_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags)
@@ -831,7 +831,7 @@ ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags)
  *
  * Disable a feature of @pulse_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags)
@@ -1409,7 +1409,7 @@ ags_pulse_server_unregister_sequencer(AgsSoundServer *sound_server,
  * 
  * Returns: the instantiated #AgsPulseDevout
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
@@ -1523,14 +1523,14 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
 
 /**
  * ags_pulse_server_find_url:
- * @pulse_server: the #GList-struct containing #AgsPulseServer
+ * @pulse_server: (element-type AgsAudio.PulseServer) (transfer none): the #GList-struct containing #AgsPulseServer
  * @url: the url to find
  *
  * Find #AgsPulseServer by url.
  *
- * Returns: the #GList-struct containing a #AgsPulseServer matching @url or %NULL
+ * Returns: (element-type AgsAudio.PulseServer) (transfer none): the #GList-struct containing a #AgsPulseServer matching @url or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pulse_server_find_url(GList *pulse_server,
@@ -1573,9 +1573,9 @@ ags_pulse_server_find_url(GList *pulse_server,
  *
  * Find #AgsPulseClient by uuid.
  *
- * Returns: the #AgsPulseClient found or %NULL
+ * Returns: (transfer none): the #AgsPulseClient found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_find_client(AgsPulseServer *pulse_server,
@@ -1638,9 +1638,9 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
  *
  * Find #AgsPulsePort by uuid.
  *
- * Returns: the #AgsPulsePort found or %NULL
+ * Returns: (transfer none): the #AgsPulsePort found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_find_port(AgsPulseServer *pulse_server,
@@ -1679,12 +1679,16 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
       g_rec_mutex_unlock(pulse_port_mutex);
       
       if(success){
+	AgsPulsePort *retval;
+
+	retval = port->data;
+	
 	g_list_free_full(client_start,
 			 g_object_unref);
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(port->data);
+	return(retval);
       }
 
       /* iterate */
@@ -1711,7 +1715,7 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
  *
  * Add @pulse_client to @pulse_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_add_client(AgsPulseServer *pulse_server,
@@ -1746,7 +1750,7 @@ ags_pulse_server_add_client(AgsPulseServer *pulse_server,
  *
  * Remove @pulse_client to @pulse_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
@@ -1780,7 +1784,7 @@ ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
  *
  * Connect all clients.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
@@ -1904,7 +1908,7 @@ ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
  *
  * Returns: the new #AgsPulseServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPulseServer*
 ags_pulse_server_new(gchar *url)

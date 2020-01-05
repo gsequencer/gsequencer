@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -105,7 +105,7 @@ ags_output_init(AgsOutput *output)
  *
  * Retrieve first input recycling.
  *
- * Returns: the first #AgsRecycling of #AgsAudio
+ * Returns: (transfer full): the first #AgsRecycling of #AgsAudio
  *
  * Since: 3.0.0
  */
@@ -181,7 +181,7 @@ ags_output_find_first_input_recycling(AgsOutput *output)
  *
  * Retrieve last input recycling.
  *
- * Returns: the last #AgsRecycling of #AgsAudio
+ * Returns: (transfer full): the last #AgsRecycling of #AgsAudio
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -747,7 +747,6 @@ ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
 
 /**
  * ags_lv2_worker_new:
- * @returnable_thread: the #AgsReturnableThread
  *
  * Create a new instance of #AgsLv2Worker.
  *
@@ -756,12 +755,11 @@ ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
  * Since: 3.0.0
  */ 
 AgsLv2Worker*
-ags_lv2_worker_new(AgsThread *returnable_thread)
+ags_lv2_worker_new()
 {
   AgsLv2Worker *lv2_worker;
 
   lv2_worker = (AgsLv2Worker *) g_object_new(AGS_TYPE_LV2_WORKER,
-					     "returnable-thread", returnable_thread,
 					     NULL);
 
   return(lv2_worker);

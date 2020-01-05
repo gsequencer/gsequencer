@@ -535,13 +535,13 @@ ags_midi_unset_flags(AgsMidi *midi, guint flags)
 
 /**
  * ags_midi_find_near_timestamp:
- * @midi: a #GList containing #AgsMidi
+ * @midi: (element-type AgsAudio.Midi) (transfer none): the #GList-struct containing #AgsMidi
  * @audio_channel: the matching audio channel
  * @timestamp: (allow-none): the matching timestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate midi for timestamp.
  *
- * Returns: Next match.
+ * Returns: (element-type AgsAudio.Midi) (transfer none): Next match.
  *
  * Since: 3.0.0
  */
@@ -804,12 +804,12 @@ ags_midi_sort_func(gconstpointer a,
 
 /**
  * ags_midi_add:
- * @midi: the #GList-struct containing #AgsMidi
+ * @midi: (element-type AgsAudio.Midi) (transfer none): the #GList-struct containing #AgsMidi
  * @new_midi: the midi to add
  * 
  * Add @new_midi sorted to @midi
  * 
- * Returns: the new beginning of @midi
+ * Returns: (element-type AgsAudio.Midi) (transfer none): the new beginning of @midi
  * 
  * Since: 3.0.0
  */

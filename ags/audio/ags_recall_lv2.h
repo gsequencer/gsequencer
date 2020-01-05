@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -104,7 +104,7 @@ void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 				    gpointer plugin_port);
 
 GList* ags_recall_lv2_find(GList *recall,
-			   gchar *filename, gchar *uri);
+			   gchar *filename, gchar *effect);
 
 AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
 				 AgsTurtle *turtle,

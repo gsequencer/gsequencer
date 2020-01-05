@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,20 +64,20 @@ void ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter
 gpointer ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
 						      AgsOscConnection *osc_connection,
 						      AgsAudio *audio,
-						      unsigned char *message, guint message_size,
+						      guchar *message, guint message_size,
 						      gchar *type_tag,
 						      gchar *path, guint path_offset);
 gpointer ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
 							AgsOscConnection *osc_connection,
 							AgsChannel *channel,
-							unsigned char *message, guint message_size,
+							guchar *message, guint message_size,
 							gchar *type_tag,
 							gchar *path, guint path_offset);
 
 gpointer ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
 						       AgsOscConnection *osc_connection,
 						       AgsRecall *recall,
-						       unsigned char *message, guint message_size,
+						       guchar *message, guint message_size,
 						       gchar *type_tag,
 						       gchar *path, guint path_offset);
 
@@ -85,7 +85,7 @@ gpointer ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_
 						     AgsOscConnection *osc_connection,
 						     AgsRecall *parent,
 						     AgsPort *port,
-						     unsigned char *message, guint message_size,
+						     guchar *message, guint message_size,
 						     gchar *type_tag,
 						     gchar *path, guint path_offset);
 
@@ -109,18 +109,18 @@ void ags_osc_meter_controller_expand_path(gchar *path,
 
 gpointer ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
 						       AgsOscConnection *osc_connection,
-						       unsigned char *message, guint message_size,
+						       guchar *message, guint message_size,
 						       gchar *type_tag,
 						       gchar *path);
 gpointer ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
 							AgsOscConnection *osc_connection,
-							unsigned char *message, guint message_size,
+							guchar *message, guint message_size,
 							gchar *type_tag,
 							gchar *path);
 
 gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
 						     AgsOscConnection *osc_connection,
-						     unsigned char *message, guint message_size);
+						     guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_meter_controller
@@ -392,7 +392,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     GType port_value_type;
 
     gchar *path;
-    unsigned char *packet;
+    guchar *packet;
 
     guint port_value_length;
     gboolean port_value_is_pointer;
@@ -413,8 +413,8 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
     /*  */
     osc_response = ags_osc_response_new();
       
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
       
     g_object_set(osc_response,
 		 "packet", packet,
@@ -831,12 +831,12 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
 
 /**
  * ags_osc_meter_controller_monitor_find_path:
- * @monitor: the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @monitor: (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * @path: the path as string
  * 
  * Find @path in @monitor.
  * 
- * Returns: the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * Returns: (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * 
  * Since: 2.1.0
  */
@@ -863,12 +863,12 @@ ags_osc_meter_controller_monitor_find_path(GList *monitor,
 
 /**
  * ags_osc_meter_controller_monitor_find_port:
- * @monitor: the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @monitor: (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * @port: the #AgsPort
  * 
  * Find @port in @monitor.
  * 
- * Returns: the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * Returns: (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * 
  * Since: 2.1.0
  */
@@ -1133,7 +1133,7 @@ gpointer
 ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
 					     AgsOscConnection *osc_connection,
 					     AgsAudio *audio,
-					     unsigned char *message, guint message_size,
+					     guchar *message, guint message_size,
 					     gchar *type_tag,
 					     gchar *path, guint path_offset)
 {
@@ -1143,7 +1143,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint real_packet_size;
   guint packet_size;
@@ -1929,7 +1929,7 @@ gpointer
 ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
 					       AgsOscConnection *osc_connection,
 					       AgsChannel *channel,
-					       unsigned char *message, guint message_size,
+					       guchar *message, guint message_size,
 					       gchar *type_tag,
 					       gchar *path, guint path_offset)
 {
@@ -2415,7 +2415,7 @@ gpointer
 ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
 					      AgsOscConnection *osc_connection,
 					      AgsRecall *recall,
-					      unsigned char *message, guint message_size,
+					      guchar *message, guint message_size,
 					      gchar *type_tag,
 					      gchar *path, guint path_offset)
 {
@@ -2427,7 +2427,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 
   GList *start_response;
   
-  unsigned char *packet;
+  guchar *packet;
 
   guint path_length;
   guint real_packet_size;
@@ -2455,8 +2455,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -2804,7 +2804,7 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 					    AgsOscConnection *osc_connection,
 					    AgsRecall *parent,
 					    AgsPort *port,
-					    unsigned char *message, guint message_size,
+					    guchar *message, guint message_size,
 					    gchar *type_tag,
 					    gchar *path, guint path_offset)
 {
@@ -2818,7 +2818,7 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
   GList *start_response;
   GList *start_list, *list;
 
-  unsigned char *packet;
+  guchar *packet;
   gchar *current_path;
   gchar *specifier;
   
@@ -2994,8 +2994,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
     start_response = g_list_prepend(start_response,
 				    osc_response);
 
-    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
-    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    packet = (guchar *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(guchar));
 
     packet_size = 0;
     
@@ -3077,7 +3077,7 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 gpointer
 ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
 					      AgsOscConnection *osc_connection,
-					      unsigned char *message, guint message_size,
+					      guchar *message, guint message_size,
 					      gchar *type_tag,
 					      gchar *path)
 {
@@ -4836,7 +4836,7 @@ ags_osc_meter_controller_expand_path(gchar *path,
 gpointer
 ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
 					       AgsOscConnection *osc_connection,
-					       unsigned char *message, guint message_size,
+					       guchar *message, guint message_size,
 					       gchar *type_tag,
 					       gchar *path)
 {
@@ -4911,7 +4911,7 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
 gpointer
 ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
 					    AgsOscConnection *osc_connection,
-					    unsigned char *message, guint message_size)
+					    guchar *message, guint message_size)
 {
   AgsApplicationContext *application_context;
 
@@ -5012,7 +5012,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 gpointer
 ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controller,
 				       AgsOscConnection *osc_connection,
-				       unsigned char *message, guint message_size)
+				       guchar *message, guint message_size)
 {
   gpointer osc_response;
   

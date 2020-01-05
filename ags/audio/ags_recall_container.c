@@ -1174,7 +1174,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
  *
  * Retrieve recall audio of container.
  *
- * Returns: the #AgsRecallAudio
+ * Returns: (transfer none): the #AgsRecallAudio
  *
  * Since: 3.0.0
  */
@@ -1194,7 +1194,7 @@ ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container)
  *
  * Retrieve recall audio run of container.
  *
- * Returns: the #AgsRecallAudioRun as list
+ * Returns: (element-type AgsAudio.RecallAudioRun) (transfer none): the #AgsRecallAudioRun as list
  *
  * Since: 3.0.0
  */
@@ -1214,7 +1214,7 @@ ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container)
  *
  * Retrieve the recall channel of container.
  *
- * Returns: the #AgsRecallChannel
+ * Returns: (element-type AgsAudio.RecallChannel) (transfer none): the #AgsRecallChannel
  *
  * Since: 3.0.0
  */
@@ -1234,7 +1234,7 @@ ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container)
  *
  * Retrieve the recall channel run of container.
  *
- * Returns: the #AgsRecall
+ * Returns: (element-type AgsAudio.RecallChannelRun) (transfer none): the #AgsRecall
  *
  * Since: 3.0.0
  */
@@ -1257,7 +1257,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container
  *
  * Finds #AgsRecall for appropriate search criteria.
  *
- * Returns: the matching recalls
+ * Returns: (element-type AgsAudio.Recall) (transfer none): the matching recalls
  *
  * Since: 3.0.0
  */

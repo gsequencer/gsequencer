@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ G_BEGIN_DECLS
 #define AGS_OSC_UTIL_SLIP_ESC_END (220)
 #define AGS_OSC_UTIL_SLIP_ESC_ESC (221)
 
-guint ags_osc_util_type_tag_string_count_type(gchar *type_tag_string);
+guint ags_osc_util_type_tag_string_count_type(gchar *type_tag);
 
 unsigned char* ags_osc_util_meta_data(gchar *uri,
 				      guint *meta_data_length);

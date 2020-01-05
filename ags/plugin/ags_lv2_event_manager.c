@@ -120,7 +120,7 @@ ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_data,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2EventManager
+ * Returns: (transfer none): an instance of #AgsLv2EventManager
  *
  * Since: 3.0.0
  */

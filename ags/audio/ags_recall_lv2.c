@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -772,7 +772,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
  *
  * Set up LV2 ports.
  *
- * Returns: a #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
  * Since: 2.0.0
  */
@@ -1072,13 +1072,13 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 
 /**
  * ags_recall_lv2_find:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve LV2 recall.
  *
- * Returns: Next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct or %NULL
  * 
  * Since: 2.0.0
  */

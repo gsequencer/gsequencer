@@ -565,7 +565,7 @@ ags_input_is_active_END:
  * 
  * Find next #AgsInput needed to be processed.
  * 
- * Returns: next active #AgsInput, else %NULL if non available
+ * Returns: (transfer full): next active #AgsInput, else %NULL if non available
  * 
  * Since: 3.0.0
  */

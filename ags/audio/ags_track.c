@@ -387,7 +387,7 @@ ags_track_sort_func(gconstpointer a,
  * 
  * Duplicate a track.
  *
- * Returns: the duplicated #AgsTrack.
+ * Returns: (transfer full): the duplicated #AgsTrack.
  *
  * Since: 3.0.0
  */

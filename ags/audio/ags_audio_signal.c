@@ -2004,7 +2004,7 @@ ags_stream_alloc(guint buffer_size,
 
 /**
  * ags_stream_free:
- * @buffer_size: the buffer size
+ * @buffer: the buffer
  *
  * Frees an audio buffer.
  *
@@ -3321,11 +3321,11 @@ ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_get_template:
- * @audio_signal: the #GList-struct containing #AgsAudioSignal
+ * @audio_signal: (element-type AgsAudio.AudioSignal) (transfer none): the #GList-struct containing #AgsAudioSignal
  *
  * Retrieve the template audio signal.
  *
- * Returns: the template #AgsAudioSignal or %NULL if not found
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer none): the template #AgsAudioSignal or %NULL if not found
  *
  * Since: 3.0.0
  */

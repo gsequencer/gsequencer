@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,7 @@ struct _AgsSoundProviderInterface
   GTypeInterface ginterface;
 
   void (*set_default_soundcard)(AgsSoundProvider *sound_provider,
-				GObject *soundcard_thread);
+				GObject *soundcard);
   GObject* (*get_default_soundcard)(AgsSoundProvider *sound_provider);
 
   void (*set_default_soundcard_thread)(AgsSoundProvider *sound_provider,
@@ -71,7 +71,7 @@ struct _AgsSoundProviderInterface
 GType ags_sound_provider_get_type();
 
 void ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
-					      GObject *soundcard_thread);
+					      GObject *soundcard);
 GObject* ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,

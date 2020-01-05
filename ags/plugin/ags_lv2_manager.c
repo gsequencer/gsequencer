@@ -458,7 +458,7 @@ ags_lv2_manager_set_default_path(gchar** default_path)
  * 
  * Retrieve all filenames
  *
- * Returns: a %NULL-terminated array of filenames
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL-terminated array of filenames
  *
  * Since: 3.0.0
  */
@@ -554,7 +554,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the #AgsLv2Plugin
+ * Returns: (transfer none): the #AgsLv2Plugin
  *
  * Since: 3.0.0
  */
@@ -869,7 +869,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
  *
  * Get instance.
  *
- * Returns: the #AgsLv2Manager
+ * Returns: (transfer none): the #AgsLv2Manager
  *
  * Since: 3.0.0
  */

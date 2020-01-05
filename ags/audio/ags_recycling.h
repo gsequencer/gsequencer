@@ -147,7 +147,7 @@ void ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 							gdouble delay, guint attack);
 
 /* instantiate */
-AgsRecycling* ags_recycling_new(GObject *channel);
+AgsRecycling* ags_recycling_new(GObject *output_soundcard);
 
 G_END_DECLS
 

@@ -559,13 +559,13 @@ ags_notation_unset_flags(AgsNotation *notation, guint flags)
 
 /**
  * ags_notation_find_near_timestamp:
- * @notation: a #GList containing #AgsNotation
+ * @notation: (element-type AgsAudio.Notation) (transfer none): the #GList-struct containing #AgsNotation
  * @audio_channel: the matching audio channel
  * @timestamp: (allow-none): the matching timestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate notation for timestamp.
  *
- * Returns: Next matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Notation) (transfer none): Next matching #GList-struct or %NULL if not found
  *
  * Since: 3.0.0
  */
@@ -836,12 +836,12 @@ ags_notation_sort_func(gconstpointer a,
 
 /**
  * ags_notation_add:
- * @notation: the #GList-struct containing #AgsNotation
+ * @notation: (element-type AgsAudio.Notation) (transfer none): the #GList-struct containing #AgsNotation
  * @new_notation: the #AgsNotation to add
  * 
  * Add @new_notation sorted to @notation
  * 
- * Returns: the new beginning of @notation
+ * Returns: (element-type AgsAudio.Notation) (transfer none): the new beginning of @notation
  * 
  * Since: 3.0.0
  */
@@ -1091,7 +1091,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
  *
  * Retrieve selection.
  *
- * Returns: the selection.
+ * Returns: (element-type AgsAudio.Note) (transfer none): the selection.
  *
  * Since: 3.0.0
  */
@@ -1193,7 +1193,7 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
  *
  * Find note by offset and tone.
  *
- * Returns: the matching note.
+ * Returns: (element-type AgsAudio.Note) (transfer none): the matching note.
  *
  * Since: 3.0.0
  */ 
@@ -1875,7 +1875,7 @@ ags_notation_add_all_to_selection(AgsNotation *notation)
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: (transfer none): the selection as XML.
  *
  * Since: 3.0.0
  */
@@ -1999,7 +1999,7 @@ ags_notation_copy_selection(AgsNotation *notation)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as xmlNode
+ * Returns: (transfer none): the selection as xmlNode
  *
  * Since: 3.0.0
  */
@@ -2511,7 +2511,7 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
  * 
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_notation_to_raw_midi(AgsNotation *notation,
 			 gdouble bpm, gdouble delay_factor,
 			 glong nn, glong dd, glong cc, glong bb,
@@ -2542,7 +2542,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
  * Since: 3.0.0
  */
 AgsNotation*
-ags_notation_from_raw_midi(unsigned char *raw_midi,
+ags_notation_from_raw_midi(guchar *raw_midi,
 			   glong nn, glong dd, glong cc, glong bb,
 			   glong tempo,
 			   gdouble bpm, gdouble delay_factor,

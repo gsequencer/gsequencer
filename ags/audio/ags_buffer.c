@@ -770,7 +770,7 @@ ags_buffer_sort_func(gconstpointer a,
  * 
  * Duplicate a buffer.
  *
- * Returns: the duplicated #AgsBuffer.
+ * Returns: (transfer full): the duplicated #AgsBuffer.
  *
  * Since: 3.0.0
  */

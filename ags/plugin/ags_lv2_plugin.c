@@ -2164,7 +2164,7 @@ ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
 
 /**
  * ags_lv2_plugin_new:
- * @turtle: the turtle
+ * @turtle: the #AgsTurtle
  * @filename: the plugin .so
  * @effect: the effect's string representation
  * @uri: the effect's uri

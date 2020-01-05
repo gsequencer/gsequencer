@@ -339,7 +339,7 @@ ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *f
  * 
  * Find #AgsFrequencyMap by @samplerate, @buffer_size and @freq.
  * 
- * Returns: the matching #AgsFrequencyMap if found, otherwise %NULL
+ * Returns: (transfer full): the matching #AgsFrequencyMap if found, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -424,7 +424,7 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
  * 
  * Find #AgsFrequencyMap by @samplerate and @buffer_size.
  * 
- * Returns: the matching #AgsFrequencyMap if found, otherwise %NULL
+ * Returns: (transfer full): the matching #AgsFrequencyMap if found, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -573,7 +573,7 @@ ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_man
  *
  * Get instance.
  *
- * Returns: the #AgsFrequencyMapManager
+ * Returns: (transfer none): the #AgsFrequencyMapManager
  *
  * Since: 3.0.0
  */

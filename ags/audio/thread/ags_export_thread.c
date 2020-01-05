@@ -523,7 +523,7 @@ ags_export_thread_stop(AgsThread *thread)
  * @export_thread: the #AgsExportThread
  * @soundcard: the #AgsSoundcard to find
  * 
- * Returns: the matching #AgsExportThread, if not
+ * Returns: (transfer full): the matching #AgsExportThread, if not
  * found %NULL.
  * 
  * Since: 3.0.0

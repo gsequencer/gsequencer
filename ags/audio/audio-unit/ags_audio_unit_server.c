@@ -1549,12 +1549,12 @@ ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_
 
 /**
  * ags_audio_unit_server_find_url:
- * @audio_unit_server: the #GList-struct containing #AgsAudioUnitServer
+ * @audio_unit_server: (element-type AgsAudio.AudioUnitServer) (transfer none): the #GList-struct containing #AgsAudioUnitServer
  * @url: the url to find
  *
  * Find #AgsAudioUnitServer by url.
  *
- * Returns: the next matching #GList-struct containing a #AgsAudioUnitServer matching @url or %NULL
+ * Returns: (element-type AgsAudio.AudioUnitServer) (transfer none): the next matching #GList-struct containing a #AgsAudioUnitServer matching @url or %NULL
  *
  * Since: 3.0.0
  */
@@ -1599,7 +1599,7 @@ ags_audio_unit_server_find_url(GList *audio_unit_server,
  *
  * Find #AgsAudioUnitClient by uuid.
  *
- * Returns: the #AgsAudioUnitClient found or %NULL
+ * Returns: (transfer none): the #AgsAudioUnitClient found or %NULL
  *
  * Since: 3.0.0
  */
@@ -1660,7 +1660,7 @@ ags_audio_unit_server_find_client(AgsAudioUnitServer *audio_unit_server,
  *
  * Find #AgsAudioUnitPort by uuid.
  *
- * Returns: the #AgsAudioUnitPort found or %NULL
+ * Returns: (transfer none): the #AgsAudioUnitPort found or %NULL
  *
  * Since: 3.0.0
  */
@@ -1701,10 +1701,14 @@ ags_audio_unit_server_find_port(AgsAudioUnitServer *audio_unit_server,
       g_rec_mutex_unlock(audio_unit_port_mutex);
       
       if(success){
+	AgsAudioUnitPort *retval;
+
+	retval = port->data;
+	
 	g_list_free(client_start);
 	g_list_free(port_start);
 	
-	return(port->data);
+	return(retval);
       }
 
       /* iterate */

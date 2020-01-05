@@ -676,12 +676,12 @@ ags_preset_unset_flags(AgsPreset *preset, guint flags)
 
 /**
  * ags_preset_find_scope:
- * @preset: the #GList-struct containing #AgsPreset
+ * @preset: (element-type AgsAudio.Preset) (transfer none): the #GList-struct containing #AgsPreset
  * @scope: the preset's scope
  * 
  * Find preset's scope in @preset.
  * 
- * Returns: the next matching #AgsPreset
+ * Returns: (element-type AgsAudio.Preset) (transfer none): the next matching #AgsPreset
  * 
  * Since: 3.0.0
  */
@@ -716,12 +716,12 @@ ags_preset_find_scope(GList *preset,
 
 /**
  * ags_preset_find_name:
- * @preset: the #GList-struct containing #AgsPreset
+ * @preset: (element-type AgsAudio.Preset) (transfer none): the #GList-struct containing #AgsPreset
  * @preset_name: the preset's name
  * 
  * Find preset name in @preset.
  * 
- * Returns: the next matching #AgsPreset
+ * Returns: (element-type AgsAudio.Preset) (transfer none): the next matching #AgsPreset
  * 
  * Since: 3.0.0
  */

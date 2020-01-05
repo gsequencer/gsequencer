@@ -400,7 +400,7 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the matching #AgsDssiPlugin
+ * Returns: (transfer none): the matching #AgsDssiPlugin
  *
  * Since: 3.0.0
  */
@@ -683,7 +683,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
  *
  * Get instance.
  *
- * Returns: the #AgsDssiManager
+ * Returns: (transfer none): the #AgsDssiManager
  *
  * Since: 3.0.0
  */

@@ -814,12 +814,12 @@ ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 
 /**
  * ags_pattern_find_near_timestamp:
- * @pattern: a #GList containing #AgsPattern
+ * @pattern: (element-type AgsAudio.Pattern) (transfer none): the #GList-struct containing #AgsPattern
  * @timestamp: the matching #AgsTimestamp
  *
  * Retrieve appropriate pattern for timestamp.
  *
- * Returns: Next match.
+ * Returns: (element-type AgsAudio.Pattern) (transfer none): Next match.
  *
  * Since: 3.0.0
  */

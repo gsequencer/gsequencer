@@ -72,7 +72,7 @@ ags_sound_container_base_init(AgsSoundContainerInterface *ginterface)
  * 
  * Returns: %TRUE if open succeeded, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename)
@@ -98,7 +98,7 @@ ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename)
  * 
  * Returns: the level count
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_get_level_count(AgsSoundContainer *sound_container)
@@ -124,7 +124,7 @@ ags_sound_container_get_level_count(AgsSoundContainer *sound_container)
  * 
  * Returns: the nesting level
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container)
@@ -150,7 +150,7 @@ ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container)
  * 
  * Returns: the level id as string
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_sound_container_get_level_id(AgsSoundContainer *sound_container)
@@ -176,7 +176,7 @@ ags_sound_container_get_level_id(AgsSoundContainer *sound_container)
  * 
  * Returns: the level index unsigned integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
@@ -200,9 +200,9 @@ ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
  * 
  * Get sublevel names.
  * 
- * Returns: the string vector containing sublevel names
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sublevel names
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_sound_container_get_sublevel_name(AgsSoundContainer *sound_container)
@@ -229,7 +229,7 @@ ags_sound_container_get_sublevel_name(AgsSoundContainer *sound_container)
  * 
  * Returns: the level count went up 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_level_up(AgsSoundContainer *sound_container,
@@ -258,7 +258,7 @@ ags_sound_container_level_up(AgsSoundContainer *sound_container,
  * 
  * Returns: the index of level as unsigned integer 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
@@ -287,7 +287,7 @@ ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
  * 
  * Returns: the index of level as unsigned integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
@@ -313,9 +313,9 @@ ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
  * 
  * Get all resources as a #GList-struct.
  * 
- * Returns: the #GList-struct containing #AgsResource
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #AgsResource
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
@@ -340,9 +340,9 @@ ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
  * 
  * Get resources by name as a #GList-struct.
  * 
- * Returns: the #GList-struct containing #AgsResource
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #AgsResource
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
@@ -369,9 +369,9 @@ ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
  * 
  * Get resources by index as a #GList-struct.
  * 
- * Returns: the #GList-struct containing #AgsResource
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #AgsResource
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
@@ -397,9 +397,9 @@ ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
  * 
  * Get resources by index as a #GList-struct.
  * 
- * Returns: the #GList-struct containing #AgsResource
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #AgsResource
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_container_get_resource_current(AgsSoundContainer *sound_container)
@@ -423,7 +423,7 @@ ags_sound_container_get_resource_current(AgsSoundContainer *sound_container)
  * 
  * Close @sound_container.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_container_close(AgsSoundContainer *sound_container)

@@ -916,15 +916,15 @@ ags_channel_class_init(AgsChannelClass *channel)
   /* signals */
   /**
    * AgsChannel::recycling-changed:
-   * @channel the object recycling changed
-   * @old_start_region: first recycling
-   * @old_end_region: last recycling
-   * @new_start_region: new first recycling
-   * @new_end_region: new last recycling
-   * @old_start_changed_region: modified link recycling start
-   * @old_end_changed_region: modified link recyclig end
-   * @new_start_changed_region: replacing link recycling start
-   * @new_end_changed_region: replacing link recycling end
+   * @channel: the #AgsChannel recycling changed
+   * @old_start_region: first #AgsRecycling
+   * @old_end_region: last #AgsRecycling
+   * @new_start_region: new first #AgsRecycling
+   * @new_end_region: new last #AgsRecycling
+   * @old_start_changed_region: modified link #AgsRecycling start
+   * @old_end_changed_region: modified link #AgsRecyclig end
+   * @new_start_changed_region: replacing link #AgsRecycling start
+   * @new_end_changed_region: replacing link #AgsRecycling end
    *
    * The ::recycling-changed signal is invoked to notify modified recycling tree.
    * 
@@ -946,6 +946,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   /**
    * AgsChannel::add-effect:
    * @channel: the #AgsChannel to modify
+   * @filename: the effect's filename
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
@@ -1024,6 +1025,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    * AgsChannel::init-recall:
    * @channel: the #AgsChannel
    * @recall_id: the appropriate #AgsRecallID
+   * @staging_flags: the staging flags
    *
    * The ::init-recall signal is invoked during playback initialization.
    * 
@@ -1124,7 +1126,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The ::start signal is invoked as playback starts.
    * 
-   * Returns: the #GList-struct containing #AgsRecallID
+   * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
    * 
    * Since: 3.0.0
    */
@@ -1145,8 +1147,6 @@ ags_channel_class_init(AgsChannelClass *channel)
    * @sound_scope: the sound scope
    *
    * The ::stop signal is invoked as playback stops.
-   * 
-   * Returns: the #GList-struct containing #AgsRecallID
    * 
    * Since: 3.0.0
    */
@@ -3420,7 +3420,7 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
  * 
  * Iterate @channel.
  * 
- * Returns: the next of #AgsChannel if available, otherwise %NULL
+ * Returns: (transfer full): the next of #AgsChannel if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -3458,7 +3458,7 @@ ags_channel_next(AgsChannel *channel)
  * 
  * Iterate @channel.
  * 
- * Returns: the prev of #AgsChannel if available, otherwise %NULL
+ * Returns: (transfer full): the prev of #AgsChannel if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -3496,7 +3496,7 @@ ags_channel_prev(AgsChannel *channel)
  * 
  * Iterate @channel.
  * 
- * Returns: the next pad of #AgsChannel if available, otherwise %NULL
+ * Returns: (transfer full): the next pad of #AgsChannel if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -3536,7 +3536,7 @@ ags_channel_next_pad(AgsChannel *channel)
  * 
  * Returns: the prev pad of #AgsChannel if available, otherwise %NULL
  * 
- * Since: 3.0.0
+ * Since: (transfer full): 3.0.0
  */
 AgsChannel*
 ags_channel_prev_pad(AgsChannel *channel)
@@ -3572,7 +3572,7 @@ ags_channel_prev_pad(AgsChannel *channel)
  *
  * Iterates until the first #AgsChannel was found.
  *
- * Returns: the first #AgsChannel
+ * Returns: (transfer full): the first #AgsChannel
  *
  * Since: 3.0.0
  */
@@ -3630,7 +3630,7 @@ ags_channel_first(AgsChannel *channel)
  *
  * Iterates until the last #AgsChannel was found.
  *
- * Returns: the last #AgsChannel
+ * Returns: (transfer full): the last #AgsChannel
  *
  * Since: 3.0.0
  */
@@ -3689,7 +3689,7 @@ ags_channel_last(AgsChannel *channel)
  *
  * Iterates @nth times forward.
  *
- * Returns: the nth #AgsChannel
+ * Returns: (transfer full): the nth #AgsChannel
  *
  * Since: 3.0.0
  */
@@ -3744,7 +3744,7 @@ ags_channel_nth(AgsChannel *channel, guint nth)
  *
  * Iterates until the first pad has been reached.
  *
- * Returns: the first #AgsChannel with the same audio channel as @channel
+ * Returns: (transfer full): the first #AgsChannel with the same audio channel as @channel
  *
  * Since: 3.0.0
  */
@@ -3802,7 +3802,7 @@ ags_channel_pad_first(AgsChannel *channel)
  *
  * Iterates until the last pad has been reached.
  *
- * Returns: the last #AgsChannel with the same audio channel as @channel
+ * Returns: (transfer full): the last #AgsChannel with the same audio channel as @channel
  *
  * Since: 3.0.0
  */
@@ -3860,7 +3860,7 @@ ags_channel_pad_last(AgsChannel *channel)
  *
  * Iterates nth times.
  *
- * Returns: the nth pad
+ * Returns: (transfer full): the nth pad
  *
  * Since: 3.0.0
  */
@@ -3915,7 +3915,7 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
  *
  * Find first recycling related to @channel.
  *
- * Returns: the first channel with an #AgsRecycling
+ * Returns: (transfer full): the first channel with an #AgsRecycling
  *
  * Since: 3.0.0
  */
@@ -3975,7 +3975,7 @@ ags_channel_first_with_recycling(AgsChannel *channel)
  *
  * Find last recycling related to @channel.
  *
- * Returns: the last channel with an #AgsRecycling
+ * Returns: (transfer full): the last channel with an #AgsRecycling
  *
  * Since: 3.0.0
  */
@@ -4034,7 +4034,7 @@ ags_channel_last_with_recycling(AgsChannel *channel)
  *
  * Find previous #AgsRecycling of @channel.
  *
- * Returns: the prev channel with an #AgsRecycling
+ * Returns: (transfer full): the prev channel with an #AgsRecycling
  *
  * Since: 3.0.0
  */
@@ -4102,7 +4102,7 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
  *
  * Find next #AgsRecycling of @channel.
  *
- * Returns: the next channel with an #AgsRecycling
+ * Returns: (transfer full): the next channel with an #AgsRecycling
  *
  * Since: 3.0.0
  */
@@ -4170,7 +4170,7 @@ ags_channel_next_with_recycling(AgsChannel *channel)
  * 
  * Ascend/descend @channel.
  * 
- * Returns: the link of #AgsChannel if available, otherwise %NULL
+ * Returns: (transfer full): the link of #AgsChannel if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -10662,7 +10662,7 @@ ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope)
  * 
  * Check @channel's @sound_scope.
  * 
- * Returns: the #GList-struct containing #AgsRecallID or %NULL if not playing
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID or %NULL if not playing
  * 
  * Since: 3.0.0
  */
@@ -10691,7 +10691,7 @@ ags_channel_check_scope(AgsChannel *channel, gint sound_scope)
  *
  * Retrieve all ports of #AgsChannel.
  *
- * Returns: a new #GList containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): a new #GList containing #AgsPort
  *
  * Since: 3.0.0
  */
@@ -10820,7 +10820,7 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
  *
  * Retrieve specified port of #AgsChannel
  *
- * Returns: a #GList-struct of #AgsPort if found, otherwise %NULL
+ * Returns: (element-type AgsAudio.Port) (transfer full): a #GList-struct of #AgsPort if found, otherwise %NULL
  *
  * Since: 3.0.0
  */
@@ -10926,7 +10926,7 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
  * 
  * Get level.
  * 
- * Returns: the level of @channel as #AgsChannel or %NULL if no parent recycling.
+ * Returns: (transfer full): the level of @channel as #AgsChannel or %NULL if no parent recycling.
  * 
  * Since: 3.0.0
  */

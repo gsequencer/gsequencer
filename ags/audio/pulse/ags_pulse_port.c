@@ -891,12 +891,12 @@ ags_pulse_port_unset_flags(AgsPulsePort *pulse_port, guint flags)
 
 /**
  * ags_pulse_port_find:
- * @pulse_port: a #GList
+ * @pulse_port: (element-type AgsAudio.PulsePort) (transfer none): the #GList-struct containig #AgsPulsePort
  * @port_name: the port name to find
  *
  * Finds next match of @port_name in @pulse_port.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.PulsePort) (transfer none): the next matching #GList-struct or %NULL
  * 
  * Since: 2.0.0
  */

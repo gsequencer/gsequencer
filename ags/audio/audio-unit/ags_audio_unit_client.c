@@ -799,12 +799,12 @@ ags_audio_unit_client_unset_flags(AgsAudioUnitClient *audio_unit_client, guint f
 
 /**
  * ags_audio_unit_client_find_uuid:
- * @audio_unit_client: a #GList
+ * @audio_unit_client: (element-type AgsAudio.AudioUnitClient) (transfer none): the #GList-struct containing #AgsAudioUnitClient
  * @client_uuid: the client uuid to find
  *
  * Finds next match of @client_uuid in @audio_unit_client.
  *
- * Returns: a #GList or %NULL
+ * Returns: (element-type AgsAudio.AudioUnitClient) (transfer none): the next matching #GList-struct or %NULL
  * 
  * Since: 3.0.0
  */
@@ -824,12 +824,12 @@ ags_audio_unit_client_find_uuid(GList *audio_unit_client,
 
 /**
  * ags_audio_unit_client_find:
- * @audio_unit_client: the #GList-struct containing #AgsAudioUnitClient
+ * @audio_unit_client: (element-type AgsAudio.AudioUnitClient) (transfer none): the #GList-struct containing #AgsAudioUnitClient
  * @client_name: the client name to find
  *
  * Finds next match of @client_name in @audio_unit_client.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.AudioUnitClient) (transfer none): the next matching #GList-struct or %NULL
  * 
  * Since: 3.0.0
  */

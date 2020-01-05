@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,7 +92,7 @@ void ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
 /* sysex and system common */
 void ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
 					guint delta_time,
-					unsigned char *sysex_data, guint length);
+					guchar *sysex_data, guint length);
 
 void ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
 						guint delta_time,
@@ -240,7 +240,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The file to parse data from.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("file",
 				    i18n_pspec("the file stream"),
@@ -283,7 +283,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::midi-putc signal is emited during putting char to file.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[MIDI_PUTC] =
     g_signal_new("midi-putc",
@@ -302,7 +302,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::on-error signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -327,7 +327,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-header signal is emited during building of header.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[APPEND_HEADER] =
     g_signal_new("append-header",
@@ -347,11 +347,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * @midi_builder: the builder
    * @track_name: the trach name
    *
-   * Returns: The XML node representing the track
-   *
    * The ::append-track signal is emited during building of track.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[APPEND_TRACK] =
     g_signal_new("append-track",
@@ -373,7 +371,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-key-on signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[KEY_ON] =
     g_signal_new("key-on",
@@ -398,7 +396,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-key-off signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[KEY_OFF] =
     g_signal_new("key-off",
@@ -423,7 +421,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-key-pressure signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[KEY_PRESSURE] =
     g_signal_new("key-pressure",
@@ -448,7 +446,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-change-parameter signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[CHANGE_PARAMETER] =
     g_signal_new("change-parameter",
@@ -473,7 +471,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-change-pitch-bend signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[CHANGE_PITCH_BEND] =
     g_signal_new("change-pitch-bend",
@@ -497,7 +495,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-change-program signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -520,7 +518,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-change-channel-pressure signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[CHANGE_PRESSURE] =
     g_signal_new("change-channel-pressure",
@@ -543,7 +541,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-sysex signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SYSEX] =
     g_signal_new("sysex",
@@ -566,7 +564,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-quarter-frame signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[QUARTER_FRAME] =
     g_signal_new("quarter-frame",
@@ -588,7 +586,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-song-position signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SONG_POSITION] =
     g_signal_new("song-position",
@@ -609,7 +607,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-song-select signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SONG_SELECT] =
     g_signal_new("song-select",
@@ -629,7 +627,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-tune-request signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[TUNE_REQUEST] =
     g_signal_new("tune-request",
@@ -650,7 +648,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-sequence-number signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SEQUENCE_NUMBER] =
     g_signal_new("sequence-number",
@@ -675,7 +673,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-smtpe signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SMTPE] =
     g_signal_new("smtpe",
@@ -700,7 +698,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-tempo signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[TEMPO] =
     g_signal_new("tempo",
@@ -724,7 +722,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-time-signature signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[TIME_SIGNATURE] =
     g_signal_new("time-signature",
@@ -749,7 +747,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * 
    * The ::append-key-signature signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[KEY_SIGNATURE] =
     g_signal_new("key-signature",
@@ -773,7 +771,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-sequencer-meta-event signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[SEQUENCER_META_EVENT] =
     g_signal_new("sequencer-meta-event",
@@ -797,7 +795,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-text-event signal is emited during building of event.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   midi_builder_signals[TEXT_EVENT] =
     g_signal_new("text-event",
@@ -911,7 +909,7 @@ ags_midi_builder_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsMidiBuilderHeader-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiBuilderHeader*
 ags_midi_builder_header_alloc()
@@ -940,7 +938,7 @@ ags_midi_builder_header_alloc()
  * 
  * Free MIDI builder header.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
@@ -959,7 +957,7 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
  * 
  * Returns: the newly allocated #AgsMidiBuilderTrack-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiBuilderTrack*
 ags_midi_builder_track_alloc()
@@ -985,7 +983,7 @@ ags_midi_builder_track_alloc()
  * 
  * Free MIDI builder track.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
@@ -1006,16 +1004,16 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
 }
 
 /**
- * ags_midi_builder_track_find_track_name_with_delta_time:
- * @midi_builder_track: the #AgsMidiBuilderTrack
+ * ags_midi_builder_track_find_delta_time_with_track_name:
+ * @midi_builder_track: (transfer none): the #AgsMidiBuilderTrack
  * @absolute_time: the absolute time
  * @track_name: the track's string representation
  * 
  * Finds matching #AgsMidiBuilderTrack-struct within @midi_builder_track #GList-struct.
  * 
- * Returns: the matching #GList-struct
+ * Returns: (transfer none): the matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
@@ -1043,13 +1041,13 @@ ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track
  * 
  * Insert MIDI message.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
-					   unsigned char *buffer, guint length)
+					   guchar *buffer, guint length)
 {
-  unsigned char *current;
+  guchar *current;
   
   gint prefix_length, suffix_length;
   guint64 absolute_time;
@@ -1068,8 +1066,8 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   midi_builder_track->absolute_time += delta_time;
   
   /* get offset */
-  midi_builder_track->data = (unsigned char *) realloc(midi_builder_track->data,
-						       (midi_builder_track->length + length) * sizeof(unsigned char));
+  midi_builder_track->data = (guchar *) realloc(midi_builder_track->data,
+						       (midi_builder_track->length + length) * sizeof(guchar));
 
   current = midi_builder_track->data + midi_builder_track->length;
   
@@ -1109,13 +1107,13 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
  * 
  * Returns: the buffer position before @delta_time
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
 					     guint64 absolute_time)
 {
-  unsigned char *prev, *current;
+  guchar *prev, *current;
 
   guint64 time_counter;
   glong current_delta_time;
@@ -1174,7 +1172,7 @@ ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
  *
  * Put char in MIDI file.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
@@ -1206,7 +1204,7 @@ ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
  *
  * Triggered as an error occurs.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
@@ -1238,7 +1236,7 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   }
 
   if(midi_builder_header->data == NULL){
-    midi_builder_header->data = (unsigned char *) malloc(14 * sizeof(unsigned char));
+    midi_builder_header->data = (guchar *) malloc(14 * sizeof(guchar));
     midi_builder_header->length = 14;
   }
   
@@ -1268,7 +1266,7 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
  *
  * Appends MIDI header to @midi_builder.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_header(AgsMidiBuilder *midi_builder,
@@ -1311,7 +1309,7 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
     length = 0;
   }
   
-  midi_builder_track->data = (unsigned char *) malloc((8 + delta_time_size + length + 3) * sizeof(unsigned char));
+  midi_builder_track->data = (guchar *) malloc((8 + delta_time_size + length + 3) * sizeof(guchar));
   midi_builder_track->length = (4 + 4) + delta_time_size + length + 3;
 
   ags_midi_buffer_util_put_track(midi_builder_track->data,
@@ -1336,7 +1334,7 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
  *
  * Append a track called @track_name to @midi_builder.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
@@ -1358,13 +1356,13 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
 				    guint note,
 				    guint velocity)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
 
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_key_on(buffer,
 				  delta_time,
 				  audio_channel,
@@ -1384,7 +1382,7 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
  *
  * Append key-on for @note to @midi_builder with key dynamics @velocity, at @delta_time.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
@@ -1412,13 +1410,13 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
 				     guint note,
 				     guint velocity)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_key_off(buffer,
 				   delta_time,
 				   audio_channel,
@@ -1438,7 +1436,7 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
  *
  * Append key-off for @note to @midi_builder with key dynamics @velocity, at @delta_time.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
@@ -1466,13 +1464,13 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
 					  guint note,
 					  guint pressure)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_key_pressure(buffer,
 					delta_time,
 					audio_channel,
@@ -1493,7 +1491,7 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
  *
  * Append key-pressure for @note to @midi_builder with key dynamics @pressure, at @delta_time.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
@@ -1521,13 +1519,13 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
 					      guint control,
 					      guint value)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_change_parameter(buffer,
 					    delta_time,
 					    channel,
@@ -1547,7 +1545,7 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
  *
  * Appends change parameter.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
@@ -1575,13 +1573,13 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					       guint pitch,
 					       guint transmitter)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_pitch_bend(buffer,
 				      delta_time,
 				      channel,
@@ -1601,7 +1599,7 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
  *
  * Change pitch bend.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
@@ -1628,13 +1626,13 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
 					    guint channel,
 					    guint program)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_buffer_util_put_change_program(buffer,
 					  delta_time,
 					  channel,
@@ -1652,7 +1650,7 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
  *
  * Appends change program.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
@@ -1677,13 +1675,13 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
 					     guint channel,
 					     guint pressure)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_buffer_util_put_change_pressure(buffer,
 					  delta_time,
 					  channel,
@@ -1701,7 +1699,7 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
  * 
  * Appends change pressure.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
@@ -1723,15 +1721,15 @@ ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
-				   unsigned char *sysex_data, guint length)
+				   guchar *sysex_data, guint length)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + length) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + length) * sizeof(guchar));
   ags_midi_buffer_util_put_sysex(buffer,
 				 delta_time,
 				 sysex_data, length);
@@ -1748,12 +1746,12 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
  *
  * Appends sysex data.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
 			      guint delta_time,
-			      unsigned char *sysex_data, guint length)
+			      guchar *sysex_data, guint length)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
@@ -1771,13 +1769,13 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
 					   guint message_type,
 					   guint values)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_buffer_util_put_quarter_frame(buffer,
 					 delta_time,
 					 message_type,
@@ -1795,7 +1793,7 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
  *
  * Appends quarter frame.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
@@ -1818,13 +1816,13 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
 					   guint song_position)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_song_position(buffer,
 					 delta_time,
 					 song_position);
@@ -1840,7 +1838,7 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
  * 
  * Appends song position.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
@@ -1862,13 +1860,13 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
 					 guint delta_time,
 					 guint song_select)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_buffer_util_put_song_select(buffer,
 				       delta_time,
 				       song_select);
@@ -1884,7 +1882,7 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
  * 
  * Appends song select.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
@@ -1905,13 +1903,13 @@ void
 ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
 					  guint delta_time)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 1) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 1) * sizeof(guchar));
   ags_midi_buffer_util_put_tune_request(buffer,
 					delta_time);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
@@ -1925,7 +1923,7 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
  * 
  * Appends tune request.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder,
@@ -1945,13 +1943,13 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
 					     guint delta_time,
 					     guint sequence)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 5) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 5) * sizeof(guchar));
   ags_midi_buffer_util_put_sequence_number(buffer,
 					   delta_time,
 					   sequence);
@@ -1967,7 +1965,7 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
  * 
  * Appends sequence number.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
@@ -1989,13 +1987,13 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint rr, guint hr, guint mn, guint se, guint fr)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 8) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 8) * sizeof(guchar));
   ags_midi_buffer_util_put_smtpe(buffer,
 				 delta_time,
 				 rr, hr, mn, se, fr);
@@ -2015,7 +2013,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
  * 
  * Appends smtpe.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
@@ -2037,13 +2035,13 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint tempo)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 6) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 6) * sizeof(guchar));
   ags_midi_buffer_util_put_tempo(buffer,
 				 delta_time,
 				 tempo);
@@ -2060,7 +2058,7 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
  * 
  * Appends tempo.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
@@ -2082,13 +2080,13 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 					    guint delta_time,
 					    guint nn, guint dd, guint cc, guint bb)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 7) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 7) * sizeof(guchar));
   ags_midi_buffer_util_put_time_signature(buffer,
 					  delta_time,
 					  nn, dd, cc, bb);
@@ -2107,7 +2105,7 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
  *
  * Appends time signature.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
@@ -2129,13 +2127,13 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
 					   guint sf, guint mi)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 5) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + 5) * sizeof(guchar));
   ags_midi_buffer_util_put_key_signature(buffer,
 					 delta_time,
 					 sf, mi);
@@ -2152,7 +2150,7 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
  *
  * Appends key signature.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
@@ -2174,13 +2172,13 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 						  guint delta_time,
 						  guint len, guint id, guint data)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + len + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + len + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_sequencer_meta_event(buffer,
 						delta_time,
 						len, id, data);
@@ -2198,7 +2196,7 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
  * 
  * Appends sequencer meta event.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
@@ -2220,7 +2218,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 					guint delta_time,
 					gchar *text, guint length)
 {
-  unsigned char *buffer;
+  guchar *buffer;
 
   guint delta_time_size;
 
@@ -2232,7 +2230,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
   
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + length + 3) * sizeof(unsigned char));
+  buffer = (guchar *) malloc((delta_time_size + length + 3) * sizeof(guchar));
   ags_midi_buffer_util_put_text_event(buffer,
 				      delta_time,
 				      text, length);
@@ -2249,7 +2247,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
  *
  * Appends text event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
@@ -3022,7 +3020,7 @@ ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
  * 
  * Append from XML node @node.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
@@ -3068,7 +3066,7 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
  *
  * Builds from XML document @doc.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
@@ -3111,14 +3109,14 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
  *
  * Build the MIDI data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 {
   GList *midi_track;
 
-  unsigned char *offset;
+  guchar *offset;
   
   guint length;
   
@@ -3148,7 +3146,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   }
   
   if(length > 0){
-    midi_builder->data = (unsigned char *) malloc(length * sizeof(unsigned char));
+    midi_builder->data = (guchar *) malloc(length * sizeof(guchar));
 
     midi_builder->length = length;
   }else{
@@ -3164,7 +3162,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   
   if(midi_builder->midi_header != NULL &
      midi_builder->midi_header->data != NULL){
-    memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(unsigned char));
+    memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(guchar));
     offset += midi_builder->midi_header->length;
   }
   
@@ -3172,7 +3170,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 
   while(midi_track != NULL){
     if(AGS_MIDI_BUILDER_TRACK(midi_track->data)->data != NULL){
-      memcpy(offset, AGS_MIDI_BUILDER_TRACK(midi_track->data)->data, AGS_MIDI_BUILDER_TRACK(midi_track->data)->length * sizeof(unsigned char));
+      memcpy(offset, AGS_MIDI_BUILDER_TRACK(midi_track->data)->data, AGS_MIDI_BUILDER_TRACK(midi_track->data)->length * sizeof(guchar));
       offset += AGS_MIDI_BUILDER_TRACK(midi_track->data)->length;
       
       ags_midi_buffer_util_put_end_of_track(offset,
@@ -3192,7 +3190,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
  *
  * Returns: the new #AgsMidiBuilder
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiBuilder*
 ags_midi_builder_new(FILE *file)

@@ -1149,7 +1149,7 @@ ags_audio_container_check_suffix(gchar *filename)
  * 
  * Find resource specified by parameters.
  *
- * Returns: the #GList-struct containing #AgsSample or %NULL. WARNING the parameters need to be valid in order
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #GObject sample or %NULL. WARNING the parameters need to be valid in order
  * to return the correct list.
  * 
  * Since: 3.0.0
@@ -1517,7 +1517,9 @@ ags_audio_container_read(AgsAudioContainer *audio_container,
  * @audio_container: the #AgsAudioContainer
  *
  * Convert the #AgsAudioContainer to a #GList-struct of #AgsAudioSignal.
- *
+ * 
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer full): the new #GList-struct containing #AgsAudioSignal or %NULL
+ * 
  * Since: 3.0.0
  */
 GList*
@@ -1560,6 +1562,16 @@ ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container)
   return(g_list_copy(list));
 }
 
+/**
+ * ags_audio_container_read_wave:
+ * @audio_container: the #AgsAudioContainer
+ *
+ * Convert the #AgsAudioContainer to a #GList-struct of #AgsWave.
+ * 
+ * Returns: (element-type AgsAudio.Wave) (transfer full): the new #GList-struct containing #AgsWave or %NULL
+ * 
+ * Since: 3.0.0
+ */
 GList*
 ags_audio_container_read_wave(AgsAudioContainer *audio_container,
 			      guint64 x_offset,

@@ -114,6 +114,16 @@ ags_lv2_worker_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_lv2_worker_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_lv2_worker_manager_pull_worker:
+ * @worker_manager: the #AgsLv2WorkerManager
+ * 
+ * Pull worker.
+ * 
+ * Returns: (transfer full): the #AgsWorkerThread
+ * 
+ * Since: 3.0.0
+ */
 GObject*
 ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 {
@@ -143,7 +153,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2WorkerManager
+ * Returns: (transfer none): an instance of #AgsLv2WorkerManager
  *
  * Since: 3.0.0
  */

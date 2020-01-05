@@ -9349,9 +9349,9 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
  *
  * Instantiate #AgsRecall by this factory.
  *
- * Returns: The available AgsPort objects of the plugin to modify.
+ * Returns: (element-type AgsAudio.Recall) (transfer full): The #GList-struct containing #AgsRecall
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
@@ -9651,7 +9651,7 @@ ags_recall_factory_create(AgsAudio *audio,
  *
  * Returns: the new #AgsRecallFactory
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallFactory*
 ags_recall_factory_new()

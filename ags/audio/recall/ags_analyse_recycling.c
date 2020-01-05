@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_analyse_recycling_finalize(GObject *gobject)
 
 /**
  * ags_analyse_recycling_new:
- * @recycling: the source #AgsRecycling
+ * @source: the source #AgsRecycling
  *
  * Create a new instance of #AgsAnalyseRecycling
  *

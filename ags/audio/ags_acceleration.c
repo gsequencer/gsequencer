@@ -436,7 +436,7 @@ ags_acceleration_sort_func(gconstpointer a, gconstpointer b)
  * 
  * Duplicate a acceleration.
  *
- * Returns: the duplicated #AgsAcceleration.
+ * Returns: (transfer full): the duplicated #AgsAcceleration.
  *
  * Since: 3.0.0
  */

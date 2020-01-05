@@ -310,7 +310,7 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2UriMapManager
+ * Returns: (transfer none): an instance of #AgsLv2UriMapManager
  *
  * Since: 3.0.0
  */

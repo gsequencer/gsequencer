@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -755,7 +755,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
  * 
  * Get recall id of appropriate scope.
  * 
- * Returns: the matching #AgsRecallID or %NULL
+ * Returns: (transfer full): the matching #AgsRecallID or %NULL
  * 
  * Since: 3.0.0
  */
@@ -797,12 +797,12 @@ ags_playback_get_recall_id(AgsPlayback *playback,
 
 /**
  * ags_playback_play_find_channel:
- * @playback: the #GList-struct containing #AgsPlayback
+ * @playback: (element-type AgsAudio.Playback) (transfer none): the #GList-struct containing #AgsPlayback
  * @channel: the #AgsChannel
  * 
  * Find @channel in @playback.
  *
- * Returns: the matching playback
+ * Returns: (transfer none): the matching playback
  *
  * Since: 3.0.0
  */

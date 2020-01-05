@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,7 +113,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * The assigned #AgsRecallID.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("the default recall id"),
@@ -129,7 +129,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * The parent recycling context within tree.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   i18n_pspec("parent context"),
@@ -145,7 +145,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * The child recycling contexts.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("child",
 				    i18n_pspec("child context"),
@@ -160,7 +160,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    *
    * Boundary length.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("length",
 				   i18n_pspec("length of the array of assigned recycling"),
@@ -488,14 +488,14 @@ ags_recycling_context_finalize(GObject *gobject)
 
 /**
  * ags_recycling_context_find_scope:
- * @recycling_context: the #GList-struct containing #AgsRecyclingContext
+ * @recycling_context: (element-type AgsAudio.RecyclingContext) (transfer none): the #GList-struct containing #AgsRecyclingContext
  * @sound_scope: the sound scope
  * 
  * Find matching @sound_scope in @recycling_context.
  *
- * Returns: the matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.RecyclingContext) (transfer none): the matching #GList-struct or %NULL if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope)
@@ -537,7 +537,7 @@ ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope)
  *
  * Replaces one recycling entry in a context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
@@ -593,7 +593,7 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
  *
  * Adds a recycling to a context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_add(AgsRecyclingContext *recycling_context,
@@ -637,7 +637,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
  *
  * Removes a recycling in a context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
@@ -706,7 +706,7 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
  *
  * Inserts a recycling to a context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
@@ -775,9 +775,9 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
  *
  * Iterates the tree up to highest level.
  *
- * Returns: the topmost recycling context
+ * Returns: (transfer full): the topmost recycling context
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecyclingContext*
 ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
@@ -814,7 +814,7 @@ ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
  *
  * Returns: recycling array index
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_recycling_context_find(AgsRecyclingContext *recycling_context,
@@ -857,7 +857,7 @@ ags_recycling_context_find(AgsRecyclingContext *recycling_context,
  *
  * Returns: recycling array index
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
@@ -913,7 +913,7 @@ ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
  *
  * Returns: recycling array index
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
@@ -969,7 +969,7 @@ ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
  *
  * Adds a recycling context as child.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_add_child(AgsRecyclingContext *parent,
@@ -1008,7 +1008,7 @@ ags_recycling_context_add_child(AgsRecyclingContext *parent,
  *
  * Removes a recycling context of its parent.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recycling_context_remove_child(AgsRecyclingContext *parent,
@@ -1046,9 +1046,9 @@ ags_recycling_context_remove_child(AgsRecyclingContext *parent,
  * 
  * Retrieve all child recall ids.
  *
- * Returns: the #AgsRecallID as #GList-struct
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #AgsRecallID as #GList-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context)
@@ -1115,9 +1115,9 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
  *
  * Modify recycling of context.
  *
- * Returns: the new #AgsRecyclingContext
+ * Returns: (transfer full): the new #AgsRecyclingContext
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecyclingContext*
 ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
@@ -1214,7 +1214,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
  *
  * Returns: a new #AgsRecyclingContext
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecyclingContext*
 ags_recycling_context_new(guint64 length)

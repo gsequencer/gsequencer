@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -253,12 +253,12 @@ ags_recall_dependency_finalize(GObject *gobject)
 
 /**
  * ags_recall_dependency_find_dependency:
- * @recall_dependency: a #GList-struct containing  #AgsRecallDependency
+ * @recall_dependency: (element-type AgsAudio.RecallDependency) (transfer none): the #GList-struct containing  #AgsRecallDependency
  * @dependency: the #AgsRecall depending on
  *
  * Retrieve dependency.
  *
- * Returns: next matching #GList-struct or %NULL.
+ * Returns: (element-type AgsAudio.RecallDependency) (transfer none): next matching #GList-struct or %NULL.
  * 
  * Since: 3.0.0
  */
@@ -290,12 +290,12 @@ ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *depende
 
 /**
  * ags_recall_dependency_find_dependency_by_provider:
- * @recall_dependency: a #GList-struct containing  #AgsRecallDependency
+ * @recall_dependency: (element-type AgsAudio.RecallDependency) (transfer none): the #GList-struct containing  #AgsRecallDependency
  * @provider: the object providing recall, like #AgsAudio or #AgsChannel
  *
  * Retrieve dependency by provider.
  *
- * Returns: next matching #GList-struct or %NULL.
+ * Returns: (element-type AgsAudio.RecallDependency) (transfer none): next matching #GList-struct or %NULL.
  * 
  * Since: 3.0.0
  */
@@ -365,7 +365,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
  *
  * Resolve dependency.
  *
- * Returns: the #AgsRecall dependency.
+ * Returns: (transfer none): the #AgsRecall dependency.
  * 
  * Since: 3.0.0
  */

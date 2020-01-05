@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1293,7 +1293,7 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
  * 
  * Iterate @recycling.
  * 
- * Returns: the next of #AgsRecycling if available, otherwise %NULL
+ * Returns: (transfer full): the next of #AgsRecycling if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -1331,7 +1331,7 @@ ags_recycling_next(AgsRecycling *recycling)
  * 
  * Iterate @recycling.
  * 
- * Returns: the prev of #AgsRecycling if available, otherwise %NULL
+ * Returns: (transfer full): the prev of #AgsRecycling if available, otherwise %NULL
  * 
  * Since: 3.0.0
  */
@@ -2295,7 +2295,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  *
  * Retrieve next recycling with different channel.
  *
- * Returns: Matching recycling.
+ * Returns: (transfer full): Matching recycling.
  *
  * Since: 3.0.0
  */

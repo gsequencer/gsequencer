@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -689,12 +689,12 @@ ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
 
 /**
  * ags_recall_id_find_recycling_context:
- * @recall_id: a #GList containing #AgsRecallID
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer none): the #GList-struct containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
- * Returns: Matching recall id.
+ * Returns: (transfer none): Matching #AgsRecallID
  * 
  * Since: 3.0.0
  */
@@ -727,12 +727,12 @@ ags_recall_id_find_recycling_context(GList *recall_id,
 
 /**
  * ags_recall_id_find_parent_recycling_context:
- * @recall_id: a #GList containing #AgsRecallID
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer none): the #GList-struct containing #AgsRecallID
  * @parent_recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
- * Returns: Matching recall id.
+ * Returns: (transfer none): Matching #AgsRecallID
  * 
  * Since: 3.0.0
  */

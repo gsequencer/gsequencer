@@ -96,11 +96,11 @@ AgsLv2WorkerResponseData* ags_lv2_worker_alloc_response_data();
 void ags_lv2_worker_free_response_data(AgsLv2WorkerResponseData *response_data);
 
 LV2_Worker_Status ags_lv2_worker_respond(LV2_Worker_Respond_Handle handle,
-					 uint32_t size,
+					 uint32_t data_size,
 					 const void* data);
 
 LV2_Worker_Status ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
-					       uint32_t size,
+					       uint32_t data_size,
 					       const void* data);
 
 void ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data);

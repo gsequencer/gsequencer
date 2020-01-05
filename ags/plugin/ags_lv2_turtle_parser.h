@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,8 +60,6 @@ struct _AgsLv2TurtleParserClass
 };
 
 GType ags_lv2_turtle_parser_get_type(void);
-
-pthread_mutex_t* ags_lv2_turtle_parser_get_class_mutex();
 
 void ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 				       AgsTurtle **turtle, guint n_turtle);

@@ -745,12 +745,12 @@ ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags)
 
 /**
  * ags_audio_unit_port_find:
- * @audio_unit_port: a #GList
+ * @audio_unit_port: (element-type AgsAudio.AudioUnitPort) (transfer none): the #GList-struct containing #AgsAudioUnitPort
  * @port_name: the port name to find
  *
  * Finds next match of @port_name in @audio_unit_port.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.AudioUnitPort) (transfer none): the next matching #GList-struct or %NULL
  * 
  * Since: 3.0.0
  */

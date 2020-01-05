@@ -590,7 +590,7 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
  * Find @soundcard as sibling of @soundcard_thread, if it was found on the returned
  * thread should be called g_object_unref().
  * 
- * Returns: the matching #AgsSoundcardThread, if not
+ * Returns: (transfer full): the matching #AgsSoundcardThread, if not
  * found %NULL.
  * 
  * Since: 3.0.0

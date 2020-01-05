@@ -145,7 +145,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned #AgsPulseServer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pulse-server",
 				   i18n_pspec("assigned pulseaudio server"),
@@ -161,7 +161,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The pulseaudio client name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("client-name",
 				   i18n_pspec("the client name"),
@@ -177,7 +177,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned devices.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("device",
 				    i18n_pspec("assigned device"),
@@ -192,7 +192,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned ports.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("port",
 				    i18n_pspec("assigned port"),
@@ -714,7 +714,7 @@ ags_pulse_client_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags)
@@ -747,7 +747,7 @@ ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags)
  *
  * Enable a feature of @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags)
@@ -778,7 +778,7 @@ ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags)
  *
  * Disable a feature of @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags)
@@ -804,14 +804,14 @@ ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags)
 
 /**
  * ags_pulse_client_find_uuid:
- * @pulse_client: the #GList-struct containing #AgsPulseClient
+ * @pulse_client: (element-type AgsAudio.PulseClient) (transfer none): the #GList-struct containing #AgsPulseClient
  * @client_uuid: the client uuid to find
  *
  * Finds next match of @client_uuid in @pulse_client.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.PulseClient) (transfer none): the next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pulse_client_find_uuid(GList *pulse_client,
@@ -850,14 +850,14 @@ ags_pulse_client_find_uuid(GList *pulse_client,
 
 /**
  * ags_pulse_client_find:
- * @pulse_client: the #GList-struct containing #AgsPulseClient
+ * @pulse_client: (element-type AgsAudio.PulseClient) (transfer none): the #GList-struct containing #AgsPulseClient
  * @client_name: the client name to find
  *
  * Finds next match of @client_name in @pulse_client.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.PulseClient) (transfer none): the next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pulse_client_find(GList *pulse_client,
@@ -936,7 +936,7 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
  *
  * Open the pulseaudio client's connection and read uuid.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_open(AgsPulseClient *pulse_client,
@@ -1112,7 +1112,7 @@ ags_pulse_client_close(AgsPulseClient *pulse_client)
  *
  * Activate client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_activate(AgsPulseClient *pulse_client)
@@ -1184,7 +1184,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
  *
  * Deactivate client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
@@ -1226,7 +1226,7 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
  *
  * Add @pulse_device to @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_add_device(AgsPulseClient *pulse_client,
@@ -1262,7 +1262,7 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_device from @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
@@ -1296,7 +1296,7 @@ ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
  *
  * Add @pulse_port to @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_add_port(AgsPulseClient *pulse_client,
@@ -1331,7 +1331,7 @@ ags_pulse_client_add_port(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_port from @pulse_client.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
@@ -1366,7 +1366,7 @@ ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
  *
  * Returns: the new #AgsPulseClient
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPulseClient*
 ags_pulse_client_new(GObject *pulse_server)

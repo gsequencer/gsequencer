@@ -1213,13 +1213,13 @@ ags_wave_set_format(AgsWave *wave,
 
 /**
  * ags_wave_find_near_timestamp:
- * @wave: a #GList containing #AgsWave
+ * @wave: (element-type AgsAudio.Wave) (transfer none): the #GList-struct containing #AgsWave
  * @line: the matching audio channel
  * @timestamp: the matching #AgsTimestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate wave for timestamp.
  *
- * Returns: Next matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Wave) (transfer none): Next matching #GList-struct or %NULL if not found
  *
  * Since: 3.0.0
  */
@@ -1502,12 +1502,12 @@ ags_wave_sort_func(gconstpointer a,
 
 /**
  * ags_wave_add:
- * @wave: the #GList-struct containing #AgsWave
+ * @wave: (element-type AgsAudio.Wave) (transfer none): the #GList-struct containing #AgsWave
  * @new_wave: the #AgsWave to add
  * 
  * Add @new_wave sorted to @wave
  * 
- * Returns: the new beginning of @wave
+ * Returns: (element-type AgsAudio.Wave) (transfer none): the new beginning of @wave
  * 
  * Since: 3.0.0
  */
@@ -1625,7 +1625,7 @@ ags_wave_remove_buffer(AgsWave *wave,
  *
  * Retrieve selection.
  *
- * Returns: the selection.
+ * Returns: (element-type AgsAudio.Buffer) (transfer none): the selection.
  *
  * Since: 3.0.0
  */
@@ -1726,7 +1726,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
  *
  * Find buffers by offset.
  *
- * Returns: the matching buffer as #AgsBuffer.
+ * Returns: (transfer none): the matching buffer as #AgsBuffer.
  *
  * Since: 3.0.0
  */
@@ -1857,7 +1857,7 @@ ags_wave_find_point(AgsWave *wave,
  *
  * Find buffers by offset and region.
  *
- * Returns: the matching buffers as #GList.
+ * Returns: (element-type AgsAudio.Buffer) (transfer container): the matching buffers as #GList.
  *
  * Since: 3.0.0
  */
@@ -2236,7 +2236,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: (transfer none): the selection as XML.
  *
  * Since: 3.0.0
  */
@@ -2522,7 +2522,7 @@ ags_wave_copy_selection(AgsWave *wave)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as xmlNode
+ * Returns: (transfer none): the selection as xmlNode
  *
  * Since: 3.0.0
  */

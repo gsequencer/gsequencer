@@ -72,7 +72,7 @@ struct _AgsOscMeterControllerClass
 	
   gpointer (*monitor_meter)(AgsOscMeterController *osc_meter_controller,
 			    AgsOscConnection *osc_connection,
-			    unsigned char *message, guint message_size);
+			    guchar *message, guint message_size);
 };
 
 struct _AgsOscMeterControllerMonitor
@@ -116,7 +116,7 @@ void ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_cont
 
 gpointer ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controller,
 						AgsOscConnection *osc_connection,
-						unsigned char *message, guint message_size);
+						guchar *message, guint message_size);
 
 AgsOscMeterController* ags_osc_meter_controller_new();
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -416,7 +416,7 @@ ags_open_single_file_launch(AgsTask *task)
 
 /**
  * ags_open_single_file_new:
- * @channe: the #AgsChannel
+ * @channel: the #AgsChannel
  * @filename: the filename to be opened
  * @audio_channel: the audio channel
  *

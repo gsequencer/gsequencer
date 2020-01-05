@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,13 +74,13 @@ struct _AgsMidiParser
   FILE *file;
   guint nth_chunk;
 
-  unsigned char *buffer;
+  guchar *buffer;
   
   size_t file_length;
   size_t offset;
 
   guint current_time;
-  unsigned char current_status;
+  guchar current_status;
   
   xmlDoc *doc;
 };
@@ -95,7 +95,7 @@ struct _AgsMidiParserClass
   
   xmlDoc* (*parse_full)(AgsMidiParser *midi_parser);
   xmlNode* (*parse_bytes)(AgsMidiParser *midi_parser,
-			  unsigned char *midi_buffer,
+			  guchar *midi_buffer,
 			  guint buffer_length);
   
   xmlNode* (*parse_header)(AgsMidiParser *midi_parser);
@@ -127,8 +127,6 @@ struct _AgsMidiParserClass
 
 GType ags_midi_parser_get_type(void);
 
-pthread_mutex_t* ags_midi_parser_get_class_mutex();
-
 gint16 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser);
@@ -146,7 +144,7 @@ void ags_midi_parser_on_error(AgsMidiParser *midi_parser,
 
 xmlDoc* ags_midi_parser_parse_full(AgsMidiParser *midi_parser);
 xmlNode* ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
-				     unsigned char *midi_buffer,
+				     guchar *midi_buffer,
 				     guint buffer_length);
 
 xmlNode* ags_midi_parser_parse_header(AgsMidiParser *midi_parser);

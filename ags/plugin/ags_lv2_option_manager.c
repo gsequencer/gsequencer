@@ -26,11 +26,11 @@ void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_mana
 void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
 void ags_lv2_option_manager_finalize(GObject *gobject);
 
-void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *option_manager,
+void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 					    gpointer instance,
 					    gpointer options,
 					    gpointer retval);
-void ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *option_manager,
+void ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
 					    gpointer instance,
 					    gpointer options,
 					    gpointer retval);
@@ -757,7 +757,7 @@ ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2OptionManager
+ * Returns: (transfer none): an instance of #AgsLv2OptionManager
  *
  * Since: 3.0.0
  */

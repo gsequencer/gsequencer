@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -437,179 +437,179 @@ ags_note_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_X0:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->x[0] = g_value_get_uint(value);
+    note->x[0] = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_X1:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->x[1] = g_value_get_uint(value);
+    note->x[1] = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_Y:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->y = g_value_get_uint(value);
+    note->y = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RT_OFFSET:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->rt_offset = g_value_get_uint64(value);
+    note->rt_offset = g_value_get_uint64(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RT_ATTACK:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->rt_attack = g_value_get_uint(value);
+    note->rt_attack = g_value_get_uint(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_DELAY:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->stream_delay = g_value_get_double(value);
+    note->stream_delay = g_value_get_double(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_ATTACK:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->stream_attack = g_value_get_double(value);
+    note->stream_attack = g_value_get_double(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_FRAME_COUNT:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->stream_frame_count = g_value_get_uint64(value);
+    note->stream_frame_count = g_value_get_uint64(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_ATTACK:
-    {
-      AgsComplex *attack;
+  {
+    AgsComplex *attack;
 
-      attack = (AgsComplex *) g_value_get_boxed(value);
+    attack = (AgsComplex *) g_value_get_boxed(value);
 
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      ags_complex_set(&(note->attack),
-		      ags_complex_get(attack));
+    ags_complex_set(&(note->attack),
+		    ags_complex_get(attack));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_SUSTAIN:
-    {
-      AgsComplex *sustain;
+  {
+    AgsComplex *sustain;
 
-      sustain = (AgsComplex *) g_value_get_boxed(value);
+    sustain = (AgsComplex *) g_value_get_boxed(value);
 
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      ags_complex_set(&(note->sustain),
-		      ags_complex_get(sustain));
+    ags_complex_set(&(note->sustain),
+		    ags_complex_get(sustain));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_DECAY:
-    {
-      AgsComplex *decay;
+  {
+    AgsComplex *decay;
 
-      decay = (AgsComplex *) g_value_get_boxed(value);
+    decay = (AgsComplex *) g_value_get_boxed(value);
 
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      ags_complex_set(&(note->decay),
-		      ags_complex_get(decay));
+    ags_complex_set(&(note->decay),
+		    ags_complex_get(decay));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RELEASE:
-    {
-      AgsComplex *release;
+  {
+    AgsComplex *release;
 
-      release = (AgsComplex *) g_value_get_boxed(value);
+    release = (AgsComplex *) g_value_get_boxed(value);
 
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      ags_complex_set(&(note->release),
-		      ags_complex_get(release));
+    ags_complex_set(&(note->release),
+		    ags_complex_get(release));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RATIO:
-    {
-      AgsComplex *ratio;
+  {
+    AgsComplex *ratio;
 
-      ratio = (AgsComplex *) g_value_get_boxed(value);
+    ratio = (AgsComplex *) g_value_get_boxed(value);
 
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      ags_complex_set(&(note->ratio),
-		      ags_complex_get(ratio));
+    ags_complex_set(&(note->ratio),
+		    ags_complex_get(ratio));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_NOTE_NAME:
-    {
-      gchar *note_name;
+  {
+    gchar *note_name;
       
-      note_name = g_value_get_string(value);
+    note_name = g_value_get_string(value);
       
-      g_rec_mutex_lock(note_mutex);
+    g_rec_mutex_lock(note_mutex);
 
-      if(note_name == note->note_name){
-	g_rec_mutex_unlock(note_mutex);
-
-	return;
-      }
-
-      if(note->note_name != NULL){
-	g_free(note->note_name);
-      }
-
-      note->note_name = g_strdup(note_name);
-
+    if(note_name == note->note_name){
       g_rec_mutex_unlock(note_mutex);
+
+      return;
     }
-    break;
+
+    if(note->note_name != NULL){
+      g_free(note->note_name);
+    }
+
+    note->note_name = g_strdup(note_name);
+
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_FREQUENCY:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      note->frequency = g_value_get_double(value);
+    note->frequency = g_value_get_double(value);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -633,140 +633,140 @@ ags_note_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_X0:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint(value, note->x[0]);
+    g_value_set_uint(value, note->x[0]);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_X1:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint(value, note->x[1]);
+    g_value_set_uint(value, note->x[1]);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_Y:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint(value, note->y);
+    g_value_set_uint(value, note->y);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RT_OFFSET:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint64(value, note->rt_offset);
+    g_value_set_uint64(value, note->rt_offset);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RT_ATTACK:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint(value, note->rt_attack);
+    g_value_set_uint(value, note->rt_attack);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_DELAY:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_double(value, note->stream_delay);
+    g_value_set_double(value, note->stream_delay);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_ATTACK:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_double(value, note->stream_attack);
+    g_value_set_double(value, note->stream_attack);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_STREAM_FRAME_COUNT:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_uint64(value, note->stream_frame_count);
+    g_value_set_uint64(value, note->stream_frame_count);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_ATTACK:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, &(note->attack));
+    g_value_set_boxed(value, &(note->attack));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_SUSTAIN:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, &(note->sustain));
+    g_value_set_boxed(value, &(note->sustain));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_DECAY:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, &(note->decay));
+    g_value_set_boxed(value, &(note->decay));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RELEASE:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, &(note->release));
+    g_value_set_boxed(value, &(note->release));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_RATIO:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_boxed(value, &(note->ratio));
+    g_value_set_boxed(value, &(note->ratio));
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_NOTE_NAME:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_string(value, note->note_name);
+    g_value_set_string(value, note->note_name);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   case PROP_FREQUENCY:
-    {
-      g_rec_mutex_lock(note_mutex);
+  {
+    g_rec_mutex_lock(note_mutex);
 
-      g_value_set_double(value, note->frequency);
+    g_value_set_double(value, note->frequency);
 
-      g_rec_mutex_unlock(note_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(note_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -935,13 +935,13 @@ ags_note_sort_func(gconstpointer a,
 
 /**
  * ags_note_find_prev:
- * @note: the #GList-struct containing #AgsNote
+ * @note: (element-type AgsAudio.Note) (transfer none): the #GList-struct containing #AgsNote
  * @x0: x offset
  * @y:  y offset
  * 
  * Find prev note having the same y offset.
  *
- * Returns: the matching entry as #GList-struct if first entry's x offset bigger than @x0, else %NULL
+ * Returns: (element-type AgsAudio.Note) (transfer none): the matching entry as #GList-struct if first entry's x offset bigger than @x0, else %NULL
  *
  * Since: 3.0.0
  */
@@ -996,13 +996,13 @@ ags_note_find_prev(GList *note,
 
 /**
  * ags_note_find_next:
- * @note: the #GList-struct containing #AgsNote
+ * @note: (element-type AgsAudio.Note) (transfer none): the #GList-struct containing #AgsNote
  * @x0: x offset
  * @y:  y offset
  * 
  * Find next note having the same y offset.
  *
- * Returns: the matching entry as #GList-struct if last entry's x offset smaller than @x0, else %NULL
+ * Returns: (element-type AgsAudio.Note) (transfer none): the matching entry as #GList-struct if last entry's x offset smaller than @x0, else %NULL
  *
  * Since: 3.0.0
  */
@@ -1125,17 +1125,17 @@ ags_note_smf_delta_time_to_length(glong delta_time,
  *
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_note_to_raw_midi(AgsNote *note,
 		     gdouble bpm, gdouble delay_factor,
 		     guint *buffer_length)
 {
-  unsigned char *raw_midi;
+  guchar *raw_midi;
   guint length;
   guint current_length;
   long delta_time;
   guint delta_time_length;
-  unsigned char status;
+  guchar status;
   int channel;
   int key;
   int velocity;
@@ -1173,11 +1173,11 @@ ags_note_to_raw_midi(AgsNote *note,
   current_length++;
 
   /* velocity */
-  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(&(note->attack)))));
+  velocity = (0x7f & (guchar) (128 * (ags_complex_get(&(note->attack)))));
   current_length++;
 
   /* prepare buffer */
-  raw_midi = (unsigned char *) malloc(current_length * sizeof(unsigned char));
+  raw_midi = (guchar *) malloc(current_length * sizeof(guchar));
   length += current_length;
 
   ags_midi_buffer_util_put_varlength(raw_midi,
@@ -1213,12 +1213,12 @@ ags_note_to_raw_midi(AgsNote *note,
 
       /* pressure */
       //TODO:JK: verify
-      pressure = (0x7f & (unsigned char) (128 * (((ags_complex_get(&(note->decay)) / i) - (i * ags_complex_get(&(note->sustain)))))));
+      pressure = (0x7f & (guchar) (128 * (((ags_complex_get(&(note->decay)) / i) - (i * ags_complex_get(&(note->sustain)))))));
       current_length++;
 
       /* prepare buffer */
-      raw_midi = (unsigned char *) realloc(raw_midi,
-					   current_length * sizeof(unsigned char));
+      raw_midi = (guchar *) realloc(raw_midi,
+				    current_length * sizeof(guchar));
       length += current_length;
 
       ags_midi_buffer_util_put_varlength(raw_midi,
@@ -1249,12 +1249,12 @@ ags_note_to_raw_midi(AgsNote *note,
   current_length++;
 
   /* velocity */
-  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(&(note->attack)))));
+  velocity = (0x7f & (guchar) (128 * (ags_complex_get(&(note->attack)))));
   current_length++;
 
   /* prepare buffer */
-  raw_midi = (unsigned char *) realloc(raw_midi,
-				       current_length * sizeof(unsigned char));
+  raw_midi = (guchar *) realloc(raw_midi,
+				current_length * sizeof(guchar));
   length += current_length;
 
   ags_midi_buffer_util_put_varlength(raw_midi,
@@ -1291,7 +1291,7 @@ ags_note_to_raw_midi(AgsNote *note,
  * 
  * Since: 3.0.0
  */
-unsigned char*
+guchar*
 ags_note_to_raw_midi_extended(AgsNote *note,
 			      gdouble bpm, gdouble delay_factor,
 			      glong nn, glong dd, glong cc, glong bb,
@@ -1379,7 +1379,7 @@ ags_note_to_seq_event_extended(AgsNote *note,
  * Since: 3.0.0
  */
 GList*
-ags_note_from_raw_midi(unsigned char *raw_midi,
+ags_note_from_raw_midi(guchar *raw_midi,
 		       gdouble bpm, gdouble delay_factor,
 		       guint length)
 {
@@ -1411,7 +1411,7 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
  * Since: 3.0.0
  */
 GList*
-ags_note_from_raw_midi_extended(unsigned char *raw_midi,
+ags_note_from_raw_midi_extended(guchar *raw_midi,
 				glong nn, glong dd, glong cc, glong bb,
 				glong tempo,
 				gdouble bpm, gdouble delay_factor,
@@ -1489,11 +1489,11 @@ ags_note_from_seq_event_extended(snd_seq_event_t *event,
 
 /**
  * ags_note_duplicate:
- * @note: an #AgsNote
+ * @note: the #AgsNote
  * 
  * Duplicate a note.
  *
- * Returns: the duplicated #AgsNote.
+ * Returns: (transfer full): the duplicated #AgsNote.
  *
  * Since: 3.0.0
  */
