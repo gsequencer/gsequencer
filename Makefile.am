@@ -229,14 +229,14 @@ Ags_3_0_gir_SCANNERFLAGS = --include=Soup-2.4 --include=GObject-2.0 --include=li
 INTROSPECTION_GIRS += Ags-3.0.gir
 
 AgsAudio-3.0.gir: libags_audio.la $(top_builddir)/Ags-3.0.gir
-AgsAudio_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4 Ipatch-1.1 Ags-3.0
+AgsAudio_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4 Ags-3.0
 AgsAudio_3_0_gir_C_INCLUDES = ags/libags-audio.h
 AgsAudio_3_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
 AgsAudio_3_0_gir_LIBS = libags_audio.la
 AgsAudio_3_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 AgsAudio_3_0_gir_NAMESPACE = AgsAudio
 AgsAudio_3_0_gir_VERSION = 3.0
-AgsAudio_3_0_gir_SCANNERFLAGS = --include=Ipatch-1.1 --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-3.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
+AgsAudio_3_0_gir_SCANNERFLAGS = --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-3.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
 INTROSPECTION_GIRS += AgsAudio-3.0.gir
 
 AgsGui-3.0.gir: libags_gui.la
