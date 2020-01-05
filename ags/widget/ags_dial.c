@@ -243,7 +243,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The radius of the knob.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("radius",
 				 "radius",
@@ -261,7 +261,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The outline strength of the knob.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("outline-strength",
 				 "outline strength",
@@ -279,7 +279,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The font size of the buttons.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("font-size",
 				 "font size",
@@ -297,7 +297,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The buttons width.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("button-width",
 				"buttons width",
@@ -315,7 +315,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The buttons height.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("button-height",
 				"buttons height",
@@ -334,7 +334,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The button's margin left.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("margin-left",
 				"button's margin left",
@@ -352,7 +352,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The button's margin right.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("margin-right",
 				"button's margin right",
@@ -370,7 +370,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The adjustment storing current value and boundaries.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("adjustment",
 				   "assigned adjustment",
@@ -386,7 +386,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The precision of the scale.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-precision",
 				 "scale precision",
@@ -423,11 +423,10 @@ ags_dial_class_init(AgsDialClass *dial)
   /**
    * AgsDial::value-changed:
    * @dial: the #AgsDial
-   * @port_data: the port's data
    *
    * The ::value-changed signal notifies adjustment value changed.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   dial_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -1626,7 +1625,7 @@ ags_dial_motion_notify(GtkWidget *widget,
  *
  * draws the widget
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dial_draw(AgsDial *dial, cairo_t *cr)
@@ -2043,7 +2042,7 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
  *
  * draws the widget
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dial_value_changed(AgsDial *dial)
@@ -2064,13 +2063,13 @@ ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 }
 
 /**
- * ags_dial_value_changed:
+ * ags_dial_set_value:
  * @dial: an #AgsDial
  * @value: the value to set
  * 
  * Set value
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_dial_set_value(AgsDial *dial,
@@ -2092,7 +2091,7 @@ ags_dial_set_value(AgsDial *dial,
  *
  * Returns: a new #AgsDial
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDial*
 ags_dial_new()

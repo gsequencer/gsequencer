@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1961,7 +1961,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Find acceleration by offset and value region.
  *
- * Returns: (element-type AgsAudio.Acceleration) (transfer container): the matching accelerations as #GList-struct
+ * Returns: (element-type AgsAudio.Acceleration) (transfer full): the matching accelerations as #GList-struct
  *
  * Since: 3.0.0
  */
@@ -3148,9 +3148,9 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
  *
  * Find port specifier with channel type and line.
  *
- * Returns: Next matching #GList-struct
+ * Returns: (element-type AgsAudio.Automation) (transfer none): Next matching #GList-struct
  *
- * Since: (element-type AgsAudio.Automation) (transfer none): 3.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_automation_find_specifier_with_type_and_line(GList *automation,

@@ -90,7 +90,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
  *
  * Retrieve the tree mutex.
  *
- * Returns: the mutex
+ * Returns: (transfer none): the mutex
  *
  * Since: 3.0.0
  */

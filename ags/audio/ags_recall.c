@@ -5995,7 +5995,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 }
 
 /**
- * ags_recall_find_provider:
+ * ags_recall_template_find_provider:
  * @recall: the #GList-struct containing #AgsRecall
  * @provider: the #GObject as provider
  * 

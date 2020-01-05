@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -105,7 +105,7 @@ ags_mute_channel_run_finalize(GObject *gobject)
 }
 
 /**
- * ags_mute_channel_new:
+ * ags_mute_channel_run_new:
  * @source: the #AgsChannel
  *
  * Create a new instance of #AgsMuteChannelRun

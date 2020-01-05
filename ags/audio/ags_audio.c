@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -10873,7 +10873,7 @@ ags_audio_real_start(AgsAudio *audio,
  *
  * Is emitted as audio is started.
  *
- * Returns: (element-type AgsAudio.RecallID) (transfer container): the #GList-struct containing #AgsRecallID
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
  * 
  * Since: 3.0.0
  */
@@ -11254,7 +11254,7 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
  *
  * Check scope's recall id.
  * 
- * Returns: (element-type AgsAudio.RecallID) (transfer container): the scope's recall id of @audio
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the scope's recall id of @audio
  * 
  * Since: 3.0.0
  */
@@ -11283,7 +11283,7 @@ ags_audio_check_scope(AgsAudio *audio, gint sound_scope)
  *
  * Retrieve all ports of #AgsAudio.
  *
- * Returns: (element-type AgsAudio.Port) (transfer container): a new #GList containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): a new #GList containing #AgsPort
  *
  * Since: 3.0.0
  */
@@ -11412,7 +11412,7 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
  *
  * Retrieve specified port of #AgsAudio
  *
- * Returns: (element-type AgsAudio.Port) (transfer container): a #GList-struct of #AgsPort if found, otherwise %NULL
+ * Returns: (element-type AgsAudio.Port) (transfer full): a #GList-struct of #AgsPort if found, otherwise %NULL
  *
  * Since: 3.0.0
  */

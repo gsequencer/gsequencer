@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3353,7 +3353,7 @@ ags_audio_signal_get_template(GList *audio_signal)
  *
  * Retrieve the realtime template audio signal.
  *
- * Returns: (element-type AgsAudio.AudioSignal) (transfer container): the rt-templates as #GList-struct containing #AgsAudioSignal
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer full): the rt-templates as #GList-struct containing #AgsAudioSignal
  *
  * Since: 3.0.0
  */

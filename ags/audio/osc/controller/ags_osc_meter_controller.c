@@ -961,7 +961,7 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
 }
 
 /**
- * ags_osc_meter_controller_monitor_remove_monitor:
+ * ags_osc_meter_controller_monitor_contains_monitor:
  * @osc_meter_controller: the #AgsOscMeterController
  * @osc_connection: the #AgsOscConnection
  * @port: the #AgsPort

@@ -145,7 +145,7 @@ ags_turtle_manager_finalize(GObject *gobject)
  * 
  * Find @filename in @turtle_manager.
  *
- * Returns: the matching #AgsTurtle, or %NULL
+ * Returns: (transfer full): the matching #AgsTurtle, or %NULL
  * 
  * Since: 3.0.0
  */
@@ -153,31 +153,64 @@ GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 			gchar *filename)
 {
-  GList *turtle;
+  GObject *retval;
+  
+  GList *start_turtle, *turtle;
+
+  gboolean success;
+  
+  GRecMutex *turtle_manager_mutex;
+  GRecMutex *turtle_mutex;
 
   if(!AGS_IS_TURTLE_MANAGER(turtle_manager) ||
      filename == NULL){
     return(NULL);
   }
 
-  turtle = turtle_manager->turtle;
+  turtle_manager_mutex = AGS_TURTLE_MANAGER_GET_OBJ_MUTEX(turtle_manager);
 
+  g_rec_mutex_lock(turtle_manager_mutex);
+  
+  turtle =
+    start_turtle = g_list_copy_deep(turtle_manager->turtle,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+
+  g_rec_mutex_unlock(turtle_manager_mutex);
+
+  retval = NULL;
+  
   while(turtle != NULL){
-    if(!g_ascii_strcasecmp(AGS_TURTLE(turtle->data)->filename,
-			   filename)){
-      return(turtle->data);
+    turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle->data);
+
+    g_rec_mutex_lock(turtle_mutex);
+  
+    success = (!g_ascii_strcasecmp(AGS_TURTLE(turtle->data)->filename,
+				   filename)) ? TRUE: FALSE;
+
+    g_rec_mutex_unlock(turtle_mutex);    
+    
+    if(success){
+      retval = turtle->data;
+
+      g_object_ref(retval);
+      
+      break;
     }
     
     turtle = turtle->next;
   }
 
-  return(NULL);
+  g_list_free_full(start_turtle,
+		   g_object_unref);
+  
+  return(retval);
 }
 
 /**
  * ags_turtle_manager_add:
  * @turtle_manager: the #AgsTurtleManager
- * @turtle: the #AgsTurtle
+ * @turtle: (transfer full): the #AgsTurtle
  * 
  * Adds @turtle to @turtle_manager.
  *
@@ -205,7 +238,7 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
  *
  * Get instance of #AgsTurtleManager.
  *
- * Returns: the #AgsTurtleManager
+ * Returns: (transfer none): the #AgsTurtleManager
  *
  * Since: 3.0.0
  */

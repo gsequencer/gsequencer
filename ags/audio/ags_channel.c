@@ -3491,7 +3491,7 @@ ags_channel_prev(AgsChannel *channel)
 }
 
 /**
- * ags_channel_next:
+ * ags_channel_next_pad:
  * @channel: the #AgsChannel
  * 
  * Iterate @channel.
@@ -8604,13 +8604,14 @@ ags_channel_real_add_effect(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_add_effect:
  * @channel: the #AgsChannel
  * @filename: the filename
  * @effect: the effect
  * 
  * Add specified effect to @channel.
  * 
- * Returns: (element-type AgsAudio.Recall) (transfer container): the #GList-struct containing #AgsRecall
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
  * 
  * Since: 3.0.0
  */
@@ -10374,7 +10375,7 @@ ags_channel_real_start(AgsChannel *channel,
  * 
  * Start @channel's @sound_scope to do playback.
  * 
- * Returns: (element-type AgsAudio.RecallID) (transfer container): the #GList-struct containing #AgsRecallID
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
  * 
  * Since: 3.0.0
  */

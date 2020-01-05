@@ -219,7 +219,7 @@ ags_wave_class_init(AgsWaveClass *wave)
 				  param_spec);
 
   /**
-   * AgsPattern:timestamp:
+   * AgsWave:timestamp:
    *
    * The pattern's timestamp.
    * 

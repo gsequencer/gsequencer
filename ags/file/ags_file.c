@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -701,7 +701,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
  *
  * Find a reference by its XML node.
  * 
- * Returns: the matching #GObject
+ * Returns: (transfer full): the matching #GObject
  *
  * Since: 3.0.0
  */
@@ -730,7 +730,9 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
   g_rec_mutex_lock(file_mutex);
 
   list =
-    start_list = g_list_copy(file->id_refs);
+    start_list = g_list_copy_deep(file->id_refs,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   g_rec_mutex_unlock(file_mutex);
 
@@ -741,6 +743,7 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
 
     if(current_node == node){
       file_id_ref = AGS_FILE_ID_REF(list->data);
+      g_object_ref(file_id_ref);
 
       break;
     }
@@ -748,7 +751,8 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 
   return((GObject *) file_id_ref);
 }
@@ -760,7 +764,7 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
  *
  * Lookup a reference by @xpath.
  * 
- * Returns: the matching #GObject
+ * Returns: (transfer full): the matching #GObject
  *
  * Since: 3.0.0
  */
@@ -823,7 +827,7 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
  *
  * Find a reference matching @ref.
  * 
- * Returns: the matching #GObject
+ * Returns: (transfer full): the matching #GObject
  *
  * Since: 3.0.0
  */
@@ -851,7 +855,9 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
   g_rec_mutex_lock(file_mutex);
 
   list =
-    start_list = g_list_copy(file->id_refs);
+    start_list = g_list_copy_deep(file->id_refs,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   g_rec_mutex_unlock(file_mutex);
 
@@ -862,14 +868,16 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 
     if(current_ref == ref){
       file_id_ref = AGS_FILE_ID_REF(list->data);
-
+      g_object_ref(file_id_ref);
+      
       break;
     }
 
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
 
   return((GObject *) file_id_ref);
 }

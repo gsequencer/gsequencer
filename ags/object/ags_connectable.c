@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -172,7 +172,7 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
  *
  * List resources as an XML element and return it.
  *
- * Returns: the #xmlNode-struct
+ * Returns: (transfer none): the #xmlNode-struct
  *
  * Since: 3.0.0
  */
@@ -194,7 +194,7 @@ ags_connectable_list_resource(AgsConnectable *connectable)
  *
  * Compose an XML element and return it.
  *
- * Returns: the #xmlNode-struct
+ * Returns: (transfer none): the #xmlNode-struct
  *
  * Since: 3.0.0
  */
@@ -213,7 +213,7 @@ ags_connectable_xml_compose(AgsConnectable *connectable)
 /**
  * ags_connectable_xml_parse:
  * @connectable: the #AgsConnectable
- * @node: the #xmlNode-struct
+ * @node: (transfer none): the #xmlNode-struct
  *
  * Parse @node as XML element and apply it.
  *

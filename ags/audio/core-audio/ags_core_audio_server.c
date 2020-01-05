@@ -1004,6 +1004,7 @@ ags_core_audio_server_get_soundcard(AgsSoundServer *sound_server,
     if(AGS_IS_CORE_AUDIO_DEVOUT(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;
@@ -1077,6 +1078,7 @@ ags_core_audio_server_get_sequencer(AgsSoundServer *sound_server,
     if(AGS_IS_CORE_AUDIO_MIDIIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;

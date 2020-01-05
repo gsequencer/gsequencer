@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -435,7 +435,7 @@ ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint 
 /**
  * ags_returnable_thread_connect_safe_run:
  * @returnable_thread: the thread to connect
- * @callback: the callback
+ * @callback: (scope call): the callback
  *
  * Connects @callback to @thread.
  *

@@ -1013,6 +1013,7 @@ ags_pulse_server_get_soundcard(AgsSoundServer *sound_server,
        AGS_IS_PULSE_DEVIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;
@@ -1086,6 +1087,7 @@ ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
     if(AGS_IS_PULSE_MIDIIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1053,7 +1053,7 @@ ags_application_context_quit(AgsApplicationContext *application_context)
  * 
  * Get your application context instance.
  *
- * Returns: the #AgsApplicationContext instance
+ * Returns: (transfer none): the #AgsApplicationContext instance
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -295,9 +295,9 @@ ags_lv2ui_manager_finalize(GObject *gobject)
  * 
  * Get lv2ui manager default plugin path.
  *
- * Returns: the plugin default search path as a string vector
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer none): the plugin default search path as a string vector
  * 
- * Since: (element-type utf8) (array zero-terminated=1) (transfer none): 3.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_lv2ui_manager_get_default_path()

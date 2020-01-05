@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -197,7 +197,7 @@ ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_delivery,
  * 
  * Find sender namespace of #AgsMessageQueue in @message_delivery.
  * 
- * Returns: (element-type Ags.MessageQueue) (transfer container): the matching #GList-struct containing #AgsMessageQueue or %NULL
+ * Returns: (element-type Ags.MessageQueue) (transfer full): the matching #GList-struct containing #AgsMessageQueue or %NULL
  * 
  * Since: 3.0.0
  */
@@ -259,7 +259,7 @@ ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
  * 
  * Find recipient namespace of #AgsMessageQueue in @message_delivery.
  * 
- * Returns: (element-type Ags.MessageQueue) (transfer container): the matching #GList-struct containing #AgsMessageQueue or %NULL
+ * Returns: (element-type Ags.MessageQueue) (transfer full): the matching #GList-struct containing #AgsMessageQueue or %NULL
  * 
  * Since: 3.0.0
  */
@@ -400,7 +400,7 @@ ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_deliver
  * Find @sender for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
- * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer full): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */
@@ -465,7 +465,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
  * Find @recipient for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
- * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer full): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */
@@ -530,7 +530,7 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
  * Query @xpath for @recipient_namespace matching #AgsMessageQueue. If @recipient_namespace equals %NULL match
  * all available message queues.
  * 
- * Returns: (element-type Ags.MessageEnvelope) (transfer container): all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: (element-type Ags.MessageEnvelope) (transfer full): all matching #AgsMessageEnvelope as #GList-struct
  * 
  * Since: 3.0.0
  */
@@ -591,7 +591,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
  *
  * Get the #AgsMessageDelivery instance.
  *
- * Returns: the #AgsMessageDelivery
+ * Returns: (transfer none): the #AgsMessageDelivery
  *
  * Since: 3.0.0
  */ 

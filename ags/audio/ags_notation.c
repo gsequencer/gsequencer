@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1266,7 +1266,7 @@ ags_notation_find_point(AgsNotation *notation,
  *
  * Find note by offset and tone region.
  *
- * Returns: the matching notes as #GList-struct
+ * Returns: (element-type AgsAudio.Note) (transfer container): the matching notes as #GList-struct
  *
  * Since: 3.0.0
  */
@@ -1355,14 +1355,14 @@ ags_notation_find_region(AgsNotation *notation,
 }
 
 /**
- * ags_notation_find_region:
+ * ags_notation_find_offset:
  * @notation: the #AgsNotation
  * @x: offset
  * @use_selection_list: if %TRUE selection is searched
  *
  * Find all notes by offset @x.
  *
- * Returns: the #GList-struct containing matching #AgsNote
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing matching #AgsNote
  *
  * Since: 3.0.0
  */

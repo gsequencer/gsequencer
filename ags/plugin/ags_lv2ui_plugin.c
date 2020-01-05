@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -166,7 +166,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
 				  param_spec);
   
   /**
-   * AgsLv2Plugin:manifest:
+   * AgsLv2uiPlugin:manifest:
    *
    * The assigned manifest.
    * 

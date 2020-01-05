@@ -88,7 +88,7 @@ ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
  *
  * Get port.
  *
- * Returns: the #GObject
+ * Returns: (transfer full): the #GObject
  *
  * Since: 3.0.0
  */
@@ -100,6 +100,7 @@ ags_portlet_get_port(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->get_port, NULL);
+  
   return(portlet_interface->get_port(portlet));
 }
 
@@ -109,7 +110,7 @@ ags_portlet_get_port(AgsPortlet *portlet)
  *
  * Retrieve thread-safe properties.
  *
- * Returns: a #GList containing properties
+ * Returns: (element-type utf8) (transfer full): a #GList containing properties
  *
  * Since: 3.0.0
  */
@@ -121,6 +122,7 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->list_safe_properties, NULL);
+  
   return(portlet_interface->list_safe_properties(portlet));
 }
 

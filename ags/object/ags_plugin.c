@@ -246,7 +246,7 @@ ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
  *
  * Retrieve the ports of the plugin.
  *
- * Returns: the plugins ports
+ * Returns: (element-type GObject) (transfer full): the plugins ports
  *
  * Since: 3.0.0
  */
@@ -267,7 +267,7 @@ ags_plugin_get_ports(AgsPlugin *plugin)
 /**
  * ags_plugin_set_ports:
  * @plugin: an @AgsPlugin
- * @ports: the build id of plugin
+ * @ports: (element-type GObject) (transfer none): the build id of plugin
  *
  * Set the build id of the plugin.
  *
@@ -316,7 +316,7 @@ ags_plugin_read(GObject *file,
  *
  * Write to file.
  *
- * Returns: the new node you created
+ * Returns: (transfer none): the new node you created
  *
  * Since: 3.0.0
  */

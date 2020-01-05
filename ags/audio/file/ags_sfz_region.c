@@ -150,7 +150,7 @@ ags_sfz_region_class_init(AgsSFZRegionClass *sfz_region)
 				  param_spec);
 
   /**
-   * AgsSFZSample:group:
+   * AgsSFZRegion:group:
    *
    * The group assigned with.
    * 
@@ -166,7 +166,7 @@ ags_sfz_region_class_init(AgsSFZRegionClass *sfz_region)
 				  param_spec);
 
   /**
-   * AgsSFZSample:sample:
+   * AgsSFZRegion:sample:
    *
    * The sample assigned with.
    * 

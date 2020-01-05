@@ -379,7 +379,7 @@ ags_message_envelope_finalize(GObject *gobject)
  * 
  * Get sender.
  * 
- * Returns: the sender
+ * Returns: (transfer full): the sender
  * 
  * Since: 3.0.0
  */
@@ -400,6 +400,10 @@ ags_message_envelope_get_sender(AgsMessageEnvelope *message_envelope)
   g_rec_mutex_lock(message_envelope_mutex);
   
   sender = message_envelope->sender;
+
+  if(sender != NULL){
+    g_object_ref(sender);
+  }
   
   g_rec_mutex_unlock(message_envelope_mutex);
   
@@ -412,7 +416,7 @@ ags_message_envelope_get_sender(AgsMessageEnvelope *message_envelope)
  * 
  * Get recipient.
  * 
- * Returns: the recipient
+ * Returns: (transfer full): the recipient
  * 
  * Since: 3.0.0
  */
@@ -433,6 +437,10 @@ ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
   g_rec_mutex_lock(message_envelope_mutex);
   
   recipient = message_envelope->recipient;
+
+  if(recipient != NULL){
+    g_object_ref(recipien);
+  }
   
   g_rec_mutex_unlock(message_envelope_mutex);
   
@@ -445,7 +453,7 @@ ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
  * 
  * Get xmlDoc.
  * 
- * Returns: the doc
+ * Returns: (transfer none): the doc
  * 
  * Since: 3.0.0
  */

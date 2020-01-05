@@ -155,7 +155,7 @@ ags_sound_server_get_ports(AgsSoundServer *sound_server,
  * ags_sound_server_set_soundcard:
  * @sound_server: The #AgsSoundServer
  * @client_uuid: the location to fetch from
- * @soundcard: the soundcard to set
+ * @soundcard: (element-type GObject) (transfer full): the soundcard to set
  *
  * Sets the soundcard at @client_uuid.
  *
@@ -184,7 +184,7 @@ ags_sound_server_set_soundcard(AgsSoundServer *sound_server,
  *
  * Gets the soundcard of @sound_server associated with @client_uuid.
  *
- * Returns: the soundcard as #GList-struct
+ * Returns: (element-type GObject) (transfer full): the soundcard as #GList-struct
  *
  * Since: 3.0.0
  */
@@ -206,7 +206,7 @@ ags_sound_server_get_soundcard(AgsSoundServer *sound_server,
  * ags_sound_server_set_sequencer:
  * @sound_server: The #AgsSoundServer
  * @client_uuid: the location to fetch from
- * @sequencer: the sequencer to set
+ * @sequencer: (element-type GObject) (transfer full): the sequencer to set
  *
  * Sets the sequencer at @client_uuid.
  *
@@ -235,7 +235,7 @@ ags_sound_server_set_sequencer(AgsSoundServer *sound_server,
  *
  * Gets the sequencer of @sound_server associated with @client_uuid.
  *
- * Returns: the sequencer as #GList-struct
+ * Returns: (element-type GObject) (transfer full): the sequencer as #GList-struct
  *
  * Since: 3.0.0
  */
@@ -260,7 +260,7 @@ ags_sound_server_get_sequencer(AgsSoundServer *sound_server,
  *
  * Fetches @soundcard of @sound_server.
  *
- * Returns: a new #AgsSoundcard
+ * Returns: (transfer full): a new #AgsSoundcard
  *
  * Since: 3.0.0
  */
@@ -308,7 +308,7 @@ ags_sound_server_unregister_soundcard(AgsSoundServer *sound_server,
  *
  * Fetches @sequencer of @sound_server.
  *
- * Returns: a new #AgsSequencer
+ * Returns: (transfer full): a new #AgsSequencer
  *
  * Since: 3.0.0
  */

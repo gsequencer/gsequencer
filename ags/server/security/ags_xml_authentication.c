@@ -1100,7 +1100,7 @@ ags_xml_authentication_open_filename(AgsXmlAuthentication *xml_authentication,
  * 
  * Find ags-srv-auth xmlNode containing @user_uuid.
  * 
- * Returns: the matching xmlNode or %NULL
+ * Returns: (transfer none): the matching xmlNode or %NULL
  * 
  * Since: 3.0.0
  */

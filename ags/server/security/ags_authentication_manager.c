@@ -213,7 +213,7 @@ ags_login_info_unref(AgsLoginInfo *login_info)
  * 
  * Get authentication.
  * 
- * Returns: (element-type G.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsAuthentication
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #GObject implementing #AgsAuthentication
  * 
  * Since: 3.0.0
  */
@@ -795,7 +795,7 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
  *
  * Get instance.
  *
- * Returns: the #AgsAuthenticationManager
+ * Returns: (transfer none): the #AgsAuthenticationManager
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,12 +30,13 @@
  */
 
 /**
- * ags_container_remove_all:
+ * ags_container_add_all:
  * @container: the #GtkContainer
+ * @list: (element-type Gtk.Widget): the #GList-struct containing #GtkWidget
  * 
  * Adds all #GtkWidget pointed by #GList to @container. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_container_add_all(GtkContainer *container,

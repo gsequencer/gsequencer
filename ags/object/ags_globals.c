@@ -28,7 +28,7 @@ static GMutex ags_globals_mutex;
  * 
  * Get globals hash table.
  * 
- * Returns: (element-type utf8 G.Value) (transfer none): the #GHashTable containig globals
+ * Returns: (element-type utf8 GObject.Value) (transfer none): the #GHashTable containig globals
  * 
  * Since: 3.0.0
  */

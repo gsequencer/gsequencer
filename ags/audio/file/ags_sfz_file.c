@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1347,10 +1347,10 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 }
 
 /**
- * ags_sfz_file_check_suffix:
+ * ags_sfz_file_get_range:
  * @sfz_file: the #AgsSFZFile
- * @hikey: the return location of key high
- * @lokey: the return location of key low
+ * @hikey: (out): the return location of key high
+ * @lokey: (out): the return location of key low
  * 
  * Get range of @sfz_file, set return location @hikey and @lokey.
  * 

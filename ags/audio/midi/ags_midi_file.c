@@ -1124,7 +1124,7 @@ ags_midi_file_write_header(AgsMidiFile *midi_file,
 }
 
 /**
- * ags_midi_file_read_header:
+ * ags_midi_file_read_track_data:
  * @midi_file: the #AgsMidiFile
  * @buffer_length: pointer to return buffer length or %NULL
  * @error: the #GError pointer return location

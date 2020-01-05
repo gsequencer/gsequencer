@@ -965,7 +965,7 @@ ags_config_clear(AgsConfig *config)
  *
  * Get config instance.
  *
- * Returns: the config instance
+ * Returns: (transfer none): the config instance
  *
  * Since: 3.0.0
  */

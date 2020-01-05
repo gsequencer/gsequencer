@@ -605,7 +605,7 @@ ags_priority_get_value(AgsPriority *priority, gchar *group, gchar *key)
  *
  * Get priority instance.
  *
- * Returns: the priority instance
+ * Returns: (transfer none): the priority instance
  *
  * Since: 3.0.0
  */

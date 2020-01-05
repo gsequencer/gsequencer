@@ -57,7 +57,7 @@ struct _AgsFileLookupClass
 {
   GObjectClass gobject;
 
-  void (*resolve)(AgsFileLookup *lookup);
+  void (*resolve)(AgsFileLookup *file_lookup);
 };
 
 GType ags_file_lookup_get_type(void);

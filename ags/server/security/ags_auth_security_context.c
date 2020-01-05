@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_auth_security_context_finalize(GObject *gobject)
  *
  * Get instance.
  *
- * Returns: the #AgsAuthSecurityContext
+ * Returns: (transfer none): the #AgsAuthSecurityContext
  *
  * Since: 3.0.0
  */

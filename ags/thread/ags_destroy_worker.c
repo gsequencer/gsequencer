@@ -250,7 +250,7 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
  * 
  * Get your destroy worker instance.
  *
- * Returns: the #AgsDestroyWorker instance
+ * Returns: (transfer none): the #AgsDestroyWorker instance
  *
  * Since: 3.0.0
  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -136,7 +136,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 
   /* properties */
   /**
-   * AgsAudioSignal:samplerate:
+   * AgsPeakChannel:samplerate:
    *
    * The samplerate to be used.
    * 
@@ -154,7 +154,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:buffer-size:
+   * AgsPeakChannel:buffer-size:
    *
    * The buffer size to be used.
    * 
@@ -172,7 +172,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:format:
+   * AgsPeakChannel:format:
    *
    * The format to be used.
    * 

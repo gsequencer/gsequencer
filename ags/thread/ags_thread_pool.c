@@ -477,7 +477,7 @@ ags_thread_pool_creation_thread(void *ptr)
  * Pull a previously instantiated #AgsReturnableThread. Note this
  * function may block until a new thread is available.
  *
- * Returns: a new #AgsThread
+ * Returns: (transfer full): a new #AgsThread
  *
  * Since: 3.0.0
  */    

@@ -226,7 +226,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
 				  param_spec);
 
   /**
-   * AgsAudio-UnitServer:input-audio-unit-client:
+   * AgsAudioUnitServer:input-audio-unit-client:
    *
    * The input audio unit client.
    * 
@@ -1069,6 +1069,7 @@ ags_audio_unit_server_get_soundcard(AgsSoundServer *sound_server,
     if(AGS_IS_AUDIO_UNIT_DEVOUT(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;
@@ -1139,6 +1140,7 @@ ags_audio_unit_server_get_sequencer(AgsSoundServer *sound_server,
     if(AGS_IS_AUDIO_UNIT_MIDIIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;

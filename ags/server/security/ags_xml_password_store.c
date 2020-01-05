@@ -700,7 +700,7 @@ ags_xml_password_store_open_filename(AgsXmlPasswordStore *xml_password_store,
  * 
  * Find ags-srv-user xmlNode containing @login.
  * 
- * Returns: the matching xmlNode or %NULL
+ * Returns: (transfer none): the matching xmlNode or %NULL
  * 
  * Since: 3.0.0
  */

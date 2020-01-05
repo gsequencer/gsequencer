@@ -1112,7 +1112,7 @@ ags_note_smf_delta_time_to_length(glong delta_time,
 }
 
 /**
- * ags_note_to_seq_event:
+ * ags_note_to_raw_midi:
  * @note: the #AgsNote
  * @bpm: the bpm to use
  * @delay_factor: the segmentation delay factor

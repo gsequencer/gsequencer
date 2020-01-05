@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,7 +65,7 @@ ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginterface)
  *
  * Get main loop of application context.
  *
- * Returns: the #AgsThread implementing #AgsMainLoop
+ * Returns: (transfer full): the #AgsThread implementing #AgsMainLoop
  * 
  * Since: 3.0.0
  */
@@ -110,7 +110,7 @@ ags_concurrency_provider_set_main_loop(AgsConcurrencyProvider *concurrency_provi
  *
  * Get task launcher of application context.
  *
- * Returns: the #AgsTaskLauncher
+ * Returns: (transfer full): the #AgsTaskLauncher
  * 
  * Since: 3.0.0
  */
@@ -155,7 +155,7 @@ ags_concurrency_provider_set_task_launcher(AgsConcurrencyProvider *concurrency_p
  *
  * Get thread pool of application context.
  *
- * Returns: the #AgsThreadPool
+ * Returns: (transfer full): the #AgsThreadPool
  * 
  * Since: 3.0.0
  */
@@ -200,7 +200,7 @@ ags_concurrency_provider_set_thread_pool(AgsConcurrencyProvider *concurrency_pro
  *
  * Get workers of application context.
  *
- * Returns: the #GList-struct containing workers
+ * Returns: (element-type Ags.WorkerThread) (transfer full): the #GList-struct containing workers
  * 
  * Since: 3.0.0
  */
@@ -219,7 +219,7 @@ ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider
 /**
  * ags_concurrency_provider_set_worker:
  * @concurrency_provider: the #AgsConcurrencyProvider
- * @worker: the #GList-struct containing workers
+ * @worker: (element-type Ags.WorkerThread): the #GList-struct containing workers
  * 
  * Set workers of application context.
  * 

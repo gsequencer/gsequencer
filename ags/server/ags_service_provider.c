@@ -139,7 +139,7 @@ ags_service_provider_get_registry(AgsServiceProvider *service_provider)
 /**
  * ags_service_provider_set_server:
  * @service_provider: the #AgsServiceProvider
- * @server: the #GList-struct containing #AgsServer
+ * @server: (element-type Ags.Server): the #GList-struct containing #AgsServer
  * 
  * Set server.
  *
@@ -165,7 +165,7 @@ ags_service_provider_set_server(AgsServiceProvider *service_provider,
  * 
  * Get server.
  *
- * Returns: the #GList-struct containing #AgsServer
+ * Returns: (element-type Ags.Server) (transfer full): the #GList-struct containing #AgsServer
  *
  * Since: 3.0.0
  */

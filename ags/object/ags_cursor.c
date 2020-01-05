@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -245,7 +245,7 @@ ags_cursor_get_offset(AgsCursor *cursor)
  * 
  * Get prev.
  * 
- * Returns: the #GList-struct pointing to previous
+ * Returns: (element-type GObject) (transfer full): the #GList-struct pointing to previous
  * 
  * Since: 3.0.0
  */
@@ -267,7 +267,7 @@ ags_cursor_get_prev(AgsCursor *cursor)
  * 
  * Get next.
  * 
- * Returns: the #GList-struct pointing to next
+ * Returns: (element-type GObject) (transfer full): the #GList-struct pointing to next
  * 
  * Since: 3.0.0
  */
@@ -289,7 +289,7 @@ ags_cursor_get_next(AgsCursor *cursor)
  * 
  * Get current as copy.
  * 
- * Returns: the #GList-struct of current as copy
+ * Returns: (element-type GObject) (transfer full): the #GList-struct of current as copy
  * 
  * Since: 3.0.0
  */
@@ -311,7 +311,7 @@ ags_cursor_get_current_copy(AgsCursor *cursor)
  * 
  * Get current.
  * 
- * Returns: the #GList-struct pointing to current
+ * Returns: (element-type GObject) (transfer none): the #GList-struct pointing to current
  * 
  * Since: 3.0.0
  */

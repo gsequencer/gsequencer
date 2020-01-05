@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -639,7 +639,7 @@ ags_channel_thread_set_status_flags(AgsChannelThread *channel_thread, guint stat
 }
 
 /**
- * ags_channel_thread_test_status_flags:
+ * ags_channel_thread_unset_status_flags:
  * @channel_thread: the #AgsChannelThread
  * @status_flags: status flags
  * 

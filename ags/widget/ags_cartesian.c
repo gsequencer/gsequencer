@@ -174,7 +174,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The horizontal x margin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-margin",
 				   "x margin",
@@ -192,7 +192,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The horizontal y margin. 
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-margin",
 				   "y margin",
@@ -210,7 +210,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The center of lines
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("center",
 				   "center of lines",
@@ -228,7 +228,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The line width.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("line-width",
 				   "line width",
@@ -246,7 +246,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The points radius.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("point-radius",
 				   "point radius",
@@ -264,7 +264,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The font's size to draw labels and units.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("font-size",
 				   "font size",
@@ -282,7 +282,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The width of a x step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-step-width",
 				   "x step width",
@@ -300,7 +300,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The height of a y step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-step-height",
 				   "y step height",
@@ -318,7 +318,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The width of a x scale step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-scale-step-width",
 				   "x scale step width",
@@ -336,7 +336,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The height of a y scale step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-scale-step-height",
 				   "y scale step height",
@@ -354,7 +354,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-step",
 				   "x step",
@@ -372,7 +372,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-step",
 				   "y step",
@@ -390,7 +390,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-start",
 				   "x start",
@@ -408,7 +408,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-end",
 				   "x end",
@@ -426,7 +426,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-start",
 				   "y start",
@@ -444,7 +444,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-end",
 				   "y end",
@@ -462,7 +462,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit's x0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-unit-x0",
 				   "x unit x0",
@@ -480,7 +480,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit's y0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-unit-y0",
 				   "x unit y0",
@@ -498,7 +498,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit label.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("x-unit",
 				   "x unit",
@@ -514,7 +514,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit's x0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-unit-x0",
 				   "y unit x0",
@@ -532,7 +532,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit's y0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-unit-y0",
 				   "y unit y0",
@@ -550,7 +550,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit label.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("y-unit",
 				   "y unit",
@@ -566,7 +566,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x label start position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-label-start",
 				   "x label start",
@@ -584,7 +584,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x label step width.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-label-step-width",
 				   "x label step width",
@@ -602,7 +602,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x labels as a string array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("x-label",
 				    "x label",
@@ -617,7 +617,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y label start position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-label-start",
 				   "y label start",
@@ -635,7 +635,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y label step height.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-label-step-height",
 				   "y label step height",
@@ -653,7 +653,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y labels as a string array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("y-label",
 				    "y label",
@@ -2109,7 +2109,7 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
  *
  * Returns: the new #AgsCartesian
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCartesian*
 ags_cartesian_new()

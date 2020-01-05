@@ -1280,7 +1280,7 @@ ags_thread_get_max_precision(AgsThread *thread)
  *
  * Get parent thread.
  * 
- * Returns: the parent #AgsThread
+ * Returns: (transfer full): the parent #AgsThread
  * 
  * Since: 3.0.0
  */
@@ -1316,7 +1316,7 @@ ags_thread_parent(AgsThread *thread)
  *
  * Get next thread.
  * 
- * Returns: the next #AgsThread
+ * Returns: (transfer full): the next #AgsThread
  * 
  * Since: 3.0.0
  */
@@ -1352,7 +1352,7 @@ ags_thread_next(AgsThread *thread)
  *
  * Get prev thread.
  * 
- * Returns: the prev #AgsThread
+ * Returns: (transfer full): the prev #AgsThread
  * 
  * Since: 3.0.0
  */
@@ -1388,7 +1388,7 @@ ags_thread_prev(AgsThread *thread)
  *
  * Get children thread.
  * 
- * Returns: the children #AgsThread
+ * Returns: (transfer full): the children #AgsThread
  * 
  * Since: 3.0.0
  */
@@ -1424,7 +1424,7 @@ ags_thread_children(AgsThread *thread)
  *
  * Retrieve toplevel thread.
  *
- * Returns: the toplevevel #AgsThread
+ * Returns: (transfer full): the toplevevel #AgsThread
  *
  * Since: 3.0.0
  */
@@ -1456,7 +1456,7 @@ ags_thread_get_toplevel(AgsThread *thread)
  *
  * Retrieve first sibling.
  *
- * Returns: the very first #AgsThread within same tree level
+ * Returns: (transfer full): the very first #AgsThread within same tree level
  *
  * Since: 3.0.0
  */
@@ -1488,7 +1488,7 @@ ags_thread_first(AgsThread *thread)
  * 
  * Retrieve last sibling.
  *
- * Returns: the very last @AgsThread within same tree level
+ * Returns: (transfer full): the very last @AgsThread within same tree level
  *
  * Since: 3.0.0
  */
@@ -2946,6 +2946,8 @@ ags_thread_stop(AgsThread *thread)
  * Find @gtype as descendant of @thread. If its a descendant thread,
  * the ref-count is increased.
  * 
+ * Returns: (transfer full): the matching #AgsThread
+ * 
  * Since: 3.0.0
  */
 AgsThread*
@@ -2981,10 +2983,24 @@ ags_thread_find_type(AgsThread *thread, GType gtype)
   return(NULL);
 }
 
+/**
+ * ags_thread_self:
+ * 
+ * Thread self.
+ * 
+ * Returns: (transfer full): the running #AgsThread
+ * 
+ * Since: 3.0.0
+ */
 AgsThread*
 ags_thread_self(void)
 {
-  return((AgsThread *) g_private_get(&ags_thread_key));
+  AgsThread *self;
+
+  self = (AgsThread *) g_private_get(&ags_thread_key);
+  g_object_ref(self);
+  
+  return(self);
 }
 
 /**

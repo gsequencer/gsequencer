@@ -31,12 +31,12 @@
 
 /**
  * ags_list_util_find_type:
- * @list: (transfer none) (element-type G.Object): the #GList-struct
+ * @list: (transfer none) (element-type GObject): the #GList-struct
  * @gtype: the #GType to find
  * 
  * Find @gtype within @list.
  * 
- * Returns: (transfer none) (element-type G.Object): the next matching #GList-struct
+ * Returns: (transfer none) (element-type GObject): the next matching #GList-struct
  * 
  * Since: 3.0.0
  */

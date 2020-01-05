@@ -113,7 +113,7 @@ ags_certificate_manager_finalize(GObject *gobject)
  * 
  * Get certificate.
  * 
- * Returns: (element-type Glib.Object) (transfer container): the #GList-struct containing #GObject implementing #AgsCertificate
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #GObject implementing #AgsCertificate
  * 
  * Since: 3.0.0
  */
@@ -218,7 +218,7 @@ ags_certificate_manager_remove_certificate(AgsCertificateManager *certificate_ma
  *
  * Get instance.
  *
- * Returns: the #AgsCertificateManager
+ * Returns: (transfer none): the #AgsCertificateManager
  *
  * Since: 3.0.0
  */
