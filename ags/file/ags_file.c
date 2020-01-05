@@ -695,7 +695,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 }
 
 /**
- * ags_file_add_id_ref_by_node:
+ * ags_file_find_id_ref_by_node:
  * @file: the @AgsFile
  * @node: a XML node
  *

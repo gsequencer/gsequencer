@@ -2537,7 +2537,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
  * 
  * Parse @raw_midi data and convert to #AgsNotation.
  * 
- * Returns: the #AgsNotation
+ * Returns: (transfer full): the #AgsNotation
  * 
  * Since: 3.0.0
  */

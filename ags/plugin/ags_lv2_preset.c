@@ -603,7 +603,7 @@ ags_lv2_preset_finalize(GObject *gobject)
  * 
  * Allocated #AgsLv2PortPreset-struct.
  * 
- * Returns: the new #AgsLv2PortPreset-struct.
+ * Returns: (type gpointer) (transfer none): the new #AgsLv2PortPreset-struct.
  * 
  * Since: 3.0.0
  */
@@ -630,7 +630,7 @@ ags_lv2_port_preset_alloc(gchar *port_symbol,
 
 /**
  * ags_lv2_port_preset_free:
- * @lv2_port_preset: the #AgsLv2PortPreset-struct
+ * @lv2_port_preset: (type gpointer) (transfer none): the #AgsLv2PortPreset-struct
  * 
  * Free @lv2_port_preset.
  * 

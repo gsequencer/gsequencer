@@ -211,7 +211,7 @@ ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_contro
    *
    * The ::start-monitor signal is emited during start of monitoring meter.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_meter_controller_signals[START_MONITOR] =
     g_signal_new("start-monitor",
@@ -228,7 +228,7 @@ ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_contro
    *
    * The ::stop-monitor signal is emited during stop of monitoring meter.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_meter_controller_signals[STOP_MONITOR] =
     g_signal_new("stop-monitor",
@@ -250,7 +250,7 @@ ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_contro
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_meter_controller_signals[MONITOR_METER] =
     g_signal_new("monitor-meter",
@@ -651,7 +651,7 @@ ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_contro
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, guint flags)
@@ -684,7 +684,7 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags)
@@ -713,7 +713,7 @@ ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, 
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags)
@@ -740,9 +740,9 @@ ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller
  * 
  * Allocate #AgsOscMeterControllerMonitor-struct.
  * 
- * Returns: the newly allocate #AgsOscMeterControllerMonitor-struct
+ * Returns: (type gpointer) (transfer none): the newly allocate #AgsOscMeterControllerMonitor-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscMeterControllerMonitor*
 ags_osc_meter_controller_monitor_alloc()
@@ -763,11 +763,11 @@ ags_osc_meter_controller_monitor_alloc()
 
 /**
  * ags_osc_meter_controller_monitor_free:
- * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * @monitor: (type gpointer) (transfer none): the #AgsOscMeterControllerMonitor-struct
  * 
  * Free @monitor.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
@@ -791,11 +791,11 @@ ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
 
 /**
  * ags_osc_meter_controller_monitor_ref:
- * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * @monitor: (type gpointer) (transfer none): the #AgsOscMeterControllerMonitor-struct
  * 
  * Increase reference count of @monitor.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
@@ -809,12 +809,12 @@ ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
 
 /**
  * ags_osc_meter_controller_monitor_unref:
- * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * @monitor: (type gpointer) (transfer none): the #AgsOscMeterControllerMonitor-struct
  * 
  * Decrease reference count of @monitor. If ref count is less or equal 0
  * @monitor is freed.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
@@ -831,14 +831,14 @@ ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
 
 /**
  * ags_osc_meter_controller_monitor_find_path:
- * @monitor: (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @monitor: (element-type gpointer) (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * @path: the path as string
  * 
  * Find @path in @monitor.
  * 
- * Returns: (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * Returns: (element-type gpointer) (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GList*
 ags_osc_meter_controller_monitor_find_path(GList *monitor,
@@ -863,14 +863,14 @@ ags_osc_meter_controller_monitor_find_path(GList *monitor,
 
 /**
  * ags_osc_meter_controller_monitor_find_port:
- * @monitor: (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @monitor: (element-type gpointer) (transfer none): the #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * @port: the #AgsPort
  * 
  * Find @port in @monitor.
  * 
- * Returns: (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * Returns: (element-type gpointer) (transfer none): the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GList*
 ags_osc_meter_controller_monitor_find_port(GList *monitor,
@@ -895,11 +895,11 @@ ags_osc_meter_controller_monitor_find_port(GList *monitor,
 /**
  * ags_osc_meter_controller_monitor_add_monitor:
  * @osc_meter_controller: the #AgsOscMeterController
- * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * @monitor: (type gpointer) (transfer none): the #AgsOscMeterControllerMonitor-struct
  * 
  * Add @monitor to @osc_meter_controller.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller,
@@ -929,11 +929,11 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
 /**
  * ags_osc_meter_controller_monitor_remove_monitor:
  * @osc_meter_controller: the #AgsOscMeterController
- * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * @monitor: (type gpointer) (transfer none): the #AgsOscMeterControllerMonitor-struct
  * 
  * Remove @monitor from @osc_meter_controller.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_controller,
@@ -970,7 +970,7 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
  * 
  * Returns: %TRUE if found, otherwise %FALSE
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_controller,
@@ -1083,7 +1083,7 @@ ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_con
  * 
  * Start monitoring.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controller)
@@ -1116,7 +1116,7 @@ ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_cont
  * 
  * Stop monitoring.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controller)
@@ -5007,7 +5007,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controller,
@@ -5036,7 +5036,7 @@ ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controll
  * 
  * Returns: the #AgsOscMeterController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscMeterController*
 ags_osc_meter_controller_new()

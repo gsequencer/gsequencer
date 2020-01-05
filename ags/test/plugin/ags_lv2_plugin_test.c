@@ -124,9 +124,9 @@ ags_lv2_plugin_test_concat_event_buffer()
   length[1] = AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_1;
   length[2] = AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_2;
   
-  event_buffer[0] = ags_lv2_plugin_alloc_event_buffer(length[0]);  
-  event_buffer[1] = ags_lv2_plugin_alloc_event_buffer(length[1]);
-  event_buffer[2] = ags_lv2_plugin_alloc_event_buffer(length[2]);
+  event_buffer[0] = ags_lv2_plugin_event_buffer_alloc(length[0]);  
+  event_buffer[1] = ags_lv2_plugin_event_buffer_alloc(length[1]);
+  event_buffer[2] = ags_lv2_plugin_event_buffer_alloc(length[2]);
   
   ptr = ags_lv2_plugin_concat_event_buffer(event_buffer[0],
 					   event_buffer[1],
@@ -206,7 +206,7 @@ ags_lv2_plugin_test_event_buffer_append_midi()
   seq_event[2].data.note.velocity = 127;
 
   /* event buffer */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE);
   offset = event_buffer->data;
   
   /* append midi and assert */
@@ -265,7 +265,7 @@ ags_lv2_plugin_test_event_buffer_remove_midi()
   seq_event[2].data.note.velocity = 127;
 
   /* event buffer and append midi */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE);
   
   ags_lv2_plugin_event_buffer_append_midi(event_buffer,
 					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
@@ -326,7 +326,7 @@ ags_lv2_plugin_test_clear_event_buffer()
   seq_event[0].data.note.velocity = 127;
 
   /* event buffer and append midi */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
   
   ags_lv2_plugin_event_buffer_append_midi(event_buffer,
 					  AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE,

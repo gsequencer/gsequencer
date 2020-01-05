@@ -1250,7 +1250,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container
 
 /**
  * ags_recall_container_find:
- * @recall_container: the #AgsRecallContainer
+ * @recall_container: (element-type AgsAudio.RecallContainer) (transfer none): the #GList-struct containing #AgsRecallContainer
  * @type: recall type
  * @find_flags: search mask
  * @recall_id: an #AgsRecallID

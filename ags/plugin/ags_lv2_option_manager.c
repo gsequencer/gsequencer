@@ -242,7 +242,7 @@ ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data
  *
  * Allocate an #AgsLv2OptionRessource.
  * 
- * Returns: the newly created #AgsLv2OptionRessource-struct
+ * Returns: (type gpointer) (transfer none): the newly created #AgsLv2OptionRessource-struct
  *
  * Since: 3.0.0
  */
@@ -271,7 +271,7 @@ ags_lv2_option_ressource_alloc()
 /**
  * ags_lv2_option_manager_ressource_insert:
  * @lv2_option_manager: the #AgsLv2OptionManager
- * @lv2_option_ressource: the #AgsLv2OptionRessource-struct as key
+ * @lv2_option_ressource: (type gpointer) (transfer none): the #AgsLv2OptionRessource-struct as key
  * @data: the data
  *
  * Inserts a data into hash associated with @lv2_option_ressource.
@@ -309,7 +309,7 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
 /**
  * ags_lv2_option_manager_ressource_remove:
  * @lv2_option_manager: the #AgsLv2OptionManager
- * @lv2_option_ressource: the struct to remove
+ * @lv2_option_ressource: (type gpointer) (transfer none): the struct to remove
  * 
  * Removes an entry associated with @lv2_option_ressource.
  *
@@ -347,7 +347,7 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
 /**
  * ags_lv2_option_manager_ressource_lookup:
  * @lv2_option_manager: the #AgsLv2OptionManager
- * @lv2_option_ressource: the #AgsLv2OptionRessource to lookup
+ * @lv2_option_ressource: (type gpointer) (transfer none): the #AgsLv2OptionRessource to lookup
  *
  * Lookup a ressource associated with @lv2_option_ressource in
  * @lv2_option_manager.

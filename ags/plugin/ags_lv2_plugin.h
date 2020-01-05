@@ -122,36 +122,31 @@ gboolean ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 void ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags);
 
-G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_alloc) void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
-G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_concat) void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
-
 LV2_Event_Buffer* ags_lv2_plugin_event_buffer_alloc(guint buffer_size);
 void ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
 					      guint buffer_size);
 LV2_Event_Buffer* ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...);
 						     
-gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
+gboolean ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
 						 guint buffer_size,
 						 snd_seq_event_t *events,
 						 guint event_count);
-gboolean ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
+gboolean ags_lv2_plugin_event_buffer_remove_midi(gpointer event_buffer,
 						 guint buffer_size,
 						 guint note);
-void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
+void ags_lv2_plugin_clear_event_buffer(gpointer event_buffer,
 				       guint buffer_size);
 
-void* ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
-void* ags_lv2_plugin_concat_atom_sequence(void *sequence, guint sequence_size,
-					  ...); //TODO:JK: shall I implement this?
+gpointer ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
 
-gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
+gboolean ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 						  guint sequence_size,
 						  snd_seq_event_t *events,
 						  guint event_count);
-gboolean ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
+gboolean ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
 						  guint sequence_size,
 						  guint note);
-void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
+void ags_lv2_plugin_clear_atom_sequence(gpointer atom_sequence,
 					guint sequence_size);
 
 GList* ags_lv2_plugin_find_uri(GList *lv2_plugin,

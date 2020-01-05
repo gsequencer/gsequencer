@@ -584,7 +584,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
  * 
  * Get audio thread of specified scope.
  * 
- * Returns: the matching #AgsThread or %NULL
+ * Returns: (transfer full): the matching #AgsThread or %NULL
  * 
  * Since: 3.0.0
  */

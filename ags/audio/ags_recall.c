@@ -886,6 +886,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The ::duplicate signal notifies about instantiating.
    *
+   * Returns: (transfer full): the new #AgsRecall instance
+   * 
    * Since: 3.0.0
    */
   recall_signals[PLAY_DUPLICATE] =
@@ -3686,7 +3688,7 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 
 /**
  * ags_recall_handler_free:
- * @recall_handler: the #AgsRecallHandler-struct
+ * @recall_handler: (type gpointer) (transfer none): the #AgsRecallHandler-struct
  *
  * Free @recall_hanlder. 
  * 
@@ -3707,12 +3709,12 @@ ags_recall_handler_free(AgsRecallHandler *recall_handler)
 /**
  * ags_recall_handler_alloc:
  * @signal_name: signal's name to connect
- * @callback: the #GCallback function
+ * @callback: (scope call): the #GCallback function
  * @data: the data to pass the callback
  *
  * Allocates #AgsRecallHandler-struct.
  * 
- * Returns: the newly allocated #AgsRecallHandler-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsRecallHandler-struct
  * 
  * Since: 3.0.0
  */
@@ -3735,7 +3737,7 @@ ags_recall_handler_alloc(const gchar *signal_name,
 /**
  * ags_recall_add_recall_handler:
  * @recall: the #AgsRecall to connect
- * @recall_handler: the signal specs
+ * @recall_handler: (type gpointer) (transfer none): the signal specs
  *
  * Connect callback to @recall specified by @recall_handler.
  * 
@@ -3767,7 +3769,7 @@ ags_recall_add_recall_handler(AgsRecall *recall,
 /**
  * ags_recall_remove_recall_handler:
  * @recall: the #AgsRecall to connect
- * @recall_handler: the signal specs
+ * @recall_handler: (type gpointer) (transfer none): the signal specs
  *
  * Remove a #AgsRecallHandler-struct from @recall.
  * 

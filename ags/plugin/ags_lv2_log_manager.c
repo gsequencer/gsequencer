@@ -99,8 +99,8 @@ ags_lv2_log_manager_finalize(GObject *gobject)
 
 /**
  * ags_lv2_log_manager_printf:
- * @handle: the log handle
- * @type: LV2 URID
+ * @handle: (type gpointer) (transfer none): the log handle
+ * @type: (type gpointer) (transfer none): LV2 URID
  * @fmt: format
  * @...: %NULL terminated variable arguments
  * 
@@ -129,8 +129,8 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
 
 /**
  * ags_lv2_log_manager_vprintf:
- * @handle: the log handle
- * @type: LV2 URID
+ * @handle: (type gpointer) (transfer none): the log handle
+ * @type: (type gpointer) (transfer none): LV2 URID
  * @fmt: format
  * @ap: argument pointer
  *

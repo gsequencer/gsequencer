@@ -192,11 +192,11 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
 /**
  * ags_destroy_entry_alloc:
  * @ptr: a pointer
- * @destroy_func: the @ptr's destroy function
+ * @destroy_func: (scope call): the @ptr's destroy function
  * 
  * Allocated a destroy entry.
  * 
- * Returns: the allocated #AgsDestroyEntry
+ * Returns: (type gpointer) (transfer none): the allocated #AgsDestroyEntry
  * 
  * Since: 3.0.0
  */
@@ -215,9 +215,9 @@ ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
 
 /**
  * ags_destroy_worker_add:
- * @destroy_worker: the #AgsDestroyWorker
+ * @destroy_worker: (type gpointer): the #AgsDestroyWorker
  * @ptr: the gpointer to destroy
- * @destroy_func: (destroy ptr): the AgsDestroyFunc
+ * @destroy_func: (scope call): the AgsDestroyFunc
  * 
  * Add @ptr for destruction using @destroy_func.
  * 

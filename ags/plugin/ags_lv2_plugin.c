@@ -1433,97 +1433,12 @@ ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
 }
 
 /**
- * ags_lv2_plugin_alloc_event_buffer:
- * @buffer_size: the allocated size
- *
- * Allocates a LV2_Event_Buffer
- * 
- * Returns: the new event buffer
- * 
- * Since: 3.0.0
- */
-void*
-ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
-{
-  void *event_buffer;
-  
-  uint32_t padded_buffer_size;
-
-  if(buffer_size > G_MAXUINT16){
-    return(NULL);
-  }
-  
-  if(buffer_size < 8){
-    padded_buffer_size = 8;
-  }else{
-    padded_buffer_size = buffer_size;
-  }
-    
-  event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event_Buffer));
-  memset(event_buffer, 0, padded_buffer_size + sizeof(LV2_Event_Buffer));
-
-  AGS_LV2_EVENT_BUFFER(event_buffer)->data = event_buffer + sizeof(LV2_Event_Buffer);
-
-  AGS_LV2_EVENT_BUFFER(event_buffer)->header_size = sizeof(LV2_Event_Buffer);
-
-  AGS_LV2_EVENT_BUFFER(event_buffer)->stamp_type = 0;
-  AGS_LV2_EVENT_BUFFER(event_buffer)->capacity = padded_buffer_size;
-
-  AGS_LV2_EVENT_BUFFER(event_buffer)->event_count = 0;
-  AGS_LV2_EVENT_BUFFER(event_buffer)->size = 0;
-
-  return(event_buffer);
-}
-
-/**
- * ags_lv2_plugin_concat_event_buffer:
- * @buffer0: the first buffer
- * @...: %NULL terminated variadict arguments
- *
- * Concats the event buffers.
- * 
- * Returns: The newly allocated event buffer
- * 
- * Since: 3.0.0
- */
-void*
-ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
-{
-  void *buffer;
-  void *current;
-  
-  va_list ap;
-
-  guint buffer_length, prev_length;
-
-  buffer_length = AGS_LV2_EVENT_BUFFER(buffer0)->capacity + sizeof(LV2_Event_Buffer);
-
-  buffer = (void *) malloc(buffer_length);
-  memcpy(buffer, buffer0, buffer_length);
-  
-  va_start(ap, buffer0);
-
-  while((current = va_arg(ap, void*)) != NULL){
-    prev_length = buffer_length;
-    buffer_length += (AGS_LV2_EVENT_BUFFER(current)->capacity + sizeof(LV2_Event_Buffer));
-    
-    buffer = (void *) realloc(buffer,
-			      buffer_length);
-    memcpy(buffer + prev_length, current, buffer_length - prev_length);
-  }
-
-  va_end(ap);
-
-  return(buffer);
-}
-
-/**
  * ags_lv2_plugin_event_buffer_alloc:
  * @buffer_size: the data's buffer size
  * 
  * Allocate LV2_Event_Buffer struct.
  * 
- * Returns: a new allocated LV2_Event_Buffer
+ * Returns: (type gpointer) (transfer none): a new allocated LV2_Event_Buffer
  * 
  * Since: 3.0.0
  */
@@ -1565,7 +1480,7 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
 
 /**
  * ags_lv2_plugin_event_buffer_realloc_data:
- * @event_buffer: the LV2_Event_Buffer struct
+ * @event_buffer: (type gpointer) (transfer none): the LV2_Event_Buffer struct
  * @buffer_size: the data's buffer size
  * 
  * Reallocate LV2_Event_Buffer struct's data field.
@@ -1599,12 +1514,12 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
 
 /**
  * ags_lv2_plugin_event_buffer_concat:
- * @event_buffer: the first buffer
+ * @event_buffer: (type gpointer) (transfer none): the first buffer
  * @...: %NULL terminated variadict arguments
  *
  * Concats the event buffers.
  * 
- * Returns: The newly allocated event buffer
+ * Returns: (type gpointer) (transfer none): The newly allocated event buffer
  * 
  * Since: 3.0.0
  */
@@ -1651,7 +1566,7 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
  * ags_lv2_plugin_event_buffer_append_midi:
  * @event_buffer: the event buffer
  * @buffer_size: the event buffer size
- * @events: the events to write
+ * @events: (type gpointer) (transfer none): the events to write
  * @event_count: the number of events to write
  *
  * Append MIDI data to event buffer.
@@ -1661,7 +1576,7 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
  * Since: 3.0.0
  */
 gboolean
-ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
+ags_lv2_plugin_event_buffer_append_midi(gpointer event_buffer,
 					guint buffer_size,
 					snd_seq_event_t *events,
 					guint event_count)
@@ -1732,7 +1647,7 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
  * Since: 3.0.0
  */
 gboolean
-ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
+ags_lv2_plugin_event_buffer_remove_midi(gpointer event_buffer,
 					guint buffer_size,
 					guint note)
 {
@@ -1801,7 +1716,7 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
  * Since: 3.0.0 
  */
 void
-ags_lv2_plugin_clear_event_buffer(void *event_buffer,
+ags_lv2_plugin_clear_event_buffer(gpointer event_buffer,
 				  guint buffer_size)
 {
   void *offset;
@@ -1829,7 +1744,7 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
  * 
  * Since: 3.0.0
  */
-void*
+gpointer
 ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 {
   LV2_Atom_Sequence *aseq;
@@ -1856,7 +1771,7 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
  * ags_lv2_plugin_atom_sequence_append_midi:
  * @atom_sequence: the atom sequence
  * @sequence_size: the atom sequence size
- * @events: the events to write
+ * @events: (type gpointer) (transfer none): the events to write
  * @event_count: the number of events to write
  *
  * Append MIDI data to atom sequence.
@@ -1866,7 +1781,7 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
  * Since: 3.0.0
  */
 gboolean
-ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
+ags_lv2_plugin_atom_sequence_append_midi(gpointer atom_sequence,
 					 guint sequence_size,
 					 snd_seq_event_t *events,
 					 guint event_count)
@@ -1946,7 +1861,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
  * Since: 3.0.0
  */
 gboolean
-ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
+ags_lv2_plugin_atom_sequence_remove_midi(gpointer atom_sequence,
 					 guint sequence_size,
 					 guint note)
 {
@@ -2017,7 +1932,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
  * Since: 3.0.0 
  */
 void
-ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
+ags_lv2_plugin_clear_atom_sequence(gpointer atom_sequence,
 				   guint sequence_size)
 {
   memset(atom_sequence, 0, sequence_size);

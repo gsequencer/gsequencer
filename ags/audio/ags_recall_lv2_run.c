@@ -545,7 +545,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     g_message("connect event port: %d", recall_lv2->event_port);
 #endif
 
-    recall_lv2_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+    recall_lv2_run->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
     
     connect_port(recall_lv2_run->lv2_handle[0],
 		 recall_lv2->event_port,

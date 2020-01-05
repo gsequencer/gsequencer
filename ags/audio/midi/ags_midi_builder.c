@@ -907,7 +907,7 @@ ags_midi_builder_finalize(GObject *gobject)
  * 
  * Allocate MIDI builder header.
  * 
- * Returns: the newly allocated #AgsMidiBuilderHeader-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsMidiBuilderHeader-struct
  * 
  * Since: 3.0.0
  */
@@ -934,7 +934,7 @@ ags_midi_builder_header_alloc()
 
 /**
  * ags_midi_builder_header_free:
- * @midi_builder_header: the #AgsMidiBuilderHeader-struct
+ * @midi_builder_header: (type gpointer) (transfer none): the #AgsMidiBuilderHeader-struct
  * 
  * Free MIDI builder header.
  * 
@@ -955,7 +955,7 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
  * 
  * Allocate MIDI builder track.
  * 
- * Returns: the newly allocated #AgsMidiBuilderTrack-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsMidiBuilderTrack-struct
  * 
  * Since: 3.0.0
  */
@@ -979,7 +979,7 @@ ags_midi_builder_track_alloc()
 
 /**
  * ags_midi_builder_track_free:
- * @midi_builder_track: the #AgsMidiBuilderTrack-struct
+ * @midi_builder_track: (type gpointer) (transfer none): the #AgsMidiBuilderTrack-struct
  * 
  * Free MIDI builder track.
  * 
@@ -1005,13 +1005,13 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
 
 /**
  * ags_midi_builder_track_find_delta_time_with_track_name:
- * @midi_builder_track: (transfer none): the #AgsMidiBuilderTrack
+ * @midi_builder_track: (element-type gpointer) (transfer none): the #AgsMidiBuilderTrack
  * @absolute_time: the absolute time
  * @track_name: the track's string representation
  * 
  * Finds matching #AgsMidiBuilderTrack-struct within @midi_builder_track #GList-struct.
  * 
- * Returns: (transfer none): the matching #GList-struct
+ * Returns: (element-type gpointer) (transfer none): the matching #GList-struct
  * 
  * Since: 3.0.0
  */

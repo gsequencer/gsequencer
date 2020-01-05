@@ -969,7 +969,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
 
   /* connect event port */
   if(ags_play_lv2_audio_test_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT)){
-    play_lv2_audio_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+    play_lv2_audio_run->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
     
     connect_port(play_lv2_audio_run->lv2_handle[0],
 		 play_lv2_audio->event_port,

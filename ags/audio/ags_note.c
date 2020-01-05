@@ -1313,7 +1313,7 @@ ags_note_to_raw_midi_extended(AgsNote *note,
  * Convert @note to ALSA sequencer events and set the number of events
  * in the array as @n_events.
  *
- * Returns: The sequencer events as array.
+ * Returns: (type gpointer) (transfer none): The sequencer events as array.
  *
  * Since: 3.0.0
  */
@@ -1345,7 +1345,7 @@ ags_note_to_seq_event(AgsNote *note,
  * 
  * Convert @note to raw-midi.
  * 
- * Returns: an array of snd_seq_event_t structs
+ * Returns: (type gpointer) (transfer none): an array of snd_seq_event_t structs
  * 
  * Since: 3.0.0
  */
@@ -1374,7 +1374,7 @@ ags_note_to_seq_event_extended(AgsNote *note,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList-struct containing the notes
+ * Returns: (element-type AgsAudio.Note) (transfer full): a #GList-struct containing the notes
  *
  * Since: 3.0.0
  */
@@ -1406,7 +1406,7 @@ ags_note_from_raw_midi(guchar *raw_midi,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList-struct containing the notes
+ * Returns: (element-type AgsAudio.Note) (transfer full): a #GList-struct containing the notes
  *
  * Since: 3.0.0
  */
@@ -1428,14 +1428,14 @@ ags_note_from_raw_midi_extended(guchar *raw_midi,
 
 /**
  * ags_note_from_seq_event:
- * @event: ALSA sequencer events as array
+ * @event: (type gpointer) (transfer none): ALSA sequencer events as array
  * @bpm: the bpm to use
  * @delay_factor: the segmentation delay factor
  * @n_events: the arrays length
  *
  * Convert ALSA sequencer data @event to #AgsNote.
  *
- * Returns: a #GList-struct containing the notes
+ * Returns: (element-type AgsAudio.Note) (transfer full): a #GList-struct containing the notes
  *
  * Since: 3.0.0
  */
@@ -1455,7 +1455,7 @@ ags_note_from_seq_event(snd_seq_event_t *event,
 
 /**
  * ags_note_from_seq_event_extended:
- * @event: the snd_seq_event_t struct array
+ * @event: (type gpointer) (transfer none): the snd_seq_event_t struct array
  * @nn: numerator
  * @dd: denominator
  * @cc: clocks
@@ -1467,7 +1467,7 @@ ags_note_from_seq_event(snd_seq_event_t *event,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList-struct containing the notes
+ * Returns: (element-type AgsAudio.Note) (transfer full): a #GList-struct containing the notes
  *
  * Since: 3.0.0
  */

@@ -124,7 +124,7 @@ ags_authentication_manager_finalize(GObject *gobject)
  * 
  * Alloc #AgsLoginInfo-struct.
  * 
- * Returns: the newly allocated #AgsLoginInfo-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsLoginInfo-struct
  * 
  * Since: 3.0.0
  */
@@ -147,7 +147,7 @@ ags_login_info_alloc()
 
 /**
  * ags_login_info_free:
- * @login_info: the #AgsLoginInfo-struct
+ * @login_info: (type gpointer): the #AgsLoginInfo-struct
  * 
  * Free @login_info.
  * 
@@ -169,7 +169,7 @@ ags_login_info_free(AgsLoginInfo *login_info)
 
 /**
  * ags_login_info_ref:
- * @login_info: the #AgsLoginInfo-struct
+ * @login_info: (type gpointer): the #AgsLoginInfo-struct
  * 
  * Increase ref-count of @login_info.
  * 
@@ -187,7 +187,7 @@ ags_login_info_ref(AgsLoginInfo *login_info)
 
 /**
  * ags_login_info_unref:
- * @login_info: the #AgsLoginInfo-struct
+ * @login_info: (type gpointer): the #AgsLoginInfo-struct
  * 
  * Decrease ref-count of @login_info and free it if ref-count drops to 0.
  * 
@@ -354,7 +354,7 @@ ags_authentication_manager_get_session_timeout(AgsAuthenticationManager *authent
  * 
  * Lookup @login.
  * 
- * Returns: the user #AgsLoginInfo-struct or %NULL
+ * Returns: (type gpointer) (transfer none): the user #AgsLoginInfo-struct or %NULL
  * 
  * Since: 3.0.0
  */

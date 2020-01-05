@@ -671,7 +671,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
  * 
  * Get channel thread of appropriate scope.
  * 
- * Returns: the matching #AgsThread or %NULL
+ * Returns: (transfer full): the matching #AgsThread or %NULL
  * 
  * Since: 3.0.0
  */
@@ -796,7 +796,7 @@ ags_playback_get_recall_id(AgsPlayback *playback,
 }
 
 /**
- * ags_playback_play_find_channel:
+ * ags_playback_find_channel:
  * @playback: (element-type AgsAudio.Playback) (transfer none): the #GList-struct containing #AgsPlayback
  * @channel: the #AgsChannel
  * 

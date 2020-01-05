@@ -170,7 +170,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::osc-putc signal is emited during putting char to file.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[OSC_PUTC] =
     g_signal_new("osc-putc",
@@ -189,7 +189,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::on-error signal is emited during building of event.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -207,7 +207,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-packet signal is emited during building packet.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_PACKET] =
     g_signal_new("append-packet",
@@ -228,7 +228,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-bundle signal is emited during building bundle.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_BUNDLE] =
     g_signal_new("append-bundle",
@@ -252,7 +252,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-message signal is emited during building message.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_MESSAGE] =
     g_signal_new("append-message",
@@ -274,7 +274,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-value signal is emited during building value.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_VALUE] =
     g_signal_new("append-value",
@@ -443,9 +443,9 @@ ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
  * 
  * Allocate #AgsOscBuilderPacket-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderPacket-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderPacket-struct
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderPacket*
 ags_osc_builder_packet_alloc(guint64 offset)
@@ -468,11 +468,11 @@ ags_osc_builder_packet_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_packet_free:
- * @packet: the #AgsOscBuilderPacket-struct
+ * @packet: (type gpointer) (transfer none): the #AgsOscBuilderPacket-struct
  *
  * Free @packet.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_packet_free(AgsOscBuilderPacket *packet)
@@ -496,9 +496,9 @@ ags_osc_builder_packet_free(AgsOscBuilderPacket *packet)
  * 
  * Allocate #AgsOscBuilderBundle-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderBundle-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderBundle-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderBundle*
 ags_osc_builder_bundle_alloc(guint64 offset)
@@ -524,11 +524,11 @@ ags_osc_builder_bundle_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_bundle_free:
- * @bundle: the #AgsOscBuilderBundle-struct
+ * @bundle: (type gpointer) (transfer none): the #AgsOscBuilderBundle-struct
  *
  * Free @bundle.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_bundle_free(AgsOscBuilderBundle *bundle)
@@ -552,9 +552,9 @@ ags_osc_builder_bundle_free(AgsOscBuilderBundle *bundle)
  * 
  * Allocate #AgsOscBuilderMessage-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderMessage-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderMessage-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderMessage*
 ags_osc_builder_message_alloc(guint64 offset)
@@ -581,11 +581,11 @@ ags_osc_builder_message_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_message_free:
- * @message: the #AgsOscBuilderMessage-struct
+ * @message: (type gpointer) (transfer none): the #AgsOscBuilderMessage-struct
  *
  * Free @message.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_message_free(AgsOscBuilderMessage *message)
@@ -623,7 +623,7 @@ ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
  * 
  * Put character
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_osc_putc(AgsOscBuilder *osc_builder,
@@ -655,7 +655,7 @@ ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
  * 
  * Report error.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_on_error(AgsOscBuilder *osc_builder,
@@ -692,7 +692,7 @@ ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder)
  * ags_osc_builder_append_packet:
  * @osc_builder: the #AgsOscBuilder
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_packet(AgsOscBuilder *osc_builder)
@@ -757,7 +757,7 @@ ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
  * 
  * Append bundle.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_bundle(AgsOscBuilder *osc_builder,
@@ -832,7 +832,7 @@ ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
  * 
  * Append message.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
@@ -1123,7 +1123,7 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
  * 
  * Append value.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
@@ -1241,7 +1241,7 @@ ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
  *
  * Build the OSC data.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_build(AgsOscBuilder *osc_builder)
@@ -1341,7 +1341,7 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
  *
  * Returns: the new #AgsOscBuilder
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilder*
 ags_osc_builder_new()

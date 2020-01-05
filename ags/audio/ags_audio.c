@@ -11405,7 +11405,7 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
 }
 
 /**
- * ags_audio_collect_all_audio_ports_by_specifier_and_scope:
+ * ags_audio_collect_all_audio_ports_by_specifier_and_context:
  * @audio: an #AgsAudio
  * @specifier: the port's name
  * @play_context: either %TRUE for play or %FALSE for recall

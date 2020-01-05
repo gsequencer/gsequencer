@@ -14,7 +14,7 @@ ags (3.0.0)
        * TODO:JK: implemented AgsAudioMainLoop?
        * TODO:JK: implemented AgsOscMainLoop?
        * TODO:JK: implemented support for GtkApplication
-       * TODO:JK: implemented introspection support
+       * implemented introspection support
        * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
        * added G_BEGIN_DECLS and G_END_DECLS to header files
        * moved ags_thread-posix.[ch] to ags_thread.[ch]

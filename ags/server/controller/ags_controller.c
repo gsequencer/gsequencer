@@ -299,7 +299,7 @@ ags_controller_finalize(GObject *gobject)
  * 
  * Allocated #AgsControllerResource-struct.
  * 
- * Returns: the newly allocated #AgsControllerResource-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsControllerResource-struct
  * 
  * Since: 3.0.0
  */
@@ -323,7 +323,7 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
 
 /**
  * ags_controller_resource_free:
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Free @controller_resource.
  * 
@@ -344,7 +344,7 @@ ags_controller_resource_free(AgsControllerResource *controller_resource)
 
 /**
  * ags_controller_resource_ref:
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Increase ref-count of @controller_resource.
  * 
@@ -362,7 +362,7 @@ ags_controller_resource_ref(AgsControllerResource *controller_resource)
 
 /**
  * ags_controller_resource_unref:
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Decrease ref-count of @controller_resource and free it if ref-count drops to 0.
  * 
@@ -386,7 +386,7 @@ ags_controller_resource_unref(AgsControllerResource *controller_resource)
  * ags_controller_add_resource:
  * @controller: the #AgsController
  * @resource_name: the resource name as string
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Add @controller_resource with key @resource_name to hash table.
  * 
@@ -457,7 +457,7 @@ ags_controller_remove_resource(AgsController *controller,
  * 
  * Lookup key @resource_name in hash table.
  * 
- * Returns: the matchin #AgsControllerResource-struct
+ * Returns: (type gpointer) (transfer none): the matching #AgsControllerResource-struct
  * 
  * Since: 3.0.0
  */

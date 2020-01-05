@@ -10813,7 +10813,7 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
 }
 
 /**
- * ags_channel_collect_all_channel_ports_by_specifier_and_scope:
+ * ags_channel_collect_all_channel_ports_by_specifier_and_context:
  * @channel: an #AgsChannel
  * @specifier: the port's name
  * @play_context: either %TRUE for play or %FALSE for recall
