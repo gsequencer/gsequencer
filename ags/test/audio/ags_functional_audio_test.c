@@ -527,7 +527,7 @@ ags_functional_audio_test_playback_stop_audio(AgsAudio *audio,
   clock_gettime(CLOCK_MONOTONIC, &sleep_time);
 
   while(sleep_time.tv_sec < start_time->tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY){
-    usleep(USEC_PER_SEC);
+    usleep(AGS_USEC_PER_SEC);
     clock_gettime(CLOCK_MONOTONIC, &sleep_time);
 
     g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]",

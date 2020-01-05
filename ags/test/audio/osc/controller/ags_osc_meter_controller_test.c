@@ -404,7 +404,7 @@ ags_osc_meter_controller_test_start_monitor()
   CU_ASSERT(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED) == TRUE);
 
   delay.tv_sec = 0;
-  delay.tv_nsec = NSEC_PER_SEC / 30;
+  delay.tv_nsec = AGS_NSEC_PER_SEC / 30;
 
   i = 0;
   
@@ -433,7 +433,7 @@ ags_osc_meter_controller_test_stop_monitor()
   CU_ASSERT(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED) == TRUE);
 
   delay.tv_sec = 0;
-  delay.tv_nsec = NSEC_PER_SEC / 30;
+  delay.tv_nsec = AGS_NSEC_PER_SEC / 30;
 
   i = 0;
   

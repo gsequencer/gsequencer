@@ -62,40 +62,40 @@ ags_complex_test_copy()
   AgsComplex *ptr;
 
   /* test x = 1.0 */
-  a[0] = 1.0;
-  a[1] = 0.0;
+  a.real = 1.0;
+  a.imag = 0.0;
 
   ptr = ags_complex_copy(&a);
 
-  CU_ASSERT(ptr[0][0] == a[0] &&
-	    ptr[0][1] == a[1]);
+  CU_ASSERT(ptr[0].real == a.real &&
+	    ptr[0].imag == a.imag);
 
   /* test y = 1.0 */
-  a[0] = 0.0;
-  a[1] = 1.0;
+  a.real = 0.0;
+  a.imag = 1.0;
 
   ptr = ags_complex_copy(&a);
 
-  CU_ASSERT(ptr[0][0] == a[0] &&
-	    ptr[0][1] == a[1]);
+  CU_ASSERT(ptr[0].real == a.real &&
+	    ptr[0].imag == a.imag);
 
   /* test x = 1.25, y = 2 * M_PI */
-  a[0] = 1.25;
-  a[1] = 2.0 * M_PI;
+  a.real = 1.25;
+  a.imag = 2.0 * M_PI;
 
   ptr = ags_complex_copy(&a);
 
-  CU_ASSERT(ptr[0][0] == a[0] &&
-	    ptr[0][1] == a[1]);
+  CU_ASSERT(ptr[0].real == a.real &&
+	    ptr[0].imag == a.imag);
 
   /* test x = 2 * M_PI, y = 1.25 */
-  a[0] = 2.0 * M_PI;
-  a[1] = 1.25;
+  a.real = 2.0 * M_PI;
+  a.imag = 1.25;
 
   ptr = ags_complex_copy(&a);
 
-  CU_ASSERT(ptr[0][0] == a[0] &&
-	    ptr[0][1] == a[1]);
+  CU_ASSERT(ptr[0].real == a.real &&
+	    ptr[0].imag == a.imag);
 }
 
 void
@@ -106,36 +106,36 @@ ags_complex_test_get()
   complex z;
   
   /* test x = 1.0 */
-  a[0] = 1.0;
-  a[1] = 0.0;
+  a.real = 1.0;
+  a.imag = 0.0;
 
   z = ags_complex_get(&a);
 
-  CU_ASSERT(z == (a[0] + a[1] * I));
+  CU_ASSERT(z == (a.real + a.imag * I));
   
   /* test y = 1.0 */
-  a[0] = 0.0;
-  a[1] = 1.0;
+  a.real = 0.0;
+  a.imag = 1.0;
 
   z = ags_complex_get(&a);
 
-  CU_ASSERT(z == (a[0] + a[1] * I));
+  CU_ASSERT(z == (a.real + a.imag * I));
 
   /* test x = 1.25, y = 2 * M_PI */
-  a[0] = 1.25;
-  a[1] = 2.0 * M_PI;
+  a.real = 1.25;
+  a.imag = 2.0 * M_PI;
 
   z = ags_complex_get(&a);
 
-  CU_ASSERT(z == (a[0] + a[1] * I));
+  CU_ASSERT(z == (a.real + a.imag * I));
 
   /* test x = 2 * M_PI, y = 1.25 */
-  a[0] = 2.0 * M_PI;
-  a[1] = 1.25;
+  a.real = 2.0 * M_PI;
+  a.imag = 1.25;
 
   z = ags_complex_get(&a);
 
-  CU_ASSERT(z == (a[0] + a[1] * I));
+  CU_ASSERT(z == (a.real + a.imag * I));
 }
 
 void
@@ -150,32 +150,32 @@ ags_complex_test_set()
   
   ags_complex_set(&a, z);
 
-  CU_ASSERT(a[0] == 1.0 &&
-	    a[1] == 0.0);
+  CU_ASSERT(a.real == 1.0 &&
+	    a.imag == 0.0);
   
   /* test y = 1.0 */
   z = 0.0 + 1.0 * I;
 
   ags_complex_set(&a, z);
 
-  CU_ASSERT(a[0] == 0.0 &&
-	    a[1] == 1.0);
+  CU_ASSERT(a.real == 0.0 &&
+	    a.imag == 1.0);
   
   /* test x = 1.25, y = 2 * M_PI */
   z = 1.25 + (2.0 * M_PI) * I;
 
   ags_complex_set(&a, z);
 
-  CU_ASSERT(a[0] == 1.25 &&
-	    a[1] == 2.0 * M_PI);
+  CU_ASSERT(a.real == 1.25 &&
+	    a.imag == 2.0 * M_PI);
   
   /* test x = 2 * M_PI, y = 1.25 */
   z = (2.0 * M_PI) + 1.25 * I;
 
   ags_complex_set(&a, z);
   
-  CU_ASSERT(a[0] == 2.0 * M_PI &&
-	    a[1] == 1.25);
+  CU_ASSERT(a.real == 2.0 * M_PI &&
+	    a.imag == 1.25);
 }
 
 int

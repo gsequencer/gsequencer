@@ -1299,7 +1299,7 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   timeout_delay.tv_nsec = 0;
   
   idle_delay.tv_sec = 0;
-  idle_delay.tv_nsec = NSEC_PER_SEC / 30;
+  idle_delay.tv_nsec = AGS_NSEC_PER_SEC / 30;
   
   g_atomic_int_set(&(meter_packet_count),
 		   0);
