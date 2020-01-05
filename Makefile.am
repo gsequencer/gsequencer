@@ -217,35 +217,38 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES)
 
-Ags.gir: libags.la libags_thread.la libags_server.la
-Ags_gir_C_INCLUDES = ags/libags.h
-Ags_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
-Ags_gir_LIBS = libags.la libags_thread.la libags_server.la
-Ags_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
-Ags_gir_NAMESPACE = Ags
-Ags_gir_VERSION = 3.0
-Ags_gir_SCANNERFLAGS = --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
-INTROSPECTION_GIRS += Ags.gir
+Ags-3.0.gir: libags.la libags_thread.la libags_server.la
+Ags_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4
+Ags_3_0_gir_C_INCLUDES = ags/libags.h
+Ags_3_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
+Ags_3_0_gir_LIBS = libags.la libags_thread.la libags_server.la
+Ags_3_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
+Ags_3_0_gir_NAMESPACE = Ags
+Ags_3_0_gir_VERSION = 3.0
+Ags_3_0_gir_SCANNERFLAGS = --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
+INTROSPECTION_GIRS += Ags-3.0.gir
 
-AgsAudio.gir: libags_audio.la $(top_builddir)/Ags.gir
-AgsAudio_gir_C_INCLUDES = ags/libags-audio.h
-AgsAudio_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
-AgsAudio_gir_LIBS = libags_audio.la
-AgsAudio_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
-AgsAudio_gir_NAMESPACE = AgsAudio
-AgsAudio_gir_VERSION = 3.0
-AgsAudio_gir_SCANNERFLAGS = --include=GObject-2.0 --include=libxml2-2.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
-INTROSPECTION_GIRS += AgsAudio.gir
+AgsAudio-3.0.gir: libags_audio.la $(top_builddir)/Ags-3.0.gir
+AgsAudio_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4 Ags-3.0
+AgsAudio_3_0_gir_C_INCLUDES = ags/libags-audio.h
+AgsAudio_3_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
+AgsAudio_3_0_gir_LIBS = libags_audio.la
+AgsAudio_3_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
+AgsAudio_3_0_gir_NAMESPACE = AgsAudio
+AgsAudio_3_0_gir_VERSION = 3.0
+AgsAudio_3_0_gir_SCANNERFLAGS = --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-3.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
+INTROSPECTION_GIRS += AgsAudio-3.0.gir
 
-AgsGui.gir: libags_gui.la
-AgsGui_gir_C_INCLUDES = ags/libags-gui.h
-AgsGui_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
-AgsGui_gir_LIBS = libags_gui.la
-AgsGui_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
-AgsGui_gir_NAMESPACE = AgsGui
-AgsGui_gir_VERSION = 3.0
-AgsGui_gir_SCANNERFLAGS = --include=Gtk-3.0 --namespace=AgsGui --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
-INTROSPECTION_GIRS += AgsGui.gir
+AgsGui-3.0.gir: libags_gui.la
+AgsGui_3_0_gir_INCLUDES = GObject-2.0 Gtk-3.0
+AgsGui_3_0_gir_C_INCLUDES = ags/libags-gui.h
+AgsGui_3_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
+AgsGui_3_0_gir_LIBS = libags_gui.la
+AgsGui_3_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
+AgsGui_3_0_gir_NAMESPACE = AgsGui
+AgsGui_3_0_gir_VERSION = 3.0
+AgsGui_3_0_gir_SCANNERFLAGS = --include=Gtk-3.0 --namespace=AgsGui --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_
+INTROSPECTION_GIRS += AgsGui-3.0.gir
 
 girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)

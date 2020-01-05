@@ -439,7 +439,7 @@ ags_message_envelope_get_recipient(AgsMessageEnvelope *message_envelope)
   recipient = message_envelope->recipient;
 
   if(recipient != NULL){
-    g_object_ref(recipien);
+    g_object_ref(recipient);
   }
   
   g_rec_mutex_unlock(message_envelope_mutex);
