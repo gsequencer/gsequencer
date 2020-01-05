@@ -180,7 +180,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The assigned URL.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -196,7 +196,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -212,7 +212,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default jack client.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-jack-client",
 				   i18n_pspec("default jack client"),
@@ -244,7 +244,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The jack client list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("jack-client",
 				    i18n_pspec("jack client list"),
@@ -825,7 +825,7 @@ ags_jack_server_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_jack_server_test_flags(AgsJackServer *jack_server, guint flags)
@@ -858,7 +858,7 @@ ags_jack_server_test_flags(AgsJackServer *jack_server, guint flags)
  *
  * Enable a feature of @jack_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_server_set_flags(AgsJackServer *jack_server, guint flags)
@@ -889,7 +889,7 @@ ags_jack_server_set_flags(AgsJackServer *jack_server, guint flags)
  *
  * Disable a feature of @jack_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_server_unset_flags(AgsJackServer *jack_server, guint flags)
@@ -1726,7 +1726,7 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
  * 
  * Returns: the instantiated #AgsJackDevout
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
@@ -1860,14 +1860,14 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 
 /**
  * ags_jack_server_find_url:
- * @jack_server: the #GList-struct containing #AgsJackServer
+ * @jack_server: (element-type AgsAudio.JackServer) (transfer none): the #GList-struct containing #AgsJackServer
  * @url: the url to find
  *
  * Find #AgsJackServer by url.
  *
- * Returns: the #GList-struct containing a #AgsJackServer matching @url or %NULL
+ * Returns: (element-type AgsAudio.JackServer) (transfer none): the #GList-struct containing a #AgsJackServer matching @url or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_jack_server_find_url(GList *jack_server,
@@ -1910,9 +1910,9 @@ ags_jack_server_find_url(GList *jack_server,
  *
  * Find #AgsJackClient by uuid.
  *
- * Returns: the #AgsJackClient found or %NULL
+ * Returns: (transfer none): the #AgsJackClient found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_jack_server_find_client(AgsJackServer *jack_server,
@@ -1975,9 +1975,9 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
  *
  * Find #AgsJackPort by uuid.
  *
- * Returns: the #AgsJackPort found or %NULL
+ * Returns: (transfer none): the #AgsJackPort found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_jack_server_find_port(AgsJackServer *jack_server,
@@ -2016,12 +2016,16 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
       g_rec_mutex_unlock(jack_port_mutex);
       
       if(success){
+	AgsJackPort *retval;
+
+	retval = port->data;
+	
 	g_list_free_full(client_start,
 			 g_object_unref);
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(port->data);
+	return(retval);
       }
 
       /* iterate */
@@ -2048,7 +2052,7 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
  *
  * Add @jack_client to @jack_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_server_add_client(AgsJackServer *jack_server,
@@ -2083,7 +2087,7 @@ ags_jack_server_add_client(AgsJackServer *jack_server,
  *
  * Remove @jack_client to @jack_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_server_remove_client(AgsJackServer *jack_server,
@@ -2117,7 +2121,7 @@ ags_jack_server_remove_client(AgsJackServer *jack_server,
  *
  * Connect all clients.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_server_connect_client(AgsJackServer *jack_server)
@@ -2204,7 +2208,7 @@ ags_jack_server_disconnect_client(AgsJackServer *jack_server)
  *
  * Returns: the new #AgsJackServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsJackServer*
 ags_jack_server_new(gchar *url)

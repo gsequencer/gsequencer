@@ -1193,7 +1193,7 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
  *
  * Find note by offset and tone.
  *
- * Returns: (element-type AgsAudio.Note) (transfer none): the matching note.
+ * Returns: (transfer none): the matching note.
  *
  * Since: 3.0.0
  */ 

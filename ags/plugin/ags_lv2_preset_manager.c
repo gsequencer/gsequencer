@@ -191,7 +191,7 @@ ags_lv2_preset_manager_finalize(GObject *gobject)
  *
  * Get instance.
  *
- * Returns: the #AgsLv2PresetManager
+ * Returns: (transfer none): the #AgsLv2PresetManager
  *
  * Since: 3.0.0
  */

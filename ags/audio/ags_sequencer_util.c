@@ -41,7 +41,7 @@
  * 
  * Get object mutex of @sequencer.
  * 
- * Returns: GRecMutex pointer
+ * Returns: (transfer none): GRecMutex pointer
  * 
  * Since: 3.0.0
  */

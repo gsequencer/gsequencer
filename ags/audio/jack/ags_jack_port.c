@@ -614,12 +614,12 @@ ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
 
 /**
  * ags_jack_port_find:
- * @jack_port: the #GList-struct containing #AgsJackPort
+ * @jack_port: (element-type AgsAudio.JackPort) (transfer none): the #GList-struct containing #AgsJackPort
  * @port_name: the port name to find
  *
  * Finds next match of @port_name in @jack_port.
  *
- * Returns: the next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.JackPort) (transfer none): the next matching #GList-struct or %NULL
  * 
  * Since: 2.0.0
  */

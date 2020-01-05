@@ -143,7 +143,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The selected bank.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("bank",
 				 i18n_pspec("bank"),
@@ -161,7 +161,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The selected program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("program",
 				 i18n_pspec("program"),
@@ -180,7 +180,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The plugin's plugin object.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_object("plugin",
 				    i18n_pspec("the plugin"),
@@ -196,7 +196,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The effect's input lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("input-lines",
 				   i18n_pspec("input lines of effect"),
@@ -214,7 +214,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The effect's output lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("output-lines",
 				   i18n_pspec("output lines of effect"),
@@ -461,7 +461,7 @@ ags_play_dssi_audio_finalize(GObject *gobject)
  *
  * Set up DSSI handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
@@ -547,9 +547,9 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
  *
  * Set up DSSI ports.
  *
- * Returns: a #GList-struct containing #AgsPort.
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
@@ -746,7 +746,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
@@ -808,15 +808,15 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
 
 /**
  * ags_play_dssi_audio_find:
- * @recall: a #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin's filename
  * @effect: plugin's effect
  *
  * Find DSSI recall.
  *
- * Returns: Next matching #GList-struct, or %NULL if not found
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct, or %NULL if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_dssi_audio_find(GList *recall,
@@ -861,7 +861,7 @@ ags_play_dssi_audio_find(GList *recall,
  *
  * Returns: the new #AgsPlayDssiAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayDssiAudio*
 ags_play_dssi_audio_new(AgsAudio *audio)

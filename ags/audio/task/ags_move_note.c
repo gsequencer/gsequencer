@@ -135,7 +135,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of move note"),
@@ -151,7 +151,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("selection",
 				    i18n_pspec("selection to move"),
@@ -166,7 +166,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation from x offset.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("first-x",
 				  i18n_pspec("move from x offset"),
@@ -184,7 +184,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation with x padding.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("first-y",
 				  i18n_pspec("move with x padding"),
@@ -202,7 +202,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-x amount.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("move-x",
 				i18n_pspec("move with move-x amount"),
@@ -220,7 +220,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-y amount.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("move-y",
 				 i18n_pspec("move with move-y amount"),
@@ -238,7 +238,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by relative position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("relative",
 				     i18n_pspec("move relative"),
@@ -254,7 +254,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by absolute position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("absolute",
 				     i18n_pspec("move absolute"),
@@ -626,7 +626,7 @@ ags_move_note_launch(AgsTask *task)
  * ags_move_note_new:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
- * @selection: the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * @first_x: the x offset to move from 
  * @first_y: the x padding to use
  * @move_x: the amout to move in x direction
@@ -639,7 +639,7 @@ ags_move_note_launch(AgsTask *task)
  *
  * Returns: a new #AgsMoveNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMoveNote*
 ags_move_note_new(AgsAudio *audio,

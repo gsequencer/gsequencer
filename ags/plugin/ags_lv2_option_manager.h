@@ -59,11 +59,11 @@ struct _AgsLv2OptionManagerClass
 {
   GObjectClass gobject;
 
-  void (*get_option)(AgsLv2OptionManager *option_manager,
+  void (*get_option)(AgsLv2OptionManager *lv2_option_manager,
 		     gpointer instance,
 		     gpointer option,
 		     gpointer retval);
-  void (*set_option)(AgsLv2OptionManager *option_manager,
+  void (*set_option)(AgsLv2OptionManager *lv2_option_manager,
 		     gpointer instance,
 		     gpointer option,
 		     gpointer retval);

@@ -48,7 +48,7 @@ struct _AgsOscInfoControllerClass
 {
   AgsOscControllerClass osc_controller;
 
-  gpointer (*get_info)(AgsOscInfoController *info_controller,
+  gpointer (*get_info)(AgsOscInfoController *osc_info_controller,
 		       AgsOscConnection *osc_connection,
 		       guchar *message, guint message_size);
 };

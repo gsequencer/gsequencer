@@ -43,7 +43,7 @@
  * 
  * Get object mutex of @soundcard.
  * 
- * Returns: GRecMutex pointer
+ * Returns: (transfer none): GRecMutex pointer
  * 
  * Since: 3.0.0
  */

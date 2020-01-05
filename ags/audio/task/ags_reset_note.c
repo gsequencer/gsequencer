@@ -204,7 +204,7 @@ ags_reset_note_launch(AgsTask *task)
  *
  * Add @note.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_reset_note_add(AgsResetNote *reset_note,
@@ -235,7 +235,7 @@ ags_reset_note_add(AgsResetNote *reset_note,
  *
  * Remove @note.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_reset_note_remove(AgsResetNote *reset_note,
@@ -267,9 +267,9 @@ ags_reset_note_remove(AgsResetNote *reset_note,
  *
  * Get instance.
  *
- * Returns: the #AgsResetNote
+ * Returns: (transfer none): the #AgsResetNote
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 AgsResetNote*
 ags_reset_note_get_instance()
@@ -311,7 +311,7 @@ ags_reset_note_get_instance()
  *
  * Returns: an new #AgsResetNote.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 AgsResetNote*
 ags_reset_note_new()

@@ -825,7 +825,7 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
  * 
  * Get all preset names.
  * 
- * Returns: the string vector cotaining preset names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining preset names or %NULL on failure
  * 
  * Since: 3.0.0
  */
@@ -890,7 +890,7 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
  * 
  * Get all instrument names.
  * 
- * Returns: the string vector cotaining instrument names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining instrument names or %NULL on failure
  * 
  * Since: 3.0.0
  */
@@ -955,7 +955,7 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
  * 
  * Get all sample names.
  * 
- * Returns: the string vector cotaining sample names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining sample names or %NULL on failure
  * 
  * Since: 3.0.0
  */
@@ -1021,7 +1021,7 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
  * 
  * Get instrument by preset index.
  * 
- * Returns: the string vector cotaining instrument names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining instrument names or %NULL on failure
  * 
  * Since: 3.0.0
  */
@@ -1111,7 +1111,7 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
  * 
  * Get sample by preset index.
  * 
- * Returns: the string vector cotaining sample names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining sample names or %NULL on failure
  * 
  * Since: 3.0.0
  */
@@ -1224,7 +1224,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
  * 
  * Get sample by preset and instrument index.
  * 
- * Returns: the string vector cotaining sample names or %NULL on failure
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector cotaining sample names or %NULL on failure
  * 
  * Since: 3.0.0
  */

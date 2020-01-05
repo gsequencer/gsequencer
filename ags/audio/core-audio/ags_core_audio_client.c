@@ -832,7 +832,7 @@ ags_core_audio_client_find_uuid(GList *core_audio_client,
 
 /**
  * ags_core_audio_client_find:
- * @core_audio: (element-type AgsAudio.CoreAudioClient) (transfer none)_client: the #GList-struct containing #AgsCoreAudioClient
+ * @core_audio_client: (element-type AgsAudio.CoreAudioClient) (transfer none): the #GList-struct containing #AgsCoreAudioClient
  * @client_name: the client name to find
  *
  * Finds next match of @client_name in @core_audio_client.

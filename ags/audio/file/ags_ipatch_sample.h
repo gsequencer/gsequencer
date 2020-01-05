@@ -98,8 +98,6 @@ struct _AgsIpatchSampleClass
 
 GType ags_ipatch_sample_get_type();
 
-pthread_mutex_t* ags_ipatch_sample_get_class_mutex();
-
 gboolean ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags);
 void ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags);
 void ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags);

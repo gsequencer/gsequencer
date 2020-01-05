@@ -724,6 +724,16 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
   return(success);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_instrument_all:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * 
+ * Get instrument all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing instrument
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
@@ -784,6 +794,16 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
   return(instrument);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_sample_all:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * 
+ * Get sample all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
@@ -846,6 +866,16 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
   return(sample);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_sample_by_instrument_index:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * 
+ * Get sample by instrument index.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_gig_reader,
 						     guint instrument_index)

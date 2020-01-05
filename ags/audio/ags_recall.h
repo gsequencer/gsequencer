@@ -259,7 +259,7 @@ void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
 void ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
 
-void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
+void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
 
 void ags_recall_handler_free(AgsRecallHandler *recall_handler);
@@ -308,7 +308,7 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				guint *n_params, gchar **parameter_name, GValue *value);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase);
-void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
+void ags_recall_child_added(AgsRecall *recall, AgsRecall *child);
 
 /* query */
 gboolean ags_recall_is_done(GList *recall, GObject *recycling_context);

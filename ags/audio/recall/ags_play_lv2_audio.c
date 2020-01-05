@@ -136,7 +136,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The assigned turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -152,7 +152,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -168,7 +168,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The plugin's plugin object.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_object("plugin",
 				    i18n_pspec("the plugin"),
@@ -184,7 +184,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The effect's input lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("input-lines",
 				   i18n_pspec("input lines of effect"),
@@ -202,7 +202,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The effect's output lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("output-lines",
 				   i18n_pspec("output lines of effect"),
@@ -508,7 +508,7 @@ ags_play_lv2_audio_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
@@ -541,7 +541,7 @@ ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
@@ -570,7 +570,7 @@ ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
@@ -598,7 +598,7 @@ ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Set up LV2 handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
@@ -713,9 +713,9 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
  *
  * Set up LV2 ports.
  *
- * Returns: a #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
@@ -942,7 +942,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
@@ -971,15 +971,15 @@ ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 
 /**
  * ags_play_lv2_audio_find:
- * @recall: a #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin's filename
  * @uri: plugin's uri
  *
  * Retrieve LV2 recall.
  *
- * Returns: Next match.
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next match.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_lv2_audio_find(GList *recall,
@@ -1024,7 +1024,7 @@ ags_play_lv2_audio_find(GList *recall,
  *
  * Returns: the new #AgsPlayLv2Audio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayLv2Audio*
 ags_play_lv2_audio_new(AgsAudio *audio)

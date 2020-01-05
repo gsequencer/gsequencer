@@ -1807,7 +1807,7 @@ ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
  *
  * Find #AgsCoreAudioPort by uuid.
  *
- * Returns: (element-type AgsAudio.CoreAudioPort) (transfer none): the #AgsCoreAudioPort found or %NULL
+ * Returns: (transfer none): the #AgsCoreAudioPort found or %NULL
  *
  * Since: 3.0.0
  */

@@ -130,7 +130,7 @@ ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader)
    *
    * The assigned #AgsIpatch
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ipatch",
 				   i18n_pspec("the ipatch"),
@@ -726,6 +726,16 @@ ags_ipatch_dls2_reader_select_sample(AgsIpatchDLS2Reader *ipatch_dls2_reader,
   return(success);
 }
 
+/**
+ * ags_ipatch_dls2_reader_get_instrument_all:
+ * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
+ * 
+ * Get instrument all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing instrument
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
@@ -786,6 +796,16 @@ ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reade
   return(instrument);
 }
 
+/**
+ * ags_ipatch_dls2_reader_get_sample_all:
+ * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
+ * 
+ * Get sample all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
@@ -848,6 +868,16 @@ ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
   return(sample);
 }
 
+/**
+ * ags_ipatch_dls2_reader_get_sample_by_instrument_index:
+ * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
+ * 
+ * Get sample by instrument index.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 						      guint instrument_index)
@@ -938,7 +968,7 @@ ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatc
  *
  * Returns: an empty #AgsIpatchDLS2Reader.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIpatchDLS2Reader*
 ags_ipatch_dls2_reader_new(AgsIpatch *ipatch)

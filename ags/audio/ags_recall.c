@@ -3498,15 +3498,15 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
 
 /**
  * ags_recall_add_child:
- * @parent: the parent #AgsRecall
+ * @recall: the #AgsRecall
  * @child: the child #AgsRecall
  *
- * Add @child to @parent.
+ * Add @child to @recall.
  * 
  * Since: 3.0.0
  */
 void
-ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
+ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
 {
   AgsRecall *old_parent;
   AgsRecallID *recall_id;
@@ -3519,26 +3519,26 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   guint samplerate;
   guint buffer_size;
   guint format;
-  guint parent_ability_flags;
-  guint parent_behaviour_flags;
-  gint parent_sound_scope;
+  guint recall_ability_flags;
+  guint recall_behaviour_flags;
+  gint recall_sound_scope;
   guint staging_flags;
   
-  GRecMutex *parent_mutex, *child_mutex;
+  GRecMutex *recall_mutex, *child_mutex;
   
   if(!AGS_IS_RECALL(child) ||
-     !AGS_IS_RECALL(parent)){
+     !AGS_IS_RECALL(recall)){
     return;
   }
 
-  /* get recall mutex - parent and child */
-  parent_mutex = AGS_RECALL_GET_OBJ_MUTEX(parent);
+  /* get recall mutex - recall and child */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   child_mutex = AGS_RECALL_GET_OBJ_MUTEX(child);
 
   /* check if already set */
   g_rec_mutex_lock(child_mutex);
 
-  if(child->parent == parent){
+  if(child->parent == recall){
     g_rec_mutex_unlock(child_mutex);
     
     return;
@@ -3549,7 +3549,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   g_rec_mutex_unlock(child_mutex);
 
   /*  */
-  g_object_ref(parent);
+  g_object_ref(recall);
   g_object_ref(child);
 
   /* remove old */
@@ -3560,37 +3560,37 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   }
 
   /* add child */
-  g_rec_mutex_lock(parent_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
-  parent_ability_flags = parent->ability_flags;
-  parent_behaviour_flags = parent->behaviour_flags;
-  parent_sound_scope = parent->sound_scope;
+  recall_ability_flags = recall->ability_flags;
+  recall_behaviour_flags = recall->behaviour_flags;
+  recall_sound_scope = recall->sound_scope;
 
-  output_soundcard = parent->output_soundcard;
-  output_soundcard_channel = parent->output_soundcard_channel;
+  output_soundcard = recall->output_soundcard;
+  output_soundcard_channel = recall->output_soundcard_channel;
 
-  input_soundcard = parent->input_soundcard;
-  input_soundcard_channel = parent->input_soundcard_channel;
+  input_soundcard = recall->input_soundcard;
+  input_soundcard_channel = recall->input_soundcard_channel;
 
-  samplerate = parent->samplerate;
-  buffer_size = parent->buffer_size;
-  format = parent->format;
+  samplerate = recall->samplerate;
+  buffer_size = recall->buffer_size;
+  format = recall->format;
   
-  recall_id = parent->recall_id;
+  recall_id = recall->recall_id;
   
-  parent->children = g_list_prepend(parent->children,
+  recall->children = g_list_prepend(recall->children,
 				    child);
   
-  g_rec_mutex_unlock(parent_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* ref new */
-  ags_recall_set_ability_flags(child, parent_ability_flags);
-  ags_recall_set_behaviour_flags(child, parent_behaviour_flags);
-  ags_recall_set_sound_scope(child, parent_sound_scope);
+  ags_recall_set_ability_flags(child, recall_ability_flags);
+  ags_recall_set_behaviour_flags(child, recall_behaviour_flags);
+  ags_recall_set_sound_scope(child, recall_sound_scope);
 
   g_rec_mutex_lock(child_mutex);
 
-  child->parent = parent;
+  child->parent = recall;
 
   g_rec_mutex_unlock(child_mutex);
 
@@ -3606,12 +3606,12 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 	       NULL);
 
   g_signal_connect_after(G_OBJECT(child), "done",
-			 G_CALLBACK(ags_recall_child_done), parent);
+			 G_CALLBACK(ags_recall_child_done), recall);
 
-  ags_recall_child_added(parent,
+  ags_recall_child_added(recall,
 			 child);
 
-  if(ags_connectable_is_connected(AGS_CONNECTABLE(parent))){
+  if(ags_connectable_is_connected(AGS_CONNECTABLE(recall))){
     ags_connectable_connect(AGS_CONNECTABLE(child));
   }
   
@@ -3621,11 +3621,11 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 		   AGS_SOUND_STAGING_RUN_INIT_INTER |
 		   AGS_SOUND_STAGING_RUN_INIT_POST);
   
-  g_rec_mutex_lock(parent_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
-  staging_flags = (staging_flags & (parent->staging_flags));
+  staging_flags = (staging_flags & (recall->staging_flags));
   
-  g_rec_mutex_unlock(parent_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* set staging flags */
   ags_recall_set_staging_flags(child,
@@ -5265,7 +5265,7 @@ ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean incre
 
 /**
  * ags_recall_child_added:
- * @parent: the parent #AgsRecall
+ * @recall: the #AgsRecall
  * @child: the child #AgsRecall
  *
  * A signal indicating that the a child has been added.
@@ -5273,14 +5273,14 @@ ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean incre
  * Since: 3.0.0
  */
 void
-ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
+ags_recall_child_added(AgsRecall *recall, AgsRecall *child)
 {
-  g_return_if_fail(AGS_IS_RECALL(parent));
-  g_object_ref(G_OBJECT(parent));
-  g_signal_emit(G_OBJECT(parent),
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
 		recall_signals[CHILD_ADDED], 0,
 		child);
-  g_object_unref(G_OBJECT(parent));
+  g_object_unref(G_OBJECT(recall));
 }
 
 /**

@@ -1126,7 +1126,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The ::start signal is invoked as playback starts.
    * 
-   * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
+   * Returns: (type GLib.List) (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
    * 
    * Since: 3.0.0
    */
@@ -3534,9 +3534,9 @@ ags_channel_next_pad(AgsChannel *channel)
  * 
  * Iterate @channel.
  * 
- * Returns: the prev pad of #AgsChannel if available, otherwise %NULL
+ * Returns: (transfer full): the prev pad of #AgsChannel if available, otherwise %NULL
  * 
- * Since: (transfer full): 3.0.0
+ * Since: 3.0.0
  */
 AgsChannel*
 ags_channel_prev_pad(AgsChannel *channel)

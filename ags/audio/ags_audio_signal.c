@@ -3325,7 +3325,7 @@ ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
  *
  * Retrieve the template audio signal.
  *
- * Returns: (element-type AgsAudio.AudioSignal) (transfer none): the template #AgsAudioSignal or %NULL if not found
+ * Returns: (transfer full): the template #AgsAudioSignal or %NULL if not found
  *
  * Since: 3.0.0
  */

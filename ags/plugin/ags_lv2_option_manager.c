@@ -112,7 +112,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
   /* signals */
   /**
    * AgsLv2OptionManager::get-option:
-   * @option_manager: the plugin to instantiate
+   * @lv2_option_manager: the plugin to instantiate
    * @intstance: the LV2 plugin instance
    * @option: the LV2 option pointer
    * @retval: the location of the return value
@@ -135,7 +135,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
 
   /**
    * AgsLv2OptionManager::set-option:
-   * @option_manager: the plugin to instantiate
+   * @lv2_option_manager: the plugin to instantiate
    * @intstance: the LV2 plugin instance
    * @option: the LV2 option pointer
    * @retval: the location of the return value

@@ -185,7 +185,7 @@ ags_reset_amplitude_launch(AgsTask *task)
  *
  * Add @analyse_channel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
@@ -216,7 +216,7 @@ ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
  *
  * Remove @analyse_channel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
@@ -248,9 +248,9 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
  *
  * Get instance.
  *
- * Returns: the #AgsResetAmplitude
+ * Returns: (transfer none): the #AgsResetAmplitude
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_get_instance()
@@ -292,7 +292,7 @@ ags_reset_amplitude_get_instance()
  *
  * Returns: an new #AgsResetAmplitude.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_new()
