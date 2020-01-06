@@ -3776,6 +3776,9 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 					 secret_rabbit.data_out, channels,
 					 (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+  
   return(ret_buffer);
 }
 
@@ -3825,6 +3828,9 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s16(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3876,6 +3882,9 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 					  secret_rabbit.data_out, channels,
 					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+
   return(ret_buffer);
 }
 
@@ -3925,6 +3934,9 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s32(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3976,6 +3988,9 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 					  secret_rabbit.data_out, channels,
 					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+
   return(ret_buffer);
 }
 
@@ -4022,6 +4037,9 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 					    secret_rabbit.data_out, channels,
 					    (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
   
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+
   return(ret_buffer);
 }
 
@@ -4074,6 +4092,9 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_double(ret_buffer, channels,
 					     secret_rabbit.data_out, channels,
 					     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -4279,6 +4300,9 @@ ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s8(target_buffer, channels,
 					 secret_rabbit.data_out, channels,
 					 ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4311,6 +4335,9 @@ ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s16(target_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4343,6 +4370,9 @@ ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s24(target_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4375,6 +4405,9 @@ ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s32(target_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4407,6 +4440,9 @@ ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_s64(target_buffer, channels,
 					  secret_rabbit.data_out, channels,
 					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4434,6 +4470,9 @@ ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
   ags_audio_buffer_util_copy_float_to_float(target_buffer, channels,
 					    secret_rabbit.data_out, channels,
 					    ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
@@ -4466,6 +4505,9 @@ ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channel
   ags_audio_buffer_util_copy_float_to_double(target_buffer, channels,
 					     secret_rabbit.data_out, channels,
 					     ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 }
 
 void
