@@ -8641,7 +8641,7 @@ ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
   }
 
   if(audio->automation_port == NULL){
-    audio->automation_port = malloc(2 * sizeof(gchar **));
+    audio->automation_port = (gchar **) malloc(2 * sizeof(gchar *));
 
     audio->automation_port[0] = g_strdup(control_name);
     audio->automation_port[1] = NULL;
@@ -8649,7 +8649,7 @@ ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name)
     length = g_strv_length(audio->automation_port);
 
     audio->automation_port = (gchar **) realloc(audio->automation_port,
-						(length + 2) * sizeof(gchar **));
+						(length + 2) * sizeof(gchar *));
 
     audio->automation_port[length] = g_strdup(control_name);
     audio->automation_port[length + 1] = NULL;

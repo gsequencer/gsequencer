@@ -9,10 +9,6 @@ ags (3.0.0)
        * TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
        * TODO:JK: migrated to gi18n.h?
        * TODO:JK: migrated unit-tests to GTest?
-       * TODO:JK: replaced AgsAudioLoop by AgsAudioAsyncMainLoop
-       * TODO:JK: replaced AgsGenericMainLoop by AgsGenericAsyncMainLoop
-       * TODO:JK: implemented AgsAudioMainLoop?
-       * TODO:JK: implemented AgsOscMainLoop?
        * TODO:JK: implemented support for GtkApplication
        * implemented introspection support
        * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
