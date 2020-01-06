@@ -215,8 +215,14 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
 
   padding = AGS_INDICATOR(vindicator)->segment_padding;
 
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
+
+  /* clear bg */
+  gtk_render_background(vindicator_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) allocation.width, (gdouble) allocation.height);
 
   for(i = 0; i < AGS_INDICATOR(vindicator)->segment_count; i++){
     if(gtk_adjustment_get_value(adjustment) > 0.0 &&

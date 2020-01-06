@@ -1229,13 +1229,23 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
   
-  /* fill bg */
+  /* clear bg */
+  gtk_render_background(piano_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) x_start, (gdouble) y_start);
+
+  gtk_render_background(piano_style_context,
+			cr,
+			(double) x_start + width, (double) y_start + height,
+			(gdouble) allocation.width, (gdouble) allocation.height);
+
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_rectangle(cr,
 		  (double) x_start, (double) y_start,
 		  (double) width, (double) height);
   cairo_fill(cr);
-
+  
   /* draw */
   control_x0 = x_start;
   control_y0 = y_start;

@@ -1718,6 +1718,7 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
   cairo_push_group(cr);
 
   /* clear bg */
+#if 0
   cairo_set_source_rgba(cr,
 			bg_color->red,
 			bg_color->green,
@@ -1728,7 +1729,13 @@ ags_dial_draw(AgsDial *dial, cairo_t *cr)
 		  0.0, 0.0,
 		  (gdouble) allocation.width, (gdouble) allocation.height);
   cairo_fill(cr);
-
+#else
+  gtk_render_background(dial_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) allocation.width, (gdouble) allocation.height);
+#endif
+  
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
     PangoLayout *layout;
     PangoFontDescription *desc;

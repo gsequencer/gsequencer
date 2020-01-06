@@ -1054,6 +1054,7 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 	       NULL);
   
   /* clear bg */
+#if 0
   cairo_set_source_rgba(cr,
 			bg_color->red,
 			bg_color->green,
@@ -1064,6 +1065,12 @@ ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 		  0.0, 0.0,
 		  allocation.width, allocation.height);
   cairo_fill(cr);
+#else
+  gtk_render_background(cartesian_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) allocation.width, (gdouble) allocation.height);
+#endif
   
   /* cartesian offset, width and height */
   width = (cartesian->x_end - cartesian->x_start);
