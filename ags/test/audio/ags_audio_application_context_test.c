@@ -50,7 +50,7 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
   "\n"						       \
   "[soundcard-0]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"                                    \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \
@@ -59,7 +59,7 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
   "\n"						       \
   "[soundcard-1]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"                                    \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \

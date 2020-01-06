@@ -1177,6 +1177,8 @@ ags_piano_motion_notify(GtkWidget *widget,
 void
 ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 {  
+  GtkStyleContext *piano_style_context;
+
   GtkAllocation allocation;
 
   guint width, height;
@@ -1201,6 +1203,9 @@ ags_piano_draw(AgsPiano *piano, cairo_t *cr)
 
   gtk_widget_get_allocation(piano,
 			    &allocation);
+
+  /* style context */
+  piano_style_context = gtk_widget_get_style_context(GTK_WIDGET(piano));
 
   width  = 0;
   height = 0;
