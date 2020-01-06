@@ -1087,7 +1087,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   }
 
   instantiate = NULL;
-  
+
   if(plugin_so != NULL){
     gboolean success;
     
@@ -1120,13 +1120,18 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   /* alloc handle */
   lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
 
+  lv2_handle[0] = NULL;
+  
   /* instantiate */
   rate = (double) samplerate;
-  lv2_handle[0] = instantiate(plugin_descriptor,
-			      rate,
-			      path,
-			      feature);
 
+  if(instantiate != NULL){
+    lv2_handle[0] = instantiate(plugin_descriptor,
+				rate,
+				path,
+				feature);
+  }
+  
   if(initial_call){
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));

@@ -776,14 +776,18 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   /* instantiate */
   ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
-  
-  ui_handle[0] = instantiate(plugin_descriptor,
-			     uri,
-			     path,
-			     write_function,
-			     controller,
-			     &widget,
-			     feature);
+
+  ui_handle[0] = NULL;
+
+  if(instantiate != NULL){
+    ui_handle[0] = instantiate(plugin_descriptor,
+			       uri,
+			       path,
+			       write_function,
+			       controller,
+			       &widget,
+			       feature);
+  }
   
   g_message("LV2UI handle = %p", ui_handle[0]);
   

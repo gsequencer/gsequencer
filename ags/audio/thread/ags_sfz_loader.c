@@ -942,7 +942,7 @@ ags_sfz_loader_run(void *ptr)
 						       &current_key);
 
 	  if(retval > 0){
-	    pitch_keycenter = current_pitch_keycenter;
+	    pitch_keycenter = current_key;
 	  }
 	}
       }else if(str_key != NULL){
@@ -980,7 +980,7 @@ ags_sfz_loader_run(void *ptr)
 						       &current_key);
 
 	  if(retval > 0){
-	    pitch_keycenter = current_pitch_keycenter;
+	    pitch_keycenter = current_key;
 	  }
 	}		
       }else if(str_key != NULL){

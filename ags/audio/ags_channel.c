@@ -8732,11 +8732,15 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 
   /* play context */
   /* automation */
-  g_rec_mutex_lock(play_mutex);
+  port = NULL;
 
-  port = AGS_RECALL(play->data)->port;
+  if(play != NULL){
+    g_rec_mutex_lock(play_mutex);
 
-  g_rec_mutex_unlock(play_mutex);
+    port = AGS_RECALL(play->data)->port;
+
+    g_rec_mutex_unlock(play_mutex);
+  }
   
   while(port != NULL){
     specifier = AGS_PORT(port->data)->specifier;
@@ -8799,12 +8803,16 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 
   /* recall context */
   /* automation */
-  g_rec_mutex_lock(recall_mutex);
+  port = NULL;
+
+  if(recall != NULL){
+    g_rec_mutex_lock(recall_mutex);
   
-  port = AGS_RECALL(recall->data)->port;
+    port = AGS_RECALL(recall->data)->port;
 
-  g_rec_mutex_unlock(recall_mutex);
-
+    g_rec_mutex_unlock(recall_mutex);
+  }
+  
   while(port != NULL){
     specifier = AGS_PORT(port->data)->specifier;
 
@@ -13533,8 +13541,7 @@ ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
     current_link = ags_channel_get_link(current_input);
       
     /* check scope - input */
-    recall_id =
-      start_recall_id = ags_channel_check_scope(current_input, sound_scope);
+    start_recall_id = ags_channel_check_scope(current_input, sound_scope);
 
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     recycling_context);

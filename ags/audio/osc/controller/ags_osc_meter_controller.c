@@ -2848,6 +2848,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
     audio = NULL;
     channel = NULL;
     
+    current_path = NULL;    
+
     if(AGS_IS_RECALL_CHANNEL(parent)){
       g_object_get(parent,
 		   "source", &channel,
@@ -3008,8 +3010,6 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 
     path_offset += 1;
 
-    current_path = NULL;    
-
     if(!strncmp(path + path_offset,
 		"value",
 		6)){
@@ -3069,6 +3069,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       ags_osc_meter_controller_add_monitor(osc_meter_controller,
 					   monitor);
     }
+
+    g_free(current_path);
   }
 
   return(start_response);

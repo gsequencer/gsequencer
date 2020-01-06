@@ -846,14 +846,14 @@ ags_midi_builder_set_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_FILE:
-    {
-      g_rec_mutex_lock(midi_builder_mutex);
+  {
+    g_rec_mutex_lock(midi_builder_mutex);
 
-      midi_builder->file = g_value_get_pointer(value);
+    midi_builder->file = g_value_get_pointer(value);
 
-      g_rec_mutex_unlock(midi_builder_mutex);
-    }
-    break;
+    g_rec_mutex_unlock(midi_builder_mutex);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -877,14 +877,14 @@ ags_midi_builder_get_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_FILE:
-    {
-      g_rec_mutex_lock(midi_builder_mutex);
+  {
+    g_rec_mutex_lock(midi_builder_mutex);
 
-      g_value_set_pointer(value,
-			  midi_builder->file);
+    g_value_set_pointer(value,
+			midi_builder->file);
 
-      g_rec_mutex_unlock(midi_builder_mutex);
-    }
+    g_rec_mutex_unlock(midi_builder_mutex);
+  }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1067,7 +1067,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   
   /* get offset */
   midi_builder_track->data = (guchar *) realloc(midi_builder_track->data,
-						       (midi_builder_track->length + length) * sizeof(guchar));
+						(midi_builder_track->length + length) * sizeof(guchar));
 
   current = midi_builder_track->data + midi_builder_track->length;
   
@@ -1683,9 +1683,9 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
   
   buffer = (guchar *) malloc((delta_time_size + 2) * sizeof(guchar));
   ags_midi_buffer_util_put_change_pressure(buffer,
-					  delta_time,
-					  channel,
-					  pressure);
+					   delta_time,
+					   channel,
+					   pressure);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
 					     buffer, delta_time_size + 2);
 }
@@ -3092,8 +3092,8 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
 	ags_midi_builder_append_xml_node(midi_builder,
 					 child);
       }else if(!xmlStrncmp(child->name,
-		     (xmlChar *) "midi-tracks",
-		     13)){
+			   (xmlChar *) "midi-tracks",
+			   13)){
 	ags_midi_builder_append_xml_node(midi_builder,
 					 child);
       }
@@ -3160,7 +3160,8 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   /* fill */
   offset = midi_builder->data;
   
-  if(midi_builder->midi_header != NULL &
+  if(offset != NULL &&
+     midi_builder->midi_header != NULL &
      midi_builder->midi_header->data != NULL){
     memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(guchar));
     offset += midi_builder->midi_header->length;

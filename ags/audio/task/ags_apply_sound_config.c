@@ -660,7 +660,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 					    orig_sequencer->data);
     }
     
-    orig_soundcard = orig_soundcard->next;
+    orig_sequencer = orig_sequencer->next;
   }
 
   ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),

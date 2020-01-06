@@ -491,6 +491,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
     machine = (AgsMachine *) ags_synth_new(default_soundcard);
   }else{
     g_warning("unknown machine type");
+
+    return;
   }
 
   /* connect everything */

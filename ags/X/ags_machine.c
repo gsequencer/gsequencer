@@ -2700,14 +2700,23 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
   xmlNode *notation_node, *current_note;
 
   GList *start_list;
-    
+
+  gchar *str;
+  
+  guint audio_channel;
   guint x_boundary, y_boundary;
   guint bank_0, bank_1, k;
 
   current = start_current;
 
+  audio_channel = 0;
+  
   if(current != NULL){
     g_object_ref(current);
+
+    g_object_get(current,
+		 "audio-channel", &audio_channel,
+		 NULL);
   }
 
   next_current = NULL;
@@ -2719,8 +2728,13 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
   xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
   xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
   xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup("0"));
-  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", current->audio_channel));
+  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST "0");
+
+  str = g_strdup_printf("%u",
+			audio_channel);
+  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST str);
+
+  g_free(str);
 
   bank_0 = machine->bank_0;
   bank_1 = machine->bank_1;

@@ -454,6 +454,8 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
     start_list = g_list_copy(lv2ui_manager->lv2ui_plugin);
 
   g_rec_mutex_unlock(lv2ui_manager_mutex);
+
+  success = FALSE;
   
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);

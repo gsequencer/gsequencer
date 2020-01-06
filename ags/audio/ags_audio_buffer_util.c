@@ -4015,7 +4015,7 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gdouble *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gdouble));
+  ret_buffer = (gfloat *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gfloat));
   ags_audio_buffer_util_clear_double(ret_buffer, channels,
 				     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
   ags_audio_buffer_util_copy_float_to_float(ret_buffer, channels,

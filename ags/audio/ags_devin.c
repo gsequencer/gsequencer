@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2338,6 +2338,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   /* get devin mutex */
   devin_mutex = AGS_DEVIN_GET_OBJ_MUTEX(devin);
   
+#ifdef AGS_WITH_OSS
   /* lock */
   g_rec_mutex_lock(devin_mutex);
 
@@ -2395,7 +2396,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
     nth_buffer = 3;
   }
 
-#ifdef AGS_WITH_OSS
   /* write ring buffer */
   n_write = read(devin->out.oss.device_fd,
 		 devin->ring_buffer[devin->nth_ring_buffer],
@@ -2420,7 +2420,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   if(n_write != devin->pcm_channels * devin->buffer_size * word_size * sizeof (char)){
     g_critical("write() return doesn't match written bytes");
   }
-#endif
 
   /* increment nth ring-buffer */
   if(devin->nth_ring_buffer + 1 >= devin->ring_buffer_size){
@@ -2430,6 +2429,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   }
   
   g_rec_mutex_unlock(devin_mutex);
+#endif
 
   /* update soundcard */
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));

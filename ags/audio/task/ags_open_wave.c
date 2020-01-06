@@ -388,6 +388,8 @@ ags_open_wave_launch(AgsTask *task)
 
   if(audio_file == NULL){
     //TODO:JK: implement me
+
+    return;
   }
   
   /* get some fields */

@@ -87,7 +87,7 @@ ags_uuid_copy(AgsUUID *ptr)
   new_ptr = (AgsUUID *) malloc(sizeof(AgsUUID));
   memcpy(new_ptr->data, ptr->data, sizeof(AgsUUID));
 
-  return(ptr);
+  return(new_ptr);
 }
 
 /**

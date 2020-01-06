@@ -1661,7 +1661,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 							   &current_key);
 
 	      if(retval > 0){
-		pitch_keycenter = current_pitch_keycenter;
+		pitch_keycenter = current_key;
 	      }
 	    }		
 	  }else if(str_key != NULL){
@@ -1696,14 +1696,14 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 							   &current_key);
 
 	      if(retval > 0){
-		pitch_keycenter = current_pitch_keycenter;
+		pitch_keycenter = current_key;
 	      }
 	    }		
 	  }else if(str_key != NULL){
 	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
-	      pitch_keycenter = current_key;
+	      pitch_keycenter = current_pitch_key_center;
 	    }else{
 	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
 							   &current_key);

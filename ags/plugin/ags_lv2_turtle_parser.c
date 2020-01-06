@@ -888,8 +888,14 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_
       }
 	
       g_list_free(start_xpath_result);
-	
-      path = g_path_get_dirname(turtle[0]->filename);
+
+      path = NULL;
+
+      if(turtle != NULL &&
+	 turtle[0] != NULL){
+	path = g_path_get_dirname(turtle[0]->filename);
+      }
+      
       so_filename = NULL;
 
       if(node_binary != NULL){
@@ -1151,9 +1157,14 @@ ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsLv2TurtlePar
 	  int ttl_length;
 	  guint next_n_turtle;
 	  gboolean skip;
-	    
-	  path = g_path_get_dirname(turtle[0]->filename);
 
+	  path = NULL;
+
+	  if(turtle != NULL &&
+	     turtle[0] != NULL){
+	    path = g_path_get_dirname(turtle[0]->filename);
+	  }
+	  
 	  ttl_length = strlen(str) - 2;
 	  filename = g_strdup_printf("%s%c%.*s",
 				     path,
@@ -2353,17 +2364,19 @@ ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle
 				prefix_id,
 				"schedule");
 
-	xpath_result =
-	  start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-								       xpath,
-								       (xmlNode *) current);
-
-	g_free(xpath);
+	start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								     xpath,
+								     (xmlNode *) current);
 
 	if(start_xpath_result != NULL){
 	  ags_lv2_plugin_set_flags(lv2_plugin,
 				   AGS_LV2_PLUGIN_NEEDS_WORKER);
+
 	}
+
+	g_list_free(start_xpath_result);
+	
+	g_free(xpath);
       }
 
       g_list_free(start_worker_xpath_result);

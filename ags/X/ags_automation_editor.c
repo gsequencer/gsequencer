@@ -2526,7 +2526,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       gint big_step, small_step;
 
       //TODO:JK: implement me
-      big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (automation_edit->cursor_position_x % (guint) 16);
+      big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (automation_editor->focused_automation_edit->cursor_position_x % (guint) 16);
       small_step = (guint) big_step - 16;
 	
       if(small_step < last_x){

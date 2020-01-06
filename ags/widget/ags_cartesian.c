@@ -1747,8 +1747,8 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
     plot->point = NULL;
     plot->point_color = NULL;
   }else{
-    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble));
-    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble));
+    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble *));
+    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble *));
     plot->point_label = (gchar **) malloc((n_points + 1) * sizeof(gchar *));
 
     for(i = 0; i < n_points; i++){
@@ -2088,23 +2088,29 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
     i_stop = (guint) ceil((1.0 / cartesian->x_label_step_width) *
 			  (cartesian->x_end - cartesian->x_start));
 
-    for(i = 0; i < i_stop; i++){
-      /* fill x label */
-      cartesian->x_label[i] = cartesian->x_label_func((cartesian->x_label_factor *
-						       (gdouble) i + (cartesian->x_start / cartesian->x_step_width) +
-						       (cartesian->x_label_start / cartesian->x_step_width)),
-						      cartesian->x_label_data);
+    if(cartesian->x_label != NULL &&
+       cartesian->x_label_func != NULL){
+      for(i = 0; i < i_stop; i++){
+	/* fill x label */
+	cartesian->x_label[i] = cartesian->x_label_func((cartesian->x_label_factor *
+							 (gdouble) i + (cartesian->x_start / cartesian->x_step_width) +
+							 (cartesian->x_label_start / cartesian->x_step_width)),
+							cartesian->x_label_data);
+      }
     }
   }else{
     i_stop = (guint) ceil((1.0 / cartesian->y_label_step_height) *
 			  (cartesian->y_end - cartesian->y_start));
 
-    for(i = 0; i < i_stop; i++){
-      /* fill y label */
-      cartesian->y_label[i] = cartesian->y_label_func((cartesian->y_label_factor *
-						       (gdouble) i + (cartesian->y_start / cartesian->y_step_height) +
-						       (cartesian->y_label_start / cartesian->y_step_height)),
-						      cartesian->y_label_data);
+    if(cartesian->y_label != NULL &&
+       cartesian->y_label_func != NULL){
+      for(i = 0; i < i_stop; i++){
+	/* fill y label */
+	cartesian->y_label[i] = cartesian->y_label_func((cartesian->y_label_factor *
+							 (gdouble) i + (cartesian->y_start / cartesian->y_step_height) +
+							 (cartesian->y_label_start / cartesian->y_step_height)),
+							cartesian->y_label_data);
+      }
     }
   }
 }

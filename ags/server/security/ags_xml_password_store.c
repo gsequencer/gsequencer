@@ -641,6 +641,8 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 
   password_hash = crypt_r(password, salt,
 			  data);
+
+  free(data);
 #else
   password_hash = crypt(password, salt);
 #endif
