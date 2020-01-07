@@ -569,7 +569,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   guint i;
   
   /* flags */
@@ -641,10 +641,10 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    jack_devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    jack_devout->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

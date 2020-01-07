@@ -488,139 +488,8 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
 }
 
 /**
- * ags_midi_util_envelope_to_velocity:
- * @attack: attack
- * @decay: decay
- * @sustain: sustain
- * @release: release
- * @ratio: ratio
- * @samplerate: samplerate
- * @start_frame: start frame
- * @end_frame: end frame
- *
- * Envelope to velocity.
- *
- * Returns: the velocity
- *
- * Since: 2.0.0
- */
-glong
-ags_midi_util_envelope_to_velocity(AgsComplex *attack,
-				   AgsComplex *decay,
-				   AgsComplex *sustain,
-				   AgsComplex *release,
-				   AgsComplex *ratio,
-				   guint samplerate,
-				   guint start_frame, guint end_frame)
-{
-  glong velocity;
-
-  velocity = 127;
-
-  //TODO:JK: implement me
-  
-  return(velocity);
-}
-
-/**
- * ags_midi_util_velocity_to_envelope:
- * @delta_time: delta time
- * @is_release: is release
- * @attack: attack
- * @decay: decay
- * @sustain: sustain
- * @release: release
- * @ratio: ratio
- * @samplerate: samplerate
- * @start_frame: start frame
- * @end_frame: end frame
- *
- * Velocity to envelope.
- *
- * Since: 2.0.0
- */
-void
-ags_midi_util_velocity_to_envelope(glong delta_time,
-				   gboolean is_release,
-				   AgsComplex **attack,
-				   AgsComplex **decay,
-				   AgsComplex **sustain,
-				   AgsComplex **release,
-				   AgsComplex **ratio,
-				   guint *samplerate,
-				   guint *start_frame, guint *end_frame)
-{
-  //TODO:JK: implement me
-}
-
-/**
- * ags_midi_util_envelope_to_pressure:
- * @attack: attack
- * @decay: decay
- * @sustain: sustain
- * @release: release
- * @ratio: ratio
- * @samplerate: samplerate
- * @start_frame: start frame
- * @end_frame: end frame
- *
- * Envelope to pressure.
- *
- * Returns: the pressure
- *
- * Since: 2.0.0
- */
-glong
-ags_midi_util_envelope_to_pressure(AgsComplex *attack,
-				   AgsComplex *decay,
-				   AgsComplex *sustain,
-				   AgsComplex *release,
-				   AgsComplex *ratio,
-				   guint samplerate,
-				   guint start_frame, guint end_frame)
-{
-  glong pressure;
-
-  pressure = 127;
-
-  //TODO:JK: implement me
-  
-  return(pressure);
-}
-
-/**
- * ags_midi_util_pressure_to_envelope:
- * @delta_time: delta time
- * @is_sustain: is sustain
- * @attack: attack
- * @decay: decay
- * @sustain: sustain
- * @release: release
- * @ratio: ratio
- * @samplerate: samplerate
- * @start_frame: start frame
- * @end_frame: end frame
- *
- * Pressure to envelope.
- *
- * Since: 2.0.0
- */
-void
-ags_midi_util_pressure_to_envelope(glong delta_time,
-				   gboolean is_sustain,
-				   AgsComplex **attack,
-				   AgsComplex **decay,
-				   AgsComplex **sustain,
-				   AgsComplex **release,
-				   AgsComplex **ratio,
-				   guint *samplerate,
-				   guint *start_frame, guint *end_frame)
-{
-  //TODO:JK: implement me
-}
-
-/**
  * ags_midi_util_delta_time_to_offset:
+ * @delay_factor: delay factor
  * @division: division
  * @tempo: tempo
  * @bpm: bpm
@@ -630,10 +499,11 @@ ags_midi_util_pressure_to_envelope(glong delta_time,
  *
  * Returns: the offset
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
-ags_midi_util_delta_time_to_offset(glong division,
+ags_midi_util_delta_time_to_offset(gdouble delay_factor,
+				   glong division,
 				   glong tempo,
 				   glong bpm,
 				   glong delta_time)
@@ -642,10 +512,10 @@ ags_midi_util_delta_time_to_offset(glong division,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    offset = (16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC));
+    offset = (16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
   }else{
     /* SMTPE */
-    offset = (16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC));
+    offset = (16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * delay_factor;
   }
 
   return(offset);
@@ -653,6 +523,7 @@ ags_midi_util_delta_time_to_offset(glong division,
 
 /**
  * ags_midi_util_offset_to_delta_time:
+ * @delay_factor: delay factor
  * @division: division
  * @tempo: tempo
  * @bpm: bpm
@@ -662,10 +533,11 @@ ags_midi_util_delta_time_to_offset(glong division,
  *
  * Returns: the delta time
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 glong
-ags_midi_util_offset_to_delta_time(glong division,
+ags_midi_util_offset_to_delta_time(gdouble delay_factor,
+				   glong division,
 				   glong tempo,
 				   glong bpm,
 				   guint x)
@@ -674,10 +546,10 @@ ags_midi_util_offset_to_delta_time(glong division,
 
   if(((1 << 15) & division) == 0){
     /* ticks per quarter note */
-    delta_time = x / (16.0 * bpm / 60.0) / (tempo / division / ((gdouble) AGS_USEC_PER_SEC));
+    delta_time = (60.0 * AGS_USEC_PER_SEC * division * x) / (16.0 * bpm * delay_factor * tempo);
   }else{
     /* SMTPE */
-    delta_time = x / (16.0 * bpm / 60.0) * (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC));
+    delta_time = (60.0 * (((division * division) / 256.0) / ((gdouble) AGS_USEC_PER_SEC)) * x) / (16.0 * bpm * delay_factor * tempo);
   }
 
   return(delta_time);

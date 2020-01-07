@@ -400,7 +400,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   gchar *segmentation;
 
   guint i;
-  guint denumerator, numerator;
+  guint denominator, numerator;
 
   jack_midiin->flags = 0;
 
@@ -458,10 +458,10 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    jack_midiin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    jack_midiin->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

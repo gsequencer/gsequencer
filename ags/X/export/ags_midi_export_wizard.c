@@ -399,9 +399,9 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 
   /* add header */
   ags_midi_builder_append_header(midi_export_wizard->midi_builder,
-				 0, 1,
+				 6, 1,
 				 track_count, division,
-				 times, bpm,
+				 times, AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,
 				 clicks);
   
   /* apply tracks */

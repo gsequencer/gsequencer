@@ -541,7 +541,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   guint i;
   
   /* flags */
@@ -608,10 +608,10 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    core_audio_devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    core_audio_devin->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

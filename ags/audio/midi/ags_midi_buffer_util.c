@@ -1798,7 +1798,7 @@ ags_midi_buffer_util_put_time_signature(guchar *buffer,
   buffer[delta_time_size + 1] = 0x58;
 
   /* length */
-  buffer[delta_time_size + 2] = 4;
+  buffer[delta_time_size + 2] = 0x4;
 
   /* nn */
   buffer[delta_time_size + 3] = nn;

@@ -569,7 +569,7 @@ ags_audio_unit_devout_init(AgsAudioUnitDevout *audio_unit_devout)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   guint i;
   
   /* flags */
@@ -645,10 +645,10 @@ ags_audio_unit_devout_init(AgsAudioUnitDevout *audio_unit_devout)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    audio_unit_devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    audio_unit_devout->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

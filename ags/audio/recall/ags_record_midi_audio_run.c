@@ -689,6 +689,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   
   unsigned char *midi_buffer;
 
+  gdouble delay_factor;
   glong division, tempo, bpm;
   guint64 notation_counter;
   gboolean reverse_mapping;
@@ -741,6 +742,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     return;
   }
 
+  delay_factor = ags_sequencer_get_delay_factor(AGS_SEQUENCER(input_sequencer));
+  
   /* get audio fields */
   pattern_mode = ags_audio_test_behaviour_flags(audio,
 						AGS_SOUND_BEHAVIOUR_PATTERN_MODE);
@@ -918,6 +921,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		    current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
 		  }
 
+		  current_note->attack.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
+
 #ifdef AGS_DEBUG
 		  g_message("add %d", current_note->y);
 #endif
@@ -952,6 +957,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  /* note-off */
 		  ags_note_unset_flags(current_note,
 				       AGS_NOTE_FEED);
+
+		  current_note->release.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
 
 		  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							      current_note);
@@ -1009,6 +1016,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 	    /* remove current note */
 	    if(current_note != NULL){
+	      current_note->release.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
+	      
 	      ags_note_unset_flags(current_note,
 				   AGS_NOTE_FEED);
 	      
@@ -1154,7 +1163,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       glong delta_time;
       guint smf_buffer_length;
 
-      delta_time = ags_midi_util_offset_to_delta_time(division,
+      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+						      division,
 						      tempo,
 						      bpm,
 						      notation_counter);

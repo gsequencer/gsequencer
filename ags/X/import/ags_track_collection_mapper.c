@@ -597,7 +597,10 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
   GList *list;
-  
+
+  gchar *segmentation;
+
+  gdouble delay_factor;
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
@@ -643,6 +646,25 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   timestamp->timer.ags_offset.offset = 0;
   
   prev_x = 0;
+
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
+
+  /* segmentation */
+  segmentation = ags_config_get_value(ags_config_get_instance(),
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    guint denominator, numerator;
+    
+    sscanf(segmentation, "%d/%d",
+	   &denominator,
+	   &numerator);
+    
+    delay_factor = 1.0 / numerator * (numerator / denominator);
+
+    g_free(segmentation);
+  }
   
   while(track != NULL){
     current = track->data;
@@ -666,7 +688,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(track_collection->division,
+	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+						 track_collection->division,
 						 track_collection->tempo,
 						 (glong) track_collection->bpm,
 						 delta_time);
@@ -693,8 +716,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
 	    note->y = y;
-	    ags_complex_set(&(note->attack),
-			    velocity);
+	    note->attack.imag = (gdouble) velocity / 127.0;
 
 	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
 	      current_notation = ags_notation_new(NULL,
@@ -734,7 +756,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	  xmlFree(str);
 	  
-	  x = ags_midi_util_delta_time_to_offset(track_collection->division,
+	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+						 track_collection->division,
 						 track_collection->tempo,
 						 (glong) track_collection->bpm,
 						 delta_time);
@@ -771,8 +794,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 		}
 	      
 		note->y = y;
-		ags_complex_set(&(note->release),
-				velocity);
+		note->release.imag = (gdouble) velocity / 127.0;
 
 		break;
 	      }

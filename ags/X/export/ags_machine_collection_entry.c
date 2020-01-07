@@ -355,23 +355,16 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   AgsMidiBuilder *midi_builder;
 
-  AgsNote **check_match;
-  
   GList *start_notation, *notation;
-  GList *start_note, *note;
   
-  gint key_on[128];
-  gint key_off[128];
-  gboolean key_active[128];
+  gchar *segmentation;
 
+  guint audio_channels;
+  gdouble delay_factor;
   gdouble bpm;
+  guint prev_delta_time;
   guint delta_time;
-  guint pulse_unit;
-  guint notation_count;
-  guint x, prev_x;
   guint i;
-  gboolean initial_track;
-  gboolean success;
   
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
 
@@ -386,102 +379,78 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   g_object_get(machine->audio,
 	       "notation", &start_notation,
+	       "audio-channels", &audio_channels,
 	       NULL);
   
   midi_builder = midi_export_wizard->midi_builder;
-  pulse_unit = midi_export_wizard->pulse_unit;
 
   bpm = midi_builder->midi_header->beat;
   
-  notation_count = g_list_length(start_notation);
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
 
-  if(midi_builder->current_midi_track == NULL){
-    initial_track = TRUE;
-  }else{
-    initial_track = FALSE;
+  /* segmentation */
+  segmentation = ags_config_get_value(ags_config_get_instance(),
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    guint denominator, numerator;
+    
+    sscanf(segmentation, "%d/%d",
+	   &denominator,
+	   &numerator);
+    
+    delay_factor = 1.0 / numerator * (numerator / denominator);
+
+    g_free(segmentation);
   }
   
-  /* append track */
-  ags_midi_builder_append_track(midi_builder,
-				gtk_entry_get_text(machine_collection_entry->sequence));
+  delta_time = 0;
+  prev_delta_time = 0;
 
-  /* append tempo */
-  if(initial_track){
-    //TODO:JK: improve hard-coded values
+  for(i = 0; i < audio_channels; i++){
+    GList *start_note, *note;
+    GList *start_active_note, *active_note;
+
+    gchar *str;
+    gint key_on[128];
+    
+    /* append track */
+    str = g_strdup_printf("%s #%d",
+			  gtk_entry_get_text(machine_collection_entry->sequence),
+			  i);
+    
+    ags_midi_builder_append_track(midi_builder,
+				  str);
+
+    g_free(str);
+
+    /* append tempo */
     ags_midi_builder_append_time_signature(midi_builder,
 					   0,
 					   4, 4,
-					   4, 16);
-    
-    ags_midi_builder_append_tempo(midi_builder,
-				  0,
-				  (guint) round(60.0 * 1000000.0 / bpm));
-  }
-  
-  /* put keys */
-  check_match = (AgsNote **) malloc(notation_count * sizeof(AgsNote *));
-
-  for(i = 0; i < notation_count; i++){
-    check_match[i] = NULL;
-  }
-  
-  memset(key_on, -1, 128 * sizeof(gint));
-  memset(key_off, -1, 128 * sizeof(gint));
-  
-  memset(key_active, FALSE, 128 * sizeof(gboolean));
-
-  delta_time = 0;
-  prev_x = 0;
-  
-  success = TRUE;
-
-  while(success){
-    guint note_x0, note_x1;
-    guint check_x0, check_x1;
-    guint note_y;
-    guint check_y;
+					   36, 8);  
     
     notation = start_notation;
 
-    for(i = 0; i < notation_count; i++){
-      check_match[i] = NULL;
-    }
+    start_active_note = NULL;
+    
+    /* put keys */
+    memset(key_on, 0, 128 * sizeof(gint));
 
-    /* check key-on */    
-    for(i = 0; notation != NULL; i++){
+    while(notation != NULL){
+      guint audio_channel;
+
       g_object_get(notation->data,
-		   "note", &start_note,
+		   "audio-channel", &audio_channel,
 		   NULL);
+      
+      if(i != audio_channel){
+	notation = notation->next;
 
-      note = start_note;
-
-      while(note != NULL){
-	g_object_get(note->data,
-		     "x0", &note_x0,
-		     "y", &note_y,
-		     NULL);
-	
-	if(note_y < 128){
-	  if(key_on[note_y] < (gint) note_x0){
-	    check_match[i] = AGS_NOTE(note->data);
-	    
-	    break;
-	  }
-	}
-	
-	note = note->next;
+	continue;
       }
 
-      g_list_free_full(start_note,
-		       g_object_unref);
-      
-      notation = notation->next;
-    }
-
-    /* check key-off */
-    notation = start_notation;
-
-    for(i = 0; notation != NULL; i++){
       g_object_get(notation->data,
 		   "note", &start_note,
 		   NULL);
@@ -489,123 +458,89 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
       note = start_note;
 
       while(note != NULL){
+	guint note_x0;
+	guint note_y;
+
 	g_object_get(note->data,
 		     "x0", &note_x0,
-		     "x1", &note_x1,
 		     "y", &note_y,
 		     NULL);
 
-	if(note_y < 128){
-	  if(check_match[i] != NULL){
-	    g_object_get(check_match[i],
-			 "x0", &check_x0,
-			 NULL);
+	/* check note-off */
+	active_note = start_active_note;
+	
+	while(active_note != NULL){
+	  guint active_x1;
+	  guint active_y;
+
+	  g_object_get(active_note->data,
+		       "x1", &active_x1,
+		       "y", &active_y,
+		       NULL);
+
+	  
+	  if(active_x1 <= note_x0){
+	    key_on[active_y] -= 1;
 	    
-	    if(check_x0 < note_x1){
-	      break;
+	    if(key_on[note_y] == 0){
+	      delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION,
+							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_TEMPO,
+							      AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,
+							      note_x0);
+	    
+	      /* append key-off */
+	      ags_midi_builder_append_key_off(midi_builder,
+					      delta_time - prev_delta_time,
+					      0,
+					      active_y,
+					      (guint) 127 * AGS_NOTE(active_note->data)->release.imag);
+
+	      prev_delta_time = delta_time;
+	      
+	      start_active_note = g_list_remove(start_active_note,
+						active_note->data);
 	    }
 	  }
 	  
-    	  if(key_off[note_y] < (gint) note_x1){
-	    check_match[i] = AGS_NOTE(note->data);
-	    
-	    break;
-	  }
+	  active_note = active_note->next;
 	}
 	
+	/* note-on */
+	if(note_y < 128){
+	  start_active_note = g_list_prepend(start_active_note,
+					     note->data);
+	  
+	  key_on[note_y] += 1;
+
+	  if(key_on[note_y] == 1){
+	    delta_time = ags_midi_util_offset_to_delta_time(delay_factor,
+							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION,
+							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_TEMPO,
+							    AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,
+							    note_x0);
+	    
+	    /* append key-on */
+	    ags_midi_builder_append_key_on(midi_builder,
+					   delta_time - prev_delta_time,
+					   0,
+					   note_y,
+					   (guint) 127 * AGS_NOTE(note->data)->attack.imag);
+
+	    prev_delta_time = delta_time;
+	  }
+	}
+
 	note = note->next;
       }
 
       g_list_free_full(start_note,
 		       g_object_unref);
-      
+            
       notation = notation->next;
     }
-
-    /* find next pulse */
-    x = G_MAXUINT;
-    success = FALSE;
-    
-    for(i = 0; i < notation_count; i++){
-      if(check_match[i] != NULL){
-	g_object_get(check_match[i],
-		     "x0", &check_x0,
-		     "x1", &check_x1,
-		     "y", &check_y,
-		     NULL);
-	
-	if(!key_active[check_y]){
-	  /* check key-on */
-	  if(check_x0 < x){
-	    x = check_x0;
-
-	    success = TRUE;
-	  }
-	}else if(key_active[check_y]){
-	  /* check key-off */
-	  if(check_x1 < x){
-	    x = check_x1;
-	    
-	    success = TRUE;
-	  }
-	}
-      }
-    }
-    
-    /* apply events matching pulse */
-    if(success){
-      for(i = 0; i < notation_count; i++){
-	if(check_match[i] != NULL){
-	  if(x > prev_x){
-	    delta_time += (x - prev_x) * pulse_unit;
-	  }else{
-	    delta_time = 0;
-	  }
-
-	  g_object_get(check_match[i],
-		       "x0", &check_x0,
-		       "x1", &check_x1,
-		       "y", &check_y,
-		       NULL);
-
-	  if(check_x0 == x){
-	    if(key_on[check_y] != check_x0){
-	      /* append key-on */
-	      ags_midi_builder_append_key_on(midi_builder,
-					     delta_time,
-					     0,
-					     check_y,
-					     127);
-	      
-#ifdef AGS_DEBUG
-	      g_message("key-on %d,%d - %d", check_x0, check_x1, check_y);
-#endif
-	    
-	      key_on[check_y] = check_x0;
-	      key_active[check_y] = TRUE;
-	    }
-	  }else if(check_x1 == x){
-	    if(key_off[check_y] != check_x1){
-	      /* append key-off */
-	      ags_midi_builder_append_key_off(midi_builder,
-					      delta_time,
-					      0,
-					      check_y,
-					      127);	    
-
-	      key_off[check_y] = check_x1;
-	      key_active[check_y] = FALSE;
-	    }
-	  }
-
-	  prev_x = x;
-	}
-      }
-    }
   }
-
-  free(check_match);
-  
+    
   g_list_free_full(start_notation,
 		   g_object_unref);
 }

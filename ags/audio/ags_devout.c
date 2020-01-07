@@ -580,7 +580,7 @@ ags_devout_init(AgsDevout *devout)
   gchar *segmentation;
 
   guint i;
-  guint denumerator, numerator;
+  guint denominator, numerator;
   gboolean use_alsa;  
   
   devout->flags = 0;
@@ -691,10 +691,10 @@ ags_devout_init(AgsDevout *devout)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    devout->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

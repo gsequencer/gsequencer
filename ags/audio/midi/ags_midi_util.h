@@ -53,46 +53,13 @@ unsigned char* ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_len
 				    glong delta_time,
 				    guint *smf_buffer_length);
 
-/*  */
-glong ags_midi_util_envelope_to_velocity(AgsComplex *attack,
-					 AgsComplex *decay,
-					 AgsComplex *sustain,
-					 AgsComplex *release,
-					 AgsComplex *ratio,
-					 guint samplerate,
-					 guint start_frame, guint end_frame);
-void ags_midi_util_velocity_to_envelope(glong delta_time,
-					gboolean is_release,
-					AgsComplex **attack,
-					AgsComplex **decay,
-					AgsComplex **sustain,
-					AgsComplex **release,
-					AgsComplex **ratio,
-					guint *samplerate,
-					guint *start_frame, guint *end_frame);
-
-glong ags_midi_util_envelope_to_pressure(AgsComplex *attack,
-					 AgsComplex *decay,
-					 AgsComplex *sustain,
-					 AgsComplex *release,
-					 AgsComplex *ratio,
-					 guint samplerate,
-					 guint start_frame, guint end_frame);
-void ags_midi_util_pressure_to_envelope(glong delta_time,
-					gboolean is_sustain,
-					AgsComplex **attack,
-					AgsComplex **decay,
-					AgsComplex **sustain,
-					AgsComplex **release,
-					AgsComplex **ratio,
-					guint *samplerate,
-					guint *start_frame, guint *end_frame);
-
-guint ags_midi_util_delta_time_to_offset(glong division,
+guint ags_midi_util_delta_time_to_offset(gdouble delay_factor,
+					 glong division,
 					 glong tempo,
 					 glong bpm,
 					 glong delta_time);
-glong ags_midi_util_offset_to_delta_time(glong division,
+glong ags_midi_util_offset_to_delta_time(gdouble delay_factor,
+					 glong division,
 					 glong tempo,
 					 glong bpm,
 					 guint x);

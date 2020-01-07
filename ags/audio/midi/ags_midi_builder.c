@@ -2088,8 +2088,8 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
   
   buffer = (guchar *) malloc((delta_time_size + 7) * sizeof(guchar));
   ags_midi_buffer_util_put_time_signature(buffer,
-					  delta_time,
-					  nn, dd, cc, bb);
+					  (glong) delta_time,
+					  (glong) nn, (glong) dd, (glong) cc, (glong) bb);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
 					     buffer, delta_time_size + 7);
 }

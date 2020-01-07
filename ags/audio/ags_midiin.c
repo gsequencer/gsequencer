@@ -395,7 +395,7 @@ ags_midiin_init(AgsMidiin *midiin)
   gchar *segmentation;
 
   guint i;
-  guint denumerator, numerator;
+  guint denominator, numerator;
   gboolean use_alsa;  
 
   midiin->flags = 0;
@@ -497,10 +497,10 @@ ags_midiin_init(AgsMidiin *midiin)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    midiin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    midiin->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

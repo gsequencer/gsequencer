@@ -549,7 +549,7 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   
   /* flags */
   pulse_devin->flags = 0;
@@ -607,10 +607,10 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    pulse_devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    pulse_devin->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }

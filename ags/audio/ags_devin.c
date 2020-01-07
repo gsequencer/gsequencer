@@ -560,7 +560,7 @@ ags_devin_init(AgsDevin *devin)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   guint i;
   gboolean use_alsa;  
   
@@ -663,10 +663,10 @@ ags_devin_init(AgsDevin *devin)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    devin->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }
