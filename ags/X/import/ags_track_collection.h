@@ -52,6 +52,9 @@ struct _AgsTrackCollection
   guint first_offset;
   gdouble bpm;
 
+  glong tempo;
+  glong division;
+  
   guint default_length;
   
   GType child_type;

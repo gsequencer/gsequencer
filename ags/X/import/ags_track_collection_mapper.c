@@ -651,23 +651,40 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
+	xmlChar *str;
+
+	glong delta_time;
+
 	if(!xmlStrncmp(xmlGetProp(child,
 				  "event"),
 		       "note-on",
 		       8)){
-	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
-	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time"),
-					 NULL) / track_collection->bpm) -
-	    track_collection->first_offset;
-	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note"),
+	  str = xmlGetProp(child,
+			   "delta-time");
+	  delta_time = g_ascii_strtod(str,
+				      NULL);
+
+	  xmlFree(str);
+	  
+	  x = ags_midi_util_delta_time_to_offset(track_collection->division,
+						 track_collection->tempo,
+						 (glong) track_collection->bpm,
+						 delta_time);
+	  x -= track_collection->first_offset;
+
+	  str = xmlGetProp(child,
+			   "note");
+	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
-	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity"),
+	  xmlFree(str);
+
+	  str = xmlGetProp(child,
+			   "velocity");
+	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);
+	  xmlFree(str);
 
 	  notation = notation_start;
 	  
@@ -710,19 +727,32 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					"event"),
 			     "note-off",
 			     9)){	  
-	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
-	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time"),
-					 NULL) / track_collection->bpm) -
-	    track_collection->first_offset;
-	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note"),
+	  str = xmlGetProp(child,
+			   "delta-time");
+	  delta_time = g_ascii_strtod(str,
+				      NULL);
+
+	  xmlFree(str);
+	  
+	  x = ags_midi_util_delta_time_to_offset(track_collection->division,
+						 track_collection->tempo,
+						 (glong) track_collection->bpm,
+						 delta_time);
+	  x -= track_collection->first_offset;
+
+	  str = xmlGetProp(child,
+			   "note");
+	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
-	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity"),
+	  xmlFree(str);
+
+	  str = xmlGetProp(child,
+			   "velocity");
+	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);
+	  xmlFree(str);
 	  
 	  for(i = 0; i < audio_channels; i++){
 	    notation = g_list_last(notation_start);

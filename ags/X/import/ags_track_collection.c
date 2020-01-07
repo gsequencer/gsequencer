@@ -176,6 +176,9 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   track_collection->first_offset = 0;
   track_collection->bpm = 120.0;
+
+  track_collection->division = 96;
+  track_collection->tempo = 500000;
   
   track_collection->default_length = 4;
   
@@ -214,6 +217,8 @@ ags_track_collection_set_property(GObject *gobject,
       }
 
       track_collection->midi_doc = midi_document;
+
+      
     }
     break;
   default:
@@ -356,7 +361,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   xmlNode **node, **instrument_node, **sequence_node;
 
   GList *list, *list_start;
-  
+
+  xmlChar *str;
   gchar *instrument, *sequence;
 
   gdouble sec_val;
@@ -400,21 +406,28 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     return;
   }
 
+  str = xmlGetProp(header_node,
+		   "division");
+  track_collection->division = g_ascii_strtoull(str,
+						NULL,
+						10);
+  
+  xmlFree(str);
+  
   if(tempo_node != NULL){
     track_collection->first_offset = 0;
+    
+    str = xmlGetProp(tempo_node,
+		     "tempo");
+    track_collection->tempo = g_ascii_strtoull(str,
+					       NULL,
+					       10);
+    xmlFree(str);
+    
     sec_val = ags_midi_parser_ticks_to_sec(NULL,
-					   (guint) g_ascii_strtoull(xmlGetProp(header_node,
-									       "division"),
-								    NULL,
-								    10),
-					   (gint) g_ascii_strtoll(xmlGetProp(header_node,
-									     "division"),
-								  NULL,
-								  10),
-					   (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
-									       "tempo"),
-								    NULL,
-								    10));
+					   (guint) track_collection->division,
+					   (gint) track_collection->division,
+					   (guint) track_collection->tempo);
     //  g_message("", sec_val);
     track_collection->bpm = 60.0 / sec_val;
   }
