@@ -529,8 +529,12 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 	gchar *str;
 	
 	date_time = g_date_time_new_now_utc();
-	
+
+#if 0	
 	str = g_date_time_format_iso8601(date_time);
+#else
+	str = g_date_time_format(datetime, "%Y-%m-%dT%H:%M:%SZ");
+#endif
 	
 	xmlNewProp(session_node,
 		   "last-active",
