@@ -533,7 +533,7 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 #if 0	
 	str = g_date_time_format_iso8601(date_time);
 #else
-	str = g_date_time_format(datetime, "%Y-%m-%dT%H:%M:%SZ");
+	str = g_date_time_format(date_time, "%Y-%m-%dT%H:%M:%SZ");
 #endif
 	
 	xmlNewProp(session_node,
