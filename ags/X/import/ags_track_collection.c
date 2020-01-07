@@ -362,7 +362,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   gdouble sec_val;
   guint denominator, numerator;
   guint i, j;
-
+  
   /* bpm and first_offset */
   header_node = NULL;
   
@@ -396,27 +396,28 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     }
   }
 
-  if(header_node == NULL ||
-     tempo_node == NULL){
+  if(header_node == NULL){
     return;
   }
-  
-  track_collection->first_offset = 0;
-  sec_val = ags_midi_parser_ticks_to_sec(NULL,
-					 (guint) g_ascii_strtoull(xmlGetProp(header_node,
+
+  if(tempo_node != NULL){
+    track_collection->first_offset = 0;
+    sec_val = ags_midi_parser_ticks_to_sec(NULL,
+					   (guint) g_ascii_strtoull(xmlGetProp(header_node,
+									       "division"),
+								    NULL,
+								    10),
+					   (gint) g_ascii_strtoll(xmlGetProp(header_node,
 									     "division"),
 								  NULL,
 								  10),
-					 (gint) g_ascii_strtoll(xmlGetProp(header_node,
-									   "division"),
-								NULL,
-								10),
-					 (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
-									     "tempo"),
-								  NULL,
-								  10));
-  //  g_message("", sec_val);
-  track_collection->bpm = 60.0 / sec_val;
+					   (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
+									       "tempo"),
+								    NULL,
+								    10));
+    //  g_message("", sec_val);
+    track_collection->bpm = 60.0 / sec_val;
+  }
   //  g_message("bpm %f", track_collection->bpm);
 
   /* default length */

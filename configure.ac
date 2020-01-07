@@ -366,9 +366,9 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.12])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.12])
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
+PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.26.2])
+AC_SUBST(WEBKITGTK_CFLAGS)
+AC_SUBST(WEBKITGTK_LIBS)
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],

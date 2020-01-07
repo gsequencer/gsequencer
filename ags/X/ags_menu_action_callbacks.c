@@ -54,6 +54,8 @@
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
+#include <webkit2/webkit2.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -1488,6 +1490,27 @@ void
 ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
+{
+  GtkWidget *online_help_window;
+  WebKitWebView *web_view;
+  
+  online_help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
+  g_object_set(online_help_window,
+	       "default-width", 800,
+	       "default-height", 600,
+	       NULL);
+  
+  web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
+  gtk_container_add(GTK_CONTAINER(online_help_window), GTK_WIDGET(web_view));
+
+  //FIXME:JK: hard-coded
+  webkit_web_view_load_uri(web_view, "file:///usr/share/doc/gsequencer-doc/html/index.html");
+  gtk_widget_show_all(online_help_window);
 }
 
 void

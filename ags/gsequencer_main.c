@@ -85,8 +85,6 @@ ags_setup(int argc, char **argv)
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  GThread *thread;
-
   /* application context */
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
@@ -101,9 +99,9 @@ ags_setup(int argc, char **argv)
 		      "Welcome to Advanced Gtk+ Sequencer");
   
   /* application context */
-  thread = g_thread_new("Advanced Gtk+ Sequencer - setup",
-			ags_setup_thread,
-			application_context);
+  g_thread_new("Advanced Gtk+ Sequencer - setup",
+	       ags_setup_thread,
+	       application_context);
   
   ags_application_context_prepare(application_context);
 }
@@ -122,7 +120,6 @@ main(int argc, char **argv)
   gchar *path;
 #endif
 
-  gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
   guint i;
 
@@ -154,7 +151,6 @@ main(int argc, char **argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
   
-  single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
 
   config = NULL;
@@ -225,10 +221,9 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--single-thread     run in single thread mode",
 	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
@@ -238,15 +233,13 @@ main(int argc, char **argv)
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
-	     "Copyright (C) 2005-2019 Joël Krähemann",
+	     "Copyright (C) 2005-2020 Joël Krähemann",
 	     "This is free software; see the source for copying conditions.  There is NO",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[i], "--single-thread", 16)){
-      single_thread_enabled = TRUE;
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){

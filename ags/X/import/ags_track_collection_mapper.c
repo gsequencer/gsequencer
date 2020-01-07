@@ -495,6 +495,16 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
     return;
   }
 
+  /* add audio */  
+  add_audio = ags_add_audio_new(machine->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+  
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(machine),
+		     FALSE, FALSE,
+		     0);
+
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(machine));
 
@@ -520,15 +530,6 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
     
     imported_notation = imported_notation->next;
   }
-
-  /* add audio */  
-  add_audio = ags_add_audio_new(machine->audio);
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(machine),
-		     FALSE, FALSE, 0);
 
   /* */
   gtk_widget_show_all(GTK_WIDGET(machine));

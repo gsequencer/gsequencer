@@ -32,7 +32,6 @@
 #include <ags/lib/ags_endian.h>
 #include <ags/lib/ags_function.h>
 #include <ags/lib/ags_log.h>
-#include <ags/lib/ags_parameter.h>
 #include <ags/lib/ags_regex.h>
 #include <ags/lib/ags_string_util.h>
 #include <ags/lib/ags_time.h>

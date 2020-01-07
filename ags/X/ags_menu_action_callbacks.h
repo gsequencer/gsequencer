@@ -70,6 +70,7 @@ void ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data);
 
+void ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data);
 
 G_END_DECLS

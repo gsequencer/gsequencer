@@ -25,6 +25,7 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_context_menu.h>
+#include <ags/X/ags_menu_action_callbacks.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -332,7 +333,7 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
     i_stop = g_list_length(start_list);
     
     if(animation_window->message_count < i_stop){
-      gtk_widget_queue_draw(animation_window);
+      gtk_widget_queue_draw((GtkWidget *) animation_window);
     }
 
     return(TRUE);
@@ -341,68 +342,121 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
     AgsMenuBar *menu_bar;
     AgsContextMenu *context_menu;
     
-    GtkImageMenuItem *item;
+    GtkMenuItem *item;
+
+    GtkAccelGroup *accel_group;
+    GClosure *closure;
     
-    gtk_widget_hide(animation_window);
+    gtk_widget_hide((GtkWidget *) animation_window);
 
-    window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+    /* accel group */
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_open_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_O,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_save_as_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_S,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_quit_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_Q,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_online_help_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_H,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+    
+    /* menu */
     menu_bar = window->menu_bar;
     context_menu = window->context_menu;
     
     /* menu - bridge */
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
     /* menu - live */
     menu_bar->live = (GtkMenu *) gtk_menu_new();
   
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget *) menu_bar->live);
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
 
     /* context menu - bridge */
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
     /* context menu - live */
     context_menu->live = (GtkMenu *) gtk_menu_new();
   
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) context_menu->live);
     gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
 
-    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
     gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
     gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
 

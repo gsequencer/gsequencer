@@ -164,21 +164,37 @@ ags_preferences_init(AgsPreferences *preferences)
 		    GTK_WIDGET(preferences->notebook));
 
   preferences->generic_preferences = ags_generic_preferences_new();
+  gtk_widget_set_hexpand(preferences->generic_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->generic_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->generic_preferences),
 			   gtk_label_new(i18n("generic")));
 
   preferences->audio_preferences = ags_audio_preferences_new();
+  gtk_widget_set_hexpand(preferences->audio_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->audio_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
 			   gtk_label_new(i18n("audio")));
 
   preferences->midi_preferences = ags_midi_preferences_new();
+  gtk_widget_set_hexpand(preferences->midi_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->midi_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->midi_preferences),
 			   gtk_label_new(i18n("midi")));
 
   preferences->performance_preferences = ags_performance_preferences_new();
+  gtk_widget_set_hexpand(preferences->performance_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->performance_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->performance_preferences),
 			   gtk_label_new(i18n("performance")));
@@ -188,6 +204,10 @@ ags_preferences_init(AgsPreferences *preferences)
 			     "disable-feature");
   
   preferences->osc_server_preferences = ags_osc_server_preferences_new();
+  gtk_widget_set_hexpand(preferences->osc_server_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->osc_server_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->osc_server_preferences),
 			   gtk_label_new(i18n("OSC server")));
