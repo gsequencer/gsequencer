@@ -621,8 +621,10 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 {
   GResolver *resolver;
   
-  GList *start_list;
+  GList *start_list, *list;
 
+  gchar *ip4, *ip6;
+  
   GError *error;
   
   GRecMutex *osc_client_mutex;
@@ -634,7 +636,8 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
   
   /* lock */
   g_rec_mutex_lock(osc_client_mutex);
-  
+
+#if 0  
   /* IPv4 */
   error = NULL;
   start_list = g_resolver_lookup_by_name_with_flags(resolver,
@@ -669,10 +672,50 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
   }
 
   if(start_list != NULL){
-    osc_client->ip4 = g_inet_address_to_string(start_list->data);
+    osc_client->ip6 = g_inet_address_to_string(start_list->data);
     g_resolver_free_addresses(start_list);
   }
+#else
+  start_list = g_resolver_lookup_by_name(resolver,
+					 osc_client->domain,
+					 NULL,
+					 &error);
 
+  if(error != NULL){
+    g_warning("AgsOscClient - %s", error->message);
+
+    g_error_free(error);
+  }
+
+  list = start_list;
+
+  ip4 = NULL;
+  ip6 = NULL;
+  
+  while(list != NULL &&
+	(ip4 == NULL ||
+	 ip6 == NULL)){
+    guint address_family;
+    
+    g_object_get(list->data,
+		 "family", &address_family,
+		 NULL);
+
+    if(address_family == G_SOCKET_FAMILY_IPV4){
+      ip4 = g_inet_address_to_string(list->data);
+    }else if(address_family == G_SOCKET_FAMILY_IPV6){
+      ip6 = g_inet_address_to_string(list->data);
+    }
+
+    list = list->next;
+  }
+  
+  osc_client->ip4 = ip4;
+  osc_client->ip6 = ip6;
+  
+  g_resolver_free_addresses(start_list);
+#endif
+  
   /* unlock */
   g_rec_mutex_unlock(osc_client_mutex);
 

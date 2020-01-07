@@ -125,6 +125,11 @@ void ags_devout_oss_play_fill_ring_buffer(void *buffer,
 					  unsigned char *ring_buffer,
 					  guint channels,
 					  guint buffer_size);
+
+gboolean ags_devout_oss_io_func(GIOChannel *source,
+				GIOCondition condition,
+				AgsDevout *devout);
+
 void ags_devout_oss_play(AgsSoundcard *soundcard,
 			 GError **error);
 void ags_devout_oss_free(AgsSoundcard *soundcard);
@@ -2079,6 +2084,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  GIOChannel *io_channel;
+
+  guint tag;
+
   gchar *str;
 
   guint word_size;
@@ -2300,6 +2309,18 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 	      tmp,
 	      devout->samplerate);
   }
+
+  io_channel = g_io_channel_unix_new(devout->out.oss.device_fd);
+  tag = g_io_add_watch(io_channel,
+		       G_IO_OUT,
+		       (GIOFunc) ags_devout_oss_io_func,
+		       devout);
+      
+  devout->io_channel = g_list_prepend(devout->io_channel,
+				      io_channel);
+  devout->tag = g_list_prepend(devout->tag,
+			       GUINT_TO_POINTER(tag));
+
 #endif
   
   devout->tact_counter = 0.0;
@@ -2408,6 +2429,16 @@ ags_devout_oss_play_fill_ring_buffer(void *buffer,
   }
 }
 
+gboolean
+ags_devout_oss_io_func(GIOChannel *source,
+		       GIOCondition condition,
+		       AgsDevout *devout)
+{
+  g_atomic_int_set(&(devout->available), TRUE);
+
+  return(TRUE);
+}
+
 void
 ags_devout_oss_play(AgsSoundcard *soundcard,
 		    GError **error)
@@ -2507,15 +2538,22 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 				       devout->buffer_size);
 
   /* wait until available */
+  g_rec_mutex_unlock(devout_mutex);
+
   //TODO:JK: implement me
+  while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
+    g_usleep(1);
+  }
+
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
   
+  g_rec_mutex_lock(devout_mutex);
+
   /* write ring buffer */
   n_write = write(devout->out.oss.device_fd,
 		  devout->ring_buffer[devout->nth_ring_buffer],
 		  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-  g_atomic_int_set(&(devout->available),
-		   FALSE);
   
   if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
     g_critical("write() return doesn't match written bytes");
@@ -2591,8 +2629,7 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   devout->out.oss.device_fd = -1;
 
   /* free ring-buffer */
-  g_atomic_int_set(&(devout->available),
-		   FALSE);
+  g_atomic_int_set(&(devout->available), TRUE);
   
   for(i = 0; i < devout->ring_buffer_size; i++){
     free(devout->ring_buffer[i]);

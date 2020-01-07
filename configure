@@ -673,8 +673,6 @@ GTK_LIBS
 GTK_CFLAGS
 CAIRO_LIBS
 CAIRO_CFLAGS
-GDKPIXBUF_LIBS
-GDKPIXBUF_CFLAGS
 VST3_LIBS
 VST3_CXXFLAGS
 WITH_LIBINSTPATCH_FALSE
@@ -966,8 +964,6 @@ LIBSOUP_CFLAGS
 LIBSOUP_LIBS
 LIBINSTPATCH_CFLAGS
 LIBINSTPATCH_LIBS
-GDKPIXBUF_CFLAGS
-GDKPIXBUF_LIBS
 CAIRO_CFLAGS
 CAIRO_LIBS
 GTK_CFLAGS
@@ -1734,10 +1730,6 @@ Some influential environment variables:
               C compiler flags for LIBINSTPATCH, overriding pkg-config
   LIBINSTPATCH_LIBS
               linker flags for LIBINSTPATCH, overriding pkg-config
-  GDKPIXBUF_CFLAGS
-              C compiler flags for GDKPIXBUF, overriding pkg-config
-  GDKPIXBUF_LIBS
-              linker flags for GDKPIXBUF, overriding pkg-config
   CAIRO_CFLAGS
               C compiler flags for CAIRO, overriding pkg-config
   CAIRO_LIBS  linker flags for CAIRO, overriding pkg-config
@@ -21631,12 +21623,12 @@ if test -n "$GLIB_CFLAGS"; then
     pkg_cv_GLIB_CFLAGS="$GLIB_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.32.3\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.32.3") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.62.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.62.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GLIB_CFLAGS=`$PKG_CONFIG --cflags "glib-2.0 >= 2.32.3" 2>/dev/null`
+  pkg_cv_GLIB_CFLAGS=`$PKG_CONFIG --cflags "glib-2.0 >= 2.62.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -21648,12 +21640,12 @@ if test -n "$GLIB_LIBS"; then
     pkg_cv_GLIB_LIBS="$GLIB_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.32.3\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.32.3") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.62.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.62.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GLIB_LIBS=`$PKG_CONFIG --libs "glib-2.0 >= 2.32.3" 2>/dev/null`
+  pkg_cv_GLIB_LIBS=`$PKG_CONFIG --libs "glib-2.0 >= 2.62.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -21674,14 +21666,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "glib-2.0 >= 2.32.3" 2>&1`
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "glib-2.0 >= 2.62.0" 2>&1`
         else
-	        GLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "glib-2.0 >= 2.32.3" 2>&1`
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "glib-2.0 >= 2.62.0" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GLIB_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (glib-2.0 >= 2.32.3) were not met:
+	as_fn_error $? "Package requirements (glib-2.0 >= 2.62.0) were not met:
 
 $GLIB_PKG_ERRORS
 
@@ -22135,12 +22127,12 @@ if test -n "$LIBSOUP_CFLAGS"; then
     pkg_cv_LIBSOUP_CFLAGS="$LIBSOUP_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.68.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.68.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.62.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.62.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBSOUP_CFLAGS=`$PKG_CONFIG --cflags "libsoup-2.4 >= 2.68.2" 2>/dev/null`
+  pkg_cv_LIBSOUP_CFLAGS=`$PKG_CONFIG --cflags "libsoup-2.4 >= 2.62.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22152,12 +22144,12 @@ if test -n "$LIBSOUP_LIBS"; then
     pkg_cv_LIBSOUP_LIBS="$LIBSOUP_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.68.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.68.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libsoup-2.4 >= 2.62.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libsoup-2.4 >= 2.62.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBSOUP_LIBS=`$PKG_CONFIG --libs "libsoup-2.4 >= 2.68.2" 2>/dev/null`
+  pkg_cv_LIBSOUP_LIBS=`$PKG_CONFIG --libs "libsoup-2.4 >= 2.62.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22178,14 +22170,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libsoup-2.4 >= 2.68.2" 2>&1`
+	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libsoup-2.4 >= 2.62.0" 2>&1`
         else
-	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libsoup-2.4 >= 2.68.2" 2>&1`
+	        LIBSOUP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libsoup-2.4 >= 2.62.0" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBSOUP_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (libsoup-2.4 >= 2.68.2) were not met:
+	as_fn_error $? "Package requirements (libsoup-2.4 >= 2.62.0) were not met:
 
 $LIBSOUP_PKG_ERRORS
 
@@ -22390,100 +22382,6 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GDKPIXBUF" >&5
-$as_echo_n "checking for GDKPIXBUF... " >&6; }
-
-if test -n "$GDKPIXBUF_CFLAGS"; then
-    pkg_cv_GDKPIXBUF_CFLAGS="$GDKPIXBUF_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-2.0 >= 2.32.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-2.0 >= 2.32.2") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-2.0 >= 2.32.2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$GDKPIXBUF_LIBS"; then
-    pkg_cv_GDKPIXBUF_LIBS="$GDKPIXBUF_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-2.0 >= 2.32.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-2.0 >= 2.32.2") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-2.0 >= 2.32.2" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-2.0 >= 2.32.2" 2>&1`
-        else
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-2.0 >= 2.32.2" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$GDKPIXBUF_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (gdk-pixbuf-2.0 >= 2.32.2) were not met:
-
-$GDKPIXBUF_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables GDKPIXBUF_CFLAGS
-and GDKPIXBUF_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables GDKPIXBUF_CFLAGS
-and GDKPIXBUF_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	GDKPIXBUF_CFLAGS=$pkg_cv_GDKPIXBUF_CFLAGS
-	GDKPIXBUF_LIBS=$pkg_cv_GDKPIXBUF_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-fi
-
-
-
-
-pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CAIRO" >&5
 $as_echo_n "checking for CAIRO... " >&6; }
 
@@ -22585,12 +22483,12 @@ if test -n "$GTK_CFLAGS"; then
     pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.12\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.12") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-3.0 >= 3.24.12" 2>/dev/null`
+  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-3.0 >= 3.24.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22602,12 +22500,12 @@ if test -n "$GTK_LIBS"; then
     pkg_cv_GTK_LIBS="$GTK_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.12\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.12") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-3.0 >= 3.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-3.0 >= 3.24.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-3.0 >= 3.24.12" 2>/dev/null`
+  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-3.0 >= 3.24.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22628,14 +22526,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-3.0 >= 3.24.12" 2>&1`
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-3.0 >= 3.24.0" 2>&1`
         else
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-3.0 >= 3.24.12" 2>&1`
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-3.0 >= 3.24.0" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GTK_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gtk+-3.0 >= 3.24.12) were not met:
+	as_fn_error $? "Package requirements (gtk+-3.0 >= 3.24.0) were not met:
 
 $GTK_PKG_ERRORS
 
@@ -22679,12 +22577,12 @@ if test -n "$WEBKITGTK_CFLAGS"; then
     pkg_cv_WEBKITGTK_CFLAGS="$WEBKITGTK_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"webkit2gtk-4.0 >= 2.26.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "webkit2gtk-4.0 >= 2.26.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"webkit2gtk-4.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "webkit2gtk-4.0 >= 2.24.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_WEBKITGTK_CFLAGS=`$PKG_CONFIG --cflags "webkit2gtk-4.0 >= 2.26.2" 2>/dev/null`
+  pkg_cv_WEBKITGTK_CFLAGS=`$PKG_CONFIG --cflags "webkit2gtk-4.0 >= 2.24.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22696,12 +22594,12 @@ if test -n "$WEBKITGTK_LIBS"; then
     pkg_cv_WEBKITGTK_LIBS="$WEBKITGTK_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"webkit2gtk-4.0 >= 2.26.2\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "webkit2gtk-4.0 >= 2.26.2") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"webkit2gtk-4.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "webkit2gtk-4.0 >= 2.24.0") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_WEBKITGTK_LIBS=`$PKG_CONFIG --libs "webkit2gtk-4.0 >= 2.26.2" 2>/dev/null`
+  pkg_cv_WEBKITGTK_LIBS=`$PKG_CONFIG --libs "webkit2gtk-4.0 >= 2.24.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -22722,14 +22620,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        WEBKITGTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "webkit2gtk-4.0 >= 2.26.2" 2>&1`
+	        WEBKITGTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "webkit2gtk-4.0 >= 2.24.0" 2>&1`
         else
-	        WEBKITGTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "webkit2gtk-4.0 >= 2.26.2" 2>&1`
+	        WEBKITGTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "webkit2gtk-4.0 >= 2.24.0" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$WEBKITGTK_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (webkit2gtk-4.0 >= 2.26.2) were not met:
+	as_fn_error $? "Package requirements (webkit2gtk-4.0 >= 2.24.0) were not met:
 
 $WEBKITGTK_PKG_ERRORS
 
