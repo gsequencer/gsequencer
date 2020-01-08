@@ -4018,10 +4018,17 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 
   gfloat *ret_buffer;
 
+  //FIXME:JK: lost precision
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
-  secret_rabbit.data_in = buffer;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_float_to_float(secret_rabbit.data_in, channels,
+					    buffer, channels,
+					    buffer_length);
 
   secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
   secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
@@ -4030,13 +4037,13 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gfloat *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gfloat));
-  ags_audio_buffer_util_clear_double(ret_buffer, channels,
-				     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+  ret_buffer = (gfloat *) malloc(channels * (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)) * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(ret_buffer, channels,
+				    (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)));
   ags_audio_buffer_util_copy_float_to_float(ret_buffer, channels,
 					    secret_rabbit.data_out, channels,
-					    (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
-  
+					    (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)));
+
   free(secret_rabbit.data_out);
   free(secret_rabbit.data_in);
 

@@ -676,6 +676,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
     g_resolver_free_addresses(start_list);
   }
 #else
+  error = NULL;
   start_list = g_resolver_lookup_by_name(resolver,
 					 osc_client->domain,
 					 NULL,
