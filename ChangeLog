@@ -1,29 +1,26 @@
 ags (3.0.0)
 
        [ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+       * TODO:JK: implemented support for GtkApplication
+       * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
+       * TODO:JK: migrated AgsBasePlugin to GModule
+       * TODO:JK: strip AgsPlugin from machines
+       * TODO:JK: removed AgsMenuBar
+       * TODO:JK: removed AgsPlugin?
        * migrated to Gtk3
        * migrated AgsOscServer and AgsOscClient to GIO sockets
-       * TODO:JK: migrated AgsBasePlugin to GModule
        * migrated AgsServer to Libsoup XMLRPC
        * migrated AgsThread to GThread API
-       * TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
-       * TODO:JK: migrated to gi18n.h?
-       * TODO:JK: migrated unit-tests to GTest?
-       * TODO:JK: implemented support for GtkApplication
        * implemented introspection support
-       * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
        * added G_BEGIN_DECLS and G_END_DECLS to header files
        * moved ags_thread-posix.[ch] to ags_thread.[ch]
        * removed ags_thread_file_xml.[ch], ags_audio_file_xml.[ch] and ags_gui_file_xml.[ch]
-       * TODO:JK: removed AgsPlugin?
        * removed AgsTaskThread
        * removed AgsPollingThread
        * removed AgsPollFD
        * removed AgsAsyncQueue
        * removed AgsSingleThread
        * removed AgsNotifySoundcard
-       * TODO:JK: strip AgsPlugin from machines
-       * TODO:JK: removed AgsMenuBar
        * removed barriers of AgsThread
        * replaced nested functions
 

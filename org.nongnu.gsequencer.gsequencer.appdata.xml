@@ -35,12 +35,26 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.4.8" date="2019-12-27">
+      <description>
+	<p>Improved performance.</p>
+      </description>
+    </release>
+
+    <release version="2.4.6" date="2019-12-27">
+      <description>
+	<p>Implemented ags_audio_buffer_resample_with_buffer() and related.</p>
+	<p>Fixed potential buffer-overflow in ags_sfz_sample.c.</p>
+	<p>Fixed potential SIGSEGV in ags_sound_resource.c during resample.</p>
+      </description>
+    </release>
+
     <release version="2.4.5" date="2019-12-18">
       <description>
 	<p>minor improvements.</p>
       </description>
     </release>
-
+    
     <release version="2.4.4" date="2019-12-17">
       <description>
 	<p>Fixed potential SIGSEGV of AgsFFPlayer adding plugin.</p>

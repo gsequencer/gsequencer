@@ -7,6 +7,9 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
+* TODO:JK: migrated to gi18n.h?
+* TODO:JK: migrated unit-tests to GTest?
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: refactor AgsAudioThreadFlags and AgsChannelThreadFlags
 * TODO:JK: move ags/X to ags/ui
