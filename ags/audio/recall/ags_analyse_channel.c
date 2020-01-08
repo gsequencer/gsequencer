@@ -157,7 +157,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    *
    * The cache's samplerate.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("cache-samplerate",
 				 i18n_pspec("cache samplerate"),
@@ -175,7 +175,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    *
    * The cache's buffer length.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("cache-buffer-size",
 				 i18n_pspec("cache buffer size"),
@@ -193,7 +193,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    *
    * The cache's format.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("cache-format",
 				 i18n_pspec("cache format"),
@@ -211,7 +211,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The property indicating if buffer was cleared.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-cleared",
 				   i18n_pspec("if buffer was cleared"),
@@ -227,7 +227,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The property indicating if buffer was computed.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-computed",
 				   i18n_pspec("if buffer was computed"),
@@ -243,7 +243,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The frequency buffer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("frequency-buffer",
 				   i18n_pspec("frequency buffer"),
@@ -259,7 +259,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The magnitude buffer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("magnitude-buffer",
 				   i18n_pspec("magnitude buffer"),
@@ -877,7 +877,7 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
  *
  * Returns: the new #AgsAnalyseChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAnalyseChannel*
 ags_analyse_channel_new(AgsChannel *source)

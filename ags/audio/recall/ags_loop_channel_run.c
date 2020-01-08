@@ -142,7 +142,7 @@ ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run)
    *
    * The count beats audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -685,7 +685,7 @@ ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
  *
  * Returns: the new #AgsLoopChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLoopChannelRun*
 ags_loop_channel_run_new(AgsChannel *source,

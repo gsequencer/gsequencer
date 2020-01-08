@@ -198,7 +198,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -214,7 +214,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The target channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -248,7 +248,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::add-effect signal notifies about added effect.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -269,7 +269,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::remove-effect signal notifies about removed effect.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -290,7 +290,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::resize-audio-channels signal notifies about changes in channel
    * alignment.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[RESIZE_AUDIO_CHANNELS] = 
     g_signal_new("resize-audio-channels",
@@ -311,7 +311,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::resize-pads signal notifies about changes in channel
    * alignment.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[RESIZE_PADS] = 
     g_signal_new("resize_pads",
@@ -329,7 +329,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The ::map-recall should be used to add the effect_bulk's default recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -348,7 +348,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * Returns: a #GList-struct with associated ports
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bulk_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -831,7 +831,7 @@ ags_effect_bulk_show(GtkWidget *widget)
  * 
  * Returns: the newly allocated #AgsEffectBulkPlugin-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(gchar *filename,
@@ -857,7 +857,7 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
  * 
  * Free @effect_bulk_plugin.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
@@ -2602,7 +2602,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
  *
  * Returns: the #GList-struct containing the #AgsPort objects added
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
@@ -2806,7 +2806,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
  *
  * Remove an effect by its position.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
@@ -3387,7 +3387,7 @@ ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
@@ -3415,7 +3415,7 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -3477,7 +3477,7 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsEffectBulk
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEffectBulk*
 ags_effect_bulk_new(AgsAudio *audio,

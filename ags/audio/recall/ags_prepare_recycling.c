@@ -114,7 +114,7 @@ ags_prepare_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPrepareRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPrepareRecycling*
 ags_prepare_recycling_new(AgsRecycling *source)

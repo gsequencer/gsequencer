@@ -219,7 +219,7 @@ ags_stop_sequencer_launch(AgsTask *task)
  *
  * Returns: an new #AgsStopSequencer.
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsStopSequencer*
 ags_stop_sequencer_new()

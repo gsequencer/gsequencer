@@ -140,7 +140,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The enabled port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("enabled",
 				   i18n_pspec("enabled"),
@@ -156,7 +156,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-wave port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-wave",
 				   i18n_pspec("lfo wave to apply"),
@@ -172,7 +172,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-freq port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-freq",
 				   i18n_pspec("lfo frequency to apply"),
@@ -188,7 +188,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-phase port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-phase",
 				   i18n_pspec("lfo phase to apply"),
@@ -204,7 +204,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-depth port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-depth",
 				   i18n_pspec("lfo depth to apply"),
@@ -220,7 +220,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-tuning port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-tuning",
 				   i18n_pspec("lfo tuning to apply"),
@@ -973,7 +973,7 @@ ags_lfo_channel_get_lfo_tuning_plugin_port()
  *
  * Returns: the new #AgsLfoChannel
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoChannel*
 ags_lfo_channel_new(AgsChannel *source)

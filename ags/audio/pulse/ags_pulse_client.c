@@ -1039,7 +1039,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
  *
  * Close the pulseaudio client's connection.
  *
- * Since: 2.1.14
+ * Since: 3.0.0
  */
 void
 ags_pulse_client_close(AgsPulseClient *pulse_client)

@@ -115,7 +115,7 @@ ags_peak_recycling_finalize(GObject *gobject)
  *
  * Returns: a new #AgsPeakRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakRecycling*
 ags_peak_recycling_new(AgsRecycling *source)

@@ -1082,7 +1082,7 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
  *
  * Returns: %TRUE if proceed poll completed, otherwise %FALSE
  *
- * Since: 2.0.13
+ * Since: 3.0.0
  */
 gboolean
 ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
@@ -1148,7 +1148,7 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
@@ -1266,7 +1266,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
  *
  * Returns: the new #AgsAudiorec
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAudiorec*
 ags_audiorec_new(GObject *soundcard)

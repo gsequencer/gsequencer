@@ -280,7 +280,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The core audio soundcard indentifier
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -296,7 +296,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The dsp channel count
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -314,7 +314,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The pcm channel count
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -332,7 +332,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -350,7 +350,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The buffer size
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -368,7 +368,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The samplerate
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -386,7 +386,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * The buffer
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -401,7 +401,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * Beats per minute
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -419,7 +419,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * tact
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -437,7 +437,7 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.3.4
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -1213,7 +1213,7 @@ ags_wasapi_devout_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 gboolean
 ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, guint flags)
@@ -1246,7 +1246,7 @@ ags_wasapi_devout_test_flags(AgsWasapiDevout *wasapi_devout, guint flags)
  *
  * Enable a feature of @wasapi_devout.
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 void
 ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, guint flags)
@@ -1277,7 +1277,7 @@ ags_wasapi_devout_set_flags(AgsWasapiDevout *wasapi_devout, guint flags)
  *
  * Disable a feature of @wasapi_devout.
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 void
 ags_wasapi_devout_unset_flags(AgsWasapiDevout *wasapi_devout, guint flags)
@@ -3197,7 +3197,7 @@ ags_wasapi_devout_unlock_sub_block(AgsSoundcard *soundcard,
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 void
 ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout)
@@ -3249,7 +3249,7 @@ ags_wasapi_devout_switch_buffer_flag(AgsWasapiDevout *wasapi_devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 void
 ags_wasapi_devout_adjust_delay_and_attack(AgsWasapiDevout *wasapi_devout)
@@ -3376,7 +3376,7 @@ ags_wasapi_devout_adjust_delay_and_attack(AgsWasapiDevout *wasapi_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 void
 ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
@@ -3490,7 +3490,7 @@ ags_wasapi_devout_realloc_buffer(AgsWasapiDevout *wasapi_devout)
  *
  * Returns: a new #AgsWasapiDevout
  *
- * Since: 2.3.4
+ * Since: 3.0.0
  */
 AgsWasapiDevout*
 ags_wasapi_devout_new()

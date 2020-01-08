@@ -1357,7 +1357,7 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
  * 
  * Add @oscillator to @syncsynth.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
@@ -1403,7 +1403,7 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
  * 
  * Remove nth oscillator.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
@@ -1445,7 +1445,7 @@ ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
  * 
  * Reset loop spin buttons.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
@@ -1489,7 +1489,7 @@ ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
  * 
  * Update audio data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_syncsynth_update(AgsSyncsynth *syncsynth)
@@ -1705,7 +1705,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
  *
  * Returns: the new #AgsSyncsynth
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSyncsynth*
 ags_syncsynth_new(GObject *soundcard)

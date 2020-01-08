@@ -1069,7 +1069,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
  *
  * Returns: the new #AgsCopyPatternChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyPatternChannelRun*
 ags_copy_pattern_channel_run_new(AgsChannel *destination,

@@ -229,7 +229,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale width to use for drawing a scale.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-width",
 				 "scale width",
@@ -247,7 +247,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale height to use for drawing a scale.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-height",
 				 "scale height",
@@ -265,7 +265,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's control name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   "control name",
@@ -281,7 +281,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's lower range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -299,7 +299,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's upper range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -317,7 +317,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("default-value",
 				   "default value",
@@ -358,7 +358,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The ::value-changed signal notifies about modified default value.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   scale_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -1364,7 +1364,7 @@ ags_scale_draw(AgsScale *scale, cairo_t *cr)
  * 
  * Emits ::value-changed event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_scale_value_changed(AgsScale *scale,
@@ -1386,7 +1386,7 @@ ags_scale_value_changed(AgsScale *scale,
  * 
  * Returns: the new #AgsScale instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScale*
 ags_scale_new()

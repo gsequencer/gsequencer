@@ -107,7 +107,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
    *
    * The assigned #AgsDelayAudio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio",
 				   "assigned delay audio",
@@ -252,7 +252,7 @@ ags_loop_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsLoopChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLoopChannel*
 ags_loop_channel_new(AgsChannel *source)

@@ -137,7 +137,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * The assigned #AgsOscServer.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("osc-server",
 				   i18n_pspec("assigned OSC server"),
@@ -153,7 +153,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * The IPv4 address as string of the server connection.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip4",
 				   i18n_pspec("ip4"),
@@ -169,7 +169,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * The IPv6 address as string of the server connection.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip6",
 				   i18n_pspec("ip6"),
@@ -196,7 +196,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * Returns: byte array read or %NULL if no data available
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_connection_signals[READ_BYTES] =
     g_signal_new("read-bytes",
@@ -217,7 +217,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * Returns: the count bytes written
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_connection_signals[WRITE_RESPONSE] =
     g_signal_new("write-response",
@@ -235,7 +235,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
    *
    * The ::close signal is emited as closing the file descriptor.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_connection_signals[CLOSE] =
     g_signal_new("close",
@@ -502,7 +502,7 @@ ags_osc_connection_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags)
@@ -535,7 +535,7 @@ ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags)
@@ -564,7 +564,7 @@ ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags)
@@ -595,7 +595,7 @@ ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags)
  * 
  * Returns: %TRUE if timeout expired, otherwise %FALSE
  * 
- * Since: 2.1.10
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_connection_timeout_expired(struct timespec *start_time,
@@ -963,7 +963,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
  * 
  * Returns: byte array read or %NULL if no data available
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 guchar*
 ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
@@ -1069,7 +1069,7 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
  * 
  * Returns: the count of bytes written
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gint64
 ags_osc_connection_write_response(AgsOscConnection *osc_connection,
@@ -1128,7 +1128,7 @@ ags_osc_connection_real_close(AgsOscConnection *osc_connection)
  * 
  * Close @osc_connection.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_connection_close(AgsOscConnection *osc_connection)
@@ -1149,7 +1149,7 @@ ags_osc_connection_close(AgsOscConnection *osc_connection)
  *
  * Returns: the new #AgsOscConnection
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscConnection*
 ags_osc_connection_new(GObject *osc_server)

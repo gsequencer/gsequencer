@@ -165,7 +165,7 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * 
    * The delay audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -181,7 +181,7 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * 
    * The count beats audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -1280,7 +1280,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
  *
  * Returns: the new #AgsRouteDssiAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRouteDssiAudioRun*
 ags_route_dssi_audio_run_new(AgsAudio *audio)

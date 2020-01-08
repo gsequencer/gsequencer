@@ -164,7 +164,7 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsFFPlayerBulkInput
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayerBulkInput*
 ags_ffplayer_bulk_input_new(AgsAudio *audio,

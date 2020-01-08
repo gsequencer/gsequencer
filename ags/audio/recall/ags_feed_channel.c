@@ -110,7 +110,7 @@ ags_feed_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsFeedChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFeedChannel*
 ags_feed_channel_new(AgsChannel *source)

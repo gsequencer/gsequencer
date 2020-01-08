@@ -486,7 +486,7 @@ ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_dls2_reader_test_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)
@@ -519,7 +519,7 @@ ags_ipatch_dls2_reader_test_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint
  *
  * Enable a feature of @ipatch_dls2_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_dls2_reader_set_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)
@@ -550,7 +550,7 @@ ags_ipatch_dls2_reader_set_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint 
  *
  * Disable a feature of @ipatch_dls2_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_dls2_reader_unset_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags)

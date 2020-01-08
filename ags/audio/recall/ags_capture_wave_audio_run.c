@@ -388,7 +388,7 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
  *
  * Returns: the new #AgsCaptureWaveAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCaptureWaveAudioRun*
 ags_capture_wave_audio_run_new(AgsAudio *audio)

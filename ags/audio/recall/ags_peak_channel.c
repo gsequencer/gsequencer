@@ -140,7 +140,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    *
    * The samplerate to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -158,7 +158,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -176,7 +176,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    *
    * The format to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -194,7 +194,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if buffer was cleared.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-cleared",
 				   i18n_pspec("if buffer was cleared"),
@@ -210,7 +210,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if buffer was computed.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-computed",
 				   i18n_pspec("if buffer was computed"),
@@ -226,7 +226,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if scale was precision.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("scale-precision",
 				   i18n_pspec("scale precision"),
@@ -243,7 +243,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The peak of the channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("peak",
 				   i18n_pspec("peak of channel"),
@@ -879,7 +879,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
  *
  * Returns: the new #AgsPeakChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakChannel*
 ags_peak_channel_new(AgsChannel *source)

@@ -206,7 +206,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The beats per minute.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("bpm",
 				   i18n_pspec("bpm of recall"),
@@ -222,7 +222,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The tact segmentation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("tact",
 				   i18n_pspec("tact of recall"),
@@ -239,7 +239,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The sequencer's delay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-delay",
 				   i18n_pspec("sequencer-delay of recall"),
@@ -255,7 +255,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The notation's delay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-delay",
 				   i18n_pspec("notation-delay of recall"),
@@ -270,7 +270,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The wave's delay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-delay",
 				   i18n_pspec("wave-delay of recall"),
@@ -286,7 +286,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The midi's delay.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("midi-delay",
 				   i18n_pspec("midi-delay of recall"),
@@ -302,7 +302,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The sequencer's duration.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-duration",
 				   i18n_pspec("sequencer-duration of recall"),
@@ -318,7 +318,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The notation's duration.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-duration",
 				   i18n_pspec("notation-duration of recall"),
@@ -334,7 +334,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The wave's duration.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-duration",
 				   i18n_pspec("wave-duration of recall"),
@@ -350,7 +350,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The midi's duration.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("midi-duration",
 				   i18n_pspec("midi-duration of recall"),
@@ -369,7 +369,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * The ::sequencer-duration-changed signal notifies about changed duration
    * of sequencer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
     g_signal_new("sequencer-duration-changed",
@@ -387,7 +387,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * The ::notation-duration-changed signal notifies about changed duration
    * of notation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_signals[NOTATION_DURATION_CHANGED] = 
     g_signal_new("notation-duration-changed",
@@ -405,7 +405,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * The ::wave-duration-changed signal notifies about changed duration
    * of wave.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_signals[WAVE_DURATION_CHANGED] = 
     g_signal_new("wave-duration-changed",
@@ -423,7 +423,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * The ::midi-duration-changed signal notifies about changed duration
    * of midi.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_signals[MIDI_DURATION_CHANGED] = 
     g_signal_new("midi-duration-changed",
@@ -2201,7 +2201,7 @@ ags_delay_audio_change_midi_duration(AgsTactable *tactable, guint64 duration)
  *
  * Sequencer duration changed of #AgsDelayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
@@ -2220,7 +2220,7 @@ ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Notation duration changed of #AgsDelayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
@@ -2239,7 +2239,7 @@ ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Wave duration changed of #AgsDelayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_wave_duration_changed(AgsDelayAudio *delay_audio)
@@ -2258,7 +2258,7 @@ ags_delay_audio_wave_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Midi duration changed of #AgsDelayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_midi_duration_changed(AgsDelayAudio *delay_audio)
@@ -2279,7 +2279,7 @@ ags_delay_audio_midi_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Returns: the new #AgsDelayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDelayAudio*
 ags_delay_audio_new(AgsAudio *audio)

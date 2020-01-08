@@ -117,7 +117,7 @@ ags_copy_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsCopyRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyRecycling*
 ags_copy_recycling_new(AgsRecycling *destination,

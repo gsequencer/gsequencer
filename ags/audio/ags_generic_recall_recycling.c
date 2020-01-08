@@ -114,7 +114,7 @@ ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recy
  *
  * Returns: a new #AgsGenericRecallRecycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericRecallRecycling*
 ags_generic_recall_recycling_new(AgsRecycling *recycling, GType child_type)

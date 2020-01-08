@@ -281,7 +281,7 @@ ags_feed_audio_signal_run_post(AgsRecall *recall)
  *
  * Returns: the new #AgsFeedAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFeedAudioSignal*
 ags_feed_audio_signal_new(AgsAudioSignal *source)

@@ -145,7 +145,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -161,7 +161,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned plugin.
    * 
-   * Since: 2.1.53
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("plugin",
 				   i18n_pspec("plugin of recall lv2"),
@@ -177,7 +177,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -193,7 +193,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The event port index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("event-port",
 				 i18n_pspec("event port"),
@@ -211,7 +211,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The atom port index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("atom-port",
 				 i18n_pspec("atom port"),
@@ -229,7 +229,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The selected bank.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("bank",
 				 i18n_pspec("bank"),
@@ -247,7 +247,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The selected program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("program",
 				 i18n_pspec("program"),
@@ -569,7 +569,7 @@ ags_recall_lv2_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags)
@@ -602,7 +602,7 @@ ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags)
@@ -631,7 +631,7 @@ ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags)
@@ -659,7 +659,7 @@ ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Set up LV2 handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
@@ -774,7 +774,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
  *
  * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
@@ -1037,7 +1037,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
@@ -1080,7 +1080,7 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
  *
  * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_lv2_find(GList *recall,
@@ -1129,7 +1129,7 @@ ags_recall_lv2_find(GList *recall,
  *
  * Returns: the new #AgsRecallLv2
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallLv2*
 ags_recall_lv2_new(AgsChannel *source,

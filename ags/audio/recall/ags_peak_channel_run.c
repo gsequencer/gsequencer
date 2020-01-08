@@ -201,7 +201,7 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
  *
  * Returns: the new #AgsPeakChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakChannelRun*
 ags_peak_channel_run_new(AgsChannel *source)

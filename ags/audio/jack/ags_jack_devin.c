@@ -254,7 +254,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The jack soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -270,7 +270,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -288,7 +288,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -306,7 +306,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -324,7 +324,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -342,7 +342,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -360,7 +360,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -375,7 +375,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -393,7 +393,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -411,7 +411,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -427,7 +427,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -443,7 +443,7 @@ ags_jack_devin_class_init(AgsJackDevinClass *jack_devin)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("jack-port",
 				    i18n_pspec("jack port object"),
@@ -1234,7 +1234,7 @@ ags_jack_devin_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags)
@@ -1267,7 +1267,7 @@ ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags)
  *
  * Enable a feature of @jack_devin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags)
@@ -1298,7 +1298,7 @@ ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags)
  *
  * Disable a feature of @jack_devin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags)
@@ -1496,7 +1496,7 @@ ags_jack_devin_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_list_cards(AgsSoundcard *soundcard,
@@ -2726,7 +2726,7 @@ ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
@@ -2766,7 +2766,7 @@ ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin)
@@ -2889,7 +2889,7 @@ ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
@@ -3078,7 +3078,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
  *
  * Returns: the new #AgsJackDevin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsJackDevin*
 ags_jack_devin_new()

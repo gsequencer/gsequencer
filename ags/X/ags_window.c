@@ -505,7 +505,7 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: a new #GList containing #AgsMachineCounter for know machines
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_window_standard_machine_counter_alloc()
@@ -586,7 +586,7 @@ ags_window_standard_machine_counter_alloc()
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
@@ -614,7 +614,7 @@ ags_window_find_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Increment window's counter.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
@@ -637,7 +637,7 @@ ags_window_increment_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Decrement window's counter.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
@@ -664,7 +664,7 @@ ags_window_decrement_machine_counter(AgsWindow *window,
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
@@ -707,7 +707,7 @@ ags_window_show_error(AgsWindow *window,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_window_load_file_timeout(AgsWindow *window)
@@ -776,7 +776,7 @@ ags_window_load_file_timeout(AgsWindow *window)
  *
  * Returns: a new #AgsWindow
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWindow*
 ags_window_new()

@@ -81,7 +81,7 @@ ags_vscale_box_init(AgsVScaleBox *vscale_box)
  * 
  * Returns: the new #AgsVScaleBox instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVScaleBox*
 ags_vscale_box_new()

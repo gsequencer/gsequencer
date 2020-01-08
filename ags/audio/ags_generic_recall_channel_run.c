@@ -131,7 +131,7 @@ ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *gener
    *
    * The type of child #AgsRecall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("generic-recall-recycling-child-type",
 				  i18n_pspec("generic recall recycling child type"),
@@ -334,7 +334,7 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsGenericRecallChannelRun.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericRecallChannelRun*
 ags_generic_recall_channel_run_new(AgsChannel *source,

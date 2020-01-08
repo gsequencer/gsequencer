@@ -140,7 +140,7 @@ ags_select_buffer_dialog_class_init(AgsSelectBufferDialogClass *select_buffer_di
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -528,7 +528,7 @@ ags_select_buffer_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsSelectBufferDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSelectBufferDialog*
 ags_select_buffer_dialog_new(GtkWidget *main_window)

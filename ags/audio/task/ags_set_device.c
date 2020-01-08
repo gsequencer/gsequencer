@@ -110,7 +110,7 @@ ags_set_device_class_init(AgsSetDeviceClass *set_device)
    *
    * The assigned #AgsSoundcard or #AgsSequencer instance.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope to set device"),
@@ -126,7 +126,7 @@ ags_set_device_class_init(AgsSetDeviceClass *set_device)
    *
    * The device to set.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("device"),
@@ -290,7 +290,7 @@ ags_set_device_launch(AgsTask *task)
  *
  * Returns: the new #AgsSetDevice.
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsSetDevice*
 ags_set_device_new(GObject *scope, gchar *device)

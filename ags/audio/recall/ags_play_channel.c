@@ -135,7 +135,7 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * The audio channel port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-channel",
 				   i18n_pspec("assigned audio channel"),
@@ -151,7 +151,7 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * The muted port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -485,7 +485,7 @@ ags_play_channel_get_muted_plugin_port()
  *
  * Returns: the new #AgsPlayChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayChannel*
 ags_play_channel_new(AgsChannel *source)

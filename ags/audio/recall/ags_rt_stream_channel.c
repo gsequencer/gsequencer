@@ -126,7 +126,7 @@ ags_rt_stream_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsRtStreamChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamChannel*
 ags_rt_stream_channel_new(AgsChannel *source)

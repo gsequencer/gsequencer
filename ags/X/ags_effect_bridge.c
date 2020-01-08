@@ -162,7 +162,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -180,7 +180,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -198,7 +198,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -216,7 +216,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -247,7 +247,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_bridge_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -268,7 +268,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_bridge_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -289,7 +289,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_bridge_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -312,7 +312,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bridge_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -336,7 +336,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bridge_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -356,7 +356,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::map-recall should be used to add the effect_bridge's default recall.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bridge_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -374,7 +374,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::find-port as recall should be mapped
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_bridge_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -1078,7 +1078,7 @@ ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_samplerate_changed(AgsEffectBridge *effect_bridge,
@@ -1102,7 +1102,7 @@ ags_effect_bridge_samplerate_changed(AgsEffectBridge *effect_bridge,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
@@ -1126,7 +1126,7 @@ ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
@@ -1200,7 +1200,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
  *
  * Resize audio channel allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
@@ -1364,7 +1364,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Resize pad allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
@@ -1401,7 +1401,7 @@ ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge)
  *
  * You may want the @effect_bridge to add its default recall.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge)
@@ -1500,7 +1500,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
@@ -1528,7 +1528,7 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)

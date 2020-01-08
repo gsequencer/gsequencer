@@ -270,7 +270,7 @@ ags_sheet_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsSheetToolbar
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSheetToolbar*
 ags_sheet_toolbar_new()

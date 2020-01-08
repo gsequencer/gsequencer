@@ -47,7 +47,7 @@
  * 
  * Returns: the count of types specified
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 guint
 ags_osc_util_type_tag_string_count_type(gchar *type_tag)
@@ -79,7 +79,7 @@ ags_osc_util_type_tag_string_count_type(gchar *type_tag)
  * 
  * Returns: the byte array containing meta data
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_meta_data(gchar *uri,
@@ -107,7 +107,7 @@ ags_osc_util_meta_data(gchar *uri,
  * 
  * Returns: the byte array containing MIME header
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_mime_header(gchar *uri,
@@ -137,7 +137,7 @@ ags_osc_util_mime_header(gchar *uri,
  * 
  * Returns: the encoded byte array
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_slip_encode(unsigned char *osc_buffer,
@@ -206,7 +206,7 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  * 
  * Returns: the OSC buffer as byte array
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_slip_decode(unsigned char *slip_buffer,
@@ -256,7 +256,7 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
  * 
  * Get current time.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction)

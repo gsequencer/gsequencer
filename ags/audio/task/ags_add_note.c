@@ -114,7 +114,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of notation"),
@@ -130,7 +130,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of add note"),
@@ -146,7 +146,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned audio channel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel of notation"),
@@ -164,7 +164,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The notation's use-selection-list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("use-selection-list",
 				     i18n_pspec("use selection list"),
@@ -417,7 +417,7 @@ ags_add_note_launch(AgsTask *task)
  *
  * Returns: the new #AgsAddNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAddNote*
 ags_add_note_new(AgsAudio *audio,

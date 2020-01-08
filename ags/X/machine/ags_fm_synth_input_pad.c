@@ -167,7 +167,7 @@ ags_fm_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: the new #AgsFMSynthInputPad
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMSynthInputPad*
 ags_fm_synth_input_pad_new(AgsChannel *channel)

@@ -129,7 +129,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The playback port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("if do playback"),
@@ -145,7 +145,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The record port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("record",
 				   i18n_pspec("if do record"),
@@ -161,7 +161,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The filename port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("filename",
 				   i18n_pspec("filename of record"),
@@ -177,7 +177,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The division port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("division",
 				   i18n_pspec("division of record"),
@@ -193,7 +193,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The tempo port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("tempo",
 				   i18n_pspec("tempo of record"),
@@ -209,7 +209,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The bpm port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("bpm",
 				   i18n_pspec("bpm of record"),
@@ -695,7 +695,7 @@ ags_record_midi_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsRecordMidiAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecordMidiAudio*
 ags_record_midi_audio_new(AgsAudio *audio)

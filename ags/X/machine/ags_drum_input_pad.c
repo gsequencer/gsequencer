@@ -245,7 +245,7 @@ ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: a new #AgsDrumInputPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)

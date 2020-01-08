@@ -180,7 +180,7 @@ ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
  *
  * Returns: the new #AgsMatrixBulkInput
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMatrixBulkInput*
 ags_matrix_bulk_input_new(AgsAudio *audio,

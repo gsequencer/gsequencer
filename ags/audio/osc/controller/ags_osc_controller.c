@@ -111,7 +111,7 @@ ags_osc_controller_class_init(AgsOscControllerClass *osc_controller)
    *
    * The assigned #AgsOscServer
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("osc-server",
 				   i18n("assigned osc server"),
@@ -127,7 +127,7 @@ ags_osc_controller_class_init(AgsOscControllerClass *osc_controller)
    *
    * The context path provided.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("context-path",
 				   i18n_pspec("context path to provide"),
@@ -291,7 +291,7 @@ ags_osc_controller_finalize(GObject *gobject)
  * 
  * Returns: the #AgsOscController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscController*
 ags_osc_controller_new()

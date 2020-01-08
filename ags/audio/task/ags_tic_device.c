@@ -109,7 +109,7 @@ ags_tic_device_class_init(AgsTicDeviceClass *tic_device)
    *
    * The assigned #GObject as device.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device to tic"),
@@ -257,7 +257,7 @@ ags_tic_device_launch(AgsTask *task)
  *
  * Returns: an new #AgsTicDevice.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTicDevice*
 ags_tic_device_new(GObject *device)

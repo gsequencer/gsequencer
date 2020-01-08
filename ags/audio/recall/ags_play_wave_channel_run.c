@@ -145,7 +145,7 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
    *
    * The x offset.
    * 
-   * Since: 2.1.24
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("x-offset",
 				   i18n_pspec("x offset"),
@@ -699,7 +699,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsPlayWaveChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayWaveChannelRun*
 ags_play_wave_channel_run_new(AgsChannel *source)

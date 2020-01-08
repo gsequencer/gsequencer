@@ -116,7 +116,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin top.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -134,7 +134,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin bottom.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -152,7 +152,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin left.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -170,7 +170,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin right.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -382,7 +382,7 @@ ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
  *
  * Returns: a new #AgsScrolledAutomationEditBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScrolledAutomationEditBox*
 ags_scrolled_automation_edit_box_new()

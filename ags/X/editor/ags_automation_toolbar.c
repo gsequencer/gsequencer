@@ -553,7 +553,7 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Fill in port field with available ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
@@ -838,7 +838,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
  *
  * Applies all port to appropriate #AgsMachine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
@@ -1305,7 +1305,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
  *
  * Returns: a new #GtkMenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkMenu*
 ags_automation_toolbar_tool_popup_new(AgsAutomationToolbar *automation_toolbar)
@@ -1373,7 +1373,7 @@ ags_automation_toolbar_tool_popup_new(AgsAutomationToolbar *automation_toolbar)
  *
  * Returns: the new #AgsAutomationToolbar
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationToolbar*
 ags_automation_toolbar_new()

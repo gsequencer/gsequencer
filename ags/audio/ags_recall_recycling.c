@@ -153,7 +153,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination recycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -171,7 +171,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination recycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("AgsRecycling destination of this recall"),
@@ -187,7 +187,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned source recycling.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("AgsRecycling source of this recall"),
@@ -203,7 +203,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination audio signal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("child-destination",
 				   i18n_pspec("AgsAudioSignal of this recall"),
@@ -219,7 +219,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned source audio signal.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("child-source",
 				    i18n_pspec("AgsAudioSignal of this recall"),
@@ -1096,7 +1096,7 @@ ags_recall_recycling_source_remove_audio_signal_callback_END:
  *
  * Returns: the new #AgsRecallRecycling
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallRecycling*
 ags_recall_recycling_new()

@@ -755,7 +755,7 @@ ags_sheet_edit_draw(AgsSheetEdit *sheet_edit)
  *
  * Returns: a new #AgsSheetEdit
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsSheetEdit*
 ags_sheet_edit_new()

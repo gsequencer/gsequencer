@@ -105,7 +105,7 @@ ags_prepare_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPrepareChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPrepareChannel*
 ags_prepare_channel_new(AgsChannel *source)

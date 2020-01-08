@@ -231,7 +231,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The alsa sequencer indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -247,7 +247,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -262,7 +262,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -280,7 +280,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -298,7 +298,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -862,7 +862,7 @@ ags_midiin_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
@@ -895,7 +895,7 @@ ags_midiin_test_flags(AgsMidiin *midiin, guint flags)
  *
  * Enable a feature of @midiin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
@@ -926,7 +926,7 @@ ags_midiin_set_flags(AgsMidiin *midiin, guint flags)
  *
  * Disable a feature of @midiin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midiin_unset_flags(AgsMidiin *midiin, guint flags)
@@ -2313,7 +2313,7 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
@@ -2386,7 +2386,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
  *
  * Returns: the new #AgsMidiin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiin*
 ags_midiin_new()

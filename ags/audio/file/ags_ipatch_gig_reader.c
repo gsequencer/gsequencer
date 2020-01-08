@@ -130,7 +130,7 @@ ags_ipatch_gig_reader_class_init(AgsIpatchGigReaderClass *ipatch_gig_reader)
    *
    * The assigned #AgsIpatch
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ipatch",
 				   i18n_pspec("the ipatch"),
@@ -484,7 +484,7 @@ ags_ipatch_gig_reader_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
@@ -517,7 +517,7 @@ ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint fl
  *
  * Enable a feature of @ipatch_gig_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
@@ -548,7 +548,7 @@ ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint fla
  *
  * Disable a feature of @ipatch_gig_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_gig_reader_unset_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
@@ -966,7 +966,7 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
  *
  * Returns: the new #AgsIpatchGigReader.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIpatchGigReader*
 ags_ipatch_gig_reader_new(AgsIpatch *ipatch)

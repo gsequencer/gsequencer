@@ -110,7 +110,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add soundcard"),
@@ -266,7 +266,7 @@ ags_add_soundcard_launch(AgsTask *task)
  *
  * Returns: the new #AgsAddSoundcard.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAddSoundcard*
 ags_add_soundcard_new(GObject *soundcard)

@@ -185,7 +185,7 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsAnalyseAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAnalyseAudioSignal*
 ags_analyse_audio_signal_new(AgsAudioSignal *source)

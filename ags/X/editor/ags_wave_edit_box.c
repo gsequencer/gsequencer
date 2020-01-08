@@ -107,7 +107,7 @@ ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
    *
    * The fixed height of a edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("fixed-edit-height",
 				 "fixed edit height",
@@ -203,7 +203,7 @@ GType ags_wave_edit_box_child_type(GtkContainer *container)
  * 
  * Returns: the new #AgsWaveEditBox instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWaveEditBox*
 ags_wave_edit_box_new()

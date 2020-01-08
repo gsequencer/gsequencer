@@ -263,7 +263,7 @@ ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: the new #AgsPanelInputPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPanelInputPad*
 ags_panel_input_pad_new(AgsChannel *channel)

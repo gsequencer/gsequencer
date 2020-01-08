@@ -316,7 +316,7 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsMidiPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiPreferences*
 ags_midi_preferences_new()

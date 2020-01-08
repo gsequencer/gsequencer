@@ -132,7 +132,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    *
    * The assigned #AgsSoundcard to use as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -154,7 +154,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    *
    * The ::change-position seeks the stream.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   navigation_signals[CHANGE_POSITION] =
     g_signal_new("change-position",
@@ -615,7 +615,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  * Change tact position of editor. The scrollbar is adjustet
  * and its playback position seeked.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
@@ -640,7 +640,7 @@ ags_navigation_change_position(AgsNavigation *navigation,
  *
  * Returns: tact as time string
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
@@ -686,7 +686,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
  *
  * Updates time as string.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_navigation_update_time_string(double tact,
@@ -802,7 +802,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
  *
  * Enables/Disables the #AgsNavigation to control the tree.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
@@ -860,7 +860,7 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
  *
  * Returns: the new #AgsNavigation
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNavigation*
 ags_navigation_new()

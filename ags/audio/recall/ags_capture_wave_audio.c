@@ -146,7 +146,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The playback port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("if do playback"),
@@ -162,7 +162,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The replace port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("replace",
 				   i18n_pspec("if do replace"),
@@ -178,7 +178,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The record port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("record",
 				   i18n_pspec("if do record"),
@@ -194,7 +194,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The filename port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("filename",
 				   i18n_pspec("filename of record"),
@@ -210,7 +210,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The file's audio channels port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file-audio-channels",
 				   i18n_pspec("file audio channels"),
@@ -226,7 +226,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The file's samplerate port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file-samplerate",
 				   i18n_pspec("file samplerate"),
@@ -242,7 +242,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The file's buffer size port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file-buffer-size",
 				   i18n_pspec("files buffer size"),
@@ -258,7 +258,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    * 
    * The file's format port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file-format",
 				   i18n_pspec("file format"),
@@ -274,7 +274,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop",
 				   i18n_pspec("wave loop capturing"),
@@ -290,7 +290,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    *
    * The wave's loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -306,7 +306,7 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
    *
    * The wave's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop-end",
 				   i18n_pspec("end beat of wave loop"),
@@ -1148,7 +1148,7 @@ ags_capture_wave_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsCaptureWaveAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCaptureWaveAudio*
 ags_capture_wave_audio_new(AgsAudio *audio)

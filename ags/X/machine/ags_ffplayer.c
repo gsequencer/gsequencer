@@ -1542,7 +1542,7 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
  *
  * Returns: %TRUE if proceed poll completed, otherwise %FALSE
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 gboolean
 ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
@@ -1626,7 +1626,7 @@ ags_ffplayer_sf2_loader_completed_timeout(AgsFFPlayer *ffplayer)
  *
  * Returns: the new #AgsFFPlayer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayer*
 ags_ffplayer_new(GObject *output_soundcard)

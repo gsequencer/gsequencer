@@ -272,7 +272,7 @@ ags_start_soundcard_launch(AgsTask *task)
  *
  * Returns: the new #AgsStartSoundcard.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartSoundcard*
 ags_start_soundcard_new()

@@ -2010,7 +2010,7 @@ ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr)
  *
  * Returns: a new #AgsNotationEdit
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNotationEdit*
 ags_notation_edit_new()

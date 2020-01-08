@@ -117,7 +117,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin top.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -135,7 +135,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin bottom.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -153,7 +153,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin left.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -171,7 +171,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin right.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -371,7 +371,7 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
  *
  * Returns: the new #AgsScrolledScaleBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScrolledScaleBox*
 ags_scrolled_scale_box_new()

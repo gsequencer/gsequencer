@@ -1352,7 +1352,7 @@ ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
  * 
  * Add @fm_oscillator to @fm_syncsynth.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
@@ -1398,7 +1398,7 @@ ags_fm_syncsynth_add_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
  * 
  * Remove nth fm_oscillator.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
@@ -1440,7 +1440,7 @@ ags_fm_syncsynth_remove_fm_oscillator(AgsFMSyncsynth *fm_syncsynth,
  * 
  * Reset loop spin buttons.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth)
@@ -1484,7 +1484,7 @@ ags_fm_syncsynth_reset_loop(AgsFMSyncsynth *fm_syncsynth)
  * 
  * Update audio data.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
@@ -1712,7 +1712,7 @@ ags_fm_syncsynth_update(AgsFMSyncsynth *fm_syncsynth)
  *
  * Returns: the new #AgsFMSyncsynth
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMSyncsynth*
 ags_fm_syncsynth_new(GObject *soundcard)

@@ -2328,7 +2328,7 @@ ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port,
  * 
  * Gets latency.
  * 
- * Since: 2.1.41
+ * Since: 3.0.0
  */
 guint
 ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port)

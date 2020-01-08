@@ -136,7 +136,7 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    *
    * The assigned #AgsJackClient.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("assigned JACK client"),
@@ -152,7 +152,7 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    *
    * The JACK port name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
@@ -524,7 +524,7 @@ ags_jack_port_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags)
@@ -557,7 +557,7 @@ ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags)
  *
  * Enable a feature of @jack_port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags)
@@ -588,7 +588,7 @@ ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags)
  *
  * Disable a feature of @jack_port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
@@ -621,7 +621,7 @@ ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
  *
  * Returns: (element-type AgsAudio.JackPort) (transfer none): the next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_jack_port_find(GList *jack_port,
@@ -668,7 +668,7 @@ ags_jack_port_find(GList *jack_port,
  * Register a new JACK port and read uuid. Creates a new AgsSequencer or AgsSoundcard
  * object.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_port_register(AgsJackPort *jack_port,
@@ -817,7 +817,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
  * 
  * Unregister JACK port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_port_unregister(AgsJackPort *jack_port)
@@ -903,7 +903,7 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
  *
  * Returns: the new #AgsJackPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsJackPort*
 ags_jack_port_new(GObject *jack_client)

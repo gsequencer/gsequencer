@@ -160,7 +160,7 @@ ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run)
    * 
    * The route lv2 audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("route-lv2-audio-run",
 				   i18n_pspec("assigned AgsRouteLv2AudioRun"),
@@ -176,7 +176,7 @@ ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run)
    *
    * The assigned #AgsNote.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("note",
 				    i18n_pspec("assigned note"),
@@ -1205,7 +1205,7 @@ ags_recall_lv2_run_run_inter_END:
  *
  * Set up LV2 ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
@@ -1374,7 +1374,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
  *
  * Returns: the new #AgsRecallLv2Run
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallLv2Run*
 ags_recall_lv2_run_new(AgsAudioSignal *source)

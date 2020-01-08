@@ -123,7 +123,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment width.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-width",
 				 "segment width",
@@ -141,7 +141,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment height.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-height",
 				 "segment height",
@@ -159,7 +159,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment padding.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-padding",
 				 "segment padding",
@@ -177,7 +177,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment count.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-count",
 				 "segment count",
@@ -195,7 +195,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The adjustment giving indicator value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("adjustment",
 				   "assigned adjustment",
@@ -440,7 +440,7 @@ ags_indicator_show(GtkWidget *widget)
  *
  * Returns: a new #AgsIndicator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIndicator*
 ags_indicator_new()

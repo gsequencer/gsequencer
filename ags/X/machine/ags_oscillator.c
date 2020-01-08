@@ -104,7 +104,7 @@ ags_oscillator_class_init(AgsOscillatorClass *oscillator)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -387,7 +387,7 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_oscillator_control_changed(AgsOscillator *oscillator)
@@ -407,7 +407,7 @@ ags_oscillator_control_changed(AgsOscillator *oscillator)
  *
  * Returns: the new #AgsOscillator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOscillator*
 ags_oscillator_new()

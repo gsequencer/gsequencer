@@ -157,7 +157,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("widget-type",
 				  i18n_pspec("widget type of line member"),
@@ -174,7 +174,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget's label to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("widget-label",
 				   i18n_pspec("label to display"),
@@ -190,7 +190,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin name to control"),
@@ -206,7 +206,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin filename of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -222,7 +222,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin effect of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -238,7 +238,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("port specifier"),
@@ -254,7 +254,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The control port of the recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control port index"),
@@ -270,7 +270,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * If line member has integer ports, this is the number of steps.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-precision",
 				 i18n_pspec("scale precision of line members port"),
@@ -288,7 +288,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * If line member has logarithmic ports, this is the number of step count.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("step-count",
 				   i18n_pspec("step count of line members port"),
@@ -306,7 +306,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The conversion of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion to apply"),
@@ -322,7 +322,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching simple port of plugin name and specifier.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("port to apply"),
@@ -338,7 +338,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The port data to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("port-data",
 				    i18n_pspec("port data"),
@@ -353,7 +353,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching complex port of plugin name and specifier.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-port",
 				   i18n_pspec("recall port to apply"),
@@ -369,7 +369,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The complex port data to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("recall-port-data",
 				    i18n_pspec("recall port data"),
@@ -384,7 +384,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The task type to apply the port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("task-type",
 				  i18n_pspec("task type to apply"),
@@ -408,7 +408,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The ::change-port signal notifies modified port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_member_signals[CHANGE_PORT] =
     g_signal_new("change-port",
@@ -428,7 +428,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Returns: a #GList-struct with associated ports
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_member_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -1426,7 +1426,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_member_change_port(AgsLineMember *line_member,
@@ -1641,7 +1641,7 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
  *
  * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_line_member_find_port(AgsLineMember *line_member)
@@ -1668,7 +1668,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
  * Chain changed control and apply the very same value to grouped
  * controls if sticky controls set.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_member_chained_event(AgsLineMember *line_member)
@@ -1833,7 +1833,7 @@ ags_line_member_chained_event(AgsLineMember *line_member)
  *
  * Returns: the new #AgsLineMember
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLineMember*
 ags_line_member_new()

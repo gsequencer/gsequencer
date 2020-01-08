@@ -117,7 +117,7 @@ ags_play_notation_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayNotationAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayNotationAudio*
 ags_play_notation_audio_new(AgsAudio *audio)

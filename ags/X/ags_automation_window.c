@@ -248,7 +248,7 @@ ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsAutomationWindow
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationWindow*
 ags_automation_window_new(GtkWidget *parent_window)

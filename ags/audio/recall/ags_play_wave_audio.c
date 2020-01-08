@@ -120,7 +120,7 @@ ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop",
 				   i18n_pspec("wave loop playing"),
@@ -136,7 +136,7 @@ ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio)
    *
    * The wave's loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -152,7 +152,7 @@ ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio)
    *
    * The wave's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop-end",
 				   i18n_pspec("end beat of wave loop"),
@@ -448,7 +448,7 @@ ags_play_wave_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayWaveAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayWaveAudio*
 ags_play_wave_audio_new(AgsAudio *audio)

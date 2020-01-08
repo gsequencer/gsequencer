@@ -261,7 +261,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The core audio soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -277,7 +277,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -295,7 +295,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -313,7 +313,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -331,7 +331,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -349,7 +349,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -367,7 +367,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -382,7 +382,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -400,7 +400,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -418,7 +418,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -434,7 +434,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The assigned #AgsCoreAudioClient
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("core audio client object"),
@@ -450,7 +450,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    *
    * The assigned #AgsCoreAudioPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("core-audio-port",
 				    i18n_pspec("core audio port object"),
@@ -1285,7 +1285,7 @@ ags_core_audio_devout_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
@@ -1318,7 +1318,7 @@ ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint fl
  *
  * Enable a feature of @core_audio_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
@@ -1349,7 +1349,7 @@ ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint fla
  *
  * Disable a feature of @core_audio_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, guint flags)
@@ -3170,7 +3170,7 @@ ags_core_audio_devout_unlock_sub_block(AgsSoundcard *soundcard,
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout)
@@ -3222,7 +3222,7 @@ ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout)
@@ -3349,7 +3349,7 @@ ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_dev
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
@@ -3463,7 +3463,7 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
  *
  * Returns: a new #AgsCoreAudioDevout
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCoreAudioDevout*
 ags_core_audio_devout_new()

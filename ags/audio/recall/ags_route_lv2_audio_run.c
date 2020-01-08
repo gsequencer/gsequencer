@@ -1299,7 +1299,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
  *
  * Returns: the new #AgsRouteLv2AudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRouteLv2AudioRun*
 ags_route_lv2_audio_run_new(AgsAudio *audio)

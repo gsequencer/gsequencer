@@ -120,7 +120,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned preset.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("preset",
 				   i18n_pspec("the preset"),
@@ -136,7 +136,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned instrument.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("the instrument"),
@@ -152,7 +152,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned sample.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("sample",
 				   i18n_pspec("the sample"),
@@ -168,7 +168,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned audio channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel to read"),
@@ -185,7 +185,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned timestamp.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp"),
@@ -586,7 +586,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
  *
  * Returns: the new #AgsAudioFileLink
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAudioFileLink*
 ags_audio_file_link_new()

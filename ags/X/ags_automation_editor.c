@@ -169,7 +169,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -1376,7 +1376,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -2735,7 +2735,7 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
  *
  * Returns: the new #AgsAutomationEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationEditor*
 ags_automation_editor_new()

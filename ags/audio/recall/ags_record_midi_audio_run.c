@@ -125,7 +125,7 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
    * 
    * The delay audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -141,7 +141,7 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
    * 
    * The count beats audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -157,7 +157,7 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
    * 
    * The timestamp.
    * 
-   * Since: 2.1.53
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("assigned timestamp"),
@@ -1209,7 +1209,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
  *
  * Returns: the new #AgsRecordMidiAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecordMidiAudioRun*
 ags_record_midi_audio_run_new(AgsAudio *audio,

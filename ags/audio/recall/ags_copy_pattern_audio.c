@@ -127,7 +127,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 0 port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("bank-index-0",
 				   i18n_pspec("current bank index 0"),
@@ -143,7 +143,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 1 port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("bank-index-1",
 				   i18n_pspec("current bank index 1"),
@@ -473,7 +473,7 @@ ags_copy_pattern_audio_get_bank_index_1_plugin_port()
  *
  * Returns: the new #AgsCopyPatternAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(AgsAudio *audio,

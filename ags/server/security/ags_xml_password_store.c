@@ -786,7 +786,7 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
  *
  * Returns: the new #AgsXmlPasswordStore instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsXmlPasswordStore*
 ags_xml_password_store_new()

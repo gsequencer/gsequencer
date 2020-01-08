@@ -342,7 +342,7 @@ ags_resize_editor_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsResizeEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResizeEditor*
 ags_resize_editor_new()

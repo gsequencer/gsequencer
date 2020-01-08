@@ -114,7 +114,7 @@ ags_capture_wave_channel_class_init(AgsCaptureWaveChannelClass *capture_wave_cha
    *
    * The x-offset port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("x-offset",
 				   i18n_pspec("x offset"),
@@ -281,7 +281,7 @@ ags_capture_wave_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsCaptureWaveChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCaptureWaveChannel*
 ags_capture_wave_channel_new(AgsChannel *source)

@@ -289,7 +289,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
  *
  * Returns: the new #AgsMixerInputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMixerInputLine*
 ags_mixer_input_line_new(AgsChannel *channel)

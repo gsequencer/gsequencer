@@ -448,7 +448,7 @@ ags_envelope_info_y_label_func(gdouble value,
  * 
  * Plot envelope.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
@@ -601,7 +601,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
  *
  * Returns: a new #AgsEnvelopeInfo
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeInfo*
 ags_envelope_info_new()

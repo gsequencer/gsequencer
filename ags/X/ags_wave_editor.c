@@ -169,7 +169,7 @@ ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   wave_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -755,7 +755,7 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
  *
  * Is emitted as machine changed of wave editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_editor_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *machine)
@@ -1560,7 +1560,7 @@ ags_wave_editor_invert(AgsWaveEditor *wave_editor)
  *
  * Returns: a new #AgsWaveEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWaveEditor*
 ags_wave_editor_new()

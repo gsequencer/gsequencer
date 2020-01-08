@@ -127,7 +127,7 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device of change device"),
@@ -570,7 +570,7 @@ ags_clear_buffer_launch(AgsTask *task)
  *
  * Returns: the new #AgsClearBuffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsClearBuffer*
 ags_clear_buffer_new(GObject *device)

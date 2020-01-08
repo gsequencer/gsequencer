@@ -450,7 +450,7 @@ ags_buffer_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsBufferAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferAudioSignal*
 ags_buffer_audio_signal_new(AgsAudioSignal *destination,

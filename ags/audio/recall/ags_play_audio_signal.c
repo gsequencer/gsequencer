@@ -455,7 +455,7 @@ ags_play_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsPlayAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayAudioSignal*
 ags_play_audio_signal_new(AgsAudioSignal *source)

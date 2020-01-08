@@ -114,7 +114,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of remove note"),
@@ -130,7 +130,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of remove note"),
@@ -146,7 +146,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned audio channel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel of notation"),
@@ -164,7 +164,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The notation's use-selection-list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("use-selection-list",
 				     i18n_pspec("use selection list"),
@@ -414,7 +414,7 @@ ags_remove_note_launch(AgsTask *task)
  *
  * Returns: the new #AgsRemoveNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRemoveNote*
 ags_remove_note_new(AgsAudio *audio,

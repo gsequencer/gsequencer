@@ -418,7 +418,7 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkMenu*
 ags_wave_toolbar_tool_popup_new(AgsWaveToolbar *wave_toolbar)
@@ -479,7 +479,7 @@ ags_wave_toolbar_tool_popup_new(AgsWaveToolbar *wave_toolbar)
  *
  * Returns: a new #AgsWaveToolbar
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWaveToolbar*
 ags_wave_toolbar_new()

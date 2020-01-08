@@ -208,7 +208,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The target channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -224,7 +224,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsFilename representing this channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename assigned with"),
@@ -240,7 +240,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsEffect representing this channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect assigned with"),
@@ -256,7 +256,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsControl-Specifier representing this channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-specifier",
 				   i18n_pspec("assigned control specifier"),
@@ -272,7 +272,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsControl-Name representing this channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   i18n_pspec("displayed control name"),
@@ -288,7 +288,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's lower range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -306,7 +306,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's upper range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -324,7 +324,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("default-value",
 				   "default value",
@@ -2452,7 +2452,7 @@ ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr)
  *
  * Returns: a new #AgsAutomationEdit
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationEdit*
 ags_automation_edit_new()

@@ -113,7 +113,7 @@ ags_feed_recycling_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFeedRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFeedRecycling*
 ags_feed_recycling_new(AgsRecycling *source)

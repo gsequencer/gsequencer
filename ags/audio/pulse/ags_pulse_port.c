@@ -154,7 +154,7 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
    *
    * The assigned #AgsPulseClient.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pulse-client",
 				   i18n_pspec("assigned pulseaudio client"),
@@ -170,7 +170,7 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
    *
    * The assigned #AgsPulseDevout.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pulse-devout",
 				   i18n_pspec("assigned pulseaudio devout"),
@@ -186,7 +186,7 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
    *
    * The assigned #AgsPulseDevout.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pulse-devin",
 				   i18n_pspec("assigned pulseaudio devin"),
@@ -202,7 +202,7 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
    *
    * The pulse soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
@@ -801,7 +801,7 @@ ags_pulse_port_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pulse_port_test_flags(AgsPulsePort *pulse_port, guint flags)
@@ -834,7 +834,7 @@ ags_pulse_port_test_flags(AgsPulsePort *pulse_port, guint flags)
  *
  * Enable a feature of @pulse_port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_port_set_flags(AgsPulsePort *pulse_port, guint flags)
@@ -865,7 +865,7 @@ ags_pulse_port_set_flags(AgsPulsePort *pulse_port, guint flags)
  *
  * Disable a feature of @pulse_port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_port_unset_flags(AgsPulsePort *pulse_port, guint flags)
@@ -898,7 +898,7 @@ ags_pulse_port_unset_flags(AgsPulsePort *pulse_port, guint flags)
  *
  * Returns: (element-type AgsAudio.PulsePort) (transfer none): the next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pulse_port_find(GList *pulse_port,
@@ -939,7 +939,7 @@ ags_pulse_port_find(GList *pulse_port,
  * Register a new pulseaudio port and read uuid. Creates a new AgsSequencer or AgsSoundcard
  * object.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_port_register(AgsPulsePort *pulse_port,
@@ -2193,7 +2193,7 @@ ags_pulse_port_set_cache_buffer_size(AgsPulsePort *pulse_port,
  * 
  * Gets latency.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
@@ -2231,7 +2231,7 @@ ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
  *
  * Returns: the new #AgsPulsePort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPulsePort*
 ags_pulse_port_new(GObject *pulse_client)

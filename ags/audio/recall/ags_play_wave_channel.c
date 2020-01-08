@@ -117,7 +117,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The wave containing the notes.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave",
 				   i18n_pspec("assigned AgsWave"),
@@ -133,7 +133,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The do-playback port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("do-playback",
 				   i18n_pspec("do playback"),
@@ -149,7 +149,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The x-offset port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("x-offset",
 				   i18n_pspec("x offset"),
@@ -431,7 +431,7 @@ ags_play_wave_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayWaveChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayWaveChannel*
 ags_play_wave_channel_new(AgsChannel *source)

@@ -115,7 +115,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of seek soundcard"),
@@ -131,7 +131,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The offset to seek.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int64("offset",
 				 i18n_pspec("offset"),
@@ -149,7 +149,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * Whence either AGS_SEEK_SET, AGS_SEEK_CUR or AGS_SEEK_END
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("whence",
 				 i18n_pspec("whence"),
@@ -402,7 +402,7 @@ ags_seek_soundcard_launch(AgsTask *task)
  *
  * Returns: the new #AgsSeekSoundcard
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSeekSoundcard*
 ags_seek_soundcard_new(GObject *soundcard,

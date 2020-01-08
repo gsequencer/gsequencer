@@ -140,7 +140,7 @@ ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_action_controller_signals[RUN_ACTION] =
     g_signal_new("run-action",
@@ -584,7 +584,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controller,
@@ -613,7 +613,7 @@ ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controll
  * 
  * Returns: the #AgsOscActionController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscActionController*
 ags_osc_action_controller_new()

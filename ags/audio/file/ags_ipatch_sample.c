@@ -174,7 +174,7 @@ ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -192,7 +192,7 @@ ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
    *
    * The format to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -210,7 +210,7 @@ ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
    *
    * The assigned output #IpatchSample.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sample",
 				   i18n_pspec("assigned sample"),
@@ -1056,7 +1056,7 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
@@ -1089,7 +1089,7 @@ ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
  *
  * Enable a feature of @ipatch_sample.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
@@ -1120,7 +1120,7 @@ ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
  *
  * Disable a feature of @ipatch_sample.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
@@ -1151,7 +1151,7 @@ ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
  *
  * Returns: the new #AgsIpatchSample.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIpatchSample*
 ags_ipatch_sample_new()

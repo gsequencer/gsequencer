@@ -286,7 +286,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The assigned #AgsDelayAudioRun dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -302,7 +302,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The sequencer counter.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("sequencer-counter",
 				   i18n_pspec("sequencer counter indicates offset"),
@@ -320,7 +320,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The notation counter.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("notation-counter",
 				   i18n_pspec("notation counter indicates offset"),
@@ -338,7 +338,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The wave counter.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("wave-counter",
 				   i18n_pspec("wave counter indicates offset"),
@@ -356,7 +356,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The midi counter.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("midi-counter",
 				   i18n_pspec("midi counter indicates offset"),
@@ -393,7 +393,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::sequencer-start signal is emited while starting sequencer playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[SEQUENCER_START] =
     g_signal_new("sequencer-start",
@@ -412,7 +412,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::sequencer-loop signal is emited while looping sequencer playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[SEQUENCER_LOOP] =
     g_signal_new("sequencer-loop",
@@ -431,7 +431,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::sequencer-loop signal is emited while stoping sequencer playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[SEQUENCER_STOP] =
     g_signal_new("sequencer-stop",
@@ -450,7 +450,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::notation-start signal is emited while starting notation playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[NOTATION_START] =
     g_signal_new("notation-start",
@@ -469,7 +469,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::notation-loop signal is emited while looping notation playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[NOTATION_LOOP] =
     g_signal_new("notation-loop",
@@ -488,7 +488,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::notation-loop signal is emited while stoping notation playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[NOTATION_STOP] =
     g_signal_new("notation-stop",
@@ -507,7 +507,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::wave-start signal is emited while starting wave playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[WAVE_START] =
     g_signal_new("wave-start",
@@ -526,7 +526,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::wave-loop signal is emited while looping wave playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[WAVE_LOOP] =
     g_signal_new("wave-loop",
@@ -545,7 +545,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::wave-loop signal is emited while stoping wave playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[WAVE_STOP] =
     g_signal_new("wave-stop",
@@ -565,7 +565,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::midi-start signal is emited while starting midi playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[MIDI_START] =
     g_signal_new("midi-start",
@@ -584,7 +584,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::midi-loop signal is emited while looping midi playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[MIDI_LOOP] =
     g_signal_new("midi-loop",
@@ -603,7 +603,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The ::midi-loop signal is emited while stoping midi playback.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   count_beats_audio_run_signals[MIDI_STOP] =
     g_signal_new("midi-stop",
@@ -1576,7 +1576,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
  *
  * Emitted as sequencer starts playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1598,7 +1598,7 @@ ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_aud
  *
  * Emitted as sequencer loops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1620,7 +1620,7 @@ ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audi
  *
  * Emitted as sequencer stops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1642,7 +1642,7 @@ ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audi
  *
  * Emitted as notation starts playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1664,7 +1664,7 @@ ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audi
  *
  * Emitted as notation loops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1686,7 +1686,7 @@ ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio
  *
  * Emitted as notation stops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1708,7 +1708,7 @@ ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio
  *
  * Emitted as wave starts playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_wave_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1730,7 +1730,7 @@ ags_count_beats_audio_run_wave_start(AgsCountBeatsAudioRun *count_beats_audio_ru
  *
  * Emitted as wave loops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_wave_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1752,7 +1752,7 @@ ags_count_beats_audio_run_wave_loop(AgsCountBeatsAudioRun *count_beats_audio_run
  *
  * Emitted as wave stops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_wave_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1774,7 +1774,7 @@ ags_count_beats_audio_run_wave_stop(AgsCountBeatsAudioRun *count_beats_audio_run
  *
  * Emitted as midi starts playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_midi_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1796,7 +1796,7 @@ ags_count_beats_audio_run_midi_start(AgsCountBeatsAudioRun *count_beats_audio_ru
  *
  * Emitted as midi loops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_midi_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1818,7 +1818,7 @@ ags_count_beats_audio_run_midi_loop(AgsCountBeatsAudioRun *count_beats_audio_run
  *
  * Emitted as midi stops playback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_count_beats_audio_run_midi_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -2725,7 +2725,7 @@ ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, g
  *
  * Returns: the new #AgsCountBeatsAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCountBeatsAudioRun*
 ags_count_beats_audio_run_new(AgsAudio *audio,

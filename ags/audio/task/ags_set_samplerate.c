@@ -122,7 +122,7 @@ ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set samplerate"),
@@ -138,7 +138,7 @@ ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate)
    *
    * The samplerate to apply to scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -417,7 +417,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
  *
  * Returns: the new #AgsSetSamplerate
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSetSamplerate*
 ags_set_samplerate_new(GObject *scope,

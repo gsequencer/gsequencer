@@ -114,7 +114,7 @@ ags_volume_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsVolumeChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeChannelRun*
 ags_volume_channel_run_new(AgsChannel *source)

@@ -136,7 +136,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
    *
    * The assigned plugin.
    * 
-   * Since: 2.1.53
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("plugin",
 				   i18n_pspec("plugin of recall ladspa"),

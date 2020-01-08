@@ -279,7 +279,7 @@ ags_hindicator_draw(AgsHIndicator *hindicator, cairo_t *cr)
  *
  * Returns: a new #AgsHIndicator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsHIndicator*
 ags_hindicator_new()

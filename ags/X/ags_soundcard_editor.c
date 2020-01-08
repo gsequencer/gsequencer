@@ -2515,7 +2515,7 @@ ags_soundcard_editor_hide_wasapi_control(AgsSoundcardEditor *soundcard_editor)
  *
  * Returns: the new #AgsSoundcardEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSoundcardEditor*
 ags_soundcard_editor_new()

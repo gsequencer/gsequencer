@@ -1472,7 +1472,7 @@ ags_pitch_sampler_output_map_recall(AgsPitchSampler *pitch_sampler, guint output
  * 
  * Add @file to @pitch_sampler.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
@@ -1512,7 +1512,7 @@ ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
  * 
  * Remove nth file.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
@@ -1539,7 +1539,7 @@ ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
  * 
  * Open @filename.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
@@ -1566,7 +1566,7 @@ ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
  * 
  * Update @pitch_sampler.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
@@ -1582,7 +1582,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
  *
  * Returns: %TRUE if proceed poll completed, otherwise %FALSE
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
@@ -1820,7 +1820,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
  *
  * Returns: the new #AgsPitchSampler
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsPitchSampler*
 ags_pitch_sampler_new(GObject *output_soundcard)

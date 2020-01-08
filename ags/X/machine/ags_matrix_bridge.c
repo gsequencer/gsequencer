@@ -205,7 +205,7 @@ ags_matrix_bridge_disconnect(AgsConnectable *connectable)
  *
  * Returns: the new #AgsMatrixBridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMatrixBridge*
 ags_matrix_bridge_new(AgsAudio *audio)

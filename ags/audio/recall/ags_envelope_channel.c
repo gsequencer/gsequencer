@@ -155,7 +155,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use note length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("use-note-length",
 				   i18n_pspec("use note length"),
@@ -171,7 +171,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use fixed length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("use-fixed-length",
 				   i18n_pspec("use fixed length"),
@@ -187,7 +187,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The fixed length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("fixed-length",
 				   i18n_pspec("fixed length"),
@@ -203,7 +203,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The attack of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("attack",
 				   i18n_pspec("attack channel"),
@@ -219,7 +219,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The decay of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("decay",
 				   i18n_pspec("decay channel"),
@@ -235,7 +235,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The sustain of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sustain",
 				   i18n_pspec("sustain channel"),
@@ -251,7 +251,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The release of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("release",
 				   i18n_pspec("release channel"),
@@ -267,7 +267,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The ratio of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ratio",
 				   i18n_pspec("envelope ratio"),
@@ -912,7 +912,7 @@ ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: the new #AgsEnvelopeChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeChannel*
 ags_envelope_channel_new(AgsChannel *source)

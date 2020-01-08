@@ -150,7 +150,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 28Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-28hz",
 				   i18n_pspec("28Hz peak to apply"),
@@ -166,7 +166,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 56Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-56hz",
 				   i18n_pspec("56Hz peak to apply"),
@@ -182,7 +182,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 112Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-112hz",
 				   i18n_pspec("112Hz peak to apply"),
@@ -198,7 +198,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 224Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-224hz",
 				   i18n_pspec("224Hz peak to apply"),
@@ -214,7 +214,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 448Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-448hz",
 				   i18n_pspec("448Hz peak to apply"),
@@ -230,7 +230,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 896Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-896hz",
 				   i18n_pspec("896Hz peak to apply"),
@@ -246,7 +246,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 1792Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-1792hz",
 				   i18n_pspec("1792Hz peak to apply"),
@@ -262,7 +262,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 3584Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-3584hz",
 				   i18n_pspec("3584Hz peak to apply"),
@@ -278,7 +278,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 7168Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-7168hz",
 				   i18n_pspec("7168Hz peak to apply"),
@@ -294,7 +294,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 14336Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-14336hz",
 				   i18n_pspec("14336Hz peak to apply"),
@@ -310,7 +310,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The pressure port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("pressure",
 				   i18n_pspec("pressure to apply"),
@@ -1234,7 +1234,7 @@ ags_eq10_channel_get_peak_generic_plugin_port()
  *
  * Returns: the new #AgsEq10Channel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEq10Channel*
 ags_eq10_channel_new(AgsChannel *source)

@@ -188,7 +188,7 @@ ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controlle
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_node_controller_signals[GET_DATA] =
     g_signal_new("get-data",
@@ -4625,7 +4625,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
@@ -4654,7 +4654,7 @@ ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
  * 
  * Returns: the #AgsOscNodeController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscNodeController*
 ags_osc_node_controller_new()

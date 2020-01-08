@@ -110,7 +110,7 @@ ags_volume_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsVolumeRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeRecycling*
 ags_volume_recycling_new(AgsRecycling *source)

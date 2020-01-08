@@ -192,7 +192,7 @@ ags_mixer_map_recall(AgsMachine *machine)
  *
  * Returns: the new #AgsMixer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMixer*
 ags_mixer_new(GObject *soundcard)

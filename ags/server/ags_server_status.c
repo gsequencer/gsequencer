@@ -179,7 +179,7 @@ ags_server_status_finalize(GObject *gobject)
  * 
  * Returns: a new #AgsServerStatus
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServerStatus*
 ags_server_status_new()

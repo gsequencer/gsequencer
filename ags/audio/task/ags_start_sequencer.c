@@ -221,7 +221,7 @@ ags_start_sequencer_launch(AgsTask *task)
  *
  * Returns: an new #AgsStartSequencer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartSequencer*
 ags_start_sequencer_new()

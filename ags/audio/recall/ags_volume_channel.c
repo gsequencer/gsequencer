@@ -118,7 +118,7 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
    * 
    * The volume port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("volume",
 				   i18n_pspec("volume to apply"),
@@ -329,7 +329,7 @@ ags_volume_channel_get_volume_plugin_port()
  *
  * Returns: the new #AgsVolumeChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeChannel*
 ags_volume_channel_new(AgsChannel *source)

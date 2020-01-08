@@ -208,7 +208,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
  *
  * Returns: the new #AgsAnalyseChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAnalyseChannelRun*
 ags_analyse_channel_run_new(AgsChannel *source)

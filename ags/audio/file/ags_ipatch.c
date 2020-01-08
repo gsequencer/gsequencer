@@ -169,7 +169,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of ipatch"),
@@ -185,7 +185,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -201,7 +201,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned mode.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("mode",
 				   i18n_pspec("the mode"),
@@ -632,7 +632,7 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
@@ -665,7 +665,7 @@ ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
  *
  * Enable a feature of @ipatch.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
@@ -696,7 +696,7 @@ ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
  *
  * Disable a feature of @ipatch.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags)
@@ -1422,7 +1422,7 @@ ags_ipatch_close(AgsSoundContainer *sound_container)
  * 
  * Returns: %TRUE if supported, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_check_suffix(gchar *filename)
@@ -1443,7 +1443,7 @@ ags_ipatch_check_suffix(gchar *filename)
  *
  * Returns: an empty #AgsIpatch.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIpatch*
 ags_ipatch_new()

@@ -184,7 +184,7 @@ ags_ffplayer_input_line_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFFPlayerInputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayerInputLine*
 ags_ffplayer_input_line_new(AgsChannel *channel)

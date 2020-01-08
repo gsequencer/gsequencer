@@ -115,7 +115,7 @@ ags_start_channel_class_init(AgsStartChannelClass *start_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of start channel"),
@@ -131,7 +131,7 @@ ags_start_channel_class_init(AgsStartChannelClass *start_channel)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -295,7 +295,7 @@ ags_start_channel_launch(AgsTask *task)
  *
  * Returns: the new #AgsStartChannel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartChannel*
 ags_start_channel_new(AgsChannel *channel,

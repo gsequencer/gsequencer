@@ -113,7 +113,7 @@ ags_eq10_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsEq10Recycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEq10Recycling*
 ags_eq10_recycling_new(AgsRecycling *source)

@@ -138,7 +138,7 @@ ags_ruler_class_init(AgsRulerClass *ruler)
    *
    * The step's width.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("step",
 				 "step",
@@ -156,7 +156,7 @@ ags_ruler_class_init(AgsRulerClass *ruler)
    *
    * The large step's width.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("large-step",
 				 "large step",
@@ -174,7 +174,7 @@ ags_ruler_class_init(AgsRulerClass *ruler)
    *
    * The small step's width.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("small-step",
 				 "small step",
@@ -609,7 +609,7 @@ ags_ruler_draw(AgsRuler *ruler, cairo_t *cr)
  *
  * Returns: the new #AgsRuler
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRuler*
 ags_ruler_new()

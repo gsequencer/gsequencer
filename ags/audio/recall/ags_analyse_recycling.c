@@ -115,7 +115,7 @@ ags_analyse_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsAnalyseRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAnalyseRecycling*
 ags_analyse_recycling_new(AgsRecycling *source)

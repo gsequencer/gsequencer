@@ -132,7 +132,7 @@ ags_osc_config_controller_class_init(AgsOscConfigControllerClass *osc_config_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_config_controller_signals[APPLY_CONFIG] =
     g_signal_new("apply-config",
@@ -327,7 +327,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_controller,
@@ -356,7 +356,7 @@ ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_contro
  * 
  * Returns: the #AgsOscConfigController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscConfigController*
 ags_osc_config_controller_new()

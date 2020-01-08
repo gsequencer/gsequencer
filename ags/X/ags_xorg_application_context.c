@@ -372,7 +372,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
    *
    * The assigned window.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("window",
 				   i18n_pspec("window of xorg application context"),

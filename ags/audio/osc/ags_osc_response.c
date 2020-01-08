@@ -112,7 +112,7 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
    *
    * The response packet.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("packet",
 				    i18n_pspec("response packet"),
@@ -127,7 +127,7 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
    *
    * The response packet's size.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("packet-size",
 				 i18n_pspec("response packet size"),
@@ -145,7 +145,7 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
    *
    * The error message.
    * 
-   * Since: 2.1.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("error-message",
 				   i18n_pspec("error message"),
@@ -399,7 +399,7 @@ ags_osc_response_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
@@ -432,7 +432,7 @@ ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
@@ -461,7 +461,7 @@ ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags)
@@ -490,7 +490,7 @@ ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags)
  *
  * Returns: the new #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscResponse*
 ags_osc_response_new()

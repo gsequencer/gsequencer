@@ -130,7 +130,7 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_info_controller_signals[GET_INFO] =
     g_signal_new("get-info",
@@ -267,7 +267,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
@@ -296,7 +296,7 @@ ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
  * 
  * Returns: the #AgsOscInfoController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscInfoController*
 ags_osc_info_controller_new()

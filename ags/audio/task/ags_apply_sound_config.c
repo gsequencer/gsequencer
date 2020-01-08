@@ -159,7 +159,7 @@ ags_apply_sound_config_class_init(AgsApplySoundConfigClass *apply_sound_config)
    *
    * The assigned sound config data as string.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("config-data",
 				   i18n_pspec("sound config data"),
@@ -1324,7 +1324,7 @@ ags_apply_sound_config_launch(AgsTask *task)
  *
  * Returns: the new #AgsApplySoundConfig.
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsApplySoundConfig*
 ags_apply_sound_config_new(gchar *config_data)

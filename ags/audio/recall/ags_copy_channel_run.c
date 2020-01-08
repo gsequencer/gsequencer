@@ -117,7 +117,7 @@ ags_copy_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsCopyChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,

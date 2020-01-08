@@ -233,7 +233,7 @@ ags_synth_input_line_show_all(GtkWidget *line)
  *
  * Returns: the new #AgsSynthInputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSynthInputLine*
 ags_synth_input_line_new(AgsChannel *channel)

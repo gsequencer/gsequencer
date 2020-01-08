@@ -250,7 +250,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsVolumeAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeAudioSignal*
 ags_volume_audio_signal_new(AgsAudioSignal *source)

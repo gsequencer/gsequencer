@@ -180,7 +180,7 @@ ags_ffplayer_input_pad_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFFPlayerInputPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayerInputPad*
 ags_ffplayer_input_pad_new(AgsChannel *channel)

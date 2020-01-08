@@ -114,7 +114,7 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
    * 
    * The peak.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("peak",
 				   i18n_pspec("resulting peak"),
@@ -286,7 +286,7 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsPeakAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakAudioSignal*
 ags_peak_audio_signal_new(AgsAudioSignal *source)

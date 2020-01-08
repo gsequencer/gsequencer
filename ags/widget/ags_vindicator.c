@@ -281,7 +281,7 @@ ags_vindicator_draw(AgsVIndicator *vindicator, cairo_t *cr)
  *
  * Returns: the new #AgsVIndicator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVIndicator*
 ags_vindicator_new()

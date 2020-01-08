@@ -113,7 +113,7 @@ ags_mute_audio_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsMuteAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteAudioRun*
 ags_mute_audio_run_new(AgsAudio *audio)

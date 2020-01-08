@@ -760,7 +760,7 @@ ags_drum_resize_pads(AgsDrum *drum, GType gtype,
  *
  * Returns: the new #AgsDrum
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDrum*
 ags_drum_new(GObject *soundcard)

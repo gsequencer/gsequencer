@@ -132,7 +132,7 @@ ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_status_controller_signals[GET_STATUS] =
     g_signal_new("get-status",
@@ -336,7 +336,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_status_controller_get_status(AgsOscStatusController *osc_status_controller,
@@ -365,7 +365,7 @@ ags_osc_status_controller_get_status(AgsOscStatusController *osc_status_controll
  * 
  * Returns: the #AgsOscStatusController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscStatusController*
 ags_osc_status_controller_new()

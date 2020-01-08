@@ -251,7 +251,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The fifo soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -267,7 +267,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -285,7 +285,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -303,7 +303,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -321,7 +321,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -339,7 +339,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -357,7 +357,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -372,7 +372,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -390,7 +390,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -408,7 +408,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -1096,7 +1096,7 @@ ags_fifoout_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags)
@@ -1129,7 +1129,7 @@ ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags)
  *
  * Enable a feature of @fifoout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags)
@@ -1160,7 +1160,7 @@ ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags)
  *
  * Disable a feature of @fifoout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_unset_flags(AgsFifoout *fifoout, guint flags)
@@ -1995,7 +1995,7 @@ ags_fifoout_get_loop_offset(AgsSoundcard *soundcard)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
@@ -2035,7 +2035,7 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
@@ -2094,7 +2094,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
@@ -2189,7 +2189,7 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
  *
  * Returns: the new #AgsFifoout
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFifoout*
 ags_fifoout_new()

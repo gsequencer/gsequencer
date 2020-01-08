@@ -289,7 +289,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
  *
  * Returns: the new #AgsDrumOutputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDrumOutputLine*
 ags_drum_output_line_new(AgsChannel *channel)

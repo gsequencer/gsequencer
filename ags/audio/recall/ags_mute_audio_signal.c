@@ -245,7 +245,7 @@ ags_mute_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsMuteAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteAudioSignal*
 ags_mute_audio_signal_new(AgsAudioSignal *source)

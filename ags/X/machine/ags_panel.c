@@ -239,7 +239,7 @@ ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
  *
  * Returns: the new #AgsPanel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPanel*
 ags_panel_new(GObject *soundcard)

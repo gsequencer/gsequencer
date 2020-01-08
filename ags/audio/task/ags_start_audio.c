@@ -114,7 +114,7 @@ ags_start_audio_class_init(AgsStartAudioClass *start_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of start audio"),
@@ -130,7 +130,7 @@ ags_start_audio_class_init(AgsStartAudioClass *start_audio)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -295,7 +295,7 @@ ags_start_audio_launch(AgsTask *task)
  *
  * Returns: the new #AgsStartAudio.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartAudio*
 ags_start_audio_new(AgsAudio *audio,

@@ -122,7 +122,7 @@ ags_buffer_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsBufferChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferChannelRun*
 ags_buffer_channel_run_new(AgsChannel *destination,

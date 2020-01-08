@@ -651,7 +651,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsEnvelopeAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeAudioSignal*
 ags_envelope_audio_signal_new(AgsAudioSignal *source)

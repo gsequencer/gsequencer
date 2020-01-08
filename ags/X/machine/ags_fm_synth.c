@@ -525,7 +525,7 @@ ags_fm_synth_update(AgsFMSynth *fm_synth)
  *
  * Returns: the new #AgsFMSynth
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMSynth*
 ags_fm_synth_new(GObject *soundcard)

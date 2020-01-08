@@ -43,7 +43,7 @@ unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_key_on(unsigned char *buffer)
@@ -61,7 +61,7 @@ ags_midi_util_is_key_on(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_key_off(unsigned char *buffer)
@@ -79,7 +79,7 @@ ags_midi_util_is_key_off(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_key_pressure(unsigned char *buffer)
@@ -97,7 +97,7 @@ ags_midi_util_is_key_pressure(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_change_parameter(unsigned char *buffer)
@@ -115,7 +115,7 @@ ags_midi_util_is_change_parameter(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_pitch_bend(unsigned char *buffer)
@@ -133,7 +133,7 @@ ags_midi_util_is_pitch_bend(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_change_program(unsigned char *buffer)
@@ -151,7 +151,7 @@ ags_midi_util_is_change_program(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_change_pressure(unsigned char *buffer)
@@ -169,7 +169,7 @@ ags_midi_util_is_change_pressure(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_sysex(unsigned char *buffer)
@@ -187,7 +187,7 @@ ags_midi_util_is_sysex(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_quarter_frame(unsigned char *buffer)
@@ -205,7 +205,7 @@ ags_midi_util_is_quarter_frame(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_song_position(unsigned char *buffer)
@@ -223,7 +223,7 @@ ags_midi_util_is_song_position(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_song_select(unsigned char *buffer)
@@ -241,7 +241,7 @@ ags_midi_util_is_song_select(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_tune_request(unsigned char *buffer)
@@ -259,7 +259,7 @@ ags_midi_util_is_tune_request(unsigned char *buffer)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_util_is_meta_event(unsigned char *buffer)
@@ -295,7 +295,7 @@ ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length)
  * 
  * Returns: the SMF buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,

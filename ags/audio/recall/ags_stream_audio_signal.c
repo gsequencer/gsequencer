@@ -333,7 +333,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
  *
  * Returns: the new #AgsStreamAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStreamAudioSignal*
 ags_stream_audio_signal_new(AgsAudioSignal *source)

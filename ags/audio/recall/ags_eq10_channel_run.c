@@ -119,7 +119,7 @@ ags_eq10_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsEq10ChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEq10ChannelRun*
 ags_eq10_channel_run_new(AgsChannel *source)

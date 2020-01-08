@@ -135,7 +135,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
    * 
    * The stream channel run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("stream-channel-run",
 				   i18n_pspec("assigned AgsStreamChannelRun"),
@@ -591,7 +591,7 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags)
@@ -624,7 +624,7 @@ ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
@@ -653,7 +653,7 @@ ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags)
@@ -684,7 +684,7 @@ ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flag
  *
  * Returns: the new #AgsPlayChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayChannelRun*
 ags_play_channel_run_new(AgsChannel *source,

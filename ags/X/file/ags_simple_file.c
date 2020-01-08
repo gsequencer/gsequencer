@@ -337,7 +337,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned filename to open and read from.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   "filename to read or write",
@@ -353,7 +353,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The charset encoding to use.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("encoding",
 				   "encoding to use",
@@ -369,7 +369,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The format of embedded audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-format",
 				   "audio format to use",
@@ -385,7 +385,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The encoding to use for embedding audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-encoding",
 				   "audio encoding to use",
@@ -401,7 +401,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned xml-doc.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    "xml document of file",
@@ -430,7 +430,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file with appropriate filename.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[OPEN] =
     g_signal_new("open",
@@ -451,7 +451,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file from a buffer containing the file.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data",
@@ -473,7 +473,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file in read-write mode.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[RW_OPEN] =
     g_signal_new("rw-open",
@@ -492,7 +492,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Write XML Document to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[WRITE] =
     g_signal_new("write",
@@ -510,7 +510,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve references and generate thus XPath expressions just
    * before writing to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[WRITE_RESOLVE] =
     g_signal_new("write-resolve",
@@ -527,7 +527,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * Read a XML document from disk with specified simple_filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ] =
     g_signal_new("read",
@@ -545,7 +545,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve XPath expressions to their counterpart the newly created
    * instances refering to.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ_RESOLVE] =
     g_signal_new("read-resolve",
@@ -562,7 +562,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * Start assigning resources.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ_START] =
     g_signal_new("read-start",

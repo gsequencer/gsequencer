@@ -127,7 +127,7 @@ ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -439,7 +439,7 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
@@ -490,7 +490,7 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
  * 
  * Refresh cards.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
@@ -650,7 +650,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
  * 
  * Set card.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
@@ -698,7 +698,7 @@ ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
  * 
  * Set filename.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
@@ -715,7 +715,7 @@ ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
  * 
  * Set format.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
@@ -761,7 +761,7 @@ ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
  * 
  * Returns: the new #AgsExportSoundcard
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportSoundcard*
 ags_export_soundcard_new()

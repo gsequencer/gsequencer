@@ -796,7 +796,7 @@ ags_envelope_editor_y_label_func(gdouble value,
  * 
  * Returns: the matching #AgsPreset, if none selected %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPreset*
 ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
@@ -855,7 +855,7 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
  *
  * Load preset.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
@@ -914,7 +914,7 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
  *
  * Add preset.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
@@ -1037,7 +1037,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
  *
  * Remove preset.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
@@ -1083,7 +1083,7 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
  * 
  * Reset controls.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
@@ -1258,7 +1258,7 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
  * 
  * Plot envelope.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
@@ -1333,7 +1333,7 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
  *
  * Returns: the new #AgsEnvelopeEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeEditor*
 ags_envelope_editor_new()

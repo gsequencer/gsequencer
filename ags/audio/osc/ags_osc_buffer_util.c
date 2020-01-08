@@ -47,7 +47,7 @@
  * 
  * Put @val in @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_int32(unsigned char *buffer,
@@ -70,7 +70,7 @@ ags_osc_buffer_util_put_int32(unsigned char *buffer,
  * 
  * Get @val from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_int32(unsigned char *buffer,
@@ -101,7 +101,7 @@ ags_osc_buffer_util_get_int32(unsigned char *buffer,
  * 
  * Put timetag specified by @tv_secs, @tv_fraction and @immediately to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_timetag(unsigned char *buffer,
@@ -135,7 +135,7 @@ ags_osc_buffer_util_put_timetag(unsigned char *buffer,
  *
  * Get timetag specified by @tv_secs, @tv_fraction and @immediately from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_timetag(unsigned char *buffer,
@@ -181,7 +181,7 @@ ags_osc_buffer_util_get_timetag(unsigned char *buffer,
  * 
  * Put @val to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_float(unsigned char *buffer,
@@ -211,7 +211,7 @@ ags_osc_buffer_util_put_float(unsigned char *buffer,
  * 
  * Get @val from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_float(unsigned char *buffer,
@@ -244,7 +244,7 @@ ags_osc_buffer_util_get_float(unsigned char *buffer,
  * 
  * Put @str to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_string(unsigned char *buffer,
@@ -273,7 +273,7 @@ ags_osc_buffer_util_put_string(unsigned char *buffer,
  * 
  * Get @str from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_string(unsigned char *buffer,
@@ -315,7 +315,7 @@ ags_osc_buffer_util_get_string(unsigned char *buffer,
  * 
  * Put @data to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_blob(unsigned char *buffer,
@@ -355,7 +355,7 @@ ags_osc_buffer_util_put_blob(unsigned char *buffer,
  * 
  * Get @data from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_blob(unsigned char *buffer,
@@ -397,7 +397,7 @@ ags_osc_buffer_util_get_blob(unsigned char *buffer,
  * 
  * Put @val to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_int64(unsigned char *buffer,
@@ -424,7 +424,7 @@ ags_osc_buffer_util_put_int64(unsigned char *buffer,
  * 
  * Get @val from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_int64(unsigned char *buffer,
@@ -457,7 +457,7 @@ ags_osc_buffer_util_get_int64(unsigned char *buffer,
  * 
  * Put @val to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_double(unsigned char *buffer,
@@ -491,7 +491,7 @@ ags_osc_buffer_util_put_double(unsigned char *buffer,
  * 
  * Get @val from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_double(unsigned char *buffer,
@@ -527,7 +527,7 @@ ags_osc_buffer_util_get_double(unsigned char *buffer,
  * 
  * Put @val to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_char(unsigned char *buffer,
@@ -550,7 +550,7 @@ ags_osc_buffer_util_put_char(unsigned char *buffer,
  * 
  * Get @val from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_char(unsigned char *buffer,
@@ -579,7 +579,7 @@ ags_osc_buffer_util_get_char(unsigned char *buffer,
  * 
  * Put RGBA color specified by @r, @g, @b and @a to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_rgba(unsigned char *buffer,
@@ -605,7 +605,7 @@ ags_osc_buffer_util_put_rgba(unsigned char *buffer,
  * 
  * Get RGBA color specified by @r, @g, @b and @a from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_rgba(unsigned char *buffer,
@@ -642,7 +642,7 @@ ags_osc_buffer_util_get_rgba(unsigned char *buffer,
  * 
  * Put MIDI to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_midi(unsigned char *buffer,
@@ -668,7 +668,7 @@ ags_osc_buffer_util_put_midi(unsigned char *buffer,
  * 
  * Get MIDI from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_midi(unsigned char *buffer,
@@ -703,7 +703,7 @@ ags_osc_buffer_util_get_midi(unsigned char *buffer,
  * 
  * Put @packet to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_packet(unsigned char *buffer,
@@ -743,7 +743,7 @@ ags_osc_buffer_util_put_packet(unsigned char *buffer,
  * 
  * Get @packet from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_packet(unsigned char *buffer,
@@ -786,7 +786,7 @@ ags_osc_buffer_util_get_packet(unsigned char *buffer,
  * 
  * Put packets to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_packets(unsigned char *buffer,
@@ -827,7 +827,7 @@ ags_osc_buffer_util_put_packets(unsigned char *buffer,
  * Put message heading to @buffer. Note you have to put following arguments
  * yourself.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_message(unsigned char *buffer,
@@ -862,7 +862,7 @@ ags_osc_buffer_util_put_message(unsigned char *buffer,
  * Get message heading from @buffer. Note you have to get following arguments
  * yourself.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_message(unsigned char *buffer,
@@ -923,7 +923,7 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
  * 
  * Put bundle to @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_put_bundle(unsigned char *buffer,
@@ -952,7 +952,7 @@ ags_osc_buffer_util_put_bundle(unsigned char *buffer,
  *
  * Get bundle from @buffer.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_buffer_util_get_bundle(unsigned char *buffer,

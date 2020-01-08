@@ -218,7 +218,7 @@ ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_rene
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.4.0
+   * Since: 3.0.0
    */
   ui_osc_renew_controller_signals[SET_DATA] =
     g_signal_new("set-data",
@@ -944,7 +944,7 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 gpointer
 ags_ui_osc_renew_controller_set_data(AgsUiOscRenewController *ui_osc_renew_controller,
@@ -1408,7 +1408,7 @@ ags_ui_osc_renew_controller_check_message_callback(GObject *application_context,
  * 
  * Returns: the #AgsUiOscRenewController
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 AgsUiOscRenewController*
 ags_ui_osc_renew_controller_new()

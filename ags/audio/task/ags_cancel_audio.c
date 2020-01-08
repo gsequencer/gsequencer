@@ -112,7 +112,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of cancel audio"),
@@ -128,7 +128,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("sound-scope",
 				i18n_pspec("sound scope"),
@@ -296,7 +296,7 @@ ags_cancel_audio_launch(AgsTask *task)
  *
  * Returns: the new #AgsCancelAudio.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,

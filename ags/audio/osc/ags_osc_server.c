@@ -143,7 +143,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The domain to use.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("domain",
 				   i18n_pspec("domain"),
@@ -159,7 +159,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The server port to use.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("server-port",
 				 i18n_pspec("server port"),
@@ -177,7 +177,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The IPv4 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip4",
 				   i18n_pspec("ip4"),
@@ -193,7 +193,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The IPv6 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip6",
 				   i18n_pspec("ip6"),
@@ -209,7 +209,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The assigned #AgsOscConnection providing default settings.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("connection",
 				    i18n_pspec("assigned connection"),
@@ -224,7 +224,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The assigned #AgsOscFrontController.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("front-controller",
 				   i18n_pspec("assigned OSC front controller"),
@@ -240,7 +240,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The assigned #AgsOscController providing default settings.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("controller",
 				    i18n_pspec("assigned controller"),
@@ -265,7 +265,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The ::start signal is emited during start of server.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_server_signals[START] =
     g_signal_new("start",
@@ -282,7 +282,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The ::stop signal is emited during stop of server.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_server_signals[STOP] =
     g_signal_new("stop",
@@ -301,7 +301,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_server_signals[LISTEN] =
     g_signal_new("listen",
@@ -318,7 +318,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The ::dispatch signal is emited during dispatch of server.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_server_signals[DISPATCH] =
     g_signal_new("dispatch",
@@ -698,7 +698,7 @@ ags_osc_server_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
@@ -731,7 +731,7 @@ ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
@@ -760,7 +760,7 @@ ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
@@ -789,7 +789,7 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
  *
  * Add @osc_connection to @osc_server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_add_connection(AgsOscServer *osc_server,
@@ -818,7 +818,7 @@ ags_osc_server_add_connection(AgsOscServer *osc_server,
  *
  * Remove @osc_connection from @osc_server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_remove_connection(AgsOscServer *osc_server,
@@ -847,7 +847,7 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
  *
  * Add @osc_controller to @osc_server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_add_controller(AgsOscServer *osc_server,
@@ -876,7 +876,7 @@ ags_osc_server_add_controller(AgsOscServer *osc_server,
  *
  * Remove @osc_controller from @osc_server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_remove_controller(AgsOscServer *osc_server,
@@ -905,7 +905,7 @@ ags_osc_server_remove_controller(AgsOscServer *osc_server,
  *
  * Add default controlers to @osc_server.
  * 
- * Since: 2.1.8
+ * Since: 3.0.0
  */
 void
 ags_osc_server_add_default_controller(AgsOscServer *osc_server)
@@ -1280,7 +1280,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
  * 
  * Start OSC server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_start(AgsOscServer *osc_server)
@@ -1376,7 +1376,7 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
  * 
  * Stop OSC server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_stop(AgsOscServer *osc_server)
@@ -1536,7 +1536,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
  * 
  * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_server_listen(AgsOscServer *osc_server)
@@ -1648,7 +1648,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
  * 
  * Dispatch the OSC server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_server_dispatch(AgsOscServer *osc_server)
@@ -1708,7 +1708,7 @@ ags_osc_server_dispatch_thread(void *ptr)
  *
  * Returns: the new #AgsOscServer
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscServer*
 ags_osc_server_new()

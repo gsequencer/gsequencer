@@ -296,7 +296,7 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
  *
  * Returns: the new #AgsRtStreamChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamChannelRun*
 ags_rt_stream_channel_run_new(AgsChannel *source)

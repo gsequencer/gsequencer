@@ -110,7 +110,7 @@ ags_lfo_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsLfoRecycling
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoRecycling*
 ags_lfo_recycling_new(AgsRecycling *source)

@@ -159,7 +159,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -177,7 +177,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -195,7 +195,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -213,7 +213,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -243,7 +243,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   pad_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -264,7 +264,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   pad_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -285,7 +285,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   pad_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -305,7 +305,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::set-channel signal notifies about changed channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   pad_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -326,7 +326,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::resize-lines is emitted as count of lines pack is modified.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   pad_signals[RESIZE_LINES] =
     g_signal_new("resize-lines",
@@ -346,7 +346,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The ::map-recall as recall should be mapped
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   pad_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -366,7 +366,7 @@ ags_pad_class_init(AgsPadClass *pad)
    * 
    * Returns: a #GList-struct with associated ports
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   pad_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -736,7 +736,7 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_pad_samplerate_changed(AgsPad *pad,
@@ -760,7 +760,7 @@ ags_pad_samplerate_changed(AgsPad *pad,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_pad_buffer_size_changed(AgsPad *pad,
@@ -784,7 +784,7 @@ ags_pad_buffer_size_changed(AgsPad *pad,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_pad_format_changed(AgsPad *pad,
@@ -870,7 +870,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
  *
  * Is emitted as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
@@ -971,7 +971,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
  *
  * Resize the count of #AgsLine packe by #AgsPad.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pad_resize_lines(AgsPad *pad, GType line_type,
@@ -1008,7 +1008,7 @@ ags_pad_real_map_recall(AgsPad *pad, guint output_pad_start)
  *
  * Start of output pad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pad_map_recall(AgsPad *pad, guint output_pad_start)
@@ -1060,7 +1060,7 @@ ags_pad_real_find_port(AgsPad *pad)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pad_find_port(AgsPad *pad)
@@ -1250,7 +1250,7 @@ ags_pad_play(AgsPad *pad)
  *
  * Returns: a new #AgsPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPad*
 ags_pad_new(AgsChannel *channel)

@@ -1120,7 +1120,7 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
  *
  * Returns: the new #AgsMatrix
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMatrix*
 ags_matrix_new(GObject *soundcard)

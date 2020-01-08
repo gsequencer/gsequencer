@@ -136,7 +136,7 @@ ags_play_wave_audio_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayWaveAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayWaveAudioRun*
 ags_play_wave_audio_run_new(AgsAudio *audio)

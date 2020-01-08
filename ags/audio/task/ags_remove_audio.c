@@ -113,7 +113,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of remove audio"),
@@ -276,7 +276,7 @@ ags_remove_audio_launch(AgsTask *task)
  *
  * Returns: the new #AgsRemoveAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRemoveAudio*
 ags_remove_audio_new(AgsAudio *audio)

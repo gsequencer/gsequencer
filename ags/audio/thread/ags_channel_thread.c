@@ -131,7 +131,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    *
    * The assigned default soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-output-soundcard",
 				   i18n_pspec("default output soundcard assigned to"),
@@ -147,7 +147,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel assigned to"),
@@ -665,7 +665,7 @@ ags_channel_thread_unset_status_flags(AgsChannelThread *channel_thread, guint st
  * 
  * Set sound scope.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
@@ -696,7 +696,7 @@ ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
  *
  * Returns: the new #AgsChannelThread
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsChannelThread*
 ags_channel_thread_new(GObject *default_output_soundcard,

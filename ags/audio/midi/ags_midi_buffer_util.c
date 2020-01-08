@@ -44,7 +44,7 @@
  *
  * Returns: the size needed to be allocated
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_varlength_size(glong varlength)
@@ -79,7 +79,7 @@ ags_midi_buffer_util_get_varlength_size(glong varlength)
  *
  * Put the variable lenght value to @buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_varlength(guchar *buffer,
@@ -121,7 +121,7 @@ ags_midi_buffer_util_put_varlength(guchar *buffer,
  *
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_varlength(guchar *buffer,
@@ -162,7 +162,7 @@ ags_midi_buffer_util_get_varlength(guchar *buffer,
  * 
  * Put signed 16 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_int16(guchar *buffer,
@@ -183,7 +183,7 @@ ags_midi_buffer_util_put_int16(guchar *buffer,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_get_int16(guchar *buffer,
@@ -210,7 +210,7 @@ ags_midi_buffer_util_get_int16(guchar *buffer,
  * 
  * Put signed 24 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_int24(guchar *buffer,
@@ -232,7 +232,7 @@ ags_midi_buffer_util_put_int24(guchar *buffer,
  *
  * Get signed 24 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_get_int24(guchar *buffer,
@@ -260,7 +260,7 @@ ags_midi_buffer_util_get_int24(guchar *buffer,
  * 
  * Put signed 32 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_int32(guchar *buffer,
@@ -283,7 +283,7 @@ ags_midi_buffer_util_put_int32(guchar *buffer,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_get_int32(guchar *buffer,
@@ -315,7 +315,7 @@ ags_midi_buffer_util_get_int32(guchar *buffer,
  *
  * Puts the midi header.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_header(guchar *buffer,
@@ -364,7 +364,7 @@ ags_midi_buffer_util_put_header(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_header(guchar *buffer,
@@ -405,7 +405,7 @@ ags_midi_buffer_util_get_header(guchar *buffer,
  * 
  * Put track.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_track(guchar *buffer,
@@ -434,7 +434,7 @@ ags_midi_buffer_util_put_track(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_track(guchar *buffer,
@@ -469,7 +469,7 @@ ags_midi_buffer_util_get_track(guchar *buffer,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_key_on(guchar *buffer,
@@ -511,7 +511,7 @@ ags_midi_buffer_util_put_key_on(guchar *buffer,
  *
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_key_on(guchar *buffer,
@@ -563,7 +563,7 @@ ags_midi_buffer_util_get_key_on(guchar *buffer,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_key_off(guchar *buffer,
@@ -606,7 +606,7 @@ ags_midi_buffer_util_put_key_off(guchar *buffer,
  *
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_key_off(guchar *buffer,
@@ -658,7 +658,7 @@ ags_midi_buffer_util_get_key_off(guchar *buffer,
  * 
  * Puts the given values to @buffer with appropriate channel message.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_key_pressure(guchar *buffer,
@@ -701,7 +701,7 @@ ags_midi_buffer_util_put_key_pressure(guchar *buffer,
  *
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_key_pressure(guchar *buffer,
@@ -753,7 +753,7 @@ ags_midi_buffer_util_get_key_pressure(guchar *buffer,
  * 
  * Put change parameter.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_change_parameter(guchar *buffer,
@@ -796,7 +796,7 @@ ags_midi_buffer_util_put_change_parameter(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_change_parameter(guchar *buffer,
@@ -848,7 +848,7 @@ ags_midi_buffer_util_get_change_parameter(guchar *buffer,
  * 
  * Put pitch bend.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
@@ -891,7 +891,7 @@ ags_midi_buffer_util_put_pitch_bend(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
@@ -942,7 +942,7 @@ ags_midi_buffer_util_get_pitch_bend(guchar *buffer,
  * 
  * Put change program.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_change_program(guchar *buffer,
@@ -980,7 +980,7 @@ ags_midi_buffer_util_put_change_program(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_change_program(guchar *buffer,
@@ -1025,7 +1025,7 @@ ags_midi_buffer_util_get_change_program(guchar *buffer,
  *
  * Put change pressure.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_change_pressure(guchar *buffer,
@@ -1063,7 +1063,7 @@ ags_midi_buffer_util_put_change_pressure(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_change_pressure(guchar *buffer,
@@ -1108,7 +1108,7 @@ ags_midi_buffer_util_get_change_pressure(guchar *buffer,
  * 
  * Put sysex.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_sysex(guchar *buffer,
@@ -1147,7 +1147,7 @@ ags_midi_buffer_util_put_sysex(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_sysex(guchar *buffer,
@@ -1202,7 +1202,7 @@ ags_midi_buffer_util_get_sysex(guchar *buffer,
  * 
  * Put quarter frame.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
@@ -1242,7 +1242,7 @@ ags_midi_buffer_util_put_quarter_frame(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
@@ -1283,7 +1283,7 @@ ags_midi_buffer_util_get_quarter_frame(guchar *buffer,
  * 
  * Put song position.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_song_position(guchar *buffer,
@@ -1319,7 +1319,7 @@ ags_midi_buffer_util_put_song_position(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_song_position(guchar *buffer,
@@ -1358,7 +1358,7 @@ ags_midi_buffer_util_get_song_position(guchar *buffer,
  * 
  * Put song select.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_song_select(guchar *buffer,
@@ -1393,7 +1393,7 @@ ags_midi_buffer_util_put_song_select(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_song_select(guchar *buffer,
@@ -1429,7 +1429,7 @@ ags_midi_buffer_util_get_song_select(guchar *buffer,
  * 
  * Put tune request
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_tune_request(guchar *buffer,
@@ -1459,7 +1459,7 @@ ags_midi_buffer_util_put_tune_request(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_tune_request(guchar *buffer,
@@ -1491,7 +1491,7 @@ ags_midi_buffer_util_get_tune_request(guchar *buffer,
  * 
  * Put sequence number.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_sequence_number(guchar *buffer,
@@ -1533,7 +1533,7 @@ ags_midi_buffer_util_put_sequence_number(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_sequence_number(guchar *buffer,
@@ -1576,7 +1576,7 @@ ags_midi_buffer_util_get_sequence_number(guchar *buffer,
  * 
  * Put smtpe timestamp.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_smtpe(guchar *buffer,
@@ -1633,7 +1633,7 @@ ags_midi_buffer_util_put_smtpe(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_smtpe(guchar *buffer,
@@ -1691,7 +1691,7 @@ ags_midi_buffer_util_get_smtpe(guchar *buffer,
  * 
  * Put tempo.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_tempo(guchar *buffer,
@@ -1733,7 +1733,7 @@ ags_midi_buffer_util_put_tempo(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_tempo(guchar *buffer,
@@ -1773,7 +1773,7 @@ ags_midi_buffer_util_get_tempo(guchar *buffer,
  * 
  * Put time signature
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_time_signature(guchar *buffer,
@@ -1826,7 +1826,7 @@ ags_midi_buffer_util_put_time_signature(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_time_signature(guchar *buffer,
@@ -1880,7 +1880,7 @@ ags_midi_buffer_util_get_time_signature(guchar *buffer,
  * 
  * Put key signature.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_key_signature(guchar *buffer,
@@ -1925,7 +1925,7 @@ ags_midi_buffer_util_put_key_signature(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_key_signature(guchar *buffer,
@@ -1970,7 +1970,7 @@ ags_midi_buffer_util_get_key_signature(guchar *buffer,
  * 
  * Put sequencer meta event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
@@ -2026,7 +2026,7 @@ ags_midi_buffer_util_put_sequencer_meta_event(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
@@ -2084,7 +2084,7 @@ ags_midi_buffer_util_get_sequencer_meta_event(guchar *buffer,
  * 
  * Put text event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_text_event(guchar *buffer,
@@ -2126,7 +2126,7 @@ ags_midi_buffer_util_put_text_event(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_text_event(guchar *buffer,
@@ -2172,7 +2172,7 @@ ags_midi_buffer_util_get_text_event(guchar *buffer,
  * 
  * Put end of track.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_buffer_util_put_end_of_track(guchar *buffer,
@@ -2208,7 +2208,7 @@ ags_midi_buffer_util_put_end_of_track(guchar *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_get_end_of_track(guchar *buffer,
@@ -2242,7 +2242,7 @@ ags_midi_buffer_util_get_end_of_track(guchar *buffer,
  * 
  * Returns: the buffer at offset at @message_count ahead
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_midi_buffer_util_seek_message(guchar *buffer,
@@ -2622,7 +2622,7 @@ ags_midi_buffer_util_seek_message(guchar *buffer,
  *
  * Returns: the bytes written
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_midi_buffer_util_decode(guchar *buffer,

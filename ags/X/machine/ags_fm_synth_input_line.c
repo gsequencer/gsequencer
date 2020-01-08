@@ -233,7 +233,7 @@ ags_fm_synth_input_line_show_all(GtkWidget *line)
  *
  * Returns: the new #AgsFMSynthInputLine
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMSynthInputLine*
 ags_fm_synth_input_line_new(AgsChannel *channel)

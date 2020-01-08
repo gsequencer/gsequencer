@@ -164,7 +164,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    *
    * The ::start-delegate signal is emited during start of delegating messages.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_front_controller_signals[START_DELEGATE] =
     g_signal_new("start-delegate",
@@ -181,7 +181,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    *
    * The ::stop-delegate signal is emited during stop of delegating messages.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_front_controller_signals[STOP_DELEGATE] =
     g_signal_new("stop-delegate",
@@ -201,7 +201,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
    *
    * The ::do-request signal is emited during do request of front controller.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_front_controller_signals[DO_REQUEST] =
     g_signal_new("do-request",
@@ -540,7 +540,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags)
@@ -573,7 +573,7 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags)
@@ -602,7 +602,7 @@ ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, 
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags)
@@ -728,7 +728,7 @@ ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_co
  * 
  * Start delegating.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_start_delegate(AgsOscFrontController *osc_front_controller)
@@ -764,7 +764,7 @@ ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_con
  * 
  * Stop delegating.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controller)
@@ -1010,7 +1010,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
  * 
  * Returns: %NULL
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
@@ -1041,7 +1041,7 @@ ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
  * 
  * Returns: the #AgsOscFrontController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscFrontController*
 ags_osc_front_controller_new()

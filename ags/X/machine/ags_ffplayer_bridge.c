@@ -203,7 +203,7 @@ ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsFFPlayerBridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayerBridge*
 ags_ffplayer_bridge_new(AgsAudio *audio)

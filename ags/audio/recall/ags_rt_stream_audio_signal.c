@@ -453,7 +453,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
  *
  * Returns: the new #AgsRtStreamAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamAudioSignal*
 ags_rt_stream_audio_signal_new(AgsAudioSignal *source)

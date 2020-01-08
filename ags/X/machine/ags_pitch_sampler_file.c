@@ -109,7 +109,7 @@ ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_file)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   pitch_sampler_file_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -295,7 +295,7 @@ ags_pitch_sampler_file_disconnect(AgsConnectable *connectable)
  *
  * Returns: the new #AgsPitchSamplerFile
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsPitchSamplerFile*
 ags_pitch_sampler_file_new()

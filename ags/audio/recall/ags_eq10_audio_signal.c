@@ -1001,7 +1001,7 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsEq10AudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEq10AudioSignal*
 ags_eq10_audio_signal_new(AgsAudioSignal *source)

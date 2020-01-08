@@ -239,7 +239,7 @@ ags_stop_soundcard_launch(AgsTask *task)
  *
  * Returns: the new #AgsStopSoundcard.
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsStopSoundcard*
 ags_stop_soundcard_new()

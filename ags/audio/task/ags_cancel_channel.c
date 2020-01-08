@@ -111,7 +111,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of cancel channel"),
@@ -127,7 +127,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -294,7 +294,7 @@ ags_cancel_channel_launch(AgsTask *task)
  *
  * Returns: the new #AgsCancelChannel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel,

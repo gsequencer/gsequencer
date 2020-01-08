@@ -110,7 +110,7 @@ ags_rt_stream_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsRtStreamRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamRecycling*
 ags_rt_stream_recycling_new(AgsRecycling *source)

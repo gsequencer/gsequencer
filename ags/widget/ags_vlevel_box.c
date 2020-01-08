@@ -81,7 +81,7 @@ ags_vlevel_box_init(AgsVLevelBox *vlevel_box)
  * 
  * Returns: the new #AgsVLevelBox instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVLevelBox*
 ags_vlevel_box_new()

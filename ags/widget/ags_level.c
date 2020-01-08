@@ -228,7 +228,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level width to use for drawing a level.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("level-width",
 				 "level width",
@@ -246,7 +246,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level height to use for drawing a level.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("level-height",
 				 "level height",
@@ -264,7 +264,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's lower range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -282,7 +282,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's upper range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -300,7 +300,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("normalized-volume",
 				   "normalized volume",
@@ -341,7 +341,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The ::value-changed signal notifies about modified default value.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   level_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -1301,7 +1301,7 @@ ags_level_draw(AgsLevel *level, cairo_t *cr)
  * 
  * Emits ::value-changed event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_level_value_changed(AgsLevel *level,
@@ -1323,7 +1323,7 @@ ags_level_value_changed(AgsLevel *level,
  * 
  * Returns: the new #AgsLevel instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLevel*
 ags_level_new()

@@ -113,7 +113,7 @@ ags_envelope_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsEnvelopeChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeChannelRun*
 ags_envelope_channel_run_new(AgsChannel *source)

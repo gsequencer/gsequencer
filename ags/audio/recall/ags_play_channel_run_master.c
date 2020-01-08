@@ -157,7 +157,7 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
    * 
    * The assigned stream channel run.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("stream-channel-run",
 				    i18n_pspec("assigned AgsStreamChannelRun"),
@@ -892,7 +892,7 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
  *
  * Returns: the new #AgsPlayChannelRunMaster
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayChannelRunMaster*
 ags_play_channel_run_master_new(AgsChannel *source)

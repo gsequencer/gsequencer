@@ -115,7 +115,7 @@ ags_stream_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsStreamChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStreamChannelRun*
 ags_stream_channel_run_new(AgsChannel *source)

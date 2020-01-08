@@ -108,7 +108,7 @@ ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   fm_oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -534,7 +534,7 @@ ags_fm_oscillator_disconnect(AgsConnectable *connectable)
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_oscillator_control_changed(AgsFMOscillator *fm_oscillator)
@@ -554,7 +554,7 @@ ags_fm_oscillator_control_changed(AgsFMOscillator *fm_oscillator)
  *
  * Returns: the new #AgsFMOscillator
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMOscillator*
 ags_fm_oscillator_new()

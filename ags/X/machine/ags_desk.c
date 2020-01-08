@@ -260,7 +260,7 @@ ags_desk_map_recall(AgsMachine *machine)
  *
  * Returns: a new #AgsDesk
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDesk*
 ags_desk_new(GObject *soundcard)

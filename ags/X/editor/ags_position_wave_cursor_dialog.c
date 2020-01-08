@@ -143,7 +143,7 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -437,7 +437,7 @@ ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *eve
  *
  * Returns: a new #AgsPositionWaveCursorDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPositionWaveCursorDialog*
 ags_position_wave_cursor_dialog_new(GtkWidget *main_window)

@@ -118,7 +118,7 @@ ags_route_lv2_audio_class_init(AgsRouteLv2AudioClass *route_lv2_audio)
    *
    * If enabled input is taken of #AgsNotation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-input",
 				   i18n_pspec("route notation input"),
@@ -134,7 +134,7 @@ ags_route_lv2_audio_class_init(AgsRouteLv2AudioClass *route_lv2_audio)
    *
    * If enabled input is taken of #AgsSequencer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-input",
 				   i18n_pspec("route sequencer input"),
@@ -369,7 +369,7 @@ ags_route_lv2_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsRouteLv2Audio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRouteLv2Audio*
 ags_route_lv2_audio_new(AgsAudio *audio)

@@ -114,7 +114,7 @@ ags_lfo_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsLfoChannelRun
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoChannelRun*
 ags_lfo_channel_run_new(AgsChannel *source)

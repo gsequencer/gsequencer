@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -135,7 +135,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The domain to lookup server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("domain",
 				   i18n_pspec("domain"),
@@ -151,7 +151,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The server port to connect.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("server-port",
 				 i18n_pspec("server port"),
@@ -169,7 +169,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The IPv4 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip4",
 				   i18n_pspec("ip4"),
@@ -185,7 +185,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The IPv6 address as string of the server.
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("ip6",
 				   i18n_pspec("ip6"),
@@ -210,7 +210,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The ::resolve signal is emited during resolve of domain.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_client_signals[RESOLVE] =
     g_signal_new("resolve",
@@ -227,7 +227,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * The ::connect signal is emited as connection is establishing.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_client_signals[CONNECT] =
     g_signal_new("connect",
@@ -247,7 +247,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * Returns: byte array read or %NULL if no data available
    * 
-   * Since: 2.1.11
+   * Since: 3.0.0
    */
   osc_client_signals[READ_BYTES] =
     g_signal_new("read-bytes",
@@ -269,7 +269,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
    *
    * Returns: %TRUE if all bytes written, otherwise %FALSE
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_client_signals[WRITE_BYTES] =
     g_signal_new("write-bytes",
@@ -532,7 +532,7 @@ ags_osc_client_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
@@ -565,7 +565,7 @@ ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
@@ -594,7 +594,7 @@ ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
@@ -728,7 +728,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
  * 
  * Resolve OSC client.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_client_resolve(AgsOscClient *osc_client)
@@ -994,7 +994,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
  * 
  * Connect OSC client.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_client_connect(AgsOscClient *osc_client)
@@ -1358,7 +1358,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
  * 
  * Returns: byte array read or %NULL if no data available
  * 
- * Since: 2.1.11
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_client_read_bytes(AgsOscClient *osc_client,
@@ -1475,7 +1475,7 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
  * 
  * Returns: %TRUE if all bytes written, otherwise %FALSE
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gboolean
 ags_osc_client_write_bytes(AgsOscClient *osc_client,
@@ -1502,7 +1502,7 @@ ags_osc_client_write_bytes(AgsOscClient *osc_client,
  *
  * Returns: the new #AgsOscClient
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscClient*
 ags_osc_client_new()

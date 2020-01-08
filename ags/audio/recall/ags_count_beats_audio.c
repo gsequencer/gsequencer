@@ -188,7 +188,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-loop",
 				   i18n_pspec("sequencer loop playing"),
@@ -204,7 +204,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The sequencer's loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -220,7 +220,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The sequencer's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-loop-end",
 				   i18n_pspec("end beat of sequencer loop"),
@@ -236,7 +236,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until notation-loop-end and start at notation-loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-loop",
 				   i18n_pspec("notation-loop playing"),
@@ -252,7 +252,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The notation's notation-loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-loop-start",
 				   i18n_pspec("start beat of notation loop"),
@@ -268,7 +268,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The notation's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-loop-end",
 				   i18n_pspec("end beat of notation loop"),
@@ -284,7 +284,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop",
 				   i18n_pspec("wave loop playing"),
@@ -300,7 +300,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The wave's loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -316,7 +316,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The wave's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("wave-loop-end",
 				   i18n_pspec("end beat of wave loop"),
@@ -332,7 +332,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("midi-loop",
 				   i18n_pspec("midi loop playing"),
@@ -348,7 +348,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The midi's loop-start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("midi_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -364,7 +364,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The midi's loop-end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("midi-loop-end",
 				   i18n_pspec("end beat of midi loop"),
@@ -1473,7 +1473,7 @@ ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, guint64 durati
  *
  * Returns: the new #AgsCountBeatsAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCountBeatsAudio*
 ags_count_beats_audio_new(AgsAudio *audio)

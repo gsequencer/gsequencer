@@ -144,7 +144,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -166,7 +166,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    *
    * The ::set-machine notify about modified machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   connection_editor_signals[SET_MACHINE] =
     g_signal_new("set-machine",
@@ -399,7 +399,7 @@ ags_connection_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
@@ -502,7 +502,7 @@ ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, A
  *
  * Is emitted as machine gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
@@ -524,7 +524,7 @@ ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMac
  *
  * Returns: the new #AgsConnectionEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsConnectionEditor*
 ags_connection_editor_new(AgsMachine *machine)

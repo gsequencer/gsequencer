@@ -590,7 +590,7 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
@@ -689,7 +689,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsSpectrometer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSpectrometer*
 ags_spectrometer_new(GObject *soundcard)

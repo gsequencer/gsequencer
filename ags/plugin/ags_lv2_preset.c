@@ -226,7 +226,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The port preset.
    * 
-   * Since: 2.1.55
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("port-preset",
 				    i18n_pspec("port-preset of the preset"),

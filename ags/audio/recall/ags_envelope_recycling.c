@@ -115,7 +115,7 @@ ags_envelope_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsEnvelopeRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeRecycling*
 ags_envelope_recycling_new(AgsRecycling *source)

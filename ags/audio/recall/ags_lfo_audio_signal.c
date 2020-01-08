@@ -450,7 +450,7 @@ ags_lfo_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsLfoAudioSignal
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoAudioSignal*
 ags_lfo_audio_signal_new(AgsAudioSignal *source)

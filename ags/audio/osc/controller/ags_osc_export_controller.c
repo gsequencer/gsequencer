@@ -124,7 +124,7 @@ ags_osc_export_controller_class_init(AgsOscExportControllerClass *osc_export_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   osc_export_controller_signals[DO_EXPORT] =
     g_signal_new("do-export",
@@ -651,7 +651,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_export_controller_do_export(AgsOscExportController *osc_export_controller,
@@ -680,7 +680,7 @@ ags_osc_export_controller_do_export(AgsOscExportController *osc_export_controlle
  * 
  * Returns: the #AgsOscExportController
  * 
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsOscExportController*
 ags_osc_export_controller_new()

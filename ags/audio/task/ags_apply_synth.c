@@ -121,7 +121,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The assigned #AgsSynthGenerator
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("synth-generator",
 				   i18n_pspec("synth generator"),
@@ -137,7 +137,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("start-channel",
 				   i18n_pspec("start channel of apply synth"),
@@ -153,7 +153,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The base-note to ramp up from.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("base-note",
                                   i18n_pspec("base note"),
@@ -171,7 +171,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The count of channels to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("count",
 				 i18n_pspec("count of channels"),
@@ -468,7 +468,7 @@ ags_apply_synth_launch(AgsTask *task)
  *
  * Returns: an new #AgsApplySynth.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsApplySynth*
 ags_apply_synth_new(AgsSynthGenerator *synth_generator,

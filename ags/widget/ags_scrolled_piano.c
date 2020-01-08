@@ -286,7 +286,7 @@ ags_scrolled_piano_allocate_viewport(GtkWidget *widget)
  *
  * Returns: a new #AgsScrolledPiano
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScrolledPiano*
 ags_scrolled_piano_new()

@@ -203,7 +203,7 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
    *
    * The wave edit's line.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("line",
 				 "line",
@@ -2064,7 +2064,7 @@ ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr)
  *
  * Returns: the new #AgsWaveEdit
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWaveEdit*
 ags_wave_edit_new(guint line)

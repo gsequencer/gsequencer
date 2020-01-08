@@ -1034,7 +1034,7 @@ ags_equalizer10_find_specifier(GList *recall, gchar *specifier)
  *
  * Returns: a new #AgsEqualizer10
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEqualizer10*
 ags_equalizer10_new(GObject *soundcard)

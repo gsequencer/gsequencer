@@ -106,7 +106,7 @@ ags_play_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayRecycling*
 ags_play_recycling_new(AgsRecycling *source)

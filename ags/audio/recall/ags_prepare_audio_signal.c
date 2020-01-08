@@ -264,7 +264,7 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
  *
  * Returns: thde new #AgsPrepareAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPrepareAudioSignal*
 ags_prepare_audio_signal_new(AgsAudioSignal *source)

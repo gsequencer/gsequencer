@@ -261,7 +261,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The jack soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -277,7 +277,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -295,7 +295,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -313,7 +313,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -331,7 +331,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -349,7 +349,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -367,7 +367,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -382,7 +382,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -400,7 +400,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -418,7 +418,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -434,7 +434,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -450,7 +450,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("jack-port",
 				    i18n_pspec("jack port object"),
@@ -1275,7 +1275,7 @@ ags_jack_devout_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
@@ -1308,7 +1308,7 @@ ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
  *
  * Enable a feature of @jack_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
@@ -1339,7 +1339,7 @@ ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
  *
  * Disable a feature of @jack_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags)
@@ -2874,7 +2874,7 @@ ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
@@ -2914,7 +2914,7 @@ ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
@@ -3037,7 +3037,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
@@ -3229,7 +3229,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
  *
  * Returns: the new #AgsJackDevout
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsJackDevout*
 ags_jack_devout_new()

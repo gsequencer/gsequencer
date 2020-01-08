@@ -1830,7 +1830,7 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
  *
  * Disconnect all clients.
  *
- * Since: 2.1.14
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server)

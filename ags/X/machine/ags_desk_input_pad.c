@@ -223,7 +223,7 @@ ags_desk_input_pad_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsDeskInputPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDeskInputPad*
 ags_desk_input_pad_new(AgsChannel *channel)

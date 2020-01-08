@@ -112,7 +112,7 @@ ags_mute_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsMuteChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteChannelRun*
 ags_mute_channel_run_new(AgsChannel *source)

@@ -195,7 +195,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -213,7 +213,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -231,7 +231,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -249,7 +249,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsPad.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pad",
 				   i18n_pspec("parent pad"),
@@ -265,7 +265,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsChannel to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -301,7 +301,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   line_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -322,7 +322,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   line_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -343,7 +343,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   line_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -363,7 +363,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::set-channel signal notifies about changed channel.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -382,7 +382,7 @@ ags_line_class_init(AgsLineClass *line)
    * The ::group-changed signal notifies about changed grouping. This
    * normally happens as toggling group button in #AgsPad or #AgsLine.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[GROUP_CHANGED] =
     g_signal_new("group-changed",
@@ -404,7 +404,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * Returns: a #GList-struct containing new #AgsPort objects
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -425,7 +425,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::remove-effect signal notifies about removed effect.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -444,7 +444,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::map-recall as recalls should be mapped.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -464,7 +464,7 @@ ags_line_class_init(AgsLineClass *line)
    * 
    * Returns: an #GList-struct containing all related #AgsPort
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -483,7 +483,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::stop signal gets emited as audio stops playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_signals[STOP] =
     g_signal_new("stop",
@@ -919,7 +919,7 @@ ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_line_samplerate_changed(AgsLine *line,
@@ -943,7 +943,7 @@ ags_line_samplerate_changed(AgsLine *line,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_line_buffer_size_changed(AgsLine *line,
@@ -967,7 +967,7 @@ ags_line_buffer_size_changed(AgsLine *line,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_line_format_changed(AgsLine *line,
@@ -1042,7 +1042,7 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
  *
  * Is emitted as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_set_channel(AgsLine *line, AgsChannel *channel)
@@ -1062,7 +1062,7 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
  *
  * Is emitted as group is changed.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_group_changed(AgsLine *line)
@@ -2244,7 +2244,7 @@ ags_line_real_add_effect(AgsLine *line,
  *
  * Returns: a #GList-struct containing new #AgsPort objects
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 GList*
 ags_line_add_effect(AgsLine *line,
@@ -2432,7 +2432,7 @@ ags_line_real_remove_effect(AgsLine *line,
  *
  * Remove a line member.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_remove_effect(AgsLine *line,
@@ -2467,7 +2467,7 @@ ags_line_real_map_recall(AgsLine *line,
  *
  * Is emitted as group is changed.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_map_recall(AgsLine *line,
@@ -2527,7 +2527,7 @@ ags_line_real_find_port(AgsLine *line)
  *
  * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_line_find_port(AgsLine *line)
@@ -2555,7 +2555,7 @@ ags_line_find_port(AgsLine *line)
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_stop(AgsLine *line,
@@ -2578,7 +2578,7 @@ ags_line_stop(AgsLine *line,
  *
  * Returns: next matching #GList-struct containing #AgsLine
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_line_find_next_grouped(GList *line)
@@ -2878,7 +2878,7 @@ ags_line_check_message(AgsLine *line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -3082,7 +3082,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: the new #AgsLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLine*
 ags_line_new(GtkWidget *pad, AgsChannel *channel)

@@ -108,7 +108,7 @@ ags_midi_file_class_init(AgsMidiFileClass *midi_file)
    *
    * The assigned filename to perform input/output on.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("assigned filename"),
@@ -255,7 +255,7 @@ ags_midi_file_finalize(GObject *gobject)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_file_open(AgsMidiFile *midi_file,
@@ -291,7 +291,7 @@ ags_midi_file_open(AgsMidiFile *midi_file,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_file_open_from_data(AgsMidiFile *midi_file,
@@ -317,7 +317,7 @@ ags_midi_file_open_from_data(AgsMidiFile *midi_file,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_midi_file_rw_open(AgsMidiFile *midi_file,
@@ -351,7 +351,7 @@ ags_midi_file_rw_open(AgsMidiFile *midi_file,
  *
  * Closes the file stream.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_close(AgsMidiFile *midi_file)
@@ -374,7 +374,7 @@ ags_midi_file_close(AgsMidiFile *midi_file)
  *
  * Returns: the data array just read
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_midi_file_read(AgsMidiFile *midi_file)
@@ -417,7 +417,7 @@ ags_midi_file_read(AgsMidiFile *midi_file)
  *
  * Writes @data to the file stream and to internal buffer, reallocates it if necessary.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write(AgsMidiFile *midi_file,
@@ -458,7 +458,7 @@ ags_midi_file_write(AgsMidiFile *midi_file,
  *
  * Seeks the file stream's offset.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
@@ -477,7 +477,7 @@ ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
  * 
  * Flushes file stream's data buffer to disc.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_flush(AgsMidiFile *midi_file)
@@ -499,7 +499,7 @@ ags_midi_file_flush(AgsMidiFile *midi_file)
  *
  * Returns: the current value at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char
 ags_midi_file_read_byte(AgsMidiFile *midi_file,
@@ -538,7 +538,7 @@ ags_midi_file_read_byte(AgsMidiFile *midi_file,
  *
  * Returns: the current value at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint16
 ags_midi_file_read_gint16(AgsMidiFile *midi_file,
@@ -582,7 +582,7 @@ ags_midi_file_read_gint16(AgsMidiFile *midi_file,
  *
  * Returns: the current value at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32
 ags_midi_file_read_gint24(AgsMidiFile *midi_file,
@@ -629,7 +629,7 @@ ags_midi_file_read_gint24(AgsMidiFile *midi_file,
  *
  * Returns: the current value at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32
 ags_midi_file_read_gint32(AgsMidiFile *midi_file,
@@ -677,7 +677,7 @@ ags_midi_file_read_gint32(AgsMidiFile *midi_file,
  *
  * Returns: the current value at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 long
 ags_midi_file_read_varlength(AgsMidiFile *midi_file,
@@ -745,7 +745,7 @@ ags_midi_file_read_varlength(AgsMidiFile *midi_file,
  *
  * Returns: the string at file's iteration pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_midi_file_read_text(AgsMidiFile *midi_file,
@@ -801,7 +801,7 @@ ags_midi_file_read_text(AgsMidiFile *midi_file,
  *
  * Writes a unsigned char quantity to internal buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_byte(AgsMidiFile *midi_file, unsigned char val)
@@ -829,7 +829,7 @@ ags_midi_file_write_byte(AgsMidiFile *midi_file, unsigned char val)
  *
  * Writes a gint16 quantity to internal buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val)
@@ -858,7 +858,7 @@ ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val)
  *
  * Writes a 24-bit quantity to internal buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val)
@@ -888,7 +888,7 @@ ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val)
  *
  * Writes a gint32 quantity to internal buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val)
@@ -919,7 +919,7 @@ ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val)
  *
  * Writes a variable length quantity to internal buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val)
@@ -966,7 +966,7 @@ ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val)
  *
  * Writes a string to internal buffer up to length bytes.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_text(AgsMidiFile *midi_file,
@@ -1005,7 +1005,7 @@ ags_midi_file_write_text(AgsMidiFile *midi_file,
  *
  * Returns: the header's bytes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_midi_file_read_header(AgsMidiFile *midi_file,
@@ -1094,7 +1094,7 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
  *
  * Write header bytes.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_midi_file_write_header(AgsMidiFile *midi_file,
@@ -1133,7 +1133,7 @@ ags_midi_file_write_header(AgsMidiFile *midi_file,
  *
  * Returns: the track's bytes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_midi_file_read_track_data(AgsMidiFile *midi_file,
@@ -1450,7 +1450,7 @@ ags_mid_file_read_midi(AgsMidiFile *midi_file)
  * 
  * Returns: the new #AgsMidiFile
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiFile*
 ags_midi_file_new(gchar *filename)

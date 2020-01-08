@@ -228,7 +228,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The input jack client.
    * 
-   * Since: 2.1.15
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("input-jack-client",
 				   i18n_pspec("input jack client"),
@@ -2169,7 +2169,7 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
  *
  * Connect all clients.
  *
- * Since: 2.1.14
+ * Since: 3.0.0
  */
 void
 ags_jack_server_disconnect_client(AgsJackServer *jack_server)

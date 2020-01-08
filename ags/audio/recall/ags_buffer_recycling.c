@@ -114,7 +114,7 @@ ags_buffer_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsBufferRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferRecycling*
 ags_buffer_recycling_new(AgsRecycling *destination,

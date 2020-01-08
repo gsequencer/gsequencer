@@ -509,7 +509,7 @@ ags_recall_ladspa_run_run_inter_END:
  *
  * Set up LADSPA ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)

@@ -112,7 +112,7 @@ ags_mute_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsMuteRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteRecycling*
 ags_mute_recycling_new(AgsRecycling *source)

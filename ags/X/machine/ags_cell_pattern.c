@@ -993,7 +993,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
@@ -1121,7 +1121,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
  *
  * Returns: a new #AgsCellPattern
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCellPattern*
 ags_cell_pattern_new()
