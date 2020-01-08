@@ -324,6 +324,13 @@ ags_link_channel_launch(AgsTask *task)
   channel = link_channel->channel;
   link = link_channel->link;
 
+  if((channel != NULL &&
+      channel->link == link) ||
+     (link != NULL &&
+      link->link == channel)){
+    return;
+  }
+  
   /* unset file-link */
   if(AGS_IS_INPUT(channel)){
     g_object_set(channel,
@@ -337,6 +344,14 @@ ags_link_channel_launch(AgsTask *task)
 		 "file-link", NULL,
 		 NULL);
   }
+
+  /* unlink first */
+  //NOTE:JK: may be we want to improve this
+  ags_channel_set_link(channel, NULL,
+  		       NULL);
+
+  ags_channel_set_link(link, NULL,
+  		       NULL);
   
   /* link channel */
   ags_channel_set_link(channel, link,
