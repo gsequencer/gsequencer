@@ -1,10 +1,6 @@
 ags (3.0.0)
 
        [ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-       * TODO:JK: implemented support for GtkApplication
-       * TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
-       * TODO:JK: migrated AgsBasePlugin to GModule
-       * TODO:JK: removed AgsMenuBar
        * migrated to Gtk3
        * migrated AgsOscServer and AgsOscClient to GIO sockets
        * migrated AgsServer to Libsoup XMLRPC
