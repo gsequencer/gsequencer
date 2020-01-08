@@ -35,9 +35,40 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="2.4.8" date="2019-12-27">
+    <release version="3.0.0" date="2020-01-08">
       <description>
 	<p>Improved performance.</p>
+      </description>
+    </release>
+
+    <release version="2.4.8" date="2019-12-27">
+      <description>
+	<p>
+	  Implemented GObject-Introspection annotations, enjoy the new GIRs.
+	</p>
+	<p>
+	  Implemented AgsServer XMLRPC based authentication using XML files with
+	  session cookie support. There is a new dependency on Libsoup2.4.
+	</p>
+	<p>
+	  Implemented AGS-OSC-OVER-XMLRPC allowing you to encapsule OSC packets in
+	  your XMLRPC request. Response is handled by WebSockets.
+	</p>
+	<p>
+	  Migrated from Gtk+-2.0 to Gtk+-3.0.
+	</p>
+	<p>
+	  Migrated from POSIX to GThread API.
+	</p>
+	<p>
+	  Major API changes.
+	</p>
+	<p>
+	  Supporting LLVM's clang compiler. Replaced nested functions GNU C extension.
+	</p>
+	<p>
+	  Fixed some potential SIGSEGVs.
+	</p>
       </description>
     </release>
 
