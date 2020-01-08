@@ -685,7 +685,6 @@ ags_id_generator_create_uuid
 <SECTION>
 <FILE>ags_list_util</FILE>
 ags_list_util_find_type
-ags_list_util_copy_and_ref
 </SECTION>
 
 <SECTION>
@@ -910,12 +909,6 @@ AGS_TYPE_MUTABLE
 AgsMutable
 AgsMutableInterface
 ags_mutable_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_parameter</FILE>
-ags_parameter_grow
-ags_parameter_find
 </SECTION>
 
 <SECTION>
@@ -1212,7 +1205,6 @@ ags_server_remove_controller
 ags_server_start
 ags_server_stop
 ags_server_listen
-ags_server_lookup
 ags_server_new
 <SUBSECTION Public>
 AGS_IS_SERVER
@@ -1662,8 +1654,8 @@ ags_thread_pool_get_type
 <SECTION>
 <FILE>ags_time</FILE>
 AGS_TIME_ZERO
-USEC_PER_SEC
-NSEC_PER_SEC
+AGS_USEC_PER_SEC
+AGS_NSEC_PER_SEC
 ags_time_get_uptime_from_offset
 ags_time_timeout_expired
 </SECTION>

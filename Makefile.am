@@ -8,7 +8,7 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po m4
 
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-introspection
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99 -include errno.h
@@ -211,8 +211,8 @@ CLEANFILES = \
 # gir - gobject introspection
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --warn-all
+INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)
 
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES)

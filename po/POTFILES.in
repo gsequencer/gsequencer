@@ -541,7 +541,6 @@
 ./ags/lib/ags_endian.c
 ./ags/lib/ags_function.c
 ./ags/lib/ags_log.c
-./ags/lib/ags_parameter.c
 ./ags/lib/ags_regex.c
 ./ags/lib/ags_solver_matrix.c
 ./ags/lib/ags_solver_vector.c

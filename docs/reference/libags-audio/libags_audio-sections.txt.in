@@ -857,6 +857,7 @@ ags_automation_unset_flags
 ags_automation_find_port
 ags_automation_find_near_timestamp
 ags_automation_find_near_timestamp_extended
+ags_automation_sort_func
 ags_automation_add
 ags_automation_add_acceleration
 ags_automation_remove_acceleration
@@ -904,6 +905,7 @@ ags_base_plugin_unset_flags
 ags_base_plugin_find_filename
 ags_base_plugin_find_effect
 ags_base_plugin_find_ui_effect_index
+ags_base_plugin_sort_func
 ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
@@ -2304,7 +2306,6 @@ ags_ipatch_gig_reader_get_type
 <TITLE>AgsIpatchSample</TITLE>
 AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX
 AgsIpatchSampleFlags
-ags_ipatch_sample_get_class_mutex
 ags_ipatch_sample_test_flags
 ags_ipatch_sample_set_flags
 ags_ipatch_sample_unset_flags
@@ -2865,7 +2866,6 @@ ags_lv2_plugin_event_buffer_append_midi
 ags_lv2_plugin_event_buffer_remove_midi
 ags_lv2_plugin_clear_event_buffer
 ags_lv2_plugin_alloc_atom_sequence
-ags_lv2_plugin_concat_atom_sequence
 ags_lv2_plugin_atom_sequence_append_midi
 ags_lv2_plugin_atom_sequence_remove_midi
 ags_lv2_plugin_clear_atom_sequence
@@ -2929,7 +2929,6 @@ ags_lv2_preset_manager_get_type
 <FILE>ags_lv2_turtle_parser</FILE>
 <TITLE>AgsLv2TurtleParser</TITLE>
 AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX
-ags_lv2_turtle_parser_get_class_mutex
 ags_lv2_turtle_parser_parse_names
 ags_lv2_turtle_parser_parse
 ags_lv2_turtle_parser_new
@@ -3099,6 +3098,7 @@ ags_midi_test_flags
 ags_midi_set_flags
 ags_midi_unset_flags
 ags_midi_find_near_timestamp
+ags_midi_sort_func
 ags_midi_add
 ags_midi_add_track
 ags_midi_remove_track
@@ -3184,7 +3184,6 @@ AGS_MIDI_BUILDER_TRACK
 AgsMidiBuilderFlags
 AgsMidiBuilderHeader
 AgsMidiBuilderTrack
-ags_midi_builder_get_class_mutex
 ags_midi_builder_header_alloc
 ags_midi_builder_header_free
 ags_midi_builder_track_alloc
@@ -3297,7 +3296,6 @@ AGS_MIDI_PARSER_MTCK
 AGS_MIDI_EVENT
 AgsMidiParserFlags
 AgsMidiChunkFlags
-ags_midi_parser_get_class_mutex
 ags_midi_parser_read_gint16
 ags_midi_parser_read_gint24
 ags_midi_parser_read_gint32
@@ -3359,10 +3357,6 @@ ags_midi_util_is_song_select
 ags_midi_util_is_tune_request
 ags_midi_util_is_meta_event
 ags_midi_util_to_smf
-ags_midi_util_envelope_to_velocity
-ags_midi_util_velocity_to_envelope
-ags_midi_util_envelope_to_pressure
-ags_midi_util_pressure_to_envelope
 ags_midi_util_delta_time_to_offset
 ags_midi_util_offset_to_delta_time
 </SECTION>
@@ -3524,6 +3518,7 @@ ags_notation_set_flags
 ags_notation_unset_flags
 ags_notation_find_near_timestamp
 ags_notation_add
+ags_notation_sort_func
 ags_notation_add_note
 ags_notation_remove_note
 ags_notation_remove_note_at_position
@@ -5187,7 +5182,6 @@ ags_recall_dssi_run_get_type
 <TITLE>AgsRecallFactory</TITLE>
 AgsRecallFactoryCreateFlags
 ags_recall_factory_create
-ags_recall_factory_get_instance
 ags_recall_factory_new
 <SUBSECTION Public>
 AGS_IS_RECALL_FACTORY
@@ -6512,6 +6506,7 @@ ags_wave_set_samplerate
 ags_wave_set_buffer_size
 ags_wave_set_format
 ags_wave_find_near_timestamp
+ags_wave_sort_func
 ags_wave_add
 ags_wave_add_buffer
 ags_wave_remove_buffer

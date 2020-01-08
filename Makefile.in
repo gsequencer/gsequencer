@@ -6520,7 +6520,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po m4
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-introspection
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = -std=gnu99 -include errno.h $(am__append_1) \
 	$(am__append_2) $(am__append_3) -DSRCDIR=\"$(srcdir)\" \
@@ -6687,8 +6687,8 @@ CLEANFILES = functional-system-tests.mk m4/Makefile libags.sym \
 	docs/reference/libgsequencer/libgsequencer.interfaces \
 	$(am__append_8) $(appdata_DATA) $(pkgconfig_DATA)
 INTROSPECTION_GIRS = $(am__append_7)
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --warn-all
+INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)
 @HAVE_INTROSPECTION_TRUE@introspection_sources = $(libags_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_C_INCLUDES = ags/libags.h
