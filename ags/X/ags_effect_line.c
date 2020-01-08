@@ -47,7 +47,6 @@
 
 void ags_effect_line_class_init(AgsEffectLineClass *effect_line);
 void ags_effect_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_effect_line_init(AgsEffectLine *effect_line);
 void ags_effect_line_set_property(GObject *gobject,
 				  guint prop_id,
@@ -62,13 +61,6 @@ void ags_effect_line_finalize(GObject *gobject);
 
 void ags_effect_line_connect(AgsConnectable *connectable);
 void ags_effect_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_effect_line_get_name(AgsPlugin *plugin);
-void ags_effect_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_effect_line_get_version(AgsPlugin *plugin);
-void ags_effect_line_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_effect_line_get_build_id(AgsPlugin *plugin);
-void ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_line_real_set_channel(AgsEffectLine *effect_line, AgsChannel *channel);
 GList* ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
@@ -152,12 +144,6 @@ ags_effect_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_effect_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_effect_line = g_type_register_static(GTK_TYPE_VBOX,
 						  "AgsEffectLine", &ags_effect_line_info,
 						  0);
@@ -165,10 +151,6 @@ ags_effect_line_get_type(void)
     g_type_add_interface_static(ags_type_effect_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_effect_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_line);
   }
@@ -475,23 +457,6 @@ ags_effect_line_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_effect_line_get_version;
-  plugin->set_version = ags_effect_line_set_version;
-  plugin->get_build_id = ags_effect_line_get_build_id;
-  plugin->set_build_id = ags_effect_line_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
-}
-
-void
 ags_effect_line_init(AgsEffectLine *effect_line)
 {
   AgsApplicationContext *application_context;
@@ -788,54 +753,6 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-gchar*
-ags_effect_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_LINE(plugin)->name);
-}
-
-void
-ags_effect_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AgsEffectLine *effect_line;
-
-  effect_line = AGS_EFFECT_LINE(plugin);
-
-  effect_line->name = name;
-}
-
-gchar*
-ags_effect_line_get_version(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_LINE(plugin)->version);
-}
-
-void
-ags_effect_line_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsEffectLine *effect_line;
-
-  effect_line = AGS_EFFECT_LINE(plugin);
-
-  effect_line->version = version;
-}
-
-gchar*
-ags_effect_line_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_LINE(plugin)->build_id);
-}
-
-void
-ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsEffectLine *effect_line;
-
-  effect_line = AGS_EFFECT_LINE(plugin);
-
-  effect_line->build_id = build_id;
 }
 
 /**

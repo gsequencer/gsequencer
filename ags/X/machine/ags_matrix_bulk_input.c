@@ -26,7 +26,6 @@
 
 void ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input);
 void ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_bulk_input_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input);
 void ags_matrix_bulk_input_finalize(GObject *gobject);
 
@@ -73,12 +72,6 @@ ags_matrix_bulk_input_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_matrix_bulk_input_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_matrix_bulk_input = g_type_register_static(AGS_TYPE_EFFECT_BULK,
 							"AgsMatrixBulkInput", &ags_matrix_bulk_input_info,
 							0);
@@ -86,10 +79,6 @@ ags_matrix_bulk_input_get_type(void)
     g_type_add_interface_static(ags_type_matrix_bulk_input,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_matrix_bulk_input,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_matrix_bulk_input);
   }
@@ -119,19 +108,6 @@ ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connec
   connectable->is_connected = NULL;
   connectable->connect = ags_matrix_bulk_input_connect;
   connectable->disconnect = ags_matrix_bulk_input_disconnect;
-}
-
-void
-ags_matrix_bulk_input_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void

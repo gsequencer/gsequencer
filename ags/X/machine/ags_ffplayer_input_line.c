@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,20 +20,16 @@
 #include <ags/X/machine/ags_ffplayer_input_line.h>
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>
 
 void ags_ffplayer_input_line_class_init(AgsFFPlayerInputLineClass *ffplayer_input_line);
 void ags_ffplayer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line);
+void ags_ffplayer_input_line_finalize(GObject *gobject);
+
 void ags_ffplayer_input_line_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
-void ags_ffplayer_input_line_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ffplayer_input_line
@@ -82,12 +78,6 @@ ags_ffplayer_input_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_ffplayer_input_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_ffplayer_input_line = g_type_register_static(AGS_TYPE_EFFECT_LINE,
 							  "AgsFFPlayerInputLine", &ags_ffplayer_input_line_info,
 							  0);
@@ -95,10 +85,6 @@ ags_ffplayer_input_line_get_type(void)
     g_type_add_interface_static(ags_type_ffplayer_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_ffplayer_input_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer_input_line);
   }
@@ -131,23 +117,17 @@ ags_ffplayer_input_line_connectable_interface_init(AgsConnectableInterface *conn
 }
 
 void
-ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
-}
-
-void
 ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line)
 {
   g_signal_connect_after(ffplayer_input_line, "notify::channel",
 			 G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback), NULL);
+}
+
+void
+ags_ffplayer_input_line_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_ffplayer_input_line_parent_class)->finalize(gobject);
 }
 
 void
@@ -168,12 +148,6 @@ ags_ffplayer_input_line_disconnect(AgsConnectable *connectable)
   }
 
   ags_ffplayer_input_line_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_ffplayer_input_line_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_ffplayer_input_line_parent_class)->finalize(gobject);
 }
 
 /**

@@ -27,7 +27,6 @@
 
 void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
 void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_effect_pad_init(AgsEffectPad *effect_pad);
 void ags_effect_pad_set_property(GObject *gobject,
 				 guint prop_id,
@@ -40,13 +39,6 @@ void ags_effect_pad_get_property(GObject *gobject,
 
 void ags_effect_pad_connect(AgsConnectable *connectable);
 void ags_effect_pad_disconnect(AgsConnectable *connectable);
-
-gchar* ags_effect_pad_get_name(AgsPlugin *plugin);
-void ags_effect_pad_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_effect_pad_get_version(AgsPlugin *plugin);
-void ags_effect_pad_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_effect_pad_get_build_id(AgsPlugin *plugin);
-void ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
@@ -112,12 +104,6 @@ ags_effect_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_effect_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_effect_pad = g_type_register_static(GTK_TYPE_VBOX,
 						 "AgsEffectPad", &ags_effect_pad_info,
 						 0);
@@ -125,10 +111,6 @@ ags_effect_pad_get_type(void)
     g_type_add_interface_static(ags_type_effect_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_effect_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_pad);
   }
@@ -383,23 +365,6 @@ ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_effect_pad_connect;
   connectable->disconnect = ags_effect_pad_disconnect;
-}
-
-void
-ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_effect_pad_get_version;
-  plugin->set_version = ags_effect_pad_set_version;
-  plugin->get_build_id = ags_effect_pad_get_build_id;
-  plugin->set_build_id = ags_effect_pad_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -664,54 +629,6 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(effect_line_list_start);
-}
-
-gchar*
-ags_effect_pad_get_name(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->name);
-}
-
-void
-ags_effect_pad_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->name = name;
-}
-
-gchar*
-ags_effect_pad_get_version(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->version);
-}
-
-void
-ags_effect_pad_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->version = version;
-}
-
-gchar*
-ags_effect_pad_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->build_id);
-}
-
-void
-ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->build_id = build_id;
 }
 
 /**

@@ -39,7 +39,6 @@
 
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_effect_bulk_init(AgsEffectBulk *effect_bulk);
 void ags_effect_bulk_set_property(GObject *gobject,
 				  guint prop_id,
@@ -54,13 +53,6 @@ void ags_effect_bulk_finalize(GObject *gobject);
 
 void ags_effect_bulk_connect(AgsConnectable *connectable);
 void ags_effect_bulk_disconnect(AgsConnectable *connectable);
-
-gchar* ags_effect_bulk_get_name(AgsPlugin *plugin);
-void ags_effect_bulk_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_effect_bulk_get_version(AgsPlugin *plugin);
-void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
-void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_bulk_show(GtkWidget *widget);
 
@@ -150,12 +142,6 @@ ags_effect_bulk_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_effect_bulk_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_effect_bulk = g_type_register_static(GTK_TYPE_VBOX,
 						  "AgsEffectBulk", &ags_effect_bulk_info,
 						  0);
@@ -163,10 +149,6 @@ ags_effect_bulk_get_type(void)
     g_type_add_interface_static(ags_type_effect_bulk,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_effect_bulk,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_bulk);
   }
@@ -367,23 +349,6 @@ ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_effect_bulk_connect;
   connectable->disconnect = ags_effect_bulk_disconnect;
-}
-
-void
-ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_effect_bulk_get_version;
-  plugin->set_version = ags_effect_bulk_set_version;
-  plugin->get_build_id = ags_effect_bulk_get_build_id;
-  plugin->set_build_id = ags_effect_bulk_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -754,54 +719,6 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-gchar*
-ags_effect_bulk_get_name(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BULK(plugin)->name);
-}
-
-void
-ags_effect_bulk_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AgsEffectBulk *effect_bulk;
-
-  effect_bulk = AGS_EFFECT_BULK(plugin);
-
-  effect_bulk->name = name;
-}
-
-gchar*
-ags_effect_bulk_get_version(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BULK(plugin)->version);
-}
-
-void
-ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsEffectBulk *effect_bulk;
-
-  effect_bulk = AGS_EFFECT_BULK(plugin);
-
-  effect_bulk->version = version;
-}
-
-gchar*
-ags_effect_bulk_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BULK(plugin)->build_id);
-}
-
-void
-ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsEffectBulk *effect_bulk;
-
-  effect_bulk = AGS_EFFECT_BULK(plugin);
-
-  effect_bulk->build_id = build_id;
 }
 
 void

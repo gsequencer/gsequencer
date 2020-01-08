@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_bulk.h>
@@ -32,7 +28,6 @@
 
 void ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge);
 void ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_effect_bridge_init(AgsEffectBridge *effect_bridge);
 void ags_effect_bridge_set_property(GObject *gobject,
 				    guint prop_id,
@@ -44,12 +39,6 @@ void ags_effect_bridge_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_effect_bridge_connect(AgsConnectable *connectable);
 void ags_effect_bridge_disconnect(AgsConnectable *connectable);
-gchar* ags_effect_bridge_get_name(AgsPlugin *plugin);
-void ags_effect_bridge_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_effect_bridge_get_version(AgsPlugin *plugin);
-void ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_effect_bridge_get_build_id(AgsPlugin *plugin);
-void ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 						  guint new_size, guint old_size);
@@ -118,12 +107,6 @@ ags_effect_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_effect_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_effect_bridge = g_type_register_static(GTK_TYPE_VBOX,
 						    "AgsEffectBridge", &ags_effect_bridge_info,
 						    0);
@@ -131,10 +114,6 @@ ags_effect_bridge_get_type(void)
     g_type_add_interface_static(ags_type_effect_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_effect_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_bridge);
   }
@@ -393,23 +372,6 @@ ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
   connectable->is_connected = NULL;
   connectable->connect = ags_effect_bridge_connect;
   connectable->disconnect = ags_effect_bridge_disconnect;
-}
-
-void
-ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_effect_bridge_get_name;
-  plugin->set_name = ags_effect_bridge_set_name;
-  plugin->get_version = ags_effect_bridge_get_version;
-  plugin->set_version = ags_effect_bridge_set_version;
-  plugin->get_build_id = ags_effect_bridge_get_build_id;
-  plugin->set_build_id = ags_effect_bridge_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -1020,54 +982,6 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
     g_list_free(effect_pad_list_start);
   }
-}
-
-gchar*
-ags_effect_bridge_get_name(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BRIDGE(plugin)->name);
-}
-
-void
-ags_effect_bridge_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AgsEffectBridge *effect_bridge;
-
-  effect_bridge = AGS_EFFECT_BRIDGE(plugin);
-
-  effect_bridge->name = name;
-}
-
-gchar*
-ags_effect_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BRIDGE(plugin)->version);
-}
-
-void
-ags_effect_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsEffectBridge *effect_bridge;
-
-  effect_bridge = AGS_EFFECT_BRIDGE(plugin);
-
-  effect_bridge->version = version;
-}
-
-gchar*
-ags_effect_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsEffectBridge *effect_bridge;
-
-  effect_bridge = AGS_EFFECT_BRIDGE(plugin);
-
-  effect_bridge->build_id = build_id;
 }
 
 /**

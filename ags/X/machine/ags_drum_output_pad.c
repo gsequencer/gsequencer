@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,26 +20,16 @@
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_pad_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_line.h>
 
 #include <ags/X/machine/ags_drum.h>
 
 void ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad);
 void ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_output_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad);
 
 void ags_drum_output_pad_connect(AgsConnectable *connectable);
 void ags_drum_output_pad_disconnect(AgsConnectable *connectable);
-
-gchar* ags_drum_output_pad_get_name(AgsPlugin *plugin);
-void ags_drum_output_pad_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_drum_output_pad_get_xml_type(AgsPlugin *plugin);
-void ags_drum_output_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_drum_output_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
@@ -84,12 +74,6 @@ ags_drum_output_pad_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_drum_output_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_drum_output_pad = g_type_register_static(AGS_TYPE_PAD,
 						      "AgsDrumOutputPad", &ags_drum_output_pad_info,
 						      0);
@@ -97,10 +81,6 @@ ags_drum_output_pad_get_type()
     g_type_add_interface_static(ags_type_drum_output_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_drum_output_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_drum_output_pad);
   }
@@ -133,15 +113,6 @@ ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connecta
 }
 
 void
-ags_drum_output_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_drum_output_pad_get_name;
-  plugin->set_name = ags_drum_output_pad_set_name;
-  plugin->get_xml_type = ags_drum_output_pad_get_xml_type;
-  plugin->set_xml_type = ags_drum_output_pad_set_xml_type;
-}
-
-void
 ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad)
 {
   drum_output_pad->flags = 0;
@@ -171,30 +142,6 @@ ags_drum_output_pad_disconnect(AgsConnectable *connectable)
   ags_drum_output_pad_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
-}
-
-gchar*
-ags_drum_output_pad_get_name(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_PAD(plugin)->name);
-}
-
-void
-ags_drum_output_pad_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_DRUM_OUTPUT_PAD(plugin)->name = name;
-}
-
-gchar*
-ags_drum_output_pad_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_PAD(plugin)->xml_type);
-}
-
-void
-ags_drum_output_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DRUM_OUTPUT_PAD(plugin)->xml_type = xml_type;
 }
 
 void

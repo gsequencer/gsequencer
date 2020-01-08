@@ -41,7 +41,6 @@
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_line_init(AgsLine *line);
 void ags_line_set_property(GObject *gobject,
 			   guint prop_id,
@@ -56,11 +55,6 @@ void ags_line_finalize(GObject *gobject);
 
 void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_line_get_version(AgsPlugin *plugin);
-void ags_line_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_line_get_build_id(AgsPlugin *plugin);
-void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 GList* ags_line_add_ladspa_effect(AgsLine *line,
@@ -147,12 +141,6 @@ ags_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_line = g_type_register_static(GTK_TYPE_VBOX,
 					   "AgsLine", &ags_line_info,
 					   0);
@@ -160,10 +148,6 @@ ags_line_get_type(void)
     g_type_add_interface_static(ags_type_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_line);
   }
@@ -503,23 +487,6 @@ ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_line_connect;
   connectable->disconnect = ags_line_disconnect;
-}
-
-void
-ags_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_line_get_version;
-  plugin->set_version = ags_line_set_version;
-  plugin->get_build_id = ags_line_get_build_id;
-  plugin->set_build_id = ags_line_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -885,30 +852,6 @@ ags_line_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-}
-
-gchar*
-ags_line_get_version(AgsPlugin *plugin)
-{
-  return(AGS_LINE(plugin)->version);
-}
-
-void
-ags_line_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AGS_LINE(plugin)->version = version;
-}
-
-gchar*
-ags_line_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_LINE(plugin)->build_id);
-}
-
-void
-ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AGS_LINE(plugin)->build_id = build_id;
 }
 
 /**

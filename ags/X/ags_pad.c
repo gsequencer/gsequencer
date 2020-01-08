@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,6 @@
 
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_pad_init(AgsPad *pad);
 void ags_pad_set_property(GObject *gobject,
 			  guint prop_id,
@@ -41,11 +40,6 @@ void ags_pad_get_property(GObject *gobject,
 
 void ags_pad_connect(AgsConnectable *connectable);
 void ags_pad_disconnect(AgsConnectable *connectable);
-
-gchar* ags_pad_get_version(AgsPlugin *plugin);
-void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_pad_get_build_id(AgsPlugin *plugin);
-void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
@@ -113,12 +107,6 @@ ags_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
 					  "AgsPad", &ags_pad_info,
 					  0);
@@ -126,10 +114,6 @@ ags_pad_get_type(void)
     g_type_add_interface_static(ags_type_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_pad);
   }
@@ -385,23 +369,6 @@ ags_pad_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_pad_connect;
   connectable->disconnect = ags_pad_disconnect;
-}
-
-void
-ags_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_pad_get_version;
-  plugin->set_version = ags_pad_set_version;
-  plugin->get_build_id = ags_pad_get_build_id;
-  plugin->set_build_id = ags_pad_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -694,38 +661,6 @@ ags_pad_disconnect(AgsConnectable *connectable)
 
   g_signal_handlers_disconnect_by_data(pad->channel,
 				       pad);
-}
-
-gchar*
-ags_pad_get_version(AgsPlugin *plugin)
-{
-  return(AGS_PAD(plugin)->version);
-}
-
-void
-ags_pad_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsPad *pad;
-
-  pad = AGS_PAD(plugin);
-
-  pad->version = version;
-}
-
-gchar*
-ags_pad_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_PAD(plugin)->build_id);
-}
-
-void
-ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsPad *pad;
-
-  pad = AGS_PAD(plugin);
-
-  pad->build_id = build_id;
 }
 
 /**
