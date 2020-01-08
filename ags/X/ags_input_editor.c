@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_input_editor.h>
 #include <ags/X/ags_input_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -336,7 +332,7 @@ ags_input_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to input. And modifies its ranges.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_input_editor_check(AgsInputEditor *input_editor)
@@ -385,7 +381,7 @@ ags_input_editor_check(AgsInputEditor *input_editor)
  *
  * Returns: the new #AgsInputEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsInputEditor*
 ags_input_editor_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_input_collection_editor.h>
 #include <ags/X/ags_input_collection_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -139,7 +135,7 @@ ags_input_collection_editor_class_init(AgsInputCollectionEditorClass *input_coll
    *
    * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -464,7 +460,7 @@ ags_input_collection_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to input. And modifies its ranges.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_input_collection_editor_check(AgsInputCollectionEditor *input_collection_editor)
@@ -545,7 +541,7 @@ ags_input_collection_editor_check(AgsInputCollectionEditor *input_collection_edi
  *
  * Returns: the new #AgsInputCollectionEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsInputCollectionEditor*
 ags_input_collection_editor_new(GType channel_type)

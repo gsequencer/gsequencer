@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1062,7 +1062,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
  *
  * Returns: the new #AgsSequencerEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSequencerEditor*
 ags_sequencer_editor_new()

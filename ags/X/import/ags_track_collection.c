@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/import/ags_track_collection.h>
 #include <ags/X/import/ags_track_collection_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/import/ags_track_collection_mapper.h>
 
@@ -139,7 +136,7 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("midi-document",
 				    i18n_pspec("midi document of track collection"),
@@ -606,7 +603,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

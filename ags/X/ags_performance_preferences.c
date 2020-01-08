@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
-
-#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -449,7 +447,7 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsPerformancePreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPerformancePreferences*
 ags_performance_preferences_new()

@@ -76,6 +76,7 @@
       <xi:include href="xml/ags_lv2_log_manager.xml"/>
       <xi:include href="xml/ags_lv2_manager.xml"/>
       <xi:include href="xml/ags_lv2_option_manager.xml"/>
+      <xi:include href="xml/ags_lv2_turtle_parser.xml"/>
       <xi:include href="xml/ags_lv2_plugin.xml"/>
       <xi:include href="xml/ags_lv2_preset.xml"/>
       <xi:include href="xml/ags_lv2_uri_map_manager.xml"/>
@@ -296,6 +297,7 @@
       <xi:include href="xml/ags_osc_controller.xml"/>	
       <xi:include href="xml/ags_osc_action_controller.xml"/>
       <xi:include href="xml/ags_osc_config_controller.xml"/>
+      <xi:include href="xml/ags_osc_export_controller.xml"/>
       <xi:include href="xml/ags_osc_front_controller.xml"/>
       <xi:include href="xml/ags_osc_info_controller.xml"/>
       <xi:include href="xml/ags_osc_meter_controller.xml"/>

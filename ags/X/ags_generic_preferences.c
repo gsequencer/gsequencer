@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -471,7 +468,7 @@ ags_generic_preferences_create_segmentation()
  *
  * Returns: a new #AgsGenericPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericPreferences*
 ags_generic_preferences_new()

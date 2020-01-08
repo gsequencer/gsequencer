@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/X/export/ags_machine_collection_entry.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -135,7 +132,7 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
    *
    * The assigned #AgsMachine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -559,7 +556,7 @@ ags_machine_collection_entry_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsMachineCollectionEntry
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCollectionEntry*
 ags_machine_collection_entry_new(GtkWidget *machine)

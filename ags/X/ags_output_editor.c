@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -334,7 +334,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to output. And modifies its ranges.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_output_editor_check(AgsOutputEditor *output_editor)
@@ -383,7 +383,7 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
  *
  * Returns: the new #AgsOutputEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOutputEditor*
 ags_output_editor_new()

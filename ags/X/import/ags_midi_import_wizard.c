@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -141,7 +141,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -381,7 +381,7 @@ ags_midi_import_wizard_show(GtkWidget *widget)
  *
  * Returns: the new #AgsMidiImportWizard
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiImportWizard*
 ags_midi_import_wizard_new()

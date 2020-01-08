@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -409,7 +409,7 @@ ags_preferences_show_all(GtkWidget *widget)
  *
  * Returns: the new #AgsPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPreferences*
 ags_preferences_new()

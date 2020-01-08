@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -172,7 +172,7 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -194,7 +194,7 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   notation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -614,7 +614,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
@@ -636,7 +636,7 @@ ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
  * 
  * Add note.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
@@ -723,7 +723,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
  * 
  * Delete note.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
@@ -796,7 +796,7 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
  * 
  * Select region.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
@@ -888,7 +888,7 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
  * 
  * Do playback feedback.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
@@ -1037,7 +1037,7 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
  * 
  * Start play @key_code.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_start_play_key(AgsNotationEditor *notation_editor,
@@ -1145,7 +1145,7 @@ ags_notation_editor_start_play_key(AgsNotationEditor *notation_editor,
  * 
  * Stop play @key_code.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_stop_play_key(AgsNotationEditor *notation_editor,
@@ -1248,7 +1248,7 @@ ags_notation_editor_stop_play_key(AgsNotationEditor *notation_editor,
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
@@ -1562,7 +1562,7 @@ ags_notation_editor_paste_notation(AgsNotationEditor *notation_editor,
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_paste(AgsNotationEditor *notation_editor)
@@ -1672,7 +1672,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_copy(AgsNotationEditor *notation_editor)
@@ -1765,7 +1765,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_cut(AgsNotationEditor *notation_editor)
@@ -1938,7 +1938,7 @@ ags_notation_editor_invert_notation(AgsNotationEditor *notation_editor,
  *
  * Invert all notation of @notation_editor's selected machine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notation_editor_invert(AgsNotationEditor *notation_editor)
@@ -2035,7 +2035,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
  *
  * Returns: a new #AgsNotationEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNotationEditor*
 ags_notation_editor_new()

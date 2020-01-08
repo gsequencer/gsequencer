@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_lv2_browser_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -355,7 +352,7 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active lv2 filename
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
@@ -380,7 +377,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
  *
  * Returns: the active lv2 uri
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
@@ -410,7 +407,7 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_output_boolean_controls_new()
@@ -435,7 +432,7 @@ ags_lv2_browser_combo_box_output_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_output_controls_new()
@@ -462,7 +459,7 @@ ags_lv2_browser_combo_box_output_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_boolean_controls_new()
@@ -489,7 +486,7 @@ ags_lv2_browser_combo_box_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_controls_new()
@@ -532,7 +529,7 @@ ags_lv2_browser_preview_new()
  *
  * Returns: the new #AgsLv2Browser
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2Browser*
 ags_lv2_browser_new()

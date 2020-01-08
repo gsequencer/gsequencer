@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -158,7 +158,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -176,7 +176,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -194,7 +194,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -212,7 +212,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The assigned #AgsAudio to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -228,7 +228,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The machine's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("machine-name",
 				   i18n_pspec("machine name"),
@@ -262,7 +262,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -283,7 +283,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -304,7 +304,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -326,7 +326,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -349,7 +349,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -369,7 +369,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::map-recall should be used to add the machine's default recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -387,7 +387,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::find-port signal emits as recall should be mapped.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -406,7 +406,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::stop signal gets emited as audio stops playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[STOP] =
     g_signal_new("stop",
@@ -1305,7 +1305,7 @@ ags_machine_disconnect(AgsConnectable *connectable)
  * 
  * Returns: the new allocated #AgsMachineAutomationPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineAutomationPort*
 ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
@@ -1326,7 +1326,7 @@ ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
  * 
  * Free @automation_port
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
@@ -1350,7 +1350,7 @@ ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
  * 
  * Returns: the matching #AgsAutomationPort or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
@@ -1377,7 +1377,7 @@ ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_samplerate_changed(AgsMachine *machine,
@@ -1401,7 +1401,7 @@ ags_machine_samplerate_changed(AgsMachine *machine,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_buffer_size_changed(AgsMachine *machine,
@@ -1425,7 +1425,7 @@ ags_machine_buffer_size_changed(AgsMachine *machine,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_format_changed(AgsMachine *machine,
@@ -1745,7 +1745,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
  *
  * Resize audio channel allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_resize_audio_channels(AgsMachine *machine,
@@ -1944,7 +1944,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
  *
  * Resize pad allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_resize_pads(AgsMachine *machine,
@@ -1981,7 +1981,7 @@ ags_machine_real_map_recall(AgsMachine *machine)
  *
  * You may want the @machine to add its default recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_map_recall(AgsMachine *machine)
@@ -2067,7 +2067,7 @@ ags_machine_real_find_port(AgsMachine *machine)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_machine_find_port(AgsMachine *machine)
@@ -2095,7 +2095,7 @@ ags_machine_find_port(AgsMachine *machine)
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
@@ -2118,7 +2118,7 @@ ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
  *
  * Returns: the matching #AgsMachine, or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
@@ -2141,7 +2141,7 @@ ags_machine_find_by_name(GList *list, char *name)
  *
  * Start/stop @playback of @machine.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_machine_playback_set_active(AgsMachine *machine,
@@ -2266,7 +2266,7 @@ ags_machine_playback_set_active(AgsMachine *machine,
  *
  * Start/stop playback of @machine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_set_run(AgsMachine *machine,
@@ -2288,7 +2288,7 @@ ags_machine_set_run(AgsMachine *machine,
  *
  * Start/stop playback of @machine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_set_run_extended(AgsMachine *machine,
@@ -2439,7 +2439,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
@@ -2505,7 +2505,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
@@ -2575,7 +2575,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
@@ -2623,7 +2623,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
  *
  * Returns: a new #GtkFileChooserDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
@@ -2661,7 +2661,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
  *
  * Opens audio files and modifies or creates new channels if wished.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_open_files(AgsMachine *machine,
@@ -3108,7 +3108,7 @@ ags_machine_check_message(AgsMachine *machine)
  *
  * Returns: a new #AgsMachine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachine*
 ags_machine_new(GObject *soundcard)
@@ -3136,7 +3136,7 @@ ags_machine_new(GObject *soundcard)
  *
  * Returns: a new #GtkMenu containing basic actions.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
@@ -3232,7 +3232,7 @@ ags_machine_popup_new(AgsMachine *machine)
  *
  * Add options to edit submenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
@@ -3290,7 +3290,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
  *
  * Add options to connection submenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)

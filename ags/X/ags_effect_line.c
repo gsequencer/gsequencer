@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -199,7 +199,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -217,7 +217,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -235,7 +235,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -253,7 +253,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -288,7 +288,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_line_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -309,7 +309,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_line_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -330,7 +330,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_line_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -350,7 +350,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::set-channel signal notifies about changed channel.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -373,7 +373,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * Returns: the #GList-struct containing the #AgsPort objects added
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -394,7 +394,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::remove-effect signal notifies about removed effect.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -414,7 +414,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * The ::map-recall should be used to add the effect_line's default recall. This function
    * may call ags_effect_line_find_port().
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -434,7 +434,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * Returns: an #GList-struct containing all related #AgsPort
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -452,7 +452,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::done signal gets emited as audio stops playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_line_signals[DONE] =
     g_signal_new("done",
@@ -846,7 +846,7 @@ ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_line_samplerate_changed(AgsEffectLine *effect_line,
@@ -870,7 +870,7 @@ ags_effect_line_samplerate_changed(AgsEffectLine *effect_line,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_line_buffer_size_changed(AgsEffectLine *effect_line,
@@ -894,7 +894,7 @@ ags_effect_line_buffer_size_changed(AgsEffectLine *effect_line,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_effect_line_format_changed(AgsEffectLine *effect_line,
@@ -969,7 +969,7 @@ ags_effect_line_real_set_channel(AgsEffectLine *effect_line, AgsChannel *channel
  *
  * Is emitted as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_line_set_channel(AgsEffectLine *effect_line, AgsChannel *channel)
@@ -2190,7 +2190,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
  *
  * Returns: the #GList-struct containing the #AgsPort objects added
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_line_add_effect(AgsEffectLine *effect_line,
@@ -2370,7 +2370,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
  *
  * Remove an effect by its position.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_line_remove_effect(AgsEffectLine *effect_line,
@@ -2406,7 +2406,7 @@ ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
  * You may want the @effect_line to add its default recall. This function
  * may call ags_effect_line_find_port().
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_line_map_recall(AgsEffectLine *effect_line,
@@ -2466,7 +2466,7 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
  *
  * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_line_find_port(AgsEffectLine *effect_line)
@@ -2493,7 +2493,7 @@ ags_effect_line_find_port(AgsEffectLine *effect_line)
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_line_done(AgsEffectLine *effect_line, GObject *recall_id)
@@ -2515,7 +2515,7 @@ ags_effect_line_done(AgsEffectLine *effect_line, GObject *recall_id)
  *
  * Returns: next matching #GList-struct containing #AgsEffectLine
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_line_find_next_grouped(GList *effect_line)
@@ -2812,7 +2812,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -3016,7 +3016,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: the new #AgsEffectLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEffectLine*
 ags_effect_line_new(AgsChannel *channel)

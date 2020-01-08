@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_line_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/i18n.h>
 
@@ -127,7 +124,7 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    *
    * The assigned #AgsChannel to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -348,7 +345,7 @@ ags_line_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
@@ -415,7 +412,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
  *
  * Returns: the new #AgsLineEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLineEditor*
 ags_line_editor_new(AgsChannel *channel)

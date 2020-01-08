@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/X/ags_animation_window.h>
-
-#include <ags/libags.h>
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
@@ -475,7 +473,7 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
  *
  * Returns: a new #AgsAnimationWindow
  *
- * Since: 2.2.33
+ * Since: 3.0.0
  */
 AgsAnimationWindow*
 ags_animation_window_new()

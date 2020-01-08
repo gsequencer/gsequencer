@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_plugin_preferences.h>
 #include <ags/X/ags_plugin_preferences_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -175,7 +172,7 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
  *
  * Returns: the new #AgsPluginPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPluginPreferences*
 ags_plugin_preferences_new()

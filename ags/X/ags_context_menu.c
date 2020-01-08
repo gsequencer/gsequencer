@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,6 @@
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -530,7 +527,7 @@ ags_context_menu_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsContextMenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsContextMenu*
 ags_context_menu_new()

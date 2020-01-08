@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_wave_window_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -245,7 +242,7 @@ ags_wave_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsWaveWindow instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWaveWindow*
 ags_wave_window_new(GtkWidget *parent_window)

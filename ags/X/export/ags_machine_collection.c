@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -343,7 +343,7 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
  *
  * Returns: a new #AgsMachineCollection
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCollection*
 ags_machine_collection_new(GType child_type,

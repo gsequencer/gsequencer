@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -139,7 +139,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -739,7 +739,7 @@ ags_midi_dialog_show_all(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiDialog*
 ags_midi_dialog_new(AgsMachine *machine)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_pad_editor.h>
 #include <ags/X/ags_pad_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_connection_editor.h>
@@ -390,7 +386,7 @@ ags_pad_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
@@ -492,7 +488,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
  *
  * Returns: the new #AgsPadEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPadEditor*
 ags_pad_editor_new(AgsChannel *channel)

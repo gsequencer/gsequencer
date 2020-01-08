@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 G_BEGIN_DECLS

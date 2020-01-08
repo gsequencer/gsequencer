@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_ladspa_browser_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -341,7 +338,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active ladspa filename
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
@@ -361,7 +358,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: the active ladspa effect
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
@@ -380,7 +377,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_boolean_controls_new()
@@ -405,7 +402,7 @@ ags_ladspa_browser_combo_box_output_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_controls_new()
@@ -432,7 +429,7 @@ ags_ladspa_browser_combo_box_output_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_boolean_controls_new()
@@ -459,7 +456,7 @@ ags_ladspa_browser_combo_box_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_controls_new()
@@ -502,7 +499,7 @@ ags_ladspa_browser_preview_new()
  *
  * Returns: the new #AgsLadspaBrowser
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaBrowser*
 ags_ladspa_browser_new()

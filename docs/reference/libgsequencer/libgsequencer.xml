@@ -37,6 +37,7 @@
       <xi:include href="xml/ags_ui_provider.xml"/>
       <xi:include href="xml/ags_xorg_application_context.xml"/>
 
+      <xi:include href="xml/ags_animation_window.xml"/>
       <xi:include href="xml/ags_window.xml"/>
       <xi:include href="xml/ags_window_callbacks.xml"/>
 
@@ -90,7 +91,7 @@
 
       <xi:include href="xml/ags_performance_preferences.xml"/>
 
-      <xi:include href="xml/ags_server_preferences.xml"/>
+      <xi:include href="xml/ags_osc_server_preferences.xml"/>
 
       <xi:include href="xml/ags_plugin_preferences.xml"/>      
     </chapter>
@@ -237,6 +238,8 @@
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_crop_note_dialog.xml"/>
       <xi:include href="xml/ags_crop_note_dialog_callbacks.xml"/>    
+      <xi:include href="xml/ags_position_notation_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_notation_cursor_dialog_callbacks.xml"/>
     </chapter>
     
     <chapter id="automation-editor">
@@ -263,6 +266,8 @@
       <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_select_acceleration_dialog.xml"/>
       <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_position_automation_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_automation_cursor_dialog_callbacks.xml"/>
     </chapter>
 
     <chapter id="wave-editor">
@@ -288,6 +293,8 @@
       
       <xi:include href="xml/ags_select_buffer_dialog.xml"/>
       <xi:include href="xml/ags_select_buffer_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_position_wave_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_wave_cursor_dialog_callbacks.xml"/>
     </chapter>
 
     <chapter id="machine">
@@ -343,14 +350,21 @@
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
+      <xi:include href="xml/ags_pitch_sampler.xml"/>
       <xi:include href="xml/ags_spectrometer.xml"/>
       <xi:include href="xml/ags_spectrometer_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
+      <xi:include href="xml/ags_fm_synth.xml"/>
+      <xi:include href="xml/ags_fm_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_fm_synth_input_line.xml"/>
+      <xi:include href="xml/ags_fm_synth_input_pad.xml"/>
       <xi:include href="xml/ags_syncsynth.xml"/>
       <xi:include href="xml/ags_syncsynth_callbacks.xml"/>
+      <xi:include href="xml/ags_fm_syncsynth.xml"/>
+      <xi:include href="xml/ags_fm_syncsynth_callbacks.xml"/>
     </chapter>
     
     <chapter id="file">
