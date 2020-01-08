@@ -140,6 +140,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_machine_parent_class = g_type_class_peek_parent(machine);

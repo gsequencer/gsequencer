@@ -38,6 +38,7 @@ void ags_pad_editor_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+void ags_pad_editor_finalize(GObject *gobject);
 
 void ags_pad_editor_connect(AgsConnectable *connectable);
 void ags_pad_editor_disconnect(AgsConnectable *connectable);
@@ -61,6 +62,8 @@ enum{
   PROP_0,
   PROP_CHANNEL,
 };
+
+static gpointer ags_pad_editor_parent_class = NULL;
 
 GType
 ags_pad_editor_get_type(void)
@@ -116,13 +119,20 @@ void
 ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
+  ags_pad_editor_parent_class = g_type_class_peek_parent(pad_editor);
+
+  /* GObjectClass */
   gobject = (GObjectClass *) pad_editor;
 
   gobject->set_property = ags_pad_editor_set_property;
   gobject->get_property = ags_pad_editor_get_property;
 
+  gobject->finalize = ags_pad_editor_finalize;
+
+  /* properties */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
 				   i18n_pspec("The channel which this pad editor is assigned with"),
@@ -158,6 +168,8 @@ ags_pad_editor_init(AgsPadEditor *pad_editor)
   pad_editor->version = AGS_PAD_EDITOR_DEFAULT_VERSION;
   pad_editor->build_id = AGS_PAD_EDITOR_DEFAULT_BUILD_ID;
 
+  pad_editor->pad = NULL;
+  
   pad_editor->line_editor_expander = (GtkExpander *) gtk_expander_new(NULL);
   gtk_box_pack_start(GTK_BOX(pad_editor),
 		     GTK_WIDGET(pad_editor->line_editor_expander),
@@ -212,6 +224,21 @@ ags_pad_editor_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_pad_editor_finalize(GObject *gobject)
+{
+  AgsPadEditor *pad_editor;
+
+  pad_editor = (AgsPadEditor *) gobject;
+
+  if(pad_editor->pad != NULL){
+    g_object_unref(pad_editor->pad);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_pad_editor_parent_class)->finalize(gobject);
 }
 
 void
@@ -399,7 +426,17 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
     gtk_widget_destroy(GTK_WIDGET(vbox));
   }
 
-  pad_editor->pad = start_channel;
+  if(pad_editor->pad != start_channel){
+    if(pad_editor->pad != NULL){
+      g_object_unref(pad_editor->pad);
+    }
+    
+    if(start_channel != NULL){
+      g_object_ref(start_channel);
+    }
+    
+    pad_editor->pad = start_channel;
+  }
   
   if(start_channel != NULL){
     AgsLineEditor *line_editor;
@@ -413,17 +450,11 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
     guint i;
 
     /* get some channel fields */
+    pad = 0;
+    
     g_object_get(start_channel,
 		 "pad", &pad,
 		 NULL);
-
-    channel = start_channel;
-
-    if(channel != NULL){
-      g_object_ref(channel);
-    }
-    
-    next_pad = ags_channel_next_pad(start_channel);
     
     /* set label */
     str = g_strdup_printf("%s: %u",
@@ -437,6 +468,15 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
     pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));
+
+    channel = start_channel;
+    next_pad = NULL;
+    
+    if(channel != NULL){
+      g_object_ref(channel);
+    
+      next_pad = ags_channel_next_pad(start_channel);
+    }
 
     next_channel = NULL;
     
@@ -467,12 +507,12 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
       channel = next_channel;
     }
 
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
+    if(channel != NULL){
+      g_object_unref(channel);
     }
 
-    if(next_channel != NULL){
-      g_object_unref(next_channel);
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
     }
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,
