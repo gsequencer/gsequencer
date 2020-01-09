@@ -106,6 +106,9 @@ ags_sound_resource_open(AgsSoundResource *sound_resource,
  * @sound_resource: the #AgsSoundResource
  * @filename: the filename as string
  * @create: create
+ * @audio_channels: the audio channels count
+ * @samplerate: the samplerate
+ * @create: if %TRUE create file, otherwise don't
  * 
  * Open @sound_resource for reading/writing and assign filename. Setting
  * @create to %TRUE causes to create the file if it doesn't exist.

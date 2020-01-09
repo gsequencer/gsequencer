@@ -871,6 +871,7 @@ ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 /**
  * ags_ipatch_dls2_reader_get_sample_by_instrument_index:
  * @ipatch_dls2_reader: the #AgsIpatchDLS2Reader
+ * @instrument_index: the instrument index
  * 
  * Get sample by instrument index.
  * 

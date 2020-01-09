@@ -55,7 +55,7 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * @AGS_RECALL_ADDED_TO_REGISTRY: the recall was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_TEMPLATE: is template
- * @AGS_RECALL_DEFAULT_TEMPLATE: 
+ * @AGS_RECALL_DEFAULT_TEMPLATE: is default template
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
  * @AGS_RECALL_BYPASS: don't apply effect processing
  * @AGS_RECALL_INITIAL_RUN: initial run, first attack to audio data
@@ -196,7 +196,6 @@ struct _AgsRecallClass
  * @signal_name: the signal to listen
  * @callback: the callback to use
  * @data: user data to pass
- * @handler: the handler id
  *
  * A #AgsRecallHandler-struct acts as a callback definition
  */

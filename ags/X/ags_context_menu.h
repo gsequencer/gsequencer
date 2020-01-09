@@ -39,9 +39,6 @@ G_BEGIN_DECLS
 #define AGS_IS_CONTEXT_MENU_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONTEXT_MENU))
 #define AGS_CONTEXT_MENU_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_CONTEXT_MENU, AgsContextMenuClass))
 
-#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key"
-#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key"
-
 typedef struct _AgsContextMenu AgsContextMenu;
 typedef struct _AgsContextMenuClass AgsContextMenuClass;
 

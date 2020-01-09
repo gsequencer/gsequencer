@@ -501,6 +501,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_notation_toolbar_tool_popup_new:
+ * @notation_toolbar: the #AgsNotationToolbar
  *
  * Create a new #GtkMenu suitable for menu tool button.
  *

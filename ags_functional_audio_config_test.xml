@@ -12,7 +12,7 @@ gui-scale=1.0
 backend=alsa
 capability=playback
 buffer-size=1024
-pcm-channels=24
+pcm-channels=2
 format=16
 samplerate=48000
 device=default
@@ -24,8 +24,8 @@ auto-sense=false
 model=multi-threaded
 lock-global=ags-thread
 lock-parent=ags-recycling-thread
-thread-pool-max-unused-threads=8
-max-precision=1000
+thread-pool-max-unused-threads=4
+max-precision=250
 
 [osc-server]
 auto-start=false

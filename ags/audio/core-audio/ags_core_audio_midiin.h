@@ -88,6 +88,7 @@ typedef enum
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE: sync done, soundcard conditional lock
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * @AGS_CORE_AUDIO_MIDIIN_DO_SYNC: do synchronize
  * 
  * Enum values to control the synchronization between soundcard and client.
  */

@@ -73,6 +73,7 @@ typedef struct _AgsWasapiDevoutClass AgsWasapiDevoutClass;
  * @AGS_WASAPI_DEVOUT_START_PLAY: playback starting
  * @AGS_WASAPI_DEVOUT_NONBLOCKING: do non-blocking calls
  * @AGS_WASAPI_DEVOUT_INITIALIZED: the soundcard was initialized
+ * @AGS_WASAPI_DEVOUT_SHARE_MODE_EXCLUSIVE: share mode exclusive
  *
  * Enum values to control the behavior or indicate internal state of #AgsWasapiDevout by
  * enable/disable as flags.

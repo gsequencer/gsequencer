@@ -22,13 +22,13 @@
 #include <ags/object/ags_soundcard.h>
 
 /**
- * SECTION:ags_soundcard_util
- * @short_description: soundcard util
- * @title: AgsSoundcardUtil
+ * SECTION:ags_soundcard_helper
+ * @short_description: soundcard helper
+ * @title: AgsSoundcardHelper
  * @section_id:
- * @include: ags/util/ags_soundcard_util.h
+ * @include: ags/util/ags_soundcard_helper.h
  *
- * Common utility functions related to #AgsSoundcard.
+ * Common helper functions related to #AgsSoundcard.
  */
 
 /**

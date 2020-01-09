@@ -1076,7 +1076,7 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
 
 /**
  * ags_audiorec_wave_loader_completed_timeout:
- * @widget: the widget
+ * @audiorec: the #AgsAudiorec
  *
  * Queue draw widget
  *
@@ -1142,7 +1142,7 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 
 /**
  * ags_audiorec_indicator_queue_draw_timeout:
- * @widget: the widget
+ * @audiorec: the #AgsAudiorec
  *
  * Queue draw widget
  *

@@ -63,6 +63,7 @@ struct _AgsControllerClass
 
 /**
  * AgsControllerResource:
+ * @ref_count: the reference count
  * @group_id: the group id of permissions
  * @user_id: the user id of permissions
  * @access_mode: the access mode of permissions

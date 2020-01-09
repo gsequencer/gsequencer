@@ -86,7 +86,7 @@ ags_cursor_get_default_offset(AgsCursor *cursor)
 }
 
 /**
- * ags_cursor_cursor_get_tact:
+ * ags_cursor_get_tact:
  * @cursor: the #AgsCursor interface
  * 
  * Get the tact.
@@ -96,7 +96,7 @@ ags_cursor_get_default_offset(AgsCursor *cursor)
  * Since: 3.0.0
  */
 gdouble
-ags_cursor_cursor_get_tact(AgsCursor *cursor)
+ags_cursor_get_tact(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
 
@@ -108,7 +108,7 @@ ags_cursor_cursor_get_tact(AgsCursor *cursor)
 }
 
 /**
- * ags_cursor_cursor_get_bpm:
+ * ags_cursor_get_bpm:
  * @cursor: the #AgsCursor interface
  * 
  * Get BPM.
@@ -118,7 +118,7 @@ ags_cursor_cursor_get_tact(AgsCursor *cursor)
  * Since: 3.0.0
  */
 gdouble
-ags_cursor_cursor_get_bpm(AgsCursor *cursor)
+ags_cursor_get_bpm(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
 
@@ -130,7 +130,7 @@ ags_cursor_cursor_get_bpm(AgsCursor *cursor)
 }
 
 /**
- * ags_cursor_cursor_get_rate:
+ * ags_cursor_get_rate:
  * @cursor: the #AgsCursor interface
  * 
  * Get offset counter rate.
@@ -140,7 +140,7 @@ ags_cursor_cursor_get_bpm(AgsCursor *cursor)
  * Since: 3.0.0
  */
 guint
-ags_cursor_cursor_get_rate(AgsCursor *cursor)
+ags_cursor_get_rate(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
 
@@ -152,7 +152,7 @@ ags_cursor_cursor_get_rate(AgsCursor *cursor)
 }
 
 /**
- * ags_cursor_cursor_get_delay:
+ * ags_cursor_get_delay:
  * @cursor: the #AgsCursor interface
  * 
  * Get delay.
@@ -162,7 +162,7 @@ ags_cursor_cursor_get_rate(AgsCursor *cursor)
  * Since: 3.0.0
  */
 gdouble
-ags_cursor_cursor_get_delay(AgsCursor *cursor)
+ags_cursor_get_delay(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
 
@@ -174,7 +174,7 @@ ags_cursor_cursor_get_delay(AgsCursor *cursor)
 }
 
 /**
- * ags_cursor_cursor_get_duration:
+ * ags_cursor_get_duration:
  * @cursor: the #AgsCursor interface
  * 
  * Get duration.
@@ -184,7 +184,7 @@ ags_cursor_cursor_get_delay(AgsCursor *cursor)
  * Since: 3.0.0
  */
 guint64
-ags_cursor_cursor_get_duration(AgsCursor *cursor)
+ags_cursor_get_duration(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
 

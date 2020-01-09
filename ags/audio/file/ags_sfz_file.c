@@ -985,7 +985,7 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(sfz_file));
 
   switch(sublevel){
-  case AGS_SFZ_FILENAME:
+  case AGS_SFZ_LEVEL_FILENAME:
   {
     gchar **sublevel_name;
 	
@@ -996,7 +996,7 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
 
     return(sublevel_name);
   }
-  case AGS_SFZ_SAMPLE:
+  case AGS_SFZ_LEVEL_SAMPLE:
   {
     GList *start_list, *list;
 
@@ -1109,16 +1109,16 @@ ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
   retval = 0;
   
   switch(sublevel){
-  case AGS_SFZ_FILENAME:
+  case AGS_SFZ_LEVEL_FILENAME:
   {
     if(ags_sfz_file_select_sample(sfz_file, level_index)){
-      retval = AGS_SFZ_FILENAME;
+      retval = AGS_SFZ_LEVEL_FILENAME;
     }
   }
   break;
-  case AGS_SFZ_SAMPLE:
+  case AGS_SFZ_LEVEL_SAMPLE:
   {
-    retval = AGS_SFZ_SAMPLE;
+    retval = AGS_SFZ_LEVEL_SAMPLE;
   }
   break;
   };
@@ -1328,15 +1328,15 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 			sample_index);
 
       /* selected index and name */
-      sfz_file->index_selected[AGS_SFZ_SAMPLE] = sample_index;
+      sfz_file->index_selected[AGS_SFZ_LEVEL_SAMPLE] = sample_index;
 
-      g_free(sfz_file->name_selected[AGS_SFZ_SAMPLE]);
+      g_free(sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE]);
 
       g_object_get(list->data,
 		   "filename", &filename,
 		   NULL);
       
-      sfz_file->name_selected[AGS_SFZ_SAMPLE] = filename;
+      sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE] = filename;
 
       /* container */
       sfz_file->current_sample = (AgsSFZSample *) list->data;

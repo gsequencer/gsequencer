@@ -60,6 +60,7 @@ typedef struct _AgsOscServerClass AgsOscServerClass;
  * @AGS_OSC_SERVER_INET6: use IPv6
  * @AGS_OSC_SERVER_UDP: run using UDP transport
  * @AGS_OSC_SERVER_TCP: run using TCP transport
+ * @AGS_OSC_SERVER_UNIX: run on UNIX socket
  * @AGS_OSC_SERVER_ANY_ADDRESS: listen on any address
  * @AGS_OSC_SERVER_AUTO_START: start the server
  * 

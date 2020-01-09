@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,6 +56,8 @@ typedef struct _AgsMidiinClass AgsMidiinClass;
  * @AGS_MIDIIN_BUFFER3: ring-buffer 3
  * @AGS_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
  * @AGS_MIDIIN_RECORD: is recording
+ * @AGS_MIDIIN_OSS: use OSS4 backend
+ * @AGS_MIDIIN_ALSA: use ALSA backend
  * @AGS_MIDIIN_SHUTDOWN: stop recording
  * @AGS_MIDIIN_START_RECORD: just started recording
  * @AGS_MIDIIN_NONBLOCKING: do non-blocking calls

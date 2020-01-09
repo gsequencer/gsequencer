@@ -1576,7 +1576,7 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 
 /**
  * ags_pitch_sampler_sfz_loader_completed_timeout:
- * @widget: the widget
+ * @pitch_sampler: the #AgsPitchSampler
  *
  * Queue draw widget
  *

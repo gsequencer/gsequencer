@@ -3082,6 +3082,7 @@ ags_automation_find_specifier(GList *automation,
  * ags_automation_find_channel_type_with_control_name:
  * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @channel_type: the #GType to match
+ * @specifier: the control name
  * 
  * Find automation by @channel_type.
  * 

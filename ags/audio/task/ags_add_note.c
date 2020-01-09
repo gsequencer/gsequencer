@@ -411,6 +411,7 @@ ags_add_note_launch(AgsTask *task)
  * ags_add_note_new:
  * @audio: the #AgsAudio
  * @note: the #AgsNote to add
+ * @audio_channel: the audio channel
  * @use_selection_list: if %TRUE added to selection, otherwise to notation
  *
  * Create a new instance of #AgsAddNote.

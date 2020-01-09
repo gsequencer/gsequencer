@@ -869,6 +869,7 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 /**
  * ags_ipatch_gig_reader_get_sample_by_instrument_index:
  * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * @instrument_index: the instrument index
  * 
  * Get sample by instrument index.
  * 

@@ -25,8 +25,8 @@ model=super-threaded
 super-threaded-scope=channel
 lock-global=ags-thread
 lock-parent=ags-recycling-thread
-thread-pool-max-unused-threads=8
-max-precision=1000
+thread-pool-max-unused-threads=4
+max-precision=250
 
 [osc-server]
 auto-start=false

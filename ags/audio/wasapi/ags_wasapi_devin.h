@@ -73,6 +73,7 @@ typedef struct _AgsWasapiDevinClass AgsWasapiDevinClass;
  * @AGS_WASAPI_DEVIN_START_RECORD: capture starting
  * @AGS_WASAPI_DEVIN_NONBLOCKING: do non-blocking calls
  * @AGS_WASAPI_DEVIN_INITIALIZED: the soundcard was initialized
+ * @AGS_WASAPI_DEVIN_SHARE_MODE_EXCLUSIVE: share mode exclusive
  *
  * Enum values to control the behavior or indicate internal state of #AgsWasapiDevin by
  * enable/disable as flags.

@@ -4208,9 +4208,8 @@ ags_channel_get_link(AgsChannel *channel)
  * @link: an other #AgsChannel to link with
  * @error: you may retrieve a AGS_CHANNEL_ERROR_LOOP_IN_LINK error
  *
- * Change the linking of #AgsChannel objects. Sets link, calls ags_channel_reset_recycling()
- * and ags_channel_recursive_reset_recall_ids(). Further it does loop detection and makes
- * your machine running. Thus it adds #AgsRecallID. Invoke only by a task.
+ * Change the linking of #AgsChannel objects. Sets link, calls ags_channel_reset_recycling().
+ * Further it does loop detection and makes your machine running.
  *
  * Since: 3.0.0
  */

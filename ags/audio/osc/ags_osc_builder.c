@@ -269,6 +269,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
   /**
    * AgsOscBuilder::append-value:
    * @osc_builder: the builder
+   * @message: the message
    * @v_type: the type as ASCII char
    * @value: the #GValue-struct
    *
@@ -282,7 +283,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_value),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__INT_POINTER,
+		 ags_cclosure_marshal_VOID__POINTER_INT_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_INT,
 		 G_TYPE_POINTER);
@@ -1118,6 +1119,7 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 /**
  * ags_osc_builder_append_value:
  * @osc_builder: the #AgsOscBuilder
+ * @message: the message
  * @v_type: the type as char
  * @value: the #GValue-struct containinig value
  * 
@@ -1136,6 +1138,7 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
   g_object_ref((GObject *) osc_builder);
   g_signal_emit(G_OBJECT(osc_builder),
 		osc_builder_signals[APPEND_VALUE], 0,
+		message,
 		v_type, value);
   g_object_unref((GObject *) osc_builder);
 }

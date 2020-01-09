@@ -290,6 +290,7 @@ ags_start_channel_launch(AgsTask *task)
 /**
  * ags_start_channel_new:
  * @channel: the #AgsChannel to start
+ * @sound_scope: the sound scope
  *
  * Create a new instance of #AgsStartChannel.
  *

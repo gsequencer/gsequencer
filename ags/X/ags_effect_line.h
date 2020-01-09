@@ -133,7 +133,7 @@ GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
 void ags_effect_line_done(AgsEffectLine *effect_line,
 			  GObject *recall_id);
 
-GList* ags_effect_line_find_next_grouped(GList *line);
+GList* ags_effect_line_find_next_grouped(GList *effect_line);
 
 void ags_effect_line_check_message(AgsEffectLine *effect_line);
 

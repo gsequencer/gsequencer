@@ -1223,6 +1223,7 @@ ags_osc_parser_real_value(AgsOscParser *osc_parser,
 /**
  * ags_osc_parser_value:
  * @osc_parser: the #AgsOscParser
+ * @v_type: value type
  * 
  * Parse OSC value.
  * 

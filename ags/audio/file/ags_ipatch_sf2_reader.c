@@ -1221,6 +1221,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
  * ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index:
  * @ipatch_sf2_reader: the #AgsSF2Reader
  * @preset_index: the preset index
+ * @instrument_index: the instrument index
  * 
  * Get sample by preset and instrument index.
  * 

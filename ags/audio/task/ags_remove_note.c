@@ -408,6 +408,7 @@ ags_remove_note_launch(AgsTask *task)
  * ags_remove_note_new:
  * @audio: the #AgsAudio
  * @note: the #AgsNote to remove
+ * @audio_channel: the audio channel
  * @use_selection_list: if %TRUE remove of selection, otherwise of notation
  *
  * Create a new instance of #AgsRemoveNote.

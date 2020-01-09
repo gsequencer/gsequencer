@@ -413,6 +413,7 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_wave_toolbar_tool_popup_new:
+ * @wave_toolbar: the #AgsWaveToolbar
  *
  * Create a new #GtkMenu suitable for menu tool button.
  *

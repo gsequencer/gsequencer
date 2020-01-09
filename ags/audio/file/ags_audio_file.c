@@ -1538,8 +1538,11 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 /**
  * ags_audio_file_read_wave:
  * @audio_file: the #AgsAudioFile
+ * @x_offset: the x offset
+ * @delay: the delay
+ * @attack: the attack
  *
- * Convert the #AgsAudioFile to a #GList of buffers.
+ * Convert the #AgsAudioFile to a #GList-struct of buffers.
  *
  * Since: 3.0.0
  */

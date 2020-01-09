@@ -68,8 +68,8 @@ typedef enum{
  * Enum values to describe the different levels of a SFZ file.
  */
 typedef enum{
-  AGS_SFZ_FILENAME = 0,
-  AGS_SFZ_SAMPLE   = 1,
+  AGS_SFZ_LEVEL_FILENAME = 0,
+  AGS_SFZ_LEVEL_SAMPLE   = 1,
 }AgsSFZLevel;
 
 struct _AgsSFZFile

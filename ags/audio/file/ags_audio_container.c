@@ -1565,6 +1565,9 @@ ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container)
 /**
  * ags_audio_container_read_wave:
  * @audio_container: the #AgsAudioContainer
+ * @x_offset: the x offset
+ * @delay: the delay
+ * @attack: the attack
  *
  * Convert the #AgsAudioContainer to a #GList-struct of #AgsWave.
  * 

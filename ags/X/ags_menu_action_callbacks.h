@@ -31,6 +31,9 @@
 
 G_BEGIN_DECLS
 
+#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key"
+#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key"
+
 void ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data);

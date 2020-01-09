@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,13 +63,13 @@ GType ags_cursor_get_type();
 
 gdouble ags_cursor_get_default_offset(AgsCursor *cursor);
 
-gdouble ags_cursor_cursor_get_tact(AgsCursor *cursor);
-gdouble ags_cursor_cursor_get_bpm(AgsCursor *cursor);
+gdouble ags_cursor_get_tact(AgsCursor *cursor);
+gdouble ags_cursor_get_bpm(AgsCursor *cursor);
 
-guint ags_cursor_cursor_get_rate(AgsCursor *cursor);
+guint ags_cursor_get_rate(AgsCursor *cursor);
 
-gdouble ags_cursor_cursor_get_delay(AgsCursor *cursor);
-guint64 ags_cursor_cursor_get_duration(AgsCursor *cursor);
+gdouble ags_cursor_get_delay(AgsCursor *cursor);
+guint64 ags_cursor_get_duration(AgsCursor *cursor);
 
 gdouble ags_cursor_get_delay_counter(AgsCursor *cursor);
 guint64 ags_cursor_get_offset(AgsCursor *cursor);

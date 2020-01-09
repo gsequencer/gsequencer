@@ -834,7 +834,6 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
  * @automation_toolbar: an #AgsAutomationToolbar
  * @channel_type: the #GType of channel
  * @control_name: the specifier as string
- * @port: the #AgsPort
  *
  * Applies all port to appropriate #AgsMachine.
  *
@@ -1300,6 +1299,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
 /**
  * ags_automation_toolbar_tool_popup_new:
+ * @automation_toolbar: the #AgsAutomationToolbar
  *
  * Create a new #GtkMenu suitable for menu tool button.
  *

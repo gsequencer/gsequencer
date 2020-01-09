@@ -214,7 +214,7 @@ ags_ui_provider_get_file_ready(AgsUiProvider *ui_provider)
 /**
  * ags_ui_provider_set_file_ready:
  * @ui_provider: the #AgsUiProvider
- * @is_file_ready: is GUI ready
+ * @file_ready: is GUI ready
  * 
  * Set file ready.
  * 
@@ -376,7 +376,7 @@ ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_animation_window:
+ * ags_ui_provider_set_animation_window:
  * @ui_provider: the #AgsUiProvider
  * @animation_window: the #GtkWidget
  * 
@@ -421,7 +421,7 @@ ags_ui_provider_get_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_window:
+ * ags_ui_provider_set_window:
  * @ui_provider: the #AgsUiProvider
  * @window: the #AgsWindow
  * 
@@ -466,7 +466,7 @@ ags_ui_provider_get_automation_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_automation_window:
+ * ags_ui_provider_set_automation_window:
  * @ui_provider: the #AgsUiProvider
  * @automation_window: the #GtkWidget
  * 
@@ -511,7 +511,7 @@ ags_ui_provider_get_wave_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_wave_window:
+ * ags_ui_provider_set_wave_window:
  * @ui_provider: the #AgsUiProvider
  * @wave_window: the #GtkWidget
  * 
@@ -556,7 +556,7 @@ ags_ui_provider_get_sheet_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_sheet_window:
+ * ags_ui_provider_set_sheet_window:
  * @ui_provider: the #AgsUiProvider
  * @sheet_window: the #GtkWidget
  * 
@@ -601,7 +601,7 @@ ags_ui_provider_get_export_window(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_export_window:
+ * ags_ui_provider_set_export_window:
  * @ui_provider: the #AgsUiProvider
  * @export_window: the #GtkWidget
  * 
@@ -646,7 +646,7 @@ ags_ui_provider_get_preferences(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_preferences:
+ * ags_ui_provider_set_preferences:
  * @ui_provider: the #AgsUiProvider
  * @preferences: the #GtkWidget
  * 
@@ -691,7 +691,7 @@ ags_ui_provider_get_history_browser(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_history_browser:
+ * ags_ui_provider_set_history_browser:
  * @ui_provider: the #AgsUiProvider
  * @history_browser: the #GtkWidget
  * 
@@ -736,7 +736,7 @@ ags_ui_provider_get_midi_browser(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_midi_browser:
+ * ags_ui_provider_set_midi_browser:
  * @ui_provider: the #AgsUiProvider
  * @midi_browser: the #GtkWidget
  * 
@@ -759,7 +759,7 @@ ags_ui_provider_set_midi_browser(AgsUiProvider *ui_provider,
 }
 
 /**
- * ags_ui_provider_get_sample_browser:
+ * ags_ui_provider_et_sample_browser:
  * @ui_provider: the #AgsUiProvider
  * 
  * Get animation window.
@@ -781,7 +781,7 @@ ags_ui_provider_get_sample_browser(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_sample_browser:
+ * ags_ui_provider_set_sample_browser:
  * @ui_provider: the #AgsUiProvider
  * @sample_browser: the #GtkWidget
  * 
@@ -826,7 +826,7 @@ ags_ui_provider_get_midi_import_wizard(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_midi_import_wizard:
+ * ags_ui_provider_set_midi_import_wizard:
  * @ui_provider: the #AgsUiProvider
  * @midi_import_wizard: the #GtkWidget
  * 
@@ -871,7 +871,7 @@ ags_ui_provider_get_midi_export_wizard(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_midi_export_wizard:
+ * ags_ui_provider_set_midi_export_wizard:
  * @ui_provider: the #AgsUiProvider
  * @midi_export_wizard: the #GtkWidget
  * 
@@ -916,7 +916,7 @@ ags_ui_provider_get_machine(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_machine:
+ * ags_ui_provider_set_machine:
  * @ui_provider: the #AgsUiProvider
  * @machine: the #GList-struct containing #AgsMachine
  * 
@@ -961,7 +961,7 @@ ags_ui_provider_get_composite_editor(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_composite_editor:
+ * ags_ui_provider_set_composite_editor:
  * @ui_provider: the #AgsUiProvider
  * @composite_editor: the #GtkWidget
  * 
@@ -1006,7 +1006,7 @@ ags_ui_provider_get_navigation(AgsUiProvider *ui_provider)
 }
 
 /**
- * ags_ui_provider_get_navigation:
+ * ags_ui_provider_set_navigation:
  * @ui_provider: the #AgsUiProvider
  * @navigation: the #GtkWidget
  * 

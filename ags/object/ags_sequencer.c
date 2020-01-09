@@ -358,6 +358,7 @@ ags_sequencer_tic(AgsSequencer *sequencer)
 /**
  * ags_sequencer_offset_changed:
  * @sequencer: the #AgsSequencer
+ * @note_offset: the note offset
  *
  * Callback when counter expires minor note offset.
  *

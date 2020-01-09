@@ -1536,7 +1536,7 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 
 /**
  * ags_ffplayer_sf2_loader_completed_timeout:
- * @widget: the widget
+ * @ffplayer: the #AgsFFPlayer
  *
  * Queue draw widget
  *

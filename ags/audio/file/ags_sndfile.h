@@ -46,6 +46,7 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
  * @AGS_SNDFILE_ADDED_TO_REGISTRY: the sndfile was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_SNDFILE_CONNECTED: indicates the sndfile was connected by calling #AgsConnectable::connect()
  * @AGS_SNDFILE_VIRTUAL: virtual IO
+ * @AGS_SNDFILE_FILL_CACHE: fill cache
  * 
  * Enum values to control the behavior or indicate internal state of #AgsSndfile by
  * enable/disable as flags.

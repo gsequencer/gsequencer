@@ -60,10 +60,10 @@ typedef struct _AgsSimpleFile AgsSimpleFile;
 typedef struct _AgsSimpleFileClass AgsSimpleFileClass;
 
 typedef enum{
-  AGS_SIMPLE_FILE_READ                    = 1,
+  AGS_SIMPLE_FILE_READ_BASIC              = 1,
   AGS_SIMPLE_FILE_READ_AUDIO_SIGNAL       = 1 << 1,
   AGS_SIMPLE_FILE_READ_EMBEDDED_AUDIO     = 1 << 2,
-  AGS_SIMPLE_FILE_WRITE                   = 1 << 3,
+  AGS_SIMPLE_FILE_WRITE_BASIC             = 1 << 3,
   AGS_SIMPLE_FILE_WRITE_AUDIO_SIGNAL      = 1 << 4,
   AGS_SIMPLE_FILE_WRITE_EMBEDDED_AUDIO    = 1 << 5,
 }AgsSimpleFileFlags;
