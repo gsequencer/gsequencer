@@ -1432,7 +1432,7 @@ ags_functional_test_util_open()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
 
@@ -1460,7 +1460,7 @@ ags_functional_test_util_save()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
     
@@ -1488,7 +1488,7 @@ ags_functional_test_util_save_as()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
     
@@ -1517,7 +1517,7 @@ ags_functional_test_util_export_open()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
 
@@ -1955,7 +1955,7 @@ ags_functional_test_util_add_machine(gchar *submenu,
     return(FALSE);
   }
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+  if(!ags_functional_test_util_menu_bar_click("_Edit")){    
     return(FALSE);
   }
 
@@ -1976,14 +1976,14 @@ ags_functional_test_util_add_machine(gchar *submenu,
   success = FALSE;
   
   success = ags_functional_test_util_menu_click(menu_bar->edit,
-						GTK_STOCK_ADD);
+						"Add");
 
   if(!success){
     return(FALSE);
   }
   
   add_menu = ags_functional_test_util_submenu_find(menu_bar->edit,
-						   GTK_STOCK_ADD);
+						   "Add");
 
   if(submenu == NULL){
     success = ags_functional_test_util_menu_click(add_menu,
@@ -2041,7 +2041,7 @@ ags_functional_test_util_preferences_open()
 
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+  if(!ags_functional_test_util_menu_bar_click("_Edit")){    
     return(FALSE);
   }
 
@@ -2055,7 +2055,7 @@ ags_functional_test_util_preferences_open()
   ags_test_leave();
 
   success = ags_functional_test_util_menu_click(menu_bar->edit,
-						GTK_STOCK_PREFERENCES);
+						"Preferences");
 
   if(!success){
     return(FALSE);
