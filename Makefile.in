@@ -6687,7 +6687,7 @@ CLEANFILES = functional-system-tests.mk m4/Makefile libags.sym \
 	docs/reference/libgsequencer/libgsequencer.interfaces \
 	$(am__append_8) $(appdata_DATA) $(pkgconfig_DATA)
 INTROSPECTION_GIRS = $(am__append_7)
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) --warn-all
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_builddir)
 @HAVE_INTROSPECTION_TRUE@introspection_sources = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4
@@ -6697,7 +6697,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_buil
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_NAMESPACE = Ags
 @HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_VERSION = 3.0
-@HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) --warn-all --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-3.0.gir
+@HAVE_INTROSPECTION_TRUE@Ags_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-3.0.gir
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-2.4 Ags-3.0
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_C_INCLUDES = ags/libags-audio.h
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
@@ -6705,7 +6705,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_buil
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_NAMESPACE = AgsAudio
 @HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_VERSION = 3.0
-@HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) --warn-all --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-3.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-3.0.gir
+@HAVE_INTROSPECTION_TRUE@AgsAudio_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-2.4 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-3.0 --namespace=AgsAudio --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-3.0.gir
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_INCLUDES = GObject-2.0 Gtk-3.0
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_C_INCLUDES = ags/libags-gui.h
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS)
@@ -6713,7 +6713,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_buil
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_NAMESPACE = AgsGui
 @HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_VERSION = 3.0
-@HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) --warn-all --include=Gtk-3.0 --namespace=AgsGui --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-3.0.gir
+@HAVE_INTROSPECTION_TRUE@AgsGui_3_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-3.0 --namespace=AgsGui --nsversion=3.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-3.0.gir
 @HAVE_INTROSPECTION_TRUE@girdir = $(datadir)/gir-1.0
 @HAVE_INTROSPECTION_TRUE@gir_DATA = $(INTROSPECTION_GIRS)
 @HAVE_INTROSPECTION_TRUE@typelibdir = $(libdir)/girepository-1.0
