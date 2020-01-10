@@ -111,9 +111,6 @@ ags_audio_application_context_test_dispose()
 					   NULL);
   g_object_ref(audio_application_context);
   
-  ags_application_context_prepare(audio_application_context);
-  ags_application_context_setup(audio_application_context);
-
   /* run dispose */
   g_object_run_dispose(audio_application_context);
 
@@ -135,8 +132,13 @@ ags_audio_application_context_test_finalize()
 {
   AgsAudioApplicationContext *audio_application_context;
 
+  AgsThread *main_loop;
+  GThread *thread;
+  
   AgsConfig *config;
 
+  GList *list;
+  
   gpointer gobject_class;
   gpointer orig_finalize;
   
@@ -148,10 +150,7 @@ ags_audio_application_context_test_finalize()
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
 
-  ags_application_context_prepare(audio_application_context);
-  ags_application_context_setup(audio_application_context);
-
-  /* run dispose */
+  /* run dispose */  
   g_object_run_dispose(audio_application_context);
 
   /* stub finalize */

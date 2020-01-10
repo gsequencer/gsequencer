@@ -65,6 +65,8 @@ void ags_xorg_application_context_test_finalize_stub(GObject *gobject);
 
 gboolean xorg_application_context_test_finalized;
 
+extern AgsApplicationContext *ags_application_context;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -116,6 +118,8 @@ ags_xorg_application_context_test_dispose()
   CU_ASSERT(xorg_application_context->sequencer == NULL);
   CU_ASSERT(xorg_application_context->sound_server == NULL);
   CU_ASSERT(xorg_application_context->window == NULL);
+
+  ags_application_context = NULL;  
 }
 
 void
@@ -123,12 +127,17 @@ ags_xorg_application_context_test_finalize()
 {
   AgsXorgApplicationContext *xorg_application_context;
 
+  AgsThread *main_loop;
+  GThread *thread;
+
   AgsConfig *config;
 
   GObjectClass *class;
+
+  GList *list;
   
   gpointer stub_finalize;
-  
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
@@ -147,7 +156,6 @@ ags_xorg_application_context_test_finalize()
   stub_finalize = class->finalize;
   
   G_OBJECT_GET_CLASS(xorg_application_context)->finalize = ags_xorg_application_context_test_finalize_stub;
-
   
   /* unref and assert */
   g_object_unref(xorg_application_context);
@@ -155,6 +163,8 @@ ags_xorg_application_context_test_finalize()
   class->finalize = stub_finalize;
   
   CU_ASSERT(xorg_application_context_test_finalized == TRUE);
+
+  ags_application_context = NULL;  
 }
 
 void
