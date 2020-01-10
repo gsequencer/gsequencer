@@ -8053,7 +8053,7 @@ ags_xorg_application_context_test_LDADD = libgsequencer.la libags_gui.la libags_
 @RUN_FUNCTIONAL_TESTS_TRUE@	$(GOBJECT_LIBS) $(LIBSOUP_LIBS) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	$(JACK_LIBS) $(FONTCONFIG_LIBS) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	$(GDKPIXBUF_LIBS) $(CAIRO_LIBS) \
-@RUN_FUNCTIONAL_TESTS_TRUE@	$(GTK_LIBS)
+@RUN_FUNCTIONAL_TESTS_TRUE@	$(GTK_LIBS) -lXtst
 @RUN_FUNCTIONAL_TESTS_TRUE@check_LTLIBRARIES = libgsequencer_test.la
 
 # functional test util library

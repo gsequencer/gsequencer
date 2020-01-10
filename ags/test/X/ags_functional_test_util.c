@@ -30,6 +30,9 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
+#include <gdk/gdkx.h>
+#include <X11/extensions/XTest.h>
+
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
@@ -483,6 +486,25 @@ ags_functional_test_util_leave(GtkWidget *window)
   ags_functional_test_util_reaction_time_long();
 }
 
+void
+ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x, guint y)
+{
+  static const gulong delay = 1;
+
+  XTestFakeMotionEvent((Display *) display, screen, x, y, delay);
+  XSync((Display *) display, 0);
+}
+
+void
+ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 1, delay);
+  XTestFakeButtonEvent((Display *) display, button, 0, delay);
+  XFlush((Display *) display);
+}
+
 GtkMenu*
 ags_functional_test_util_submenu_find(GtkMenu *menu,
 				      gchar *item_label)
@@ -574,10 +596,13 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	GdkWindow *window;
 	GdkEvent *event_motion;
 
+	Display *x_display;
+	
 	struct timespec spec;
 	
 	gint x, y;
 	gint origin_x, origin_y;
+	gint position_x, position_y;
 	
 	widget = GTK_WIDGET(list->data);
 
@@ -591,51 +616,39 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	gtk_widget_get_allocation(widget,
 				  &allocation);
 	
-	x = allocation.x + allocation.width / 2.0;
-	y = allocation.y + allocation.height / 2.0;
-
-	window = gtk_widget_get_window(widget);
-
 	x = allocation.x;
 	y = allocation.y;
 
+	position_x = allocation.width / 2.0;
+	position_y = allocation.height / 2.0;
+
+	window = gtk_widget_get_window(widget);
+
 	gdk_window_get_origin(window, &origin_x, &origin_y);
 
-	gdk_display_warp_pointer(gtk_widget_get_display(widget),
-				 gtk_widget_get_screen(widget),
-				 origin_x + x + 15, origin_y + y + 5);
+	x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 	
 	ags_test_leave();
 
 	/*  */
-	ags_functional_test_util_reaction_time();
-
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_PRESS);
+	ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
 	ags_functional_test_util_reaction_time();
 
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_RELEASE);
+	ags_functional_test_util_fake_mouse_button_click(x_display, 1);
 
 	ags_functional_test_util_reaction_time();
 
 	/*  */
+#if 0	
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item");
 	
 	ags_test_leave();
-
+#endif
+	
 	success = TRUE;
 
 	break;
