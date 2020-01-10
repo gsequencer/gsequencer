@@ -105,7 +105,6 @@ ags_sound_resource_open(AgsSoundResource *sound_resource,
  * ags_sound_resource_rw_open:
  * @sound_resource: the #AgsSoundResource
  * @filename: the filename as string
- * @create: create
  * @audio_channels: the audio channels count
  * @samplerate: the samplerate
  * @create: if %TRUE create file, otherwise don't

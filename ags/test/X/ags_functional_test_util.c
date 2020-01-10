@@ -496,6 +496,24 @@ ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x
 }
 
 void
+ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 1, delay);
+  XFlush((Display *) display);
+}
+
+void
+ags_functional_test_util_fake_mouse_button_release(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 0, delay);
+  XFlush((Display *) display);
+}
+
+void
 ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
 {
   static const gulong delay = 1;
@@ -630,7 +648,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	
 	ags_test_leave();
 
-	/*  */
+	/* warp and click */
 	ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
 	ags_functional_test_util_reaction_time();
@@ -708,8 +726,11 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	
 	GdkWindow *window;
 	
+	Display *x_display;
+	
 	gint x, y;
 	gint origin_x, origin_y;
+	gint position_x, position_y;
 	gboolean is_realized;
 	
 	widget = GTK_WIDGET(list->data);
@@ -733,49 +754,40 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	  gtk_widget_get_allocation(widget,
 				    &allocation);
 	  
-	  x = allocation.x + allocation.width / 2.0;
-	  y = allocation.y + allocation.height / 2.0;
+	  x = allocation.x;
+	  y = allocation.y;
+
+	  position_x = allocation.width / 2.0;
+	  position_y = allocation.height / 2.0;
 
 	  gdk_window_get_origin(window, &origin_x, &origin_y);
 
-	  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-				   gtk_widget_get_screen(widget),
-				   origin_x + x + 15, origin_y + y + 5);
+	  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 
 	  ags_test_leave();
 
-	  ags_functional_test_util_reaction_time();
-	
-	  gdk_test_simulate_button(window,
-				   x + 5,
-				   y + 5,
-				   1,
-				   GDK_BUTTON1_MASK,
-				   GDK_BUTTON_PRESS);
-
+	  /* warp and click */
+	  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
 	  ags_functional_test_util_reaction_time();
 
-	  gdk_test_simulate_button(window,
-				   x + 5,
-				   y + 5,
-				   1,
-				   GDK_BUTTON1_MASK,
-				   GDK_BUTTON_RELEASE);
-  	
+	  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
 	  ags_functional_test_util_reaction_time();
 	}
 	
 	success = TRUE;
 
 	/*  */
+#if 0
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item");
 	
 	ags_test_leave();
-
+#endif
+	
 	break;
       }
     }
@@ -800,8 +812,11 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
   
   GdkWindow *window;
   
+  Display *x_display;
+  
   gint x, y;
   gint origin_x, origin_y;	
+  gint position_x, position_y;
   
   if(combo_box == NULL ||
      !GTK_IS_COMBO_BOX(combo_box)){
@@ -822,16 +837,21 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
   gtk_widget_get_allocation(widget,
 			    &allocation);
   
-  x = allocation.x + allocation.width / 2.0;
-  y = allocation.y + allocation.height / 2.0;
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 
   ags_test_leave();
+
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
+
+  ags_functional_test_util_reaction_time();
 
   /*
   ags_functional_test_util_reaction_time();
@@ -878,8 +898,11 @@ ags_functional_test_util_button_click(GtkButton *button)
   
   GdkWindow *window;
 
+  Display *x_display;
+
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
   gboolean is_realized;
   
   if(button == NULL ||
@@ -901,46 +924,37 @@ ags_functional_test_util_button_click(GtkButton *button)
   gtk_widget_get_allocation(widget,
 			    &allocation);
   
-  x = allocation.x + allocation.width / 2.0;
-  y = allocation.y + allocation.height / 2.0;
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  /*  */
-  ags_functional_test_util_reaction_time();
-	
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
   ags_functional_test_util_reaction_time();
 
+  /* */
+#if 0
   ags_test_enter();
 
   g_signal_emit_by_name(widget,
 			"clicked");
   
   ags_test_leave();
-
+#endif
+  
   ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
@@ -955,8 +969,11 @@ ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
   
   GdkWindow *window;
 
+  Display *x_display;
+
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
   gboolean is_realized;
   
   if(tool_button == NULL ||
@@ -978,46 +995,37 @@ ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
   gtk_widget_get_allocation(widget,
 			    &allocation);
   
-  x = allocation.x + allocation.width / 2.0;
-  y = allocation.y + allocation.height / 2.0;
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  /*  */
-  ags_functional_test_util_reaction_time();
-	
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
   ags_functional_test_util_reaction_time();
 
+  /* */
+#if 0
   ags_test_enter();
 
   g_signal_emit_by_name(widget,
 			"clicked");
   
   ags_test_leave();
-
+#endif
+  
   ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
@@ -1034,8 +1042,11 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   GdkWindow *window;
 
+  Display *x_display;
+
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
 	
   if(button == NULL ||
      !GTK_IS_MENU_TOOL_BUTTON(button)){
@@ -1062,38 +1073,29 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   gtk_widget_get_allocation(widget,
 			    &allocation);  
 
-  x = allocation.x + (allocation.width / 2.0);
-  y = allocation.y + (allocation.height / 2.0);
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x, origin_y + y);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  ags_functional_test_util_reaction_time();
-
-  gdk_test_simulate_button(window,
-			   x,
-			   y,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x,
-			   y,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
 
+  ags_functional_test_util_reaction_time();
+
+  /* */
+#if 0
   ags_test_enter();
 
   if(!gtk_widget_get_realized(widget)){
@@ -1104,7 +1106,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   }
 
   ags_test_leave();
-
+  
   ags_functional_test_util_reaction_time_long();
 
   /*  */
@@ -1119,6 +1121,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 		 gtk_get_current_event_time());
   
   ags_test_leave();
+#endif
 
   ags_functional_test_util_reaction_time_long();
   
@@ -2860,9 +2863,9 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
 
   GtkAllocation allocation;
   
-  GdkDisplay *display;
-  GdkScreen *screen;
   GdkWindow *window;
+
+  Display *x_display;
 
   gdouble zoom;
   guint history;
@@ -2888,9 +2891,6 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   notation_edit = notation_editor->notation_edit;
   widget = notation_edit->drawing_area;
   
-  display = gtk_widget_get_display(widget);
-  screen = gtk_widget_get_screen(widget);
-  
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
   
@@ -2915,27 +2915,29 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
+
   /* make visible */
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscrollbar));
   
-  if((x0 * notation_edit->control_width) > gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_page_size(adjustment)){
+  if((x0 * notation_edit->control_width) / zoom > gtk_adjustment_get_value(adjustment) + width - ((x1 - x0) * notation_edit->control_width) / zoom){
     gtk_adjustment_set_value(adjustment,
-			     x0 * notation_edit->control_width);
+			     x0 * notation_edit->control_width / zoom);
 
     ags_functional_test_util_reaction_time_long();
-  }else if((x0 * notation_edit->control_width) < gtk_adjustment_get_value(adjustment)){
+  }else if((x0 * notation_edit->control_width) / zoom < gtk_adjustment_get_value(adjustment)){
     gtk_adjustment_set_value(adjustment,
-			     x0 * notation_edit->control_width);
+			     x0 * notation_edit->control_width / zoom);
 
     ags_functional_test_util_reaction_time_long();
   }
 
-  x0 = (x0 * notation_edit->control_width) - (gtk_adjustment_get_value(adjustment));
-  x1 = (x1 * notation_edit->control_width) - (gtk_adjustment_get_value(adjustment));
+  x0 = (x0 * notation_edit->control_width) / zoom - (gtk_adjustment_get_value(adjustment));
+  x1 = (x1 * notation_edit->control_width) / zoom - (gtk_adjustment_get_value(adjustment));
 
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscrollbar));
   
-  if((y * notation_edit->control_height) > (gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_page_size(adjustment))){
+  if((y * notation_edit->control_height) > gtk_adjustment_get_value(adjustment) + height){
     gtk_adjustment_set_value(adjustment,
 			     (y * notation_edit->control_height));
 
@@ -2952,33 +2954,19 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   ags_test_leave();
 
   /*  */
-  gdk_display_warp_pointer(display,
-			   screen,
-			   origin_x + x0 + 8, origin_y + y + 7);
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x0 + 8, origin_y + y + 7);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x0 + 8,
-			   y + 7,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
+  ags_functional_test_util_fake_mouse_button_press(x_display, 1);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_display_warp_pointer(display,
-			   screen,
-			   origin_x + x1 + 8, origin_y + y + 7);
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x1 + 8, origin_y + y + 7);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x1 + 8,
-			   y + 7,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
+  ags_functional_test_util_fake_mouse_button_release(x_display, 1);
   
   ags_functional_test_util_reaction_time_long();
   

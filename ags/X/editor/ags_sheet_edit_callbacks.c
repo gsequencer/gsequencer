@@ -30,14 +30,6 @@
 #include <gdk/gdkkeysyms.h>
 
 gboolean
-ags_sheet_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsSheetEdit *sheet_edit)
-{  
-  ags_sheet_edit_draw(sheet_edit);
-  
-  return(TRUE);
-}
-
-gboolean
 ags_sheet_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsSheetEdit *sheet_edit)
 {
   ags_sheet_edit_draw(sheet_edit);

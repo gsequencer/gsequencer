@@ -89,6 +89,10 @@ void ags_functional_test_util_leave(GtkWidget *window);
 
 /* mouse */
 void ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x, guint y);
+
+void ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button);
+void ags_functional_test_util_fake_mouse_button_release(gpointer display, guint button);
+
 void ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button);
 
 /* common */

@@ -446,9 +446,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->drawing_area, "draw",
                    G_CALLBACK(ags_ffplayer_draw_callback), (gpointer) ffplayer);
 
-  g_signal_connect((GObject *) ffplayer->drawing_area, "expose_event",
-                   G_CALLBACK(ags_ffplayer_drawing_area_expose_callback), (gpointer) ffplayer);
-
   g_signal_connect((GObject *) ffplayer->drawing_area, "button_press_event",
                    G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback), (gpointer) ffplayer);
 
@@ -493,12 +490,6 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) ffplayer->instrument,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_ffplayer_instrument_changed_callback),
-		      (gpointer) ffplayer,
-		      NULL);
-
-  g_object_disconnect((GObject *) ffplayer->drawing_area,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_ffplayer_drawing_area_expose_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 

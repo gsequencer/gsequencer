@@ -317,9 +317,6 @@ ags_sheet_edit_connect(AgsConnectable *connectable)
   sheet_edit->flags |= AGS_SHEET_EDIT_CONNECTED;
   
   /* drawing area */
-  g_signal_connect_after((GObject *) sheet_edit->drawing_area, "expose_event",
-			 G_CALLBACK(ags_sheet_edit_drawing_area_expose_event), (gpointer) sheet_edit);
-
   g_signal_connect_after((GObject *) sheet_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_sheet_edit_drawing_area_configure_event), (gpointer) sheet_edit);
 
@@ -354,9 +351,6 @@ ags_sheet_edit_disconnect(AgsConnectable *connectable)
 
   /* drawing area */
   g_object_disconnect(sheet_edit->drawing_area,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_sheet_edit_drawing_area_expose_event),
-		      (gpointer) sheet_edit,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_sheet_edit_drawing_area_configure_event),
 		      (gpointer) sheet_edit,
