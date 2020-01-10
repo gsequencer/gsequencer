@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_priority.h>
 
 #include <ags/thread/ags_returnable_thread.h>
 
@@ -352,10 +353,28 @@ ags_thread_pool_creation_thread(void *ptr)
   /* real-time setup */
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_POOL_RT_SETUP & (g_atomic_int_get(&(thread_pool->flags)))) == 0){
+    AgsPriority *priority;
+    
     struct sched_param param;
+
+    gchar *str;
+
+    priority = ags_priority_get_instance();  
     
     /* Declare ourself as a real time task */
-    param.sched_priority = AGS_THREAD_POOL_RT_PRIORITY;
+    param.sched_priority = 1;
+
+    str = ags_priority_get_value(priority,
+				 AGS_PRIORITY_RT_THREAD,
+				 AGS_PRIORITY_KEY_LIBAGS);
+
+    if(str != NULL){
+      param.sched_priority = (int) g_ascii_strtoull(str,
+						    NULL,
+						    10);
+
+      g_free(str);
+    }
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");

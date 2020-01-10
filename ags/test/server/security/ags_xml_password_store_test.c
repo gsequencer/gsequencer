@@ -207,7 +207,7 @@ ags_xml_password_store_test_encrypt_password()
 						 &error);
 
   CU_ASSERT(password != NULL);
-  CU_ASSERT((!g_strcmp0(password, AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD)) == FALSE);
+  CU_ASSERT((password != NULL) && ((!g_strcmp0(password, AGS_XML_PASSWORD_STORE_TEST_ENCRYPT_PASSWORD_DEFAULT_PASSWORD)) == FALSE));
   
   //TODO:JK: implement me
 }

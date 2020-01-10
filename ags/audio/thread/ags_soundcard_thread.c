@@ -437,11 +437,11 @@ ags_soundcard_thread_run(AgsThread *thread)
     priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
-    param.sched_priority = AGS_RT_PRIORITY;
+    param.sched_priority = 1;
 
     str = ags_priority_get_value(priority,
 				 AGS_PRIORITY_RT_THREAD,
-				 "default");
+				 AGS_PRIORITY_KEY_AUDIO);
 
     if(str != NULL){
       param.sched_priority = (int) g_ascii_strtoull(str,

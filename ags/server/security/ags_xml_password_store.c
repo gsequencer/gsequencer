@@ -639,9 +639,13 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 
-  password_hash = crypt_r(password, salt,
-			  data);
+  password_hash = (gchar *) malloc(CRYPT_OUTPUT_SIZE * sizeof(gchar));
 
+  crypt_r(password, salt,
+	  data);
+
+  memcpy(password_hash, data->output, CRYPT_OUTPUT_SIZE * sizeof(gchar));
+  
   free(data);
 #else
   password_hash = crypt(password, salt);

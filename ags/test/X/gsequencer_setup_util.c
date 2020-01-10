@@ -102,10 +102,10 @@ ags_test_init(int *argc, char ***argv,
 	      gchar *conf_str)
 {
   AgsConfig *config;
-
+  AgsPriority *priority;
+  
   gchar *filename;
 
-  gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
   guint i;
 
@@ -177,8 +177,10 @@ ags_test_init(int *argc, char ***argv,
   textdomain(PACKAGE);
 
   /* parameters */
-  single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
+
+  priority = ags_priority_get_instance();  
+  ags_priority_load_defaults(priority);
   
   //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
@@ -198,7 +200,21 @@ ags_test_init(int *argc, char ***argv,
     }
   }
 
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_GUI_MAIN_LOOP);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
       
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
@@ -216,10 +232,9 @@ ags_test_init(int *argc, char ***argv,
     if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--single-thread     run in single thread mode",
 	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
@@ -229,15 +244,13 @@ ags_test_init(int *argc, char ***argv,
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
-	     "Copyright (C) 2005-2017 Joël Krähemann",
+	     "Copyright (C) 2005-2020 Joël Krähemann",
 	     "This is free software; see the source for copying conditions.  There is NO",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[0][i], "--single-thread", 16)){
-      single_thread_enabled = TRUE;
     }else if(!strncmp(argv[0][i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[0][i], "--filename", 11)){

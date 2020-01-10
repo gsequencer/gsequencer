@@ -317,9 +317,10 @@ ags_server_application_context_finalize(GObject *gobject)
 {
   AgsServerApplicationContext *server_application_context;
 
-  G_OBJECT_CLASS(ags_server_application_context_parent_class)->finalize(gobject);
-
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(gobject);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_server_application_context_parent_class)->finalize(gobject);
 }
 
 AgsThread*
@@ -1026,6 +1027,14 @@ ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop)
 
   GList *start_list, *list;
 
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
+  struct sched_param param;
+
+  gchar *str;
+#endif
+
   g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
   
   application_context = ags_application_context_get_instance();
@@ -1033,6 +1042,29 @@ ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop)
   while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
     usleep(G_USEC_PER_SEC / 30);
   }
+
+  /* real-time setup */
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_SERVER_MAIN_LOOP);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed");
+  }
+#endif
   
   list = 
     start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));

@@ -46,10 +46,6 @@ G_BEGIN_DECLS
 #define AGS_THREAD_GET_START_MUTEX(obj) (&(((AgsThread *) obj)->start_mutex))
 #define AGS_THREAD_GET_START_COND(obj) (&(((AgsThread *) obj)->start_cond))
 
-#ifndef AGS_RT_PRIORITY
-#define AGS_RT_PRIORITY (45)
-#endif
-
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
 #define AGS_THREAD_YIELD_JIFFIE (2.0)
 

@@ -1867,16 +1867,35 @@ ags_pulse_server_do_poll_loop(void *ptr)
 {
   AgsPulseServer *pulse_server;
 
-#ifndef __APPLE__
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
   struct sched_param param;
+    
+  gchar *str;
 #endif
 
   pulse_server = (AgsPulseServer *) ptr;
     
   /* Declare ourself as a real time task */
-#ifndef __APPLE__
-  param.sched_priority = AGS_RT_PRIORITY;
-  
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();
+    
+  /* Declare ourself as a real time task */
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_AUDIO);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+      
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }

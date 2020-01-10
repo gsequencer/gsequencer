@@ -156,6 +156,7 @@ main(int argc, char **argv)
   config = NULL;
   
   priority = ags_priority_get_instance();  
+  ags_priority_load_defaults(priority);
 
 //  mtrace();
   
@@ -194,11 +195,11 @@ main(int argc, char **argv)
     }
   }
 
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+  param.sched_priority = 1;
 
   str = ags_priority_get_value(priority,
 			       AGS_PRIORITY_RT_THREAD,
-			       "gsequencer");
+			       AGS_PRIORITY_KEY_GUI_MAIN_LOOP);
 
   if(str != NULL){
     param.sched_priority = (int) g_ascii_strtoull(str,

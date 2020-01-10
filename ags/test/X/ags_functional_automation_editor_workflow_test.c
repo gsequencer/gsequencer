@@ -141,7 +141,7 @@ ags_functional_automation_editor_workflow_test_init_suite()
   ags_functional_test_util_file_default_editor_resize();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -235,7 +235,7 @@ ags_functional_automation_editor_workflow_test_panel()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -347,7 +347,7 @@ ags_functional_automation_editor_workflow_test_mixer()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -459,7 +459,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -571,7 +571,7 @@ ags_functional_automation_editor_workflow_test_drum()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -683,7 +683,7 @@ ags_functional_automation_editor_workflow_test_matrix()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -795,7 +795,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -908,7 +908,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   

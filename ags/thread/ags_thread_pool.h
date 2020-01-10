@@ -37,10 +37,6 @@ G_BEGIN_DECLS
 #define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS (8)
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS (1024)
 
-#ifndef AGS_THREAD_POOL_RT_PRIORITY
-#define AGS_THREAD_POOL_RT_PRIORITY (99)
-#endif
-
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 

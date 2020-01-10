@@ -4339,11 +4339,11 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 #ifdef AGS_WITH_RT
   priority = ags_priority_get_instance();  
 
-  param.sched_priority = LIBAGS_AUDIO_RT_PRIORITY;
+  param.sched_priority = 1;
 
   str = ags_priority_get_value(priority,
 			       AGS_PRIORITY_RT_THREAD,
-			       "libags-audio");
+			       AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP);
 
   if(str != NULL){
     param.sched_priority = (int) g_ascii_strtoull(str,

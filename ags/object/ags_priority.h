@@ -39,6 +39,16 @@ G_BEGIN_DECLS
 
 #define AGS_PRIORITY_RT_THREAD "rt-thread"
 
+#define AGS_PRIORITY_KEY_LIBAGS "libags"
+
+#define AGS_PRIORITY_KEY_SERVER_MAIN_LOOP "server-main-loop"
+
+#define AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP "audio-main-loop"
+#define AGS_PRIORITY_KEY_AUDIO "audio"
+#define AGS_PRIORITY_KEY_OSC_SERVER_MAIN_LOOP "osc-server-main-loop"
+
+#define AGS_PRIORITY_KEY_GUI_MAIN_LOOP "gui-main-loop"
+
 typedef struct _AgsPriority AgsPriority;
 typedef struct _AgsPriorityClass AgsPriorityClass;
 

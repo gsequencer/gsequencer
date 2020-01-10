@@ -386,9 +386,15 @@ ags_priority_real_load_defaults(AgsPriority *priority)
   /* load defaults */
   g_rec_mutex_lock(priority_mutex);
 
-  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "gsequencer", "95");
-  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "libags-audio", "95");
-  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, "default", "45");
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_LIBAGS, "5");
+
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_SERVER_MAIN_LOOP, "5");
+
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP, "5");
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_AUDIO, "5");
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_OSC_SERVER_MAIN_LOOP, "5");
+
+  ags_priority_set_value(priority, AGS_PRIORITY_RT_THREAD, AGS_PRIORITY_KEY_GUI_MAIN_LOOP, "5");
 
   g_rec_mutex_unlock(priority_mutex);
 }

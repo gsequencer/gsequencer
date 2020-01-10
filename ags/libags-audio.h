@@ -20,8 +20,6 @@
 #ifndef __LIBAGS_AUDIO_H__
 #define __LIBAGS_AUDIO_H__
 
-#define LIBAGS_AUDIO_RT_PRIORITY (95)
-
 /* plugin */
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_dssi_manager.h>

@@ -202,8 +202,6 @@ void* ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop)
  * The #AgsAudioApplicationContext provides you sound processing, output and capturing.
  */
 
-#define LIBAGS_AUDIO_RT_PRIORITY (95)
-
 enum{
   PROP_0,
 };
@@ -489,23 +487,8 @@ ags_audio_application_context_dispose(GObject *gobject)
 {
   AgsAudioApplicationContext *audio_application_context;
 
-  GRecMutex *application_context_mutex;
-
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
-
-  if(AGS_IS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)){
-    ags_thread_stop(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop);
-
-    if(AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->thread != NULL){
-      g_thread_join(AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop)->thread);
-    }
-  }
-  
-  /* get application context mutex */
-  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(audio_application_context);
-
-  g_rec_mutex_lock(application_context_mutex);
-  
+    
   /* thread pool */
   if(audio_application_context->thread_pool != NULL){
     g_object_unref(audio_application_context->thread_pool);
@@ -595,8 +578,6 @@ ags_audio_application_context_dispose(GObject *gobject)
     audio_application_context->osc_server = NULL;
   }
   
-  g_rec_mutex_unlock(application_context_mutex);    
-
   /* call parent */
   G_OBJECT_CLASS(ags_audio_application_context_parent_class)->dispose(gobject);
 }
@@ -3157,6 +3138,14 @@ ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop)
 
   GList *start_list, *list;
 
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
+  struct sched_param param;
+
+  gchar *str;
+#endif
+
   g_main_context_push_thread_default(g_main_loop_get_context(main_loop));
   
   application_context = ags_application_context_get_instance();
@@ -3164,6 +3153,29 @@ ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop)
   while(!ags_service_provider_is_operating(AGS_SERVICE_PROVIDER(application_context))){
     g_usleep(G_USEC_PER_SEC / 30);
   }
+
+  /* real-time setup */
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_SERVER_MAIN_LOOP);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+  
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed");
+  }
+#endif
 
   list = 
     start_list = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
@@ -3213,11 +3225,11 @@ ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 #ifdef AGS_WITH_RT
   priority = ags_priority_get_instance();  
 
-  param.sched_priority = LIBAGS_AUDIO_RT_PRIORITY;
+  param.sched_priority = 1;
 
   str = ags_priority_get_value(priority,
 			       AGS_PRIORITY_RT_THREAD,
-			       "libags-audio");
+			       AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP);
 
   if(str != NULL){
     param.sched_priority = (int) g_ascii_strtoull(str,
