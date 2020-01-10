@@ -62,8 +62,8 @@ typedef enum{
 
 /**
  * AgsSFZLevel:
- * @AGS_SFZ_FILENAME: filename
- * @AGS_SFZ_SAMPLE: sample
+ * @AGS_SFZ_LEVEL_FILENAME: filename
+ * @AGS_SFZ_LEVEL_SAMPLE: sample
  * 
  * Enum values to describe the different levels of a SFZ file.
  */

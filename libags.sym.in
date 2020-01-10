@@ -24,7 +24,6 @@ ags_soundcard_helper_config_get_samplerate
 ags_soundcard_helper_config_get_buffer_size
 ags_soundcard_helper_config_get_format
 ags_list_util_find_type
-ags_list_util_copy_and_ref
 ags_function_get_type
 ags_function_collapse_parantheses
 ags_function_find_literals
@@ -44,8 +43,6 @@ ags_complex_copy
 ags_complex_free
 ags_complex_get
 ags_complex_set
-ags_parameter_grow
-ags_parameter_find
 ags_solver_vector_get_type
 ags_solver_vector_new
 ags_string_util_escape_single_quote
@@ -266,11 +263,11 @@ ags_seekable_get_type
 ags_seekable_seek
 ags_cursor_get_type
 ags_cursor_get_default_offset
-ags_cursor_cursor_get_tact
-ags_cursor_cursor_get_bpm
-ags_cursor_cursor_get_rate
-ags_cursor_cursor_get_delay
-ags_cursor_cursor_get_duration
+ags_cursor_get_tact
+ags_cursor_get_bpm
+ags_cursor_get_rate
+ags_cursor_get_delay
+ags_cursor_get_duration
 ags_cursor_get_delay_counter
 ags_cursor_get_offset
 ags_cursor_get_prev

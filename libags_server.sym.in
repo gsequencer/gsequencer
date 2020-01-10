@@ -130,8 +130,6 @@ ags_business_group_manager_remove_business_group
 ags_business_group_manager_get_instance
 ags_business_group_manager_new
 ags_server_get_type
-ags_server_threads_enter
-ags_server_threads_leave
 ags_server_test_flags
 ags_server_set_flags
 ags_server_unset_flags
