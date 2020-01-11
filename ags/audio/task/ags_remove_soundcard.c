@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -238,11 +238,9 @@ ags_remove_soundcard_launch(AgsTask *task)
   remove_soundcard = AGS_REMOVE_SOUNDCARD(task);
 
   application_context = ags_application_context_get_instance();
-  
-  if(!AGS_IS_SOUND_PROVIDER(application_context) ||
-     !AGS_IS_SOUNDCARD(remove_soundcard->soundcard)){
-    return;
-  }
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_SOUNDCARD(remove_soundcard->soundcard));
   
   /* remove soundcard */
   list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));

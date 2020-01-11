@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -305,9 +305,12 @@ ags_seek_soundcard_launch(AgsTask *task)
 
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
-  soundcard = seek_soundcard->soundcard;
-
   application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_SOUNDCARD(seek_soundcard->soundcard));
+  
+  soundcard = seek_soundcard->soundcard;
 
   audio = 
     audio_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));

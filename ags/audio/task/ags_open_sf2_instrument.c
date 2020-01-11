@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -475,6 +475,9 @@ ags_open_sf2_instrument_launch(AgsTask *task)
   
   open_sf2_instrument = (AgsOpenSf2Instrument *) task;
 
+  g_return_if_fail(AGS_IS_AUDIO(open_sf2_instrument->audio));
+  g_return_if_fail(AGS_IS_IPATCH(open_sf2_instrument->ipatch));
+  
   audio = open_sf2_instrument->audio;
 
   ipatch = open_sf2_instrument->ipatch;

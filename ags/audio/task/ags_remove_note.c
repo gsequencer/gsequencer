@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2018 Joël Krähemann
+  * Copyright (C) 2005-2020 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -359,6 +359,9 @@ ags_remove_note_launch(AgsTask *task)
 
   remove_note = AGS_REMOVE_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(remove_note->audio));
+  g_return_if_fail(AGS_IS_NOTE(remove_note->note));
+  
   /* get some fields */
   audio = remove_note->audio;
 

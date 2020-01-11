@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -270,12 +270,12 @@ ags_cancel_audio_launch(AgsTask *task)
   
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(cancel_audio->audio));
+
   g_object_get(cancel_audio,
 	       "audio", &audio,
 	       "sound-scope", &sound_scope,
 	       NULL);
-
-  g_return_if_fail(AGS_IS_AUDIO(audio));
 
   start_recall_id = ags_audio_check_scope(audio, sound_scope);
   

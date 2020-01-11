@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -433,8 +433,10 @@ ags_add_audio_signal_launch(AgsTask *task)
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
+  g_return_if_fail(AGS_IS_RECYCLING(add_audio_signal->recycling));
+  
   soundcard = add_audio_signal->soundcard;
-
+  
   recycling = add_audio_signal->recycling;
 
   audio_signal = add_audio_signal->audio_signal;

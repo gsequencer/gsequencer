@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -330,6 +330,8 @@ ags_resize_audio_launch(AgsTask *task)
 
   resize_audio = AGS_RESIZE_AUDIO(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(resize_audio->audio));
+  
   audio = resize_audio->audio;
 
   /* get some fields */

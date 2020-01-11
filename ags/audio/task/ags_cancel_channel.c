@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -268,6 +268,8 @@ ags_cancel_channel_launch(AgsTask *task)
   gint sound_scope;
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
+
+  g_return_if_fail(AGS_IS_CHANNEL(cancel_channel->channel));
 
   g_object_get(cancel_channel,
 	       "channel", &channel,

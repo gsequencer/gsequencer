@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -441,10 +441,14 @@ ags_export_output_launch(AgsTask *task)
   guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
-  
-  soundcard = export_output->soundcard;
+
+  g_return_if_fail(AGS_IS_EXPORT_THREAD(export_output->export_thread));
+  g_return_if_fail(AGS_IS_SOUNDCARD(export_output->soundcard));
+  g_return_if_fail(export_output->filename != NULL);
   
   export_thread = export_output->export_thread;
+  
+  soundcard = export_output->soundcard;
   
   filename = export_output->filename;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -513,6 +513,9 @@ ags_open_sf2_sample_launch(AgsTask *task)
   GError *error;
   
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
+
+  g_return_if_fail(AGS_IS_CHANNEL(open_sf2_sample->channel));
+  g_return_if_fail(AGS_IS_IPATCH_SAMPLE(open_sf2_sample->ipatch_sample));
 
   channel = open_sf2_sample->channel;
 

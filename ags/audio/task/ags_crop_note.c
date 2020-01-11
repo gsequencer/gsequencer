@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -502,12 +502,18 @@ ags_crop_note_launch(AgsTask *task)
 
   crop_note = AGS_CROP_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(crop_note->audio));
+  g_return_if_fail(AGS_IS_NOTATION(crop_note->notation));
+
+  g_object_get(crop_note,
+	       "audio", &audio,
+	       NULL);
+  
   /* get some properties */
   notation =
     current_notation = crop_note->notation;
 
   g_object_get(notation,
-	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
   

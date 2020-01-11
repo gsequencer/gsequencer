@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -532,6 +532,9 @@ ags_move_note_launch(AgsTask *task)
 
   move_note = AGS_MOVE_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(move_note->audio));
+  g_return_if_fail(AGS_IS_NOTATION(move_note->notation));
+
   g_object_get(move_note,
 	       "audio", &audio,
 	       NULL);
@@ -661,6 +664,8 @@ ags_move_note_new(AgsAudio *audio,
 					   "relative", relative,
 					   "absolute", absolute,
 					   NULL);
+
+  //FIXME:JK: argh, introspection!
 
   move_note->selection = g_list_copy_deep(selection,
 					  (GCopyFunc) g_object_ref,

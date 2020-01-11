@@ -329,6 +329,8 @@ ags_open_single_file_launch(AgsTask *task)
 
   open_single_file = AGS_OPEN_SINGLE_FILE(task);
 
+  g_return_if_fail(AGS_IS_CHANNEL(open_single_file->channel));
+  
   channel = open_single_file->channel;
 
   g_object_get(channel,
@@ -411,7 +413,9 @@ ags_open_single_file_launch(AgsTask *task)
   /* unref audio file */
   g_object_unref(audio_file);
 
-  g_object_unref(soundcard);
+  if(soundcard != NULL){
+    g_object_unref(soundcard);
+  }
 }
 
 /**

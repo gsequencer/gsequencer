@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -382,6 +382,8 @@ ags_open_wave_launch(AgsTask *task)
 
   open_wave = (AgsOpenWave *) task;
 
+  g_return_if_fail(AGS_IS_AUDIO(open_wave->audio));
+  
   audio = open_wave->audio;
 
   audio_file = open_wave->audio_file;

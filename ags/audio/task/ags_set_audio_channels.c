@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -266,6 +266,8 @@ ags_set_audio_channels_launch(AgsTask *task)
 
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
 
+  g_return_if_fail(AGS_IS_SOUNDCARD(set_audio_channels->soundcard));
+  
   /* set audio channels */
   ags_soundcard_get_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
 			    &channels,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -359,6 +359,9 @@ ags_add_note_launch(AgsTask *task)
 
   add_note = AGS_ADD_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(add_note->audio));
+  g_return_if_fail(AGS_IS_NOTE(add_note->note));
+  
   /* get some fields */
   audio = add_note->audio;
 

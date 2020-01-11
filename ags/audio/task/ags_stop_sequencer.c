@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -187,6 +187,8 @@ ags_stop_sequencer_launch(AgsTask *task)
   stop_sequencer = AGS_STOP_SEQUENCER(task);
 
   application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(application_context));
 
   /* get main loop */
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));

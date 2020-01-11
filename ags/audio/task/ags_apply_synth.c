@@ -372,9 +372,12 @@ ags_apply_synth_launch(AgsTask *task)
   
   apply_synth = AGS_APPLY_SYNTH(task);
 
-  synth_generator = apply_synth->synth_generator;
+  g_return_if_fail(AGS_IS_CHANNEL(apply_synth->start_channel));
+  g_return_if_fail(AGS_IS_SYNTH_GENERATOR(apply_synth->synth_generator));
   
   channel = apply_synth->start_channel;
+  
+  synth_generator = apply_synth->synth_generator;
 
   base_note = apply_synth->base_note;
   count = apply_synth->count;

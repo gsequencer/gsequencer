@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -240,11 +240,9 @@ ags_remove_audio_launch(AgsTask *task)
   remove_audio = AGS_REMOVE_AUDIO(task);
 
   application_context = ags_application_context_get_instance();
-  
-  if(!AGS_IS_SOUND_PROVIDER(application_context) ||
-     !AGS_IS_AUDIO(remove_audio->audio)){
-    return;
-  }
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_AUDIO(remove_audio->audio));
 
   /* remove audio */
   list =
