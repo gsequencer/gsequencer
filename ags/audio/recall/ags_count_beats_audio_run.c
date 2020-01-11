@@ -1529,9 +1529,6 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 	       "audio", &audio,
 	       "recall-audio", &count_beats_audio,
 	       "recall-id", &recall_id,
-	       NULL);
-
-  g_object_get(count_beats_audio_run,
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
   
@@ -1541,31 +1538,47 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   /* get task thread */
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  /* create cancel task */
-  cancel_audio = ags_cancel_audio_new(audio,
-				      AGS_SOUND_SCOPE_SEQUENCER);
+  if(audio != NULL){
+    /* create cancel task */
+    cancel_audio = ags_cancel_audio_new(audio,
+					AGS_SOUND_SCOPE_SEQUENCER);
   
-  /* append AgsCancelAudio */
-  ags_task_launcher_add_task(task_launcher,
-			     (AgsTask *) cancel_audio);  
+    /* append AgsCancelAudio */
+    ags_task_launcher_add_task(task_launcher,
+			       (AgsTask *) cancel_audio);  
+  }
   
   /* call parent */
   parent_class_done(recall);
 
   /* chained events */
-  ags_recall_done((AgsRecall *) delay_audio_run);
-  ags_audio_done_recall(audio,
-			recall_id);
+  if(delay_audio_run != NULL){
+    ags_recall_done((AgsRecall *) delay_audio_run);
+  }
 
+  if(audio != NULL &&
+     recall_id != NULL){
+    ags_audio_done_recall(audio,
+			  recall_id);
+  }
+  
   /* unref */
-  g_object_unref(audio);
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
 
-  g_object_unref(count_beats_audio);
+  if(count_beats_audio != NULL){
+    g_object_unref(count_beats_audio);
+  }
 
-  g_object_unref(recall_id);
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
 
-  g_object_unref(delay_audio_run);
-
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
+  
   g_object_unref(task_launcher);
 }
 

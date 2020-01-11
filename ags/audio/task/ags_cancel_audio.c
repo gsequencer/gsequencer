@@ -275,6 +275,8 @@ ags_cancel_audio_launch(AgsTask *task)
 	       "sound-scope", &sound_scope,
 	       NULL);
 
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+
   start_recall_id = ags_audio_check_scope(audio, sound_scope);
   
   ags_audio_stop(audio,
