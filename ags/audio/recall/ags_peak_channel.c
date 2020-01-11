@@ -781,10 +781,19 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
   if(samplerate != target_samplerate){
-    buffer_source = ags_audio_buffer_util_resample(buffer, 1,
-						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						   buffer_size,
-						   target_samplerate);
+    void *tmp_buffer_source;
+
+    tmp_buffer_source = ags_stream_alloc(target_buffer_size,
+					 format);
+
+    ags_audio_buffer_util_resample_with_buffer(buffer, 1,
+					       ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+					       buffer_size,
+					       target_samplerate,
+					       target_buffer_size,
+					       tmp_buffer_source);
+      
+    buffer_source = tmp_buffer_source;
     
     resample = TRUE;
   }else{

@@ -552,7 +552,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 				  format);
 
       ags_audio_buffer_util_resample_with_buffer(data, audio_channels,
-						 format, samplerate,
+						 ags_audio_buffer_util_format_from_soundcard(format), samplerate,
 						 buffer_size,
 						 target_samplerate,
 						 target_buffer_size,
@@ -800,7 +800,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 				  format);
 
       ags_audio_buffer_util_resample_with_buffer(data, audio_channels,
-						 format, samplerate,
+						 ags_audio_buffer_util_format_from_soundcard(format), samplerate,
 						 buffer_size,
 						 file_samplerate,
 						 file_buffer_size,

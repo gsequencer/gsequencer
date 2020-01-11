@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -308,10 +308,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       resample = FALSE;
 
       if(samplerate != soundcard_samplerate){
-	buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						       ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						       buffer_size,
-						       soundcard_samplerate);
+	void *tmp_buffer_source;
+
+	tmp_buffer_source = ags_stream_alloc(soundcard_buffer_size,
+					     format);
+
+	ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+						   buffer_size,
+						   soundcard_samplerate,
+						   soundcard_buffer_size,
+						   tmp_buffer_source);
+      
+	buffer_source = tmp_buffer_source;
       
 	resample = TRUE;
       }
@@ -360,10 +369,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     resample = FALSE;
     
     if(samplerate != soundcard_samplerate){
-      buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						     buffer_size,
-						     soundcard_samplerate);
+      void *tmp_buffer_source;
+
+      tmp_buffer_source = ags_stream_alloc(soundcard_buffer_size,
+					   format);
+
+      ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+						 ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+						 buffer_size,
+						 soundcard_samplerate,
+						 soundcard_buffer_size,
+						 tmp_buffer_source);
+      
+      buffer_source = tmp_buffer_source;
       
       resample = TRUE;
     }
@@ -386,11 +404,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	buffer_source_prev = stream->prev->data;
 
 	if(resample){
-	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
-							      ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-							      buffer_size,
-							      soundcard_samplerate);
+	  void *tmp_buffer_source_prev;
 
+	  tmp_buffer_source_prev = ags_stream_alloc(soundcard_buffer_size,
+						    format);
+
+	  ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
+						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+						     buffer_size,
+						     soundcard_samplerate,
+						     soundcard_buffer_size,
+						     tmp_buffer_source_prev);
+      
+	  buffer_source_prev = tmp_buffer_source_prev;
 	}
 	
 	/* copy */

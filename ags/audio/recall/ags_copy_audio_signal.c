@@ -499,10 +499,19 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   attack = (destination_samplerate / source_samplerate) * attack;
 
   if(source_samplerate != destination_samplerate){
-    buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						   ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-						   source_buffer_size,
-						   destination_samplerate);
+    void *tmp_buffer_source;
+
+    tmp_buffer_source = ags_stream_alloc(destination_buffer_size,
+					 source_format);
+
+    ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+					       ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+					       source_buffer_size,
+					       destination_samplerate,
+					       destination_buffer_size,
+					       tmp_buffer_source);
+      
+    buffer_source = tmp_buffer_source;
       
     resample = TRUE;
   }
@@ -520,11 +529,19 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
       buffer_source_prev = stream_source->prev->data;
 
       if(resample){
-	buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
-							    ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-							    source_buffer_size,
-							    destination_samplerate);
+	void *tmp_buffer_source_prev;
 
+	tmp_buffer_source_prev = ags_stream_alloc(destination_buffer_size,
+						  source_format);
+	  
+	ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
+						   ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						   source_buffer_size,
+						   destination_samplerate,
+						   destination_buffer_size,
+						   tmp_buffer_source_prev);
+      
+	buffer_source_prev = tmp_buffer_source_prev;
       }
 
       ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
