@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -546,11 +546,20 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     resample_target = FALSE;
     
     if(target_samplerate != samplerate){
-      data = ags_audio_buffer_util_resample(data, audio_channels,
-					    format, samplerate,
-					    buffer_size,
-					    target_samplerate);
+      void *tmp_data;
 
+      tmp_data = ags_stream_alloc(target_buffer_size,
+				  format);
+
+      ags_audio_buffer_util_resample_with_buffer(data, audio_channels,
+						 format, samplerate,
+						 buffer_size,
+						 target_samplerate,
+						 target_buffer_size,
+						 tmp_data);
+
+      data = tmp_data;
+      
       resample_target = TRUE;
     }
 
@@ -785,10 +794,19 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 				       file_audio_channels * file_buffer_size, file_format);
 
     if(file_samplerate != samplerate){
-      data = ags_audio_buffer_util_resample(data, audio_channels,
-					    format, samplerate,
-					    buffer_size,
-					    file_samplerate);
+      void *tmp_data;
+
+      tmp_data = ags_stream_alloc(file_buffer_size,
+				  format);
+
+      ags_audio_buffer_util_resample_with_buffer(data, audio_channels,
+						 format, samplerate,
+						 buffer_size,
+						 file_samplerate,
+						 file_buffer_size,
+						 tmp_data);
+
+      data = tmp_data;
 
       resample_file = TRUE;
     }
