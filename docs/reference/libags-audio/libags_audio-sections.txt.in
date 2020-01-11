@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -355,7 +355,6 @@ ags_audio_get_type
 <SECTION>
 <FILE>ags_audio_application_context</FILE>
 <TITLE>AgsAudioApplicationContext</TITLE>
-AGS_AUDIO_RT_PRIORITY
 AGS_AUDIO_DEFAULT_VERSION
 AGS_AUDIO_BUILD_ID
 AGS_EFFECTS_DEFAULT_VERSION

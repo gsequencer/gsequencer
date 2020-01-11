@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -394,8 +394,6 @@ ags_connection_editor_delete_event
 <SECTION>
 <FILE>ags_context_menu</FILE>
 <TITLE>AgsContextMenu</TITLE>
-AGS_MENU_ITEM_FILENAME_KEY
-AGS_MENU_ITEM_EFFECT_KEY
 AgsContextMenuFlags
 ags_context_menu_new
 <SUBSECTION Public>
@@ -1054,8 +1052,6 @@ ags_ffplayer_open_clicked_callback
 ags_ffplayer_open_dialog_response_callback
 ags_ffplayer_preset_changed_callback
 ags_ffplayer_instrument_changed_callback
-ags_ffplayer_drawing_area_expose_callback
-ags_ffplayer_drawing_area_configure_callback
 ags_ffplayer_drawing_area_button_press_callback
 ags_ffplayer_hscrollbar_value_changed
 </SECTION>
@@ -2021,6 +2017,8 @@ ags_matrix_stop_callback
 
 <SECTION>
 <FILE>ags_menu_action_callbacks</FILE>
+AGS_MENU_ITEM_FILENAME_KEY
+AGS_MENU_ITEM_EFFECT_KEY
 ags_menu_action_open_callback
 ags_menu_action_save_callback
 ags_menu_action_save_as_callback
@@ -2058,8 +2056,6 @@ ags_menu_action_about_callback
 <SECTION>
 <FILE>ags_menu_bar</FILE>
 <TITLE>AgsMenuBar</TITLE>
-AGS_MENU_ITEM_FILENAME_KEY
-AGS_MENU_ITEM_EFFECT_KEY
 AgsMenuBarFlags
 ags_zoom_menu_new
 ags_tact_menu_new
@@ -3273,7 +3269,6 @@ ags_sheet_edit_get_type
 
 <SECTION>
 <FILE>ags_sheet_edit_callbacks</FILE>
-ags_sheet_edit_drawing_area_expose_event
 ags_sheet_edit_drawing_area_configure_event
 ags_sheet_edit_drawing_area_button_press_event
 ags_sheet_edit_drawing_area_button_release_event
@@ -3937,7 +3932,7 @@ ags_wave_window_get_type
 AGS_MACHINE_COUNTER
 AgsWindowFlags
 AgsMachineCounter
-ags_window_standard_machine_counter_alloc
+ags_window_public_machine_counter_alloc
 ags_window_find_machine_counter
 ags_window_increment_machine_counter
 ags_window_decrement_machine_counter

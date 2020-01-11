@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2005-2019 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -811,8 +811,8 @@ AUTOMAKE_OPTIONS = foreign no-dependencies
 SUBDIRS = po
 
 # libadd and ldadd
-@WITH_SYSTEM_TESTS_TRUE@libgsequencer_check_system_test_LIBADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-@WITH_SYSTEM_TESTS_TRUE@gsequencer_check_system_functional_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+@WITH_SYSTEM_TESTS_TRUE@libgsequencer_check_system_test_LIBADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm -lXtst $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+@WITH_SYSTEM_TESTS_TRUE@gsequencer_check_system_functional_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm -lXtst $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 @WITH_SYSTEM_TESTS_TRUE@AGS_RESOURCES = -DAGS_RC_FILENAME=\"/usr/share/gsequencer/styles/ags.rc\" -DAGS_ANIMATION_FILENAME=\"/usr/share/gsequencer/images/ags_supermoon-800x450.png\" -DAGS_LOGO_FILENAME=\"/usr/share/gsequencer/images/ags.png\" -DAGS_LICENSE_FILENAME=\"/usr/share/common-licenses/GPL-3\"
 @WITH_SYSTEM_TESTS_TRUE@AGS_FEATURES = $(am__append_1)
 @WITH_SYSTEM_TESTS_TRUE@noinst_LTLIBRARIES = libgsequencer_check_system_test.la

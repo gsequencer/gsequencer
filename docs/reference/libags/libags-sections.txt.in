@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -428,11 +428,11 @@ ags_countable_get_type
 <FILE>ags_cursor</FILE>
 <TITLE>AgsCursor</TITLE>
 ags_cursor_get_default_offset
-ags_cursor_cursor_get_tact
-ags_cursor_cursor_get_bpm
-ags_cursor_cursor_get_rate
-ags_cursor_cursor_get_delay
-ags_cursor_cursor_get_duration
+ags_cursor_get_tact
+ags_cursor_get_bpm
+ags_cursor_get_rate
+ags_cursor_get_delay
+ags_cursor_get_duration
 ags_cursor_get_delay_counter
 ags_cursor_get_offset
 ags_cursor_get_prev
@@ -1022,6 +1022,12 @@ AGS_PRIORITY_GET_OBJ_MUTEX
 AGS_PRIORITY_DEFAULT_VERSION
 AGS_PRIORITY_DEFAULT_BUILD_ID
 AGS_PRIORITY_RT_THREAD
+AGS_PRIORITY_KEY_LIBAGS
+AGS_PRIORITY_KEY_SERVER_MAIN_LOOP
+AGS_PRIORITY_KEY_AUDIO_MAIN_LOOP
+AGS_PRIORITY_KEY_AUDIO
+AGS_PRIORITY_KEY_OSC_SERVER_MAIN_LOOP
+AGS_PRIORITY_KEY_GUI_MAIN_LOOP
 AgsPriorityFlags
 ags_priority_load_defaults
 ags_priority_load_from_file
@@ -1541,7 +1547,6 @@ AGS_THREAD_GET_TIC_MUTEX
 AGS_THREAD_GET_TIC_COND
 AGS_THREAD_GET_START_MUTEX
 AGS_THREAD_GET_START_COND
-AGS_RT_PRIORITY
 AGS_THREAD_HERTZ_JIFFIE
 AGS_THREAD_YIELD_JIFFIE
 AGS_THREAD_DEFAULT_JIFFIE
@@ -1635,7 +1640,6 @@ ags_thread_application_context_get_type
 <TITLE>AgsThreadPool</TITLE>
 AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS
 AGS_THREAD_POOL_DEFAULT_MAX_THREADS
-AGS_THREAD_POOL_RT_PRIORITY
 AgsThreadPoolFlags
 ags_thread_pool_pull
 ags_thread_pool_start
@@ -1775,7 +1779,7 @@ ags_uuid_get_type
 <FILE>ags_worker_thread</FILE>
 <TITLE>AgsWorkerThread</TITLE>
 AGS_WORKER_THREAD_DEFAULT_JIFFIE
-AgsWorkerThreadFlags
+AgsWorkerThreadStatusFlags
 ags_worker_thread_test_status_flags
 ags_worker_thread_set_status_flags
 ags_worker_thread_unset_status_flags
