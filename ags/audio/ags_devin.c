@@ -2048,8 +2048,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   }
 
   /* prepare for recordback */
-  devin->flags |= (AGS_DEVIN_BUFFER3 |
-		   AGS_DEVIN_START_RECORD |
+  devin->flags |= (AGS_DEVIN_START_RECORD |
 		   AGS_DEVIN_RECORD |
 		   AGS_DEVIN_NONBLOCKING);
 
@@ -2076,6 +2075,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   devin->out.oss.device_fd = open(str, O_RDONLY, 0);
 
   if(devin->out.oss.device_fd == -1){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+    
     g_rec_mutex_unlock(devin_mutex);
 
     g_warning("couldn't open device %s", devin->out.oss.device);
@@ -2098,6 +2101,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = format;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_SETFMT, &tmp) == -1){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
@@ -2117,6 +2124,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   }
   
   if(tmp != format){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
@@ -2138,6 +2149,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = devin->dsp_channels;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_CHANNELS, &tmp) == -1){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
@@ -2157,6 +2172,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   }
 
   if(tmp != devin->dsp_channels){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
@@ -2178,6 +2197,10 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = devin->samplerate;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_SPEED, &tmp) == -1){
+    devin->flags &= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
@@ -2628,10 +2651,9 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* prepare for playback */
-  devin->flags |= (AGS_DEVIN_BUFFER3 |
-		    AGS_DEVIN_START_RECORD |
-		    AGS_DEVIN_RECORD |
-		    AGS_DEVIN_NONBLOCKING);
+  devin->flags |= (AGS_DEVIN_START_RECORD |
+		   AGS_DEVIN_RECORD |
+		   AGS_DEVIN_NONBLOCKING);
 
   memset(devin->buffer[0], 0, devin->pcm_channels * devin->buffer_size * word_size);
   memset(devin->buffer[1], 0, devin->pcm_channels * devin->buffer_size * word_size);
@@ -2669,6 +2691,10 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     handle = NULL;
     
     if((err = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_CAPTURE, 0)) < 0){
+      devin->flags |= (~(AGS_DEVIN_START_RECORD |
+			 AGS_DEVIN_RECORD |
+			 AGS_DEVIN_NONBLOCKING));
+      
       g_rec_mutex_unlock(devin_mutex);
       
       if(error != NULL){
@@ -2690,6 +2716,10 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_any(handle, hwparams);
 
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2727,6 +2757,10 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2749,7 +2783,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 
   /* set the sample format */
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
+
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2773,7 +2812,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set the count of channels */
   channels = devin->pcm_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
+
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2798,7 +2842,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   rate = devin->samplerate;
   rrate = rate;
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
+
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2820,7 +2869,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   }
 
   if (rrate != rate) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
+
     g_warning("Rate doesn't match (requested %iHz, get %iHz)", rate, err);
 
     if(error != NULL){
@@ -2838,10 +2892,16 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set the buffer size */
   size = 2 * devin->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
+
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
+
     g_warning("Unable to set buffer size %lu for playback: %s", size, str);
 
     if(error != NULL){
@@ -2878,6 +2938,10 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params(handle, hwparams);
 
   if (err < 0) {
+    devin->flags |= (~(AGS_DEVIN_START_RECORD |
+		       AGS_DEVIN_RECORD |
+		       AGS_DEVIN_NONBLOCKING));
+
     g_rec_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
@@ -2968,8 +3032,8 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 #endif
   devin->flags |= AGS_DEVIN_BUFFER0;
   devin->flags &= (~(AGS_DEVIN_BUFFER1 |
-		      AGS_DEVIN_BUFFER2 |
-		      AGS_DEVIN_BUFFER3));
+		     AGS_DEVIN_BUFFER2 |
+		     AGS_DEVIN_BUFFER3));
   
   g_rec_mutex_unlock(devin_mutex);
 }
