@@ -427,7 +427,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   for(i = 0; i < 4; i++){
     jack_midiin->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    g_mutex_init(jack_midiin->buffer_mutex[i]);
+    g_rec_mutex_init(jack_midiin->buffer_mutex[i]);
   }
 
   jack_midiin->buffer = (char **) malloc(4 * sizeof(char*));

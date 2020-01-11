@@ -607,7 +607,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   for(i = 0; i < 8; i++){
     pulse_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    g_mutex_init(pulse_devout->buffer_mutex[i]);
+    g_rec_mutex_init(pulse_devout->buffer_mutex[i]);
   }
 
   pulse_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
@@ -616,7 +616,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
     pulse_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    g_mutex_init(pulse_devout->sub_block_mutex[i]);
+    g_rec_mutex_init(pulse_devout->sub_block_mutex[i]);
   }
 
   pulse_devout->buffer = (void **) malloc(8 * sizeof(void*));

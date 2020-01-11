@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -278,12 +278,12 @@ typedef enum{
 
 }AgsAudioBufferUtilCopyMode;
 
-typedef gint8 v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
-typedef gint16 v8s16 __attribute__ ((vector_size(8 * sizeof(gint16))));
-typedef gint32 v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
-typedef gint64 v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
-typedef gfloat v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
-typedef gdouble v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
+typedef gint8 ags_v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
+typedef gint16 ags_v8s16 __attribute__ ((vector_size(8 * sizeof(gint16))));
+typedef gint32 ags_v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
+typedef gint64 ags_v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
+typedef gfloat ags_v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
+typedef gdouble ags_v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
 
 guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
