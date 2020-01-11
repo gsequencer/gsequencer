@@ -635,7 +635,7 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 
   gchar *password_hash;
   
-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
+#if 0 // !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 
