@@ -2786,6 +2786,11 @@ ags_thread_loop(void *ptr)
 void
 ags_thread_real_start(AgsThread *thread)
 {
+  if(thread->thread != NULL ||
+     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+    return;
+  }
+  
 #ifdef AGS_DEBUG
   g_message("thread start: %s", G_OBJECT_TYPE_NAME(thread));
 #endif
@@ -2807,9 +2812,7 @@ ags_thread_real_start(AgsThread *thread)
 void
 ags_thread_start(AgsThread *thread)
 {
-  g_return_if_fail((AGS_IS_THREAD(thread) &&
-		    thread->thread == NULL &&
-		    !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)));
+  g_return_if_fail(AGS_IS_THREAD(thread));
   
   g_object_ref(thread);
   g_signal_emit(thread,
@@ -2914,6 +2917,11 @@ ags_thread_run(AgsThread *thread)
 void
 ags_thread_real_stop(AgsThread *thread)
 {
+  if(thread->thread == NULL ||
+     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+    return;
+  }
+  
   ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_RUNNING);
 }
 
@@ -2928,9 +2936,7 @@ ags_thread_real_stop(AgsThread *thread)
 void
 ags_thread_stop(AgsThread *thread)
 {
-  g_return_if_fail(AGS_IS_THREAD(thread) &&
-		   thread->thread != NULL &&
-		   ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING));
+  g_return_if_fail(AGS_IS_THREAD(thread));
   
   g_object_ref(G_OBJECT(thread));
   g_signal_emit(G_OBJECT(thread),

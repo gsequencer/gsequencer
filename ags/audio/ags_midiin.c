@@ -1323,8 +1323,7 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   /* prepare for playback */
   g_rec_mutex_lock(midiin_mutex);
     
-  midiin->flags |= (AGS_MIDIIN_BUFFER3 |
-		    AGS_MIDIIN_START_RECORD |
+  midiin->flags |= (AGS_MIDIIN_START_RECORD |
 		    AGS_MIDIIN_RECORD |
 		    AGS_MIDIIN_NONBLOCKING);
 
@@ -1334,6 +1333,10 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   midiin->in.oss.device_fd = open(str, O_WRONLY, 0);
 
   if(midiin->in.oss.device_fd == -1){
+    midiin->flags &= (~(AGS_MIDIIN_START_RECORD |
+			AGS_MIDIIN_RECORD |
+			AGS_MIDIIN_NONBLOCKING));
+    
     g_rec_mutex_unlock(midiin_mutex);
 
     g_warning("couldn't open device %s", midiin->in.oss.device);
@@ -1624,8 +1627,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   g_rec_mutex_lock(midiin_mutex);
 
   /* prepare for record */
-  midiin->flags |= (AGS_MIDIIN_BUFFER3 |
-		    AGS_MIDIIN_START_RECORD |
+  midiin->flags |= (AGS_MIDIIN_START_RECORD |
 		    AGS_MIDIIN_RECORD |
 		    AGS_MIDIIN_NONBLOCKING);
 
@@ -1633,6 +1635,10 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   mode = SND_RAWMIDI_NONBLOCK;
   
   if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa.device, mode)) < 0) {
+    midiin->flags &= (~(AGS_MIDIIN_START_RECORD |
+			AGS_MIDIIN_RECORD |
+			AGS_MIDIIN_NONBLOCKING));
+
     g_rec_mutex_unlock(midiin_mutex);
 
     printf("Record midi open error: %s\n", snd_strerror(err));
@@ -1656,6 +1662,11 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 #ifdef AGS_WITH_ALSA
   midiin->flags |= AGS_MIDIIN_INITIALIZED;
 #endif
+
+  midiin->flags |= AGS_MIDIIN_BUFFER0;
+  midiin->flags &= (~(AGS_MIDIIN_BUFFER1 |
+		      AGS_MIDIIN_BUFFER2 |
+		      AGS_MIDIIN_BUFFER3));
 
   g_rec_mutex_unlock(midiin_mutex);
 }

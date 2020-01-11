@@ -914,10 +914,6 @@ ags_apply_sound_config_launch(AgsTask *task)
     if(ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
       ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(application_context),
 					       soundcard);
-      
-      g_object_set(audio_loop,
-		   "default-output-soundcard", G_OBJECT(soundcard),
-		   NULL);
     }
     
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),

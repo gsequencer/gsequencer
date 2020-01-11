@@ -499,6 +499,10 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   GError *error;
 
   GRecMutex *osc_response_mutex;
+
+  if(!AGS_IS_OSC_RESPONSE(osc_response)){
+    return(-1);
+  }
   
   g_object_get(osc_websocket_connection,
 	       "websocket-connection", &websocket_connection,
@@ -546,8 +550,12 @@ ags_osc_websocket_connection_write_response(AgsOscWebsocketConnection *osc_webso
   xmlDocDumpFormatMemoryEnc(doc, &buffer, &buffer_length, "UTF-8", TRUE);
   xmlFreeDoc(doc);
 
+  g_rec_mutex_lock(osc_response_mutex);
+
   soup_websocket_connection_send_text(websocket_connection,
 				      buffer);
+
+  g_rec_mutex_unlock(osc_response_mutex);
   
   g_object_unref(websocket_connection);
   

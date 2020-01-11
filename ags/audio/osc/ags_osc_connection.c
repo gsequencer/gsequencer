@@ -998,6 +998,10 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   GRecMutex *osc_connection_mutex;
   GRecMutex *osc_response_mutex;
 
+  if(!AGS_IS_OSC_RESPONSE(osc_response)){
+    return(-1);
+  }
+
   /* get osc connection mutex */
   osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(osc_connection);
 

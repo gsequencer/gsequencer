@@ -426,7 +426,8 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
   websocket_connection = soup_session_websocket_connect_finish(SOUP_SESSION(source_object),
 							       res,
 							       &error);
-    
+  g_object_ref(websocket_connection);
+  
   if(error != NULL){
     g_critical("%s", error->message);
     

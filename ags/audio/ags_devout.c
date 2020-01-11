@@ -2156,8 +2156,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   }
 
   /* prepare for playback */
-  devout->flags |= (AGS_DEVOUT_BUFFER3 |
-		    AGS_DEVOUT_START_PLAY |
+  devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
 
@@ -2184,6 +2183,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   devout->out.oss.device_fd = open(str, O_WRONLY, 0);
 
   if(devout->out.oss.device_fd == -1){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     g_warning("couldn't open device %s", devout->out.oss.device);
@@ -2206,6 +2209,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   tmp = format;
 
   if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_SETFMT, &tmp) == -1){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     str = strerror(errno);
@@ -2225,6 +2232,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   }
   
   if(tmp != format){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     str = strerror(errno);
@@ -2246,6 +2257,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   tmp = devout->dsp_channels;
 
   if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_CHANNELS, &tmp) == -1){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     str = strerror(errno);
@@ -2265,6 +2280,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   }
 
   if(tmp != devout->dsp_channels){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     str = strerror(errno);
@@ -2286,6 +2305,10 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   tmp = devout->samplerate;
 
   if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_SPEED, &tmp) == -1){
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+
     g_rec_mutex_unlock(devout_mutex);
 
     str = strerror(errno);
@@ -2775,8 +2798,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* prepare for playback */
-  devout->flags |= (AGS_DEVOUT_BUFFER3 |
-		    AGS_DEVOUT_START_PLAY |
+  devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
 
@@ -2813,6 +2835,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     handle = NULL;
     
     if((err = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
+      devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			  AGS_DEVOUT_PLAY |
+			  AGS_DEVOUT_NONBLOCKING));
+      
       g_rec_mutex_unlock(devout_mutex);
       
       if(error != NULL){
@@ -2834,6 +2860,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_any(handle, hwparams);
 
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -2871,6 +2901,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -2894,6 +2928,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set the sample format */
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -2918,6 +2956,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   channels = devout->pcm_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -2943,6 +2985,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   rrate = rate;
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -2964,7 +3010,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   if (rrate != rate) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
+    
     g_warning("Rate doesn't match (requested %iHz, get %iHz)", rate, err);
 
     if(error != NULL){
@@ -2982,7 +3033,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set the buffer size */
   size = 2 * devout->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
+
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);
@@ -3022,6 +3078,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params(handle, hwparams);
 
   if (err < 0) {
+    devout->flags &= (~(AGS_DEVOUT_START_PLAY |
+			AGS_DEVOUT_PLAY |
+			AGS_DEVOUT_NONBLOCKING));
+    
     g_rec_mutex_unlock(devout_mutex);
 
     str = snd_strerror(err);

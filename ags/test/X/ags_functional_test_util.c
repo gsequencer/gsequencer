@@ -3524,6 +3524,8 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
 						      &ags_functional_test_util_default_timeout,
 						      properties);
 
+  ags_functional_test_util_reaction_time_long();
+
   return(success);
 }
 
