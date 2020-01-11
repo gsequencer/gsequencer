@@ -743,6 +743,8 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   buffer_length = g_list_length(start_list);
 
+  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
+
   copy_mode = G_MAXUINT;
   
   switch(format){
@@ -830,16 +832,19 @@ ags_wave_set_samplerate(AgsWave *wave,
     offset += buffer_size;
   }
 
-  resampled_data = ags_audio_buffer_util_resample(data, 1,
-						  ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
-						  buffer_length * buffer_size,
-						  samplerate);
+  resampled_data = ags_stream_alloc(new_buffer_length * buffer_size,
+				    format);
+  
+  ags_audio_buffer_util_resample_with_buffer(data, 1,
+					     ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
+					     buffer_length * buffer_size,
+					     samplerate,
+					     new_buffer_length * buffer_size,
+					     resampled_data);
 
   if(data != NULL){
     free(data);
   }
-
-  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
     
   if(samplerate < old_samplerate){
     list = g_list_nth(start_list,
@@ -3018,12 +3023,18 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							  ags_audio_buffer_util_format_from_soundcard(format_val));
 
 	  if(samplerate_val != wave_samplerate){
-	    target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							 ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-							 buffer_size_val,
-							 wave_samplerate);
 	    target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
-	      
+
+	    target_data = ags_stream_alloc(target_frame_count,
+					   format_val);
+
+	    ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
+						       ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
+						       buffer_size_val,
+						       wave_samplerate,
+						       target_frame_count,
+						       target_data);
+	    
 	    if(attack + target_frame_count <= wave_buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
 							  target_data, 1, 0,
@@ -3091,10 +3102,15 @@ ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
 							    ags_audio_buffer_util_format_from_soundcard(format_val));
 	      
 	    if(samplerate_val != wave_samplerate){
-	      target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							   ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-							   buffer_size_val,
-							   wave_samplerate);
+	      target_data = ags_stream_alloc(wave_buffer_size,
+					     format_val);
+	      
+	      ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
+							 ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
+							 buffer_size_val,
+							 wave_samplerate,
+							 wave_buffer_size,
+							 target_data);
 	      
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  target_data, 1, wave_buffer_size - attack,
