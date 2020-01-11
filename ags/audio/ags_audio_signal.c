@@ -2273,10 +2273,14 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   g_rec_mutex_unlock(stream_mutex);
 
-  resampled_data = ags_audio_buffer_util_resample(data, 1,
-						  ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
-						  stream_length * buffer_size,
-						  samplerate);
+  resampled_data = ags_stream_alloc((guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
+				    format);
+  ags_audio_buffer_util_resample_with_buffer(data, 1,
+					     ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
+					     stream_length * buffer_size,
+					     samplerate,
+					     (guint) (samplerate * (stream_length * buffer_size / old_samplerate)),
+					     resampled_data);
 
   if(data != NULL){
     free(data);
