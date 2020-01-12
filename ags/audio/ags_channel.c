@@ -8982,8 +8982,6 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   /* get some fields */
   g_rec_mutex_lock(recall_id_mutex);
 
-  recycling_context = recall_id->recycling_context;
-
   sound_scope = recall_id->sound_scope;
 
   g_rec_mutex_unlock(recall_id_mutex);
@@ -8993,6 +8991,12 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     
     return;
   }
+
+  recycling_context = NULL;
+
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
   
   /* get channel mutex */
   channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
@@ -9006,6 +9010,10 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) != 0){
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+
     return;
   }
   
@@ -9013,11 +9021,11 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   recycling_context_mutex = AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(recycling_context);
 
   /* get parent recycling context */
-  g_rec_mutex_lock(recycling_context_mutex);
-
-  parent_recycling_context = recycling_context->parent;
-
-  g_rec_mutex_unlock(recycling_context_mutex);
+  parent_recycling_context = NULL;
+  
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
   
   /* get the appropriate list */
   if(parent_recycling_context == NULL){
@@ -9031,7 +9039,9 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     /* copy play context */
     g_rec_mutex_lock(play_mutex);
 
-    list_start = g_list_copy(channel->play);
+    list_start = g_list_copy_deep(channel->play,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
     g_rec_mutex_unlock(play_mutex);
 
@@ -9049,7 +9059,9 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     /* copy recall context */
     g_rec_mutex_lock(recall_mutex);
 
-    list_start = g_list_copy(channel->recall);
+    list_start = g_list_copy_deep(channel->recall,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
     
     g_rec_mutex_unlock(recall_mutex);
 
@@ -9068,6 +9080,17 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
      ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_ACTIVE) ||
      ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_PROCESSING) ||
      ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+    g_list_free_full(list_start,
+		     g_object_unref);
+
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+  
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+    
     g_rec_mutex_unlock(recall_id_mutex);
     
     return;
@@ -9140,7 +9163,16 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
 }
 
 /**
@@ -9191,8 +9223,6 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
   /* get some fields */
   g_rec_mutex_lock(recall_id_mutex);
 
-  recycling_context = recall_id->recycling_context;
-
   sound_scope = recall_id->sound_scope;
 
   g_rec_mutex_unlock(recall_id_mutex);
@@ -9202,6 +9232,12 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
     
     return;
   }
+
+  recycling_context = NULL;
+
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
 
   /* get channel mutex */
   channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
@@ -9215,6 +9251,10 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
 
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) != 0){
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+    
     return;
   }
 
@@ -9222,11 +9262,11 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
   recycling_context_mutex = AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(recycling_context);
 
   /* get parent recycling context */
-  g_rec_mutex_lock(recycling_context_mutex);
-
-  parent_recycling_context = recycling_context->parent;
-
-  g_rec_mutex_unlock(recycling_context_mutex);
+  parent_recycling_context = NULL;
+  
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
   
   /* get the appropriate lists */
   if(parent_recycling_context == NULL){
@@ -9239,7 +9279,9 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
     g_rec_mutex_lock(play_mutex);
 
     list = 
-      list_start = g_list_copy(channel->play);
+      list_start = g_list_copy_deep(channel->play,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     g_rec_mutex_unlock(play_mutex);
 
@@ -9256,7 +9298,9 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
     g_rec_mutex_lock(recall_mutex);
 
     list = 
-      list_start = g_list_copy(channel->recall);
+      list_start = g_list_copy_deep(channel->recall,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
     
     g_rec_mutex_unlock(recall_mutex);
 
@@ -9275,7 +9319,16 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
+
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
 }
 
 /**
@@ -9358,6 +9411,10 @@ ags_channel_real_init_recall(AgsChannel *channel,
 
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) != 0){
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+    
     return;
   }
 
@@ -9382,7 +9439,9 @@ ags_channel_real_init_recall(AgsChannel *channel,
     g_rec_mutex_lock(play_mutex);
 
     list = 
-      list_start = g_list_copy(channel->play);
+      list_start = g_list_copy_deep(channel->play,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     g_rec_mutex_unlock(play_mutex);
 
@@ -9399,7 +9458,9 @@ ags_channel_real_init_recall(AgsChannel *channel,
     g_rec_mutex_lock(recall_mutex);
 
     list = 
-      list_start = g_list_copy(channel->recall);
+      list_start = g_list_copy_deep(channel->recall,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
     
     g_rec_mutex_unlock(recall_mutex);
 
@@ -9422,7 +9483,8 @@ ags_channel_real_init_recall(AgsChannel *channel,
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
 #if 0
   ags_channel_set_staging_flags(channel, sound_scope,
@@ -9702,6 +9764,10 @@ ags_channel_real_done_recall(AgsChannel *channel,
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_INTER & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_POST & (current_staging_flags)) == 0){
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+
     return;
   }
 
@@ -9851,6 +9917,10 @@ ags_channel_real_cancel_recall(AgsChannel *channel,
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_INTER & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_POST & (current_staging_flags)) == 0){
+    if(recycling_context != NULL){
+      g_object_unref(recycling_context);
+    }
+
     return;
   }
 
@@ -10072,7 +10142,8 @@ ags_channel_real_cleanup_recall(AgsChannel *channel,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* destroy  */
   match = match_start;
