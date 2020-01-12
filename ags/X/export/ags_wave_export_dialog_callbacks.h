@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
-#define __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
+#ifndef __AGS_WAVE_EXPORT_DIALOG_CALLBACKS_H__
+#define __AGS_WAVE_EXPORT_DIALOG_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -30,19 +30,18 @@
 
 #include <ags/libags-gui.h>
 
-#include <ags/X/ags_export_soundcard.h>
+#include <ags/X/export/ags_wave_export_dialog.h>
 
 G_BEGIN_DECLS
 
-void ags_export_soundcard_backend_callback(GtkWidget *combo_box,
-					   AgsExportSoundcard *export_soundcard);
+void ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_button,
+							 AgsWaveExportDialog *wave_export_dialog);
 
-void ags_export_soundcard_card_callback(GtkWidget *combo_box,
-					AgsExportSoundcard *export_soundcard);
+int ags_wave_export_dialog_apply_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
+int ags_wave_export_dialog_ok_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
+int ags_wave_export_dialog_cancel_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog);
 
-void ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
-						       AgsExportSoundcard *export_soundcard);
 
 G_END_DECLS
 
-#endif /*__AGS_EXPORT_SOUNDCARD_CALLBACKS_H__*/
+#endif /*__AGS_WAVE_EXPORT_DIALOG_CALLBACKS_H__*/

@@ -516,6 +516,11 @@ ags_machine_init(AgsMachine *machine)
   machine->connection_editor = NULL;
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
+
+  machine->midi_export_dialog = NULL;
+  machine->wave_export_dialog = NULL;
+  machine->midi_import_dialog = NULL;
+  machine->wave_import_dialog = NULL;
 }
 
 void
@@ -3327,6 +3332,88 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
     
     g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_midi_dialog_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  gtk_widget_show_all((GtkWidget *) machine->popup);
+}
+
+void
+ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options)
+{
+  GtkMenu *export;
+  GtkMenuItem *item;
+
+  gchar *str;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("export"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show((GtkWidget *) item);
+
+  export = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    (GtkWidget *) export);
+
+  gtk_widget_show((GtkWidget *) export);
+
+  if((AGS_MACHINE_POPUP_MIDI_EXPORT & export_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI export"));
+    gtk_menu_shell_append((GtkMenuShell *) export, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_midi_export_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  if((AGS_MACHINE_POPUP_WAVE_EXPORT & export_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audio export"));
+    gtk_menu_shell_append((GtkMenuShell *) export, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_wave_export_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  gtk_widget_show_all((GtkWidget *) machine->popup);
+}
+
+void
+ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options)
+{
+  GtkMenu *import;
+  GtkMenuItem *item;
+
+  gchar *str;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("import"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show((GtkWidget *) item);
+
+  import = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    (GtkWidget *) import);
+
+  gtk_widget_show((GtkWidget *) import);
+
+  if((AGS_MACHINE_POPUP_MIDI_IMPORT & import_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI import"));
+    gtk_menu_shell_append((GtkMenuShell *) import, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_midi_import_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  if((AGS_MACHINE_POPUP_WAVE_IMPORT & import_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audio import"));
+    gtk_menu_shell_append((GtkMenuShell *) import, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_wave_import_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }

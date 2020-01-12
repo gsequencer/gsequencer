@@ -20,9 +20,6 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_soundcard.h>
@@ -42,8 +39,10 @@ void ags_export_window_get_property(GObject *gobject,
 				    GValue *value,
 				    GParamSpec *param_spec);
 void ags_export_window_finalize(GObject *gobject);
+
 void ags_export_window_connect(AgsConnectable *connectable);
 void ags_export_window_disconnect(AgsConnectable *connectable);
+
 void ags_export_window_show(GtkWidget *widget);
 gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 

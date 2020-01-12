@@ -1499,9 +1499,18 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 
   WebKitWebView *web_view;
 
+  AgsApplicationContext *application_context;
+
   gchar *start_filename;
+#if defined(AGS_W32API)
+  gchar *app_dir;
+#endif
 
   start_filename = NULL;
+  
+#if defined AGS_W32API
+  app_dir = NULL;
+#endif
   
 #ifdef AGS_ONLINE_HELP_START_FILENAME
   start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
@@ -1556,6 +1565,10 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
   gtk_widget_show_all(online_help_window);
 
   g_free(start_filename);
+
+#if defined AGS_W32API
+  g_free(app_dir);
+#endif
 }
 
 void

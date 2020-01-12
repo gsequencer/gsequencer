@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
@@ -55,6 +56,12 @@ void ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
 
 void ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
+
+void ags_machine_popup_midi_export_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_wave_export_callback(GtkWidget *widget, AgsMachine *machine);
+
+void ags_machine_popup_midi_import_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_wave_import_callback(GtkWidget *widget, AgsMachine *machine);
 
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 

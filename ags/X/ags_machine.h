@@ -93,6 +93,16 @@ typedef enum{
   AGS_MACHINE_SHOW_MIDI_OUTPUT                = 1 <<  5,
 }AgsMachineConnectionOptions;
 
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_EXPORT          = 1,
+  AGS_MACHINE_POPUP_WAVE_EXPORT          = 1 <<  1,
+}AgsMachineExportOptions;
+
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_IMPORT          = 1,
+  AGS_MACHINE_POPUP_WAVE_IMPORT          = 1 <<  1,
+}AgsMachineImportOptions;
+
 struct _AgsMachine
 {
   GtkBin bin;
@@ -101,6 +111,8 @@ struct _AgsMachine
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;
+  guint export_flags;
+  guint import_flags;
 
   char *machine_name;
 
@@ -148,6 +160,10 @@ struct _AgsMachine
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;
+  GtkDialog *midi_export_dialog;
+  GtkDialog *wave_export_dialog;
+  GtkDialog *midi_import_dialog;
+  GtkDialog *wave_import_dialog;
 };
 
 struct _AgsMachineClass
@@ -236,6 +252,8 @@ void ags_machine_copy_pattern(AgsMachine *machine);
 
 void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
 void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
+void ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options);
+void ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options);
 
 void ags_machine_check_message(AgsMachine *machine);
 

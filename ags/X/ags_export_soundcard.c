@@ -20,9 +20,6 @@
 #include <ags/X/ags_export_soundcard.h>
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
@@ -43,8 +40,8 @@ void ags_export_soundcard_finalize(GObject *gobject);
 
 void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
-void ags_export_soundcard_show(GtkWidget *widget);
 
+void ags_export_soundcard_show(GtkWidget *widget);
 gboolean ags_export_soundcard_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -292,6 +289,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 				 AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
   gtk_combo_box_text_append_text(export_soundcard->output_format,
 				 AGS_EXPORT_SOUNDCARD_FORMAT_FLAC);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_AIFF);
   gtk_combo_box_text_append_text(export_soundcard->output_format,
 				 AGS_EXPORT_SOUNDCARD_FORMAT_OGG);
 

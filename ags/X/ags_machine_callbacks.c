@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
+
+#include <ags/X/export/ags_wave_export_dialog.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -549,6 +551,44 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   }
 
   gtk_widget_show_all((GtkWidget *) midi_dialog);
+}
+
+void
+ags_machine_popup_midi_export_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_popup_wave_export_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  AgsWaveExportDialog *wave_export_dialog;
+  
+  if(machine->wave_export_dialog == NULL){
+    wave_export_dialog = ags_wave_export_dialog_new(machine);
+    machine->wave_export_dialog = (GtkDialog *) wave_export_dialog;
+
+    ags_connectable_connect(AGS_CONNECTABLE(wave_export_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(wave_export_dialog));
+
+    gtk_widget_show_all((GtkWidget *) wave_export_dialog);
+  }else{
+    wave_export_dialog = (AgsWaveExportDialog *) machine->wave_export_dialog;
+  }
+
+  gtk_widget_show_all((GtkWidget *) wave_export_dialog);
+}
+
+void
+ags_machine_popup_midi_import_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_popup_wave_import_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  //TODO:JK: implement me
 }
 
 void

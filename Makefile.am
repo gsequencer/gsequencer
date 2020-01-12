@@ -1998,7 +1998,9 @@ libgsequencer_export_h_sources = \
 	ags/X/export/ags_machine_collection.h \
 	ags/X/export/ags_machine_collection_callbacks.h \
 	ags/X/export/ags_machine_collection_entry.h \
-	ags/X/export/ags_machine_collection_entry_callbacks.h
+	ags/X/export/ags_machine_collection_entry_callbacks.h \
+	ags/X/export/ags_wave_export_dialog.h \
+	ags/X/export/ags_wave_export_dialog_callbacks.h
 
 deprecated_libgsequencer_export_c_sources =
 
@@ -2009,7 +2011,9 @@ libgsequencer_export_c_sources = \
 	ags/X/export/ags_machine_collection.c \
 	ags/X/export/ags_machine_collection_callbacks.c \
 	ags/X/export/ags_machine_collection_entry.c \
-	ags/X/export/ags_machine_collection_entry_callbacks.c
+	ags/X/export/ags_machine_collection_entry_callbacks.c \
+	ags/X/export/ags_wave_export_dialog.c \
+	ags/X/export/ags_wave_export_dialog_callbacks.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =

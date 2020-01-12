@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -184,6 +184,9 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   AGS_MACHINE(audiorec)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION;
   
+  ags_machine_popup_add_export_options((AgsMachine *) audiorec,
+				       (AGS_MACHINE_POPUP_WAVE_EXPORT));
+
   /* hbox */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);

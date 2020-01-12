@@ -1321,6 +1321,8 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/export/ags_machine_collection_callbacks.h \
 	ags/X/export/ags_machine_collection_entry.h \
 	ags/X/export/ags_machine_collection_entry_callbacks.h \
+	ags/X/export/ags_wave_export_dialog.h \
+	ags/X/export/ags_wave_export_dialog_callbacks.h \
 	ags/X/machine/ags_audiorec.h \
 	ags/X/machine/ags_audiorec_callbacks.h \
 	ags/X/machine/ags_cell_pattern_callbacks.h \
@@ -1543,6 +1545,8 @@ am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/export/ags_machine_collection_callbacks.c \
 	ags/X/export/ags_machine_collection_entry.c \
 	ags/X/export/ags_machine_collection_entry_callbacks.c \
+	ags/X/export/ags_wave_export_dialog.c \
+	ags/X/export/ags_wave_export_dialog_callbacks.c \
 	ags/X/machine/ags_audiorec.c \
 	ags/X/machine/ags_audiorec_callbacks.c \
 	ags/X/machine/ags_cell_pattern.c \
@@ -1810,7 +1814,9 @@ am__objects_37 = $(am__objects_1) \
 	ags/X/export/libgsequencer_la-ags_machine_collection.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo \
-	ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo
+	ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo \
+	ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo \
+	ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo
 @WITH_LIBINSTPATCH_TRUE@am__objects_38 = ags/X/machine/libgsequencer_la-ags_ffplayer.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_callbacks.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_bridge.lo \
@@ -4602,6 +4608,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo \
 	ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo \
 	ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo \
+	ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Plo \
+	ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Plo \
 	ags/X/file/$(DEPDIR)/libgsequencer_la-ags_simple_file.Plo \
 	ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Plo \
 	ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard_callbacks.Plo \
@@ -9529,7 +9537,9 @@ libgsequencer_export_h_sources = \
 	ags/X/export/ags_machine_collection.h \
 	ags/X/export/ags_machine_collection_callbacks.h \
 	ags/X/export/ags_machine_collection_entry.h \
-	ags/X/export/ags_machine_collection_entry_callbacks.h
+	ags/X/export/ags_machine_collection_entry_callbacks.h \
+	ags/X/export/ags_wave_export_dialog.h \
+	ags/X/export/ags_wave_export_dialog_callbacks.h
 
 deprecated_libgsequencer_export_c_sources = 
 libgsequencer_export_c_sources = \
@@ -9539,7 +9549,9 @@ libgsequencer_export_c_sources = \
 	ags/X/export/ags_machine_collection.c \
 	ags/X/export/ags_machine_collection_callbacks.c \
 	ags/X/export/ags_machine_collection_entry.c \
-	ags/X/export/ags_machine_collection_entry_callbacks.c
+	ags/X/export/ags_machine_collection_entry_callbacks.c \
+	ags/X/export/ags_wave_export_dialog.c \
+	ags/X/export/ags_wave_export_dialog_callbacks.c
 
 
 # libgsequencer - machine
@@ -11711,6 +11723,12 @@ ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo:  \
 	ags/X/export/$(am__dirstamp) \
 	ags/X/export/$(DEPDIR)/$(am__dirstamp)
 ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo:  \
 	ags/X/export/$(am__dirstamp) \
 	ags/X/export/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/$(am__dirstamp):
@@ -13903,6 +13921,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/file/$(DEPDIR)/libgsequencer_la-ags_simple_file.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard_callbacks.Plo@am__quote@ # am--include-marker
@@ -18353,6 +18373,20 @@ ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo: ags/X/e
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_machine_collection_entry_callbacks.c' object='ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo `test -f 'ags/X/export/ags_machine_collection_entry_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_entry_callbacks.c
+
+ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo: ags/X/export/ags_wave_export_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Tpo -c -o ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo `test -f 'ags/X/export/ags_wave_export_dialog.c' || echo '$(srcdir)/'`ags/X/export/ags_wave_export_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_wave_export_dialog.c' object='ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_wave_export_dialog.lo `test -f 'ags/X/export/ags_wave_export_dialog.c' || echo '$(srcdir)/'`ags/X/export/ags_wave_export_dialog.c
+
+ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo: ags/X/export/ags_wave_export_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Tpo -c -o ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo `test -f 'ags/X/export/ags_wave_export_dialog_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_wave_export_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_wave_export_dialog_callbacks.c' object='ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_wave_export_dialog_callbacks.lo `test -f 'ags/X/export/ags_wave_export_dialog_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_wave_export_dialog_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_audiorec.lo: ags/X/machine/ags_audiorec.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_audiorec.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_audiorec.Tpo -c -o ags/X/machine/libgsequencer_la-ags_audiorec.lo `test -f 'ags/X/machine/ags_audiorec.c' || echo '$(srcdir)/'`ags/X/machine/ags_audiorec.c
@@ -24625,6 +24659,8 @@ distclean: distclean-recursive
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo
+	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Plo
+	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Plo
 	-rm -f ags/X/file/$(DEPDIR)/libgsequencer_la-ags_simple_file.Plo
 	-rm -f ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Plo
 	-rm -f ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard_callbacks.Plo
@@ -25556,6 +25592,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo
 	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo
+	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog.Plo
+	-rm -f ags/X/export/$(DEPDIR)/libgsequencer_la-ags_wave_export_dialog_callbacks.Plo
 	-rm -f ags/X/file/$(DEPDIR)/libgsequencer_la-ags_simple_file.Plo
 	-rm -f ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Plo
 	-rm -f ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard_callbacks.Plo
