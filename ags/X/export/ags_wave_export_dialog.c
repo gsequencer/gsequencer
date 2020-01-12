@@ -24,6 +24,9 @@
 #include <ags/X/ags_notation_editor.h>
 
 #include <stdlib.h>
+
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_wave_export_dialog_class_init(AgsWaveExportDialogClass *wave_export_dialog);
@@ -238,6 +241,10 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     0);
   
   wave_export_dialog->start_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
+  gtk_spin_button_set_digits(wave_export_dialog->start_tact,
+			     3);
+  gtk_spin_button_set_value(wave_export_dialog->start_tact,
+			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(wave_export_dialog->start_tact),
   		     FALSE, FALSE,
@@ -260,7 +267,11 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   		     TRUE, TRUE,
   		     0);
   
-  wave_export_dialog->end_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
+  wave_export_dialog->end_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS / 16.0, 1.0);
+  gtk_spin_button_set_digits(wave_export_dialog->end_tact,
+			     3);
+  gtk_spin_button_set_value(wave_export_dialog->end_tact,
+			    4.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(wave_export_dialog->end_tact),
   		     FALSE, FALSE,
@@ -424,7 +435,23 @@ ags_wave_export_dialog_connect(AgsConnectable *connectable)
 
   wave_export_dialog->flags |= AGS_WAVE_EXPORT_DIALOG_CONNECTED;
 
-  //TODO:JK: implement me
+  g_signal_connect(G_OBJECT(wave_export_dialog->file_chooser_button), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback), wave_export_dialog);
+  
+  g_signal_connect_after(G_OBJECT(wave_export_dialog->start_tact), "value-changed",
+			 G_CALLBACK(ags_wave_export_dialog_start_tact_callback), wave_export_dialog);
+
+  g_signal_connect_after(G_OBJECT(wave_export_dialog->end_tact), "value-changed",
+			 G_CALLBACK(ags_wave_export_dialog_end_tact_callback), wave_export_dialog);
+
+  g_signal_connect(G_OBJECT(wave_export_dialog->apply), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_apply_callback), wave_export_dialog);
+
+  g_signal_connect(G_OBJECT(wave_export_dialog->ok), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_ok_callback), wave_export_dialog);
+
+  g_signal_connect(G_OBJECT(wave_export_dialog->cancel), "clicked",
+		   G_CALLBACK(ags_wave_export_dialog_cancel_callback), wave_export_dialog);
 }
 
 void
@@ -442,7 +469,41 @@ ags_wave_export_dialog_disconnect(AgsConnectable *connectable)
 
   wave_export_dialog->flags &= (~AGS_WAVE_EXPORT_DIALOG_CONNECTED);
 
-  //TODO:JK: implement me
+  g_object_disconnect(G_OBJECT(wave_export_dialog->file_chooser_button),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_export_dialog_file_chooser_button_callback),
+		      wave_export_dialog,
+		      NULL);
+  
+  g_object_disconnect(G_OBJECT(wave_export_dialog->start_tact),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_wave_export_dialog_start_tact_callback),
+		      wave_export_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_export_dialog->end_tact),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_wave_export_dialog_end_tact_callback),
+		      wave_export_dialog,
+		      NULL);
+  
+  g_object_disconnect(G_OBJECT(wave_export_dialog->apply),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_export_dialog_apply_callback),
+		      wave_export_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_export_dialog->ok),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_export_dialog_ok_callback),
+		      wave_export_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_export_dialog->cancel),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_export_dialog_cancel_callback),
+		      wave_export_dialog,
+		      NULL);
 }
 
 void
@@ -454,19 +515,215 @@ ags_wave_export_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_wave_export_dialog_apply(AgsApplicable *applicable)
 {
-  /* empty */
+  AgsApplicationContext *application_context;
+  
+  AgsWaveExportDialog *wave_export_dialog;
+
+  AgsBuffer *buffer;
+  AgsAudioFile *audio_file;
+
+  AgsTimestamp *timestamp;
+  
+  GObject *soundcard;
+
+  GList *start_wave, *wave;
+  
+  void *data;
+  
+  gchar *filename;
+  
+  gdouble bpm;
+  gdouble delay, delay_factor;
+  gdouble start_tact, end_tact;
+  gdouble offset;
+  guint default_offset;
+  guint64 start_frame, end_frame;
+  guint destination_offset, source_offset;
+  guint audio_channels;
+  guint copy_mode;
+  guint samplerate;
+  guint format;
+  guint source_format;
+  guint buffer_size;
+  guint i, j;
+  
+  wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(applicable);
+
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+
+  /* get some fields */
+  g_object_get(wave_export_dialog->machine->audio,
+	       "wave", &start_wave,
+	       "audio-channels", &audio_channels,
+	       "samplerate", &samplerate,
+	       "format", &format,
+	       "buffer-size", &buffer_size,	       
+	       NULL);
+  
+  filename = gtk_entry_get_text(wave_export_dialog->filename);
+
+  if(g_file_test(filename,
+		 G_FILE_TEST_EXISTS)){
+    g_remove(filename);
+  }
+  
+  start_tact = gtk_spin_button_get_value(wave_export_dialog->start_tact);
+  end_tact = gtk_spin_button_get_value(wave_export_dialog->end_tact);
+
+  offset = 16.0 * (end_tact - start_tact);
+  
+  audio_file = ags_audio_file_new(filename,
+				  soundcard,
+				  -1);
+
+  audio_file->file_audio_channels = audio_channels;
+  audio_file->file_samplerate = samplerate;  
+  
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  default_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+  timestamp = ags_timestamp_new();
+  timestamp->flags = AGS_TIMESTAMP_OFFSET;
+  
+  data = ags_stream_alloc(audio_channels * buffer_size,
+			  format);
+
+  start_frame = ((16.0 * start_tact) / (16.0 * delay_factor * bpm / 60.0)) * samplerate;
+  end_frame = ((16.0 * end_tact) / (16.0 * delay_factor * bpm / 60.0)) * samplerate + buffer_size;
+  
+  for(i = start_frame; i + buffer_size < end_frame; ){
+    guint current_buffer_size;
+
+    GRecMutex *buffer_mutex;
+    
+    ags_timestamp_set_ags_offset(timestamp,
+				 default_offset * floor((gdouble) i / (gdouble) default_offset));
+    
+    ags_audio_buffer_util_clear_buffer(data, audio_channels,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
+    current_buffer_size = buffer_size;
+    
+    if(i == start_frame){
+      source_offset = start_frame % buffer_size;
+
+      current_buffer_size -= source_offset;
+    }else{
+      source_offset = 0;
+    }
+    
+    for(j = 0; j < audio_channels; j++){
+      wave = ags_wave_find_near_timestamp(start_wave, j,
+					  timestamp);
+
+      if(wave == NULL){
+	continue;
+      }
+
+      buffer = ags_wave_find_point(wave->data,
+				   i,
+				   FALSE);
+      
+      if(buffer != NULL){
+	g_object_get(buffer,
+		     "format", &source_format,
+		     NULL);
+	
+	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+							ags_audio_buffer_util_format_from_soundcard(source_format));
+	
+	buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
+
+	destination_offset = j;
+
+	g_rec_mutex_lock(buffer_mutex);
+      
+	ags_audio_buffer_util_copy_buffer_to_buffer(data, audio_channels, destination_offset,
+						    buffer->data, 1, source_offset,
+						    current_buffer_size, copy_mode);
+
+	g_rec_mutex_unlock(buffer_mutex);
+      }
+    }
+    
+    ags_audio_file_write(audio_file,
+			 data,
+			 current_buffer_size,
+			 format);
+    
+    i += buffer_size;
+  }
+  
+  ags_audio_file_flush(audio_file);
+  ags_audio_file_close(audio_file);
 }
 
 void
 ags_wave_export_dialog_reset(AgsApplicable *applicable)
 {
-  /* empty */
+  AgsWaveExportDialog *wave_export_dialog;
+
+  wave_export_dialog = AGS_WAVE_EXPORT_DIALOG(applicable);
+
+  ags_wave_export_dialog_update_duration(wave_export_dialog);
 }
 
 void
 ags_wave_export_dialog_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_wave_export_dialog_parent_class)->show(widget);
+}
+
+void
+ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog)
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *soundcard;
+
+  gchar *str;
+  
+  gdouble bpm;
+  gdouble delay, delay_factor;
+  gdouble start_tact, end_tact;
+  gdouble offset;
+  
+  if(!AGS_IS_WAVE_EXPORT_DIALOG(wave_export_dialog)){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  
+  start_tact = gtk_spin_button_get_value(wave_export_dialog->start_tact);
+  end_tact = gtk_spin_button_get_value(wave_export_dialog->end_tact);
+  
+  offset = 16.0 * (end_tact - start_tact);
+
+  str = ags_time_get_uptime_from_offset(offset,
+					bpm,
+					delay,
+					delay_factor);
+
+  gtk_label_set_label(wave_export_dialog->duration,
+		      str);
+  
+  g_free(str);
 }
 
 /**

@@ -42,6 +42,17 @@ ags_wave_export_dialog_file_chooser_button_callback(GtkWidget *file_chooser_butt
   gtk_widget_destroy((GtkWidget *) file_chooser);
 }
 
+void
+ags_wave_export_dialog_start_tact_callback(GtkSpinButton *spin_button, AgsWaveExportDialog *wave_export_dialog)
+{
+  ags_wave_export_dialog_update_duration(wave_export_dialog);
+}
+
+void
+ags_wave_export_dialog_end_tact_callback(GtkSpinButton *spin_button, AgsWaveExportDialog *wave_export_dialog)
+{
+  ags_wave_export_dialog_update_duration(wave_export_dialog);
+}
 
 int
 ags_wave_export_dialog_apply_callback(GtkWidget *widget, AgsWaveExportDialog *wave_export_dialog)

@@ -83,6 +83,8 @@ struct _AgsWaveExportDialogClass
 
 GType ags_wave_export_dialog_get_type(void);
 
+void ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog);
+
 AgsWaveExportDialog* ags_wave_export_dialog_new(AgsMachine *machine);
 
 G_END_DECLS
