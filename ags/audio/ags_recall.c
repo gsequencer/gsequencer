@@ -164,7 +164,7 @@ enum{
 static gpointer ags_recall_parent_class = NULL;
 static guint recall_signals[LAST_SIGNAL];
 
-static gboolean ags_recall_global_children_lock_free = TRUE;
+static gboolean ags_recall_global_children_lock_free = FALSE;
 static gboolean ags_recall_global_omit_event = TRUE;
 static gboolean ags_recall_global_performance_mode = FALSE;
 static gboolean ags_recall_global_rt_safe = FALSE;
@@ -5837,37 +5837,32 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
   AgsRecallID *current_recall_id;
   AgsRecyclingContext *current_recycling_context;
 
-  GRecMutex *current_recall_mutex;
-  GRecMutex *current_recall_id_mutex;
-
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
-    /* get recall mutex */
-    current_recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(current_recall);
-
     /* get some fields */
-    g_rec_mutex_lock(current_recall_mutex);
-
-    current_recall_id = current_recall->recall_id;
+    current_recall_id = NULL;
+    current_recycling_context = NULL;    
     
-    g_rec_mutex_unlock(current_recall_mutex);
+    g_object_get(current_recall,
+		 "recall-id", &current_recall_id,
+		 NULL);
 
     /* get recycling context */
-    current_recycling_context = NULL;
-    
     if(current_recall_id != NULL){
-      /* get recall id mutex */
-      current_recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(current_recall_id);
-
-      /* recycling context */
-      g_rec_mutex_lock(current_recall_id_mutex);
-
-      current_recycling_context = current_recall_id->recycling_context;
-      
-      g_rec_mutex_unlock(current_recall_id_mutex);
+      g_object_get(current_recall_id,
+		   "recycling-context", &current_recycling_context,
+		   NULL);
     }
 
+    if(current_recall_id != NULL){
+      g_object_unref(current_recall_id);
+    }
+
+    if(current_recycling_context != NULL){
+      g_object_unref(current_recycling_context);
+    }
+    
     /* check recycling context */
     if(current_recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall);
