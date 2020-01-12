@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1496,7 +1496,50 @@ void
 ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
   GtkWidget *online_help_window;
+
   WebKitWebView *web_view;
+
+  gchar *start_filename;
+
+  start_filename = NULL;
+  
+#ifdef AGS_ONLINE_HELP_START_FILENAME
+  start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
+#else
+  if((start_filename = getenv("AGS_ONLINE_HELP_START_FILENAME")) != NULL){
+    start_filename = g_strdup(start_filename);    
+  }else{
+#if defined (AGS_W32API)
+    application_context = ags_application_context_get_instance();
+
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+    }
+  
+    start_filename = g_strdup_printf("%s\\share\\doc\\gsequencer-doc\\html\\index.html",
+				     g_get_current_dir());
+    
+    if(!g_file_test(start_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(start_filename);
+
+      if(g_path_is_absolute(app_dir)){
+	start_filename = g_strdup_printf("%s\\%s",
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
+      }else{
+	start_filename = g_strdup_printf("%s\\%s\\%s",
+					 g_get_current_dir(),
+					 app_dir,
+					 "\\share\\doc\\gsequencer-doc\\html\\index.html");
+      }
+    }
+#else
+    start_filename = g_strdup("file:///usr/share/doc/gsequencer-doc/html/index.html");
+#endif
+  }
+#endif
   
   online_help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -1509,8 +1552,10 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
   gtk_container_add(GTK_CONTAINER(online_help_window), GTK_WIDGET(web_view));
 
   //FIXME:JK: hard-coded
-  webkit_web_view_load_uri(web_view, "file:///usr/share/doc/gsequencer-doc/html/index.html");
+  webkit_web_view_load_uri(web_view, start_filename);
   gtk_widget_show_all(online_help_window);
+
+  g_free(start_filename);
 }
 
 void
