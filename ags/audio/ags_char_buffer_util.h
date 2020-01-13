@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,25 @@
 
 G_BEGIN_DECLS
 
+/**
+ * AgsCharBufferUtilCopyMode:
+ * @AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER: copy signed 8 bit to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_S16_TO_CBUFFER: copy signed 16 bit to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_S24_TO_CBUFFER: copy signed 24 bit to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_S32_TO_CBUFFER: copy signed 32 bit to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_S64_TO_CBUFFER: copy signed 64 bit to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_FLOAT_TO_CBUFFER: copy float to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_DOUBLE_TO_CBUFFER: copy double to char buffer
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S8: copy char buffer to signed 8 bit
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S16: copy char buffer to signed 16 bit
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S24: copy char buffer to signed 24 bit
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S32: copy char buffer to signed 32 bit
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S64: copy char buffer to signed 64 bit
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_FLOAT: copy char buffer to float
+ * @AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_DOUBLE: copy char buffer to double
+ * 
+ * Copy modes.
+ */
 typedef enum{
   AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER,
   AGS_CHAR_BUFFER_UTIL_COPY_S16_TO_CBUFFER,

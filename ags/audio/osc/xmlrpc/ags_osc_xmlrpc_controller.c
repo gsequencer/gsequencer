@@ -54,7 +54,7 @@ void ags_osc_xmlrpc_controller_get_property(GObject *gobject,
 void ags_osc_xmlrpc_controller_dispose(GObject *gobject);
 void ags_osc_xmlrpc_controller_finalize(GObject *gobject);
 
-void* ags_osc_xmlrpc_controller_delegate_thread(void *ptr);
+gboolean ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_controller);
 
 void ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
 void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
@@ -247,10 +247,6 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 
   osc_xmlrpc_controller->osc_xmlrpc_server = NULL;
 
-  osc_xmlrpc_controller->delegate_timeout = (struct timespec *) malloc(sizeof(struct timespec));
-
-  osc_xmlrpc_controller->delegate_timeout = 0;
-
   g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
 		   FALSE);
 
@@ -258,8 +254,6 @@ ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller)
 
   g_cond_init(&(osc_xmlrpc_controller->delegate_cond));
   
-  osc_xmlrpc_controller->delegate_thread = NULL;
-
   osc_xmlrpc_controller->message = NULL;
 
   osc_xmlrpc_controller->queued_response = NULL;
@@ -389,20 +383,22 @@ ags_osc_xmlrpc_controller_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_osc_xmlrpc_controller_parent_class)->finalize(gobject);
 }
 
-void*
-ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
+gboolean
+ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_controller)
 {
   AgsOscXmlrpcServer *osc_xmlrpc_server;
-  AgsOscXmlrpcController *osc_xmlrpc_controller;
 
+  AgsOscMessage *current;
+
+  GList *start_osc_response, *osc_response;      
+  GList *start_message, *message;
+  GList *start_list, *list;
   GList *start_controller, *controller;
   
   gint64 time_now, time_next;
   gint64 current_time;
   
   GRecMutex *controller_mutex;
-
-  osc_xmlrpc_controller = AGS_OSC_XMLRPC_CONTROLLER(ptr);
 
   g_object_get(osc_xmlrpc_controller,
 	       "osc-xmlrpc-server", &osc_xmlrpc_server,
@@ -417,306 +413,286 @@ ags_osc_xmlrpc_controller_delegate_thread(void *ptr)
 
   time_next = 0;
 
-  ags_osc_xmlrpc_controller_set_flags(osc_xmlrpc_controller,
-				      AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING);
-  
-  while(ags_osc_xmlrpc_controller_test_flags(osc_xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING)){
-    AgsOscMessage *current;
+  /*  */
+  g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
 
-    GList *start_osc_response, *osc_response;      
-    GList *start_message, *message;
-    GList *start_list, *list;
+  time_now = g_get_monotonic_time();
 
-    /*  */
-    g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
-
-    time_now = g_get_monotonic_time();
-    osc_xmlrpc_controller->delegate_timeout = time_now + (G_TIME_SPAN_SECOND / 30);
+  g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
+		   FALSE);
     
-    while(!g_atomic_int_get(&(osc_xmlrpc_controller->do_reset)) &&
-	  ((time_now < time_next) &&
-	   (time_now < osc_xmlrpc_controller->delegate_timeout))){
-      g_cond_wait_until(&(osc_xmlrpc_controller->delegate_cond),
-			&(osc_xmlrpc_controller->delegate_mutex),
-			osc_xmlrpc_controller->delegate_timeout);
+  g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
+
+
+  /* check queued response */
+  g_rec_mutex_lock(controller_mutex);
+
+  start_osc_response = g_list_copy_deep(osc_xmlrpc_controller->queued_response,
+					(GCopyFunc) g_object_ref,
+					NULL);
+	      
+  g_rec_mutex_unlock(controller_mutex);
+    
+  osc_response = start_osc_response;
       
-      time_now = g_get_monotonic_time();
+  while(osc_response != NULL){
+    gint64 num_written;
+
+    gboolean has_expired;
+
+    GRecMutex *response_mutex;
+      
+    static const struct timespec timeout_delay = {
+      30,
+      0,
+    };
+      
+    g_object_get(osc_response->data,
+		 "osc-message", &current,
+		 NULL);
+	    
+    num_written = ags_osc_connection_write_response(current->osc_connection,
+						    osc_response->data);
+
+    g_object_unref(current);
+
+    response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
+
+    g_rec_mutex_lock(response_mutex);
+      
+    has_expired = ags_time_timeout_expired(AGS_OSC_RESPONSE(osc_response->data)->creation_time, &timeout_delay);
+
+    g_rec_mutex_unlock(response_mutex);
+      
+    if(num_written != -1 ||
+       has_expired){
+      g_rec_mutex_lock(controller_mutex);
+
+      osc_xmlrpc_controller->queued_response = g_list_remove(osc_xmlrpc_controller->queued_response,
+							     osc_response->data);
+      g_object_unref(osc_response->data);
+	      
+      g_rec_mutex_unlock(controller_mutex);
     }
-
-    g_atomic_int_set(&(osc_xmlrpc_controller->do_reset),
-		     FALSE);
-    
-    g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
-
-
-    /* check queued response */
-    g_rec_mutex_lock(controller_mutex);
-
-    start_osc_response = g_list_copy_deep(osc_xmlrpc_controller->queued_response,
-					  (GCopyFunc) g_object_ref,
-					  NULL);
-	      
-    g_rec_mutex_unlock(controller_mutex);
-    
-    osc_response = start_osc_response;
-      
-    while(osc_response != NULL){
-      gint64 num_written;
-
-      gboolean has_expired;
-
-      GRecMutex *response_mutex;
-      
-      static const struct timespec timeout_delay = {
-	30,
-	0,
-      };
-      
-      g_object_get(osc_response->data,
-		   "osc-message", &current,
-		   NULL);
 	    
-      num_written = ags_osc_connection_write_response(current->osc_connection,
-						      osc_response->data);
-
-      g_object_unref(current);
-
-      response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
-
-      g_rec_mutex_lock(response_mutex);
-      
-      has_expired = ags_time_timeout_expired(AGS_OSC_RESPONSE(osc_response->data)->creation_time, &timeout_delay);
-
-      g_rec_mutex_unlock(response_mutex);
-      
-      if(num_written != -1 ||
-	 has_expired){
-	g_rec_mutex_lock(controller_mutex);
-
-	osc_xmlrpc_controller->queued_response = g_list_remove(osc_xmlrpc_controller->queued_response,
-							       osc_response->data);
-	g_object_unref(osc_response->data);
-	      
-	g_rec_mutex_unlock(controller_mutex);
-      }
+    osc_response = osc_response->next;
+  }    
 	    
-      osc_response = osc_response->next;
-    }    
-	    
-    g_list_free_full(start_osc_response,
-		     g_object_unref);
+  g_list_free_full(start_osc_response,
+		   g_object_unref);
     
-    /* check delegate */
-    g_rec_mutex_lock(controller_mutex);
+  /* check delegate */
+  g_rec_mutex_lock(controller_mutex);
 
-    start_message = NULL;
-    list =
-      start_list = g_list_copy_deep(osc_xmlrpc_controller->message,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
+  start_message = NULL;
+  list =
+    start_list = g_list_copy_deep(osc_xmlrpc_controller->message,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
     
-    g_rec_mutex_unlock(controller_mutex);
+  g_rec_mutex_unlock(controller_mutex);
 
-    while(list != NULL){
-      gboolean immediately;
+  while(list != NULL){
+    gboolean immediately;
       
-      GRecMutex *message_mutex;
+    GRecMutex *message_mutex;
 
-      message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(list->data);
+    message_mutex = AGS_OSC_MESSAGE_GET_OBJ_MUTEX(list->data);
 
-      g_object_get(list->data,
-		   "immediately", &immediately,
-		   NULL);
+    g_object_get(list->data,
+		 "immediately", &immediately,
+		 NULL);
       
-      if(immediately){
+    if(immediately){
+      start_message = g_list_prepend(start_message,
+				     list->data);
+      g_object_ref(list->data);
+	
+      ags_osc_xmlrpc_controller_remove_message(osc_xmlrpc_controller,
+					       list->data);
+    }else{
+      g_rec_mutex_lock(message_mutex);
+	
+      current_time = AGS_OSC_MESSAGE(list->data)->tv_sec + AGS_OSC_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
+
+      g_rec_mutex_unlock(message_mutex);
+      
+      if(current_time < time_now){
 	start_message = g_list_prepend(start_message,
 				       list->data);
 	g_object_ref(list->data);
-	
+	  
 	ags_osc_xmlrpc_controller_remove_message(osc_xmlrpc_controller,
 						 list->data);
       }else{
-	g_rec_mutex_lock(message_mutex);
-	
-	current_time = AGS_OSC_MESSAGE(list->data)->tv_sec + AGS_OSC_MESSAGE(list->data)->tv_fraction / 4.294967296 * 1000.0;
-
-	g_rec_mutex_unlock(message_mutex);
-      
-	if(current_time < time_now){
-	  start_message = g_list_prepend(start_message,
-					 list->data);
-	  g_object_ref(list->data);
-	  
-	  ags_osc_xmlrpc_controller_remove_message(osc_xmlrpc_controller,
-						   list->data);
-	}else{
-	  break;
-	}
+	break;
       }
-
-      list = list->next;
     }
 
-    g_list_free_full(start_list,
-		     (GDestroyNotify) g_object_unref);
-    
-    message = 
-      start_message = g_list_reverse(start_message);
-
-    while(message != NULL){
-      gchar *path;
-
-      ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
-				     &path, NULL);
-
-      controller = start_controller;
-      start_osc_response = NULL;
-      
-      while(controller != NULL){
-	gboolean success;
-	
-	GRecMutex *mutex;
-
-	/* get OSC controller mutex */
-	mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
-
-	/* match path */
-	g_rec_mutex_lock(mutex);
-	
-	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->context_path,
-			     path);
-
-	g_rec_mutex_unlock(mutex);
-	
-	if(success){
-	  current = AGS_OSC_MESSAGE(message->data);
-	  
-	  /* delegate */
-	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_action_controller_run_action(controller->data,
-								      current->osc_connection,
-								      current->message, current->message_size);
-	  }else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_config_controller_apply_config(controller->data,
-									current->osc_connection,
-									current->message, current->message_size);
-	  }else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_info_controller_get_info(controller->data,
-								  current->osc_connection,
-								  current->message, current->message_size);
-	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
-									current->osc_connection,
-									current->message, current->message_size);
-	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_node_controller_get_data(controller->data,
-								  current->osc_connection,
-								  current->message, current->message_size);
-	  }else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_renew_controller_set_data(controller->data,
-								   current->osc_connection,
-								   current->message, current->message_size);
-	  }else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_status_controller_get_status(controller->data,
-								      current->osc_connection,
-								      current->message, current->message_size);
-	  }else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
-	    start_osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
-								      current->osc_connection,
-								      current->message, current->message_size);
-	  }
-
-	  /* write response */
-	  osc_response = start_osc_response;
-      
-	  while(osc_response != NULL){
-	    gint64 num_written;
-
-#ifdef __APPLE__
-	    clock_serv_t cclock;
-	    mach_timespec_t mts;
-#endif
-	    
-	    GRecMutex *response_mutex;
-      
-	    num_written = ags_osc_connection_write_response(current->osc_connection,
-							    osc_response->data);
-
-	    if(num_written == -1){
-	      response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
-
-	      g_rec_mutex_lock(response_mutex);
-      
-	      AGS_OSC_RESPONSE(osc_response->data)->creation_time = (struct timespec *) malloc(sizeof(struct timespec));
-
-#ifdef __APPLE__
-	      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-      
-	      clock_get_time(cclock, &mts);
-	      mach_port_deallocate(mach_task_self(), cclock);
-      
-	      AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_sec = mts.tv_sec;
-	      AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_nsec = mts.tv_nsec;
-#else
-	      clock_gettime(CLOCK_MONOTONIC, AGS_OSC_RESPONSE(osc_response->data)->creation_time);
-#endif
-
-	      g_rec_mutex_unlock(response_mutex);
-	      
-	      g_object_set(osc_response->data,
-			   "osc-message", current,
-			   NULL);
-	      
-	      g_rec_mutex_lock(controller_mutex);
-
-	      osc_xmlrpc_controller->queued_response = g_list_prepend(osc_xmlrpc_controller->queued_response,
-								      osc_response->data);
-	      g_object_ref(osc_response->data);
-	      
-	      g_rec_mutex_unlock(controller_mutex);
-	    }
-	    
-	    osc_response = osc_response->next;
-	  }
-	    
-	  g_list_free_full(start_osc_response,
-			   g_object_unref);
-	  
-	  break;
-	}
-	
-	controller = controller->next;
-      }
-
-      message = message->next;
-    }
-    
-    /* free messages */
-    g_list_free_full(start_message,
-		     (GDestroyNotify) g_object_unref);
-
-    /* next */
-    g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
-
-    if(osc_xmlrpc_controller->message != NULL){
-      time_next = AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_sec + AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_fraction / 4.294967296 * 1000.0;
-    }else{
-      time_now = g_get_monotonic_time();
-
-      time_next = time_now + G_TIME_SPAN_SECOND / 30;
-    }
-    
-    g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
+    list = list->next;
   }
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+    
+  message = 
+    start_message = g_list_reverse(start_message);
+
+  while(message != NULL){
+    gchar *path;
+
+    ags_osc_buffer_util_get_string(AGS_OSC_MESSAGE(message->data)->message,
+				   &path, NULL);
+
+    controller = start_controller;
+    start_osc_response = NULL;
+      
+    while(controller != NULL){
+      gboolean success;
+	
+      GRecMutex *mutex;
+
+      /* get OSC controller mutex */
+      mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
+
+      /* match path */
+      g_rec_mutex_lock(mutex);
+	
+      success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->context_path,
+			   path);
+
+      g_rec_mutex_unlock(mutex);
+	
+      if(success){
+	current = AGS_OSC_MESSAGE(message->data);
+	  
+	/* delegate */
+	if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_action_controller_run_action(controller->data,
+								    current->osc_connection,
+								    current->message, current->message_size);
+	}else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_config_controller_apply_config(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
+	}else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_info_controller_get_info(controller->data,
+								current->osc_connection,
+								current->message, current->message_size);
+	}else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
+	}else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_node_controller_get_data(controller->data,
+								current->osc_connection,
+								current->message, current->message_size);
+	}else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_renew_controller_set_data(controller->data,
+								 current->osc_connection,
+								 current->message, current->message_size);
+	}else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_status_controller_get_status(controller->data,
+								    current->osc_connection,
+								    current->message, current->message_size);
+	}else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
+	  start_osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
+								    current->osc_connection,
+								    current->message, current->message_size);
+	}
+
+	/* write response */
+	osc_response = start_osc_response;
+      
+	while(osc_response != NULL){
+	  gint64 num_written;
+
+#ifdef __APPLE__
+	  clock_serv_t cclock;
+	  mach_timespec_t mts;
+#endif
+	    
+	  GRecMutex *response_mutex;
+      
+	  num_written = ags_osc_connection_write_response(current->osc_connection,
+							  osc_response->data);
+
+	  if(num_written == -1){
+	    response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response->data);
+
+	    g_rec_mutex_lock(response_mutex);
+      
+	    AGS_OSC_RESPONSE(osc_response->data)->creation_time = (struct timespec *) malloc(sizeof(struct timespec));
+
+#ifdef __APPLE__
+	    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+	    clock_get_time(cclock, &mts);
+	    mach_port_deallocate(mach_task_self(), cclock);
+      
+	    AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_sec = mts.tv_sec;
+	    AGS_OSC_RESPONSE(osc_response->data)->creation_time->tv_nsec = mts.tv_nsec;
+#else
+	    clock_gettime(CLOCK_MONOTONIC, AGS_OSC_RESPONSE(osc_response->data)->creation_time);
+#endif
+
+	    g_rec_mutex_unlock(response_mutex);
+	      
+	    g_object_set(osc_response->data,
+			 "osc-message", current,
+			 NULL);
+	      
+	    g_rec_mutex_lock(controller_mutex);
+
+	    osc_xmlrpc_controller->queued_response = g_list_prepend(osc_xmlrpc_controller->queued_response,
+								    osc_response->data);
+	    g_object_ref(osc_response->data);
+	      
+	    g_rec_mutex_unlock(controller_mutex);
+	  }
+	    
+	  osc_response = osc_response->next;
+	}
+	    
+	g_list_free_full(start_osc_response,
+			 g_object_unref);
+	  
+	break;
+      }
+	
+      controller = controller->next;
+    }
+
+    message = message->next;
+  }
+    
+  /* free messages */
+  g_list_free_full(start_message,
+		   (GDestroyNotify) g_object_unref);
+
+  /* next */
+  g_mutex_lock(&(osc_xmlrpc_controller->delegate_mutex));
+
+  if(osc_xmlrpc_controller->message != NULL){
+    time_next = AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_sec + AGS_OSC_MESSAGE(osc_xmlrpc_controller->message)->tv_fraction / 4.294967296 * 1000.0;
+  }else{
+    time_now = g_get_monotonic_time();
+
+    time_next = time_now + G_TIME_SPAN_SECOND / 30;
+  }
+    
+  g_mutex_unlock(&(osc_xmlrpc_controller->delegate_mutex));
 
   g_object_unref(osc_xmlrpc_server);
   
   g_list_free_full(start_controller,
 		   g_object_unref);
   
-  g_thread_exit(NULL);
-
-  return(NULL);
+  if(!ags_osc_xmlrpc_controller_test_flags(osc_xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING)){
+    return(G_SOURCE_REMOVE);
+  }
+    
+  return(G_SOURCE_CONTINUE);
 }
 
 /**
@@ -886,6 +862,15 @@ ags_osc_xmlrpc_controller_remove_message(AgsOscXmlrpcController *osc_xmlrpc_cont
 void
 ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller)
 {
+  AgsConfig *config;
+
+  GMainContext *main_context;
+  GSource *timeout_source;
+  
+  gchar *str;
+
+  gdouble delegate_timeout;
+
   GRecMutex *controller_mutex;
 
   /* get OSC xmlrpc controller mutex */
@@ -904,10 +889,41 @@ ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc
   
   g_rec_mutex_unlock(controller_mutex);
 
-  /* create delegate thread */
-  osc_xmlrpc_controller->delegate_thread = g_thread_new("Advanced Gtk+ Sequencer OSC XMLRPC Server - delegate thread",
-							ags_osc_xmlrpc_controller_delegate_thread,
-							osc_xmlrpc_controller);
+  config = ags_config_get_instance();
+  
+  /* delegate timeout */
+  ags_osc_xmlrpc_controller_set_flags(osc_xmlrpc_controller,
+				      AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING);
+  
+  delegate_timeout = AGS_OSC_XMLRPC_CONTROLLER_DEFAULT_DELEGATE_TIMEOUT;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_OSC_SERVER,
+			     "delegate-timeout");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_OSC_SERVER_0,
+			       "delegate-timeout");
+  }
+  
+  if(str != NULL){
+    delegate_timeout = g_ascii_strtod(str,
+				     NULL);
+    
+    free(str);
+  }
+
+  /* create delegate timeout */
+  main_context = g_main_context_get_thread_default();
+
+  timeout_source = g_timeout_source_new(delegate_timeout * G_TIME_SPAN_MILLISECOND);
+  g_source_set_callback(timeout_source,
+			ags_osc_xmlrpc_controller_delegate_timeout,
+			osc_xmlrpc_controller,
+			NULL);
+  g_source_attach(timeout_source,
+		  main_context);
 }
 
 /**
@@ -940,8 +956,6 @@ ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_
   ags_osc_xmlrpc_controller_unset_flags(osc_xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING);
 
   /* join thread */
-  g_thread_join(osc_xmlrpc_controller->delegate_thread);
-  
   ags_osc_xmlrpc_controller_unset_flags(osc_xmlrpc_controller, (AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_TERMINATING |
 								AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED));
 }

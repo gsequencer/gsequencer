@@ -185,10 +185,6 @@ ags_osc_xmlrpc_controller_test_stop_delegate()
   ags_osc_xmlrpc_controller_start_delegate(xmlrpc_controller);
 
   CU_ASSERT(ags_osc_xmlrpc_controller_test_flags(xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_STARTED) == TRUE);
-
-  while(!ags_osc_xmlrpc_controller_test_flags(xmlrpc_controller, AGS_OSC_XMLRPC_CONTROLLER_DELEGATE_RUNNING)){
-    sleep(1);
-  }
   
   ags_osc_xmlrpc_controller_stop_delegate(xmlrpc_controller);
 

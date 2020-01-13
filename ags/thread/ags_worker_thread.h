@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,7 @@ typedef struct _AgsWorkerThread AgsWorkerThread;
 typedef struct _AgsWorkerThreadClass AgsWorkerThreadClass;
 
 /**
- * AgsWorkerThreadFlags:
+ * AgsWorkerThreadStatusFlags:
  * @AGS_WORKER_THREAD_STATUS_RUNNING: the worker is running
  * @AGS_WORKER_THREAD_STATUS_RUN_WAIT: sync wait
  * @AGS_WORKER_THREAD_STATUS_RUN_DONE: sync done

@@ -54,6 +54,8 @@
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -9477,6 +9479,9 @@ ags_channel_real_init_recall(AgsChannel *channel,
     recall = AGS_RECALL(list->data);
     
     /* run init stages */
+    ags_recall_set_state_flags(recall,
+			       AGS_SOUND_STATE_IS_ACTIVE);
+
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
 
@@ -9792,7 +9797,9 @@ ags_channel_real_done_recall(AgsChannel *channel,
     g_rec_mutex_lock(play_mutex);
 
     list = 
-      list_start = g_list_copy(channel->play);
+      list_start = g_list_copy_deep(channel->play,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     g_rec_mutex_unlock(play_mutex);
 
@@ -9809,7 +9816,9 @@ ags_channel_real_done_recall(AgsChannel *channel,
     g_rec_mutex_lock(recall_mutex);
 
     list = 
-      list_start = g_list_copy(channel->recall);
+      list_start = g_list_copy_deep(channel->recall,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
     
     g_rec_mutex_unlock(recall_mutex);
 
@@ -9830,7 +9839,8 @@ ags_channel_real_done_recall(AgsChannel *channel,
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   ags_channel_set_staging_flags(channel, sound_scope,
 				staging_flags);
@@ -9983,6 +9993,9 @@ ags_channel_real_cancel_recall(AgsChannel *channel,
     /* cancel stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
+
+    ags_recall_unset_state_flags(recall,
+				 AGS_SOUND_STATE_IS_ACTIVE);
     
     list = list->next;
   }
@@ -10196,20 +10209,27 @@ void
 ags_channel_recall_done_callback(AgsRecall *recall,
 				 AgsChannel *channel)
 {
-  GList *start_recall_id;
+  AgsCancelChannel *cancel_channel;
   
+  AgsTaskLauncher *task_launcher;
+  
+  AgsApplicationContext *application_context;
+
   gint sound_scope;
-  
+
   if(AGS_IS_PLAY_CHANNEL_RUN(recall)){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
-      start_recall_id = ags_channel_check_scope(channel, sound_scope);
-      ags_channel_stop(channel,
-		       start_recall_id, sound_scope);
+      application_context = ags_application_context_get_instance();
 
-      g_list_free_full(start_recall_id,
-		       g_object_unref);
+      task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+      cancel_channel = ags_cancel_channel_new(channel,
+					      sound_scope);
+
+      ags_task_launcher_add_task(task_launcher,
+				 cancel_channel);
     }
   }
 }

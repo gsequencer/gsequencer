@@ -35,6 +35,14 @@ G_BEGIN_DECLS
 typedef struct _AgsSeekable AgsSeekable;
 typedef struct _AgsSeekableInterface AgsSeekableInterface;
 
+/**
+ * AgsSeekType:
+ * @AGS_SEEK_CUR: seek from current position
+ * @AGS_SEEK_SET: seek by setting absolute position
+ * @AGS_SEEK_END: seek from end
+ * 
+ * Seek type.
+ */
 typedef enum{
   AGS_SEEK_CUR,
   AGS_SEEK_SET,

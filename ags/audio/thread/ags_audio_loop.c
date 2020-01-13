@@ -862,6 +862,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   while(play_channel != NULL){
     playback = (AgsPlayback *) play_channel->data;
 
+    channel = NULL;
     g_object_get(playback,
 		 "channel", &channel,
 		 NULL);
@@ -930,6 +931,7 @@ ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
   
   gint sound_scope;
 
+  channel = NULL;
   g_object_get(playback,
 	       "channel", &channel,
 	       NULL);
@@ -982,6 +984,7 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
   
   gint sound_scope;
 
+  channel = NULL;
   g_object_get(playback,
 	       "channel", &channel,
 	       NULL);
@@ -1075,12 +1078,13 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   while(play_audio != NULL){
     playback_domain = (AgsPlaybackDomain *) play_audio->data;
 
+    audio = NULL;
     g_object_get(playback_domain,
 		 "audio", &audio,
 		 NULL);
 
     g_object_unref(audio);
-        
+    
     /* play */
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       /* super threaded */
@@ -1170,6 +1174,7 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   
   gint sound_scope;
 
+  audio = NULL;
   g_object_get(playback_domain,
 	       "audio", &audio,
 	       NULL);
@@ -1233,6 +1238,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   
   gint sound_scope;
 
+  audio = NULL;
   g_object_get(playback_domain,
 	       "audio", &audio,
 	       NULL);
@@ -1384,14 +1390,36 @@ ags_audio_loop_unset_flags(AgsAudioLoop *audio_loop, guint flags)
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
+  AgsPlaybackDomain *playback_domain;
+
+  GRecMutex *thread_mutex;
+  
+  if(!AGS_IS_AUDIO_LOOP(audio_loop) ||
+     !AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+  
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  g_rec_mutex_lock(thread_mutex);
+  
   if(g_list_find(audio_loop->play_audio,
-		 AGS_AUDIO(audio)->playback_domain) == NULL){
-    g_object_ref(G_OBJECT(audio));
+		 playback_domain) == NULL){
     audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
-					    AGS_AUDIO(audio)->playback_domain);
+					    playback_domain);
 
     audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
+  }else{
+    if(playback_domain != NULL){
+      g_object_unref(playback_domain);
+    }
   }
+  
+  g_rec_mutex_unlock(thread_mutex);  
 }
 
 /**
@@ -1406,13 +1434,36 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {  
+  AgsPlaybackDomain *playback_domain;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop) ||
+     !AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+  
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  g_rec_mutex_lock(thread_mutex);
+
   if(g_list_find(audio_loop->play_audio,
-		 AGS_AUDIO(audio)->playback_domain) != NULL){
+		 playback_domain) != NULL){
     audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
-					   AGS_AUDIO(audio)->playback_domain);
+					   playback_domain);
     audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
     
-    g_object_unref(audio);
+    g_object_unref(playback_domain);
+  }
+
+  g_rec_mutex_unlock(thread_mutex);  
+
+  if(playback_domain != NULL){
+    g_object_unref(playback_domain);
   }
 }
 
@@ -1428,14 +1479,36 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
+  AgsPlayback *playback;
+  
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop) ||
+     !AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);  
+
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
+
+  g_rec_mutex_lock(thread_mutex);
+
   if(g_list_find(audio_loop->play_channel,
-		 AGS_CHANNEL(channel)->playback) == NULL){
-    g_object_ref(G_OBJECT(channel));
+		 playback) == NULL){    
     audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
-					      AGS_CHANNEL(channel)->playback);
+					      playback);
 
     audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
+  }else{
+    if(playback != NULL){
+      g_object_unref(playback);
+    }
   }
+
+  g_rec_mutex_unlock(thread_mutex);  
 }
 
 /**
@@ -1450,13 +1523,36 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
+  AgsPlayback *playback;
+
+  GRecMutex *thread_mutex;
+
+  if(!AGS_IS_AUDIO_LOOP(audio_loop) ||
+     !AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(audio_loop);
+  
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
+
+  g_rec_mutex_lock(thread_mutex);
+
   if(g_list_find(audio_loop->play_channel,
-		 AGS_CHANNEL(channel)->playback) != NULL){
+		 playback) != NULL){
     audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
-					     AGS_CHANNEL(channel)->playback);
+					     playback);
     audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 
-    g_object_unref(channel);
+    g_object_unref(playback);
+  }
+
+  g_rec_mutex_unlock(thread_mutex);  
+
+  if(playback != NULL){
+    g_object_unref(playback);
   }
 }
 

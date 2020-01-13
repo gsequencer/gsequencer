@@ -385,7 +385,9 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
+#ifdef AGS_DEBUG
   g_message("channel thread start");
+#endif
   
   /* reset status */
   ags_channel_thread_set_status_flags(thread, (AGS_CHANNEL_THREAD_STATUS_WAIT |
@@ -576,7 +578,9 @@ ags_channel_thread_stop(AgsThread *thread)
   /*  */
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
+#ifdef AGS_DEBUG
   g_message("channel thread stop");
+#endif
   
   /* call parent */
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->stop(thread);

@@ -43,6 +43,12 @@ G_BEGIN_DECLS
 typedef struct _AgsSF2Loader AgsSF2Loader;
 typedef struct _AgsSF2LoaderClass AgsSF2LoaderClass;
 
+/**
+ * AgsSF2LoaderFlags:
+ * @AGS_SF2_LOADER_HAS_COMPLETED: has completed
+ * 
+ * Enum values to configure SF2 loader.
+ */
 typedef enum{
   AGS_SF2_LOADER_HAS_COMPLETED   = 1,
 }AgsSF2LoaderFlags;

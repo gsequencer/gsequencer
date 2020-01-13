@@ -101,6 +101,14 @@ typedef enum{
   AGS_SOUNDCARD_COMPLEX         = 0xfffffff8,
 }AgsSoundcardFormat;
 
+/**
+ * AgsSoundcardCapability:
+ * @AGS_SOUNDCARD_CAPABILITY_PLAYBACK: capability playback
+ * @AGS_SOUNDCARD_CAPABILITY_CAPTURE: capability capture
+ * @AGS_SOUNDCARD_CAPABILITY_DUPLEX: capability duplex
+ * 
+ * Enum values to tell about capability.
+ */
 typedef enum{
   AGS_SOUNDCARD_CAPABILITY_PLAYBACK  = 1,
   AGS_SOUNDCARD_CAPABILITY_CAPTURE   = 1 <<  1,

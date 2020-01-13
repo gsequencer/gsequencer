@@ -392,7 +392,9 @@ ags_audio_thread_finalize(GObject *gobject)
 void
 ags_audio_thread_start(AgsThread *thread)
 {
+#ifdef AGS_DEBUG
   g_message("audio thread start");
+#endif
   
   /* reset status */
   ags_audio_thread_set_status_flags(thread, (AGS_AUDIO_THREAD_STATUS_WAIT |
@@ -768,8 +770,10 @@ ags_audio_thread_stop(AgsThread *thread)
     return;
   }
 
+#ifdef AGS_DEBUG
   g_message("audio thread stop");    
-
+#endif
+  
   audio_thread = AGS_AUDIO_THREAD(thread);
   
   /* call parent */

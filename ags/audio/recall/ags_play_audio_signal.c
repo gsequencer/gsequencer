@@ -163,8 +163,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   if(output_soundcard == NULL){
+#ifdef AGS_DEBUG
     g_warning("no soundcard");
-
+#endif
+    
     if(source != NULL){
       g_object_unref(source);
     }
@@ -182,8 +184,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   buffer0 = ags_soundcard_get_buffer(AGS_SOUNDCARD(output_soundcard));
   
   if(buffer0 == NULL){
+#ifdef AGS_DEBUG
     g_warning("no output buffer");
-
+#endif
+    
     g_object_unref(output_soundcard);
     g_object_unref(source);
     

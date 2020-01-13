@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,14 @@ G_BEGIN_DECLS
 typedef struct _AgsOscConnection AgsOscConnection;
 typedef struct _AgsOscConnectionClass AgsOscConnectionClass;
 
+/**
+ * AgsOscConnectionFlags:
+ * @AGS_OSC_CONNECTION_ACTIVE: is active
+ * @AGS_OSC_CONNECTION_INET4: IPv4 connection
+ * @AGS_OSC_CONNECTION_INET6: IPv6 connection
+ * 
+ * Enum values to configure OSC connection.
+ */
 typedef enum{
   AGS_OSC_CONNECTION_ACTIVE     = 1,
   AGS_OSC_CONNECTION_INET4      = 1 <<  1,

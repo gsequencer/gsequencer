@@ -507,7 +507,9 @@ ags_thread_finalize(GObject *gobject)
   
   thread = AGS_THREAD(gobject);
 
+#ifdef AGS_DEBUG
   g_message("fin");
+#endif
   
   if(thread == ags_thread_self()){
     do_exit = TRUE;
@@ -2725,8 +2727,10 @@ ags_thread_loop(void *ptr)
 
   current_sync_tic = ags_thread_get_current_sync_tic(thread);
 
+#ifdef AGS_DEBUG
   g_message("thread finish %d %d", main_sync_tic, current_sync_tic);
-
+#endif
+  
   ags_thread_clear_status_flags(thread);
   ags_thread_clear_sync_tic_flags(thread);
   

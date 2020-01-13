@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,13 @@
 
 G_BEGIN_DECLS
 
+/**
+ * AgsByteOrder:
+ * @AGS_BYTE_ORDER_LE: little endian
+ * @AGS_BYTE_ORDER_BE: big endian
+ * 
+ * Endianess.
+ */
 typedef enum{
   AGS_BYTE_ORDER_LE,
   AGS_BYTE_ORDER_BE,

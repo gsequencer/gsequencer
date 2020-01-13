@@ -2500,10 +2500,10 @@ install-html: fix-local-html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	ln -s ../../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	ln -s ../../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	ln -s ../../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api

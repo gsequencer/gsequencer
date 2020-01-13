@@ -208,6 +208,8 @@ struct _AgsRecallHandler
 
 GType ags_recall_get_type();
 
+void ags_recall_global_set_omit_event(gboolean omit_event);
+
 gboolean ags_recall_global_get_children_lock_free();
 gboolean ags_recall_global_get_omit_event();
 gboolean ags_recall_global_get_performance_mode();

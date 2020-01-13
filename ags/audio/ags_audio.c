@@ -40,6 +40,8 @@
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <ags/audio/task/ags_cancel_audio.h>
+
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -10622,19 +10624,26 @@ void
 ags_audio_recall_done_callback(AgsRecall *recall,
 			       AgsAudio *audio)
 {
-  GList *start_recall_id;
+  AgsCancelAudio *cancel_audio;
   
+  AgsTaskLauncher *task_launcher;
+  
+  AgsApplicationContext *application_context;
+
   gint sound_scope;
   
   if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){    
     sound_scope = ags_recall_get_sound_scope(recall);
 
-    start_recall_id = ags_audio_check_scope(audio, sound_scope);
-    ags_audio_stop(audio,
-		   start_recall_id, sound_scope);
+    application_context = ags_application_context_get_instance();
 
-    g_list_free_full(start_recall_id,
-		     g_object_unref);
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+    cancel_audio = ags_cancel_audio_new(audio,
+					sound_scope);
+
+    ags_task_launcher_add_task(task_launcher,
+			       cancel_audio);
   }
 }
 

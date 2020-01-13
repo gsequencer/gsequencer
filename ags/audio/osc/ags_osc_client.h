@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,15 @@ G_BEGIN_DECLS
 typedef struct _AgsOscClient AgsOscClient;
 typedef struct _AgsOscClientClass AgsOscClientClass;
 
+/**
+ * AgsOscClientFlags:
+ * @AGS_OSC_CLIENT_INET4: use IPv4 socket
+ * @AGS_OSC_CLIENT_INET6: use IPv6 socket
+ * @AGS_OSC_CLIENT_UDP: use UDP transport protocol
+ * @AGS_OSC_CLIENT_TCP: used TCP transport protocol
+ * 
+ * Enum values to configure OSC client.
+ */
 typedef enum{
   AGS_OSC_CLIENT_INET4      = 1,
   AGS_OSC_CLIENT_INET6      = 1 <<  1,

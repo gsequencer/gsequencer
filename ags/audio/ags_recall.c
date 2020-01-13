@@ -2096,6 +2096,20 @@ ags_recall_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_recall_global_set_omit_event:
+ * @omit_event: %TRUE if omit event, otherwise %FALSE
+ * 
+ * Set global config value omit event.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_recall_global_set_omit_event(gboolean omit_event)
+{
+  ags_recall_global_omit_event = omit_event;
+}
+
+/**
  * ags_recall_global_get_children_lock_free:
  * 
  * Get global config value lock free children.
@@ -2914,6 +2928,7 @@ void
 ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 {
   guint recall_staging_flags;
+  guint recall_state_flags;
   
   gboolean omit_event;
 
@@ -2932,11 +2947,13 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   g_rec_mutex_lock(recall_mutex);
 
   recall_staging_flags = recall->staging_flags;
-
+  recall_state_flags = recall->state_flags;
+  
   g_rec_mutex_unlock(recall_mutex);
   
   /* invoke appropriate staging */
-  if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0){
+  if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0 &&
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall_state_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_staging_flags)) == 0){    
       if(omit_event){
@@ -4100,6 +4117,7 @@ void
 ags_recall_check_rt_data(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4175,6 +4193,7 @@ void
 ags_recall_run_init_pre(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4249,6 +4268,7 @@ void
 ags_recall_run_init_inter(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4331,6 +4351,7 @@ void
 ags_recall_run_init_post(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4405,6 +4426,7 @@ void
 ags_recall_feed_input_queue(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4546,6 +4568,7 @@ void
 ags_recall_run_pre(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4620,6 +4643,7 @@ void
 ags_recall_run_inter(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4695,6 +4719,7 @@ void
 ags_recall_run_post(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4769,6 +4794,7 @@ void
 ags_recall_do_feedback(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -4843,6 +4869,7 @@ void
 ags_recall_feed_output_queue(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(!ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),

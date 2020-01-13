@@ -27,6 +27,17 @@
 
 G_BEGIN_DECLS
 
+/**
+ * AgsSynthOscillatorMode:
+ * @AGS_SYNTH_OSCILLATOR_SIN: sinus oscillator
+ * @AGS_SYNTH_OSCILLATOR_SAWTOOTH: sawtooth oscillator
+ * @AGS_SYNTH_OSCILLATOR_TRIANGLE: triangle oscillator
+ * @AGS_SYNTH_OSCILLATOR_SQUARE: square oscillator
+ * @AGS_SYNTH_OSCILLATOR_IMPULSE: impulse oscillator
+ * @AGS_SYNTH_OSCILLATOR_LAST: last mode
+ * 
+ * Enum values to specify oscillator mode.
+ */
 typedef enum{
   AGS_SYNTH_OSCILLATOR_SIN,
   AGS_SYNTH_OSCILLATOR_SAWTOOTH,

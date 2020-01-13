@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,14 @@ G_BEGIN_DECLS
 typedef struct _AgsOscResponse AgsOscResponse;
 typedef struct _AgsOscResponseClass AgsOscResponseClass;
 
+/**
+ * AgsOscResponseFlags:
+ * @AGS_OSC_RESPONSE_EMPTY: is empty
+ * @AGS_OSC_RESPONSE_OK: is OK
+ * @AGS_OSC_RESPONSE_ERROR: has error
+ * 
+ * Enum values to configure OSC response.
+ */
 typedef enum{
   AGS_OSC_RESPONSE_EMPTY     = 1,
   AGS_OSC_RESPONSE_OK        = 1 <<  1,

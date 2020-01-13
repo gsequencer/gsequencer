@@ -43,6 +43,13 @@ G_BEGIN_DECLS
 typedef struct _AgsSFZLoader AgsSFZLoader;
 typedef struct _AgsSFZLoaderClass AgsSFZLoaderClass;
 
+/**
+ * AgsSFZLoaderFlags:
+ * @AGS_SFZ_LOADER_DO_REPLACE: do replace audio signal
+ * @AGS_SFZ_LOADER_HAS_COMPLETED: has completed
+ * 
+ * Enum values to configure SFZ loader.
+ */
 typedef enum{
   AGS_SFZ_LOADER_DO_REPLACE      = 1,
   AGS_SFZ_LOADER_HAS_COMPLETED   = 1 <<  1,

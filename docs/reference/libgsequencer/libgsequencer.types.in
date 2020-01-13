@@ -154,6 +154,7 @@ ags_vwave_edit_box_get_type
 ags_wave_edit_box_get_type
 ags_wave_edit_get_type
 ags_wave_editor_get_type
+ags_wave_export_dialog_get_type
 ags_wave_toolbar_get_type
 ags_wave_window_get_type
 ags_window_get_type

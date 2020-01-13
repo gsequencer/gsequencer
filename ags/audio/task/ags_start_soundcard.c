@@ -206,8 +206,10 @@ ags_start_soundcard_launch(AgsTask *task)
     
       guint soundcard_capability;
 
+#ifdef AGS_DEBUG
       g_message("start soundcard");
-
+#endif
+      
       g_object_get(soundcard_thread,
 		   "soundcard", &soundcard,
 		   NULL);
@@ -248,8 +250,10 @@ ags_start_soundcard_launch(AgsTask *task)
     
       guint export_capability;
 
+#ifdef AGS_DEBUG
       g_message("start export");
-
+#endif
+      
       /* append export thread */
       ags_thread_add_start_queue(audio_loop,
 				 export_thread);
