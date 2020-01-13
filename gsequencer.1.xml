@@ -125,6 +125,36 @@
           <para>LV2 plugin search path</para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_FILENAME</term>
+        <listitem>
+          <para>The splash screen's background picture</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_BOX_X0</term>
+        <listitem>
+          <para>The splash screen's text box x-position</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_BOX_Y0</term>
+        <listitem>
+          <para>The splash screen's text box y-position</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_COLOR</term>
+        <listitem>
+          <para>The splash screen's text color</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_CSS_FILENAME</term>
+        <listitem>
+          <para>The application's style sheet</para>
+        </listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
 

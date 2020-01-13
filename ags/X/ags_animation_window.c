@@ -94,6 +94,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 #endif
   
   gchar *filename;
+  gchar *str;
   
   unsigned char *image_data;
 
@@ -120,7 +121,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
     }
 
-    filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags_supermoon-800x450.png",
+    filename = g_strdup_printf("%s\\share\\gsequencer\\images\\gsequencer-800x450.png",
 			       g_get_current_dir());
     
     if(!g_file_test(filename,
@@ -130,16 +131,16 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
       if(g_path_is_absolute(app_dir)){
 	filename = g_strdup_printf("%s\\%s",
 				   app_dir,
-				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+				   "\\share\\gsequencer\\images\\gsequencer-800x450.png");
       }else{
 	filename = g_strdup_printf("%s\\%s\\%s",
 				   g_get_current_dir(),
 				   app_dir,
-				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+				   "\\share\\gsequencer\\images\\gsequencer-800x450.png");
       }
     }
 #else
-    filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
+    filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/gsequencer-800x450.png");
 #endif
   }else{
     filename = g_strdup(filename);
@@ -164,7 +165,35 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
     
     cairo_surface_destroy(surface);
   }
+
+  animation_window->text_box_x0 = 4;
+  animation_window->text_box_y0 = 220;
+
+  if((str = getenv("AGS_ANIMATION_TEXT_BOX_X0")) != 0){
+    animation_window->text_box_x0 = g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }
+
+  if((str = getenv("AGS_ANIMATION_TEXT_BOX_Y0")) != 0){
+    animation_window->text_box_y0 = g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }
+
+  animation_window->text_color = g_new0(GdkRGBA,
+					1);
+
+  animation_window->text_color->red = 0.680067002;
+  animation_window->text_color->green = 1.0;
+  animation_window->text_color->blue = 0.998324958;
+  animation_window->text_color->alpha = 1.0;
   
+  if((str = getenv("AGS_ANIMATION_TEXT_COLOR")) != 0){
+    gdk_rgba_parse(animation_window->text_color,
+		   str);
+  }
+
   gtk_widget_set_size_request((GtkWidget *) animation_window,
 			      800, 450);
 
@@ -232,13 +261,14 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr)
 	       NULL);
 
   /*  */
-  x0 = 4.0;
-  y0 = 4.0 + (i_stop * 12.0);
+  x0 = (gdouble) animation_window->text_box_x0;
+  y0 = (gdouble) animation_window->text_box_y0 + (i_stop * 12.0);
 
-  cairo_set_source_rgb(cr,
-		       1.0,
-		       0.0,
-		       1.0);
+  cairo_set_source_rgba(cr,
+			animation_window->text_color->red,
+			animation_window->text_color->green,
+			animation_window->text_color->blue,
+			animation_window->text_color->alpha);
   
   /* text */
   layout = pango_cairo_create_layout(cr);

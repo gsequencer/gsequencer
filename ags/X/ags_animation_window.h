@@ -55,6 +55,11 @@ struct _AgsAnimationWindow
   guint image_size;
   unsigned char *bg_data;
   unsigned char *cache_data;
+
+  guint text_box_x0;
+  guint text_box_y0;
+
+  GdkRGBA *text_color;
 };
 
 struct _AgsAnimationWindowClass
