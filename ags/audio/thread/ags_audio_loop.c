@@ -866,8 +866,6 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
     g_object_get(playback,
 		 "channel", &channel,
 		 NULL);
-
-    g_object_unref(channel);
         
     /* play */
     if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
@@ -879,6 +877,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
       
       if(ags_playback_get_recall_id(playback, sound_scope) == NULL){
+	g_object_unref(channel);
+	
 	play_channel = play_channel->next;
 	
 	continue;
@@ -892,6 +892,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 			 g_object_unref);
       }
     }
+
+    g_object_unref(channel);
 
     /* iterate */
     play_channel = play_channel->next;
@@ -1082,8 +1084,6 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
     g_object_get(playback_domain,
 		 "audio", &audio,
 		 NULL);
-
-    g_object_unref(audio);
     
     /* play */
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
@@ -1125,6 +1125,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
       }
     }
+
+    g_object_unref(audio);
     
     /* iterate */
     play_audio = play_audio->next;

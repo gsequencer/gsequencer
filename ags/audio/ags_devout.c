@@ -2480,7 +2480,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   GList *list;
 
   gchar *str;
-  
+
+  gint64 poll_timeout;
   guint word_size;
   guint nth_buffer;
 
@@ -2561,11 +2562,18 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 				       devout->buffer_size);
 
   /* wait until available */
+  poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) devout->samplerate * (gdouble) devout->buffer_size));
+
   g_rec_mutex_unlock(devout_mutex);
 
   //TODO:JK: implement me
+  
   while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
     g_usleep(1);
+
+    if(g_get_monotonic_time() > poll_timeout){
+      break;
+    }
   }
 
   g_atomic_int_set(&(devout->available),
@@ -3439,7 +3447,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   GList *list;
   
   gchar *str;
-  
+
+  gint64 poll_timeout;
   guint word_size;
   guint nth_buffer;
   
@@ -3525,11 +3534,17 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 					devout->pcm_channels, devout->buffer_size);
 
   /* wait until available */
+  poll_timeout = g_get_monotonic_time() + (G_USEC_PER_SEC * (1.0 / (gdouble) devout->samplerate * (gdouble) devout->buffer_size));
+
   g_rec_mutex_unlock(devout_mutex);
   
   //TODO:JK: implement me
   while(!ags_soundcard_is_available(AGS_SOUNDCARD(devout))){
     g_usleep(1);
+
+    if(g_get_monotonic_time() > poll_timeout){
+      break;
+    }
   }
   
   g_atomic_int_set(&(devout->available),
