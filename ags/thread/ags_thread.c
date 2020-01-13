@@ -2745,8 +2745,6 @@ ags_thread_loop(void *ptr)
     AgsTaskLauncher *task_launcher;
 
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), TRUE);
-      
-    g_rec_mutex_unlock(tree_mutex);
 
     /* get task launcher */
     task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -2775,6 +2773,8 @@ ags_thread_loop(void *ptr)
 #endif
 
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), FALSE);
+      
+    g_rec_mutex_unlock(tree_mutex);
   }
   
   /* exit thread */

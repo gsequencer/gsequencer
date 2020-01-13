@@ -10670,7 +10670,8 @@ ags_audio_real_start(AgsAudio *audio,
   GList *start_message_queue;
   GList *start_output_playback, *output_playback;
   GList *start_recall_id;
-
+  GList *start_wait_thread, *wait_thread;
+  
   guint audio_channels;
   guint output_pads;
   gint i;
@@ -10706,7 +10707,7 @@ ags_audio_real_start(AgsAudio *audio,
 
   /* initialize channel */
   start_recall_id = NULL;
-
+  
   if(sound_scope >= 0){
     output_playback = start_output_playback;
 
@@ -10784,9 +10785,13 @@ ags_audio_real_start(AgsAudio *audio,
     output_playback = start_output_playback;
 
     /* add to start queue */
+    start_wait_thread = NULL;
+    
     audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							sound_scope);
-        
+    start_wait_thread = g_list_prepend(start_wait_thread,
+				       audio_thread);
+    
     ags_thread_add_start_queue(audio_loop,
 			       audio_thread);
     
@@ -10804,23 +10809,31 @@ ags_audio_real_start(AgsAudio *audio,
       /* add to start queue */
       ags_thread_add_start_queue(audio_loop,
 				 channel_thread);
-
+      start_wait_thread = g_list_prepend(start_wait_thread,
+					 channel_thread);
+      
       /* unref */
       g_object_unref(channel);
-
-      if(channel_thread != NULL){
-	g_object_unref(channel_thread);
-      }
       
       /* iterate */
       output_playback = output_playback->next;
     }
 
     /* unref */
-    if(audio_thread != NULL){
-      g_object_unref(audio_thread);
+    wait_thread = start_wait_thread;
+
+    while(wait_thread != NULL){
+      while(wait_thread->data != NULL &&
+	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+
+      wait_thread = wait_thread->next;
     }
+    
+    g_list_free_full(start_wait_thread,
+		     g_object_unref);
   }else{
+    start_wait_thread = NULL;
+    
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       output_playback = start_output_playback;
 
@@ -10902,6 +10915,8 @@ ags_audio_real_start(AgsAudio *audio,
       /* add to start queue */
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  i);
+      start_wait_thread = g_list_prepend(start_wait_thread,
+					 audio_thread);
         
       ags_thread_add_start_queue(audio_loop,
 				 audio_thread);
@@ -10916,6 +10931,8 @@ ags_audio_real_start(AgsAudio *audio,
 
 	channel_thread = ags_playback_get_channel_thread(playback,
 							 i);
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   channel_thread);
       
 	/* add to start queue */
 	ags_thread_add_start_queue(audio_loop,
@@ -10923,20 +10940,24 @@ ags_audio_real_start(AgsAudio *audio,
 
 	/* unref */
 	g_object_unref(channel);
-
-	if(channel_thread != NULL){
-	  g_object_unref(channel_thread);
-	}
 	
 	/* iterate */
 	output_playback = output_playback->next;
       }
-
-      /* unref */
-      if(audio_thread != NULL){
-	g_object_unref(audio_thread);
-      }
     }
+
+    /* unref */
+    wait_thread = start_wait_thread;
+
+    while(wait_thread != NULL){
+      while(wait_thread->data != NULL &&
+	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+
+      wait_thread = wait_thread->next;
+    }
+    
+    g_list_free_full(start_wait_thread,
+		     g_object_unref);
   }
     
   g_object_unref(playback_domain);
