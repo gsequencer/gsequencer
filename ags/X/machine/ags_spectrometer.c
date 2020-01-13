@@ -499,7 +499,7 @@ ags_spectrometer_x_label_func(gdouble value,
 
   gdouble correction;
   
-  correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->x_label_precision));
@@ -599,25 +599,38 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
   if(g_hash_table_lookup(ags_spectrometer_cartesian_queue_draw,
 			 widget) != NULL){    
+    AgsCartesian *cartesian;
+    
     GList *fg_plot;
     GList *frequency_buffer_port;
     GList *magnitude_buffer_port;
 
+    guint samplerate;
+    gdouble nyquist;
     gdouble correction;
-    double frequency;
+    gdouble frequency;
+    gdouble gfrequency, gfrequency_next;
     double magnitude;
     guint i;
     guint j, j_stop;
     guint k, k_stop;
     guint nth;
-      
+
+    gboolean completed;
+    
     GValue value = {0,};
 
     spectrometer = (AgsSpectrometer *) gtk_widget_get_ancestor(widget,
 							       AGS_TYPE_SPECTROMETER);
+    cartesian = spectrometer->cartesian;
 
+    g_object_get(AGS_MACHINE(spectrometer)->audio,
+		 "samplerate", &samplerate,
+		 NULL);
+    
     fg_plot = spectrometer->fg_plot;
-    correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    nyquist = ((gdouble) samplerate / 2.0);
+    correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
     frequency_buffer_port = spectrometer->frequency_buffer_play_port;
     magnitude_buffer_port = spectrometer->magnitude_buffer_play_port;
@@ -640,28 +653,49 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
       g_value_unset(&value);
 
-      magnitude = 0.0;
-
-      for(nth = 1, j = 1, k = 0; nth < spectrometer->buffer_size; nth++){
-	frequency = nth * correction;
-
-	magnitude += spectrometer->magnitude_buffer[nth];
-	k++;
+      completed = FALSE;
+      
+      for(j = 1, nth = 1; j < AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT && !completed; j++){
+	magnitude = 0.0;
+	k = 0;
 	
-	if(frequency > ((correction / 2.0) * (exp(((nth / spectrometer->buffer_size) * 18.0) / 12.0) - 1.0))){
-	  if(nth - 1 != 0){
-	    AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
-	    //	    g_message("plot[%d]: %f %f", j, frequency, magnitude);
-	  }
-	  
-	  j++;
+	for(; nth < spectrometer->buffer_size; k++){
+	  frequency = ((double) nth) / ((double) spectrometer->buffer_size) * (nyquist);
 
-	  if(j >= AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT){
+	  gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * (100.0)) / 12.0) - 1.0);
+//	  gfrequency_next = (correction / 2.0) * (exp((((double) j + 1.0)) / 12.0) - 1.0);
+
+#if 1
+	  if(gfrequency > samplerate ||
+	     frequency > samplerate){
+	    completed = TRUE;
+
 	    break;
 	  }
+#endif
 	  
-	  magnitude = 0.0;
-	  k = 0;
+#if 0
+	  g_message("freq=%f", frequency);
+	  g_message("gfreq=%f", gfrequency);
+#endif
+	  
+	  if(frequency < gfrequency){
+	    magnitude += spectrometer->magnitude_buffer[nth];
+
+	    nth++;
+	  }else{
+	    break;
+	  }
+	}
+
+#if 0
+	g_message("j=%d", j);
+#endif
+	
+	if(k != 0){
+	  AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
+	}else{
+	  AGS_PLOT(fg_plot->data)->point[j][1] = 0.0;
 	}
       }
 

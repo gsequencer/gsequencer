@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.0.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-01-12 18:19+0100\n"
+"POT-Creation-Date: 2020-01-13 15:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ags/X/ags_animation_window.c:406 ags/X/ags_animation_window.c:434
+#: ags/X/ags_animation_window.c:436 ags/X/ags_animation_window.c:464
 msgid "LADSPA"
 msgstr ""
 
-#: ags/X/ags_animation_window.c:410 ags/X/ags_animation_window.c:425
-#: ags/X/ags_animation_window.c:438 ags/X/ags_animation_window.c:453
+#: ags/X/ags_animation_window.c:440 ags/X/ags_animation_window.c:455
+#: ags/X/ags_animation_window.c:468 ags/X/ags_animation_window.c:483
 msgid "DSSI"
 msgstr ""
 
-#: ags/X/ags_animation_window.c:414 ags/X/ags_animation_window.c:429
-#: ags/X/ags_animation_window.c:442 ags/X/ags_animation_window.c:457
+#: ags/X/ags_animation_window.c:444 ags/X/ags_animation_window.c:459
+#: ags/X/ags_animation_window.c:472 ags/X/ags_animation_window.c:487
 msgid "Lv2"
 msgstr ""
 
