@@ -29,6 +29,8 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_IPATCH                (ags_ipatch_get_type())
 #define AGS_IPATCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH, AgsIpatch))
 #define AGS_IPATCH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_IPATCH, AgsIpatchClass))
@@ -36,7 +38,7 @@
 #define AGS_IS_IPATCH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_IPATCH))
 #define AGS_IPATCH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_IPATCH, AgsIpatchClass))
 
-#define AGS_IPATCH_GET_OBJ_MUTEX(obj) (((AgsIpatch *) obj)->obj_mutex)
+#define AGS_IPATCH_GET_OBJ_MUTEX(obj) (&(((AgsIpatch *) obj)->obj_mutex))
 
 #define AGS_IPATCH_DEFAULT_CHANNELS (2)
 
@@ -71,8 +73,7 @@ struct _AgsIpatch
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -107,8 +108,6 @@ struct _AgsIpatchClass
 
 GType ags_ipatch_get_type();
 
-pthread_mutex_t* ags_ipatch_get_class_mutex();
-
 gboolean ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags);
 void ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags);
 void ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags);
@@ -116,5 +115,7 @@ void ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags);
 gboolean ags_ipatch_check_suffix(gchar *filename);
 
 AgsIpatch* ags_ipatch_new();
+
+G_END_DECLS
 
 #endif /*__AGS_IPATCH_H__*/

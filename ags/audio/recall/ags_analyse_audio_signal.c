@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_analyse_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_analyse_channel.h>
@@ -121,19 +119,10 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-  
   analyse_audio_signal = AGS_ANALYSE_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_analyse_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -196,7 +185,7 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsAnalyseAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAnalyseAudioSignal*
 ags_analyse_audio_signal_new(AgsAudioSignal *source)

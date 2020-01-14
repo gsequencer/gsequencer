@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUTOMATION_EDIT                (ags_automation_edit_get_type())
 #define AGS_AUTOMATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEdit))
 #define AGS_AUTOMATION_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUTOMATION_EDIT, AgsAutomationEditClass))
@@ -51,6 +53,8 @@
 
 #define AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0.0)
+
+#define AGS_AUTOMATION_EDIT_DEFAULT_SELECTED_ACCELERATION_BORDER (2)
 
 #define AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH (3)
 
@@ -123,6 +127,8 @@ struct _AgsAutomationEdit
   guint cursor_position_x;
   gdouble cursor_position_y;
 
+  guint selected_acceleration_border;
+
   guint selection_x0;
   guint selection_x1;
   guint selection_y0;
@@ -160,20 +166,22 @@ GType ags_automation_edit_get_type(void);
 void ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
 
-void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
-void ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
 void ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 					   AgsAcceleration *acceleration_a, AgsAcceleration *acceleration_b,
 					   cairo_t *cr,
-					   double r, double g, double b, double a);
-void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit);
+					   gdouble opacity);
+void ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
-void ags_automation_edit_draw(AgsAutomationEdit *automation_edit);
+void ags_automation_edit_draw(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
 AgsAutomationEdit* ags_automation_edit_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_EDIT_H__*/

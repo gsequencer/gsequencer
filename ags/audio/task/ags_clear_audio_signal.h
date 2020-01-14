@@ -23,9 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CLEAR_AUDIO_SIGNAL                (ags_clear_audio_signal_get_type())
 #define AGS_CLEAR_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CLEAR_AUDIO_SIGNAL, AgsClearAudioSignal))
@@ -52,5 +54,7 @@ struct _AgsClearAudioSignalClass
 GType ags_clear_audio_signal_get_type();
 
 AgsClearAudioSignal* ags_clear_audio_signal_new(AgsAudioSignal *audio_signal);
+
+G_END_DECLS
 
 #endif /*__AGS_CLEAR_AUDIO_SIGNAL_H__*/

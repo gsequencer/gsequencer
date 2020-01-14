@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+gpointer ags_functional_fourier_transform_test_add_thread(gpointer data);
+
 int ags_functional_fourier_transform_test_init_suite();
 int ags_functional_fourier_transform_test_clean_suite();
 
@@ -61,6 +63,8 @@ void ags_functional_fourier_transform_test_s16();
   "super-threaded-scope=channel\n"					\
   "lock-global=ags-thread\n"						\
   "lock-parent=ags-recycling-thread\n"					\
+  "thread-pool-max-unused-threads=8\n"					\
+  "max-precision=125\n"							\
   "\n"									\
   "[soundcard]\n"							\
   "backend=alsa\n"							\
@@ -75,12 +79,56 @@ void ags_functional_fourier_transform_test_s16();
   "auto-sense=true\n"							\
   "\n"
 
+GThread *add_thread = NULL;
+
 AgsAudioApplicationContext *audio_application_context;
 
 AgsAudio *output_panel;
 AgsAudio *wave_player;
 
 GObject *output_soundcard;
+
+gpointer
+ags_functional_fourier_transform_test_add_thread(gpointer data)
+{
+  CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
+
+  /* initialize the CUnit test registry */
+  if(CUE_SUCCESS != CU_initialize_registry()){
+    exit(CU_get_error());
+  }
+
+  /* add a suite to the registry */
+  pSuite = CU_add_suite("AgsFunctionalFourierTransformTest", ags_functional_fourier_transform_test_init_suite, ags_functional_fourier_transform_test_clean_suite);
+  
+  if(pSuite == NULL){
+    CU_cleanup_registry();
+    
+    exit(CU_get_error());
+  }
+  
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "test of ags_fourier_transform_util.h doing signed 16 bit", ags_functional_fourier_transform_test_s16) == NULL)){
+    CU_cleanup_registry();
+      
+    exit(CU_get_error());
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+  
+  exit(CU_get_error());
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -146,6 +194,8 @@ ags_functional_fourier_transform_test_init_suite()
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(output_panel));
+
   /* wave player */
   wave_player = ags_audio_new(output_soundcard);
 
@@ -186,6 +236,8 @@ ags_functional_fourier_transform_test_init_suite()
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(wave_player));
 
   /*  */
   start_list = g_list_reverse(start_list);
@@ -228,7 +280,7 @@ ags_functional_fourier_transform_test_s16()
   AgsStartSoundcard *start_soundcard;
   AgsCancelAudio *cancel_audio;
 
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   GList *start_wave, *wave;
   GList *start_buffer, *buffer;
@@ -288,7 +340,7 @@ ags_functional_fourier_transform_test_s16()
   
   g_message("playing frequency = %f", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BASE_FREQ);
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(audio_application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(audio_application_context));
 
   /* start audio and soundcard task */
   task = NULL;    
@@ -301,8 +353,8 @@ ags_functional_fourier_transform_test_s16()
   task = g_list_prepend(task,
 			start_soundcard);
     
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* delay */
   usleep(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_DELAY);
@@ -312,8 +364,8 @@ ags_functional_fourier_transform_test_s16()
 				      AGS_SOUND_SCOPE_WAVE);
     
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_audio);
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);
 
   /*  */
   success = TRUE;
@@ -366,12 +418,12 @@ ags_functional_fourier_transform_test_s16()
   task = g_list_prepend(task,
 			start_audio);
     
-  start_soundcard = ags_start_soundcard_new(audio_application_context);
+  start_soundcard = ags_start_soundcard_new();
   task = g_list_prepend(task,
 			start_soundcard);
     
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* delay */
   usleep(AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_DELAY);
@@ -381,8 +433,8 @@ ags_functional_fourier_transform_test_s16()
 				      AGS_SOUND_SCOPE_WAVE);
     
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_audio);
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) cancel_audio);
 
   CU_ASSERT(success == TRUE);
 }
@@ -390,42 +442,15 @@ ags_functional_fourier_transform_test_s16()
 int
 main(int argc, char **argv)
 {
-  CU_pSuite pSuite = NULL;
+  add_thread = g_thread_new("libags_audio.so - functional fourier transform test",
+			    ags_functional_fourier_transform_test_add_thread,
+			    NULL);
 
-  putenv("LC_ALL=C");
-  putenv("LANG=C");
-
-  putenv("LADSPA_PATH=\"\"");
-  putenv("DSSI_PATH=\"\"");
-  putenv("LV2_PATH=\"\"");
-
-  /* initialize the CUnit test registry */
-  if(CUE_SUCCESS != CU_initialize_registry()){
-    return CU_get_error();
-  }
-
-  /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFunctionalFourierTransformTest", ags_functional_fourier_transform_test_init_suite, ags_functional_fourier_transform_test_clean_suite);
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  FALSE));
   
-  if(pSuite == NULL){
-    CU_cleanup_registry();
-    
-    return CU_get_error();
-  }
+  g_thread_join(add_thread);
   
-  /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_fourier_transform_util.h doing signed 16 bit", ags_functional_fourier_transform_test_s16) == NULL)){
-    CU_cleanup_registry();
-      
-    return CU_get_error();
-  }
-  
-  /* Run all tests using the CUnit Basic interface */
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  
-  CU_cleanup_registry();
-  
-  return(CU_get_error());
+  return(-1);
 }
 

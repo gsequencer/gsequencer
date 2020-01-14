@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_property_editor.h>
 
 #include <stdarg.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PROPERTY_COLLECTION_EDITOR                (ags_property_collection_editor_get_type())
 #define AGS_PROPERTY_COLLECTION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PROPERTY_COLLECTION_EDITOR, AgsPropertyCollectionEditor))
@@ -64,6 +71,8 @@ GType ags_property_collection_editor_get_type();
 AgsPropertyCollectionEditor* ags_property_collection_editor_new(GType child_type,
 								guint child_parameter_count,
 								GParameter *child_parameter);
+
+G_END_DECLS
 
 #endif /*__AGS_PROPERTY_COLLECTION_EDITOR_H__*/
 

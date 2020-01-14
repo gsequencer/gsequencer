@@ -20,10 +20,10 @@
 #ifndef __AGS_TASK_H__
 #define __AGS_TASK_H__
 
-#include <pthread.h>
-
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TASK                (ags_task_get_type())
 #define AGS_TASK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK, AgsTask))
@@ -32,7 +32,7 @@
 #define AGS_IS_TASK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_TASK))
 #define AGS_TASK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TASK, AgsTaskClass))
 
-#define AGS_TASK_GET_OBJ_MUTEX(obj) (((AgsTask *) obj)->obj_mutex)
+#define AGS_TASK_GET_OBJ_MUTEX(obj) (&(((AgsTask *) obj)->obj_mutex))
 
 typedef struct _AgsTask AgsTask;
 typedef struct _AgsTaskClass AgsTaskClass;
@@ -56,16 +56,11 @@ struct _AgsTask
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
-  char *name;
+  gchar *task_name;
 
-  guint delay;
-
-  pthread_cond_t wait_sync_task_cond;
-
-  GObject *task_thread;
+  GObject *task_launcher;
 };
 
 struct _AgsTaskClass
@@ -79,8 +74,6 @@ struct _AgsTaskClass
 
 GType ags_task_get_type();
 
-pthread_mutex_t* ags_task_get_class_mutex();
-
 gboolean ags_task_test_flags(AgsTask *task, guint flags);
 void ags_task_set_flags(AgsTask *task, guint flags);
 void ags_task_unset_flags(AgsTask *task, guint flags);
@@ -89,5 +82,7 @@ void ags_task_launch(AgsTask *task);
 void ags_task_failure(AgsTask *task, GError *error);
 
 AgsTask* ags_task_new();
+
+G_END_DECLS
 
 #endif /*__AGS_TASK_H__*/

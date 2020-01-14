@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_pitch_sampler_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -32,7 +28,7 @@ void ags_pitch_sampler_open_response_callback(GtkWidget *widget, gint response,
 					      AgsPitchSampler *pitch_sampler);
 
 void
-ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPitchSampler *pitch_sampler)
+ags_pitch_sampler_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsPitchSampler *pitch_sampler)
 {
   AgsWindow *window;
 

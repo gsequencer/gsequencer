@@ -37,6 +37,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIO_UNIT_PORT                (ags_audio_unit_port_get_type())
 #define AGS_AUDIO_UNIT_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_UNIT_PORT, AgsAudioUnitPort))
 #define AGS_AUDIO_UNIT_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUDIO_UNIT_PORT, AgsAudioUnitPort))
@@ -44,7 +46,7 @@
 #define AGS_IS_AUDIO_UNIT_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_PORT))
 #define AGS_AUDIO_UNIT_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_PORT, AgsAudioUnitPortClass))
 
-#define AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(obj) (((AgsAudioUnitPort *) obj)->obj_mutex)
+#define AGS_AUDIO_UNIT_PORT_GET_OBJ_MUTEX(obj) (&(((AgsAudioUnitPort *) obj)->obj_mutex))
 
 #define AGS_AUDIO_UNIT_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
@@ -80,8 +82,7 @@ struct _AgsAudioUnitPort
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio_unit_client;
 
@@ -139,8 +140,6 @@ struct _AgsAudioUnitPortClass
 
 GType ags_audio_unit_port_get_type();
 
-pthread_mutex_t* ags_audio_unit_port_get_class_mutex();
-
 gboolean ags_audio_unit_port_test_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
 void ags_audio_unit_port_set_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
 void ags_audio_unit_port_unset_flags(AgsAudioUnitPort *audio_unit_port, guint flags);
@@ -164,5 +163,7 @@ void ags_audio_unit_port_set_buffer_size(AgsAudioUnitPort *audio_unit_port,
 					 guint buffer_size);
 
 AgsAudioUnitPort* ags_audio_unit_port_new(GObject *audio_unit_client);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_UNIT_PORT_H__*/

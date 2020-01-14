@@ -19,9 +19,7 @@
 
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
+#include <ags/X/ags_ui_provider.h>
 
 void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
@@ -37,8 +35,12 @@ void ags_scrolled_automation_edit_box_finalize(GObject *gobject);
 
 void ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 						    GtkAllocation *allocation);
-void ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
-						   GtkRequisition *requisition);
+void ags_scrolled_automation_edit_box_get_preferred_width(GtkWidget *widget,
+							  gint *minimum_width,
+							  gint *natural_width);
+void ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
+							   gint *minimum_height,
+							   gint *natural_height);
 
 /**
  * SECTION:ags_scrolled_automation_edit_box
@@ -114,7 +116,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin top.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -132,7 +134,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin bottom.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -150,7 +152,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin left.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -168,7 +170,7 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
    *
    * The margin right.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -184,8 +186,9 @@ ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *s
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_automation_edit_box;
 
-  widget->size_request = ags_scrolled_automation_edit_box_size_request;
-  widget->size_allocate = ags_scrolled_automation_edit_box_size_allocate;
+//  widget->size_allocate = ags_scrolled_automation_edit_box_size_allocate;
+//  widget->get_preferred_width = ags_scrolled_automation_edit_box_get_preferred_width;
+//  widget->get_preferred_height = ags_scrolled_automation_edit_box_get_preferred_height;
 }
 
 void
@@ -202,6 +205,8 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
   g_object_set(scrolled_automation_edit_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
+  gtk_widget_set_vexpand(scrolled_automation_edit_box->viewport, TRUE);
+  gtk_widget_set_hexpand(scrolled_automation_edit_box->viewport, TRUE);
   gtk_container_add((GtkContainer *) scrolled_automation_edit_box,
 		    (GtkWidget *) scrolled_automation_edit_box->viewport);
 
@@ -306,36 +311,24 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
 
-  AgsConfig *config;
-
+  AgsApplicationContext *application_context;
+  
   GtkAllocation child_allocation;
   GtkRequisition child_requisition;
-
-  gchar *str;
   
   gdouble gui_scale_factor;
   
   scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(widget);
 
-  config = ags_config_get_instance();
+  application_context = ags_application_context_get_instance();
   
+  GTK_WIDGET_CLASS(ags_scrolled_automation_edit_box_parent_class)->size_allocate(widget,
+										 allocation);
+
   /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
-
-  widget->allocation = *allocation;
-
-  widget->allocation.height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
+  allocation->height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
   
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_automation_edit_box->viewport,
@@ -365,40 +358,21 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 }
 
 void
-ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
-					      GtkRequisition *requisition)
+ags_scrolled_automation_edit_box_get_preferred_width(GtkWidget *widget,
+						     gint *minimal_width,
+						     gint *natural_width)
 {
-  GtkRequisition child_requisition;
+  minimal_width =
+    natural_width = NULL;
+}
 
-  AgsConfig *config;
-
-  gchar *str;
-
-  GtkOrientation orientation;
-  
-  gdouble gui_scale_factor;
-
-  config = ags_config_get_instance();
-  
-  /* scale factor */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-    g_free(str);
-  }
-
-  requisition->width = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH);
-  requisition->height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
-  
-  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
-			  &child_requisition);
+void
+ags_scrolled_automation_edit_box_get_preferred_height(GtkWidget *widget,
+						      gint *minimal_height,
+						      gint *natural_height)
+{
+  minimal_height =
+    natural_height = NULL;
 }
 
 /**
@@ -408,7 +382,7 @@ ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
  *
  * Returns: a new #AgsScrolledAutomationEditBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScrolledAutomationEditBox*
 ags_scrolled_automation_edit_box_new()

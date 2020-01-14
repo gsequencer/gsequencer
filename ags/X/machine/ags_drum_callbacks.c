@@ -22,10 +22,6 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -40,7 +36,7 @@
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
 void
-ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
+ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *drum)
 {
   AgsWindow *window;
 
@@ -110,12 +106,12 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data(G_OBJECT(file_chooser), "create", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data(G_OBJECT(file_chooser), "overwrite", (gpointer) check_button);
 
   gtk_widget_show_all(GTK_WIDGET(file_chooser));
@@ -143,7 +139,7 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 
   gboolean loop;
 
-  loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+  loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
 
   /* play - count beats audio */
   g_object_get(AGS_MACHINE(drum)->audio,
@@ -230,16 +226,16 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* task - apply length */
-  length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  length = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button));
 
   apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(drum)->audio,
 							  length);
 
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_sequencer_length);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) apply_sequencer_length);
 }
 
 void
@@ -255,6 +251,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       
       GList *start_list, *list;
 
+      gchar *str;
+      
       guint64 index0;
       
       toggle_button = drum->selected0;
@@ -266,8 +264,9 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected0 = (GtkToggleButton*) widget;
 
       /* calculate index 0 */
-      AGS_MACHINE(drum)->bank_0 = 
-	index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
+      str = gtk_button_get_label(drum->selected0);
+      index0 =
+	AGS_MACHINE(drum)->bank_0 = ((guint) str[0] - 'a');
 
       /* play - set port */
       g_object_get(AGS_MACHINE(drum)->audio,
@@ -360,6 +359,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 
       GList *start_list, *list;
 
+      gchar *str;
+      
       guint64 index1;
       
       toggle_button = drum->selected1;
@@ -371,8 +372,9 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected1 = (GtkToggleButton*) widget;
 
       /* calculate index 1 */
-      AGS_MACHINE(drum)->bank_1 = 
-	index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
+      str = gtk_button_get_label(drum->selected1);
+      index1 =
+	AGS_MACHINE(drum)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 
       /* play - set port */
       g_object_get(AGS_MACHINE(drum)->audio,

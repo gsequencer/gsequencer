@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_DIALOG                (ags_midi_dialog_get_type())
 #define AGS_MIDI_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_DIALOG, AgsMidiDialog))
@@ -92,5 +99,7 @@ GType ags_midi_dialog_get_type(void);
 void ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog);
 
 AgsMidiDialog* ags_midi_dialog_new(AgsMachine *machine);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_DIALOG_H__*/

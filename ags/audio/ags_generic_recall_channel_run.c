@@ -20,8 +20,6 @@
 #include <ags/audio/ags_generic_recall_channel_run.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -32,7 +30,6 @@
 
 void ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *generic_recall_channel_run);
 void ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_recall_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_generic_recall_channel_run_init(AgsGenericRecallChannelRun *generic_recall_channel_run);
 void ags_generic_recall_channel_run_set_property(GObject *gobject,
 						 guint prop_id,
@@ -46,9 +43,6 @@ void ags_generic_recall_channel_run_finalize(GObject *gobject);
 
 void ags_generic_recall_channel_run_connect(AgsConnectable *connectable);
 void ags_generic_recall_channel_run_disconnect(AgsConnectable *connectable);
-
-void ags_generic_recall_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 AgsRecall* ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 						    AgsRecallID *recall_id,
@@ -66,7 +60,6 @@ AgsRecall* ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 
 static gpointer ags_generic_recall_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_generic_recall_channel_run_parent_connectable_interface;
-static AgsPluginInterface *ags_generic_recall_channel_run_parent_plugin_interface;
 
 enum{
   PROP_0,
@@ -99,12 +92,6 @@ ags_generic_recall_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_generic_recall_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_generic_recall_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 								 "AgsGenericRecallChannelRun",
 								 &ags_generic_recall_channel_run_info,
@@ -113,10 +100,6 @@ ags_generic_recall_channel_run_get_type()
     g_type_add_interface_static(ags_type_generic_recall_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_generic_recall_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_generic_recall_channel_run);
   }
@@ -148,7 +131,7 @@ ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *gener
    *
    * The type of child #AgsRecall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("generic-recall-recycling-child-type",
 				  i18n_pspec("generic recall recycling child type"),
@@ -172,15 +155,6 @@ ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterfac
 
   connectable->connect = ags_generic_recall_channel_run_connect;
   connectable->disconnect = ags_generic_recall_channel_run_disconnect;
-}
-
-void
-ags_generic_recall_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_generic_recall_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_generic_recall_channel_run_read;
-  plugin->write = ags_generic_recall_channel_run_write;
 }
 
 void
@@ -210,7 +184,7 @@ ags_generic_recall_channel_run_set_property(GObject *gobject,
 {
   AgsGenericRecallChannelRun *generic_recall_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   generic_recall_channel_run = AGS_GENERIC_RECALL_CHANNEL_RUN(gobject);
 
@@ -220,11 +194,11 @@ ags_generic_recall_channel_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       generic_recall_channel_run->generic_recall_recycling_child_type = g_value_get_gtype(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -241,7 +215,7 @@ ags_generic_recall_channel_run_get_property(GObject *gobject,
 {
   AgsGenericRecallChannelRun *generic_recall_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   generic_recall_channel_run = AGS_GENERIC_RECALL_CHANNEL_RUN(gobject);
 
@@ -251,12 +225,12 @@ ags_generic_recall_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_gtype(value,
 			generic_recall_channel_run->generic_recall_recycling_child_type);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -306,7 +280,7 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 
   GType generic_recall_recycling_child_type;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   generic_recall_channel_run = (AgsGenericRecallChannelRun *) recall;  
 
@@ -314,11 +288,11 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(generic_recall_channel_run);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   generic_recall_recycling_child_type = generic_recall_channel_run->generic_recall_recycling_child_type;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* duplicate */
   copy_generic_recall_channel_run = AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
@@ -350,62 +324,6 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy_generic_recall_channel_run);
 }
 
-void
-ags_generic_recall_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsGenericRecallChannelRun *gobject;
-
-  gobject = AGS_GENERIC_RECALL_CHANNEL_RUN(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  gobject->generic_recall_recycling_child_type = g_type_from_name(xmlGetProp(node,
-									     "recycling-child-type"));
-}
-
-xmlNode*
-ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsGenericRecallChannelRun *generic_recall_channel_run;
-  xmlNode *node;
-  gchar *id;
-
-  generic_recall_channel_run = AGS_GENERIC_RECALL_CHANNEL_RUN(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-generic-recall-channel-run");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", generic_recall_channel_run,
-				   NULL));
-
-  xmlNewProp(node,
-	     "recycling-child-type",
-	     g_strdup(g_type_name(generic_recall_channel_run->generic_recall_recycling_child_type)));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_generic_recall_channel_run_new:
  * @source: the source #AgsChannel
@@ -416,7 +334,7 @@ ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *
  *
  * Returns: a new #AgsGenericRecallChannelRun.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericRecallChannelRun*
 ags_generic_recall_channel_run_new(AgsChannel *source,

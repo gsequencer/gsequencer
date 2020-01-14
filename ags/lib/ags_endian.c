@@ -36,7 +36,7 @@
  * 
  * Returns: %TRUE if LE, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_endian_host_is_le()
@@ -53,7 +53,7 @@ ags_endian_host_is_le()
  * 
  * Returns: %TRUE if BE, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_endian_host_is_be()
@@ -71,7 +71,7 @@ ags_endian_host_is_be()
  *
  * Returns: the byte-swapped float
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gfloat
 ags_endian_swap_float(gfloat x)

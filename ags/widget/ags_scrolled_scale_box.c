@@ -34,10 +34,14 @@ void ags_scrolled_scale_box_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_scrolled_scale_box_finalize(GObject *gobject);
 
+void ags_scrolled_scale_get_preferred_width(GtkWidget *widget,
+					    gint *minimal_width,
+					    gint *natural_width);
+void ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
+					     gint *minimal_height,
+					     gint *natural_height);
 void ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 					  GtkAllocation *allocation);
-void ags_scrolled_scale_box_size_request(GtkWidget *widget,
-					 GtkRequisition *requisition);
 
 /**
  * SECTION:ags_scrolled_scale_box
@@ -113,7 +117,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin top.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -131,7 +135,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin bottom.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -149,7 +153,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin left.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -167,7 +171,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin right.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -183,8 +187,9 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scrolled_scale_box;
 
-  widget->size_request = ags_scrolled_scale_box_size_request;
-  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
+//  widget->get_preferred_width = ags_scrolled_scale_get_preferred_width;
+//  widget->get_preferred_height = ags_scrolled_scale_get_preferred_height;
+//  widget->size_allocate = ags_scrolled_scale_box_size_allocate;
 }
 
 void
@@ -304,6 +309,24 @@ ags_scrolled_scale_box_finalize(GObject *gobject)
 }
 
 void
+ags_scrolled_scale_get_preferred_width(GtkWidget *widget,
+				       gint *minimal_width,
+				       gint *natural_width)
+{
+  minimal_width[0] =
+    natural_width[0] = AGS_SCALE_DEFAULT_SCALE_WIDTH;
+}
+
+void
+ags_scrolled_scale_get_preferred_height(GtkWidget *widget,
+					gint *minimal_height,
+					gint *natural_height)
+{
+  minimal_height =
+    natural_height = NULL;
+}
+
+void
 ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 				     GtkAllocation *allocation)
 {
@@ -341,19 +364,6 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 			   &child_allocation);
 }
 
-void
-ags_scrolled_scale_box_size_request(GtkWidget *widget,
-				    GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-
-  requisition->width = AGS_SCALE_DEFAULT_SCALE_WIDTH;
-  requisition->height = -1;
-  
-  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
-			  &child_requisition);
-}
-
 /**
  * ags_scrolled_scale_box_new:
  *
@@ -361,7 +371,7 @@ ags_scrolled_scale_box_size_request(GtkWidget *widget,
  *
  * Returns: the new #AgsScrolledScaleBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScrolledScaleBox*
 ags_scrolled_scale_box_new()

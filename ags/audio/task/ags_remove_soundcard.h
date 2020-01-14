@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/object/ags_application_context.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_REMOVE_SOUNDCARD                (ags_remove_soundcard_get_type())
 #define AGS_REMOVE_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOVE_SOUNDCARD, AgsRemoveSoundcard))
@@ -41,8 +41,6 @@ struct _AgsRemoveSoundcard
 {
   AgsTask task;
 
-  AgsApplicationContext *application_context;
-
   GObject *soundcard;
 };
 
@@ -53,7 +51,8 @@ struct _AgsRemoveSoundcardClass
 
 GType ags_remove_soundcard_get_type();
 
-AgsRemoveSoundcard* ags_remove_soundcard_new(AgsApplicationContext *application_context,
-					     GObject *soundcard);
+AgsRemoveSoundcard* ags_remove_soundcard_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_REMOVE_SOUNDCARD_H__*/

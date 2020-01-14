@@ -25,7 +25,7 @@
 
 #include <libxml/tree.h>
 
-#include <ags/file/ags_file.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PLUGIN                    (ags_plugin_get_type())
 #define AGS_PLUGIN(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLUGIN, AgsPlugin))
@@ -56,10 +56,10 @@ struct _AgsPluginInterface
   GList* (*get_ports)(AgsPlugin *plugin);
   void (*set_ports)(AgsPlugin *plugin, GList *ports);
 
-  void (*read)(AgsFile *file,
+  void (*read)(GObject *file,
 	       xmlNode *node,
 	       AgsPlugin *plugin);
-  xmlNode* (*write)(AgsFile *file,
+  xmlNode* (*write)(GObject *file,
 		    xmlNode *parent,
 		    AgsPlugin *plugin);
 };
@@ -81,11 +81,13 @@ void ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 GList* ags_plugin_get_ports(AgsPlugin *plugin);
 void ags_plugin_set_ports(AgsPlugin *plugin, GList *ports);
 
-void ags_plugin_read(AgsFile *file,
+void ags_plugin_read(GObject *file,
 		     xmlNode *node,
 		     AgsPlugin *plugin);
-xmlNode* ags_plugin_write(AgsFile *file,
+xmlNode* ags_plugin_write(GObject *file,
 			  xmlNode *parent,
 			  AgsPlugin *plugin);
+
+G_END_DECLS
 
 #endif /*__AGS_PLUGIN_H__*/

@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LFO_CHANNEL_RUN                (ags_lfo_channel_run_get_type())
 #define AGS_LFO_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LFO_CHANNEL_RUN, AgsLfoChannelRun))
 #define AGS_LFO_CHANNEL_RUN_CLASS(class)        (G_TYPE_CHECK_INSTANCE_CAST(class, AGS_TYPE_LFO_CHANNEL_RUN, AgsLfoChannelRunClass))
@@ -51,5 +53,7 @@ struct _AgsLfoChannelRunClass
 GType ags_lfo_channel_run_get_type();
 
 AgsLfoChannelRun* ags_lfo_channel_run_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_LFO_CHANNEL_RUN_H__*/

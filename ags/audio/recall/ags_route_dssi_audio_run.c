@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_dssi.h>
@@ -36,7 +34,6 @@
 
 void ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_run);
 void ags_route_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_route_dssi_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_route_dssi_audio_run_init(AgsRouteDssiAudioRun *route_dssi_audio_run);
 void ags_route_dssi_audio_run_set_property(GObject *gobject,
 					   guint prop_id,
@@ -56,21 +53,18 @@ void ags_route_dssi_audio_run_connect_connection(AgsConnectable *connectable,
 void ags_route_dssi_audio_run_disconnect_connection(AgsConnectable *connectable,
 						    GObject *connection);
 
-void ags_route_dssi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_route_dssi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
 void ags_route_dssi_audio_run_resolve_dependency(AgsRecall *recall);
 void ags_route_dssi_audio_run_run_post(AgsRecall *recall);
+
+void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsRouteDssiAudioRun *route_dssi_audio_run,
+							     AgsNotation *notation,
+							     guint audio_start_mapping, guint audio_end_mapping,
+							     guint64 notation_counter);
 
 void ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						   guint nth_run,
 						   gdouble delay, guint attack,
 						   AgsRouteDssiAudioRun *route_dssi_audio_run);
-
-void ags_route_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						       GObject *recall);
-void ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						      GObject *recall);
 
 void ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 					AgsNote *note);
@@ -93,7 +87,6 @@ enum{
 
 static gpointer ags_route_dssi_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_route_dssi_audio_run_parent_connectable_interface;
-static AgsPluginInterface *ags_route_dssi_audio_run_parent_plugin_interface;
 
 GType
 ags_route_dssi_audio_run_get_type()
@@ -121,12 +114,6 @@ ags_route_dssi_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_route_dssi_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_route_dssi_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							   "AgsRouteDssiAudioRun",
 							   &ags_route_dssi_audio_run_info,
@@ -135,10 +122,6 @@ ags_route_dssi_audio_run_get_type()
     g_type_add_interface_static(ags_type_route_dssi_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_route_dssi_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave (&g_define_type_id__volatile, ags_type_route_dssi_audio_run);
   }
@@ -156,15 +139,6 @@ ags_route_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *con
 
   connectable->connect_connection = ags_route_dssi_audio_run_connect_connection;
   connectable->disconnect_connection = ags_route_dssi_audio_run_disconnect_connection;
-}
-
-void
-ags_route_dssi_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_route_dssi_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_route_dssi_audio_run_read;
-  plugin->write = ags_route_dssi_audio_run_write;
 }
 
 void
@@ -191,7 +165,7 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * 
    * The delay audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -207,7 +181,7 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * 
    * The count beats audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -261,7 +235,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 {
   AgsRouteDssiAudioRun *route_dssi_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
 
@@ -278,10 +252,10 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
       delay_audio_run = g_value_get_object(value);
       old_delay_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(delay_audio_run == route_dssi_audio_run->delay_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -296,7 +270,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 	g_object_ref(delay_audio_run);
       }
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(delay_audio_run != NULL &&
@@ -332,11 +306,11 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
       }
 
       /* new - dependency/connection */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       route_dssi_audio_run->delay_audio_run = delay_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(delay_audio_run != NULL){
 	if(is_template){
@@ -360,10 +334,10 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
       count_beats_audio_run = g_value_get_object(value);
       old_count_beats_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == route_dssi_audio_run->count_beats_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -386,7 +360,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 
       route_dssi_audio_run->count_beats_audio_run = count_beats_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(count_beats_audio_run != NULL &&
@@ -438,7 +412,7 @@ ags_route_dssi_audio_run_get_property(GObject *gobject,
 {
   AgsRouteDssiAudioRun *route_dssi_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
 
@@ -448,22 +422,22 @@ ags_route_dssi_audio_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value,
 			 G_OBJECT(route_dssi_audio_run->delay_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value,
 			 G_OBJECT(route_dssi_audio_run->count_beats_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -640,105 +614,6 @@ ags_route_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObj
 }
 
 void
-ags_route_dssi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_route_dssi_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", G_OBJECT(plugin),
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_route_dssi_audio_run_read_resolve_dependency), G_OBJECT(plugin));
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_route_dssi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-  gchar *id;
-
-  /* write parent */
-  node = ags_route_dssi_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_route_dssi_audio_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
-}
-
-void
 ags_route_dssi_audio_run_resolve_dependency(AgsRecall *recall)
 {
   AgsRecall *template;
@@ -858,7 +733,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   guint start_frame, end_frame;
   guint note_y;
 
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
   
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(recall);
 
@@ -877,7 +752,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get audio fields */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   audio_start_mapping = audio->audio_start_mapping;
 
@@ -899,7 +774,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
     g_object_ref(start_input);
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 
   /* note */
   g_object_get(note,
@@ -1000,9 +875,11 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		   NULL);
      
       //FIXME:JK: use filename and effect to identify
+      start_generic_channel_recall = NULL;
+
       list_recall = ags_recall_template_find_type(start_list_recall,
 						  AGS_TYPE_RECALL_DSSI);
-      
+
       if(list_recall != NULL){
 	AgsRecallContainer *recall_container;
 
@@ -1145,6 +1022,78 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 }
 
 void
+ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsRouteDssiAudioRun *route_dssi_audio_run,
+							AgsNotation *notation,
+							guint audio_start_mapping, guint audio_end_mapping,
+							guint64 notation_counter)
+{
+  AgsNote *current_note;
+    
+  GList *start_note, *note;
+  GList *start_list, *list;
+
+  guint note_y;
+  guint note_x0;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  start_list = NULL;    
+
+  g_object_get(notation,
+	       "note", &start_note,
+	       NULL);
+
+  note = start_note;
+    
+  while(note != NULL){
+    current_note = AGS_NOTE(note->data);
+
+    g_object_get(current_note,
+		 "x0", &note_x0,
+		 "y", &note_y,
+		 NULL);
+#if 0    
+    g_message("--- %f %f ; %d %d",
+	      current_note->stream_delay, delay,
+	      note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
+#endif
+      
+    //FIXME:JK: should consider delay
+    if(note_y >= audio_start_mapping &&
+       note_y < audio_end_mapping &&
+       note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
+      start_list = g_list_prepend(start_list,
+				  current_note);
+      g_object_ref(current_note);
+    }else if(note_x0 > notation_counter){
+      break;
+    }
+    
+    /* iterate */    
+    note = note->next;
+  }
+
+  start_list = g_list_reverse(start_list);
+    
+  /* feed midi */
+  list = start_list;
+    
+  while(list != NULL){
+    ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
+				       list->data);
+    g_object_unref(list->data);
+      
+    list = list->next;
+  }
+
+  g_list_free_full(start_note,
+		   g_object_unref);
+  g_list_free(start_list);
+}
+
+void
 ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					      guint nth_run,
 					      gdouble delay, guint attack,
@@ -1164,76 +1113,7 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   guint audio_channel;
   guint64 notation_counter;
   guint audio_start_mapping, audio_end_mapping;
-  
-  auto void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation);
-
-  void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation){
-    AgsNote *current_note;
     
-    GList *start_note, *note;
-    GList *start_list, *list;
-
-    guint note_y;
-    guint note_x0;
-
-    if(!AGS_IS_NOTATION(notation)){
-      return;
-    }
-
-    start_list = NULL;    
-
-    g_object_get(notation,
-		 "note", &start_note,
-		 NULL);
-
-    note = start_note;
-    
-    while(note != NULL){
-      current_note = AGS_NOTE(note->data);
-
-      g_object_get(current_note,
-		   "x0", &note_x0,
-		   "y", &note_y,
-		   NULL);
-#if 0    
-      g_message("--- %f %f ; %d %d",
-		current_note->stream_delay, delay,
-		note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
-#endif
-      
-      //FIXME:JK: should consider delay
-      if(note_y >= audio_start_mapping &&
-	 note_y < audio_end_mapping &&
-	 note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
-	start_list = g_list_prepend(start_list,
-				    current_note);
-	g_object_ref(current_note);
-      }else if(note_x0 > notation_counter){
-	break;
-      }
-    
-      /* iterate */    
-      note = note->next;
-    }
-
-    start_list = g_list_reverse(start_list);
-    
-    /* feed midi */
-    list = start_list;
-    
-    while(list != NULL){
-      ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
-					 list->data);
-      g_object_unref(list->data);
-      
-      list = list->next;
-    }
-
-    g_list_free_full(start_note,
-		     g_object_unref);
-    g_list_free(start_list);
-  }
-  
   if((guint) floor(delay) != 0){
     //    g_message("d %f", delay);
     return;
@@ -1267,7 +1147,10 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     notation = list->data;
   }
   
-  ags_route_dssi_audio_run_alloc_input_callback_feed_note(notation);
+  ags_route_dssi_audio_run_alloc_input_callback_feed_note(route_dssi_audio_run,
+							  notation,
+							  audio_start_mapping, audio_end_mapping,
+							  notation_counter);
   
   /* feed note - second attempt */
   if(route_dssi_audio_run->timestamp->timer.ags_offset.offset != 0){
@@ -1281,7 +1164,10 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       notation = list->data;
     }
 
-    ags_route_dssi_audio_run_alloc_input_callback_feed_note(notation);
+    ags_route_dssi_audio_run_alloc_input_callback_feed_note(route_dssi_audio_run,
+							    notation,
+							    audio_start_mapping, audio_end_mapping,
+							    notation_counter);
   }
 
   /* unref */
@@ -1372,7 +1258,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
   /*  */
   x = (((notation_counter * notation_delay) + notation_counter) * buffer_size);
   
-  route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
+  route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((AGS_USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / AGS_USEC_PER_SEC);
 
   /* unref */
   g_object_unref(audio);
@@ -1386,46 +1272,6 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
   g_object_unref(output_soundcard);
 }
 
-void
-ags_route_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						  GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						 GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-  
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", id_ref->ref,
-		 NULL);
-  }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
-}
-
 /**
  * ags_route_dssi_audio_run_new:
  * @audio: the #AgsAudio
@@ -1434,7 +1280,7 @@ ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Returns: the new #AgsRouteDssiAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRouteDssiAudioRun*
 ags_route_dssi_audio_run_new(AgsAudio *audio)

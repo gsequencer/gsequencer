@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PLUGIN_PORT                (ags_plugin_port_get_type())
 #define AGS_PLUGIN_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLUGIN_PORT, AgsPluginPort))
@@ -32,7 +34,7 @@
 #define AGS_IS_PLUGIN_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLUGIN_PORT))
 #define AGS_PLUGIN_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLUGIN_PORT, AgsPluginPortClass))
 
-#define AGS_PLUGIN_PORT_GET_OBJ_MUTEX(obj) (((AgsPluginPort *) obj)->obj_mutex)
+#define AGS_PLUGIN_PORT_GET_OBJ_MUTEX(obj) (&(((AgsPluginPort *) obj)->obj_mutex))
 
 typedef struct _AgsPluginPort AgsPluginPort;
 typedef struct _AgsPluginPortClass AgsPluginPortClass;
@@ -81,8 +83,7 @@ struct _AgsPluginPort
   
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   guint port_index;
 
@@ -108,8 +109,6 @@ struct _AgsPluginPortClass
 
 GType ags_plugin_port_get_type(void);
 
-pthread_mutex_t* ags_plugin_port_get_class_mutex();
-
 gboolean ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags);
 void ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags);
 void ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags);
@@ -120,5 +119,7 @@ GList* ags_plugin_port_find_port_index(GList *plugin_port,
 				       guint port_index);
 
 AgsPluginPort* ags_plugin_port_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PLUGIN_PORT_H__*/

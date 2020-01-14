@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_thread.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RETURNABLE_THREAD                (ags_returnable_thread_get_type())
 #define AGS_RETURNABLE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RETURNABLE_THREAD, AgsReturnableThread))
@@ -66,7 +64,7 @@ struct _AgsReturnableThread
 
   GObject *thread_pool;
   
-  pthread_mutex_t *reset_mutex;
+  GRecMutex reset_mutex;
   volatile void *safe_data;
 
   gulong handler;
@@ -91,5 +89,7 @@ void ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thre
 void ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread);
 
 AgsReturnableThread* ags_returnable_thread_new(GObject *thread_pool);
+
+G_END_DECLS
 
 #endif /*__AGS_RETURNABLE_THREAD_H__*/

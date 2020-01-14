@@ -29,6 +29,8 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN                (ags_capture_wave_channel_run_get_type())
 #define AGS_CAPTURE_WAVE_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN, AgsCaptureWaveChannelRun))
 #define AGS_CAPTURE_WAVE_CHANNEL_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN, AgsCaptureWaveChannelRun))
@@ -58,5 +60,7 @@ struct _AgsCaptureWaveChannelRunClass
 GType ags_capture_wave_channel_run_get_type();
 
 AgsCaptureWaveChannelRun* ags_capture_wave_channel_run_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_CAPTURE_WAVE_CHANNEL_RUN_H__*/

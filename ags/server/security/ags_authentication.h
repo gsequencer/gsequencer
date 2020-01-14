@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUTHENTICATION                    (ags_authentication_get_type())
 #define AGS_AUTHENTICATION(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTHENTICATION, AgsAuthentication))
 #define AGS_AUTHENTICATION_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_AUTHENTICATION, AgsAuthenticationInterface))
@@ -40,8 +42,10 @@ struct _AgsAuthenticationInterface
   gchar** (*get_authentication_module)(AgsAuthentication *authentication);
   
   gboolean (*login)(AgsAuthentication *authentication,
-		    gchar *login, gchar *password,
-		    gchar **user_uuid, gchar **security_token,
+		    gchar *login,
+		    gchar *password,
+		    gchar **user_uuid,
+		    gchar **security_token,
 		    GError **error);
 
   gboolean (*logout)(AgsAuthentication *authentication,
@@ -52,23 +56,16 @@ struct _AgsAuthenticationInterface
   
   gchar* (*generate_token)(AgsAuthentication *authentication,
 			   GError **error);
+
+  gchar* (*get_digest)(AgsAuthentication *authentication,
+		       gchar *realm,
+		       gchar *login,
+		       gchar *security_token,
+		       GError **error);
   
-  gchar** (*get_groups)(AgsAuthentication *authentication,
-			GObject *security_context,
-			gchar *login,
-			gchar *security_token,
-			GError **error);
-
-  gchar* (*get_permission)(AgsAuthentication *authentication,
-			   GObject *security_context,
-			   gchar *login,
-			   gchar *security_token,
-			   gchar *group_name,
-			   GError **error);
-
   gboolean (*is_session_active)(AgsAuthentication *authentication,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				GError **error);
 };
@@ -78,8 +75,10 @@ GType ags_authentication_get_type();
 gchar** ags_authentication_get_authentication_module(AgsAuthentication *authentication);
 
 gboolean ags_authentication_login(AgsAuthentication *authentication,
-				  gchar *login, gchar *password,
-				  gchar **user_uuid, gchar **security_token,
+				  gchar *login,
+				  gchar *password,
+				  gchar **user_uuid,
+				  gchar **security_token,
 				  GError **error);
 
 gboolean ags_authentication_logout(AgsAuthentication *authentication,
@@ -91,23 +90,18 @@ gboolean ags_authentication_logout(AgsAuthentication *authentication,
 gchar* ags_authentication_generate_token(AgsAuthentication *authentication,
 					 GError **error);
 
-gchar** ags_authentication_get_groups(AgsAuthentication *authentication,
-				      GObject *security_context,
-				      gchar *login,
-				      gchar *security_token,
-				      GError **error);
-
-gchar* ags_authentication_get_permission(AgsAuthentication *authentication,
-					 GObject *security_context,
-					 gchar *login,
-					 gchar *security_token,
-					 gchar *group_name,
-					 GError **error);
+gchar* ags_authentication_get_digest(AgsAuthentication *authentication,
+				     gchar *realm,
+				     gchar *login,
+				     gchar *security_token,
+				     GError **error);
 
 gboolean ags_authentication_is_session_active(AgsAuthentication *authentication,
 					      GObject *security_context,
-					      gchar *login,
+					      gchar *user_uuid,
 					      gchar *security_token,
 					      GError **error);
+
+G_END_DECLS
 
 #endif /*__AGS_AUTHENTICATION_H__*/

@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_mute_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -145,11 +143,7 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   mute_audio_signal = AGS_MUTE_AUDIO_SIGNAL(recall);
 
   /* get parent class and mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_mute_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_inter(recall);
@@ -251,7 +245,7 @@ ags_mute_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsMuteAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteAudioSignal*
 ags_mute_audio_signal_new(AgsAudioSignal *source)

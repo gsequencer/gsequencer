@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,11 +22,16 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_connection_editor.h>
 
-int ags_connection_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsConnectionEditor *connection_editor);
+G_BEGIN_DECLS
 
 int ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 int ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
@@ -34,5 +39,7 @@ int ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor
 
 gboolean ags_connection_editor_delete_event(GtkWidget *dialog, gint response,
 					    AgsConnectionEditor *connection_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_CONNECTION_EDITOR_CALLBACKS_H__*/

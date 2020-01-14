@@ -31,6 +31,8 @@
 
 #include <ags/X/ags_pad.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FM_SYNTH_INPUT_PAD                (ags_fm_synth_input_pad_get_type())
 #define AGS_FM_SYNTH_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_SYNTH_INPUT_PAD, AgsFMSynthInputPad))
 #define AGS_FM_SYNTH_INPUT_PAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FM_SYNTH_INPUT_PAD, AgsFMSynthInputPadClass))
@@ -57,5 +59,7 @@ struct _AgsFMSynthInputPadClass
 GType ags_fm_synth_input_pad_get_type();
 
 AgsFMSynthInputPad* ags_fm_synth_input_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNTH_INPUT_PAD_H__*/

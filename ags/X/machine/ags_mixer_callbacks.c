@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,7 @@
 #include <ags/X/ags_window.h>
 
 void
-ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer *mixer)
+ags_mixer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMixer *mixer)
 {
   AgsWindow *window;
 

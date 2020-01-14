@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_OPTION_MANAGER                (ags_lv2_option_manager_get_type())
 #define AGS_LV2_OPTION_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManager))
@@ -35,7 +37,7 @@
 #define AGS_IS_LV2_OPTION_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_OPTION_MANAGER))
 #define AGS_LV2_OPTION_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManagerClass))
 
-#define AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2OptionManager *) obj)->obj_mutex)
+#define AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2OptionManager *) obj)->obj_mutex))
 
 #define AGS_LV2_OPTION_RESSOURCE(ptr) ((AgsLv2OptionRessource *)(ptr))
 #define AGS_LV2_OPTIONS_OPTION(ptr) ((LV2_Options_Option *)(ptr))
@@ -48,8 +50,7 @@ struct _AgsLv2OptionManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GHashTable *ressource;
 };
@@ -58,11 +59,11 @@ struct _AgsLv2OptionManagerClass
 {
   GObjectClass gobject;
 
-  void (*get_option)(AgsLv2OptionManager *option_manager,
+  void (*get_option)(AgsLv2OptionManager *lv2_option_manager,
 		     gpointer instance,
 		     gpointer option,
 		     gpointer retval);
-  void (*set_option)(AgsLv2OptionManager *option_manager,
+  void (*set_option)(AgsLv2OptionManager *lv2_option_manager,
 		     gpointer instance,
 		     gpointer option,
 		     gpointer retval);
@@ -74,8 +75,6 @@ struct _AgsLv2OptionRessource{
 };
 
 GType ags_lv2_option_manager_get_type(void);
-
-pthread_mutex_t* ags_lv2_option_manager_get_class_mutex();
 
 /* option ressource */
 AgsLv2OptionRessource* ags_lv2_option_ressource_alloc();
@@ -110,5 +109,7 @@ uint32_t ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
 /*  */
 AgsLv2OptionManager* ags_lv2_option_manager_get_instance();
 AgsLv2OptionManager* ags_lv2_option_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_OPTION_MANAGER_H__*/

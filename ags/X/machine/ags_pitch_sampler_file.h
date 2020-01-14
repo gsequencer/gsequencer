@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PITCH_SAMPLER_FILE                (ags_pitch_sampler_file_get_type())
 #define AGS_PITCH_SAMPLER_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PITCH_SAMPLER_FILE, AgsPitchSamplerFile))
@@ -66,5 +72,7 @@ struct _AgsPitchSamplerFileClass
 GType ags_pitch_sampler_file_get_type(void);
 
 AgsPitchSamplerFile* ags_pitch_sampler_file_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PITCH_SAMPLER_FILE_H__*/

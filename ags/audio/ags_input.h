@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <glib/gstdio.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_INPUT                (ags_input_get_type())
 #define AGS_INPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INPUT, AgsInput))
@@ -77,5 +80,7 @@ gboolean ags_input_open_file(AgsInput *input,
 
 /* instantiate */
 AgsInput* ags_input_new(GObject *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_INPUT_H__*/

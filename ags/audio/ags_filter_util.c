@@ -19,13 +19,21 @@
 
 #include <ags/audio/ags_filter_util.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
 #include <math.h>
+
+/**
+ * SECTION:ags_filter_util
+ * @short_description: filter util
+ * @title: AgsFilterUtil
+ * @section_id:
+ * @include: ags/audio/ags_filter_util.h
+ *
+ * Utility functions to compute filters.
+ */
 
 /**
  * ags_filter_util_pitch_s8:
@@ -37,7 +45,7 @@
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_s8(gint8 *buffer,
@@ -279,7 +287,7 @@ ags_filter_util_pitch_s8(gint8 *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_s16(gint16 *buffer,
@@ -535,7 +543,7 @@ ags_filter_util_pitch_s16(gint16 *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_s24(gint32 *buffer,
@@ -777,7 +785,7 @@ ags_filter_util_pitch_s24(gint32 *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_s32(gint32 *buffer,
@@ -1019,7 +1027,7 @@ ags_filter_util_pitch_s32(gint32 *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_s64(gint64 *buffer,
@@ -1261,7 +1269,7 @@ ags_filter_util_pitch_s64(gint64 *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_float(gfloat *buffer,
@@ -1503,7 +1511,7 @@ ags_filter_util_pitch_float(gfloat *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_double(gdouble *buffer,
@@ -1745,7 +1753,7 @@ ags_filter_util_pitch_double(gdouble *buffer,
  * 
  * Apply pitch filter.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_filter_util_pitch_complex(AgsComplex *buffer,

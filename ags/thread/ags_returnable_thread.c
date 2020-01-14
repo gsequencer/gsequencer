@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_thread_pool.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -134,7 +133,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    *
    * The assigned #AgsThreadPool providing default settings.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("thread-pool",
 				   i18n_pspec("assigned thread pool"),
@@ -151,7 +150,6 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   thread->start = ags_returnable_thread_start;
   thread->run = ags_returnable_thread_run;
   thread->stop = ags_returnable_thread_stop;
-  thread->resume = ags_returnable_thread_resume;
 
   /* AgsReturnableThreadClass */
   returnable_thread->safe_run = NULL;
@@ -164,7 +162,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    * The ::safe-run is invoked durin AgsThread::run as
    * a context safe wrapper.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   returnable_thread_signals[SAFE_RUN] =
     g_signal_new("safe-run",
@@ -184,18 +182,18 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   thread = AGS_THREAD(returnable_thread);
 
-  g_atomic_int_or(&(thread->flags),
-  		  AGS_THREAD_UNREF_ON_EXIT);
+  ags_thread_set_flags(thread, AGS_THREAD_UNREF_ON_EXIT);
 
-  thread->freq = AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE;
+  g_object_set(thread,
+	       "frequency", AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE,
+	       NULL);
 
   g_atomic_int_set(&(returnable_thread->flags),
 		   AGS_RETURNABLE_THREAD_RUN_ONCE);
 
   returnable_thread->thread_pool = NULL;
   
-  returnable_thread->reset_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(returnable_thread->reset_mutex, NULL);
+  g_rec_mutex_init(&(returnable_thread->reset_mutex));
   
   g_atomic_pointer_set(&(returnable_thread->safe_data),
 		       NULL);
@@ -291,11 +289,6 @@ ags_returnable_thread_finalize(GObject *gobject)
   if(returnable_thread->thread_pool != NULL){
     g_object_unref(returnable_thread->thread_pool);
   }
-
-  /* reset mutex */
-  pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
-
-  free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
@@ -312,13 +305,8 @@ ags_returnable_thread_run(AgsThread *thread)
 {
   AgsThreadPool *thread_pool;
   AgsReturnableThread *returnable_thread;
-#if 0
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-#endif
   
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
   
   //  g_message("reset:0");
   
@@ -333,17 +321,14 @@ ags_returnable_thread_run(AgsThread *thread)
       g_atomic_int_and(&(returnable_thread->flags),
 		       (~AGS_RETURNABLE_THREAD_IN_USE));
 
-#if 0
-      ags_thread_stop(thread);
-#else
       /* return to thread pool */
       thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
-      pthread_mutex_lock(thread_mutex);
+      g_rec_mutex_lock(thread_mutex);
 
       thread_pool = returnable_thread->thread_pool;
       
-      pthread_mutex_unlock(thread_mutex);
+      g_rec_mutex_unlock(thread_mutex);
 
       /* give returnable thread back to thread pool */
       g_atomic_pointer_set(&(returnable_thread->safe_data),
@@ -353,15 +338,7 @@ ags_returnable_thread_run(AgsThread *thread)
       g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			   g_list_prepend(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
 					  returnable_thread));      
-#endif
     }
-
-#if 0
-    application_context = ags_application_context_get_instance();
-    
-    task_thread = (AgsTaskThread *) ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-    ags_task_thread_clear_cache(task_thread);
-#endif
   }
 }
 
@@ -401,7 +378,7 @@ ags_returnable_thread_resume(AgsThread *thread)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -424,7 +401,7 @@ ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint f
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -443,7 +420,7 @@ ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint fl
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags)
@@ -458,11 +435,11 @@ ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint 
 /**
  * ags_returnable_thread_connect_safe_run:
  * @returnable_thread: the thread to connect
- * @callback: the callback
+ * @callback: (scope call): the callback
  *
  * Connects @callback to @thread.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
@@ -481,7 +458,7 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
  *
  * Disconnects callback of @thread.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
@@ -504,7 +481,7 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
  *
  * Returns: the new #AgsReturnableThread
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)

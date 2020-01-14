@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,10 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE                (ags_machine_get_type())
 #define AGS_MACHINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE, AgsMachine))
@@ -90,14 +93,26 @@ typedef enum{
   AGS_MACHINE_SHOW_MIDI_OUTPUT                = 1 <<  5,
 }AgsMachineConnectionOptions;
 
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_EXPORT          = 1,
+  AGS_MACHINE_POPUP_WAVE_EXPORT          = 1 <<  1,
+}AgsMachineExportOptions;
+
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_IMPORT          = 1,
+  AGS_MACHINE_POPUP_WAVE_IMPORT          = 1 <<  1,
+}AgsMachineImportOptions;
+
 struct _AgsMachine
 {
-  GtkHandleBox handle_box;
+  GtkBin bin;
 
   guint flags;
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;
+  guint export_flags;
+  guint import_flags;
 
   char *machine_name;
 
@@ -145,13 +160,15 @@ struct _AgsMachine
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;
   GtkDialog *envelope_info;
-  
-  GObject *application_context;
+  GtkDialog *midi_export_dialog;
+  GtkDialog *wave_export_dialog;
+  GtkDialog *midi_import_dialog;
+  GtkDialog *wave_import_dialog;
 };
 
 struct _AgsMachineClass
 {
-  GtkHandleBoxClass handle_box;
+  GtkBinClass bin;
 
   void (*samplerate_changed)(AgsMachine *machine,
 			     guint samplerate, guint old_samplerate);
@@ -235,12 +252,13 @@ void ags_machine_copy_pattern(AgsMachine *machine);
 
 void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
 void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
+void ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options);
+void ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options);
 
-gboolean ags_machine_message_monitor_timeout(AgsMachine *machine);
-
-gboolean ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine);
-gboolean ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine);
+void ags_machine_check_message(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_H__*/

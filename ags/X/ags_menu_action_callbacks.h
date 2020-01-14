@@ -25,6 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
+#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key"
+#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key"
+
 void ags_menu_action_open_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data);
@@ -64,6 +73,9 @@ void ags_menu_action_midi_import_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_midi_playback_callback(GtkWidget *menu_item, gpointer data);
 
+void ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_MENU_ACTION_CALLBACKS_H__*/

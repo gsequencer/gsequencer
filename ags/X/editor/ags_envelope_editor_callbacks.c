@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -58,7 +55,7 @@ ags_envelope_editor_preset_add_callback(GtkWidget *button,
 						       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) dialog->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(dialog),
 		     (GtkWidget *) entry,
 		     FALSE, FALSE,
 		     0);
@@ -92,6 +89,8 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 {
   if(response == GTK_RESPONSE_ACCEPT){
     AgsEnvelopeDialog *envelope_dialog;
+
+    GList *start_list;
     
     gchar *text;
 
@@ -99,8 +98,11 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
-    text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+    start_list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_content_area(GTK_DIALOG(widget)));
+    text = gtk_editable_get_chars(GTK_EDITABLE(start_list->data),
 				  0, -1);
+
+    g_list_free(start_list);
     
     /* add preset */
     ags_envelope_editor_add_preset(envelope_editor,
@@ -162,7 +164,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = attack_x;
+  val[0].real = attack_x;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -217,7 +219,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = attack_y;
+  val[0].imag = attack_y;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -272,7 +274,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = decay_x;
+  val[0].real = decay_x;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -327,7 +329,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = decay_y;
+  val[0].imag = decay_y;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -382,7 +384,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = sustain_x;
+  val[0].real = sustain_x;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -437,7 +439,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = sustain_y;
+  val[0].imag = sustain_y;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -492,7 +494,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][0] = release_x;
+  val[0].real = release_x;
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -547,7 +549,7 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = release_y;
+  val[0].imag = release_y;
   
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -602,7 +604,7 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  val[0][1] = ratio;
+  val[0].imag = ratio;
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);

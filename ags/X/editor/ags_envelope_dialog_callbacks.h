@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,9 +22,16 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_envelope_dialog.h>
+
+G_BEGIN_DECLS
 
 int ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 int ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
@@ -32,5 +39,7 @@ int ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *en
 
 gboolean ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
 					  AgsEnvelopeDialog *envelope_dialog);
+
+G_END_DECLS
 
 #endif /*__AGS_ENVELOPE_DIALOG_CALLBACKS_H__*/

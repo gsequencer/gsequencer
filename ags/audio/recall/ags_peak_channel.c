@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_audio.h>
@@ -35,7 +33,6 @@
 #include <ags/i18n.h>
 
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
-void ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_peak_channel_init(AgsPeakChannel *peak_channel);
 void ags_peak_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -47,8 +44,6 @@ void ags_peak_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_peak_channel_dispose(GObject *gobject);
 void ags_peak_channel_finalize(GObject *gobject);
-
-void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_peak_channel_get_peak_plugin_port();
 
@@ -109,34 +104,16 @@ ags_peak_channel_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_peak_channel_init,
     };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_peak_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_peak_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsPeakChannel",
 						   &ags_peak_channel_info,
 						   0);
 
-    g_type_add_interface_static(ags_type_peak_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_peak_channel);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_peak_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_peak_channel_set_ports;
 }
 
 void
@@ -159,11 +136,11 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 
   /* properties */
   /**
-   * AgsAudioSignal:samplerate:
+   * AgsPeakChannel:samplerate:
    *
    * The samplerate to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -177,11 +154,11 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:buffer-size:
+   * AgsPeakChannel:buffer-size:
    *
    * The buffer size to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -195,11 +172,11 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:format:
+   * AgsPeakChannel:format:
    *
    * The format to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -217,7 +194,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if buffer was cleared.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-cleared",
 				   i18n_pspec("if buffer was cleared"),
@@ -233,7 +210,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if buffer was computed.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("buffer-computed",
 				   i18n_pspec("if buffer was computed"),
@@ -249,7 +226,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The property indicating if scale was precision.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("scale-precision",
 				   i18n_pspec("scale precision"),
@@ -266,7 +243,7 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * The peak of the channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("peak",
 				   i18n_pspec("peak of channel"),
@@ -288,8 +265,6 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   GList *port;
 
   gchar *str;
-
-  pthread_mutexattr_t *attr;
   
   AGS_RECALL(peak_channel)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 
@@ -299,20 +274,7 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   AGS_RECALL(peak_channel)->xml_type = "ags-peak-channel";
 
   /* buffer field */  
-  peak_channel->buffer_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  peak_channel->buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(peak_channel->buffer_mutex,
-		     attr);
+  g_mutex_init(&(peak_channel->buffer_mutex));
 
   /* read config */
   config = ags_config_get_instance();
@@ -423,7 +385,7 @@ ags_peak_channel_set_property(GObject *gobject,
 {
   AgsPeakChannel *peak_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
@@ -433,29 +395,29 @@ ags_peak_channel_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       peak_channel->samplerate = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       peak_channel->buffer_size = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       peak_channel->format = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_CLEARED:
@@ -464,10 +426,10 @@ ags_peak_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == peak_channel->buffer_cleared){      
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -482,7 +444,7 @@ ags_peak_channel_set_property(GObject *gobject,
 
       peak_channel->buffer_cleared = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_COMPUTED:
@@ -491,10 +453,10 @@ ags_peak_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == peak_channel->buffer_computed){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -509,7 +471,7 @@ ags_peak_channel_set_property(GObject *gobject,
 
       peak_channel->buffer_computed = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_SCALE_PRECISION:
@@ -518,10 +480,10 @@ ags_peak_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == peak_channel->scale_precision){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -536,7 +498,7 @@ ags_peak_channel_set_property(GObject *gobject,
 
       peak_channel->scale_precision = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK:
@@ -545,10 +507,10 @@ ags_peak_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == peak_channel->peak){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -563,7 +525,7 @@ ags_peak_channel_set_property(GObject *gobject,
 
       peak_channel->peak = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -580,7 +542,7 @@ ags_peak_channel_get_property(GObject *gobject,
 {
   AgsPeakChannel *peak_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
@@ -590,65 +552,65 @@ ags_peak_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint(value, peak_channel->samplerate);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint(value, peak_channel->buffer_size);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint(value, peak_channel->format);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_CLEARED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, peak_channel->buffer_cleared);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BUFFER_COMPUTED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, peak_channel->buffer_computed);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_SCALE_PRECISION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, peak_channel->scale_precision);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, peak_channel->peak);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -712,13 +674,7 @@ ags_peak_channel_finalize(GObject *gobject)
 
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
-  /* buffer field */
-  pthread_mutex_destroy(peak_channel->buffer_mutex);
-  free(peak_channel->buffer_mutex);
-
-  pthread_mutexattr_destroy(peak_channel->buffer_mutexattr);
-  free(peak_channel->buffer_mutexattr);
-  
+  /* buffer field */  
   free(peak_channel->buffer);
 
   /* buffer cleared */
@@ -750,30 +706,14 @@ ags_peak_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_peak_channel_parent_class)->finalize(gobject);
 }
 
-void
-ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
-}
-
 static AgsPluginPort*
 ags_peak_channel_get_peak_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -800,7 +740,7 @@ ags_peak_channel_get_peak_plugin_port()
 		      10.0);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
     
   return(plugin_port);
 }
@@ -818,14 +758,14 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
   guint target_format;
   gboolean resample;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
 
   if(!AGS_IS_PEAK_CHANNEL(peak_channel)){
     return;
   }
 
   /* get buffer mutex */
-  buffer_mutex = peak_channel->buffer_mutex;
+  buffer_mutex = &(peak_channel->buffer_mutex);
 
   g_object_get(peak_channel,
 	       "samplerate", &target_samplerate,
@@ -835,16 +775,25 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
   
   resample = FALSE;
   
-  pthread_mutex_lock(buffer_mutex);
+  g_rec_mutex_lock(buffer_mutex);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
   if(samplerate != target_samplerate){
-    buffer_source = ags_audio_buffer_util_resample(buffer, 1,
-						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						   buffer_size,
-						   target_samplerate);
+    void *tmp_buffer_source;
+
+    tmp_buffer_source = ags_stream_alloc(target_buffer_size,
+					 format);
+
+    ags_audio_buffer_util_resample_with_buffer(buffer, 1,
+					       ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+					       buffer_size,
+					       target_samplerate,
+					       target_buffer_size,
+					       tmp_buffer_source);
+      
+    buffer_source = tmp_buffer_source;
     
     resample = TRUE;
   }else{
@@ -856,7 +805,7 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
 					      target_buffer_size, copy_mode);
 
 
-  pthread_mutex_unlock(buffer_mutex);
+  g_rec_mutex_unlock(buffer_mutex);
 
   if(resample){
     free(buffer_source);
@@ -877,21 +826,21 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
   
   GValue value = {0,};
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
 
   if(!AGS_IS_PEAK_CHANNEL(peak_channel)){
     return;
   }
 
   /* get buffer mutex */
-  buffer_mutex = peak_channel->buffer_mutex;
+  buffer_mutex = &(peak_channel->buffer_mutex);
 
   /* calculate average value */
   g_object_get(peak_channel,
 	       "format", &target_format,
 	       NULL);
   
-  pthread_mutex_lock(buffer_mutex);
+  g_rec_mutex_lock(buffer_mutex);
 
   current_value = ags_audio_buffer_util_peak(peak_channel->buffer, 1,
 					     ags_audio_buffer_util_format_from_soundcard(target_format),
@@ -900,7 +849,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
 					     22000.0,
 					     1.0);
 
-  pthread_mutex_unlock(buffer_mutex);
+  g_rec_mutex_unlock(buffer_mutex);
 
   g_object_get(peak_channel,
 	       "scale-precision", &scale_precision,
@@ -916,7 +865,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
 
   current_scale_precision = g_value_get_float(&value);
 
-  current_value *= current_scale_precision;
+  current_value = current_scale_precision * current_value;
   
   if(current_value < 0.0){
     current_value *= -1.0;
@@ -939,7 +888,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
  *
  * Returns: the new #AgsPeakChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakChannel*
 ags_peak_channel_new(AgsChannel *source)

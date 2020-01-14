@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_start_channel_class_init(AgsStartChannelClass *start_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of start channel"),
@@ -131,7 +131,7 @@ ags_start_channel_class_init(AgsStartChannelClass *start_channel)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -273,6 +273,8 @@ ags_start_channel_launch(AgsTask *task)
 
   start_channel = AGS_START_CHANNEL(task);
 
+  g_return_if_fail(AGS_IS_CHANNEL(start_channel->channel));
+
   g_object_get(start_channel,
 	       "channel", &channel,
 	       "sound-scope", &sound_scope,
@@ -290,12 +292,13 @@ ags_start_channel_launch(AgsTask *task)
 /**
  * ags_start_channel_new:
  * @channel: the #AgsChannel to start
+ * @sound_scope: the sound scope
  *
  * Create a new instance of #AgsStartChannel.
  *
  * Returns: the new #AgsStartChannel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartChannel*
 ags_start_channel_new(AgsChannel *channel,

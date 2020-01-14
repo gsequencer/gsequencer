@@ -21,10 +21,6 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
@@ -82,7 +78,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 		     FALSE, FALSE,
 		     0);
 
-  if(drum_input_pad->pad.group->active){
+  if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad)->group)){
     gtk_widget_set_sensitive((GtkWidget *) spin_button,
 			     FALSE);
   }
@@ -121,15 +117,12 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   
   char *name0, *name1;
 
-  pthread_mutex_t *application_mutex;
+  application_context = ags_application_context_get_instance();
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
 						 AGS_TYPE_WINDOW);
 
   file_chooser = drum_input_pad->file_chooser;
-
-  
-  application_context = (AgsApplicationContext *) window->application_context;
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -148,7 +141,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     /* task */
     task = NULL;
     
-    if(AGS_PAD(drum_input_pad)->group->active){
+    if(gtk_toggle_button_get_active(AGS_PAD(drum_input_pad))){
       AgsChannel *current, *next_pad, *next_current;
 
       guint i;
@@ -194,15 +187,15 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
       open_single_file = ags_open_single_file_new(line->channel,
 						  name0,
-						  (guint) spin_button->adjustment->value);
+						  (guint) gtk_spin_button_get_value(spin_button));
       task = g_list_prepend(task,
 			    open_single_file);
       
       g_list_free(list);
     }
 
-    ags_xorg_application_context_schedule_task_list(application_context,
-						    task);
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      task);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){

@@ -23,13 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/thread/ags_thread.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+G_BEGIN_DECLS
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
 #define AGS_THREAD_POOL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_POOL, AgsThreadPool))
@@ -40,10 +36,6 @@
 
 #define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS (8)
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS (1024)
-
-#ifndef AGS_THREAD_POOL_RT_PRIORITY
-#define AGS_THREAD_POOL_RT_PRIORITY (99)
-#endif
 
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
@@ -70,20 +62,18 @@ struct _AgsThreadPool
   volatile guint max_unused_threads;
   volatile guint max_threads;
 
-  pthread_t *thread;
+  GThread *thread;
 
   volatile guint queued;
 
-  pthread_mutexattr_t *creation_mutexattr;
-  pthread_mutex_t *creation_mutex;
-  pthread_cond_t *creation_cond;
+  GMutex creation_mutex;
+  GCond creation_cond;
 
   volatile gboolean create_threads;
   volatile gboolean idle;
 
-  pthread_mutex_t *idle_mutex;
-  pthread_mutexattr_t *idle_mutexattr;
-  pthread_cond_t *idle_cond;
+  GMutex idle_mutex;
+  GCond idle_cond;
 
   AgsThread *parent;
 
@@ -104,5 +94,7 @@ AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 void ags_thread_pool_start(AgsThreadPool *thread_pool);
 
 AgsThreadPool* ags_thread_pool_new(AgsThread *parent);
+
+G_END_DECLS
 
 #endif /*__AGS_THREAD_POOL_H__*/

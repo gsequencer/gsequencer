@@ -25,10 +25,16 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_automation_editor.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_select_acceleration_dialog.h>
+
+G_BEGIN_DECLS
 
 void ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
 						      AgsSelectAccelerationDialog *select_acceleration_dialog);
@@ -41,5 +47,7 @@ void ags_select_acceleration_dialog_remove_callback(GtkWidget *button,
 void ags_select_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
 							     AgsMachine *machine,
 							     AgsSelectAccelerationDialog *select_acceleration_dialog);
+
+G_END_DECLS
 
 #endif /*__AGS_SELECT_ACCELERATION_DIALOG_CALLBACKS_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_COUNTABLE                    (ags_countable_get_type())
 #define AGS_COUNTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COUNTABLE, AgsCountable))
@@ -49,5 +51,7 @@ guint64 ags_countable_get_sequencer_counter(AgsCountable *countable);
 guint64 ags_countable_get_notation_counter(AgsCountable *countable);
 guint64 ags_countable_get_wave_counter(AgsCountable *countable);
 guint64 ags_countable_get_midi_counter(AgsCountable *countable);
+
+G_END_DECLS
 
 #endif /*__AGS_COUNTABLE_H__*/

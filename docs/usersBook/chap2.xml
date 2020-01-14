@@ -719,7 +719,25 @@
       Produce audio data using its oscillators. The count of oscillators depends on number of
       input lines. They are adjusted vertically. You have on the right the option to auto-update
       changes you do with the controls or do it manually by the update button.
-      Warning: There are some disabled controls.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>FM Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_fm_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The frequency modulator synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Produce audio data using its oscillators. The count of oscillators depends on number of
+      input lines. They are adjusted vertically. You have on the right the option to auto-update
+      changes you do with the controls or do it manually by the update button.
     </para>
   </sect1>
 
@@ -732,6 +750,26 @@
       <caption>
 	<para>
 	  The synced synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Produce audio data using its oscillators. The count of oscillators can be adjusted by clicking add/remove.
+      You have on the right the option to auto-update changes you do with the controls or do it manually by the
+      update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
+      in order to get the desired note length.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>FM Syncsynth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_fm_syncsynth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The frequency modulator synced synth screenshot
 	</para>
       </caption>
     </mediaobject>
@@ -765,6 +803,55 @@
       click Add or Remove within AgsFFPlayer's bridge, what you can collapse/expand. To add an effect
       to a line, you have open as usual input/output of machine properties.
     </para>
+  </sect1>
+
+  <sect1>
+    <title>Sampler</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_pitch_sampler.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The pitch sampler screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Produce audio data by opening SFZ audio file container format. There is a open button to read SFZ
+      files and assign it to the input.
+    </para>
+    <para>
+      There is a LFO enable control allowing you make adjustments to LFO amplification:
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	<para>
+	  LFO freq
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  LFO phase
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  LFO depth
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  LFO tuning
+	</para>
+      </listitem>
+      
+    </itemizedlist>
+    
   </sect1>
   
   <sect1>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,8 +35,7 @@
 #include <ags/gsequencer_main.h>
 
 #include <ags/X/ags_xorg_application_context.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
+#include <ags/X/ags_window.h>
 
 #include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
@@ -84,9 +83,6 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
-AgsGuiThread *gui_thread;
-AgsTaskThread *task_thread;
-
 void
 ags_functional_notation_edit_test_add_test()
 {
@@ -115,13 +111,6 @@ ags_functional_notation_edit_test_add_test()
 int
 ags_functional_notation_edit_test_init_suite()
 {    
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
   return(0);
 }
 
@@ -162,8 +151,8 @@ ags_functional_notation_edit_test_file_setup()
   /* get buttons */
   ags_test_enter();
 
-  play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
-  stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
+  play_button = AGS_WINDOW(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window)->navigation->play;
+  stop_button = AGS_WINDOW(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window)->navigation->stop;
 
   ags_test_leave();
 
@@ -244,8 +233,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_notation_edit_test_add_test, &is_available);
 
-  pthread_join(ags_functional_test_util_self(),
-	       NULL);
+  g_thread_join(ags_functional_test_util_test_runner_thread());
 
   return(-1);
 }

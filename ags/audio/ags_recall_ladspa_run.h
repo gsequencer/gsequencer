@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,14 @@
 
 #include <ladspa.h>
 
+#include <ags/libags.h>
+
+#include <ags/plugin/ags_ladspa_plugin.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio_signal.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_LADSPA_RUN                (ags_recall_ladspa_run_get_type())
 #define AGS_RECALL_LADSPA_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LADSPA_RUN, AgsRecallLadspaRun))
@@ -58,5 +64,7 @@ struct _AgsRecallLadspaRunClass
 GType ags_recall_ladspa_run_get_type();
 
 AgsRecallLadspaRun* ags_recall_ladspa_run_new(AgsAudioSignal *source);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_LADSPA_RUN_H__*/

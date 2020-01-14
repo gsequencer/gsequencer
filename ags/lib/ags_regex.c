@@ -21,7 +21,6 @@
 
 #define _GNU_SOURCE
 #include <locale.h>
-#include <pthread.h>
 
 #include <sys/types.h>
 #include <regex.h>
@@ -39,7 +38,7 @@
  * processing.
  */
 
-static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex locale_mutex;
 
 #if defined __APPLE__ || AGS_W32API
 static char *locale_env;
@@ -58,7 +57,7 @@ static gboolean locale_initialized = FALSE;
  * Compile regular expression language independent. It sets temporaly
  * the locale to C and then reverts it.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_regcomp(regex_t *preg, const char *regex, int cflags)
@@ -70,7 +69,7 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
   locale_t current;
 #endif
 
-  pthread_mutex_lock(&locale_mutex);
+  g_mutex_lock(&locale_mutex);
 
   if(!locale_initialized){
 #if defined __APPLE__ || AGS_W32API
@@ -82,7 +81,7 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
     locale_initialized = TRUE;
   }
 
-  pthread_mutex_unlock(&locale_mutex);
+  g_mutex_unlock(&locale_mutex);
 
 #if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, "C");
@@ -112,7 +111,7 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
  * Execute regular expression language independent. It sets temporaly
  * the locale to C and then reverts it.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
@@ -125,7 +124,7 @@ ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
   locale_t current;
 #endif
 
-  pthread_mutex_lock(&locale_mutex);
+  g_mutex_lock(&locale_mutex);
   
   if(!locale_initialized){
 #if defined __APPLE__ || AGS_W32API
@@ -137,7 +136,7 @@ ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
     locale_initialized = TRUE;
   }
 
-  pthread_mutex_unlock(&locale_mutex);
+  g_mutex_unlock(&locale_mutex);
 
 #if defined __APPLE__ || AGS_W32API
   setlocale(LC_ALL, "C");

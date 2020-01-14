@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,10 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_MACHINE_SELECTOR_CALLBACKS_H__
 #define __AGS_MACHINE_SELECTOR_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_machine_selector.h>
+
+G_BEGIN_DECLS
 
 void ags_machine_selector_popup_add_tab_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
 void ags_machine_selector_popup_remove_tab_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
@@ -30,5 +42,7 @@ void ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, A
 void ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector);
 
 void ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *machine_selector);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_SELECTOR_CALLBACKS_H__*/

@@ -61,7 +61,6 @@ gboolean ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *even
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
 };
 
 static gpointer ags_automation_window_parent_class = NULL;
@@ -123,22 +122,6 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
 
   gobject->finalize = ags_automation_window_finalize;
 
-  /**
-   * AgsAutomationWindow:soundcard:
-   *
-   * The assigned #AgsSoundcard acting as default sink.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
-
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_window;
 
@@ -163,8 +146,6 @@ ags_automation_window_init(AgsAutomationWindow *automation_window)
 
   automation_window->flags = 0;
 
-  automation_window->soundcard = NULL;
-  
   automation_window->automation_editor = ags_automation_editor_new();
   gtk_container_add((GtkContainer *) automation_window,
 		    (GtkWidget *) automation_window->automation_editor);		    
@@ -181,31 +162,6 @@ ags_automation_window_set_property(GObject *gobject,
   automation_window = AGS_AUTOMATION_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-
-      soundcard = g_value_get_object(value);
-
-      if(automation_window->soundcard == soundcard){
-	return;
-      }
-
-      if(automation_window->soundcard != NULL){
-	g_object_unref(automation_window->soundcard);
-      }
-      
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
-      }
-      
-      automation_window->soundcard = soundcard;
-
-      g_object_set(G_OBJECT(automation_window->automation_editor),
-		   "soundcard", soundcard,
-		   NULL);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -223,11 +179,6 @@ ags_automation_window_get_property(GObject *gobject,
   automation_window = AGS_AUTOMATION_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      g_value_set_object(value, automation_window->soundcard);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -240,10 +191,6 @@ ags_automation_window_finalize(GObject *gobject)
   AgsAutomationWindow *automation_window;
 
   automation_window = (AgsAutomationWindow *) gobject;
-
-  if(automation_window->soundcard != NULL){
-    g_object_unref(G_OBJECT(automation_window->soundcard));
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
@@ -301,7 +248,7 @@ ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsAutomationWindow
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationWindow*
 ags_automation_window_new(GtkWidget *parent_window)

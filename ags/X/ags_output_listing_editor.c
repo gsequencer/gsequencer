@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_output_listing_editor.h>
 #include <ags/X/ags_output_listing_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -304,7 +301,7 @@ ags_output_listing_editor_reset(AgsApplicable *applicable)
  *
  * Creates new pad editors or destroys them.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_editor,
@@ -405,7 +402,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
  *
  * Returns: the new #AgsOutputListingEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOutputListingEditor*
 ags_output_listing_editor_new(GType channel_type)

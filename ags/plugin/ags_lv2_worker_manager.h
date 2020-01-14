@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_thread_pool.h>
+#include <ags/libags.h>
 
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_WORKER_MANAGER                (ags_lv2_worker_manager_get_type())
 #define AGS_LV2_WORKER_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_WORKER_MANAGER, AgsLv2WorkerManager))
@@ -35,12 +37,16 @@
 #define AGS_IS_LV2_WORKER_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_WORKER_MANAGER))
 #define AGS_LV2_WORKER_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_WORKER_MANAGER, AgsLv2WorkerManagerClass))
 
+#define AGS_LV2_WORKER_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2WorkerManager *) obj)->obj_mutex))
+
 typedef struct _AgsLv2WorkerManager AgsLv2WorkerManager;
 typedef struct _AgsLv2WorkerManagerClass AgsLv2WorkerManagerClass;
 
 struct _AgsLv2WorkerManager
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
 
   AgsThreadPool *thread_pool;
   
@@ -58,5 +64,7 @@ GObject* ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 
 AgsLv2WorkerManager* ags_lv2_worker_manager_get_instance();
 AgsLv2WorkerManager* ags_lv2_worker_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_WORKER_MANAGER_H__*/

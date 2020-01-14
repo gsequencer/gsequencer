@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -30,7 +26,7 @@
 #include <math.h>
 
 void
-ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
+ags_matrix_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMatrix *matrix)
 {
   AgsWindow *window;
 
@@ -68,6 +64,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
       GList *start_list, *list;
 
+      gchar *str;
+
       guint64 index1;
 
       toggle = matrix->selected;
@@ -78,11 +76,12 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
       matrix->selected = (GtkToggleButton*) widget;
 
-      ags_cell_pattern_paint(matrix->cell_pattern);
+      gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
 
       /* calculate index 1 */
-      AGS_MACHINE(matrix)->bank_1 = 
-	index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
+      str = gtk_button_get_label(matrix->selected);
+      index1 =
+	AGS_MACHINE(matrix)->bank_1 = ((guint) g_ascii_strtoull(str, NULL, 10)) - 1;
 
       /* play - set port */
       g_object_get(AGS_MACHINE(matrix)->audio,
@@ -173,19 +172,19 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   
   gdouble length;
 
+  application_context = ags_application_context_get_instance();
+
   /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
   /* task - apply length */
-  length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  length = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button));
 
   apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(matrix)->audio,
 							  length);
 
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_sequencer_length);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(GObject *) apply_sequencer_length);
 }
 
 void
@@ -198,7 +197,7 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 
   gboolean loop;  
 
-  loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+  loop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
 
   /* play - count beats audio */
   g_object_get(AGS_MACHINE(matrix)->audio,

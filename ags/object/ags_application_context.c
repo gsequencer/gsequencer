@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,7 +21,8 @@
 
 #include <ags/lib/ags_log.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/file/ags_file.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <gio/gio.h>
@@ -93,7 +94,7 @@ enum{
 enum{
   PROP_0,
   PROP_MAIN_LOOP,
-  PROP_TASK_THREAD,
+  PROP_TASK_LAUNCHER,
   PROP_CONFIG,
   PROP_FILE,
 };
@@ -102,8 +103,6 @@ static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
 AgsApplicationContext *ags_application_context = NULL;
-
-static pthread_mutex_t ags_application_context_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_application_context_get_type()
@@ -170,7 +169,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned main-loop.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-loop",
 				   i18n_pspec("main loop of application context"),
@@ -182,19 +181,19 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 				  param_spec);
 
   /**
-   * AgsApplicationContext:task-thread:
+   * AgsApplicationContext:task-launcher:
    *
-   * The assigned task thread.
+   * The assigned task launcher.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
-  param_spec = g_param_spec_object("task-thread",
-				   i18n_pspec("task thread"),
-				   i18n_pspec("The task thread"),
+  param_spec = g_param_spec_object("task-launcher",
+				   i18n_pspec("task launcher"),
+				   i18n_pspec("The task launcher"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_TASK_THREAD,
+				  PROP_TASK_LAUNCHER,
 				  param_spec);
 
   /**
@@ -202,7 +201,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned config.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("config",
 				   i18n_pspec("config of application context"),
@@ -218,7 +217,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned file.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file of application context"),
@@ -246,7 +245,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::load-config notifies to load configuration.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config",
@@ -264,7 +263,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::prepare signal should be implemented to prepare
    * your application context.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   application_context_signals[PREPARE] =
     g_signal_new("prepare",
@@ -282,7 +281,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::setup signal should be implemented to setup
    * your application context.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   application_context_signals[SETUP] =
     g_signal_new("setup",
@@ -300,7 +299,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::register-types signal should be implemented to load
    * your types.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types",
@@ -317,7 +316,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::quit notifies to load configuration.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   application_context_signals[QUIT] =
     g_signal_new("quit",
@@ -357,21 +356,8 @@ ags_application_context_init(AgsApplicationContext *application_context)
   GFile *file;
 
   application_context->flags = 0;
-
-  application_context->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(application_context->obj_mutexattr);
-  pthread_mutexattr_settype(application_context->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(application_context->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
   
-  application_context->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(application_context->obj_mutex, application_context->obj_mutexattr);
+  g_rec_mutex_init(&(application_context->obj_mutex));
 
   /* uuid */
   application_context->uuid = ags_uuid_alloc();
@@ -380,19 +366,19 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->argc = 0;
   application_context->argv = NULL;
   
-  application_context->version = AGS_VERSION;
-  application_context->build_id = AGS_BUILD_ID;
+  application_context->version = g_strdup(AGS_VERSION);
+  application_context->build_id = g_strdup(AGS_BUILD_ID);
 
-  application_context->log = NULL;  
+  application_context->log = NULL;
+  
   application_context->domain = NULL;
+  
   application_context->config = NULL;
 
   application_context->main_loop = NULL;
-  application_context->task_thread = NULL;
-  application_context->autosave_thread = NULL;
+  application_context->task_launcher = NULL;
   
-  application_context->file = NULL;
-  
+  application_context->file = NULL;  
   application_context->history = NULL;
 }
 
@@ -404,7 +390,7 @@ ags_application_context_set_property(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
   
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
@@ -418,10 +404,10 @@ ags_application_context_set_property(GObject *gobject,
       
       main_loop = (GObject *) g_value_get_object(value);
 
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
       
       if(main_loop == application_context->main_loop){  
-	pthread_mutex_unlock(application_context_mutex);
+	g_rec_mutex_unlock(application_context_mutex);
 
 	return;
       }
@@ -436,34 +422,34 @@ ags_application_context_set_property(GObject *gobject,
       
       application_context->main_loop = main_loop;
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
-  case PROP_TASK_THREAD:
+  case PROP_TASK_LAUNCHER:
     {
-      GObject *task_thread;
+      GObject *task_launcher;
       
-      task_thread = (GObject *) g_value_get_object(value);
+      task_launcher = (GObject *) g_value_get_object(value);
 
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
       
-      if(task_thread == application_context->task_thread){  
-	pthread_mutex_unlock(application_context_mutex);
+      if(task_launcher == application_context->task_launcher){  
+	g_rec_mutex_unlock(application_context_mutex);
 
 	return;
       }
 
-      if(application_context->task_thread != NULL){
-	g_object_unref(application_context->task_thread);
+      if(application_context->task_launcher != NULL){
+	g_object_unref(application_context->task_launcher);
       }
       
-      if(task_thread != NULL){
-	g_object_ref(G_OBJECT(task_thread));
+      if(task_launcher != NULL){
+	g_object_ref(G_OBJECT(task_launcher));
       }
       
-      application_context->task_thread = task_thread;
+      application_context->task_launcher = task_launcher;
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_CONFIG:
@@ -472,10 +458,10 @@ ags_application_context_set_property(GObject *gobject,
       
       config = (AgsConfig *) g_value_get_object(value);
 
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
       
       if(config == application_context->config){  
-	pthread_mutex_unlock(application_context_mutex);
+	g_rec_mutex_unlock(application_context_mutex);
 
 	return;
       }
@@ -490,7 +476,7 @@ ags_application_context_set_property(GObject *gobject,
       
       application_context->config = config;
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_FILE:
@@ -499,10 +485,10 @@ ags_application_context_set_property(GObject *gobject,
       
       file = (AgsFile *) g_value_get_object(value);
 
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
 
       if(file == application_context->file){
-	pthread_mutex_unlock(application_context_mutex);
+	g_rec_mutex_unlock(application_context_mutex);
 	
 	return;
       }
@@ -517,7 +503,7 @@ ags_application_context_set_property(GObject *gobject,
       
       application_context->file = (AgsFile *) file;
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   default:
@@ -535,7 +521,7 @@ ags_application_context_get_property(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
   
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
@@ -545,38 +531,38 @@ ags_application_context_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_MAIN_LOOP:
     {
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
 
       g_value_set_object(value, application_context->main_loop);
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
-  case PROP_TASK_THREAD:
+  case PROP_TASK_LAUNCHER:
     {
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
 
-      g_value_set_object(value, application_context->task_thread);
+      g_value_set_object(value, application_context->task_launcher);
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_CONFIG:
     {
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
 
       g_value_set_object(value, application_context->config);
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_FILE:
     {
-      pthread_mutex_lock(application_context_mutex);
+      g_rec_mutex_lock(application_context_mutex);
 
       g_value_set_object(value, application_context->file);
   
-      pthread_mutex_unlock(application_context_mutex);
+      g_rec_mutex_unlock(application_context_mutex);
     }
     break;
   default:
@@ -600,11 +586,7 @@ ags_application_context_dispose(GObject *gobject)
   }
 
   /* config */
-  if(application_context->config != NULL){
-    g_object_set(application_context->config,
-		 "application-context", NULL,
-		 NULL);
-    
+  if(application_context->config != NULL){    
     g_object_unref(application_context->config);
 
     application_context->config = NULL;
@@ -617,30 +599,15 @@ ags_application_context_dispose(GObject *gobject)
     application_context->main_loop = NULL;
   }
 
-  /* autosave thread */
-  if(application_context->autosave_thread != NULL){
-    g_object_set(application_context->autosave_thread,
-		 "application-context", NULL,
-		 NULL);
+  /* task launcher */
+  if(application_context->task_launcher != NULL){
+    g_object_unref(application_context->task_launcher);
 
-    g_object_unref(application_context->autosave_thread);
-
-    application_context->autosave_thread = NULL;
-  }
-
-  /* task thread */
-  if(application_context->task_thread != NULL){
-    g_object_unref(application_context->task_thread);
-
-    application_context->task_thread = NULL;
+    application_context->task_launcher = NULL;
   }
 
   /* file */
   if(application_context->file != NULL){
-    g_object_set(application_context->file,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->file);
 
     application_context->file = NULL;
@@ -657,12 +624,8 @@ ags_application_context_finalize(GObject *gobject)
 
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
-  /* application mutex */
-  pthread_mutexattr_destroy(application_context->obj_mutexattr);
-  free(application_context->obj_mutexattr);
-
-  pthread_mutex_destroy(application_context->obj_mutex);
-  free(application_context->obj_mutex);
+  g_free(application_context->version);
+  g_free(application_context->build_id);
 
   /* log */
   if(application_context->log != NULL){
@@ -671,34 +634,17 @@ ags_application_context_finalize(GObject *gobject)
 
   /* config */
   if(application_context->config != NULL){
-    g_object_set(application_context->config,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->config);
   }
   
   /* main loop */
   if(application_context->main_loop != NULL){
-    g_object_set(application_context->main_loop,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->main_loop);
   }
 
-  /* autosave thread */
-  if(application_context->autosave_thread != NULL){
-    g_object_set(application_context->autosave_thread,
-		 "application-context", NULL,
-		 NULL);
-
-    g_object_unref(application_context->autosave_thread);
-  }
-
-  /* task thread */
-  if(application_context->task_thread != NULL){
-    g_object_unref(application_context->task_thread);
+  /* task launcher */
+  if(application_context->task_launcher != NULL){
+    g_object_unref(application_context->task_launcher);
   }
 
   /* file */
@@ -721,7 +667,7 @@ ags_application_context_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
@@ -729,11 +675,11 @@ ags_application_context_get_uuid(AgsConnectable *connectable)
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get UUID */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   ptr = application_context->uuid;
 
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
   
   return(ptr);
 }
@@ -751,7 +697,7 @@ ags_application_context_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
@@ -759,11 +705,11 @@ ags_application_context_is_ready(AgsConnectable *connectable)
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* check is added */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   is_ready = (((AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY & (application_context->flags)) != 0) ? TRUE: FALSE);
 
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
   
   return(is_ready);
 }
@@ -834,7 +780,7 @@ ags_application_context_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
@@ -842,11 +788,11 @@ ags_application_context_is_connected(AgsConnectable *connectable)
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* check is connected */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   is_connected = (((AGS_APPLICATION_CONTEXT_CONNECTED & (application_context->flags)) != 0) ? TRUE: FALSE);
   
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
   
   return(is_connected);
 }
@@ -880,21 +826,6 @@ ags_application_context_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_application_context_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_application_context_get_class_mutex()
-{
-  return(&ags_application_context_class_mutex);
-}
-
-/**
  * ags_application_context_test_flags:
  * @application_context: the #AgsApplicationContext
  * @flags: the flags
@@ -903,14 +834,14 @@ ags_application_context_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
     return(FALSE);
@@ -920,11 +851,11 @@ ags_application_context_test_flags(AgsApplicationContext *application_context, g
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* test */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   retval = (flags & (application_context->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
 
   return(retval);
 }
@@ -936,14 +867,14 @@ ags_application_context_test_flags(AgsApplicationContext *application_context, g
  *
  * Enable a feature of #AgsApplicationContext.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags)
 {
   guint application_context_flags;
   
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
     return;
@@ -953,11 +884,11 @@ ags_application_context_set_flags(AgsApplicationContext *application_context, gu
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set flags */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   application_context->flags |= flags;
   
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
 }
     
 /**
@@ -967,14 +898,14 @@ ags_application_context_set_flags(AgsApplicationContext *application_context, gu
  *
  * Disable a feature of AgsApplicationContext.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags)
 {
   guint application_context_flags;
   
-  pthread_mutex_t *application_context_mutex;
+  GRecMutex *application_context_mutex;
 
   if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
     return;
@@ -984,11 +915,11 @@ ags_application_context_unset_flags(AgsApplicationContext *application_context, 
   application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* unset flags */
-  pthread_mutex_lock(application_context_mutex);
+  g_rec_mutex_lock(application_context_mutex);
 
   application_context->flags &= (~flags);
   
-  pthread_mutex_unlock(application_context_mutex);
+  g_rec_mutex_unlock(application_context_mutex);
 }
 
 void
@@ -1003,7 +934,7 @@ ags_application_context_real_load_config(AgsApplicationContext *application_cont
  *
  * Signal to load and parse configuration.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_load_config(AgsApplicationContext *application_context)
@@ -1028,7 +959,7 @@ ags_application_context_real_prepare(AgsApplicationContext *application_context)
  *
  * Prepare @application_context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_prepare(AgsApplicationContext *application_context)
@@ -1053,7 +984,7 @@ ags_application_context_real_setup(AgsApplicationContext *application_context)
  *
  * Setup @application_context.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_setup(AgsApplicationContext *application_context)
@@ -1078,7 +1009,7 @@ ags_application_context_real_register_types(AgsApplicationContext *application_c
  *
  * Notification to register your types.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_register_types(AgsApplicationContext *application_context)
@@ -1104,7 +1035,7 @@ ags_application_context_real_quit(AgsApplicationContext *application_context)
  *
  * Calls exit()
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_application_context_quit(AgsApplicationContext *application_context)
@@ -1122,37 +1053,37 @@ ags_application_context_quit(AgsApplicationContext *application_context)
  * 
  * Get your application context instance.
  *
- * Returns: the #AgsApplicationContext instance
+ * Returns: (transfer none): the #AgsApplicationContext instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsApplicationContext*
 ags_application_context_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(ags_application_context == NULL){
     ags_application_context = ags_application_context_new(NULL,
 							  NULL);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(ags_application_context);
 }
 
 /**
  * ags_application_context_new:
- * @main_loop: the #AgsMainLoop
- * @config: the #AgsConfig
+ * @main_loop: (nullable): the #AgsMainLoop
+ * @config: (nullable): the #AgsConfig
  *
  * Create a new instance of #AgsApplicationContext
  * 
  * Returns: the #AgsApplicationContext instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsApplicationContext*
 ags_application_context_new(GObject *main_loop,
@@ -1167,5 +1098,3 @@ ags_application_context_new(GObject *main_loop,
 
   return(application_context);
 }
-
-

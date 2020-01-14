@@ -125,7 +125,7 @@ ags_sheet_window_class_init(AgsSheetWindowClass *sheet_window)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -295,7 +295,7 @@ ags_sheet_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsSheetWindow instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSheetWindow*
 ags_sheet_window_new(GtkWidget *parent_window)

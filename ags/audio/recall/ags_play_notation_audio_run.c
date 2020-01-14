@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -34,7 +32,6 @@
 
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run);
 void ags_play_notation_audio_run_set_property(GObject *gobject,
 					      guint prop_id,
@@ -54,20 +51,12 @@ void ags_play_notation_audio_run_connect_connection(AgsConnectable *connectable,
 void ags_play_notation_audio_run_disconnect_connection(AgsConnectable *connectable,
 						       GObject *connection);
 
-void ags_play_notation_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
 void ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall);
 
 void ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint nth_run,
 						      gdouble delay, guint attack,
 						      AgsPlayNotationAudioRun *play_notation_audio_run);
-
-void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-							  GObject *recall);
-void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-							 GObject *recall);
 
 /**
  * SECTION:ags_play_notation_audio_run
@@ -88,7 +77,6 @@ enum{
 
 static gpointer ags_play_notation_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_play_notation_audio_run_parent_connectable_interface;
-static AgsPluginInterface *ags_play_notation_audio_run_parent_plugin_interface;
 
 GType
 ags_play_notation_audio_run_get_type()
@@ -116,12 +104,6 @@ ags_play_notation_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_notation_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_notation_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							      "AgsPlayNotationAudioRun",
 							      &ags_play_notation_audio_run_info,
@@ -130,10 +112,6 @@ ags_play_notation_audio_run_get_type()
     g_type_add_interface_static(ags_type_play_notation_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_notation_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_notation_audio_run);
   }
@@ -165,7 +143,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The delay audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -181,7 +159,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The count beats audio run dependency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -197,7 +175,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The notation containing the notes.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("assigned AgsNotation"),
@@ -224,15 +202,6 @@ ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *
 
   connectable->connect_connection = ags_play_notation_audio_run_connect_connection;
   connectable->disconnect_connection = ags_play_notation_audio_run_disconnect_connection;
-}
-
-void
-ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_notation_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_play_notation_audio_run_read;
-  plugin->write = ags_play_notation_audio_run_write;
 }
 
 void
@@ -268,7 +237,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 {
   AgsPlayNotationAudioRun *play_notation_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
@@ -285,10 +254,10 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       delay_audio_run = g_value_get_object(value);
       old_delay_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(delay_audio_run == play_notation_audio_run->delay_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -303,7 +272,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	g_object_ref(delay_audio_run);
       }
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(delay_audio_run != NULL &&
@@ -339,11 +308,11 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       }
 
       /* new - dependency/connection */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_notation_audio_run->delay_audio_run = delay_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(delay_audio_run != NULL){
 	if(is_template){
@@ -367,10 +336,10 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       count_beats_audio_run = g_value_get_object(value);
       old_count_beats_audio_run = NULL;
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == play_notation_audio_run->count_beats_audio_run){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -393,7 +362,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       play_notation_audio_run->count_beats_audio_run = count_beats_audio_run;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       /* check template */
       if(count_beats_audio_run != NULL &&
@@ -437,10 +406,10 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       notation = (AgsNotation *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_notation_audio_run->notation == notation){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       
 	return;
       }
@@ -455,7 +424,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       play_notation_audio_run->notation = notation;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -472,7 +441,7 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
 {
   AgsPlayNotationAudioRun *play_notation_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
@@ -482,29 +451,29 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(play_notation_audio_run->delay_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(play_notation_audio_run->count_beats_audio_run));
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_NOTATION:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_notation_audio_run->notation);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -684,109 +653,6 @@ ags_play_notation_audio_run_disconnect_connection(AgsConnectable *connectable, G
 }
 
 void
-ags_play_notation_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-
-  xmlNode *iter;
-
-  /* read parent */
-  ags_play_notation_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency",
-			   15)){
-	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file", file,
-							   "node", dependency_node,
-							   "reference", G_OBJECT(plugin),
-							   NULL);
-	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			       G_CALLBACK(ags_play_notation_audio_run_read_resolve_dependency), G_OBJECT(plugin));
-	    }
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  
-  GList *list;
-
-  gchar *id;
-
-  /* write parent */
-  node = ags_play_notation_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  xmlAddChild(node,
-	      child);
-
-  list = AGS_RECALL(plugin)->recall_dependency;
-
-  while(list != NULL){
-    id = ags_id_generator_create_uuid();
-
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       id);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file", file,
-						 "node", dependency_node,
-						 "reference", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		     G_CALLBACK(ags_play_notation_audio_run_write_resolve_dependency), G_OBJECT(plugin));
-
-    list = list->next;
-  }
-
-  return(node);
-}
-
-void
 ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall)
 {
   AgsRecall *template;
@@ -909,14 +775,104 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint samplerate;
   guint i;
   
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *channel_mutex;
+  GRecMutex *recycling_mutex;
+  
+  if(delay != 0.0){
+    //    g_message("d %f", delay);
+    return;
+  }
 
-  auto void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation);
+  g_object_get(play_notation_audio_run,
+	       "audio", &audio,
+	       NULL);
+  
+  g_object_get(audio,
+	       "notation", &start_list,
+	       NULL);
+  
+  if(start_list == NULL){
+    g_object_unref(audio);
+    
+    return;
+  }
 
-  void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation)
-  {
+  /* get some fields */
+  g_object_get(play_notation_audio_run,
+	       "recall-id", &recall_id,
+	       "recall-audio", &play_notation_audio,
+	       "output-soundcard", &output_soundcard,
+	       "audio-channel", &audio_channel,
+	       "samplerate", &samplerate,
+	       "delay-audio-run", &delay_audio_run,
+	       "count-beats-audio-run", &count_beats_audio_run,
+	       NULL);
+
+  timestamp = play_notation_audio_run->timestamp;
+  
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+  
+  g_object_get(delay_audio_run,
+	       "recall-audio", &delay_audio,
+	       NULL);
+
+  /* audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  /* get audio channel */
+  g_rec_mutex_lock(audio_mutex);
+
+  audio_flags = audio->flags;
+
+  input_pads = audio->input_pads;
+  output_pads = audio->output_pads;
+  
+  start_output = audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+  
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
+
+  g_rec_mutex_unlock(audio_mutex);
+
+  /* get channel */
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
+    channel = ags_channel_nth(start_input,
+			      audio_channel);
+    pads = input_pads;
+  }else{
+    channel = ags_channel_nth(start_output,
+			      audio_channel);
+    pads = output_pads;
+  }
+  
+  /* play notation */
+  notation = NULL;
+  
+  g_object_get(count_beats_audio_run,
+	       "notation-counter", &notation_counter,
+	       NULL);
+
+  ags_timestamp_set_ags_offset(timestamp,
+			       AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET));
+  
+  list = ags_notation_find_near_timestamp(start_list, audio_channel,
+					  timestamp);
+  
+  if(list != NULL){
+    notation = list->data;
+  }
+
+  if(notation != NULL){
     AgsPort *port;
     
     gdouble notation_delay;
@@ -1123,103 +1079,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
     g_list_free_full(start_current_position,
 		     g_object_unref);
-  }
-  
-  if(delay != 0.0){
-    //    g_message("d %f", delay);
-    return;
-  }
-
-  g_object_get(play_notation_audio_run,
-	       "audio", &audio,
-	       NULL);
-  
-  g_object_get(audio,
-	       "notation", &start_list,
-	       NULL);
-  
-  if(start_list == NULL){
-    g_object_unref(audio);
-    
-    return;
-  }
-
-  /* get some fields */
-  g_object_get(play_notation_audio_run,
-	       "recall-id", &recall_id,
-	       "recall-audio", &play_notation_audio,
-	       "output-soundcard", &output_soundcard,
-	       "audio-channel", &audio_channel,
-	       "samplerate", &samplerate,
-	       "delay-audio-run", &delay_audio_run,
-	       "count-beats-audio-run", &count_beats_audio_run,
-	       NULL);
-
-  timestamp = play_notation_audio_run->timestamp;
-  
-  g_object_get(recall_id,
-	       "recycling-context", &recycling_context,
-	       NULL);
-  
-  g_object_get(delay_audio_run,
-	       "recall-audio", &delay_audio,
-	       NULL);
-
-  /* audio mutex */
-  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
-  /* get audio channel */
-  pthread_mutex_lock(audio_mutex);
-
-  audio_flags = audio->flags;
-
-  input_pads = audio->input_pads;
-  output_pads = audio->output_pads;
-  
-  start_output = audio->output;
-
-  if(start_output != NULL){
-    g_object_ref(start_output);
-  }
-  
-  start_input = audio->input;
-
-  if(start_input != NULL){
-    g_object_ref(start_input);
-  }
-
-  pthread_mutex_unlock(audio_mutex);
-
-  /* get channel */
-  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
-    channel = ags_channel_nth(start_input,
-			      audio_channel);
-    pads = input_pads;
-  }else{
-    channel = ags_channel_nth(start_output,
-			      audio_channel);
-    pads = output_pads;
-  }
-  
-  /* play notation */
-  notation = NULL;
-  
-  g_object_get(count_beats_audio_run,
-	       "notation-counter", &notation_counter,
-	       NULL);
-
-  ags_timestamp_set_ags_offset(timestamp,
-			       AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET));
-  
-  list = ags_notation_find_near_timestamp(start_list, audio_channel,
-					  timestamp);
-  
-  if(list != NULL){
-    notation = list->data;
-  }
-
-  if(notation != NULL){
-    ags_play_notation_audio_run_alloc_input_callback_play_notation(notation);
   }  
 
   /* unref */
@@ -1251,46 +1110,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }
 }
 
-void
-ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						     GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath",
-  	     g_strdup_printf("xpath=//*[@id='%s']", id));
-}
-
-void
-ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						    GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "delay-audio-run", id_ref->ref,
-		 NULL);
-  }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run", id_ref->ref,
-		 NULL);
-  }
-}
-
 /**
  * ags_play_notation_audio_run_new:
  * @audio: the #AgsAudio
@@ -1301,7 +1120,7 @@ ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Returns: the new #AgsPlayNotationAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayNotationAudioRun*
 ags_play_notation_audio_run_new(AgsAudio *audio,

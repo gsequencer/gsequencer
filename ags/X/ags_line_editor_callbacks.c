@@ -25,11 +25,11 @@
 #include <ags/X/ags_pad_editor.h>
 #include <ags/X/ags_machine_editor.h>
 
-int
-ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineEditor *line_editor)
+void
+ags_line_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLineEditor *line_editor)
 {
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   if(line_editor->link_editor != NULL){
@@ -51,9 +51,7 @@ ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 		       (GtkWidget *) line_editor->input_editor,
 		       FALSE, FALSE,
 		       0);
-  }
-    
-  return(0);
+  }    
 }
 
 int

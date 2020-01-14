@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/recall/ags_peak_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RESET_PEAK                (ags_reset_peak_get_type())
 #define AGS_RESET_PEAK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RESET_PEAK, AgsResetPeak))
@@ -59,5 +61,7 @@ void ags_reset_peak_remove(AgsResetPeak *reset_peak,
 AgsResetPeak* ags_reset_peak_get_instance();
 
 AgsResetPeak* ags_reset_peak_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RESET_PEAK_H__*/

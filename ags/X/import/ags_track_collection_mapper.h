@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TRACK_COLLECTION_MAPPER                (ags_track_collection_mapper_get_type())
 #define AGS_TRACK_COLLECTION_MAPPER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapper))
@@ -71,5 +78,7 @@ GList* ags_track_collection_mapper_find_instrument_with_sequence(GList *track_co
 void ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper);
 
 AgsTrackCollectionMapper* ags_track_collection_mapper_new();
+
+G_END_DECLS
 
 #endif /*__AGS_TRACK_COLLECTION_MAPPER_H__*/

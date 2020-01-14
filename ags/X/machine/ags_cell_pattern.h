@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CELL_PATTERN                (ags_cell_pattern_get_type())
 #define AGS_CELL_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CELL_PATTERN, AgsCellPattern))
 #define AGS_CELL_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CELL_PATTERN, AgsCellPatternClass))
@@ -100,14 +102,16 @@ struct _AgsCellPatternClass
 
 GType ags_cell_pattern_get_type(void);
 
-void ags_cell_pattern_paint(AgsCellPattern *cell_pattern);
-
-void ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *channel, guint j, guint i);
-void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
-void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
+void ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr);
+void ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern, cairo_t *cr);
+void ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern, cairo_t *cr);
+void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+					  AgsChannel *channel,
+					  guint j, guint i);
+void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+					     guint j, guint i);
+void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+					   guint j, guint i);
 
 void ags_cell_pattern_play(AgsCellPattern *cell_pattern, guint line);
 
@@ -116,5 +120,7 @@ void* ags_cell_pattern_blink_worker(void *data);
 gboolean ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern);
 
 AgsCellPattern* ags_cell_pattern_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CELL_PATTERN_H__*/

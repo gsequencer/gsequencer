@@ -22,8 +22,6 @@
 
 #include <ags/audio/ags_recall_dssi.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
@@ -57,7 +55,6 @@
 
 void ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi_class);
 void ags_recall_dssi_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_dssi_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_dssi_init(AgsRecallDssi *recall_dssi);
 void ags_recall_dssi_set_property(GObject *gobject,
 				  guint prop_id,
@@ -68,10 +65,6 @@ void ags_recall_dssi_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec);
 void ags_recall_dssi_finalize(GObject *gobject);
-
-void ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port);
-void ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_recall_dssi
@@ -92,7 +85,6 @@ enum{
 
 static gpointer ags_recall_dssi_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_dssi_parent_connectable_interface;
-static AgsPluginInterface* ags_recall_dssi_parent_plugin_interface;
 
 GType
 ags_recall_dssi_get_type (void)
@@ -120,12 +112,6 @@ ags_recall_dssi_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_recall_dssi_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_dssi = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						  "AgsRecallDssi",
 						  &ags_recall_dssi_info,
@@ -134,10 +120,6 @@ ags_recall_dssi_get_type (void)
     g_type_add_interface_static(ags_type_recall_dssi,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_dssi,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_dssi);
   }
@@ -168,7 +150,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The assigned plugin.
    * 
-   * Since: 2.1.53
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("plugin",
 				   i18n_pspec("plugin of recall dssi"),
@@ -184,7 +166,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The selected bank.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("bank",
 				 i18n_pspec("bank"),
@@ -202,7 +184,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The selected program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("program",
 				 i18n_pspec("program"),
@@ -220,16 +202,6 @@ void
 ags_recall_dssi_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_dssi_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_recall_dssi_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_recall_dssi_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_recall_dssi_set_ports;
-  plugin->read = ags_recall_dssi_read;
-  plugin->write = ags_recall_dssi_write;
 }
 
 void
@@ -262,7 +234,7 @@ ags_recall_dssi_set_property(GObject *gobject,
 {
   AgsRecallDssi *recall_dssi;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
@@ -276,10 +248,10 @@ ags_recall_dssi_set_property(GObject *gobject,
 
       plugin = (AgsDssiPlugin *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_dssi->plugin == plugin){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -294,25 +266,25 @@ ags_recall_dssi_set_property(GObject *gobject,
 
       recall_dssi->plugin = plugin;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_dssi->bank = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_dssi->program = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -329,7 +301,7 @@ ags_recall_dssi_get_property(GObject *gobject,
 {
   AgsRecallDssi *recall_dssi;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
@@ -339,29 +311,29 @@ ags_recall_dssi_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_dssi->plugin);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_dssi->bank);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_dssi->program);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -389,230 +361,13 @@ ags_recall_dssi_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_dssi_parent_class)->finalize(gobject);
 }
 
-void
-ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsRecallDssi *recall_dssi;
-  AgsPort *current_port;
-
-  AgsDssiPlugin *dssi_plugin;
-
-  GList *list;
-  GList *plugin_port_start, *plugin_port;
-
-  gchar *filename, *effect;
-  
-  guint port_count;
-  guint i;
-  
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
-  pthread_mutex_t *port_mutex;
-
-  recall_dssi = AGS_RECALL_DSSI(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-
-  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
-  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
-  
-  pthread_mutex_unlock(recall_mutex);
-  
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  filename, effect);
-
-  g_free(filename);
-  g_free(effect);
-
-  /* set dssi plugin */
-  pthread_mutex_lock(recall_mutex);
-
-  recall_dssi->plugin = dssi_plugin;
-  
-  pthread_mutex_unlock(recall_mutex);
-
-  /* get base plugin mutex */
-  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
-  
-  /* get plugin port */
-  pthread_mutex_lock(base_plugin_mutex);
-
-  plugin_port =
-    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(dssi_plugin)->plugin_port);
-
-  pthread_mutex_unlock(base_plugin_mutex);
-
-  /* match port */
-  if(plugin_port != NULL){
-    port_count = g_list_length(plugin_port_start);
-
-    for(i = 0; i < port_count; i++){
-      AgsPluginPort *current_plugin_port;
-      
-      pthread_mutex_t *plugin_port_mutex;
-      
-      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
-
-      /* get plugin port mutex */
-      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
-      
-      if(ags_plugin_port_test_flags(current_plugin_port,
-				    AGS_PLUGIN_PORT_CONTROL)){
-	gchar *specifier;
-	
-	GValue *default_value;
-	
-	default_value = g_new0(GValue,
-			       1);
-	g_value_init(default_value,
-		     G_TYPE_FLOAT);
-	
-	pthread_mutex_lock(plugin_port_mutex);
-
-	specifier = g_strdup(current_plugin_port->port_name);
-	g_value_copy(current_plugin_port->default_value,
-		     default_value);
-	
-	pthread_mutex_unlock(plugin_port_mutex);
-
-	list = ags_port_find_specifier(port, specifier);
-	
-	if(list != NULL){
-	  current_port = list->data;
-	  g_object_set(current_port,
-		       "plugin-port", current_plugin_port,
-		       NULL);
-
-	  ags_recall_dssi_load_conversion(recall_dssi,
-					  (GObject *) current_port,
-					  current_plugin_port);
-
-	  //TODO:JK: check non-raw write	  
-	  ags_port_safe_write_raw(current_port,
-				  default_value);
-	    
-#ifdef AGS_DEBUG
-	  g_message("connecting port: %lu/%lu", i, port_count);
-#endif
-	}
-
-	g_value_unset(default_value);
-	g_free(default_value);
-	g_free(specifier);
-      }else if(ags_plugin_port_test_flags(current_plugin_port,
-					  AGS_PLUGIN_PORT_AUDIO)){
-	pthread_mutex_lock(recall_mutex);
-	
-	if(ags_plugin_port_test_flags(current_plugin_port,
-				      AGS_PLUGIN_PORT_INPUT)){
-	  if(recall_dssi->input_port == NULL){
-	    recall_dssi->input_port = (guint *) malloc(sizeof(guint));
-	    recall_dssi->input_port[0] = i;
-	  }else{
-	    recall_dssi->input_port = (guint *) realloc(recall_dssi->input_port,
-							(recall_dssi->input_lines + 1) * sizeof(guint));
-	    recall_dssi->input_port[recall_dssi->input_lines] = i;
-	  }
-
-	  recall_dssi->input_lines += 1;
-	}else if(ags_plugin_port_test_flags(current_plugin_port,
-					    AGS_PLUGIN_PORT_OUTPUT)){
-	  if(recall_dssi->output_port == NULL){
-	    recall_dssi->output_port = (guint *) malloc(sizeof(guint));
-	    recall_dssi->output_port[0] = i;
-	  }else{
-	    recall_dssi->output_port = (guint *) realloc(recall_dssi->output_port,
-							 (recall_dssi->output_lines + 1) * sizeof(guint));
-	    recall_dssi->output_port[recall_dssi->output_lines] = i;
-	  }
-
-	  recall_dssi->output_lines += 1;
-	}
-
-	pthread_mutex_unlock(recall_mutex);
-      }
-
-      /* iterate plugin port */
-      plugin_port = plugin_port->next;
-    }
-    
-    /* reverse port */
-    pthread_mutex_lock(recall_mutex);
-    
-    AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
-
-    pthread_mutex_unlock(recall_mutex);
-  }
-
-  g_list_free(plugin_port_start);
-}
-
-void
-ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsRecallDssi *gobject;
-  AgsDssiPlugin *dssi_plugin;
-
-  gobject = AGS_RECALL_DSSI(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  ags_recall_dssi_load(gobject);
-}
-
-xmlNode*
-ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsRecallDssi *recall_dssi;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  /*  */
-  recall_dssi = AGS_RECALL_DSSI(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-recall-dssi");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", recall_dssi,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_recall_dssi_load:
  * @recall_dssi: the #AgsRecallDssi
  *
  * Set up DSSI handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
@@ -628,7 +383,7 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_DSSI(recall_dssi)){
     return;
@@ -638,14 +393,14 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
   effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
   
   effect_index = AGS_RECALL(recall_dssi)->effect_index;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find dssi plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
@@ -675,12 +430,12 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 #endif
 
     if(success && dssi_descriptor){
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       recall_dssi->plugin_descriptor = 
 	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
   }
 }
@@ -691,9 +446,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
  *
  * Set up DSSI ports.
  *
- * Returns: the #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
@@ -713,8 +468,8 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   guint port_count;
   guint i;
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_RECALL_DSSI(recall_dssi)){
     return(NULL);
@@ -724,14 +479,14 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
   effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
   
   effect_index = AGS_RECALL(recall_dssi)->effect_index;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* find dssi plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
@@ -740,22 +495,22 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   g_free(effect);
 
   /* set dssi plugin */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   recall_dssi->plugin = dssi_plugin;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   /* get port descriptor */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_port =
     plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(dssi_plugin)->plugin_port);
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   port = NULL;
   retval = NULL;
@@ -766,7 +521,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
     for(i = 0; i < port_count; i++){
       AgsPluginPort *current_plugin_port;
       
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
       
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -785,7 +540,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	default_value = g_new0(GValue,
 			       1);
 	
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
 
@@ -794,7 +549,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	g_value_copy(current_plugin_port->default_value,
 		     default_value);
 	
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	current_port = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", plugin_name,
@@ -844,7 +599,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
 					  AGS_PLUGIN_PORT_AUDIO)){
-	pthread_mutex_lock(recall_mutex);
+	g_rec_mutex_lock(recall_mutex);
 
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
@@ -872,7 +627,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	  recall_dssi->output_lines += 1;
 	}
 
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       }
 
       /* iterate plugin port */
@@ -880,13 +635,13 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
     }
     
     /* reverse port */
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
     
     retval = g_list_copy(AGS_RECALL(recall_dssi)->port);
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
   }
 
   g_list_free(plugin_port_start);
@@ -902,7 +657,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
@@ -964,15 +719,15 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
 /**
  * ags_recall_dssi_find:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve DSSI recall.
  *
- * Returns: Next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_dssi_find(GList *recall,
@@ -980,7 +735,7 @@ ags_recall_dssi_find(GList *recall,
 {
   gboolean success;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   while(recall != NULL){
     if(AGS_IS_RECALL_DSSI(recall->data)){
@@ -988,14 +743,14 @@ ags_recall_dssi_find(GList *recall,
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check filename and effect */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
 			    filename) &&
 		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 			    effect)) ? TRUE: FALSE;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
       
       if(success){
 	return(recall);
@@ -1019,7 +774,7 @@ ags_recall_dssi_find(GList *recall,
  *
  * Returns: the new #AgsRecallDssi
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallDssi*
 ags_recall_dssi_new(AgsChannel *source,

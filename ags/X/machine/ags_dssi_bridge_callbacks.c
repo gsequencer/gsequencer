@@ -29,7 +29,7 @@
 #include <ags/X/ags_bulk_member.h>
 
 void
-ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDssiBridge *dssi_bridge)
+ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDssiBridge *dssi_bridge)
 {
   AgsWindow *window;
 
@@ -220,8 +220,8 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	      //				  TRUE);
 	    }
 	    
-	    AGS_DIAL(child_widget)->adjustment->value = val;
-	    ags_dial_draw((AgsDial *) child_widget);
+	    gtk_adjustment_set_value(AGS_DIAL(child_widget), val);
+	    gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f", dssi_bridge->port_values[i]);

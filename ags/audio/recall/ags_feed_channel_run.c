@@ -20,8 +20,6 @@
 #include <ags/audio/recall/ags_feed_channel_run.h>
 #include <ags/audio/recall/ags_feed_recycling.h>
 
-#include <ags/libags.h>
-
 void ags_feed_channel_run_class_init(AgsFeedChannelRunClass *feed_channel_run);
 void ags_feed_channel_run_init(AgsFeedChannelRun *feed_channel_run);
 void ags_feed_channel_run_finalize(GObject *gobject);
@@ -114,7 +112,7 @@ ags_feed_channel_run_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFeedChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFeedChannelRun*
 ags_feed_channel_run_new(AgsChannel *source)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,13 +70,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 {
   /**
    * AgsTactable::change-sequencer-duration:
-   * @tactable: the #AgsTactable
-   * @duration: new duration
+   * @tactable: the #AgsTactable object
+   * @sequencer_duration: new duration
    *
    * The ::change-sequencer-duration signal notifies about changed duration
    * of sequencer.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_SEQUENCER_DURATION] = 
     g_signal_new("change-sequencer-duration",
@@ -90,13 +90,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 
   /**
    * AgsTactable::change-notation-duration:
-   * @tactable: the #AgsTactable
-   * @duration: new duration
+   * @tactable: the #AgsTactable object
+   * @notation_duration: new duration
    *
    * The ::change-notation-duration signal notifies about changed duration
    * of notation.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_NOTATION_DURATION] = 
     g_signal_new("change-notation-duration",
@@ -110,13 +110,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 
   /**
    * AgsTactable::change-wave-duration:
-   * @tactable: the #AgsTactable
-   * @duration: new duration
+   * @tactable: the #AgsTactable object
+   * @wave_duration: new duration
    *
    * The ::change-wave-duration signal notifies about changed duration
    * of wave.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_WAVE_DURATION] = 
     g_signal_new("change-wave-duration",
@@ -130,13 +130,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 
   /**
    * AgsTactable::change-midi-duration:
-   * @tactable: the #AgsTactable
-   * @duration: new duration
+   * @tactable: the #AgsTactable object
+   * @midi_duration: new duration
    *
    * The ::change-midi-duration signal notifies about changed duration
    * of midi.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_MIDI_DURATION] = 
     g_signal_new("change-midi-duration",
@@ -150,12 +150,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 
   /**
    * AgsTactable::change-tact
-   * @tactable: the #AgsTactable
-   * @tact: new tact
+   * @tactable: the #AgsTactable object
+   * @new_tact: new tact
+   * @old_tact: old tact
    *
    * The ::change-tact signal notifies about changed tact.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_TACT] = 
     g_signal_new("change-tact",
@@ -169,12 +170,13 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
 
   /**
    * AgsTactable::change-bpm:
-   * @tactable: the #AgsTactable
-   * @duration: new duration
+   * @tactable: the #AgsTactable object
+   * @new_bpm: new BPM
+   * @old_bpm: old BPM
    *
    * The ::change-bpm signal notifies about changed bpm.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   tactable_signals[CHANGE_BPM] = 
     g_signal_new("change-bpm",
@@ -195,7 +197,7 @@ ags_tactable_class_init(AgsTactableInterface *ginterface)
  *
  * Returns: the sequencer duration
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_tactable_get_sequencer_duration(AgsTactable *tactable)
@@ -217,7 +219,7 @@ ags_tactable_get_sequencer_duration(AgsTactable *tactable)
  *
  * Returns: the notation duration
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_tactable_get_notation_duration(AgsTactable *tactable)
@@ -239,7 +241,7 @@ ags_tactable_get_notation_duration(AgsTactable *tactable)
  *
  * Returns: the wave duration
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_tactable_get_wave_duration(AgsTactable *tactable)
@@ -261,7 +263,7 @@ ags_tactable_get_wave_duration(AgsTactable *tactable)
  *
  * Returns: the midi duration
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_tactable_get_midi_duration(AgsTactable *tactable)
@@ -283,7 +285,7 @@ ags_tactable_get_midi_duration(AgsTactable *tactable)
  *
  * Returns: the bpm
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_tactable_get_bpm(AgsTactable *tactable)
@@ -305,7 +307,7 @@ ags_tactable_get_bpm(AgsTactable *tactable)
  *
  * Returns: the tact
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_tactable_get_tact(AgsTactable *tactable)
@@ -322,73 +324,73 @@ ags_tactable_get_tact(AgsTactable *tactable)
 /**
  * ags_tactable_change_sequencer_duration:
  * @tactable: the #AgsTactable
- * @duration: the duration
+ * @sequencer_duration: the duration
  *
  * Change sequencer duration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_tactable_change_sequencer_duration(AgsTactable *tactable, guint64 duration)
+ags_tactable_change_sequencer_duration(AgsTactable *tactable, guint64 sequencer_duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_SEQUENCER_DURATION],
 		0,
-		duration);
+		sequencer_duration);
 }
 
 /**
  * ags_tactable_change_notation_duration:
  * @tactable: the #AgsTactable
- * @duration: the duration
+ * @notation_duration: the duration
  *
  * Change notation duration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_tactable_change_notation_duration(AgsTactable *tactable, guint64 duration)
+ags_tactable_change_notation_duration(AgsTactable *tactable, guint64 notation_duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_NOTATION_DURATION],
 		0,
-		duration);
+		notation_duration);
 }
 
 /**
  * ags_tactable_change_wave_duration:
  * @tactable: the #AgsTactable
- * @duration: the duration
+ * @wave_duration: the duration
  *
  * Change wave duration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_tactable_change_wave_duration(AgsTactable *tactable, guint64 duration)
+ags_tactable_change_wave_duration(AgsTactable *tactable, guint64 wave_duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_WAVE_DURATION],
 		0,
-		duration);
+		wave_duration);
 }
 
 /**
  * ags_tactable_change_midi_duration:
  * @tactable: the #AgsTactable
- * @duration: the duration
+ * @midi_duration: the duration
  *
  * Change midi duration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 duration)
+ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 midi_duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_MIDI_DURATION],
 		0,
-		duration);
+		midi_duration);
 }
 
 /**
@@ -399,7 +401,7 @@ ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 duration)
  *
  * Change tact.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
@@ -419,7 +421,7 @@ ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_ta
  *
  * Change bpm.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)

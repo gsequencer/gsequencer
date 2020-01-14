@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,12 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_PREFERENCES                (ags_audio_preferences_get_type())
 #define AGS_AUDIO_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_PREFERENCES, AgsAudioPreferences))
@@ -61,5 +67,7 @@ struct _AgsAudioPreferencesClass
 GType ags_audio_preferences_get_type(void);
 
 AgsAudioPreferences* ags_audio_preferences_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_PREFERENCES_H__*/

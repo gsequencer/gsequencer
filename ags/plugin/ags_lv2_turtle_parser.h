@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LV2_TURTLE_PARSER                (ags_lv2_turtle_parser_get_type())
 #define AGS_LV2_TURTLE_PARSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParser))
 #define AGS_LV2_TURTLE_PARSER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParserClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_LV2_TURTLE_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_TURTLE_PARSER))
 #define AGS_LV2_TURTLE_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_TURTLE_PARSER, AgsLv2TurtleParserClass))
 
-#define AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(obj) (((AgsLv2TurtleParser *) obj)->obj_mutex)
+#define AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(obj) (&(((AgsLv2TurtleParser *) obj)->obj_mutex))
 
 typedef struct _AgsLv2TurtleParser AgsLv2TurtleParser;
 typedef struct _AgsLv2TurtleParserClass AgsLv2TurtleParserClass;
@@ -43,8 +45,7 @@ struct _AgsLv2TurtleParser
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *turtle;
 
@@ -60,8 +61,6 @@ struct _AgsLv2TurtleParserClass
 
 GType ags_lv2_turtle_parser_get_type(void);
 
-pthread_mutex_t* ags_lv2_turtle_parser_get_class_mutex();
-
 void ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 				       AgsTurtle **turtle, guint n_turtle);
 
@@ -69,5 +68,7 @@ void ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				 AgsTurtle **turtle, guint n_turtle);
 
 AgsLv2TurtleParser* ags_lv2_turtle_parser_new(AgsTurtle *manifest);
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_TURTLE_PARSER_H__*/

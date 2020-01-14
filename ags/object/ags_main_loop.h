@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MAIN_LOOP                    (ags_main_loop_get_type())
 #define AGS_MAIN_LOOP(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MAIN_LOOP, AgsMainLoop))
@@ -41,67 +39,39 @@ struct _AgsMainLoopInterface
 {
   GTypeInterface ginterface;
   
-  pthread_mutex_t* (*get_tree_lock)(AgsMainLoop *main_loop);
+  GRecMutex* (*get_tree_lock)(AgsMainLoop *main_loop);
+
+  void (*set_syncing)(AgsMainLoop *main_loop, gboolean is_syncing);
+  gboolean (*is_syncing)(AgsMainLoop *main_loop);
+
+  void (*set_critical_region)(AgsMainLoop *main_loop, gboolean is_critical_region);
+  gboolean (*is_critical_region)(AgsMainLoop *main_loop);
+
+  void (*inc_queued_critical_region)(AgsMainLoop *main_loop);
+  void (*dec_queued_critical_region)(AgsMainLoop *main_loop);
+  guint (*test_queued_critical_region)(AgsMainLoop *main_loop);
   
-  void (*set_application_context)(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
-  AgsApplicationContext* (*get_application_context)(AgsMainLoop *main_loop);
-
-  void (*set_async_queue)(AgsMainLoop *main_loop, GObject *async_queue);
-  GObject* (*get_async_queue)(AgsMainLoop *main_loop);
-  
-  void (*set_tic)(AgsMainLoop *main_loop, guint tic);
-  guint (*get_tic)(AgsMainLoop *main_loop);
-
-  void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
-  guint (*get_last_sync)(AgsMainLoop *main_loop);
-
-  void (*interrupt)(AgsMainLoop *main_loop,
-		    int sig,
-		    guint time_cycle, guint *time_spent);
-  gboolean (*monitor)(AgsMainLoop *main_loop,
-		      guint time_cycle, guint *time_spent);
-
   void (*change_frequency)(AgsMainLoop *main_loop,
 			   gdouble frequency);
-
-  void (*sync_counter_inc)(AgsMainLoop *main_loop, guint tic);
-  void (*sync_counter_dec)(AgsMainLoop *main_loop, guint tic);
-  gboolean (*sync_counter_test)(AgsMainLoop *main_loop, guint tic);
-
-  void (*set_sync_tic)(AgsMainLoop *main_loop, guint sync_tic);
-  guint (*get_sync_tic)(AgsMainLoop *main_loop);
 };
 
 GType ags_main_loop_get_type();
 
-pthread_mutex_t* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
+GRecMutex* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
-void ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
-AgsApplicationContext* ags_main_loop_get_application_context(AgsMainLoop *main_loop);
+void ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+gboolean ags_main_loop_is_syncing(AgsMainLoop *main_loop);
 
-void ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
-GObject* ags_main_loop_get_async_queue(AgsMainLoop *main_loop);
+void ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+gboolean ags_main_loop_is_critical_region(AgsMainLoop *main_loop);
 
-void ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_main_loop_get_tic(AgsMainLoop *main_loop);
-
-void ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
-guint ags_main_loop_get_last_sync(AgsMainLoop *main_loop);
-
-void ags_main_loop_interrupt(AgsMainLoop *main_loop,
-			     int sig,
-			     guint time_cycle, guint *time_spent);
-gboolean ags_main_loop_monitor(AgsMainLoop *main_loop,
-			       guint time_cycle, guint *time_spent);
+void ags_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
+void ags_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
+guint ags_main_loop_test_queued_critical_region(AgsMainLoop *main_loop);
 
 void ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 				    gdouble frequency);
 
-void ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
-void ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
-gboolean ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
-
-void ags_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic);
-guint ags_main_loop_get_sync_tic(AgsMainLoop *main_loop);
+G_END_DECLS
 
 #endif /*__AGS_MAIN_LOOP_H__*/

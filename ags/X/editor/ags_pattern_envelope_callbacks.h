@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_pattern_envelope.h>
+
+G_BEGIN_DECLS
 
 void ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
 					gchar *path_str,
@@ -86,5 +92,7 @@ void ags_pattern_envelope_preset_remove_callback(GtkWidget *button,
 
 int ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint response,
 							 AgsPatternEnvelope *pattern_envelope);
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_ENVELOPE_CALLBACKS_H__*/

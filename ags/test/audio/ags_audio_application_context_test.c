@@ -50,7 +50,7 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
   "\n"						       \
   "[soundcard-0]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"                                    \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \
@@ -59,7 +59,7 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
   "\n"						       \
   "[soundcard-1]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"                                    \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \
@@ -71,6 +71,8 @@ void ags_audio_application_context_test_finalize_stub(GObject *gobject);
   "\n"
 
 gboolean audio_application_context_test_finalized;
+
+extern AgsApplicationContext *ags_application_context;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -109,9 +111,6 @@ ags_audio_application_context_test_dispose()
 					   NULL);
   g_object_ref(audio_application_context);
   
-  ags_application_context_prepare(audio_application_context);
-  ags_application_context_setup(audio_application_context);
-
   /* run dispose */
   g_object_run_dispose(audio_application_context);
 
@@ -120,11 +119,12 @@ ags_audio_application_context_test_dispose()
   CU_ASSERT(audio_application_context->default_soundcard == NULL);
   CU_ASSERT(audio_application_context->default_soundcard_thread == NULL);
   CU_ASSERT(audio_application_context->default_export_thread == NULL);
-  CU_ASSERT(audio_application_context->autosave_thread == NULL);
   CU_ASSERT(audio_application_context->server == NULL);
   CU_ASSERT(audio_application_context->soundcard == NULL);
   CU_ASSERT(audio_application_context->sequencer == NULL);
   CU_ASSERT(audio_application_context->sound_server == NULL);
+
+  ags_application_context = NULL;
 }
 
 void
@@ -132,8 +132,16 @@ ags_audio_application_context_test_finalize()
 {
   AgsAudioApplicationContext *audio_application_context;
 
+  AgsThread *main_loop;
+  GThread *thread;
+  
   AgsConfig *config;
 
+  GList *list;
+  
+  gpointer gobject_class;
+  gpointer orig_finalize;
+  
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG,
@@ -142,17 +150,26 @@ ags_audio_application_context_test_finalize()
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
 
-  /* run dispose */
+  /* run dispose */  
   g_object_run_dispose(audio_application_context);
 
   /* stub finalize */
   audio_application_context_test_finalized = FALSE;
-  G_OBJECT_GET_CLASS(audio_application_context)->finalize = ags_audio_application_context_test_finalize_stub;
 
+  gobject_class = G_OBJECT_GET_CLASS(audio_application_context);
+
+  orig_finalize = G_OBJECT_CLASS(gobject_class)->finalize;
+  
+  G_OBJECT_CLASS(gobject_class)->finalize = ags_audio_application_context_test_finalize_stub;
+  
   /* unref and assert */
   g_object_unref(audio_application_context);
   
   CU_ASSERT(audio_application_context_test_finalized == TRUE);
+  
+  G_OBJECT_CLASS(gobject_class)->finalize = orig_finalize;
+
+  ags_application_context = NULL;
 }
 
 void
@@ -179,7 +196,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAudioApplicationContextTest\0", ags_audio_application_context_test_init_suite, ags_audio_application_context_test_clean_suite);
+  pSuite = CU_add_suite("AgsAudioApplicationContextTest", ags_audio_application_context_test_init_suite, ags_audio_application_context_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -188,8 +205,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudioApplicationContext doing dispose\0", ags_audio_application_context_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudioApplicationContext doing finalize\0", ags_audio_application_context_test_finalize) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAudioApplicationContext doing dispose", ags_audio_application_context_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioApplicationContext doing finalize", ags_audio_application_context_test_finalize) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

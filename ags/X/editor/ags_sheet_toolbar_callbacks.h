@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_sheet_toolbar.h>
+
+G_BEGIN_DECLS
 
 void ags_sheet_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsSheetToolbar *sheet_toolbar);
 
@@ -34,5 +40,7 @@ void ags_sheet_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsSh
 
 void ags_sheet_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsSheetToolbar *sheet_toolbar);
 void ags_sheet_toolbar_paste_callback(GtkWidget *widget, AgsSheetToolbar *sheet_toolbar);
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_TOOLBAR_CALLBACKS_H__*/

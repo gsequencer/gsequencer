@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,9 +40,9 @@
  *
  * Creates a new string containing an UUID. 
  *
- * Returns: the UUID as string
+ * Returns: (transfer full): the UUID as string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_id_generator_create_uuid()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOUND_PROVIDER                    (ags_sound_provider_get_type())
 #define AGS_SOUND_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_PROVIDER, AgsSoundProvider))
 #define AGS_SOUND_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUND_PROVIDER, AgsSoundProviderInterface))
@@ -38,7 +40,7 @@ struct _AgsSoundProviderInterface
   GTypeInterface ginterface;
 
   void (*set_default_soundcard)(AgsSoundProvider *sound_provider,
-				GObject *soundcard_thread);
+				GObject *soundcard);
   GObject* (*get_default_soundcard)(AgsSoundProvider *sound_provider);
 
   void (*set_default_soundcard_thread)(AgsSoundProvider *sound_provider,
@@ -62,14 +64,14 @@ struct _AgsSoundProviderInterface
   GList* (*get_sound_server)(AgsSoundProvider *sound_provider);
 
   void (*set_osc_server)(AgsSoundProvider *sound_provider,
-			 GList *sound_server);
+			 GList *osc_server);
   GList* (*get_osc_server)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
 
 void ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
-					      GObject *soundcard_thread);
+					      GObject *soundcard);
 GObject* ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -93,7 +95,9 @@ void ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
 GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
-				       GList *sound_server);
+				       GList *osc_server);
 GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

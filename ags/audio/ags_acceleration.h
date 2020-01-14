@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_ACCELERATION                (ags_acceleration_get_type())
 #define AGS_ACCELERATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCELERATION, AgsAcceleration))
@@ -32,7 +34,7 @@
 #define AGS_IS_ACCELERATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ACCELERATION))
 #define AGS_ACCELERATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ACCELERATION, AgsAccelerationClass))
 
-#define AGS_ACCELERATION_GET_OBJ_MUTEX(obj) (((AgsAcceleration *) obj)->obj_mutex)
+#define AGS_ACCELERATION_GET_OBJ_MUTEX(obj) (&(((AgsAcceleration *) obj)->obj_mutex))
 
 typedef struct _AgsAcceleration AgsAcceleration;
 typedef struct _AgsAccelerationClass AgsAccelerationClass;
@@ -63,8 +65,7 @@ struct _AgsAcceleration
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   // gui format, convert easy to visualization
   guint x;
@@ -80,8 +81,6 @@ struct _AgsAccelerationClass
 
 GType ags_acceleration_get_type();
 
-pthread_mutex_t* ags_acceleration_get_class_mutex();
-
 gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags);
 void ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags);
 void ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags);
@@ -92,5 +91,7 @@ gint ags_acceleration_sort_func(gconstpointer a,
 AgsAcceleration* ags_acceleration_duplicate(AgsAcceleration *acceleration);
 
 AgsAcceleration* ags_acceleration_new();
+
+G_END_DECLS
 
 #endif /*__AGS_ACCELERATION_H__*/

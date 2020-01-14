@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FREQUENCY_MAP                (ags_frequency_map_get_type())
 #define AGS_FREQUENCY_MAP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FREQUENCY_MAP, AgsFrequencyMap))
@@ -34,7 +34,7 @@
 #define AGS_IS_FREQUENCY_MAP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FREQUENCY_MAP))
 #define AGS_FREQUENCY_MAP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FREQUENCY_MAP, AgsFrequencyMapClass))
 
-#define AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(obj) (((AgsFrequencyMap *) obj)->obj_mutex)
+#define AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(obj) (&(((AgsFrequencyMap *) obj)->obj_mutex))
 
 #define AGS_FREQUENCY_MAP_DEFAULT_FREQ (440.0)
 
@@ -55,8 +55,7 @@ struct _AgsFrequencyMap
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -93,8 +92,6 @@ struct _AgsFrequencyMapClass
 
 GType ags_frequency_map_get_type();
 
-pthread_mutex_t* ags_frequency_map_get_class_mutex();
-
 gint ags_frequency_map_sort_func(gconstpointer a,
 				 gconstpointer b);
 
@@ -113,5 +110,7 @@ void ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
 
 /* instantiate */
 AgsFrequencyMap* ags_frequency_map_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FREQUENCY_MAP_H__*/

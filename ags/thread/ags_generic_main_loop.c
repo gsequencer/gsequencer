@@ -36,16 +36,16 @@ void ags_generic_main_loop_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_generic_main_loop_finalize(GObject *gobject);
 
-pthread_mutex_t* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
-GObject* ags_generic_main_loop_get_async_queue(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_generic_main_loop_get_tic(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
-guint ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop);
-void ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
-void ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
-gboolean ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
+GRecMutex* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
+void ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+gboolean ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop);
+void ags_generic_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+gboolean ags_generic_main_loop_is_critical_region(AgsMainLoop *main_loop);
+void ags_generic_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
+void ags_generic_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
+guint ags_generic_main_loop_test_queued_critical_region(AgsMainLoop *main_loop);
+void ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
+					    gdouble frequency);
 
 void ags_generic_main_loop_start(AgsThread *thread);
 
@@ -64,7 +64,6 @@ static gpointer ags_generic_main_loop_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -128,21 +127,6 @@ ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop)
   gobject->finalize = ags_generic_main_loop_finalize;
 
   /* properties */
-  /**
-   * AgsGenericMainLoop:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) generic_main_loop;
@@ -157,18 +141,17 @@ ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_generic_main_loop_get_tree_lock;
 
-  main_loop->set_async_queue = ags_generic_main_loop_set_async_queue;
-  main_loop->get_async_queue = ags_generic_main_loop_get_async_queue;
+  main_loop->set_syncing = ags_generic_main_loop_set_syncing;
+  main_loop->is_syncing = ags_generic_main_loop_is_syncing;
 
-  main_loop->set_tic = ags_generic_main_loop_set_tic;
-  main_loop->get_tic = ags_generic_main_loop_get_tic;
+  main_loop->set_critical_region = ags_generic_main_loop_set_critical_region;
+  main_loop->is_critical_region = ags_generic_main_loop_is_critical_region;
 
-  main_loop->set_last_sync = ags_generic_main_loop_set_last_sync;
-  main_loop->get_last_sync = ags_generic_main_loop_get_last_sync;
+  main_loop->inc_queued_critical_region = ags_generic_main_loop_inc_queued_critical_region;
+  main_loop->dec_queued_critical_region = ags_generic_main_loop_dec_queued_critical_region;
+  main_loop->test_queued_critical_region = ags_generic_main_loop_test_queued_critical_region;
 
-  main_loop->sync_counter_inc = ags_generic_main_loop_sync_counter_inc;
-  main_loop->sync_counter_dec = ags_generic_main_loop_sync_counter_dec;
-  main_loop->sync_counter_test = ags_generic_main_loop_sync_counter_test;
+  main_loop->change_frequency = ags_generic_main_loop_change_frequency;
 }
 
 void
@@ -176,22 +159,24 @@ ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop)
 {
   AgsThread *thread;
 
+  guint i;
+  
   /* calculate frequency */
   thread = (AgsThread *) generic_main_loop;
   
-  thread->freq = AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE;
+  ags_thread_set_flags(thread, AGS_THREAD_TIME_ACCOUNTING);
 
-  g_atomic_int_set(&(generic_main_loop->tic), 0);
-  g_atomic_int_set(&(generic_main_loop->last_sync), 0);
-
-  generic_main_loop->application_context = NULL;
+  g_object_set(thread,
+	       "frequency", AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE,
+	       NULL);
   
   /* tree lock mutex */
-  pthread_mutexattr_init(&(generic_main_loop->tree_lock_mutexattr));
-  pthread_mutexattr_settype(&(generic_main_loop->tree_lock_mutexattr), PTHREAD_MUTEX_RECURSIVE);
+  g_rec_mutex_init(&(generic_main_loop->tree_lock));
 
-  generic_main_loop->tree_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(generic_main_loop->tree_lock, &(generic_main_loop->tree_lock_mutexattr));
+  ags_main_loop_set_syncing(AGS_MAIN_LOOP(generic_main_loop), FALSE);
+
+  ags_main_loop_set_critical_region(AGS_MAIN_LOOP(generic_main_loop), FALSE);
+  g_atomic_int_set(&(generic_main_loop->critical_region_ref), 0);
 }
 
 void
@@ -202,7 +187,7 @@ ags_generic_main_loop_set_property(GObject *gobject,
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
@@ -210,33 +195,6 @@ ags_generic_main_loop_set_property(GObject *gobject,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(thread_mutex);
-
-      if(generic_main_loop->application_context == (GObject *) application_context){
-	pthread_mutex_unlock(thread_mutex);
-
-	return;
-      }
-
-      if(generic_main_loop->application_context != NULL){
-	g_object_unref(G_OBJECT(generic_main_loop->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-      
-      generic_main_loop->application_context = (GObject *) application_context;
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -251,7 +209,7 @@ ags_generic_main_loop_get_property(GObject *gobject,
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
+  GRecMutex *thread_mutex;
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
@@ -259,15 +217,6 @@ ags_generic_main_loop_get_property(GObject *gobject,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(thread_mutex);
-
-      g_value_set_object(value, generic_main_loop->application_context);
-
-      pthread_mutex_unlock(thread_mutex);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -281,162 +230,134 @@ ags_generic_main_loop_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_generic_main_loop_parent_class)->finalize(gobject);
 }
 
-pthread_mutex_t*
+GRecMutex*
 ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 {
-  return(AGS_GENERIC_MAIN_LOOP(main_loop)->tree_lock);
+  GRecMutex *tree_lock;
+
+  /* get tree lock mutex */
+  tree_lock = &(AGS_GENERIC_MAIN_LOOP(main_loop)->tree_lock);
+  
+  return(tree_lock);
 }
 
 void
-ags_generic_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
-{
-  AGS_GENERIC_MAIN_LOOP(main_loop)->async_queue = async_queue;
-}
-
-GObject*
-ags_generic_main_loop_get_async_queue(AgsMainLoop *main_loop)
-{
-  return(AGS_GENERIC_MAIN_LOOP(main_loop)->async_queue);
-}
-
-void
-ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
-{
-  g_atomic_int_set(&(AGS_GENERIC_MAIN_LOOP(main_loop)->tic),
-		   tic);
-}
-
-guint
-ags_generic_main_loop_get_tic(AgsMainLoop *main_loop)
-{
-  return(g_atomic_int_get(&(AGS_GENERIC_MAIN_LOOP(main_loop)->tic)));
-}
-
-void
-ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
-{
-  g_atomic_int_set(&(AGS_GENERIC_MAIN_LOOP(main_loop)->last_sync),
-		   last_sync);
-}
-
-guint
-ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
-{
-  gint val;
-
-  val = g_atomic_int_get(&(AGS_GENERIC_MAIN_LOOP(main_loop)->last_sync));
-
-  return(val);
-}
-
-void
-ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
+ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  pthread_mutex_t *thread_mutex;
-
-  if(tic >= 3){
-    return;
-  }
-  
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* increment */
-  pthread_mutex_lock(thread_mutex);
-  
-  generic_main_loop->sync_counter[tic] += 1;
-
-  pthread_mutex_unlock(thread_mutex);
-}
-
-void
-ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
-{
-  AgsGenericMainLoop *generic_main_loop;
-
-  pthread_mutex_t *thread_mutex;
-
-  if(tic >= 3){
-    return;
-  }
-  
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
-
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
-
-  /* increment */
-  pthread_mutex_lock(thread_mutex);
-
-  if(generic_main_loop->sync_counter[tic] > 0){
-    generic_main_loop->sync_counter[tic] -= 1;
-  }
-  
-  pthread_mutex_unlock(thread_mutex);
+  /* set syncing */
+  g_atomic_int_set(&(generic_main_loop->is_syncing), is_syncing);
 }
 
 gboolean
-ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
+ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop)
 {
   AgsGenericMainLoop *generic_main_loop;
 
-  gboolean success;
-  
-  pthread_mutex_t *thread_mutex;
+  gboolean is_syncing;
 
-  if(tic >= 3){
-    return(FALSE);
-  }
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* is syncing */
+  is_syncing = g_atomic_int_get(&(generic_main_loop->is_syncing));
+
+  return(is_syncing);
+}
+
+void
+ags_generic_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* set critical region */
+  g_atomic_int_set(&(generic_main_loop->is_critical_region), is_critical_region);
+}
+
+gboolean
+ags_generic_main_loop_is_critical_region(AgsMainLoop *main_loop)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  gboolean is_critical_region;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* is critical region */
+  is_critical_region = g_atomic_int_get(&(generic_main_loop->is_critical_region));
+
+  return(is_critical_region);
+}
+
+void
+ags_generic_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* increment critical region */
+  g_atomic_int_inc(&(generic_main_loop->critical_region_ref));
+}
+
+void
+ags_generic_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
+
+  /* decrement critical region */
+  g_atomic_int_dec_and_test(&(generic_main_loop->critical_region_ref));
+}
+
+guint
+ags_generic_main_loop_test_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsGenericMainLoop *generic_main_loop;
+
+  guint critical_region_ref;
   
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
-  /* get thread mutex */
-  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
+  /* set critical region */
+  critical_region_ref = g_atomic_int_get(&(generic_main_loop->is_critical_region));
 
-  /* test */
-  success = FALSE;
-  
-  pthread_mutex_lock(thread_mutex);
+  return(critical_region_ref);
+}
 
-  if(generic_main_loop->sync_counter[tic] == 0){
-    success = TRUE;
-  }
-  
-  pthread_mutex_unlock(thread_mutex);
-
-  return(success);
+void
+ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
+				       gdouble frequency)
+{
+  //empty
 }
 
 void
 ags_generic_main_loop_start(AgsThread *thread)
 {
-  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    /*  */
-    AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);
-  }
+  AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);
 }
  
 /**
  * ags_generic_main_loop_new:
- * @application_context: the #AgsMain
  *
  * Create a new #AgsGenericMainLoop.
  *
  * Returns: the new #AgsGenericMainLoop
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericMainLoop*
-ags_generic_main_loop_new(GObject *application_context)
+ags_generic_main_loop_new()
 {
   AgsGenericMainLoop *generic_main_loop;
 
   generic_main_loop = (AgsGenericMainLoop *) g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
-							  "application-context", application_context,
 							  NULL);
 
   return(generic_main_loop);

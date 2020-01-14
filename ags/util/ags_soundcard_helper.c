@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,13 +22,13 @@
 #include <ags/object/ags_soundcard.h>
 
 /**
- * SECTION:ags_soundcard_util
- * @short_description: soundcard util
- * @title: AgsSoundcardUtil
+ * SECTION:ags_soundcard_helper
+ * @short_description: soundcard helper
+ * @title: AgsSoundcardHelper
  * @section_id:
- * @include: ags/util/ags_soundcard_util.h
+ * @include: ags/util/ags_soundcard_helper.h
  *
- * Common utility functions related to #AgsSoundcard.
+ * Common helper functions related to #AgsSoundcard.
  */
 
 /**
@@ -39,7 +39,7 @@
  * 
  * Returns: the count of dsp channels
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
@@ -83,7 +83,7 @@ ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
  * 
  * Returns: the count of pcm channels
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config)
@@ -127,7 +127,7 @@ ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config)
  * 
  * Returns: the samplerate
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_soundcard_helper_config_get_samplerate(AgsConfig *config)
@@ -170,7 +170,7 @@ ags_soundcard_helper_config_get_samplerate(AgsConfig *config)
  * 
  * Returns: the buffer size
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_soundcard_helper_config_get_buffer_size(AgsConfig *config)
@@ -214,7 +214,7 @@ ags_soundcard_helper_config_get_buffer_size(AgsConfig *config)
  * 
  * Returns: the format
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_soundcard_helper_config_get_format(AgsConfig *config)

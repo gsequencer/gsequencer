@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,26 +20,19 @@
 #ifndef __AGS_SERVER_APPLICATION_CONTEXT_H__
 #define __AGS_SERVER_APPLICATION_CONTEXT_H__
 
-#ifdef AGS_WITH_XMLRPC_C
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/abyss.h>
-#include <xmlrpc-c/server.h>
-#include <xmlrpc-c/server_abyss.h>
-#endif
-
 #include <glib.h>
 #include <glib-object.h>
 
 #include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_launcher.h>
 
-#include <ags/server/ags_registry.h>
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_server_status.h>
+#include <ags/server/ags_registry.h>
 
-#include <ags/server/security/ags_authentication_manager.h>
-#include <ags/server/security/ags_certificate_manager.h>
-#include <ags/server/security/ags_password_store_manager.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER_APPLICATION_CONTEXT                (ags_server_application_context_get_type())
 #define AGS_SERVER_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContext))
@@ -48,22 +41,11 @@
 #define AGS_IS_SERVER_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER_APPLICATION_CONTEXT))
 #define AGS_SERVER_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContextClass))
 
-#define AGS_SERVER_BUILD_ID "Sun Feb 26 23:03:41 CET 2017\0"
-#define AGS_SERVER_DEFAULT_VERSION "1.0.0\0"
+#define AGS_SERVER_VERSION "3.0.0"
+#define AGS_SERVER_BUILD_ID "Sat Dec  7 10:02:36 UTC 2019"
 
 typedef struct _AgsServerApplicationContext AgsServerApplicationContext;
 typedef struct _AgsServerApplicationContextClass AgsServerApplicationContextClass;
-
-/**
- * AgsServerApplicationContextFlags:
- * @AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER: enable the server
- *
- * Enum values to control the behavior or indicate internal state of #AgsServerApplicationContext by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER      = 1,
-}AgsServerApplicationContextFlags;
 
 struct _AgsServerApplicationContext
 {
@@ -71,23 +53,19 @@ struct _AgsServerApplicationContext
 
   guint flags;
 
-  gchar *version;
-  gchar *build_id;
-
   AgsThreadPool *thread_pool;
 
-#ifdef AGS_WITH_XMLRPC_C
-  xmlrpc_env *env;
-#else
-  void *env;
-#endif
+  GList *worker;
 
+  GMainContext *server_main_context;
+
+  gboolean is_operating;
+
+  AgsServerStatus *server_status;
+  
   AgsRegistry *registry;
-  AgsServer *server;
-
-  AgsCertificateManager *certificate_manager;
-  AgsPasswordStoreManager *password_store_manager;
-  AgsAuthenticationManager *authentication_manager;
+  
+  GList *server;
 };
 
 struct _AgsServerApplicationContextClass
@@ -98,5 +76,7 @@ struct _AgsServerApplicationContextClass
 GType ags_server_application_context_get_type();
 
 AgsServerApplicationContext* ags_server_application_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_APPLICATION_CONTEXT_H__*/

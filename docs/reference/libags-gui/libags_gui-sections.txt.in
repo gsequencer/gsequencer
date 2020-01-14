@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -94,7 +94,6 @@ AGS_DIAL_DEFAULT_HEIGHT
 AGS_DIAL_DEFAULT_WIDTH
 AgsDialFlags
 AgsDialAction
-ags_dial_draw
 ags_dial_value_changed
 ags_dial_set_value
 ags_dial_new

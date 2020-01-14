@@ -23,10 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/urid/urid.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_URID_MANAGER                (ags_lv2_urid_manager_get_type())
 #define AGS_LV2_URID_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_URID_MANAGER, AgsLv2UridManager))
@@ -35,7 +37,7 @@
 #define AGS_IS_LV2_URID_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_URID_MANAGER))
 #define AGS_LV2_URID_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_URID_MANAGER, AgsLv2UridManagerClass))
 
-#define AGS_LV2_URID_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2UridManager *) obj)->obj_mutex)
+#define AGS_LV2_URID_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2UridManager *) obj)->obj_mutex))
 
 typedef struct _AgsLv2UridManager AgsLv2UridManager;
 typedef struct _AgsLv2UridManagerClass AgsLv2UridManagerClass;
@@ -44,8 +46,7 @@ struct _AgsLv2UridManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   uint32_t id_counter;
   
@@ -58,8 +59,6 @@ struct _AgsLv2UridManagerClass
 };
 
 GType ags_lv2_urid_manager_get_type(void);
-
-pthread_mutex_t* ags_lv2_urid_manager_get_class_mutex();
 
 gboolean ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
 				     gchar *uri, GValue *id);
@@ -78,5 +77,7 @@ const char* ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
 
 AgsLv2UridManager* ags_lv2_urid_manager_get_instance();
 AgsLv2UridManager* ags_lv2_urid_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_URID_MANAGER_H__*/

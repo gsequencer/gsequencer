@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/machine/ags_pitch_sampler_file.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PITCH_SAMPLER                (ags_pitch_sampler_get_type())
 #define AGS_PITCH_SAMPLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PITCH_SAMPLER, AgsPitchSampler))
@@ -102,5 +108,7 @@ void ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler);
 gboolean ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler);
 
 AgsPitchSampler* ags_pitch_sampler_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_PITCH_SAMPLER_H__*/

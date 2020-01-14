@@ -23,9 +23,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 guint ags_diatonic_scale_note_to_midi_key(gchar *note,
 					  glong *key);
 guint ags_diatonic_scale_midi_key_to_note(glong key,
 					  gchar **note);
+
+G_END_DECLS
 
 #endif /*__AGS_DIATONIC_SCALE_H__*/

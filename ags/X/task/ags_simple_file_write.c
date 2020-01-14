@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/X/task/ags_simple_file_write.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <gdk/gdk.h>
 
@@ -160,7 +158,7 @@ ags_simple_file_write_launch(AgsTask *task)
  *
  * Returns: the #AgsSimpleFileWrite task
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSimpleFileWrite*
 ags_simple_file_write_new(AgsSimpleFile *simple_file)

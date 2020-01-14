@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,6 @@ void ags_add_audio_launch(AgsTask *task);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_AUDIO,
 };
 
@@ -121,27 +120,11 @@ ags_add_audio_class_init(AgsAddAudioClass *add_audio)
 
   /* properties */
   /**
-   * AgsAddAudio:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of add audio"),
-				   i18n_pspec("The application context of add audio task"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsAddAudio:audio:
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of add audio"),
@@ -167,7 +150,6 @@ ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_add_audio_init(AgsAddAudio *add_audio)
 {
-  add_audio->application_context = NULL;
   add_audio->audio = NULL;
 }
 
@@ -182,27 +164,6 @@ ags_add_audio_set_property(GObject *gobject,
   add_audio = AGS_ADD_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(add_audio->application_context == application_context){
-	return;
-      }
-
-      if(add_audio->application_context != NULL){
-	g_object_unref(add_audio->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      add_audio->application_context = application_context;
-    }
-    break;
   case PROP_AUDIO:
     {
       AgsAudio *audio;
@@ -241,11 +202,6 @@ ags_add_audio_get_property(GObject *gobject,
   add_audio = AGS_ADD_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, add_audio->application_context);
-    }
-    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, add_audio->audio);
@@ -264,12 +220,6 @@ ags_add_audio_dispose(GObject *gobject)
 
   add_audio = AGS_ADD_AUDIO(gobject);
 
-  if(add_audio->application_context != NULL){
-    g_object_unref(add_audio->application_context);
-
-    add_audio->application_context = NULL;
-  }
-
   if(add_audio->audio != NULL){
     g_object_unref(add_audio->audio);
 
@@ -286,11 +236,7 @@ ags_add_audio_finalize(GObject *gobject)
   AgsAddAudio *add_audio;
 
   add_audio = AGS_ADD_AUDIO(gobject);
-
-  if(add_audio->application_context != NULL){
-    g_object_unref(add_audio->application_context);
-  }
-
+  
   if(add_audio->audio != NULL){
     g_object_unref(add_audio->audio);
   }
@@ -303,54 +249,54 @@ void
 ags_add_audio_launch(AgsTask *task)
 {
   AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
   
   GList *start_list;
   
   add_audio = AGS_ADD_AUDIO(task);
+
+  application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_AUDIO(add_audio->audio));
   
-  /* add audio */
-  if(add_audio->application_context != NULL &&
-     add_audio->audio != NULL){
-    /* ref audio */
-    g_object_ref(add_audio->audio);
+  /* ref audio */
+  g_object_ref(add_audio->audio);
 
-    /* add to sound provider */
-    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(add_audio->application_context));
-    g_list_foreach(start_list,
-		   (GFunc) g_object_unref,
-		   NULL);
+  /* add to sound provider */
+  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  g_list_foreach(start_list,
+		 (GFunc) g_object_unref,
+		 NULL);
 
-    g_object_ref(add_audio->audio);
-    start_list = g_list_append(start_list,
-			  add_audio->audio);
+  g_object_ref(add_audio->audio);
+  start_list = g_list_append(start_list,
+			     add_audio->audio);
     
-    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(add_audio->application_context),
-				 start_list);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       start_list);
     
-    /* AgsAudio */
-    ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
-  }
+  /* AgsAudio */
+  ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }
 
 /**
  * ags_add_audio_new:
- * @AgsApplicationContext: the #AgsApplicationContext
  * @audio: the #AgsAudio to add
  *
  * Creates an #AgsAddAudio.
  *
  * Returns: an new #AgsAddAudio.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAddAudio*
-ags_add_audio_new(AgsApplicationContext *application_context,
-		  AgsAudio *audio)
+ags_add_audio_new(AgsAudio *audio)
 {
   AgsAddAudio *add_audio;
 
   add_audio = (AgsAddAudio *) g_object_new(AGS_TYPE_ADD_AUDIO,
-					   "application-context", application_context,
 					   "audio", audio,
 					   NULL);
 

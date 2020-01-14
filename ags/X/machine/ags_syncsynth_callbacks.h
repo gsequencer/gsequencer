@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_syncsynth.h>
 
-void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSyncsynth *syncsynth);
+G_BEGIN_DECLS
+
+void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSyncsynth *syncsynth);
 
 void ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 					       guint samplerate, guint old_samplerate,
@@ -45,5 +51,7 @@ void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_loop_start_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
 void ags_syncsynth_loop_end_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
+
+G_END_DECLS
 
 #endif /*__AGS_SYNCSYNTH_CALLBACKS_H__ */

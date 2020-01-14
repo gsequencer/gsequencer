@@ -19,15 +19,10 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_callbacks.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
@@ -79,7 +74,6 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 void
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   GtkContainer *container;
 
@@ -96,9 +90,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /*  */
   start_task = NULL;
@@ -196,8 +189,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }
 
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  start_task);
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    start_task);
 }
 
 void

@@ -19,12 +19,7 @@
 
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
 
 #include <ags/i18n.h>
@@ -247,7 +242,6 @@ ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_resize_editor_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
 
@@ -267,11 +261,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
-
-  /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine_editor->machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* get audio */
   audio = machine_editor->machine->audio;
@@ -288,8 +279,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      audio_channels);
       
   /* append AgsResizeAudio */
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) resize_audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) resize_audio);
 }
 
 void
@@ -351,7 +342,7 @@ ags_resize_editor_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsResizeEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResizeEditor*
 ags_resize_editor_new()

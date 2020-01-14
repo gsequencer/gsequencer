@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,7 +113,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The assigned #AgsPattern
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("pattern",
 				   i18n_pspec("pattern of toggle pattern bit"),
@@ -129,7 +129,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The line.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("line",
 				 i18n_pspec("line"),
@@ -147,7 +147,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The index-i.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("index-i",
 				 i18n_pspec("index-i"),
@@ -165,7 +165,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The index-j.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("index-j",
 				 i18n_pspec("index-j"),
@@ -183,7 +183,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The bit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("bit",
 				 i18n_pspec("bit"),
@@ -375,7 +375,7 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
  *
  * Returns: an new #AgsTogglePatternBit.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTogglePatternBit*
 ags_toggle_pattern_bit_new(AgsPattern *pattern,

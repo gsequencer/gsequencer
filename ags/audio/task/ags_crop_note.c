@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,7 +117,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of crop note"),
@@ -133,7 +133,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of crop note"),
@@ -149,7 +149,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("selection",
 				    i18n_pspec("selection to crop"),
@@ -164,7 +164,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation with x padding.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("x-padding",
 				  i18n_pspec("crop with x padding"),
@@ -182,7 +182,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation by x-crop amount.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("x-crop",
 				 i18n_pspec("crop with x-crop amount"),
@@ -200,7 +200,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation by absolute position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("absolute",
 				     i18n_pspec("crop absolute"),
@@ -216,7 +216,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation in place.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("in-place",
 				     i18n_pspec("crop in place"),
@@ -232,7 +232,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation do resize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("do-resize",
 				     i18n_pspec("crop do resize"),
@@ -320,19 +320,18 @@ ags_crop_note_set_property(GObject *gobject,
     break;
   case PROP_SELECTION:
     {
-      GList *selection;
+      AgsNote *note;
 
-      selection = (GList *) g_value_get_pointer(value);
+      note = (AgsNote *) g_value_get_pointer(value);
 
-      if(crop_note->selection == selection){
+      if(note == NULL ||
+	 g_list_find(crop_note->selection, note) != NULL){
 	return;
       }
 
-      if(crop_note->selection != NULL){
-	g_list_free(crop_note->selection);
-      }
-      
-      crop_note->selection = g_list_copy(selection);
+      g_object_ref(note);
+      crop_note->selection = g_list_prepend(crop_note->selection,
+					    note);
     }
     break;
   case PROP_X_PADDING:
@@ -446,7 +445,8 @@ ags_crop_note_dispose(GObject *gobject)
   }
 
   if(crop_note->selection != NULL){
-    g_list_free(crop_note->selection);
+    g_list_free_full(crop_note->selection,
+		     g_object_unref);
 
     crop_note->selection = NULL;
   }
@@ -471,7 +471,8 @@ ags_crop_note_finalize(GObject *gobject)
   }
 
   if(crop_note->selection != NULL){
-    g_list_free(crop_note->selection);
+    g_list_free_full(crop_note->selection,
+		     g_object_unref);
   }
 
   /* call parent */
@@ -501,12 +502,18 @@ ags_crop_note_launch(AgsTask *task)
 
   crop_note = AGS_CROP_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(crop_note->audio));
+  g_return_if_fail(AGS_IS_NOTATION(crop_note->notation));
+
+  g_object_get(crop_note,
+	       "audio", &audio,
+	       NULL);
+  
   /* get some properties */
   notation =
     current_notation = crop_note->notation;
 
   g_object_get(notation,
-	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
   
@@ -622,8 +629,9 @@ ags_crop_note_launch(AgsTask *task)
 
 /**
  * ags_crop_note_new:
+ * @audio: the #AgsAudio
  * @notation: the #AgsNotation
- * @selection: the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * @x_padding: the x padding to use
  * @x_crop: the amout to crop
  * @absolute: if %TRUE from absolute position, otherwise relative
@@ -636,19 +644,20 @@ ags_crop_note_launch(AgsTask *task)
  *
  * Returns: a new #AgsCropNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCropNote*
-ags_crop_note_new(AgsNotation *notation,
+ags_crop_note_new(AgsAudio *audio,
+		  AgsNotation *notation,
 		  GList *selection,
 		  guint x_padding, gint x_crop,
 		  gboolean absolute, gboolean in_place, gboolean do_resize)
 {
   AgsCropNote *crop_note;
-
+  
   crop_note = (AgsCropNote *) g_object_new(AGS_TYPE_CROP_NOTE,
+					   "audio", audio,
 					   "notation", notation,
-					   "selection", selection,
 					   "x-padding", x_padding,
 					   "x-crop", x_crop,
 					   "absolute", absolute,
@@ -656,5 +665,11 @@ ags_crop_note_new(AgsNotation *notation,
 					   "do-resize", do_resize,
 					   NULL);
 
+  //FIXME:JK: argh, introspection!
+  
+  crop_note->selection = g_list_copy_deep(selection,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
+  
   return(crop_note);
 }

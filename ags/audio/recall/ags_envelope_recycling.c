@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_envelope_recycling.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 
@@ -117,7 +115,7 @@ ags_envelope_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsEnvelopeRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeRecycling*
 ags_envelope_recycling_new(AgsRecycling *source)

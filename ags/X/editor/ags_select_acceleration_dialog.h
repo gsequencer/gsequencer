@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <gtk/gtk.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SELECT_ACCELERATION_DIALOG                (ags_select_acceleration_dialog_get_type())
 #define AGS_SELECT_ACCELERATION_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SELECT_ACCELERATION_DIALOG, AgsSelectAccelerationDialog))
@@ -31,8 +37,6 @@
 #define AGS_IS_SELECT_ACCELERATION_DIALOG(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SELECT_ACCELERATION_DIALOG))
 #define AGS_IS_SELECT_ACCELERATION_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SELECT_ACCELERATION_DIALOG))
 #define AGS_SELECT_ACCELERATION_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SELECT_ACCELERATION_DIALOG, AgsSelectAccelerationDialogClass))
-
-#define AGS_SELECT_ACCELERATION(ptr) ((AgsSelectAcceleration *)(ptr))
 
 #define AGS_SELECT_ACCELERATION_MAX_BEATS (16 * 1200)
 #define AGS_SELECT_ACCELERATION_DEFAULT_WIDTH (64)
@@ -49,8 +53,6 @@ struct _AgsSelectAccelerationDialog
   GtkDialog dialog;
 
   guint flags;
-
-  GObject *application_context;
   
   GtkWidget *main_window;
 
@@ -72,5 +74,7 @@ struct _AgsSelectAccelerationDialogClass
 GType ags_select_acceleration_dialog_get_type(void);
 
 AgsSelectAccelerationDialog* ags_select_acceleration_dialog_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_SELECT_ACCELERATION_DIALOG_H__*/

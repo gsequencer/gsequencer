@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIO_FILE                (ags_audio_file_get_type())
 #define AGS_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFile))
 #define AGS_AUDIO_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIO_FILE, AgsAudioFileClass))
@@ -32,7 +34,7 @@
 #define AGS_IS_AUDIO_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO_FILE))
 #define AGS_AUDIO_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFileClass))
 
-#define AGS_AUDIO_FILE_GET_OBJ_MUTEX(obj) (((AgsAudioFile *) obj)->obj_mutex)
+#define AGS_AUDIO_FILE_GET_OBJ_MUTEX(obj) (&(((AgsAudioFile *) obj)->obj_mutex))
 
 typedef struct _AgsAudioFile AgsAudioFile;
 typedef struct _AgsAudioFileClass AgsAudioFileClass;
@@ -56,8 +58,7 @@ struct _AgsAudioFile
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -87,8 +88,6 @@ struct _AgsAudioFileClass
 };
 
 GType ags_audio_file_get_type();
-
-pthread_mutex_t* ags_audio_file_get_class_mutex();
 
 gboolean ags_audio_file_test_flags(AgsAudioFile *audio_file, guint flags);
 void ags_audio_file_set_flags(AgsAudioFile *audio_file, guint flags);
@@ -128,5 +127,7 @@ void ags_audio_file_flush(AgsAudioFile *audio_file);
 AgsAudioFile* ags_audio_file_new(gchar *filename,
 				 GObject *soundcard,
 				 gint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_FILE_H__*/

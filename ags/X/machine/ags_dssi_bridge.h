@@ -29,8 +29,11 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DSSI_BRIDGE                (ags_dssi_bridge_get_type())
 #define AGS_DSSI_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DSSI_BRIDGE, AgsDssiBridge))
@@ -99,5 +102,7 @@ void ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge);
 AgsDssiBridge* ags_dssi_bridge_new(GObject *soundcard,
 				   gchar *filename,
 				   gchar *effect);
+
+G_END_DECLS
 
 #endif /*__AGS_DSSI_BRIDGE_H__*/

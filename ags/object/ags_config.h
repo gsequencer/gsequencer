@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CONFIG                (ags_config_get_type ())
 #define AGS_CONFIG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONFIG, AgsConfig))
@@ -32,13 +32,14 @@
 #define AGS_IS_CONFIG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CONFIG))
 #define AGS_CONFIG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONFIG, AgsConfigClass))
 
-#define AGS_CONFIG_GET_OBJ_MUTEX(obj) (((AgsConfig *) obj)->obj_mutex)
+#define AGS_CONFIG_GET_OBJ_MUTEX(obj) (&(((AgsConfig *) obj)->obj_mutex))
 
 #define AGS_CONFIG_DEFAULT_VERSION "0.7.0"
 #define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 13-10-2015 01:19"
 
 #define AGS_CONFIG_GENERIC "generic"
 #define AGS_CONFIG_THREAD "thread"
+#define AGS_CONFIG_SERVER "server"
 #define AGS_CONFIG_SOUNDCARD "soundcard"
 #define AGS_CONFIG_SOUNDCARD_0 "soundcard-0"
 #define AGS_CONFIG_SEQUENCER "sequencer"
@@ -50,31 +51,17 @@
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
 
-/**
- * AgsConfigFlags:
- * @AGS_CONFIG_CONNECTED: the config was connected by calling #AgsConnectable::connect()
- * 
- * Enum values to control the behavior or indicate internal state of #AgsConfig by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_CONFIG_CONNECTED    = 1,
-}AgsConfigFlags;
-
 struct _AgsConfig
 {
   GObject gobject;
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex *obj_mutex;
   
   gchar *version;
   gchar *build_id;
   
-  GObject *application_context;
-
   GKeyFile *key_file;
 };
 
@@ -89,8 +76,6 @@ struct _AgsConfigClass
 };
 
 GType ags_config_get_type();
-
-pthread_mutex_t* ags_config_get_class_mutex();
 
 void ags_config_load_defaults(AgsConfig *config);
 void ags_config_load_from_file(AgsConfig *config, gchar *filename);
@@ -107,6 +92,8 @@ void ags_config_save(AgsConfig *config);
 void ags_config_clear(AgsConfig *config);
 
 AgsConfig* ags_config_get_instance();
-AgsConfig* ags_config_new(GObject *application_context);
+AgsConfig* ags_config_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CONFIG_H__*/

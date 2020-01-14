@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLY_TACT                (ags_apply_tact_get_type())
 #define AGS_APPLY_TACT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_TACT, AgsApplyTact))
@@ -53,5 +55,7 @@ GType ags_apply_tact_get_type();
 
 AgsApplyTact* ags_apply_tact_new(GObject *scope,
 				 gdouble tact);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLY_TACT_H__*/

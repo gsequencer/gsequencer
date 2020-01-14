@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_WORKER_THREAD                (ags_worker_thread_get_type())
 #define AGS_WORKER_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WORKER_THREAD, AgsWorkerThread))
@@ -42,35 +38,32 @@ typedef struct _AgsWorkerThread AgsWorkerThread;
 typedef struct _AgsWorkerThreadClass AgsWorkerThreadClass;
 
 /**
- * AgsWorkerThreadFlags:
- * @AGS_WORKER_THREAD_RUNNING: the worker is running
- * @AGS_WORKER_THREAD_RUN_WAIT: sync wait
- * @AGS_WORKER_THREAD_RUN_DONE: sync done
- * @AGS_WORKER_THREAD_RUN_SYNC: do sync
+ * AgsWorkerThreadStatusFlags:
+ * @AGS_WORKER_THREAD_STATUS_RUNNING: the worker is running
+ * @AGS_WORKER_THREAD_STATUS_RUN_WAIT: sync wait
+ * @AGS_WORKER_THREAD_STATUS_RUN_DONE: sync done
+ * @AGS_WORKER_THREAD_STATUS_RUN_SYNC: do sync
  *
  * Enum values to control the behavior or indicate internal state of #AgsWorkerThread by
  * enable/disable as sync_flags.
  */
 typedef enum{
-  AGS_WORKER_THREAD_RUNNING    = 1,
-  AGS_WORKER_THREAD_RUN_WAIT   = 1 <<  1,
-  AGS_WORKER_THREAD_RUN_DONE   = 1 <<  2,
-  AGS_WORKER_THREAD_RUN_SYNC   = 1 <<  3,
-}AgsWorkerThreadFlags;
+  AGS_WORKER_THREAD_STATUS_RUNNING    = 1,
+  AGS_WORKER_THREAD_STATUS_RUN_WAIT   = 1 <<  1,
+  AGS_WORKER_THREAD_STATUS_RUN_DONE   = 1 <<  2,
+  AGS_WORKER_THREAD_STATUS_RUN_SYNC   = 1 <<  3,
+}AgsWorkerThreadStatusFlags;
 
 struct _AgsWorkerThread
 {
   AgsThread thread;
 
-  volatile guint flags;
+  volatile guint status_flags;
 
-  pthread_mutex_t *run_mutex;
-  pthread_mutexattr_t *run_mutexattr;
-  
-  pthread_cond_t *run_cond;
+  GMutex run_mutex;
+  GCond run_cond;
 
-  pthread_t *worker_thread;
-  pthread_attr_t *worker_thread_attr;
+  GThread *worker_thread;
 };
 
 struct _AgsWorkerThreadClass
@@ -81,6 +74,10 @@ struct _AgsWorkerThreadClass
 };
 
 GType ags_worker_thread_get_type();
+
+gboolean ags_worker_thread_test_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
+void ags_worker_thread_set_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
+void ags_worker_thread_unset_status_flags(AgsWorkerThread *worker_thread, guint status_flags);
 
 void* ags_woker_thread_do_poll_loop(void *ptr);
 

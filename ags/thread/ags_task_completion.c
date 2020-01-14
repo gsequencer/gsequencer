@@ -77,8 +77,6 @@ enum{
 static gpointer ags_task_completion_parent_class = NULL;
 static guint task_completion_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_task_completion_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_task_completion_get_type()
 {
@@ -143,7 +141,7 @@ ags_task_completion_class_init(AgsTaskCompletionClass *task_completion)
    *
    * The assigned task.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("task",
 				   i18n_pspec("assigned task"),
@@ -164,7 +162,7 @@ ags_task_completion_class_init(AgsTaskCompletionClass *task_completion)
    *
    * The ::complete signal is emited as a task was finished
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   task_completion_signals[COMPLETE] =
     g_signal_new("complete",
@@ -207,24 +205,7 @@ ags_task_completion_init(AgsTaskCompletion *task_completion)
 		   0);
 
   /* task completion mutex */
-  task_completion->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(task_completion->obj_mutexattr);
-  pthread_mutexattr_settype(task_completion->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  err = pthread_mutexattr_setprotocol(task_completion->obj_mutexattr,
-				      PTHREAD_PRIO_INHERIT);
-
-  if(err != 0){
-    g_warning("no priority inheritance");
-  }
-#endif
-  
-  task_completion->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(task_completion->obj_mutex,
-		     task_completion->obj_mutexattr);
+  g_rec_mutex_init(&(task_completion->obj_mutex));
 
   /* uuid */
   task_completion->uuid = ags_uuid_alloc();
@@ -242,7 +223,7 @@ ags_task_completion_set_property(GObject *gobject,
 {
   AgsTaskCompletion *task_completion;
 
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   task_completion = AGS_TASK_COMPLETION(gobject);
 
@@ -256,10 +237,10 @@ ags_task_completion_set_property(GObject *gobject,
       
       task = g_value_get_object(value);
       
-      pthread_mutex_lock(task_completion_mutex);
+      g_rec_mutex_lock(task_completion_mutex);
 
       if(task == task_completion->task){      
-	pthread_mutex_unlock(task_completion_mutex);
+	g_rec_mutex_unlock(task_completion_mutex);
       
 	return;
       }
@@ -274,7 +255,7 @@ ags_task_completion_set_property(GObject *gobject,
 
       task_completion->task = task;
       
-      pthread_mutex_unlock(task_completion_mutex);
+      g_rec_mutex_unlock(task_completion_mutex);
     }
     break;
   default:
@@ -291,7 +272,7 @@ ags_task_completion_get_property(GObject *gobject,
 {
   AgsTaskCompletion *task_completion;
 
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   task_completion = AGS_TASK_COMPLETION(gobject);
 
@@ -301,11 +282,11 @@ ags_task_completion_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_TASK:
     {
-      pthread_mutex_lock(task_completion_mutex);
+      g_rec_mutex_lock(task_completion_mutex);
 
       g_value_set_object(value, task_completion->task);
 
-      pthread_mutex_unlock(task_completion_mutex);
+      g_rec_mutex_unlock(task_completion_mutex);
     }
     break;
   default:
@@ -326,13 +307,6 @@ ags_task_completion_finalize(GObject *gobject)
     g_object_unref(task_completion->task);
   }
 
-  /* task completion mutex */
-  pthread_mutexattr_destroy(task_completion->obj_mutexattr);
-  free(task_completion->obj_mutexattr);
-
-  pthread_mutex_destroy(task_completion->obj_mutex);
-  free(task_completion->obj_mutex);
-
   /* call parent */
   G_OBJECT_CLASS(ags_task_completion_parent_class)->finalize(gobject);
 }
@@ -344,7 +318,7 @@ ags_task_completion_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   task_completion = AGS_TASK_COMPLETION(connectable);
 
@@ -352,11 +326,11 @@ ags_task_completion_get_uuid(AgsConnectable *connectable)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* get UUID */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   ptr = task_completion->uuid;
 
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
   
   return(ptr);
 }
@@ -374,7 +348,7 @@ ags_task_completion_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   task_completion = AGS_TASK_COMPLETION(connectable);
 
@@ -382,11 +356,11 @@ ags_task_completion_is_ready(AgsConnectable *connectable)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* check is added */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   is_ready = (((AGS_TASK_COMPLETION_ADDED_TO_REGISTRY & (task_completion->flags)) != 0) ? TRUE: FALSE);
 
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
   
   return(is_ready);
 }
@@ -457,7 +431,7 @@ ags_task_completion_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   task_completion = AGS_TASK_COMPLETION(connectable);
 
@@ -465,11 +439,11 @@ ags_task_completion_is_connected(AgsConnectable *connectable)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* check is connected */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   is_connected = (((AGS_TASK_COMPLETION_CONNECTED & (task_completion->flags)) != 0) ? TRUE: FALSE);
   
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
   
   return(is_connected);
 }
@@ -511,21 +485,6 @@ ags_task_completion_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_task_completion_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_task_completion_get_class_mutex()
-{
-  return(&ags_task_completion_class_mutex);
-}
-
-/**
  * ags_task_completion_test_flags:
  * @task_completion: the #AgsTaskCompletion
  * @flags: the flags
@@ -534,14 +493,14 @@ ags_task_completion_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   if(!AGS_IS_TASK_COMPLETION(task_completion)){
     return(FALSE);
@@ -551,11 +510,11 @@ ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* test */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   retval = (flags & (task_completion->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
 
   return(retval);
 }
@@ -567,14 +526,14 @@ ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
  *
  * Enable a feature of #AgsTaskCompletion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
 {
   guint task_completion_flags;
   
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   if(!AGS_IS_TASK_COMPLETION(task_completion)){
     return;
@@ -584,11 +543,11 @@ ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* set flags */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   task_completion->flags |= flags;
   
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
 }
     
 /**
@@ -598,14 +557,14 @@ ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
  *
  * Disable a feature of AgsTaskCompletion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
 {
   guint task_completion_flags;
   
-  pthread_mutex_t *task_completion_mutex;
+  GRecMutex *task_completion_mutex;
 
   if(!AGS_IS_TASK_COMPLETION(task_completion)){
     return;
@@ -615,11 +574,11 @@ ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
   task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* unset flags */
-  pthread_mutex_lock(task_completion_mutex);
+  g_rec_mutex_lock(task_completion_mutex);
 
   task_completion->flags &= (~flags);
   
-  pthread_mutex_unlock(task_completion_mutex);
+  g_rec_mutex_unlock(task_completion_mutex);
 }
 
 /**
@@ -628,7 +587,7 @@ ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
  * 
  * Emit ::complete signal
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_task_completion_complete(AgsTaskCompletion *task_completion)
@@ -662,7 +621,7 @@ ags_task_completion_launch_callback(AgsTask *task,
  *
  * Returns: the new #AgsTaskCompletion
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTaskCompletion*
 ags_task_completion_new(GObject *task,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/server/security/ags_security_context.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PASSWORD_STORE                    (ags_password_store_get_type())
 #define AGS_PASSWORD_STORE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PASSWORD_STORE, AgsPasswordStore))
 #define AGS_PASSWORD_STORE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_PASSWORD_STORE, AgsPasswordStoreInterface))
@@ -38,7 +40,7 @@ typedef struct _AgsPasswordStoreInterface AgsPasswordStoreInterface;
 struct _AgsPasswordStoreInterface
 {
   GTypeInterface ginterface;
-
+  
   void (*set_login_name)(AgsPasswordStore *password_store,
 			 GObject *security_context,
 			 gchar *user_uuid,
@@ -53,13 +55,13 @@ struct _AgsPasswordStoreInterface
 
   void (*set_password)(AgsPasswordStore *password_store,
 		       GObject *security_context,
-		       gchar *login,
+		       gchar *user_uuid,
 		       gchar *security_token,
 		       gchar *password,
 		       GError **error);
   gchar* (*get_password)(AgsPasswordStore *password_store,
 			 GObject *security_context,
-			 gchar *login,
+			 gchar *user_uuid,
 			 gchar *security_token,
 			 GError **error);
   
@@ -85,13 +87,13 @@ gchar* ags_password_store_get_login_name(AgsPasswordStore *password_store,
 
 void ags_password_store_set_password(AgsPasswordStore *password_store,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     gchar *password,
 				     GError **error);
 gchar* ags_password_store_get_password(AgsPasswordStore *password_store,
 				       GObject *security_context,
-				       gchar *login,
+				       gchar *user_uuid,
 				       gchar *security_token,
 				       GError **error);
 
@@ -99,5 +101,7 @@ gchar* ags_password_store_encrypt_password(AgsPasswordStore *password_store,
 					   gchar *password,
 					   gchar *salt,
 					   GError **error);
+
+G_END_DECLS
 
 #endif /*__AGS_PASSWORD_STORE_H__*/

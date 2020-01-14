@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,12 +73,14 @@ gchar* ags_accessible_piano_get_localized_name(AtkAction *action,
 
 void ags_piano_map(GtkWidget *widget);
 void ags_piano_realize(GtkWidget *widget);
-void ags_piano_size_request(GtkWidget *widget,
-			    GtkRequisition   *requisition);
+void ags_piano_get_preferred_width(GtkWidget *widget,
+				   gint *minimal_width,
+				   gint *natural_width);
+void ags_piano_get_preferred_height(GtkWidget *widget,
+				    gint *minimal_height,
+				    gint *natural_height);
 void ags_piano_size_allocate(GtkWidget *widget,
 			     GtkAllocation *allocation);
-gboolean ags_piano_expose(GtkWidget *widget,
-			  GdkEventExpose *event);
 gboolean ags_piano_button_press(GtkWidget *widget,
 				GdkEventButton *event);
 gboolean ags_piano_button_release(GtkWidget *widget,
@@ -90,7 +92,7 @@ gboolean ags_piano_key_release(GtkWidget *widget,
 gboolean ags_piano_motion_notify(GtkWidget *widget,
 				 GdkEventMotion *event);
 
-void ags_piano_draw(AgsPiano *piano);
+void ags_piano_draw(AgsPiano *piano, cairo_t *cr);
 
 void ags_piano_real_key_pressed(AgsPiano *piano,
 				gchar *note, gint key_code);
@@ -232,7 +234,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The base note to use as lower.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("base-note",
 				   "base note",
@@ -248,7 +250,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The base key code.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("base-key-code",
 				 "base key code",
@@ -266,7 +268,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The key width to use for drawing a key.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("key-width",
 				 "key width",
@@ -284,7 +286,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The key height to use for drawing a key.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("key-height",
 				 "key height",
@@ -302,7 +304,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The count of keys to be drawn.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("key-count",
 				 "key count",
@@ -321,14 +323,15 @@ ags_piano_class_init(AgsPianoClass *piano)
   widget->get_accessible = ags_piano_get_accessible;
   //  widget->map = ags_piano_map;
   widget->realize = ags_piano_realize;
-  widget->expose_event = ags_piano_expose;
-  widget->size_request = ags_piano_size_request;
+  widget->get_preferred_width = ags_piano_get_preferred_width;
+  widget->get_preferred_height = ags_piano_get_preferred_height;
   widget->size_allocate = ags_piano_size_allocate;
   widget->button_press_event = ags_piano_button_press;
   widget->button_release_event = ags_piano_button_release;
   widget->key_press_event = ags_piano_key_press;
   widget->key_release_event = ags_piano_key_release;
   widget->motion_notify_event = ags_piano_motion_notify;
+  widget->draw = ags_piano_draw;
   widget->show = ags_piano_show;
 
   /* AgsPianoClass */
@@ -346,7 +349,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-pressed signal notifies about key pressed.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   piano_signals[KEY_PRESSED] =
     g_signal_new("key-pressed",
@@ -367,7 +370,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-released signal notifies about key released.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   piano_signals[KEY_RELEASED] =
     g_signal_new("key-released",
@@ -388,7 +391,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-clicked signal notifies about key clicked.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   piano_signals[KEY_CLICKED] =
     g_signal_new("key-clicked",
@@ -781,8 +784,7 @@ ags_piano_map(GtkWidget *widget)
   if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
     GTK_WIDGET_CLASS(ags_piano_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_piano_draw((AgsPiano *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
   }
 }
 
@@ -791,6 +793,10 @@ ags_piano_realize(GtkWidget *widget)
 {
   AgsPiano *piano;
 
+  GdkWindow *window;
+  
+  GtkAllocation allocation;
+  
   GdkWindowAttr attributes;
 
   gint attributes_mask;
@@ -802,20 +808,22 @@ ags_piano_realize(GtkWidget *widget)
 
   gtk_widget_set_realized(widget, TRUE);
 
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.visual = gtk_widget_get_visual(widget);
+  attributes.event_mask = gtk_widget_get_events(widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
                             GDK_BUTTON_PRESS_MASK |
                             GDK_BUTTON_RELEASE_MASK |
@@ -828,15 +836,11 @@ ags_piano_realize(GtkWidget *widget)
                             GDK_ENTER_NOTIFY_MASK |
                             GDK_LEAVE_NOTIFY_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, piano);
+  window = gdk_window_new(gtk_widget_get_parent_window(widget),
+			  &attributes, attributes_mask);
 
-  widget->style = gtk_style_attach(widget->style,
-				   widget->window);
-  gtk_style_set_background(widget->style,
-			   widget->window,
-			   GTK_STATE_NORMAL);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
 
   gtk_widget_queue_resize(widget);
 }
@@ -870,19 +874,38 @@ ags_piano_show(GtkWidget *widget)
 }
 
 void
-ags_piano_size_request(GtkWidget *widget,
-		       GtkRequisition *requisition)
+ags_piano_get_preferred_width(GtkWidget *widget,
+			      gint *minimal_width,
+			      gint *natural_width)
 {
   AgsPiano *piano;
 
   piano = AGS_PIANO(widget);
 
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    requisition->width = piano->key_width;
-    requisition->height = piano->key_count * piano->key_height;
+    minimal_width[0] =
+      natural_width[0] = piano->key_width;
   }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    requisition->width = piano->key_count * piano->key_height;
-    requisition->height = piano->key_width;
+    minimal_width[0] =
+      natural_width[0] = piano->key_count * piano->key_height;
+  }
+}
+
+void
+ags_piano_get_preferred_height(GtkWidget *widget,
+			       gint *minimal_height,
+			       gint *natural_height)
+{
+  AgsPiano *piano;
+
+  piano = AGS_PIANO(widget);
+
+  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    minimal_height[0] =
+      natural_height[0] = piano->key_count * piano->key_height;
+  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    minimal_height[0] =
+      natural_height[0] = piano->key_width;
   }
 }
 
@@ -893,25 +916,17 @@ ags_piano_size_allocate(GtkWidget *widget,
   AgsPiano *piano;
 
   piano = AGS_PIANO(widget);
-  
-  widget->allocation = *allocation;
 
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    widget->allocation.width = piano->key_width;
-    widget->allocation.height = piano->key_count * piano->key_height;
+    allocation->width = piano->key_width;
+    allocation->height = piano->key_count * piano->key_height;
   }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    widget->allocation.width = piano->key_count * piano->key_height;
-    widget->allocation.height = piano->key_width;
+    allocation->width = piano->key_count * piano->key_height;
+    allocation->height = piano->key_width;
   }
-}
 
-gboolean
-ags_piano_expose(GtkWidget *widget,
-		 GdkEventExpose *event)
-{
-  ags_piano_draw(AGS_PIANO(widget));
-
-  return(FALSE);
+  gtk_widget_set_allocation(widget,
+			    allocation);
 }
 
 gboolean
@@ -920,13 +935,18 @@ ags_piano_button_press(GtkWidget *widget,
 {
   AgsPiano *piano;
 
+  GtkAllocation allocation;
+
   guint width, height;
   guint x_start, y_start;
 
   piano = AGS_PIANO(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -993,7 +1013,7 @@ ags_piano_key_press(GtkWidget *widget,
 		    GdkEventKey *event)
 {
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -1015,7 +1035,7 @@ ags_piano_key_release(GtkWidget *widget,
   //TODO:JK: implement me
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -1092,6 +1112,8 @@ ags_piano_motion_notify(GtkWidget *widget,
 {
   AgsPiano *piano;
 
+  GtkAllocation allocation;
+
   guint width, height;
   guint x_start, y_start;
 
@@ -1099,8 +1121,11 @@ ags_piano_motion_notify(GtkWidget *widget,
   
   piano = AGS_PIANO(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -1150,10 +1175,12 @@ ags_piano_motion_notify(GtkWidget *widget,
 }
 
 void
-ags_piano_draw(AgsPiano *piano)
-{
-  cairo_t *cr;
-  
+ags_piano_draw(AgsPiano *piano, cairo_t *cr)
+{  
+  GtkStyleContext *piano_style_context;
+
+  GtkAllocation allocation;
+
   guint width, height;
   guint x_start, y_start;
 
@@ -1168,53 +1195,62 @@ ags_piano_draw(AgsPiano *piano)
   gboolean current_is_active;
   guint i, j;
   
-  static const gdouble white_gc = 65535.0;
   static const guint bitmap = 0x52a52a;
 
   if(!AGS_IS_PIANO(piano)){
     return;
   }
 
-  cr = gdk_cairo_create(GTK_WIDGET(piano)->window);
-  
-  if(cr == NULL){
-    return;
-  }
+  gtk_widget_get_allocation(piano,
+			    &allocation);
+
+  /* style context */
+  piano_style_context = gtk_widget_get_style_context(GTK_WIDGET(piano));
 
   width  = 0;
   height = 0;
 
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    width = GTK_WIDGET(piano)->allocation.width;
+    width = allocation.width;
 
-    if(piano->key_count * piano->key_height < GTK_WIDGET(piano)->allocation.height){
+    if(piano->key_count * piano->key_height < allocation.height){
       height = piano->key_count * piano->key_height;
     }else{
-      height = GTK_WIDGET(piano)->allocation.height;
+      height = allocation.height;
     }
   }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    if(piano->key_count * piano->key_height < GTK_WIDGET(piano)->allocation.width){
+    if(piano->key_count * piano->key_height < allocation.width){
       width = piano->key_count * piano->key_height;
     }else{
-      width = GTK_WIDGET(piano)->allocation.width;
+      width = allocation.width;
     }
 
-    height = GTK_WIDGET(piano)->allocation.height;
+    height = allocation.height;
   }
   
   x_start = 0;
   y_start = 0;
 
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
   
-  /* fill bg */
+  /* clear bg */
+  gtk_render_background(piano_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) x_start, (gdouble) y_start);
+
+  gtk_render_background(piano_style_context,
+			cr,
+			(double) x_start + width, (double) y_start + height,
+			(gdouble) allocation.width, (gdouble) allocation.height);
+
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_rectangle(cr,
 		  (double) x_start, (double) y_start,
 		  (double) width, (double) height);
   cairo_fill(cr);
-
+  
   /* draw */
   control_x0 = x_start;
   control_y0 = y_start;
@@ -1280,6 +1316,12 @@ ags_piano_draw(AgsPiano *piano)
       cairo_line_to(cr,
 		    (double) (control_x0 + big_control_width), (double) (control_y0 + small_control_height / 2));
       cairo_stroke(cr);
+
+      cairo_move_to(cr,
+		    (double) (control_x0 + big_control_width), (double) control_y0);
+      cairo_line_to(cr,
+		    (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
+      cairo_stroke(cr);
     }else{
       /* draw no semi tone key */
       cairo_set_source_rgb(cr,
@@ -1320,8 +1362,7 @@ ags_piano_draw(AgsPiano *piano)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**
@@ -1332,7 +1373,7 @@ ags_piano_draw(AgsPiano *piano)
  * 
  * Returns: the note as string
  * 
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 gchar*
 ags_piano_key_code_to_note(gint key_code)
@@ -1454,7 +1495,7 @@ ags_piano_real_key_pressed(AgsPiano *piano,
  * 
  * Emits ::key-pressed event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_piano_key_pressed(AgsPiano *piano,
@@ -1523,7 +1564,7 @@ ags_piano_real_key_released(AgsPiano *piano,
  * 
  * Emits ::key-released event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_piano_key_released(AgsPiano *piano,
@@ -1546,7 +1587,7 @@ ags_piano_key_released(AgsPiano *piano,
  * 
  * Emits ::key-clicked event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_piano_key_clicked(AgsPiano *piano,
@@ -1570,7 +1611,7 @@ ags_piano_key_clicked(AgsPiano *piano,
  * 
  * Returns: the active keys as gint array
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint*
 ags_piano_get_active_key(AgsPiano *piano,
@@ -1607,7 +1648,7 @@ ags_piano_get_active_key(AgsPiano *piano,
  * 
  * Returns: the new #AgsPiano instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPiano*
 ags_piano_new()

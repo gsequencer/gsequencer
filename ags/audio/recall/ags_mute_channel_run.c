@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_mute_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_mute_recycling.h>
 
@@ -107,14 +105,14 @@ ags_mute_channel_run_finalize(GObject *gobject)
 }
 
 /**
- * ags_mute_channel_new:
+ * ags_mute_channel_run_new:
  * @source: the #AgsChannel
  *
  * Create a new instance of #AgsMuteChannelRun
  *
  * Returns: the new #AgsMuteChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteChannelRun*
 ags_mute_channel_run_new(AgsChannel *source)

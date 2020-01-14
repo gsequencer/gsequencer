@@ -20,13 +20,8 @@
 #include <ags/X/editor/ags_sheet_toolbar.h>
 #include <ags/X/editor/ags_sheet_toolbar_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
-
-#include <gtk/gtkstock.h>
 
 #include <ags/i18n.h>
 
@@ -114,7 +109,8 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
 								 "label", i18n("Position"),
 								 "stock-id", GTK_STOCK_JUMP_TO,
 								 NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar, (GtkWidget *) sheet_toolbar->position, i18n("position cursor"), NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->position);
 
   /* edit */
   sheet_toolbar->edit_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
@@ -169,41 +165,37 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
 				(GtkWidget *) menu);
   gtk_widget_show_all((GtkWidget *) menu);
   
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar,
-			    (GtkWidget *) sheet_toolbar->edit_tool,
-			    i18n("edit notes"),
-			    NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->edit_tool);
   
   /* clear */
   sheet_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 							      "stock-id", GTK_STOCK_CLEAR,
 							      NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar, (GtkWidget *) sheet_toolbar->clear, i18n("clear notes"), NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->clear);
 
   /* select */
   sheet_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 							       "label", i18n("Select"),
 							       "stock-id", GTK_STOCK_SELECT_ALL,
 							       NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar,
-			    (GtkWidget *) sheet_toolbar->select,
-			    i18n("select notes"),
-			    NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->select);
 
   /* copy */
   sheet_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 						       "stock-id", GTK_STOCK_COPY,
 						       NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar,
-			    (GtkWidget *) sheet_toolbar->copy,
-			    i18n("copy notes"),
-			    NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->copy);
 
   /* cut */
   sheet_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 						      "stock-id", GTK_STOCK_CUT,
 						      NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar, (GtkWidget *) sheet_toolbar->cut, i18n("cut notes"), NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->cut);
 
   /* paste */
   sheet_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
@@ -230,7 +222,8 @@ ags_sheet_toolbar_init(AgsSheetToolbar *sheet_toolbar)
 				(GtkWidget *) menu);
   gtk_widget_show_all((GtkWidget *) menu);
   
-  gtk_toolbar_append_widget((GtkToolbar *) sheet_toolbar, (GtkWidget *) sheet_toolbar->paste_tool, i18n("paste notes"), NULL);
+  gtk_container_add((GtkToolbar *) sheet_toolbar,
+		    (GtkWidget *) sheet_toolbar->paste_tool);
 }
 
 void
@@ -277,7 +270,7 @@ ags_sheet_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsSheetToolbar
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSheetToolbar*
 ags_sheet_toolbar_new()

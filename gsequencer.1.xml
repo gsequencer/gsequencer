@@ -1,7 +1,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2018 Joël Krähemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
@@ -10,9 +10,9 @@
 <refentry id="gsequencer">
 
   <refentryinfo>
-    <date>2017-10-12</date>
+    <date>2020-01-08</date>
     <copyright>
-      <year>2017</year>
+      <year>2020</year>
       <holder>Joël Krähemann</holder>
     </copyright>
     <legalnotice>
@@ -30,7 +30,7 @@
       <application>gsequencer</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo>gsequencer v1.0.0</refmiscinfo>
+    <refmiscinfo>gsequencer v3.0.0</refmiscinfo>
   </refmeta>
 
   <refnamediv>
@@ -43,7 +43,6 @@
       <command>/usr/bin/gsequencer</command>
       <arg>--help</arg>
       <arg>--version</arg>
-      <arg>--single-thread</arg>
       <arg>--no-builtin-theme</arg>
       <arg>--filename <replaceable>file</replaceable></arg>
     </cmdsynopsis>
@@ -62,7 +61,7 @@
     As version 1.0.0 it supports LADSPA, DSSI and Lv2 plugin format. And provides
     the ability to export to WAV, FLAC and OGG audio files. It can run on various
     soundcard backends including ALSA, OSS4, JACK Audio Connection Kit, Pulseaudio
-    and Core-Audio.
+    Core-Audio, Audio-Unit and WASAPI.
   </para>
   <para>&hellip;</para>
   </refsect1>
@@ -77,12 +76,6 @@
       <manvolnum>1</manvolnum>
     </citerefentry> files.</para>
     <variablelist>
-      <varlistentry>
-        <term><option>--single-thread</option></term>
-        <listitem>
-          <para>Run in single thread mode.</para>
-        </listitem>
-      </varlistentry>
       <varlistentry>
         <term><option>--no-builtin-theme</option></term>
         <listitem>
@@ -130,6 +123,36 @@
         <term>LV2_PATH</term>
         <listitem>
           <para>LV2 plugin search path</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_FILENAME</term>
+        <listitem>
+          <para>The splash screen's background picture</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_BOX_X0</term>
+        <listitem>
+          <para>The splash screen's text box x-position</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_BOX_Y0</term>
+        <listitem>
+          <para>The splash screen's text box y-position</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_ANIMATION_TEXT_COLOR</term>
+        <listitem>
+          <para>The splash screen's text color</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>AGS_CSS_FILENAME</term>
+        <listitem>
+          <para>The application's style sheet</para>
         </listitem>
       </varlistentry>
     </variablelist>

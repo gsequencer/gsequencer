@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_machine_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_property_collection_editor.h>
@@ -145,7 +141,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -167,7 +163,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
    *
    * The ::set-machine notify about modified machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_editor_signals[SET_MACHINE] =
     g_signal_new("set-machine",
@@ -215,7 +211,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   machine_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(machine_editor),
 		     (GtkWidget *) notebook,
 		     TRUE, TRUE,
 		     0);
@@ -257,19 +253,19 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
 
   /* GtkButton's in GtkDialog->action_area  */
   machine_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
 		     (GtkWidget *) machine_editor->apply,
 		     FALSE, FALSE,
 		     0);
 
   machine_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
 		     (GtkWidget *) machine_editor->ok,
 		     FALSE, FALSE,
 		     0);
 
   machine_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(machine_editor),
 		     (GtkWidget *) machine_editor->cancel,
 		     FALSE, FALSE,
 		     0);
@@ -334,10 +330,6 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor->flags |= AGS_MACHINE_EDITOR_CONNECTED;
   
-  /* GtkNotebook */
-  g_signal_connect((GtkNotebook *) machine_editor->notebook, "switch-page",
-		   G_CALLBACK(ags_machine_editor_switch_page_callback), (gpointer) machine_editor);
-
   /* AgsMachineEditor tabs */
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->output_editor));
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->input_editor));
@@ -435,7 +427,7 @@ ags_machine_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
@@ -515,7 +507,7 @@ ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine
  *
  * Is emitted as machine gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
@@ -537,7 +529,7 @@ ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *mac
  *
  * Returns: a new #AgsMachineEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineEditor*
 ags_machine_editor_new(AgsMachine *machine)

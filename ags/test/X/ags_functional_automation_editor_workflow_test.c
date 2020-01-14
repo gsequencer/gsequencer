@@ -84,9 +84,6 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
-AgsGuiThread *gui_thread;
-AgsTaskThread *task_thread;
-
 void ags_functional_automation_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
@@ -132,19 +129,11 @@ ags_functional_automation_editor_workflow_test_init_suite()
   ags_test_enter();
     
   xorg_application_context = ags_application_context;
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   edit_menu = window->menu_bar->edit;
 
   ags_test_leave();
-
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* get task thread */
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
   /* window and editor size */
   ags_functional_test_util_file_default_window_resize();
@@ -152,7 +141,7 @@ ags_functional_automation_editor_workflow_test_init_suite()
   ags_functional_test_util_file_default_editor_resize();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -218,7 +207,7 @@ ags_functional_automation_editor_workflow_test_panel()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -239,14 +228,14 @@ ags_functional_automation_editor_workflow_test_panel()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -330,7 +319,7 @@ ags_functional_automation_editor_workflow_test_mixer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -351,14 +340,14 @@ ags_functional_automation_editor_workflow_test_mixer()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -442,7 +431,7 @@ ags_functional_automation_editor_workflow_test_equalizer10()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -463,14 +452,14 @@ ags_functional_automation_editor_workflow_test_equalizer10()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -554,7 +543,7 @@ ags_functional_automation_editor_workflow_test_drum()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -575,14 +564,14 @@ ags_functional_automation_editor_workflow_test_drum()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -666,7 +655,7 @@ ags_functional_automation_editor_workflow_test_matrix()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -687,14 +676,14 @@ ags_functional_automation_editor_workflow_test_matrix()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -778,7 +767,7 @@ ags_functional_automation_editor_workflow_test_syncsynth()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -799,14 +788,14 @@ ags_functional_automation_editor_workflow_test_syncsynth()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -891,7 +880,7 @@ ags_functional_automation_editor_workflow_test_ffplayer()
   /* get machine */
   ags_test_enter();
 
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -912,14 +901,14 @@ ags_functional_automation_editor_workflow_test_ffplayer()
 
   ags_test_enter();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   automation_editor = window->automation_window->automation_editor;
   edit_menu = window->menu_bar->edit;
   
   ags_test_leave();
 
   /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_bar_click("_Edit");
   ags_functional_test_util_menu_click(edit_menu,
 				      "Automation");
   
@@ -993,9 +982,8 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_AUTOMATION_EDITOR_WORKFLOW_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_automation_editor_workflow_test_add_test, &is_available);
-
-  pthread_join(ags_functional_test_util_self(),
-	       NULL);
+  
+  g_thread_join(ags_functional_test_util_test_runner_thread());
 
   return(-1);
 }

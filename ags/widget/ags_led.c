@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,18 +25,19 @@
 void ags_led_class_init(AgsLedClass *led);
 void ags_led_init(AgsLed *led);
 
-void ags_led_size_request(AgsLed *led,
-			  GtkRequisition *requisition);
-void ags_led_size_allocate(AgsLed *led,
-			   GtkAllocation *allocation);
 void ags_led_realize(GtkWidget *widget);
-gint ags_led_expose(GtkWidget *widget,
-		     GdkEventExpose *event);
-gboolean ags_led_expose(GtkWidget *widget,
-			 GdkEventExpose *event);
-void ags_led_show(GtkWidget *widget);
+void ags_led_size_allocate(GtkWidget *widget,
+			   GtkAllocation *allocation);
+void ags_led_get_preferred_width(GtkWidget *widget,
+				 gint *minimal_width,
+				 gint *natural_width);
+void ags_led_get_preferred_height(GtkWidget *widget,
+				  gint *minimal_height,
+				  gint *natural_height);
 
-void ags_led_draw(AgsLed *led);
+void ags_led_send_configure(AgsLed *led);
+
+void ags_led_draw(AgsLed *led, cairo_t *cr);
 
 /**
  * SECTION:ags_led
@@ -70,7 +71,7 @@ ags_led_get_type(void)
       (GInstanceInitFunc) ags_led_init,
     };
 
-    ags_type_led = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_led = g_type_register_static(GTK_TYPE_WIDGET,
 					  "AgsLed", &ags_led_info,
 					  0);
 
@@ -89,171 +90,278 @@ ags_led_class_init(AgsLedClass *led)
 
   widget = (GtkWidgetClass *) led;
 
-  widget->size_request = ags_led_size_request;
-  widget->size_allocate = ags_led_size_allocate;
   widget->realize = ags_led_realize;
-  widget->expose_event = ags_led_expose;
-  widget->show = ags_led_show;
+  widget->get_preferred_width = ags_led_get_preferred_width;
+  widget->get_preferred_height = ags_led_get_preferred_height;
+  widget->size_allocate = ags_led_size_allocate;
+  widget->draw = ags_led_draw;
 }
 
 void
 ags_led_init(AgsLed *led)
 {
   g_object_set(G_OBJECT(led),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
   led->flags = 0;
 }
 
 void
-ags_led_size_allocate(AgsLed *led,
+ags_led_realize(GtkWidget *widget)
+{
+  AgsLed *led;
+
+  GdkWindow *window;
+
+  GtkAllocation allocation;
+  GdkWindowAttr attributes;
+
+  gint attributes_mask;
+
+  g_return_if_fail(widget != NULL);
+  g_return_if_fail(AGS_IS_LED(widget));
+
+  led = AGS_LED(widget);
+
+  gtk_widget_set_realized(widget, TRUE);
+
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  /*  */
+  //TODO:JK: apply borders of container widgets
+  attributes.window_type = GDK_WINDOW_CHILD;
+
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
+
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.visual = gtk_widget_get_visual(widget);  
+  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK |
+			    GDK_BUTTON_PRESS_MASK | 
+			    GDK_BUTTON_RELEASE_MASK |
+			    GDK_POINTER_MOTION_MASK |
+			    GDK_POINTER_MOTION_HINT_MASK);
+
+  window = gdk_window_new(gtk_widget_get_parent_window(widget),
+			  &attributes, attributes_mask);
+
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
+
+  ags_led_send_configure(led);
+}
+
+void
+ags_led_size_allocate(GtkWidget *widget,
 		      GtkAllocation *allocation)
 {
-  GTK_WIDGET(led)->allocation = *allocation;  
+  AgsLed *led;
+  
+  g_return_if_fail(AGS_IS_LED(widget));
+  g_return_if_fail(allocation != NULL);
+
+  led = AGS_LED(widget);  
 
   allocation->width = AGS_LED_DEFAULT_WIDTH;
   allocation->height = AGS_LED_DEFAULT_HEIGHT;
+
+  gtk_widget_set_allocation(widget, allocation);
+
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_led_send_configure(led);
+  }
 }
 
 void
-ags_led_size_request(AgsLed *led,
-		     GtkRequisition *requisition)
+ags_led_send_configure(AgsLed *led)
 {
-  requisition->height = AGS_LED_DEFAULT_HEIGHT;
-  requisition->width = AGS_LED_DEFAULT_WIDTH;
-}
-
-void
-ags_led_realize(GtkWidget *widget)
-{
-  GdkWindowAttr attributes;
-  gint attributes_mask;
-
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (AGS_IS_LED (widget));
-
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-
-  /*  */
-  //TODO:JK: apply borders of container widgets
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.window_type = GDK_WINDOW_CHILD;
-  attributes.event_mask = gtk_widget_get_events (widget) | 
-    GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | 
-    GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
-    GDK_POINTER_MOTION_HINT_MASK;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
-
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-  widget->window = gdk_window_new(gtk_widget_get_parent_window(widget), &attributes, attributes_mask);
-
-  widget->style = gtk_style_attach(widget->style, widget->window);
-
-  gdk_window_set_user_data(widget->window, widget);
-
-  gtk_style_set_background(widget->style, widget->window, GTK_STATE_ACTIVE);
-
-  /* call parent */
-  GTK_WIDGET_CLASS(ags_led_parent_class)->realize(widget);
-}
-
-void
-ags_led_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_led_parent_class)->show(widget);
-}
-
-gboolean
-ags_led_expose(GtkWidget *widget,
-		GdkEventExpose *event)
-{
-  GTK_WIDGET_CLASS(ags_led_parent_class)->expose_event(widget, event);
-
-  ags_led_draw(AGS_LED(widget));
-
-  return(FALSE);
-}
-
-void
-ags_led_draw(AgsLed *led)
-{
+  GtkAllocation allocation;
   GtkWidget *widget;
-  GdkWindow *window;
-
-  GtkStyle *led_style;
-  cairo_t *cr;
-  
-  static const gdouble white_gc = 65535.0;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
 
   widget = GTK_WIDGET(led);
-  led_style = gtk_widget_get_style(widget);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
+}
+
+void
+ags_led_get_preferred_width(GtkWidget *widget,
+			    gint *minimal_width,
+			    gint *natural_width)
+{
+  minimal_width[0] =
+    natural_width[0] = AGS_LED_DEFAULT_WIDTH;
+}
+
+void
+ags_led_get_preferred_height(GtkWidget *widget,
+			     gint *minimal_height,
+			     gint *natural_height)
+{
+  minimal_height[0] =
+    natural_height[0] = AGS_LED_DEFAULT_HEIGHT;
+}
+
+void
+ags_led_draw(AgsLed *led, cairo_t *cr)
+{
+  GtkWidget *widget;
   
-  cr = gdk_cairo_create(widget->window);
+  GtkStyleContext *led_style_context;
 
-  if(cr == NULL){
-    return;
-  }
+  GtkAllocation allocation;
 
-  /*  */
+  GdkRGBA *fg_color;
+  GdkRGBA *bg_color;
+  GdkRGBA *border_color;
+  
+  GValue value = {0,};
+
+  widget = GTK_WIDGET(led);
+
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+//  g_message("led %d|%d %d|%d", allocation.x, allocation.y, allocation.width, allocation.height);
+
+  /* style context */
+  led_style_context = gtk_widget_get_style_context(GTK_WIDGET(led));
+
+  gtk_style_context_get_property(led_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+  
+  gtk_style_context_get_property(led_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+  
+  gtk_style_context_get_property(led_style_context,
+				 "border-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  border_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  /*  */  
+//  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
     /* active */
-    cairo_set_source_rgb(cr,
-			 led_style->light[0].red / white_gc,
-			 led_style->light[0].green / white_gc,
-			 led_style->light[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->green,
+			  fg_color->blue,
+			  fg_color->alpha);
   }else{
     /* normal */
-    cairo_set_source_rgb(cr,
-			 led_style->dark[0].red / white_gc,
-			 led_style->dark[0].green / white_gc,
-			 led_style->dark[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  bg_color->red,
+			  bg_color->green,
+			  bg_color->blue,
+			  bg_color->alpha);
   }
 
   cairo_rectangle(cr,
-		  widget->allocation.x, widget->allocation.y,
-		  widget->allocation.width, widget->allocation.height);
+		  0.0, 0.0,
+		  (gdouble) allocation.width, (gdouble) allocation.height);
   cairo_fill(cr);
 
   /* outline */
-  cairo_set_source_rgb(cr,
-		       led_style->fg[0].red / white_gc,
-		       led_style->fg[0].green / white_gc,
-		       led_style->fg[0].blue / white_gc);
-  cairo_set_line_width(cr, 1.0);
-  
+  cairo_set_source_rgba(cr,
+			border_color->red,
+			border_color->green,
+			border_color->blue,
+			border_color->alpha);
+  cairo_set_line_width(cr,
+		       1.25);
+
   cairo_rectangle(cr,
-		  widget->allocation.x, widget->allocation.y,
-		  widget->allocation.width, widget->allocation.height);
+		  0.0, 0.0,
+		  (gdouble) allocation.width, (gdouble) allocation.height);
   cairo_stroke(cr);
 
-  /*  */
-  cairo_destroy(cr);
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
+  
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
+/**
+ * ags_led_set_active:
+ * @led: the #AgsLed
+ * 
+ * Set @led to active state.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_set_active(AgsLed *led)
 {
-  led->flags |= AGS_LED_ACTIVE;
+  if(!AGS_IS_LED(led)){
+    return;
+  }
 
-  gtk_widget_queue_draw((GtkWidget *) led);
+  if((AGS_LED_ACTIVE & (led->flags)) == 0){
+    led->flags |= AGS_LED_ACTIVE;
 
-  //  ags_led_draw(led);
+    gtk_widget_queue_draw((GtkWidget *) led);
+  }
 }
 
+/**
+ * ags_led_unset_active:
+ * @led: the #AgsLed
+ * 
+ * Unset @led active state.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_led_unset_active(AgsLed *led)
 {
-  led->flags &= (~AGS_LED_ACTIVE);
+  if(!AGS_IS_LED(led)){
+    return;
+  }
 
-  gtk_widget_queue_draw((GtkWidget *) led);
-
-  //  ags_led_draw(led);
+  if((AGS_LED_ACTIVE & (led->flags)) != 0){
+    led->flags &= (~AGS_LED_ACTIVE);
+    
+    gtk_widget_queue_draw((GtkWidget *) led);
+  }
 }
 
 /**
@@ -263,7 +371,7 @@ ags_led_unset_active(AgsLed *led)
  *
  * Returns: the new #AgsLed
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLed*
 ags_led_new()

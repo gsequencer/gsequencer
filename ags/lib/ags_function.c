@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,10 @@ void ags_function_get_property(GObject *gobject,
 			       GValue *value,
 			       GParamSpec *param_spec);
 void ags_function_finalize(GObject *gobject);
+
+gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
+gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
+guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
 /**
  * SECTION:ags_function
@@ -126,7 +130,7 @@ enum{
 
 static gpointer ags_function_parent_class = NULL;
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_function_get_type(void)
@@ -181,7 +185,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The source function.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("source-function",
 				   i18n_pspec("function as string"),
@@ -197,7 +201,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The normalized function.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("normalized-function",
 				   i18n_pspec("normalized form of function as string"),
@@ -213,7 +217,7 @@ ags_function_class_init(AgsFunctionClass *function)
    *
    * The pivot table.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("pivot-table",
 				    i18n_pspec("pivot table representation"),
@@ -378,9 +382,7 @@ ags_function_finalize(GObject *gobject)
   if(function->pivot_table != NULL){
     for(i = 0; i < function->pivot_table_count; i++){
       for(j = 0; j < function->row_count[i]; j++){
-	for(k = 0; k < function->column_count[i]; k++){
-	  ags_complex_free(function->pivot_table[i][j][k]);
-	}
+	ags_complex_free(function->pivot_table[i][j]);
 
 	free(function->pivot_table[i][j]);
       }
@@ -404,7 +406,7 @@ ags_function_finalize(GObject *gobject)
  * 
  * Returns: the one-dimensional array of possible functions as strings
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_function_collapse_parantheses(AgsFunction *function,
@@ -428,7 +430,7 @@ ags_function_collapse_parantheses(AgsFunction *function,
  *
  * Returns: The string vector containing symbols
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_function_find_literals(AgsFunction *function,
@@ -453,7 +455,7 @@ ags_function_find_literals(AgsFunction *function,
   n_literals = 0;
   
   /* compile regex */
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
 
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -461,7 +463,7 @@ ags_function_find_literals(AgsFunction *function,
     regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
 
   /* find literals */
   str = function->source_function;
@@ -510,6 +512,128 @@ ags_function_find_literals(AgsFunction *function,
   return(literals);
 }
 
+gchar*
+ags_function_literal_solve_expand_functions(gchar *transformed_function)
+{
+  regmatch_t match_arr[1];
+    
+  gchar *expanded_functions;
+  gchar *offset, *close_offset;
+  gchar *str;
+  gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
+
+  int regexec_result;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static regex_t function_regex;
+
+  static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
+
+  static const size_t max_matches = 1;
+    
+  /* compile regex */
+  g_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+
+    regcomp(&function_regex, function_pattern, REG_EXTENDED);
+  }
+
+  g_mutex_unlock(&regex_mutex);
+
+  /*  */
+  expanded_functions = NULL;
+
+  str =
+    offset = g_strdup(transformed_function);
+  close_offset = NULL;
+
+  close_paranthesis = NULL;
+  regexec_result = 0;
+    
+  while(regexec_result != REG_NOMATCH){
+    if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
+      if(close_offset == NULL ||
+	 close_offset > match_arr[0].rm_so){
+	offset = (gchar *) match_arr[0].rm_so;
+
+	/* find close paranthesis */
+	open_paranthesis = offset;
+	  
+	while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
+	      close_paranthesis == NULL){
+	  close_paranthesis = strchr(open_paranthesis, ')');
+	  tmp_paranthesis = strchr(open_paranthesis, '(');
+
+	  if(tmp_paranthesis < close_paranthesis){
+	    close_paranthesis = NULL;
+	  }
+	}
+
+	close_offset = close_paranthesis;
+      }else{
+	if(close_offset != NULL){
+	  if(!g_strcmp0(offset,
+			"sin")){
+	  }else if(!g_strcmp0(offset,
+			      "cos")){
+	  }else if(!g_strcmp0(offset,
+			      "tan")){
+	  }else if(!g_strcmp0(offset,
+			      "asin")){
+	  }else if(!g_strcmp0(offset,
+			      "acos")){
+	  }else if(!g_strcmp0(offset,
+			      "atan")){
+	  }
+
+	    
+	}else{
+	  //NOTE:JK: you should report paranthesis mismatch
+	    
+	  break;
+	}
+      }
+    }
+  }
+
+  return(expanded_functions);
+}
+
+gchar*
+ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function)
+{
+  gchar *numeric_exponent_only;
+    
+  guint n_terms;
+
+  numeric_exponent_only = NULL;
+
+  return(numeric_exponent_only);
+}
+  
+guint
+ags_function_literal_solve_find_max_exponent(gchar *transformed_function)
+{
+  regmatch_t match_arr[5];
+
+  guint max_exponent;
+
+  static gboolean regex_compiled = FALSE;
+
+  static regex_t exponent_regex;
+
+  static const char *exponent_pattern = AGS_FUNCTION_EXPONENT_PATTERN;
+    
+  static const size_t max_matches = 5;
+    
+  max_exponent = 1;
+
+  return(max_exponent);
+}
+
 /**
  * ags_function_literal_solve:
  * @function: the #AgsFunction
@@ -517,7 +641,7 @@ ags_function_find_literals(AgsFunction *function,
  * Solves :source-function literally, allocates the pivot table and
  * creates the normalized function.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_function_literal_solve(AgsFunction *function)
@@ -528,126 +652,7 @@ ags_function_literal_solve(AgsFunction *function)
   
   guint max_exponent, available_exponent;
   guint i, j;
-
-  auto gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
-  auto gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
-  auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
-
-  gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
-    regmatch_t match_arr[1];
-    
-    gchar *expanded_functions;
-    gchar *offset, *close_offset;
-    gchar *str;
-    gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
-
-    int regexec_result;
-    
-    static gboolean regex_compiled = FALSE;
-
-    static regex_t function_regex;
-
-    static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
-
-    static const size_t max_matches = 1;
-    
-    /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
-
-    if(!regex_compiled){
-      regex_compiled = TRUE;
-
-      regcomp(&function_regex, function_pattern, REG_EXTENDED);
-    }
-
-    pthread_mutex_unlock(&regex_mutex);
-
-    /*  */
-    expanded_functions = NULL;
-
-    str =
-      offset = g_strdup(transformed_function);
-    close_offset = NULL;
-
-    close_paranthesis = NULL;
-    regexec_result = 0;
-    
-    while(regexec_result != REG_NOMATCH){
-      if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
-	if(close_offset == NULL ||
-	   close_offset > match_arr[0].rm_so){
-	  offset = (gchar *) match_arr[0].rm_so;
-
-	  /* find close paranthesis */
-	  open_paranthesis = offset;
-	  
-	  while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
-		close_paranthesis == NULL){
-	    close_paranthesis = strchr(open_paranthesis, ')');
-	    tmp_paranthesis = strchr(open_paranthesis, '(');
-
-	    if(tmp_paranthesis < close_paranthesis){
-	      close_paranthesis = NULL;
-	    }
-	  }
-
-	  close_offset = close_paranthesis;
-	}else{
-	  if(close_offset != NULL){
-	    if(!g_strcmp0(offset,
-			  "sin")){
-	    }else if(!g_strcmp0(offset,
-				"cos")){
-	    }else if(!g_strcmp0(offset,
-				"tan")){
-	    }else if(!g_strcmp0(offset,
-				"asin")){
-	    }else if(!g_strcmp0(offset,
-				"acos")){
-	    }else if(!g_strcmp0(offset,
-				"atan")){
-	    }
-
-	    
-	  }else{
-	    //NOTE:JK: you should report paranthesis mismatch
-	    
-	    break;
-	  }
-	}
-      }
-    }
-
-    return(expanded_functions);
-  }
-
-  gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
-    gchar *numeric_exponent_only;
-    
-    guint n_terms;
-
-    numeric_exponent_only = NULL;
-
-    return(numeric_exponent_only);
-  }
   
-  guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function){
-    regmatch_t match_arr[5];
-
-    static gboolean regex_compiled = FALSE;
-
-    static regex_t exponent_regex;
-
-    static const char *exponent_pattern = AGS_FUNCTION_EXPONENT_PATTERN;
-    
-    static const size_t max_matches = 5;
-    
-    max_exponent = 1;
-
-
-    return(max_exponent);
-  }
-
   normalized_function = NULL;
   
   /* compute dimensions */
@@ -690,7 +695,7 @@ ags_function_literal_solve(AgsFunction *function)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_function_push_equation(AgsFunction *function,
@@ -774,7 +779,7 @@ ags_function_push_equation(AgsFunction *function,
  * Pops the functions of the equation stack. Call this function as you're
  * finished with pushing equations.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_function_pop_equation(AgsFunction *function,
@@ -855,7 +860,7 @@ ags_function_pop_equation(AgsFunction *function,
  *
  * Returns: the normalized form as string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_function_get_expanded(AgsFunction *function,
@@ -868,17 +873,17 @@ ags_function_get_expanded(AgsFunction *function,
 }
 
 /**
- * ags_funciton_get_normalized:
+ * ags_function_get_normalized:
  * @function: the #AgsFunction
  *
  * Get internal normalized string.
  *
  * Returns: the normalized string
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
-ags_funciton_get_normalized(AgsFunction *function)
+ags_function_get_normalized(AgsFunction *function)
 {
   if(!AGS_IS_FUNCTION(function)){
     return(NULL);
@@ -898,7 +903,7 @@ ags_funciton_get_normalized(AgsFunction *function)
  * 
  * Returns: the #AgsComplex value resulted by substitution
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_function_compute_term(gchar *term,
@@ -924,7 +929,7 @@ ags_function_compute_term(gchar *term,
  * 
  * Returns: the new #AgsComplex vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex**
 ags_function_symbolic_translate_value(AgsFunction *function,
@@ -946,7 +951,7 @@ ags_function_symbolic_translate_value(AgsFunction *function,
  *
  * Returns: %TRUE if function evaluates, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_function_substitute_values(AgsFunction *function,
@@ -966,7 +971,7 @@ ags_function_substitute_values(AgsFunction *function,
  * 
  * Returns: the solution as #AgsComplex boxed-type.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_function_translate_value(AgsFunction *function,
@@ -989,7 +994,7 @@ ags_function_translate_value(AgsFunction *function,
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFunction*
 ags_function_new(gchar *source_function)

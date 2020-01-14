@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CAPTURE_WAVE_AUDIO                (ags_capture_wave_audio_get_type())
 #define AGS_CAPTURE_WAVE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
 #define AGS_CAPTURE_WAVE_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
@@ -60,7 +62,7 @@ struct _AgsCaptureWaveAudio
   AgsPort *wave_loop_start;
   AgsPort *wave_loop_end;
 
-  pthread_mutex_t *audio_file_mutex;
+  GRecMutex audio_file_mutex;
   
   AgsAudioFile *audio_file;
 };
@@ -73,5 +75,7 @@ struct _AgsCaptureWaveAudioClass
 GType ags_capture_wave_audio_get_type();
 
 AgsCaptureWaveAudio* ags_capture_wave_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_CAPTURE_WAVE_AUDIO_H__*/

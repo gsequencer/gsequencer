@@ -34,7 +34,7 @@
 #define AGS_IS_TASK_COMPLETION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TASK_COMPLETION))
 #define AGS_TASK_COMPLETION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_TASK_COMPLETION, AgsTaskCompletionClass))
 
-#define AGS_TASK_COMPLETION_GET_OBJ_MUTEX(obj) (((AgsTaskCompletion *) obj)->obj_mutex)
+#define AGS_TASK_COMPLETION_GET_OBJ_MUTEX(obj) (&(((AgsTaskCompletion *) obj)->obj_mutex))
 
 typedef struct _AgsTaskCompletion AgsTaskCompletion;
 typedef struct _AgsTaskCompletionClass AgsTaskCompletionClass;
@@ -66,8 +66,7 @@ struct _AgsTaskCompletion
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
@@ -83,8 +82,6 @@ struct _AgsTaskCompletionClass
 };
 
 GType ags_task_completion_get_type();
-
-pthread_mutex_t* ags_task_completion_get_class_mutex();
 
 gboolean ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags);
 void ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags);

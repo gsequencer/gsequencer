@@ -20,15 +20,10 @@
 #include <ags/X/machine/ags_spectrometer.h>
 #include <ags/X/machine/ags_spectrometer_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 
 void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
 void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_spectrometer_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_spectrometer_init(AgsSpectrometer *spectrometer);
 void ags_spectrometer_finalize(GObject *gobject);
 
@@ -36,13 +31,6 @@ void ags_spectrometer_map_recall(AgsMachine *machine);
 
 void ags_spectrometer_connect(AgsConnectable *connectable);
 void ags_spectrometer_disconnect(AgsConnectable *connectable);
-
-gchar* ags_spectrometer_get_name(AgsPlugin *plugin);
-void ags_spectrometer_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_spectrometer_get_xml_type(AgsPlugin *plugin);
-void ags_spectrometer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_spectrometer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_spectrometer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 gdouble ags_spectrometer_x_small_scale_func(gdouble value,
 					    gpointer data);
@@ -70,9 +58,6 @@ static AgsConnectableInterface *ags_spectrometer_parent_connectable_interface;
 
 GHashTable *ags_spectrometer_cartesian_queue_draw = NULL;
 
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
-
 GType
 ags_spectrometer_get_type(void)
 {
@@ -99,12 +84,6 @@ ags_spectrometer_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_spectrometer_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_spectrometer = g_type_register_static(AGS_TYPE_MACHINE,
 						   "AgsSpectrometer", &ags_spectrometer_info,
 						   0);
@@ -112,10 +91,6 @@ ags_spectrometer_get_type(void)
     g_type_add_interface_static(ags_type_spectrometer,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_spectrometer,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_spectrometer);
   }
@@ -149,17 +124,6 @@ ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable
 
   connectable->connect = ags_spectrometer_connect;
   connectable->disconnect = ags_spectrometer_disconnect;
-}
-
-void
-ags_spectrometer_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_spectrometer_get_name;
-  plugin->set_name = ags_spectrometer_set_name;
-  plugin->get_xml_type = ags_spectrometer_get_xml_type;
-  plugin->set_xml_type = ags_spectrometer_set_xml_type;
-  plugin->read = ags_spectrometer_read;
-  plugin->write = ags_spectrometer_write;
 }
 
 void
@@ -290,24 +254,6 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   g_hash_table_insert(ags_spectrometer_cartesian_queue_draw,
 		      cartesian, ags_spectrometer_cartesian_queue_draw_timeout);
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_spectrometer_cartesian_queue_draw_timeout, (gpointer) cartesian);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      spectrometer,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) spectrometer);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      spectrometer,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) spectrometer);
 }
 
 void
@@ -316,12 +262,6 @@ ags_spectrometer_finalize(GObject *gobject)
   AgsSpectrometer *spectrometer;
 
   spectrometer = (AgsSpectrometer *) gobject;
-
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
 
   g_hash_table_remove(ags_spectrometer_cartesian_queue_draw,
 		      spectrometer->cartesian);
@@ -528,78 +468,6 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   AGS_MACHINE_CLASS(ags_spectrometer_parent_class)->map_recall(machine);
 }
 
-gchar*
-ags_spectrometer_get_name(AgsPlugin *plugin)
-{
-  return(AGS_SPECTROMETER(plugin)->name);
-}
-
-void
-ags_spectrometer_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_SPECTROMETER(plugin)->name = name;
-}
-
-gchar*
-ags_spectrometer_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_SPECTROMETER(plugin)->xml_type);
-}
-
-void
-ags_spectrometer_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_SPECTROMETER(plugin)->xml_type = xml_type;
-}
-
-void
-ags_spectrometer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsSpectrometer *gobject;
-
-  gobject = AGS_SPECTROMETER(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-}
-
-xmlNode*
-ags_spectrometer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsSpectrometer *spectrometer;
-  xmlNode *node;
-  GList *list;
-  gchar *id;
-  guint i;
-
-  spectrometer = AGS_SPECTROMETER(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-spectrometer");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", spectrometer,
-				   NULL));
-
-  return(node);
-}
-
 gdouble
 ags_spectrometer_x_small_scale_func(gdouble value, gpointer data)
 {
@@ -631,7 +499,7 @@ ags_spectrometer_x_label_func(gdouble value,
 
   gdouble correction;
   
-  correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->x_label_precision));
@@ -722,7 +590,7 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
@@ -731,25 +599,38 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
   if(g_hash_table_lookup(ags_spectrometer_cartesian_queue_draw,
 			 widget) != NULL){    
+    AgsCartesian *cartesian;
+    
     GList *fg_plot;
     GList *frequency_buffer_port;
     GList *magnitude_buffer_port;
 
+    guint samplerate;
+    gdouble nyquist;
     gdouble correction;
-    double frequency;
+    gdouble frequency;
+    gdouble gfrequency, gfrequency_next;
     double magnitude;
     guint i;
     guint j, j_stop;
     guint k, k_stop;
     guint nth;
-      
+
+    gboolean completed;
+    
     GValue value = {0,};
 
     spectrometer = (AgsSpectrometer *) gtk_widget_get_ancestor(widget,
 							       AGS_TYPE_SPECTROMETER);
+    cartesian = spectrometer->cartesian;
 
+    g_object_get(AGS_MACHINE(spectrometer)->audio,
+		 "samplerate", &samplerate,
+		 NULL);
+    
     fg_plot = spectrometer->fg_plot;
-    correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    nyquist = ((gdouble) samplerate / 2.0);
+    correction = (44100.0 - AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
     frequency_buffer_port = spectrometer->frequency_buffer_play_port;
     magnitude_buffer_port = spectrometer->magnitude_buffer_play_port;
@@ -772,28 +653,57 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
       g_value_unset(&value);
 
-      magnitude = 0.0;
-
-      for(nth = 1, j = 1, k = 0; nth < spectrometer->buffer_size; nth++){
-	frequency = nth * correction;
-
-	magnitude += spectrometer->magnitude_buffer[nth];
-	k++;
+      completed = FALSE;
+      
+      for(j = 1, nth = 1; j < AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT && !completed; j++){
+	magnitude = 0.0;
+	k = 0;
 	
-	if(frequency > ((correction / 2.0) * (exp(((nth / spectrometer->buffer_size) * 18.0) / 12.0) - 1.0))){
-	  if(nth - 1 != 0){
-	    AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
-	    //	    g_message("plot[%d]: %f %f", j, frequency, magnitude);
-	  }
-	  
-	  j++;
+	for(; nth < spectrometer->buffer_size; k++){
+	  frequency = ((double) nth) / ((double) spectrometer->buffer_size) * (nyquist);
 
-	  if(j >= AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT){
+	  if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+	     AGS_SPECTROMETER_DEFAULT_X_START < 0.0){
+	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END + AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	  }else if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+		   AGS_SPECTROMETER_DEFAULT_X_START >= 0.0){
+	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END - AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	  }else{
+	    g_message("only positive frequencies allowed");
+	  }
+//	  gfrequency_next = (correction / 2.0) * (exp((((double) j + 1.0)) / 12.0) - 1.0);
+
+#if 1
+	  if(gfrequency > samplerate ||
+	     frequency > samplerate){
+	    completed = TRUE;
+
 	    break;
 	  }
+#endif
 	  
-	  magnitude = 0.0;
-	  k = 0;
+#if 0
+	  g_message("freq=%f", frequency);
+	  g_message("gfreq=%f", gfrequency);
+#endif
+	  
+	  if(frequency < gfrequency){
+	    magnitude += spectrometer->magnitude_buffer[nth];
+
+	    nth++;
+	  }else{
+	    break;
+	  }
+	}
+
+#if 0
+	g_message("j=%d", j);
+#endif
+	
+	if(k != 0){
+	  AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
+	}else{
+	  AGS_PLOT(fg_plot->data)->point[j][1] = 0.0;
 	}
       }
 
@@ -821,7 +731,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsSpectrometer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSpectrometer*
 ags_spectrometer_new(GObject *soundcard)

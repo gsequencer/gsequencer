@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/i18n.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
@@ -108,7 +104,7 @@ ags_oscillator_class_init(AgsOscillatorClass *oscillator)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -211,21 +207,21 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    (GtkWidget *) gtk_label_new(i18n("attack")),
 			    2, 3, 0, 1);
   oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  oscillator->attack->adjustment->value = 0.0;
+  gtk_spin_button_set_value(oscillator->attack, 0.0);
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->attack, 3, 4, 0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("length")),
 			    4, 5, 0, 1);
   oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  oscillator->frame_count->adjustment->value = AGS_OSCILLATOR_DEFAULT_FRAME_COUNT;
+  gtk_spin_button_set_value(oscillator->frame_count, AGS_OSCILLATOR_DEFAULT_FRAME_COUNT);
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("phase")),
 			    0, 1, 1, 2);
   oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  oscillator->phase->adjustment->value = 0.0;
+  gtk_spin_button_set_value(oscillator->phase, 0.0);
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
@@ -234,7 +230,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(oscillator->frequency,
 			     3);
-  oscillator->frequency->adjustment->value = 27.5;
+  gtk_spin_button_set_value(oscillator->frequency, 27.5);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) oscillator->frequency,
 			    3, 4,
@@ -246,7 +242,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
   gtk_spin_button_set_digits(oscillator->volume,
 			     3);
-  oscillator->volume->adjustment->value = 0.2;
+  gtk_spin_button_set_value(oscillator->volume, 0.2);
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->volume, 5, 6, 1, 2);
 
   /* do sync */
@@ -385,140 +381,13 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   }
 }
 
-void
-ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillator)
-{
-  AgsOscillator *gobject;
-  xmlChar *wave;
-
-  if(*oscillator == NULL){
-    gobject = (AgsOscillator *) g_object_new(AGS_TYPE_OSCILLATOR,
-					     NULL);
-    *oscillator = gobject;
-  }else{
-    gobject = *oscillator;
-  }
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  wave = (xmlChar *) xmlGetProp(node,
-				"wave");
-
-  if(!xmlStrncmp(wave,
-		 "sin",
-		 4)){
-    gtk_combo_box_set_active(gobject->wave,
-			     0);
-  }else if(!xmlStrncmp(wave,
-		 "sawtooth",
-		 9)){
-    gtk_combo_box_set_active(gobject->wave,
-			     1);
-  }else if(!xmlStrncmp(wave,
-		 "square",
-		 7)){
-    gtk_combo_box_set_active(gobject->wave,
-			     2);
-  }else if(!xmlStrncmp(wave,
-		 "triangle",
-		 9)){
-    gtk_combo_box_set_active(gobject->wave,
-			     3);
-  }
-
-  gtk_spin_button_set_value(gobject->attack,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "attack"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->frame_count,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "frame-count"),
-					   NULL));
-  
-  gtk_spin_button_set_value(gobject->frequency,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "frequency"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->phase,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "phase"),
-					   NULL));
-  
-  gtk_spin_button_set_value(gobject->volume,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "volume"),
-					   NULL));
-}
-
-xmlNode*
-ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator)
-{
-  xmlNode *node;
-  gchar *id;
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-oscillator");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", oscillator,
-				   NULL));
-
-  xmlNewProp(node,
-	     "wave",
-	     gtk_combo_box_text_get_active_text((GtkComboBoxText *) oscillator->wave));
-
-  xmlNewProp(node,
-	     "attack",
-	     g_strdup_printf("%f", oscillator->attack->adjustment->value));
-
-  xmlNewProp(node,
-	     "frame-count",
-	     g_strdup_printf("%f", oscillator->frame_count->adjustment->value));
-
-  xmlNewProp(node,
-	     "frequency",
-	     g_strdup_printf("%f", oscillator->frequency->adjustment->value));
-
-  xmlNewProp(node,
-	     "phase",
-	     g_strdup_printf("%f", oscillator->phase->adjustment->value));
-
-  xmlNewProp(node,
-	     "volume",
-	     g_strdup_printf("%f", oscillator->volume->adjustment->value));
-
-  xmlAddChild(parent,
-	      node);  
-
-  return(node);
-}
-
 /**
  * ags_oscillator_control_changed:
  * @oscillator: the #AgsOscillator
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_oscillator_control_changed(AgsOscillator *oscillator)
@@ -538,7 +407,7 @@ ags_oscillator_control_changed(AgsOscillator *oscillator)
  *
  * Returns: the new #AgsOscillator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOscillator*
 ags_oscillator_new()

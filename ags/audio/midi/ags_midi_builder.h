@@ -25,11 +25,13 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_BUILDER                (ags_midi_builder_get_type ())
 #define AGS_MIDI_BUILDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilder))
@@ -38,7 +40,7 @@
 #define AGS_IS_MIDI_BUILDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_BUILDER))
 #define AGS_MIDI_BUILDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilderClass))
 
-#define AGS_MIDI_BUILDER_GET_OBJ_MUTEX(obj) (((AgsMidiBuilder *) obj)->obj_mutex)
+#define AGS_MIDI_BUILDER_GET_OBJ_MUTEX(obj) (&(((AgsMidiBuilder *) obj)->obj_mutex))
 
 #define AGS_MIDI_BUILDER_HEADER(ptr) ((AgsMidiBuilderHeader *)(ptr))
 #define AGS_MIDI_BUILDER_TRACK(ptr) ((AgsMidiBuilderTrack *)(ptr))
@@ -59,10 +61,9 @@ struct _AgsMidiBuilder
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
-  unsigned char *data;
+  guchar *data;
   guint length;
   
   FILE *file;
@@ -129,7 +130,7 @@ struct _AgsMidiBuilderClass
   /* sysex and system common */
   void (*append_sysex)(AgsMidiBuilder *midi_builder,
 		       guint delta_time,
-		       unsigned char *sysex_data, guint length);
+		       guchar *sysex_data, guint length);
 
   void (*append_quarter_frame)(AgsMidiBuilder *midi_builder,
 			       guint delta_time,
@@ -178,7 +179,7 @@ struct _AgsMidiBuilderHeader
   guint beat;
   guint clicks;
 
-  unsigned char *data;
+  guchar *data;
   guint length;
 };
 
@@ -191,13 +192,11 @@ struct _AgsMidiBuilderTrack
   
   guint64 absolute_time;
 
-  unsigned char *data;
+  guchar *data;
   guint length;
 };
 
 GType ags_midi_builder_get_type(void);
-
-pthread_mutex_t* ags_midi_builder_get_class_mutex();
 
 AgsMidiBuilderHeader* ags_midi_builder_header_alloc();
 void ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header);
@@ -209,8 +208,8 @@ GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builde
 							      guint64 absolute_time,
 							      gchar *track_name);
 void ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
-						unsigned char *buffer, guint length);
-unsigned char* ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
+						guchar *buffer, guint length);
+guchar* ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
 							    guint64 absolute_time);
 
 /* low-level IO */
@@ -266,7 +265,7 @@ void ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 /* sysex and system common */
 void ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
-				   unsigned char *sysex_data, guint length);
+				   guchar *sysex_data, guint length);
 
 void ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
@@ -316,5 +315,7 @@ void ags_midi_builder_build(AgsMidiBuilder *midi_builder);
 
 /*  */
 AgsMidiBuilder* ags_midi_builder_new(FILE *file);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_BUILDER_H__*/

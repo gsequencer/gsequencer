@@ -23,8 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_UI_OSC_RENEW_CONTROLLER                (ags_ui_osc_renew_controller_get_type())
 #define AGS_UI_OSC_RENEW_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_OSC_RENEW_CONTROLLER, AgsUiOscRenewController))
@@ -58,11 +63,10 @@ gpointer ags_ui_osc_renew_controller_set_data(AgsUiOscRenewController *ui_osc_re
 					      AgsOscConnection *osc_connection,
 					      unsigned char *message, guint message_size);
 
-void ags_ui_osc_renew_controller_add_monitor(AgsUiOscRenewController *ui_osc_renew_controller);
-void ags_ui_osc_renew_controller_remove_monitor(AgsUiOscRenewController *ui_osc_renew_controller);
-
-gboolean ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_osc_renew_controller);
+void ags_ui_osc_renew_controller_check_message_callback(GObject *application_context, AgsUiOscRenewController *ui_osc_renew_controller);
 
 AgsUiOscRenewController* ags_ui_osc_renew_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_UI_OSC_RENEW_CONTROLLER_H__*/

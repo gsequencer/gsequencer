@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TURTLE                (ags_turtle_get_type())
 #define AGS_TURTLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE, AgsTurtle))
@@ -34,7 +34,7 @@
 #define AGS_IS_TURTLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TURTLE))
 #define AGS_TURTLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TURTLE, AgsTurtleClass))
 
-#define AGS_TURTLE_GET_OBJ_MUTEX(obj) (((AgsTurtle *) obj)->obj_mutex)
+#define AGS_TURTLE_GET_OBJ_MUTEX(obj) (&(((AgsTurtle *) obj)->obj_mutex))
 
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8"
 
@@ -60,8 +60,7 @@ struct _AgsTurtle
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   gchar *filename;
   
@@ -76,8 +75,6 @@ struct _AgsTurtleClass
 };
 
 GType ags_turtle_get_type(void);
-
-pthread_mutex_t* ags_turtle_get_class_mutex();
 
 /* iri, pname, label and langtag */
 gchar* ags_turtle_read_iriref(gchar *offset,
@@ -157,5 +154,7 @@ xmlDoc* ags_turtle_load(AgsTurtle *turtle,
 			GError **error);
 
 AgsTurtle* ags_turtle_new(gchar *filename);
+
+G_END_DECLS
 
 #endif /*__AGS_TURTLE_H__*/

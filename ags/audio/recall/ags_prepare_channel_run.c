@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_prepare_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_prepare_recycling.h>
 
@@ -119,7 +117,7 @@ ags_prepare_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPrepareChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPrepareChannelRun*
 ags_prepare_channel_run_new(AgsChannel *source)

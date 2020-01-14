@@ -1,0 +1,27 @@
+<!-- Copyright (C) 2005-2019 Joël Krähemann -->
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
+<!-- root node -->
+<!ELEMENT ags-server-business-group (ags-srv-group-list?)>
+<!ATTLIST ags-server-business-group
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- group node -->
+<!ELEMENT ags-srv-group-list (ags-srv-group*)>
+
+<!ELEMENT ags-srv-group (ags-srv-group-uuid, ags-srv-group-name, ags-srv-group-user-list)>
+
+<!-- group fields node -->
+<!ELEMENT ags-srv-group-uuid (#CDATA)>
+
+<!ELEMENT ags-srv-group-name (#CDATA)>
+
+<!-- group node -->
+<!ELEMENT ags-srv-group-user-list (ags-srv-group-user*)>
+
+<!ELEMENT ags-srv-group-user (#CDATA)>

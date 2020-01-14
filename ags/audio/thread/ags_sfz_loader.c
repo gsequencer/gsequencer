@@ -19,8 +19,6 @@
 
 #include <ags/audio/thread/ags_sfz_loader.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recycling.h>
@@ -70,8 +68,6 @@ enum{
 };
 
 static gpointer ags_sfz_loader_parent_class = NULL;
-
-static pthread_mutex_t ags_sfz_loader_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_sfz_loader_get_type()
@@ -128,7 +124,7 @@ ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader)
    *
    * The assigned audio.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio"),
@@ -144,7 +140,7 @@ ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader)
    *
    * The filename to open.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename"),
@@ -160,7 +156,7 @@ ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader)
    *
    * The audio container opened.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-container",
 				   i18n_pspec("audio container"),
@@ -175,30 +171,13 @@ ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader)
 void
 ags_sfz_loader_init(AgsSFZLoader *sfz_loader)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   sfz_loader->flags = 0;
 
   /* add base plugin mutex */
-  sfz_loader->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  sfz_loader->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(sfz_loader->obj_mutex)); 
 
   /* fields */
-  sfz_loader->thread = (pthread_t *) malloc(sizeof(pthread_t));
+  sfz_loader->thread = NULL;
   
   sfz_loader->audio = NULL;
 
@@ -215,7 +194,7 @@ ags_sfz_loader_set_property(GObject *gobject,
 {
   AgsSFZLoader *sfz_loader;
 
-  pthread_mutex_t *sfz_loader_mutex;
+  GRecMutex *sfz_loader_mutex;
 
   sfz_loader = AGS_SFZ_LOADER(gobject);
 
@@ -229,10 +208,10 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     audio = g_value_get_object(value);
       
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
 
     if(sfz_loader->audio == audio){
-      pthread_mutex_unlock(sfz_loader_mutex);
+      g_rec_mutex_unlock(sfz_loader_mutex);
 
       return;
     }
@@ -247,7 +226,7 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     sfz_loader->audio = audio;
       
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   case PROP_FILENAME:
@@ -256,10 +235,10 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     filename = g_value_get_string(value);
       
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
 
     if(sfz_loader->filename == filename){
-      pthread_mutex_unlock(sfz_loader_mutex);
+      g_rec_mutex_unlock(sfz_loader_mutex);
 
       return;
     }
@@ -270,7 +249,7 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     sfz_loader->filename = g_strdup(filename);
       
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   case PROP_AUDIO_CONTAINER:
@@ -279,10 +258,10 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     audio_container = g_value_get_object(value);
       
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
 
     if(sfz_loader->audio_container == audio_container){
-      pthread_mutex_unlock(sfz_loader_mutex);
+      g_rec_mutex_unlock(sfz_loader_mutex);
 
       return;
     }
@@ -297,7 +276,7 @@ ags_sfz_loader_set_property(GObject *gobject,
 
     sfz_loader->audio_container = audio_container;
       
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   default:
@@ -314,7 +293,7 @@ ags_sfz_loader_get_property(GObject *gobject,
 {
   AgsSFZLoader *sfz_loader;
 
-  pthread_mutex_t *sfz_loader_mutex;
+  GRecMutex *sfz_loader_mutex;
 
   sfz_loader = AGS_SFZ_LOADER(gobject);
 
@@ -324,29 +303,29 @@ ags_sfz_loader_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
   {
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
       
     g_value_set_object(value, sfz_loader->audio);
 
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   case PROP_FILENAME:
   {
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
       
     g_value_set_string(value, sfz_loader->filename);
 
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   case PROP_AUDIO_CONTAINER:
   {
-    pthread_mutex_lock(sfz_loader_mutex);
+    g_rec_mutex_lock(sfz_loader_mutex);
       
     g_value_set_object(value, sfz_loader->audio_container);
 
-    pthread_mutex_unlock(sfz_loader_mutex);
+    g_rec_mutex_unlock(sfz_loader_mutex);
   }
   break;
   default:
@@ -386,12 +365,6 @@ ags_sfz_loader_finalize(GObject *gobject)
   sfz_loader = AGS_SFZ_LOADER(gobject);
   
   /* destroy object mutex */
-  pthread_mutex_destroy(sfz_loader->obj_mutex);
-  free(sfz_loader->obj_mutex);
-
-  pthread_mutexattr_destroy(sfz_loader->obj_mutexattr);
-  free(sfz_loader->obj_mutexattr);
-
   if(sfz_loader->audio != NULL){
     g_object_unref(sfz_loader->audio);
   }
@@ -407,21 +380,6 @@ ags_sfz_loader_finalize(GObject *gobject)
 }
 
 /**
- * ags_sfz_loader_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.3.0
- */
-pthread_mutex_t*
-ags_sfz_loader_get_class_mutex()
-{
-  return(&ags_sfz_loader_class_mutex);
-}
-
-/**
  * ags_sfz_loader_test_flags:
  * @sfz_loader: the #AgsSFZLoader
  * @flags: the flags
@@ -430,14 +388,14 @@ ags_sfz_loader_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *sfz_loader_mutex;
+  GRecMutex *sfz_loader_mutex;
 
   if(!AGS_IS_SFZ_LOADER(sfz_loader)){
     return(FALSE);
@@ -447,11 +405,11 @@ ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
   sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* test flags */
-  pthread_mutex_lock(sfz_loader_mutex);
+  g_rec_mutex_lock(sfz_loader_mutex);
 
   retval = ((flags & (sfz_loader->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(sfz_loader_mutex);
+  g_rec_mutex_unlock(sfz_loader_mutex);
 
   return(retval);
 }
@@ -463,12 +421,12 @@ ags_sfz_loader_test_flags(AgsSFZLoader *sfz_loader, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
 {
-  pthread_mutex_t *sfz_loader_mutex;
+  GRecMutex *sfz_loader_mutex;
 
   if(!AGS_IS_SFZ_LOADER(sfz_loader)){
     return;
@@ -478,11 +436,11 @@ ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
   sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* set flags */
-  pthread_mutex_lock(sfz_loader_mutex);
+  g_rec_mutex_lock(sfz_loader_mutex);
 
   sfz_loader->flags |= flags;
   
-  pthread_mutex_unlock(sfz_loader_mutex);
+  g_rec_mutex_unlock(sfz_loader_mutex);
 }
 
 /**
@@ -492,12 +450,12 @@ ags_sfz_loader_set_flags(AgsSFZLoader *sfz_loader, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags)
 {
-  pthread_mutex_t *sfz_loader_mutex;
+  GRecMutex *sfz_loader_mutex;
 
   if(!AGS_IS_SFZ_LOADER(sfz_loader)){
     return;
@@ -507,11 +465,11 @@ ags_sfz_loader_unset_flags(AgsSFZLoader *sfz_loader, guint flags)
   sfz_loader_mutex = AGS_SFZ_LOADER_GET_OBJ_MUTEX(sfz_loader);
 
   /* unset flags */
-  pthread_mutex_lock(sfz_loader_mutex);
+  g_rec_mutex_lock(sfz_loader_mutex);
 
   sfz_loader->flags &= (~flags);
   
-  pthread_mutex_unlock(sfz_loader_mutex);
+  g_rec_mutex_unlock(sfz_loader_mutex);
 }
 
 void*
@@ -984,7 +942,7 @@ ags_sfz_loader_run(void *ptr)
 						       &current_key);
 
 	  if(retval > 0){
-	    pitch_keycenter = current_pitch_keycenter;
+	    pitch_keycenter = current_key;
 	  }
 	}
       }else if(str_key != NULL){
@@ -1022,7 +980,7 @@ ags_sfz_loader_run(void *ptr)
 						       &current_key);
 
 	  if(retval > 0){
-	    pitch_keycenter = current_pitch_keycenter;
+	    pitch_keycenter = current_key;
 	  }
 	}		
       }else if(str_key != NULL){
@@ -1196,11 +1154,9 @@ ags_sfz_loader_run(void *ptr)
   ags_sfz_loader_set_flags(sfz_loader,
 			   AGS_SFZ_LOADER_HAS_COMPLETED);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
-#ifdef AGS_W32API
   return(NULL);
-#endif  
 }
 
 void
@@ -1210,8 +1166,9 @@ ags_sfz_loader_start(AgsSFZLoader *sfz_loader)
     return;
   }
   
-  pthread_create(sfz_loader->thread, NULL,
-		 ags_sfz_loader_run, sfz_loader);
+  sfz_loader->thread = g_thread_new("Advanced Gtk+ Sequencer - SFZ loader",
+				    ags_sfz_loader_run,
+				    sfz_loader);
 }
 
 
@@ -1225,7 +1182,7 @@ ags_sfz_loader_start(AgsSFZLoader *sfz_loader)
  *
  * Returns: the new #AgsSFZLoader
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */ 
 AgsSFZLoader*
 ags_sfz_loader_new(AgsAudio *audio,

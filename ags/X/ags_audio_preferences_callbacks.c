@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_soundcard_editor.h>
@@ -30,31 +26,28 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-int
-ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
+void
+ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudioPreferences *audio_preferences)
 {  
   AgsPreferences *preferences;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
   audio_preferences->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
+  gtk_box_pack_end(gtk_dialog_get_action_area(GTK_DIALOG(preferences)),
 		   (GtkWidget *) audio_preferences->add,
 		   TRUE, FALSE,
 		   0);  
-
-  return(0);
 }
 
 void
 ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
@@ -70,9 +63,9 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
   application_context = ags_application_context_get_instance();
+
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* retrieve first soundcard */
@@ -119,10 +112,6 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   gtk_widget_show_all((GtkWidget *) soundcard_editor);
 
   /* reset default card */  
-  g_object_set(window,
-	       "soundcard", soundcard,
-	       NULL);
-
   g_object_unref(main_loop);  
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/osc/controller/ags_osc_info_controller.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
@@ -43,7 +41,7 @@ void ags_osc_info_controller_finalize(GObject *gobject);
 
 gpointer ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 					       AgsOscConnection *osc_connection,
-					       unsigned char *message, guint message_size);
+					       guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_info_controller
@@ -132,7 +130,7 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_info_controller_signals[GET_INFO] =
     g_signal_new("get-info",
@@ -163,7 +161,7 @@ ags_osc_info_controller_set_property(GObject *gobject,
 {
   AgsOscInfoController *osc_info_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 
@@ -185,7 +183,7 @@ ags_osc_info_controller_get_property(GObject *gobject,
 {
   AgsOscInfoController *osc_info_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_info_controller = AGS_OSC_INFO_CONTROLLER(gobject);
 
@@ -224,17 +222,17 @@ ags_osc_info_controller_finalize(GObject *gobject)
 gpointer
 ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 				      AgsOscConnection *osc_connection,
-				      unsigned char *message, guint message_size)
+				      guchar *message, guint message_size)
 {
   AgsOscResponse *osc_response;
 
   GList *start_response;
 
-  unsigned char *packet;
+  guchar *packet;
 
   guint packet_size;
   
-  static const unsigned char server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
+  static const guchar server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
 
   start_response = NULL;
 
@@ -243,7 +241,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 				  osc_response);
 
   /* create packet */
-  packet = (unsigned char *) malloc((4 * sizeof(unsigned char)) + sizeof(server_info_message));
+  packet = (guchar *) malloc((4 * sizeof(guchar)) + sizeof(server_info_message));
 
   ags_osc_buffer_util_put_int32(packet,
 				sizeof(server_info_message));
@@ -252,7 +250,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
   /* set response packet */
   g_object_set(osc_response,
 	       "packet", packet,
-	       "packet-size", (4 * sizeof(unsigned char)) + sizeof(server_info_message),
+	       "packet-size", (4 * sizeof(guchar)) + sizeof(server_info_message),
 	       NULL);
 
   return(start_response);
@@ -269,12 +267,12 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
 				 AgsOscConnection *osc_connection,
-				 unsigned char *message, guint message_size)
+				 guchar *message, guint message_size)
 {
   gpointer osc_response;
   
@@ -298,7 +296,7 @@ ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
  * 
  * Returns: the #AgsOscInfoController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscInfoController*
 ags_osc_info_controller_new()

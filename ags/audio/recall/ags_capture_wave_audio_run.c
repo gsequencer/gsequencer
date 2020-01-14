@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_capture_wave_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_recall_id.h>
@@ -38,13 +36,9 @@
 #include <ags/i18n.h>
 
 void ags_capture_wave_audio_run_class_init(AgsCaptureWaveAudioRunClass *capture_wave_audio_run);
-void ags_capture_wave_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_wave_audio_run_init(AgsCaptureWaveAudioRun *capture_wave_audio_run);
 void ags_capture_wave_audio_run_dispose(GObject *gobject);
 void ags_capture_wave_audio_run_finalize(GObject *gobject);
-
-void ags_capture_wave_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_capture_wave_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall);
 void ags_capture_wave_audio_run_done(AgsRecall *recall);
@@ -60,7 +54,6 @@ void ags_capture_wave_audio_run_done(AgsRecall *recall);
  */
 
 static gpointer ags_capture_wave_audio_run_parent_class = NULL;
-static AgsPluginInterface *ags_capture_wave_audio_run_parent_plugin_interface;
 
 GType
 ags_capture_wave_audio_run_get_type()
@@ -82,20 +75,10 @@ ags_capture_wave_audio_run_get_type()
       (GInstanceInitFunc) ags_capture_wave_audio_run_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_capture_wave_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_capture_wave_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							     "AgsCaptureWaveAudioRun",
 							     &ags_capture_wave_audio_run_info,
 							     0);
-
-    g_type_add_interface_static(ags_type_capture_wave_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_capture_wave_audio_run);
   }
@@ -124,15 +107,6 @@ ags_capture_wave_audio_run_class_init(AgsCaptureWaveAudioRunClass *capture_wave_
 
   recall->run_init_pre = ags_capture_wave_audio_run_run_init_pre;
   recall->done = ags_capture_wave_audio_run_done;
-}
-
-void
-ags_capture_wave_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_capture_wave_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_capture_wave_audio_run_read;
-  plugin->write = ags_capture_wave_audio_run_write;
 }
 
 void
@@ -175,28 +149,6 @@ ags_capture_wave_audio_run_finalize(GObject *gobject)
 }
 
 void
-ags_capture_wave_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  /* read parent */
-  ags_capture_wave_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_capture_wave_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  xmlNode *node;
-  
-  /* write parent */
-  node = ags_capture_wave_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  //TODO:JK: implement me
-  
-  return(node);
-}
-
-void
 ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
@@ -218,21 +170,11 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
   GValue value = {0,};
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *port_mutex;
-  
+    
   capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(recall);
 
-  /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
+  /* get parent class */  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_capture_wave_audio_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get some fields */
   g_object_get(capture_wave_audio_run,
@@ -346,7 +288,7 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 NULL);
 
     if(input_soundcard != NULL){
-      pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
+      g_rec_mutex_lock(&(capture_wave_audio->audio_file_mutex));
 
       if(capture_wave_audio->audio_file == NULL){
 	capture_wave_audio->audio_file = ags_audio_file_new(filename,
@@ -364,7 +306,7 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 			       TRUE);
       }
 
-      pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
+      g_rec_mutex_unlock(&(capture_wave_audio->audio_file_mutex));
     }
   }
   
@@ -394,19 +336,10 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
 
   void (*parent_class_done)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_done = AGS_RECALL_CLASS(ags_capture_wave_audio_run_parent_class)->done;
-
-  AGS_RECALL_UNLOCK_CLASS();
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get some fields */
   g_object_get(capture_wave_audio_run,
@@ -428,7 +361,7 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
   g_object_unref(port);
   
   if(do_record){
-    pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_lock(&(capture_wave_audio->audio_file_mutex));
 
     if(capture_wave_audio->audio_file != NULL){
       ags_audio_file_flush(capture_wave_audio->audio_file);
@@ -437,7 +370,7 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
       capture_wave_audio->audio_file = NULL;
     }
 
-    pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
+    g_rec_mutex_unlock(&(capture_wave_audio->audio_file_mutex));
   }
   
   /* call parent */
@@ -455,7 +388,7 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
  *
  * Returns: the new #AgsCaptureWaveAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCaptureWaveAudioRun*
 ags_capture_wave_audio_run_new(AgsAudio *audio)

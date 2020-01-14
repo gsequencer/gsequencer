@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,13 +151,13 @@ ags_reset_amplitude_launch(AgsTask *task)
 
   GValue value = {0,};
 
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
   
   reset_amplitude = AGS_RESET_AMPLITUDE(task);
 
   task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
   
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
 
   analyse_channel = reset_amplitude->analyse_channel;
 
@@ -173,7 +173,7 @@ ags_reset_amplitude_launch(AgsTask *task)
     analyse_channel = analyse_channel->next;
   }
 
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 
   g_value_unset(&value);
 }
@@ -185,13 +185,13 @@ ags_reset_amplitude_launch(AgsTask *task)
  *
  * Add @analyse_channel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
 			AgsAnalyseChannel *analyse_channel)
 {
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
 
   if(!AGS_IS_RESET_AMPLITUDE(reset_amplitude) ||
      !AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
@@ -200,13 +200,13 @@ ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
 
   task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
 
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
 
   reset_amplitude->analyse_channel = g_list_prepend(reset_amplitude->analyse_channel,
 						    analyse_channel);
   g_object_ref(analyse_channel);
   
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 }
 
 /**
@@ -216,13 +216,13 @@ ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
  *
  * Remove @analyse_channel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
 			   AgsAnalyseChannel *analyse_channel)
 {
-  pthread_mutex_t *task_mutex;
+  GRecMutex *task_mutex;
 
   if(!AGS_IS_RESET_AMPLITUDE(reset_amplitude) ||
      !AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
@@ -231,7 +231,7 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
 
   task_mutex = AGS_TASK_GET_OBJ_MUTEX(reset_amplitude);
 
-  pthread_mutex_lock(task_mutex);
+  g_rec_mutex_lock(task_mutex);
 
   if(g_list_find(reset_amplitude->analyse_channel,
 		 analyse_channel) != NULL){
@@ -240,7 +240,7 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
     g_object_unref(analyse_channel);
   }
   
-  pthread_mutex_unlock(task_mutex);
+  g_rec_mutex_unlock(task_mutex);
 }
 
 /**
@@ -248,38 +248,38 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
  *
  * Get instance.
  *
- * Returns: the #AgsResetAmplitude
+ * Returns: (transfer none): the #AgsResetAmplitude
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_reset_amplitude == NULL){
-    AgsTaskThread *task_thread;
+    AgsTaskLauncher *task_launcher;
     
     AgsApplicationContext *application_context;
 
     /* reset amplitude */
     ags_reset_amplitude = ags_reset_amplitude_new();
 
-    pthread_mutex_unlock(&mutex);
+    g_mutex_unlock(&mutex);
 
     /* add cyclic task */
     application_context = ags_application_context_get_instance();
 
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-    ags_task_thread_append_cyclic_task(task_thread,
-				       (AgsTask *) ags_reset_amplitude);
-
+    task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+    ags_task_launcher_add_cyclic_task(task_launcher,
+				      (AgsTask *) ags_reset_amplitude);
+    
     /* unref */
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
   }else{
-    pthread_mutex_unlock(&mutex);
+    g_mutex_unlock(&mutex);
   }
 
   return(ags_reset_amplitude);
@@ -292,7 +292,7 @@ ags_reset_amplitude_get_instance()
  *
  * Returns: an new #AgsResetAmplitude.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_new()

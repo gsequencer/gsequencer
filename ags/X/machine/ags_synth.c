@@ -20,17 +20,11 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-
-#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
@@ -42,7 +36,6 @@
 
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_synth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_init(AgsSynth *synth);
 void ags_synth_finalize(GObject *gobject);
 
@@ -51,14 +44,6 @@ void ags_synth_disconnect(AgsConnectable *connectable);
 
 void ags_synth_show(GtkWidget *widget);
 void ags_synth_map_recall(AgsMachine *machine);
-gchar* ags_synth_get_name(AgsPlugin *plugin);
-void ags_synth_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_synth_get_xml_type(AgsPlugin *plugin);
-void ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
-				  AgsMachine *machine);
-xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_synth
@@ -72,8 +57,6 @@ xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 static gpointer ags_synth_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
-
-extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
 ags_synth_get_type(void)
@@ -100,12 +83,6 @@ ags_synth_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_synth_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_synth = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsSynth", &ags_synth_info,
@@ -114,10 +91,6 @@ ags_synth_get_type(void)
     g_type_add_interface_static(ags_type_synth,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_synth,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_synth);
   }
@@ -153,17 +126,6 @@ ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_synth_connect;
   connectable->disconnect = ags_synth_disconnect;
-}
-
-void
-ags_synth_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_synth_get_name;
-  plugin->set_name = ags_synth_set_name;
-  plugin->get_xml_type = ags_synth_get_xml_type;
-  plugin->set_xml_type = ags_synth_set_xml_type;
-  plugin->read = ags_synth_read;
-  plugin->write = ags_synth_write;
 }
 
 void
@@ -249,30 +211,18 @@ ags_synth_init(AgsSynth *synth)
 								  1.0);
   gtk_spin_button_set_digits(synth->lower,
 			     2);
-  synth->lower->adjustment->value = -48.0;
+  gtk_spin_button_set_value(synth->lower, -48.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
 		   1, 2,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      synth,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) synth);
 }
 
 void
 ags_synth_finalize(GObject *gobject)
 {
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_synth_parent_class)->finalize(gobject);
 }
@@ -349,151 +299,6 @@ ags_synth_map_recall(AgsMachine *machine)
   AGS_MACHINE_CLASS(ags_synth_parent_class)->map_recall(machine);
 }
 
-gchar*
-ags_synth_get_name(AgsPlugin *plugin)
-{
-  return(AGS_SYNTH(plugin)->name);
-}
-
-void
-ags_synth_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_SYNTH(plugin)->name = name;
-}
-
-gchar*
-ags_synth_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_SYNTH(plugin)->xml_type);
-}
-
-void
-ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_SYNTH(plugin)->xml_type = xml_type;
-}
-
-void
-ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsSynth *gobject;
-  AgsFileLookup *file_lookup;
-  GList *list;
-
-  gobject = AGS_SYNTH(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  /* fix wrong flag */
-  AGS_MACHINE(gobject)->flags &= (~AGS_MACHINE_IS_SYNTHESIZER);
-  
-  list = file->lookup;
-
-  while((list = ags_file_lookup_find_by_node(list,
-					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(list->data);
-    
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
-			     G_CALLBACK(ags_synth_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-
-  /*  */
-  gtk_spin_button_set_value(gobject->lower,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "lower"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->loop_start,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-begin"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->loop_end,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-end"),
-					   NULL));
-}
-
-void
-ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
-			     AgsMachine *machine)
-{
-  AgsSynth *synth;
-
-  synth = AGS_SYNTH(machine);
-
-  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
-    synth->mapped_output_pad = machine->audio->output_pads;
-    synth->mapped_input_pad = machine->audio->input_pads;
-  }else{
-    synth->mapped_output_pad = machine->audio->output_pads;
-    synth->mapped_input_pad = machine->audio->input_pads;
-  }
-}
-
-xmlNode*
-ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsSynth *synth;
-  xmlNode *node;
-  gchar *id;
-
-  synth = AGS_SYNTH(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-synth");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", synth,
-				   NULL));
-
-  xmlNewProp(node,
-	     "lower",
-	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->lower)));
-
-  xmlNewProp(node,
-	     "loop-begin",
-	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_start)));
-
-  xmlNewProp(node,
-	     "loop-end",
-	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_end)));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 void
 ags_synth_update(AgsSynth *synth)
 {
@@ -524,14 +329,14 @@ ags_synth_update(AgsSynth *synth)
   AgsComplex **sync_point;
   guint sync_point_count;
   
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
+  application_context = ags_application_context_get_instance();
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
 
   audio = AGS_MACHINE(synth)->audio;
 
   /*  */
-  start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
+  start_frequency = (gdouble) gtk_spin_button_get_value(synth->lower);
 
   /* clear output */
   input_pad_start = 
@@ -660,8 +465,8 @@ ags_synth_update(AgsSynth *synth)
       for(i = 0; i < sync_point_count; i++){
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
 	
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
-	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].real = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0].imag = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
       }
     }else{
       for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
@@ -697,8 +502,8 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
   
-  ags_xorg_application_context_schedule_task_list(application_context,
-						  g_list_reverse(task));
+  ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				    g_list_reverse(task));
 }
 
 /**
@@ -709,7 +514,7 @@ ags_synth_update(AgsSynth *synth)
  *
  * Returns: the new #AgsSynth
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSynth*
 ags_synth_new(GObject *soundcard)

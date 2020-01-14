@@ -23,19 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_time.h>
-
 #include <sys/types.h>
-
-#include <pthread.h>
-
-#include <ags/config.h>
-
-#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
-#endif
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DEVIN                (ags_devin_get_type())
 #define AGS_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVIN, AgsDevin))
@@ -44,7 +37,7 @@
 #define AGS_IS_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVIN))
 #define AGS_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVIN, AgsDevinClass))
 
-#define AGS_DEVIN_GET_OBJ_MUTEX(obj) (((AgsDevin *) obj)->obj_mutex)
+#define AGS_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsDevin *) obj)->obj_mutex))
 
 #define AGS_DEVIN_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_DEVIN_DEFAULT_OSS_DEVICE "/dev/dsp"
@@ -117,10 +110,7 @@ struct _AgsDevin
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -130,7 +120,7 @@ struct _AgsDevin
   guint buffer_size;
   guint samplerate; // sample_rate
 
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   void **buffer;
 
   volatile gboolean available;
@@ -183,11 +173,6 @@ struct _AgsDevin
     }alsa;
 #endif
   }out;
-
-  GList *poll_fd;
-  GObject *notify_soundcard;
-  
-  GList *audio;
 };
 
 struct _AgsDevinClass
@@ -199,8 +184,6 @@ GType ags_devin_get_type();
 
 GQuark ags_devin_error_quark();
 
-pthread_mutex_t* ags_devin_get_class_mutex();
-
 gboolean ags_devin_test_flags(AgsDevin *devin, guint flags);
 void ags_devin_set_flags(AgsDevin *devin, guint flags);
 void ags_devin_unset_flags(AgsDevin *devin, guint flags);
@@ -210,6 +193,8 @@ void ags_devin_switch_buffer_flag(AgsDevin *devin);
 void ags_devin_adjust_delay_and_attack(AgsDevin *devin);
 void ags_devin_realloc_buffer(AgsDevin *devin);
 
-AgsDevin* ags_devin_new(GObject *application_context);
+AgsDevin* ags_devin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_DEVIN_H__*/

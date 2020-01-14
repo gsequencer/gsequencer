@@ -23,11 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_thread.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_GENERIC_MAIN_LOOP                (ags_generic_main_loop_get_type())
 #define AGS_GENERIC_MAIN_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_MAIN_LOOP, AgsGenericMainLoop))
@@ -44,18 +42,13 @@ typedef struct _AgsGenericMainLoopClass AgsGenericMainLoopClass;
 struct _AgsGenericMainLoop
 {
   AgsThread thread;
-
-  volatile guint tic;
-  volatile guint last_sync;
-
-  guint sync_counter[3];
-
-  GObject *application_context;
   
-  GObject *async_queue;
+  GRecMutex tree_lock;
 
-  pthread_mutexattr_t tree_lock_mutexattr;
-  pthread_mutex_t *tree_lock;
+  volatile gboolean is_syncing;
+
+  volatile gboolean is_critical_region;
+  volatile guint critical_region_ref;
 };
 
 struct _AgsGenericMainLoopClass
@@ -65,6 +58,8 @@ struct _AgsGenericMainLoopClass
 
 GType ags_generic_main_loop_get_type();
 
-AgsGenericMainLoop* ags_generic_main_loop_new(GObject *application_context);
+AgsGenericMainLoop* ags_generic_main_loop_new();
+
+G_END_DECLS
 
 #endif /*__AGS_GENERIC_MAIN_LOOP_H__*/

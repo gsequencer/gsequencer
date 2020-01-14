@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/plugin/ags_ladspa_plugin.h>
-
-#include <ags/libags.h>
 
 #include <ags/plugin/ags_plugin_port.h>
 
@@ -142,7 +140,7 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -184,7 +182,7 @@ ags_ladspa_plugin_set_property(GObject *gobject,
 {
   AgsLadspaPlugin *ladspa_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   ladspa_plugin = AGS_LADSPA_PLUGIN(gobject);
 
@@ -194,11 +192,11 @@ ags_ladspa_plugin_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       ladspa_plugin->unique_id = g_value_get_uint(value);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -215,7 +213,7 @@ ags_ladspa_plugin_get_property(GObject *gobject,
 {
   AgsLadspaPlugin *ladspa_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   ladspa_plugin = AGS_LADSPA_PLUGIN(gobject);
 
@@ -225,11 +223,11 @@ ags_ladspa_plugin_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_uint(value, ladspa_plugin->unique_id);
       
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -255,19 +253,19 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
   LADSPA_Handle (*instantiate)(const struct _LADSPA_Descriptor *descriptor,
 			       unsigned long ramplerate);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get instantiate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   ladspa_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor);
   
   instantiate = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* instantiate */
   ptr = instantiate(ladspa_descriptor,
@@ -286,17 +284,17 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 		       unsigned long port_index,
 		       LADSPA_Data *data_location);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get connect port */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   connect_port = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* connect port */
   connect_port((LADSPA_Handle) plugin_handle,
@@ -310,17 +308,17 @@ ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
 {
   void (*activate)(LADSPA_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* activate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   activate = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
@@ -333,17 +331,17 @@ ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
 {
   void (*deactivate)(LADSPA_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* deactivate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   deactivate = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
@@ -359,17 +357,17 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
   void (*run)(LADSPA_Handle instance,
 	      unsigned long sample_count);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* run */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   run = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
   
   run((LADSPA_Handle) plugin_handle,
       (unsigned long) frame_count);
@@ -394,7 +392,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long i;
   gboolean success;
     
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
   
   ladspa_plugin = AGS_LADSPA_PLUGIN(base_plugin);  
 
@@ -402,7 +400,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* dlopen */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
 #ifdef AGS_W32API
   base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
@@ -418,7 +416,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
     dlerror();
 #endif
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     return;
   }
@@ -439,31 +437,31 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   success = (dlerror() == NULL) ? TRUE: FALSE;
 #endif
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
   
   if(success && ladspa_descriptor){
     gpointer plugin_descriptor;
 
     guint unique_id;
     
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
     
     effect_index = base_plugin->effect_index;
 
     plugin_descriptor = 
       base_plugin->plugin_descriptor = ladspa_descriptor((unsigned long) effect_index);
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(plugin_descriptor != NULL){
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       unique_id = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->UniqueID;
       
       port_count = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortCount;
       port_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortDescriptors;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
 
       g_object_set(base_plugin,
 		   "unique-id", unique_id,
@@ -479,7 +477,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	plugin_port = g_list_prepend(plugin_port,
 				     current_plugin_port);
 	
-	pthread_mutex_lock(base_plugin_mutex);
+	g_rec_mutex_lock(base_plugin_mutex);
 	
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
@@ -603,7 +601,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  }
 	}
 
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
       }
 
       base_plugin->plugin_port = g_list_reverse(plugin_port);
@@ -621,7 +619,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsLadspaPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)

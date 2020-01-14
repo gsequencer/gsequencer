@@ -30,7 +30,6 @@
 int ags_lv2_plugin_test_init_suite();
 int ags_lv2_plugin_test_clean_suite();
 
-void ags_lv2_plugin_test_concat_event_buffer();
 void ags_lv2_plugin_test_event_buffer_concat();
 void ags_lv2_plugin_test_event_buffer_append_midi();
 void ags_lv2_plugin_test_event_buffer_remove_midi();
@@ -46,10 +45,6 @@ void ags_lv2_plugin_test_stub_change_program(AgsLv2Plugin *lv2_plugin,
 					     gpointer lv2_handle,
 					     guint bank_index,
 					     guint program_index);
-
-#define AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_0 (1024 * sizeof(char))
-#define AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_1 (2048 * sizeof(char))
-#define AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_2 (512 * sizeof(char))
 
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_CONCAT_LENGTH_0 (1024 * sizeof(char))
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_CONCAT_LENGTH_1 (2048 * sizeof(char))
@@ -111,31 +106,6 @@ int
 ags_lv2_plugin_test_clean_suite()
 {
   return(0);
-}
-
-void
-ags_lv2_plugin_test_concat_event_buffer()
-{
-  LV2_Event_Buffer *event_buffer[3];
-  guint length[3];
-  void *ptr;
-
-  length[0] = AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_0;
-  length[1] = AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_1;
-  length[2] = AGS_LV2_PLUGIN_TEST_CONCAT_EVENT_BUFFER_LENGTH_2;
-  
-  event_buffer[0] = ags_lv2_plugin_alloc_event_buffer(length[0]);  
-  event_buffer[1] = ags_lv2_plugin_alloc_event_buffer(length[1]);
-  event_buffer[2] = ags_lv2_plugin_alloc_event_buffer(length[2]);
-  
-  ptr = ags_lv2_plugin_concat_event_buffer(event_buffer[0],
-					   event_buffer[1],
-					   event_buffer[2],
-					   NULL);
-
-  CU_ASSERT(AGS_LV2_EVENT_BUFFER(ptr)->capacity == length[0] &&
-	    AGS_LV2_EVENT_BUFFER(ptr + length[0] + sizeof(LV2_Event_Buffer))->capacity == length[1] &&
-	    AGS_LV2_EVENT_BUFFER(ptr + length[0] + length[1] + (2 * sizeof(LV2_Event_Buffer)))->capacity == length[2]);
 }
 
 void
@@ -206,7 +176,7 @@ ags_lv2_plugin_test_event_buffer_append_midi()
   seq_event[2].data.note.velocity = 127;
 
   /* event buffer */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE);
   offset = event_buffer->data;
   
   /* append midi and assert */
@@ -265,7 +235,7 @@ ags_lv2_plugin_test_event_buffer_remove_midi()
   seq_event[2].data.note.velocity = 127;
 
   /* event buffer and append midi */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE);
   
   ags_lv2_plugin_event_buffer_append_midi(event_buffer,
 					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
@@ -326,7 +296,7 @@ ags_lv2_plugin_test_clear_event_buffer()
   seq_event[0].data.note.velocity = 127;
 
   /* event buffer and append midi */
-  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
+  event_buffer = ags_lv2_plugin_event_buffer_alloc(AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
   
   ags_lv2_plugin_event_buffer_append_midi(event_buffer,
 					  AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE,
@@ -617,8 +587,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsLv2Plugin concat event buffer", ags_lv2_plugin_test_concat_event_buffer) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsLv2Plugin event buffer concat", ags_lv2_plugin_test_event_buffer_concat) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsLv2Plugin event buffer concat", ags_lv2_plugin_test_event_buffer_concat) == NULL) ||
      (CU_add_test(pSuite, "test of AgsLv2Plugin event buffer append midi", ags_lv2_plugin_test_event_buffer_append_midi) == NULL) ||
      (CU_add_test(pSuite, "test of AgsLv2Plugin event buffer remove midi", ags_lv2_plugin_test_event_buffer_remove_midi) == NULL) ||
      (CU_add_test(pSuite, "test of AgsLv2Plugin clear event buffer", ags_lv2_plugin_test_clear_event_buffer) == NULL) ||

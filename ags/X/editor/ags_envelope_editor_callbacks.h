@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,9 +22,16 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_envelope_editor.h>
+
+G_BEGIN_DECLS
 
 void ags_envelope_editor_preset_callback(GtkWidget *combo_box,
 					 AgsEnvelopeEditor *envelope_editor);
@@ -50,5 +57,7 @@ void ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor 
 void ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
 void ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_ENVELOPE_EDITOR_CALLBACKS_H__*/

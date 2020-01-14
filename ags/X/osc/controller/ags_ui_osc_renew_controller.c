@@ -19,9 +19,6 @@
 
 #include <ags/X/osc/controller/ags_ui_osc_renew_controller.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -144,9 +141,7 @@ enum{
 static gpointer ags_ui_osc_renew_controller_parent_class = NULL;
 static guint ui_osc_renew_controller_signals[LAST_SIGNAL];
 
-GHashTable *ags_ui_osc_renew_controller_message_monitor = NULL;
-
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_ui_osc_renew_controller_get_type()
@@ -223,7 +218,7 @@ ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_rene
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.4.0
+   * Since: 3.0.0
    */
   ui_osc_renew_controller_signals[SET_DATA] =
     g_signal_new("set-data",
@@ -247,6 +242,13 @@ ags_ui_osc_renew_controller_osc_plugin_controller_interface_init(AgsOscPluginCon
 void
 ags_ui_osc_renew_controller_init(AgsUiOscRenewController *ui_osc_renew_controller)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  g_signal_connect(application_context, "check-message",
+		   G_CALLBACK(ags_ui_osc_renew_controller_check_message_callback), ui_osc_renew_controller);
+
   g_object_set(ui_osc_renew_controller,
 	       "context-path", "/ui-renew",
 	       NULL);
@@ -260,7 +262,7 @@ ags_ui_osc_renew_controller_set_property(GObject *gobject,
 {
   AgsUiOscRenewController *ui_osc_renew_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   ui_osc_renew_controller = AGS_UI_OSC_RENEW_CONTROLLER(gobject);
 
@@ -282,7 +284,7 @@ ags_ui_osc_renew_controller_get_property(GObject *gobject,
 {
   AgsUiOscRenewController *ui_osc_renew_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   ui_osc_renew_controller = AGS_UI_OSC_RENEW_CONTROLLER(gobject);
 
@@ -311,10 +313,18 @@ void
 ags_ui_osc_renew_controller_finalize(GObject *gobject)
 {
   AgsUiOscRenewController *ui_osc_renew_controller;
+  
+  AgsApplicationContext *application_context;
 
   ui_osc_renew_controller = AGS_UI_OSC_RENEW_CONTROLLER(gobject);
 
-  ags_ui_osc_renew_controller_remove_monitor(ui_osc_renew_controller);
+  application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::check-message",
+		      G_CALLBACK(ags_ui_osc_renew_controller_check_message_callback),
+		      ui_osc_renew_controller,
+		      NULL);
   
   /* call parent */
   G_OBJECT_CLASS(ags_ui_osc_renew_controller_parent_class)->finalize(gobject);
@@ -364,8 +374,8 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									  "libgsequencer");
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_sender_namespace(message_delivery,
+										 "libgsequencer");
   
   real_packet_size = 0;
   packet_size = 0;
@@ -435,9 +445,9 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 			 "AgsMachine:run::clicked");
 
 	      /* add message */
-	      message = ags_message_envelope_alloc((GObject *) machine,
-						   NULL,
-						   doc);
+	      message = ags_message_envelope_new((GObject *) machine,
+						 NULL,
+						 doc);
 
 	      /* set parameter */
 	      message->n_params = 0;
@@ -446,9 +456,9 @@ ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_ren
 	      message->value = NULL;
     
 	      /* add message */
-	      ags_message_delivery_add_message(message_delivery,
-					       "libgsequencer",
-					       message);
+	      ags_message_delivery_add_message_envelope(message_delivery,
+							"libgsequencer",
+							message);
 	    }
 	  }
 	}
@@ -835,8 +845,8 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
     /* emit message */
     message_delivery = ags_message_delivery_get_instance();
 
-    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
-									    "libgsequencer");
+    message_queue = (AgsMessageQueue *) ags_message_delivery_find_sender_namespace(message_delivery,
+										   "libgsequencer");
 
     if(message_queue != NULL){
       AgsMessageEnvelope *message;
@@ -856,9 +866,9 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
 		 "AgsUiOscRenewController::set-data");
 
       /* add message */
-      message = ags_message_envelope_alloc((GObject *) ui_osc_renew_controller,
-					   NULL,
-					   doc);
+      message = ags_message_envelope_new((GObject *) ui_osc_renew_controller,
+					 NULL,
+					 doc);
 
       /* set parameter */
       message->n_params = 3;
@@ -934,7 +944,7 @@ ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 gpointer
 ags_ui_osc_renew_controller_set_data(AgsUiOscRenewController *ui_osc_renew_controller,
@@ -956,510 +966,439 @@ ags_ui_osc_renew_controller_set_data(AgsUiOscRenewController *ui_osc_renew_contr
   return(osc_response);
 }
 
-/**
- * ags_ui_osc_renew_controller_add_monitor:
- * @ui_osc_renew_controller: the #AgsUiOscRenewController
- *
- * Add @ui_osc_renew_controller to monitor.
- *
- * Since: 2.4.0
- */
 void
-ags_ui_osc_renew_controller_add_monitor(AgsUiOscRenewController *ui_osc_renew_controller)
+ags_ui_osc_renew_controller_check_message_callback(GObject *application_context, AgsUiOscRenewController *ui_osc_renew_controller)
 {
-  if(!AGS_IS_UI_OSC_RENEW_CONTROLLER(ui_osc_renew_controller)){
-    return;
-  }
-  
-  if(ags_ui_osc_renew_controller_message_monitor == NULL){
-    ags_ui_osc_renew_controller_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-									NULL,
-									NULL);
-  }
-
-  g_hash_table_insert(ags_ui_osc_renew_controller_message_monitor,
-		      ui_osc_renew_controller, ags_ui_osc_renew_controller_message_monitor_timeout);
-  
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_ui_osc_renew_controller_message_monitor_timeout,
-		(gpointer) ui_osc_renew_controller);
-
-}
-
-/**
- * ags_ui_osc_renew_controller_remove_monitor:
- * @ui_osc_renew_controller: the #AgsUiOscRenewController
- *
- * Remove @ui_osc_renew_controller from monitor.
- *
- * Since: 2.4.0
- */
-void
-ags_ui_osc_renew_controller_remove_monitor(AgsUiOscRenewController *ui_osc_renew_controller)
-{
-  if(!AGS_IS_UI_OSC_RENEW_CONTROLLER(ui_osc_renew_controller)){
-    return;
-  }
-
-  /* remove message monitor */
-  g_hash_table_remove(ags_ui_osc_renew_controller_message_monitor,
-		      ui_osc_renew_controller);
-}
-
-/**
- * ags_ui_osc_renew_controller_message_monitor_timeout:
- * @ui_osc_renew_controller: the #AgsUiOscRenewController
- *
- * Monitor messages.
- *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
- *
- * Since: 2.4.0
- */
-gboolean
-ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_osc_renew_controller)
-{
-  if(g_hash_table_lookup(ags_ui_osc_renew_controller_message_monitor,
-			 ui_osc_renew_controller) != NULL){
-    AgsChannel *channel;
+  AgsChannel *channel;
     
-    AgsMessageDelivery *message_delivery;
+  AgsMessageDelivery *message_delivery;
 
-    GList *message_start, *message;
+  GList *start_message_envelope, *message_envelope;
     
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
 
-    message_start = 
-      message = ags_message_delivery_find_sender(message_delivery,
-						 "libgsequencer",
-						 (GObject *) ui_osc_renew_controller);
+  message_envelope = 
+    start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+							      "libgsequencer",
+							      (GObject *) ui_osc_renew_controller);
     
-    while(message != NULL){
-      xmlNode *root_node;
+  while(message_envelope != NULL){
+    xmlNode *root_node;
 
-      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
-      if(!xmlStrncmp(root_node->name,
-		     "ags-command",
-		     12)){
-	if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsUiOscRenewController::set-data",
-		       34)){
-	  AgsOscConnection *osc_connection;
-	  AgsOscResponse *osc_response;
+    if(!xmlStrncmp(root_node->name,
+		   "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     "AgsUiOscRenewController::set-data",
+		     34)){
+	AgsOscConnection *osc_connection;
+	AgsOscResponse *osc_response;
 
-	  AgsApplicationContext *application_context;
+	AgsApplicationContext *application_context;
 	  
-	  GList *start_response;
+	GList *start_response;
 
-	  unsigned char *duplicated_message;
-	  gchar *type_tag;
-	  gchar *path;
+	unsigned char *duplicated_message;
+	gchar *type_tag;
+	gchar *path;
   
-	  guint message_size;
-	  guint path_offset;
-	  gint position;
-	  gboolean success;
+	guint message_size;
+	guint path_offset;
+	gint position;
+	gboolean success;
 
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "osc-connection");
-	  osc_connection = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "osc-connection");
+	osc_connection = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "message");
-	  duplicated_message = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "message");
+	duplicated_message = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "message-size");
-	  message_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "message-size");
+	message_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 
-	  start_response = NULL;
+	start_response = NULL;
 
-	  /* read type tag */
-	  ags_osc_buffer_util_get_string(duplicated_message + 8,
-					 &type_tag, NULL);
+	/* read type tag */
+	ags_osc_buffer_util_get_string(duplicated_message + 8,
+				       &type_tag, NULL);
 
-	  success = (type_tag != NULL &&
-		     !strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
+	success = (type_tag != NULL &&
+		   !strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
 
-	  if(!success){
-	    goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
-	  }
+	if(!success){
+	  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	}
   
-	  /* read argument */
-	  ags_osc_buffer_util_get_string(duplicated_message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
-					 &path, NULL);  
+	/* read argument */
+	ags_osc_buffer_util_get_string(duplicated_message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
+				       &path, NULL);  
 
-	  if(path == NULL){
-	    goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	if(path == NULL){
+	  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	}
+
+	/* create packet */
+	application_context = ags_application_context_get_instance();
+
+	path_offset = 0;
+  
+	if(!strncmp(path,
+		    "/AgsUiProvider",
+		    14)){
+	  GType machine_type;
+    
+	  GList *start_machine, *machine;
+    
+	  regmatch_t match_arr[2];
+
+	  static regex_t single_access_regex;
+	  static regex_t range_access_regex;
+	  static regex_t voluntary_access_regex;
+	  static regex_t more_access_regex;
+	  static regex_t wildcard_access_regex;
+    
+	  static gboolean regex_compiled = FALSE;
+
+	  static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+	  static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+	  static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+	  static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+	  static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+	  static const size_t max_matches = 2;
+	  static const size_t index_max_matches = 1;
+
+	  path_offset = 14;
+
+	  /* compile regex */
+	  g_mutex_lock(&regex_mutex);
+  
+	  if(!regex_compiled){
+	    regex_compiled = TRUE;
+      
+	    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+	    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+	    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+	    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+	    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
 	  }
 
-	  /* create packet */
-	  application_context = ags_application_context_get_instance();
+	  g_mutex_unlock(&regex_mutex);
 
-	  path_offset = 0;
-  
-	  if(!strncmp(path,
-		      "/AgsUiProvider",
-		      14)){
-	    GType machine_type;
+	  machine_type = G_TYPE_NONE;
     
-	    GList *start_machine, *machine;
-    
-	    regmatch_t match_arr[2];
+	  if(!strncmp(path + path_offset,
+		      "/AgsPanel",
+		      9)){    
+	    path_offset += 9;
 
-	    static regex_t single_access_regex;
-	    static regex_t range_access_regex;
-	    static regex_t voluntary_access_regex;
-	    static regex_t more_access_regex;
-	    static regex_t wildcard_access_regex;
-    
-	    static gboolean regex_compiled = FALSE;
+	    machine_type = AGS_TYPE_PANEL;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsSpectrometer",
+			    16)){
+	    path_offset += 16;
 
-	    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
-	    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
-	    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
-	    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
-	    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
-    
-	    static const size_t max_matches = 2;
-	    static const size_t index_max_matches = 1;
+	    machine_type = AGS_TYPE_SPECTROMETER;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsEqualizer10",
+			    15)){
+	    path_offset += 15;
 
-	    path_offset = 14;
+	    machine_type = AGS_TYPE_EQUALIZER10;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsMixer",
+			    9)){
+	    path_offset += 9;
 
-	    /* compile regex */
-	    pthread_mutex_lock(&regex_mutex);
-  
-	    if(!regex_compiled){
-	      regex_compiled = TRUE;
+	    machine_type = AGS_TYPE_MIXER;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsDrum",
+			    8)){
+	    path_offset += 8;
+
+	    machine_type = AGS_TYPE_DRUM;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsMatrix",
+			    10)){
+	    path_offset += 10;
+
+	    machine_type = AGS_TYPE_MATRIX;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsSynth",
+			    9)){
+	    path_offset += 9;
+
+	    machine_type = AGS_TYPE_SYNTH;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsFMSynth",
+			    11)){
+	    path_offset += 11;
+
+	    machine_type = AGS_TYPE_FM_SYNTH;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsSyncsynth",
+			    13)){
+	    path_offset += 13;
+
+	    machine_type = AGS_TYPE_SYNCSYNTH;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsFMSyncsynth",
+			    15)){
+	    path_offset += 15;
+
+	    machine_type = AGS_TYPE_FM_SYNCSYNTH;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsFFPlayer",
+			    11)){
+	    path_offset += 11;
+
+	    machine_type = AGS_TYPE_FFPLAYER;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsPitchSampler",
+			    16)){
+	    path_offset += 16;
+
+	    machine_type = AGS_TYPE_PITCH_SAMPLER;
+	  }else if(!strncmp(path + path_offset,
+			    "/AgsAudiorec",
+			    12)){
+	    path_offset += 12;
+
+	    machine_type = AGS_TYPE_AUDIOREC;
+	  }
+
+	  if(machine_type != G_TYPE_NONE){
+	    machine = 
+	      start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
       
-	      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
-	      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
-	      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
-	      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
-	      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
-	    }
-
-	    pthread_mutex_unlock(&regex_mutex);
-
-	    machine_type = G_TYPE_NONE;
-    
-	    if(!strncmp(path + path_offset,
-			"/AgsPanel",
-			9)){    
-	      path_offset += 9;
-
-	      machine_type = AGS_TYPE_PANEL;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsSpectrometer",
-			      16)){
-	      path_offset += 16;
-
-	      machine_type = AGS_TYPE_SPECTROMETER;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsEqualizer10",
-			      15)){
-	      path_offset += 15;
-
-	      machine_type = AGS_TYPE_EQUALIZER10;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsMixer",
-			      9)){
-	      path_offset += 9;
-
-	      machine_type = AGS_TYPE_MIXER;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsDrum",
-			      8)){
-	      path_offset += 8;
-
-	      machine_type = AGS_TYPE_DRUM;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsMatrix",
-			      10)){
-	      path_offset += 10;
-
-	      machine_type = AGS_TYPE_MATRIX;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsSynth",
-			      9)){
-	      path_offset += 9;
-
-	      machine_type = AGS_TYPE_SYNTH;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsFMSynth",
-			      11)){
-	      path_offset += 11;
-
-	      machine_type = AGS_TYPE_FM_SYNTH;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsSyncsynth",
-			      13)){
-	      path_offset += 13;
-
-	      machine_type = AGS_TYPE_SYNCSYNTH;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsFMSyncsynth",
-			      15)){
-	      path_offset += 15;
-
-	      machine_type = AGS_TYPE_FM_SYNCSYNTH;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsFFPlayer",
-			      11)){
-	      path_offset += 11;
-
-	      machine_type = AGS_TYPE_FFPLAYER;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsPitchSampler",
-			      16)){
-	      path_offset += 16;
-
-	      machine_type = AGS_TYPE_PITCH_SAMPLER;
-	    }else if(!strncmp(path + path_offset,
-			      "/AgsAudiorec",
-			      12)){
-	      path_offset += 12;
-
-	      machine_type = AGS_TYPE_AUDIOREC;
-	    }
-
-	    if(machine_type != G_TYPE_NONE){
-	      machine = 
-		start_machine = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
-      
-	      if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
-		AgsMachine *current;
+	    if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+	      AgsMachine *current;
 	
-		gchar *endptr;
+	      gchar *endptr;
       
-		guint i;
-		guint i_stop;
+	      guint i;
+	      guint i_stop;
 
-		endptr = NULL;
-		i_stop = g_ascii_strtoull(path + path_offset + 1,
-					  &endptr,
-					  10);
+	      endptr = NULL;
+	      i_stop = g_ascii_strtoull(path + path_offset + 1,
+					&endptr,
+					10);
 
-		current = NULL;
+	      current = NULL;
 	
-		for(i = 0; machine != NULL; ){
-		  if(G_OBJECT_TYPE(machine->data) == machine_type){
-		    i++;
+	      for(i = 0; machine != NULL; ){
+		if(G_OBJECT_TYPE(machine->data) == machine_type){
+		  i++;
 
-		    if(i > i_stop){
-		      current = machine->data;
+		  if(i > i_stop){
+		    current = machine->data;
 
-		      break;
-		    }
+		    break;
 		  }
-
-		  machine = machine->next;
 		}
 
-		g_list_free(start_machine);
+		machine = machine->next;
+	      }
 
-		path_offset += ((endptr + 1) - (path + path_offset));
+	      g_list_free(start_machine);
+
+	      path_offset += ((endptr + 1) - (path + path_offset));
 	
-		start_response = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
-									      osc_connection,
-									      current,
-									      duplicated_message, message_size,
-									      type_tag,
-									      path, path_offset);
-	      }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
-		AgsMachine *current;
-
-		gchar *endptr;
-      
-		guint i;
-		guint i_start, i_stop;
-
-		endptr = NULL;
-		i_start = g_ascii_strtoull(path + path_offset + 1,
-					   &endptr,
-					   10);
-
-		i_stop = g_ascii_strtoull(endptr + 1,
-					  &endptr,
-					  10);
-
-		path_offset += ((endptr + 1) - (path + path_offset));
-
-		for(i = 0; machine != NULL; ){
-		  GList *retval;
-
-		  if(G_OBJECT_TYPE(machine->data) == machine_type){
-		    i++;
-	    
-		    if(i > i_start){
-		      current = machine->data;
-
-		      retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+	      start_response = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
 									    osc_connection,
 									    current,
 									    duplicated_message, message_size,
 									    type_tag,
 									    path, path_offset);
+	    }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+	      AgsMachine *current;
 
-		      if(start_response != NULL){
-			start_response = g_list_concat(start_response,
-						       retval);
-		      }else{
-			start_response = retval;
-		      }
-		    }
+	      gchar *endptr;
+      
+	      guint i;
+	      guint i_start, i_stop;
 
-		    if(i > i_stop){
-		      current = machine->data;
+	      endptr = NULL;
+	      i_start = g_ascii_strtoull(path + path_offset + 1,
+					 &endptr,
+					 10);
 
-		      break;
+	      i_stop = g_ascii_strtoull(endptr + 1,
+					&endptr,
+					10);
+
+	      path_offset += ((endptr + 1) - (path + path_offset));
+
+	      for(i = 0; machine != NULL; ){
+		GList *retval;
+
+		if(G_OBJECT_TYPE(machine->data) == machine_type){
+		  i++;
+	    
+		  if(i > i_start){
+		    current = machine->data;
+
+		    retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+									  osc_connection,
+									  current,
+									  duplicated_message, message_size,
+									  type_tag,
+									  path, path_offset);
+
+		    if(start_response != NULL){
+		      start_response = g_list_concat(start_response,
+						     retval);
+		    }else{
+		      start_response = retval;
 		    }
 		  }
 
-		  machine = machine->next;
-		}
-	      }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
-		path_offset += 3;
+		  if(i > i_stop){
+		    current = machine->data;
 
-		while(machine != NULL){
-		  if(G_OBJECT_TYPE(machine->data) == machine_type){
-		    start_response = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
-										  osc_connection,
-										  start_machine->data,
-										  duplicated_message, message_size,
-										  type_tag,
-										  path, path_offset);
 		    break;
 		  }
-
-		  machine = machine->next;
 		}
-	      }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
-		path_offset += 3;
 
-		if(start_machine == NULL){
-		  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+		machine = machine->next;
+	      }
+	    }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+	      path_offset += 3;
+
+	      while(machine != NULL){
+		if(G_OBJECT_TYPE(machine->data) == machine_type){
+		  start_response = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+										osc_connection,
+										start_machine->data,
+										duplicated_message, message_size,
+										type_tag,
+										path, path_offset);
+		  break;
 		}
+
+		machine = machine->next;
+	      }
+	    }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+	      path_offset += 3;
+
+	      if(start_machine == NULL){
+		goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	      }
       
-		while(machine != NULL){
-		  if(G_OBJECT_TYPE(machine->data) == machine_type){
-		    GList *retval;
+	      while(machine != NULL){
+		if(G_OBJECT_TYPE(machine->data) == machine_type){
+		  GList *retval;
 	
-		    retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
-									  osc_connection,
-									  machine->data,
-									  duplicated_message, message_size,
-									  type_tag,
-									  path, path_offset);
+		  retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+									osc_connection,
+									machine->data,
+									duplicated_message, message_size,
+									type_tag,
+									path, path_offset);
 
-		    if(start_response != NULL){
-		      start_response = g_list_concat(start_response,
-						     retval);
-		    }else{
-		      start_response = retval;
-		    }
+		  if(start_response != NULL){
+		    start_response = g_list_concat(start_response,
+						   retval);
+		  }else{
+		    start_response = retval;
 		  }
+		}
 	  
-		  machine = machine->next;
-		}
-	      }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
-		path_offset += 3;
+		machine = machine->next;
+	      }
+	    }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+	      path_offset += 3;
 
-		if(start_machine == NULL){
-		  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
-		}
+	      if(start_machine == NULL){
+		goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	      }
       
-		while(machine != NULL){
-		  if(G_OBJECT_TYPE(machine->data) == machine_type){
-		    GList *retval;
+	      while(machine != NULL){
+		if(G_OBJECT_TYPE(machine->data) == machine_type){
+		  GList *retval;
 	
-		    retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
-									  osc_connection,
-									  machine->data,
-									  duplicated_message, message_size,
-									  type_tag,
-									  path, path_offset);
+		  retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+									osc_connection,
+									machine->data,
+									duplicated_message, message_size,
+									type_tag,
+									path, path_offset);
 
-		    if(start_response != NULL){
-		      start_response = g_list_concat(start_response,
-						     retval);
-		    }else{
-		      start_response = retval;
-		    }
+		  if(start_response != NULL){
+		    start_response = g_list_concat(start_response,
+						   retval);
+		  }else{
+		    start_response = retval;
 		  }
+		}
 	  
-		  machine = machine->next;
-		}
-	      }else if(path[path_offset] == '[' &&
-		       path[path_offset + 1] == '"'){
-		gchar *machine_name;
-		gchar *offset;
+		machine = machine->next;
+	      }
+	    }else if(path[path_offset] == '[' &&
+		     path[path_offset + 1] == '"'){
+	      gchar *machine_name;
+	      gchar *offset;
 
-		guint length;
+	      guint length;
 
-		if((offset = strchr(path + path_offset + 2, '"')) == NULL){
-		  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
-		}
+	      if((offset = strchr(path + path_offset + 2, '"')) == NULL){
+		goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	      }
 
-		length = offset - (path + path_offset + 2);
+	      length = offset - (path + path_offset + 2);
 
-		machine_name = (gchar *) malloc((length + 1) * sizeof(gchar));
-		memcpy(machine_name, path + path_offset + 2, (length) * sizeof(gchar));
-		machine_name[length] = '\0';
+	      machine_name = (gchar *) malloc((length + 1) * sizeof(gchar));
+	      memcpy(machine_name, path + path_offset + 2, (length) * sizeof(gchar));
+	      machine_name[length] = '\0';
 
-		while(machine != NULL){
-		  if(G_OBJECT_TYPE(machine->data) == machine_type &&
-		     !g_ascii_strcasecmp(AGS_MACHINE(machine->data)->machine_name,
-					 machine_name)){
-		    GList *retval;
+	      while(machine != NULL){
+		if(G_OBJECT_TYPE(machine->data) == machine_type &&
+		   !g_ascii_strcasecmp(AGS_MACHINE(machine->data)->machine_name,
+				       machine_name)){
+		  GList *retval;
 	
-		    retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
-									  osc_connection,
-									  machine->data,
-									  duplicated_message, message_size,
-									  type_tag,
-									  path, path_offset);
+		  retval = ags_ui_osc_renew_controller_set_data_machine(ui_osc_renew_controller,
+									osc_connection,
+									machine->data,
+									duplicated_message, message_size,
+									type_tag,
+									path, path_offset);
 
-		    if(start_response != NULL){
-		      start_response = g_list_concat(start_response,
-						     retval);
-		    }else{
-		      start_response = retval;
-		    }
+		  if(start_response != NULL){
+		    start_response = g_list_concat(start_response,
+						   retval);
+		  }else{
+		    start_response = retval;
 		  }
+		}
 	  
-		  machine = machine->next;
-		}      
-	      }	      
-	    }
-	  }else{
-	    goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+		machine = machine->next;
+	      }      
+	    }	      
 	  }
+	}else{
+	  goto ags_ui_osc_renew_controller_message_monitor_timeout_NEXT;
+	}
 
-	ags_ui_osc_renew_controller_message_monitor_timeout_NEXT:      
-	  if(duplicated_message != NULL){
-	    free(duplicated_message);
-	  }
+      ags_ui_osc_renew_controller_message_monitor_timeout_NEXT:      
+	if(duplicated_message != NULL){
+	  free(duplicated_message);
 	}
       }
-
-      ags_message_delivery_remove_message(message_delivery,
-					  "libgsequencer",
-					  message->data);
-      
-      message = message->next;
     }
-    
-    g_list_free_full(message_start,
-		     (GDestroyNotify) ags_message_envelope_free);
-
-    return(TRUE);
-  }else{
-    return(FALSE);
+      
+    message_envelope = message_envelope->next;
   }
+    
+  g_list_free_full(start_message_envelope,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -1469,7 +1408,7 @@ ags_ui_osc_renew_controller_message_monitor_timeout(AgsUiOscRenewController *ui_
  * 
  * Returns: the #AgsUiOscRenewController
  * 
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 AgsUiOscRenewController*
 ags_ui_osc_renew_controller_new()

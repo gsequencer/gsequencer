@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SOUND_RESOURCE                    (ags_sound_resource_get_type())
 #define AGS_SOUND_RESOURCE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_RESOURCE, AgsSoundResource))
 #define AGS_SOUND_RESOURCE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUND_RESOURCE, AgsSoundResourceInterface))
@@ -137,5 +141,7 @@ GList* ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
 /* close */
 void ags_sound_resource_close(AgsSoundResource *sound_resource);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_RESOURCE_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_midi_dialog.h>
 #include <ags/X/ags_midi_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -142,7 +139,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -197,7 +194,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   /* connection */
   midi_dialog->io_options = (GtkVBox *) gtk_vbox_new(FALSE,
 						     0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->io_options),
 		     FALSE, FALSE,
 		     0);
@@ -240,7 +237,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* mapping */
   midi_dialog->mapping = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->mapping),
 		     FALSE, FALSE,
 		     0);
@@ -342,7 +339,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* device */
   midi_dialog->device = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(GTK_DIALOG(midi_dialog)),
 		     GTK_WIDGET(midi_dialog->device),
 		     FALSE, FALSE,
 		     0);
@@ -376,19 +373,19 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->apply,
 		     FALSE, FALSE,
 		     0);
   
   midi_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->ok,
 		     FALSE, FALSE,
 		     0);
   
   midi_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(midi_dialog)),
 		     (GtkWidget *) midi_dialog->cancel,
 		     FALSE, FALSE,
 		     0);
@@ -673,7 +670,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 						 AGS_TYPE_WINDOW);
 
   /* application context and mutex manager */
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* clear model */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device))));
@@ -742,7 +739,7 @@ ags_midi_dialog_show_all(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiDialog*
 ags_midi_dialog_new(AgsMachine *machine)

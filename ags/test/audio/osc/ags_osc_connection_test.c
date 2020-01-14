@@ -114,10 +114,6 @@ ags_osc_connection_test_close()
 
   osc_connection = ags_osc_connection_new(NULL);
 
-  osc_connection->fd = open("/dev/null", O_RDWR, 0);
-
-  CU_ASSERT(osc_connection->fd != -1);
-
   ags_osc_connection_close(osc_connection);
 
   CU_ASSERT(osc_connection->fd == -1);

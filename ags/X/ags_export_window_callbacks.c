@@ -19,11 +19,7 @@
 
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_soundcard.h>
@@ -95,6 +91,10 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   AgsWindow *window;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+  
   gchar *str;
   
   gdouble delay_factor;
@@ -103,13 +103,17 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   /* retrieve window */
   window = AGS_WINDOW(export_window->main_window);
 
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
   /* get some properties */
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(window->soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
 
   /* update duration */
   str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
-					window->navigation->bpm->adjustment->value,
+					gtk_spin_button_get_value(window->navigation->bpm),
 					delay,
 					delay_factor);
   gtk_label_set_text(export_window->duration,
@@ -128,14 +132,19 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   
   AgsApplicationContext *application_context;
   
+  GObject *default_soundcard;
+
   GList *machines_start;
 
   gboolean success;
 
-  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
-
   application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
     
   /* collect */  
   machines_start = NULL;
@@ -298,8 +307,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       gdouble delay_factor;
       
       /* create task */
-      delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(window->soundcard));
-      delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
+      delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
+      delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
 
       /*  */
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
@@ -363,7 +372,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	task = g_list_prepend(task,
 			      export_output);
 	
-	if(AGS_EXPORT_SOUNDCARD(child->data)->soundcard == window->soundcard){
+	if(AGS_EXPORT_SOUNDCARD(child->data)->soundcard == default_soundcard){
 	  g_signal_connect(current_export_thread, "stop",
 			   G_CALLBACK(ags_export_window_stop_callback), export_window);
 	}
@@ -376,8 +385,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* append AgsStartSoundcard */
       task = g_list_reverse(task);
       
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
       
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

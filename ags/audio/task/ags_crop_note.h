@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CROP_NOTE                (ags_crop_note_get_type())
 #define AGS_CROP_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CROP_NOTE, AgsCropNote))
@@ -64,9 +66,12 @@ struct _AgsCropNoteClass
 
 GType ags_crop_note_get_type();
 
-AgsCropNote* ags_crop_note_new(AgsNotation *notation,
+AgsCropNote* ags_crop_note_new(AgsAudio *audio,
+			       AgsNotation *notation,
 			       GList *selection,
 			       guint x_padding, gint x_crop,
 			       gboolean absolute, gboolean in_place, gboolean do_resize);
+
+G_END_DECLS
 
 #endif /*__AGS_CROP_NOTE_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/export/ags_midi_export_wizard.h>
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -67,7 +64,6 @@ static gpointer ags_midi_export_wizard_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -142,27 +138,11 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
 
   /* properties */
   /**
-   * AgsMidiExportWizard:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsMidiExportWizard:main-window:
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -201,8 +181,6 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 
   midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
 
-  midi_export_wizard->application_context = NULL;
-
   midi_export_wizard->main_window = NULL;
 
   /* midi builder */
@@ -214,7 +192,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 						 1.0, 1.0);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
-  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
 		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
@@ -230,7 +208,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 			   NULL);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
-  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(midi_export_wizard),
 		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
@@ -260,27 +238,6 @@ ags_midi_export_wizard_set_property(GObject *gobject,
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) midi_export_wizard->application_context == application_context){
-	return;
-      }
-      
-      if(midi_export_wizard->application_context != NULL){
-	g_object_unref(midi_export_wizard->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      midi_export_wizard->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -319,11 +276,6 @@ ags_midi_export_wizard_get_property(GObject *gobject,
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, midi_export_wizard->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, midi_export_wizard->main_window);
@@ -444,9 +396,9 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 
   /* add header */
   ags_midi_builder_append_header(midi_export_wizard->midi_builder,
-				 0, 1,
+				 6, 1,
 				 track_count, division,
-				 times, bpm,
+				 times, AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM,
 				 clicks);
   
   /* apply tracks */
@@ -485,12 +437,12 @@ ags_midi_export_wizard_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_midi_export_wizard_parent_class)->show(widget);
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
-    gtk_widget_show(midi_export_wizard->file_chooser->parent);
+    gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->file_chooser));
     gtk_widget_show_all(midi_export_wizard->file_chooser);
   }
 
   if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION & (midi_export_wizard->flags)) != 0){
-    gtk_widget_show(midi_export_wizard->machine_collection->parent);
+    gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->machine_collection));
     gtk_widget_show_all(midi_export_wizard->machine_collection);
   }
 }
@@ -503,7 +455,7 @@ ags_midi_export_wizard_show(GtkWidget *widget)
  *
  * Returns: the new #AgsMidiExportWizard
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiExportWizard*
 ags_midi_export_wizard_new(GtkWidget *main_window)

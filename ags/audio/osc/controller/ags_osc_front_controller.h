@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_FRONT_CONTROLLER                (ags_osc_front_controller_get_type())
 #define AGS_OSC_FRONT_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_FRONT_CONTROLLER, AgsOscFrontController))
@@ -32,11 +36,8 @@
 #define AGS_IS_OSC_FRONT_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_FRONT_CONTROLLER))
 #define AGS_OSC_FRONT_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_OSC_FRONT_CONTROLLER, AgsOscFrontControllerClass))
 
-#define AGS_OSC_FRONT_CONTROLLER_MESSAGE(ptr) ((AgsOscFrontControllerMessage *)(ptr))
-
 typedef struct _AgsOscFrontController AgsOscFrontController;
 typedef struct _AgsOscFrontControllerClass AgsOscFrontControllerClass;
-typedef struct _AgsOscFrontControllerMessage AgsOscFrontControllerMessage;
 
 typedef enum{
   AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED        = 1,
@@ -50,14 +51,14 @@ struct _AgsOscFrontController
 
   guint flags;
   
-  struct timespec *delegate_timeout;
+  gint64 delegate_timeout;
   
   volatile gboolean do_reset;
 
-  pthread_mutex_t *delegate_mutex;
-  pthread_cond_t *delegate_cond;
+  GMutex delegate_mutex;
+  GCond delegate_cond;
   
-  pthread_t *delegate_thread;
+  GThread *delegate_thread;
 
   GList *message;
 };
@@ -71,20 +72,7 @@ struct _AgsOscFrontControllerClass
 
   gpointer (*do_request)(AgsOscFrontController *osc_front_controller,
 			 AgsOscConnection *osc_connection,
-			 unsigned char *packet, guint packet_size);
-};
-
-struct _AgsOscFrontControllerMessage
-{
-  AgsOscConnection *osc_connection;
-  
-  gint32 tv_sec;
-  gint32 tv_fraction;
-  gboolean immediately;
-
-  guint message_size;
-
-  unsigned char *message;
+			 guchar *packet, gsize packet_size);
 };
 
 GType ags_osc_front_controller_get_type();
@@ -93,24 +81,20 @@ gboolean ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_co
 void ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags);
 void ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags);
 
-gint ags_osc_front_controller_message_sort_func(gconstpointer a,
-						gconstpointer b);
-
-AgsOscFrontControllerMessage* ags_osc_front_controller_message_alloc();
-void ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message);
-
 void ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
-					  AgsOscFrontControllerMessage *message);
+					  GObject *message);
 void ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
-					     AgsOscFrontControllerMessage *message);
+					     GObject *message);
 
 void ags_osc_front_controller_start_delegate(AgsOscFrontController *osc_front_controller);
 void ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controller);
 
 gpointer ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
 					     AgsOscConnection *osc_connection,
-					     unsigned char *packet, guint packet_size);
+					     guchar *packet, gsize packet_size);
 
 AgsOscFrontController* ags_osc_front_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_FRONT_CONTROLLER_H__*/

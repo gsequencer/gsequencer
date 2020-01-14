@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_wave_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -53,6 +51,14 @@ void ags_play_wave_channel_run_finalize(GObject *gobject);
 void ags_play_wave_channel_run_seek(AgsSeekable *seekable,
 				    gint64 offset,
 				    guint whence);
+
+void ags_play_wave_channel_run_run_inter_add_audio_signal(AgsPlayWaveChannelRun *play_wave_channel_run,
+							  AgsChannel *channel,
+							  GObject *output_soundcard,
+							  AgsRecallID *recall_id,
+							  guint samplerate,
+							  guint buffer_size,
+							  guint format);
 
 void ags_play_wave_channel_run_run_inter(AgsRecall *recall);
 
@@ -139,7 +145,7 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
    *
    * The x offset.
    * 
-   * Since: 2.1.24
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint64("x-offset",
 				   i18n_pspec("x offset"),
@@ -196,7 +202,7 @@ ags_play_wave_channel_run_set_property(GObject *gobject,
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
 
@@ -210,11 +216,11 @@ ags_play_wave_channel_run_set_property(GObject *gobject,
 
       x_offset = g_value_get_uint64(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_wave_channel_run->x_offset = x_offset;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -231,7 +237,7 @@ ags_play_wave_channel_run_get_property(GObject *gobject,
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
 
@@ -241,11 +247,11 @@ ags_play_wave_channel_run_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X_OFFSET:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_uint64(value, play_wave_channel_run->x_offset);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -341,6 +347,42 @@ ags_play_wave_channel_run_seek(AgsSeekable *seekable,
 }
 
 void
+ags_play_wave_channel_run_run_inter_add_audio_signal(AgsPlayWaveChannelRun *play_wave_channel_run,
+						     AgsChannel *channel,
+						     GObject *output_soundcard,
+						     AgsRecallID *recall_id,
+						     guint samplerate,
+						     guint buffer_size,
+						     guint format)
+{
+  AgsChannel *output;
+  AgsRecycling *first_recycling;
+
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       NULL);
+  g_object_unref(first_recycling);
+    
+  play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
+							     (GObject *) first_recycling,
+							     (GObject *) recall_id);
+  g_object_set(play_wave_channel_run->audio_signal,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
+  ags_audio_signal_stream_resize(play_wave_channel_run->audio_signal,
+				 3);
+
+  play_wave_channel_run->audio_signal->stream_current = play_wave_channel_run->audio_signal->stream;
+
+  ags_recycling_add_audio_signal(first_recycling,
+				 play_wave_channel_run->audio_signal);	  
+
+  ags_connectable_connect(AGS_CONNECTABLE(play_wave_channel_run->audio_signal));
+}
+
+void
 ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 {
   AgsAudio *audio;
@@ -375,38 +417,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   GValue do_loop_value = {0,};
   GValue x_offset_value = {0,};
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  auto void ags_play_wave_channel_run_run_inter_add_audio_signal();
-
-  void ags_play_wave_channel_run_run_inter_add_audio_signal(){
-    AgsChannel *output;
-    AgsRecycling *first_recycling;
-
-    g_object_get(channel,
-		 "first-recycling", &first_recycling,
-		 NULL);
-    g_object_unref(first_recycling);
-    
-    play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
-							       (GObject *) first_recycling,
-							       (GObject *) recall_id);
-    g_object_set(play_wave_channel_run->audio_signal,
-		 "samplerate", samplerate,
-		 "buffer-size", buffer_size,
-		 "format", format,
-		 NULL);
-    ags_audio_signal_stream_resize(play_wave_channel_run->audio_signal,
-				   3);
-
-    play_wave_channel_run->audio_signal->stream_current = play_wave_channel_run->audio_signal->stream;
-
-    ags_recycling_add_audio_signal(first_recycling,
-				   play_wave_channel_run->audio_signal);	  
-
-    ags_connectable_connect(AGS_CONNECTABLE(play_wave_channel_run->audio_signal));
-  }
+  GRecMutex *audio_mutex;
+  GRecMutex *channel_mutex;
     
   play_wave_channel_run = (AgsPlayWaveChannelRun *) recall;
   
@@ -520,7 +532,13 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		   NULL);
 	
       if(play_wave_channel_run->audio_signal == NULL){
-	ags_play_wave_channel_run_run_inter_add_audio_signal();
+	ags_play_wave_channel_run_run_inter_add_audio_signal(play_wave_channel_run,
+							     channel,
+							     output_soundcard,
+							     recall_id,
+							     samplerate,
+							     buffer_size,
+							     format);
       }
 
       copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
@@ -561,7 +579,13 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		     NULL);
 	
 	if(play_wave_channel_run->audio_signal == NULL){
-	  ags_play_wave_channel_run_run_inter_add_audio_signal();
+	  ags_play_wave_channel_run_run_inter_add_audio_signal(play_wave_channel_run,
+							       channel,
+							       output_soundcard,
+							       recall_id,
+							       samplerate,
+							       buffer_size,
+							       format);
 	}
 
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
@@ -675,7 +699,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsPlayWaveChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayWaveChannelRun*
 ags_play_wave_channel_run_new(AgsChannel *source)

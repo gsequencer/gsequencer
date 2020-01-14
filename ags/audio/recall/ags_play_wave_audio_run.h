@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PLAY_WAVE_AUDIO_RUN                (ags_play_wave_audio_run_get_type())
 #define AGS_PLAY_WAVE_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_WAVE_AUDIO_RUN, AgsPlayWaveAudioRun))
 #define AGS_PLAY_WAVE_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_WAVE_AUDIO_RUN, AgsPlayWaveAudioRun))
@@ -53,5 +55,7 @@ struct _AgsPlayWaveAudioRunClass
 GType ags_play_wave_audio_run_get_type();
 
 AgsPlayWaveAudioRun* ags_play_wave_audio_run_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAY_WAVE_AUDIO_RUN_H__*/

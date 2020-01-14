@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_export_window.h>
 
 void
@@ -42,11 +39,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
 
-  application_context = NULL;
-
-  if(export_window != NULL){
-    application_context = (AgsApplicationContext *) export_window->application_context;
-  }
+  application_context = ags_application_context_get_instance();
 
   /* refresh card */
   ags_export_soundcard_refresh_card(export_soundcard);
@@ -193,11 +186,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
 
-  application_context = NULL;
-
-  if(export_window != NULL){
-    application_context = (AgsApplicationContext *) export_window->application_context;
-  }
+  application_context = ags_application_context_get_instance();
 
   /* get soundcard */
   start_soundcard = NULL;

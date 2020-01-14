@@ -101,16 +101,14 @@ ags_devin_test_dispose()
   gboolean success;
   
   devin = g_object_new(AGS_TYPE_DEVIN,
-			"application-context", audio_application_context,
-			NULL);
+		       NULL);
   g_object_ref(devin);
   
 
   /* run dispose */
   g_object_run_dispose(devin);
 
-  /* assert no application context */
-  CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(devin)) == NULL);
+  success = TRUE;
   
   /* assert */
   CU_ASSERT(success == TRUE);
@@ -125,8 +123,7 @@ ags_devin_test_finalize()
   guint i;
   
   devin = g_object_new(AGS_TYPE_DEVIN,
-			"application-context", audio_application_context,
-			NULL);
+		       NULL);
 
   /* run dispose */
   g_object_run_dispose(devin);

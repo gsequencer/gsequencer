@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,13 +22,18 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_drum.h>
 
-void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
+G_BEGIN_DECLS
+
+void ags_drum_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDrum *drum);
 void ags_drum_destroy_callback(GtkWidget *widget, AgsDrum *drum);
 
 /* controls */
@@ -45,5 +50,7 @@ void ags_drum_index1_callback(GtkWidget *toggle_button, AgsDrum *drum);
 void ags_drum_stop_callback(AgsDrum *drum,
 			    GList *recall_id, gint sound_scope,
 			    gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_CALLBACKS_H__*/

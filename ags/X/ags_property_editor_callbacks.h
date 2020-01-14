@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,17 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_property_editor.h>
+
+G_BEGIN_DECLS
 
 void ags_property_editor_enable_callback(GtkToggleButton *toggle,
 					 AgsPropertyEditor *property_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_PROPERTY_EDITOR_CALLBACKS_H__*/

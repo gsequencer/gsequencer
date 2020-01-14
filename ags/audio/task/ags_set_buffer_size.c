@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,7 +122,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -138,7 +138,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The buffer size to apply to scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -417,7 +417,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
  *
  * Returns: the new #AgsSetBufferSize
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSetBufferSize*
 ags_set_buffer_size_new(GObject *scope,

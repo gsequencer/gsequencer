@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_playback_window.h>
 #include <ags/X/ags_playback_window_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -59,7 +56,6 @@ gboolean ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -124,27 +120,11 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
 
   /* properties */
   /**
-   * AgsPlaybackWindow:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsPlaybackWindow:main-window:
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -179,8 +159,6 @@ ags_playback_window_init(AgsPlaybackWindow *playback_window)
 	       "title", "MIDI playback",
 	       NULL);
 
-  playback_window->application_context = NULL;
-
   playback_window->main_window = NULL;
 }
 
@@ -195,27 +173,6 @@ ags_playback_window_set_property(GObject *gobject,
   playback_window = AGS_PLAYBACK_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) playback_window->application_context == application_context){
-	return;
-      }
-      
-      if(playback_window->application_context != NULL){
-	g_object_unref(playback_window->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      playback_window->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -254,11 +211,6 @@ ags_playback_window_get_property(GObject *gobject,
   playback_window = AGS_PLAYBACK_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, playback_window->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, playback_window->main_window);
@@ -304,10 +256,6 @@ ags_playback_window_finalize(GObject *gobject)
   AgsPlaybackWindow *playback_window;
 
   playback_window = (AgsPlaybackWindow *) gobject;
-
-  if(playback_window->application_context != NULL){
-    g_object_unref(playback_window->application_context);
-  }
   
   G_OBJECT_CLASS(ags_playback_window_parent_class)->finalize(gobject);
 }
@@ -329,7 +277,7 @@ ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsPlaybackWindow
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlaybackWindow*
 ags_playback_window_new()

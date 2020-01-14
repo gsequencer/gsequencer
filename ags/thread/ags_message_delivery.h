@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MESSAGE_DELIVERY                (ags_message_delivery_get_type())
 #define AGS_MESSAGE_DELIVERY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MESSAGE_DELIVERY, AgsMessageDelivery))
@@ -34,6 +34,8 @@
 #define AGS_IS_MESSAGE_DELIVERY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MESSAGE_DELIVERY))
 #define AGS_MESSAGE_DELIVERY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MESSAGE_DELIVERY, AgsMessageDeliveryClass))
 
+#define AGS_MESSAGE_DELIVERY_GET_OBJ_MUTEX(obj) (&(((AgsMessageDelivery *) obj)->obj_mutex))
+
 typedef struct _AgsMessageDelivery AgsMessageDelivery;
 typedef struct _AgsMessageDeliveryClass AgsMessageDeliveryClass;
 
@@ -41,8 +43,7 @@ struct _AgsMessageDelivery
 {
   GObject gobject;
 
-  pthread_mutexattr_t *obj_mutexattr;
-  pthread_mutex_t *obj_mutex;
+  GRecMutex obj_mutex;
 
   GList *message_queue;
 };
@@ -54,36 +55,38 @@ struct _AgsMessageDeliveryClass
 
 GType ags_message_delivery_get_type();
 
-pthread_mutex_t* ags_message_delivery_get_class_mutex();
+void ags_message_delivery_add_message_queue(AgsMessageDelivery *message_delivery,
+					    GObject *message_queue);
+void ags_message_delivery_remove_message_queue(AgsMessageDelivery *message_delivery,
+					       GObject *message_queue);
 
-void ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
-				    GObject *message_queue);
-void ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
-				       GObject *message_queue);
+GList* ags_message_delivery_find_sender_namespace(AgsMessageDelivery *message_delivery,
+						  gchar *sender_namespace);
+GList* ags_message_delivery_find_recipient_namespace(AgsMessageDelivery *message_delivery,
+						     gchar *recipient_namespace);
 
-GObject* ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
-					     gchar *namespace);
-
-void ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
-				      gchar *namespace,
-				      gpointer message);
-void ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
-					 gchar *namespace,
-					 gpointer message);
+void ags_message_delivery_add_message_envelope(AgsMessageDelivery *message_delivery,
+					       gchar *sender_namespace,
+					       GObject *message_envelope);
+void ags_message_delivery_remove_message_envelope(AgsMessageDelivery *message_delivery,
+						  gchar *sender_namespace,
+						  GObject *message_envelope);
 
 GList* ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
-					gchar *namespace,
+					gchar *recipient_namespace,
 					GObject *sender);
 GList* ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
-					   gchar *namespace,
+					   gchar *recipient_namespace,
 					   GObject *recipient);
 
 GList* ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
-					  gchar *namespace,
+					  gchar *recipient_namespace,
 					  gchar *xpath);
 
 AgsMessageDelivery* ags_message_delivery_get_instance();
 
 AgsMessageDelivery* ags_message_delivery_new();
+
+G_END_DECLS
 
 #endif /*__AGS_MESSAGE_DELIVERY_H__*/

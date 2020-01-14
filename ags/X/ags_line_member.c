@@ -20,10 +20,6 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -52,7 +48,12 @@ void ags_line_member_disconnect(AgsConnectable *connectable);
 
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
+
+AgsPort* ags_line_member_find_specifier(GList *recall,
+					gchar *specifier);
+
 GList* ags_line_member_real_find_port(AgsLineMember *line_member);
+
 
 /**
  * SECTION:ags_line_member
@@ -156,7 +157,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("widget-type",
 				  i18n_pspec("widget type of line member"),
@@ -173,7 +174,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget's label to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("widget-label",
 				   i18n_pspec("label to display"),
@@ -189,7 +190,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin name to control"),
@@ -205,7 +206,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin filename of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -221,7 +222,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin effect of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -237,7 +238,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("port specifier"),
@@ -253,7 +254,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The control port of the recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control port index"),
@@ -269,7 +270,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * If line member has integer ports, this is the number of steps.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-precision",
 				 i18n_pspec("scale precision of line members port"),
@@ -287,7 +288,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * If line member has logarithmic ports, this is the number of step count.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("step-count",
 				   i18n_pspec("step count of line members port"),
@@ -305,7 +306,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The conversion of plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion to apply"),
@@ -321,7 +322,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching simple port of plugin name and specifier.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("port to apply"),
@@ -337,7 +338,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The port data to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("port-data",
 				    i18n_pspec("port data"),
@@ -352,7 +353,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching complex port of plugin name and specifier.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-port",
 				   i18n_pspec("recall port to apply"),
@@ -368,7 +369,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The complex port data to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("recall-port-data",
 				    i18n_pspec("recall port data"),
@@ -383,7 +384,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The task type to apply the port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("task-type",
 				  i18n_pspec("task type to apply"),
@@ -407,7 +408,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The ::change-port signal notifies modified port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_member_signals[CHANGE_PORT] =
     g_signal_new("change-port",
@@ -427,7 +428,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Returns: a #GList-struct with associated ports
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   line_member_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -557,9 +558,9 @@ ags_line_member_set_property(GObject *gobject,
       active = FALSE;
     
       if(GTK_IS_RANGE(child)){
-	adjustment = GTK_RANGE(child)->adjustment;
+	adjustment = gtk_range_get_adjustment(GTK_RANGE(child));
       }else if(GTK_IS_SPIN_BUTTON(child)){
-	adjustment = GTK_SPIN_BUTTON(child)->adjustment;
+	adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(child));
       }else if(AGS_IS_DIAL(child)){
 	adjustment = AGS_DIAL(child)->adjustment;
       }else if(GTK_IS_TOGGLE_BUTTON(child)){
@@ -626,30 +627,43 @@ ags_line_member_set_property(GObject *gobject,
 
       /* set range */
       if(GTK_IS_RANGE(new_child)){
-	gtk_adjustment_set_lower(GTK_RANGE(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(GTK_RANGE(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(GTK_RANGE(new_child)->adjustment,
-				 adjustment->value);
+	new_adjustment = gtk_range_get_adjustment(GTK_RANGE(new_child));
+	
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
       }else if(GTK_IS_SPIN_BUTTON(new_child)){
-	gtk_adjustment_set_lower(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(GTK_SPIN_BUTTON(new_child)->adjustment,
-				 adjustment->value);
+	new_adjustment = gtk_spin_button_get_adjustment(GTK_RANGE(new_child));
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
       }else if(AGS_IS_DIAL(new_child)){
-	gtk_adjustment_set_lower(AGS_DIAL(new_child)->adjustment,
-				 adjustment->lower);
-	gtk_adjustment_set_upper(AGS_DIAL(new_child)->adjustment,
-				 adjustment->upper);
+	GtkAdjustment *new_adjustment;
 
-	gtk_adjustment_set_value(AGS_DIAL(new_child)->adjustment,
-				 adjustment->value);
-	ags_dial_draw((AgsDial *) new_child);
+	new_adjustment = AGS_DIAL(new_child)->adjustment;
+
+	gtk_adjustment_set_lower(new_adjustment,
+				 gtk_adjustment_get_lower(adjustment));
+	gtk_adjustment_set_upper(new_adjustment,
+				 gtk_adjustment_get_upper(adjustment));
+
+	gtk_adjustment_set_value(new_adjustment,
+				 gtk_adjustment_get_value(adjustment));
+
+	gtk_widget_queue_draw((AgsDial *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
@@ -1068,9 +1082,9 @@ ags_line_member_connect(AgsConnectable *connectable)
     if(AGS_IS_DIAL(control)){
       adjustment = AGS_DIAL(control)->adjustment;
     }else if(GTK_IS_RANGE(control)){
-      adjustment = GTK_RANGE(control)->adjustment;
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(control));
     }else if(GTK_IS_SPIN_BUTTON(control)){
-      adjustment = GTK_SPIN_BUTTON(control)->adjustment;
+      adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(control));
     }else if(GTK_IS_TOGGLE_BUTTON(control)){
       line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) control);
 
@@ -1081,8 +1095,12 @@ ags_line_member_connect(AgsConnectable *connectable)
       ags_line_member_change_port(line_member,
 				  &(line_member->active));
     }else if(adjustment != NULL){
+      gdouble value;
+
+      value = gtk_adjustment_get_value(adjustment);
+      
       ags_line_member_change_port(line_member,
-				  &(adjustment->value));
+				  &value);
     }
     
     line_member->flags &= (~AGS_LINE_MEMBER_APPLY_INITIAL);
@@ -1204,8 +1222,7 @@ ags_line_member_set_label(AgsLineMember *line_member,
   }else{
     gtk_frame_set_label_widget((GtkFrame *) line_member,
 			       g_object_new(GTK_TYPE_LABEL,
-					    "wrap", TRUE,
-					    "wrap-mode", PANGO_WRAP_CHAR,
+					    "wrap", FALSE,
 					    "use-markup", TRUE,
 					    "label", g_markup_printf_escaped("<small>%s</small>", label),
 					    NULL));
@@ -1222,7 +1239,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   if((AGS_LINE_MEMBER_RESET_BY_ATOMIC & (line_member->flags)) != 0){
     AgsPort *port;
 
-    pthread_mutex_t *port_mutex;    
+    GRecMutex *port_mutex;    
 
     GValue value = {0,};
 
@@ -1234,14 +1251,10 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     }
 
     /* get port mutex */
-    pthread_mutex_lock(ags_port_get_class_mutex());
-
-    port_mutex = port->obj_mutex;
-      
-    pthread_mutex_unlock(ags_port_get_class_mutex());
+    port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
     /* change */
-    pthread_mutex_lock(port_mutex);
+    g_rec_mutex_lock(port_mutex);
 
     if(!port->port_value_is_pointer){
       if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -1374,7 +1387,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
       }
     }
 
-    pthread_mutex_unlock(port_mutex);
+    g_rec_mutex_unlock(port_mutex);
     
     ags_port_safe_write(line_member->port,
 			&value);
@@ -1395,14 +1408,14 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) line_member,
 						   AGS_TYPE_WINDOW);
   
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,
 				    NULL);
 
-    ags_xorg_application_context_schedule_task(application_context,
-					       G_OBJECT(task));
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  (AgsTask *) task);
   }
 }
 
@@ -1413,7 +1426,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_member_change_port(AgsLineMember *line_member,
@@ -1426,6 +1439,52 @@ ags_line_member_change_port(AgsLineMember *line_member,
 		line_member_signals[CHANGE_PORT], 0,
 		port_data);
   g_object_unref((GObject *) line_member);
+}
+
+AgsPort*
+ags_line_member_find_specifier(GList *recall,
+			       gchar *specifier)
+{
+  AgsPort *current_port;
+    
+  GList *start_port, *port;
+
+  current_port = NULL;
+    
+  while(recall != NULL){
+    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      recall = recall->next;
+	
+      continue;
+    }
+
+    g_object_get(recall->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   specifier);
+    
+#ifdef AGS_DEBUG
+    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+#endif
+
+    if(port != NULL){
+      current_port = port->data;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+
+    if(current_port != NULL){
+      break;
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  return(current_port);
 }
 
 GList*
@@ -1444,51 +1503,6 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   GList *list_start;
   
   gchar *specifier;
-
-  auto AgsPort* ags_line_member_find_specifier(GList *recall);
-
-  AgsPort* ags_line_member_find_specifier(GList *recall){
-    AgsPort *current_port;
-    
-    GList *start_port, *port;
-
-    current_port = NULL;
-    
-    while(recall != NULL){
-      if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-	recall = recall->next;
-	
-	continue;
-      }
-
-      g_object_get(recall->data,
-		   "port", &start_port,
-		   NULL);
-
-      port = ags_port_find_specifier(start_port,
-				     specifier);
-    
-#ifdef AGS_DEBUG
-      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
-#endif
-
-      if(port != NULL){
-	current_port = port->data;
-      }
-
-      g_list_free_full(start_port,
-		       g_object_unref);
-
-      if(current_port != NULL){
-	break;
-      }
-
-      /* iterate */
-      recall = recall->next;
-    }
-
-    return(current_port);
-  }
 
   if(!AGS_IS_LINE_MEMBER(line_member)){
     return(NULL);
@@ -1533,7 +1547,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 	       "play", &list_start,
 	       NULL);
 
-  channel_port = ags_line_member_find_specifier(list_start);
+  channel_port = ags_line_member_find_specifier(list_start,
+						specifier);
 
   g_list_free_full(list_start,
 		   g_object_unref);  
@@ -1543,7 +1558,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 	       "recall", &list_start,
 	       NULL);
     
-  recall_channel_port = ags_line_member_find_specifier(list_start);
+  recall_channel_port = ags_line_member_find_specifier(list_start,
+						       specifier);
 
   g_list_free_full(list_start,
 		   g_object_unref);
@@ -1568,7 +1584,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		 "play", &list_start,
 		 NULL);
 
-    audio_port = ags_line_member_find_specifier(list_start);
+    audio_port = ags_line_member_find_specifier(list_start,
+						specifier);
 
     g_list_free_full(list_start,
 		     g_object_unref);
@@ -1578,7 +1595,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 		 "recall", &list_start,
 		 NULL);
 
-    recall_audio_port = ags_line_member_find_specifier(list_start);
+    recall_audio_port = ags_line_member_find_specifier(list_start,
+						       specifier);
 
     g_list_free_full(list_start,
 		     g_object_unref);
@@ -1623,7 +1641,7 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
  *
  * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_line_member_find_port(AgsLineMember *line_member)
@@ -1650,7 +1668,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
  * Chain changed control and apply the very same value to grouped
  * controls if sticky controls set.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_member_chained_event(AgsLineMember *line_member)
@@ -1720,13 +1738,13 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
 	      if(AGS_IS_DIAL(child_widget)){
 		ags_dial_set_value((AgsDial *) child_widget,
-				   adjustment->value);
+				   gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
-					  adjustment->value);
+					  gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SCALE(child_widget)){
 		gtk_range_set_value((GtkRange *) child_widget,
-				    adjustment->value);
+				    gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
@@ -1775,13 +1793,13 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
 	      if(AGS_IS_DIAL(child_widget)){
 		ags_dial_set_value((AgsDial *) child_widget,
-				   adjustment->value);
+				   gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
-					  adjustment->value);
+					  gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_SCALE(child_widget)){
 		gtk_range_set_value((GtkRange *) child_widget,
-				    adjustment->value);
+				    gtk_adjustment_get_value(adjustment));
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
@@ -1815,7 +1833,7 @@ ags_line_member_chained_event(AgsLineMember *line_member)
  *
  * Returns: the new #AgsLineMember
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLineMember*
 ags_line_member_new()

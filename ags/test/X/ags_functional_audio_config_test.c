@@ -32,8 +32,7 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
+#include <ags/X/ags_window.h>
 
 #include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
@@ -82,9 +81,6 @@ volatile gboolean is_available;
 
 AgsApplicationContext *application_context;
 
-AgsGuiThread *gui_thread;
-AgsTaskThread *task_thread;
-
 void
 ags_functional_audio_config_test_add_test()
 {
@@ -115,11 +111,6 @@ ags_functional_audio_config_test_init_suite()
 {
   application_context = ags_application_context_get_instance();
   
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-
   return(0);
 }
 
@@ -160,7 +151,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -180,7 +171,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -200,7 +191,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -220,7 +211,7 @@ ags_functional_audio_config_test_file_setup()
   
   ags_test_enter();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -269,8 +260,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_audio_config_test_add_test, &is_available);
 
-  pthread_join(ags_functional_test_util_self(),
-	       NULL);
-
+  g_thread_join(ags_functional_test_util_test_runner_thread());
+  
   return(-1);
 }

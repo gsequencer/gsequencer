@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_rt_stream_recycling.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_rt_stream_audio_signal.h>
 
@@ -112,7 +110,7 @@ ags_rt_stream_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsRtStreamRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamRecycling*
 ags_rt_stream_recycling_new(AgsRecycling *source)

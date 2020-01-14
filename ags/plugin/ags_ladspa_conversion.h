@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LADSPA_CONVERSION                (ags_ladspa_conversion_get_type())
 #define AGS_LADSPA_CONVERSION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONVERSION, AgsLadspaConversion))
@@ -81,5 +83,7 @@ void ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, gui
 void ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint flags);
 
 AgsLadspaConversion* ags_ladspa_conversion_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LADSPA_CONVERSION_H__*/

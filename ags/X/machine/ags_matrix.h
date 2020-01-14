@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/machine/ags_cell_pattern.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MATRIX                (ags_matrix_get_type())
 #define AGS_MATRIX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX, AgsMatrix))
@@ -76,5 +82,7 @@ void ags_matrix_output_map_recall(AgsMatrix *matrix,
 				  guint output_pad_start);
 
 AgsMatrix* ags_matrix_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_MATRIX_H__*/

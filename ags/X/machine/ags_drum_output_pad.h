@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_pad.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DRUM_OUTPUT_PAD                (ags_drum_output_pad_get_type())
 #define AGS_DRUM_OUTPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM_OUTPUT_PAD, AgsDrumOutputPad))
@@ -59,5 +66,7 @@ struct _AgsDrumOutputPadClass
 GType ags_drum_output_pad_get_type();
 
 AgsDrumOutputPad* ags_drum_output_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_OUTPUT_PAD_H__*/

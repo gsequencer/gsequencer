@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_NODE_CONTROLLER                (ags_osc_node_controller_get_type())
 #define AGS_OSC_NODE_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_NODE_CONTROLLER, AgsOscNodeController))
@@ -58,5 +62,7 @@ gpointer ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_control
 					  unsigned char *message, guint message_size);
 
 AgsOscNodeController* ags_osc_node_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_NODE_CONTROLLER_H__*/

@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -23,11 +23,9 @@ GtkContainer AtkImplementorIface GtkBuildable
 GtkBin AtkImplementorIface GtkBuildable
 GtkExpander AtkImplementorIface GtkBuildable
 AgsExpander AtkImplementorIface GtkBuildable
-GtkAlignment AtkImplementorIface GtkBuildable
 AgsLedArray AtkImplementorIface GtkBuildable
 AgsHLedArray AtkImplementorIface GtkBuildable
 AgsVLedArray AtkImplementorIface GtkBuildable
-AgsLed AtkImplementorIface GtkBuildable
 AgsScrolledLevelBox AtkImplementorIface GtkBuildable
 AgsScrolledPiano AtkImplementorIface GtkBuildable
 AgsScrolledScaleBox AtkImplementorIface GtkBuildable
@@ -45,7 +43,11 @@ AgsNotebook AtkImplementorIface GtkBuildable GtkOrientable
 AgsIndicator AtkImplementorIface GtkBuildable
 AgsHIndicator AtkImplementorIface GtkBuildable
 AgsVIndicator AtkImplementorIface GtkBuildable
+AgsLed AtkImplementorIface GtkBuildable
 AgsLevel AtkImplementorIface GtkBuildable
 AgsPiano AtkImplementorIface GtkBuildable
 AgsRuler AtkImplementorIface GtkBuildable
 AgsScale AtkImplementorIface GtkBuildable
+GtkWidgetAccessible AtkComponent
+GtkContainerAccessible AtkComponent
+GtkExpanderAccessible AtkComponent AtkAction

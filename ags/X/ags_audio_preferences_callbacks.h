@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,15 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_audio_preferences.h>
 
-int ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences);
+G_BEGIN_DECLS
+
+void ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsAudioPreferences *audio_preferences);
 
 void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *soundcard_editor,
@@ -41,5 +45,7 @@ void ags_audio_preferences_start_jack_callback(GtkButton *button,
 					       AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_stop_jack_callback(GtkButton *button,
 					      AgsAudioPreferences *audio_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_PREFERENCES_CALLBACKS_H__*/

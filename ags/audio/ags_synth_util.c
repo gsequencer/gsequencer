@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_synth_util.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
@@ -36,7 +34,7 @@
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_s8(gint8 *buffer,
@@ -80,7 +78,7 @@ ags_synth_util_get_xcross_count_s8(gint8 *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_s16(gint16 *buffer,
@@ -124,7 +122,7 @@ ags_synth_util_get_xcross_count_s16(gint16 *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_s24(gint32 *buffer,
@@ -168,7 +166,7 @@ ags_synth_util_get_xcross_count_s24(gint32 *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_s32(gint32 *buffer,
@@ -212,7 +210,7 @@ ags_synth_util_get_xcross_count_s32(gint32 *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_s64(gint64 *buffer,
@@ -256,7 +254,7 @@ ags_synth_util_get_xcross_count_s64(gint64 *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_float(float *buffer,
@@ -300,7 +298,7 @@ ags_synth_util_get_xcross_count_float(float *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_double(double *buffer,
@@ -345,7 +343,7 @@ ags_synth_util_get_xcross_count_double(double *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
@@ -407,7 +405,7 @@ ags_synth_util_get_xcross_count_complex(AgsComplex *buffer,
  *
  * Returns: the count of zero-crossings
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_synth_util_get_xcross_count(void *buffer,
@@ -488,7 +486,7 @@ ags_synth_util_get_xcross_count(void *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_s8(gint8 *buffer,
@@ -516,7 +514,7 @@ ags_synth_util_sin_s8(gint8 *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_s16(gint16 *buffer,
@@ -544,7 +542,7 @@ ags_synth_util_sin_s16(gint16 *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_s24(gint32 *buffer,
@@ -572,7 +570,7 @@ ags_synth_util_sin_s24(gint32 *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_s32(gint32 *buffer,
@@ -600,7 +598,7 @@ ags_synth_util_sin_s32(gint32 *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_s64(gint64 *buffer,
@@ -628,7 +626,7 @@ ags_synth_util_sin_s64(gint64 *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_float(float *buffer,
@@ -655,7 +653,7 @@ ags_synth_util_sin_float(float *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_double(double *buffer,
@@ -682,7 +680,7 @@ ags_synth_util_sin_double(double *buffer,
  *
  * Generate sinus wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin_complex(AgsComplex *buffer,
@@ -735,7 +733,7 @@ ags_synth_util_sin_complex(AgsComplex *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_s8(gint8 *buffer,
@@ -766,7 +764,7 @@ ags_synth_util_sawtooth_s8(gint8 *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_s16(gint16 *buffer,
@@ -797,7 +795,7 @@ ags_synth_util_sawtooth_s16(gint16 *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_s24(gint32 *buffer,
@@ -828,7 +826,7 @@ ags_synth_util_sawtooth_s24(gint32 *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_s32(gint32 *buffer,
@@ -859,7 +857,7 @@ ags_synth_util_sawtooth_s32(gint32 *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_s64(gint64 *buffer,
@@ -890,7 +888,7 @@ ags_synth_util_sawtooth_s64(gint64 *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_float(float *buffer,
@@ -920,7 +918,7 @@ ags_synth_util_sawtooth_float(float *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_double(double *buffer,
@@ -950,7 +948,7 @@ ags_synth_util_sawtooth_double(double *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth_complex(AgsComplex *buffer,
@@ -1006,7 +1004,7 @@ ags_synth_util_sawtooth_complex(AgsComplex *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_s8(gint8 *buffer,
@@ -1037,7 +1035,7 @@ ags_synth_util_triangle_s8(gint8 *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_s16(gint16 *buffer,
@@ -1068,7 +1066,7 @@ ags_synth_util_triangle_s16(gint16 *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_s24(gint32 *buffer,
@@ -1099,7 +1097,7 @@ ags_synth_util_triangle_s24(gint32 *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_s32(gint32 *buffer,
@@ -1130,7 +1128,7 @@ ags_synth_util_triangle_s32(gint32 *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_s64(gint64 *buffer,
@@ -1161,7 +1159,7 @@ ags_synth_util_triangle_s64(gint64 *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_float(float *buffer,
@@ -1191,7 +1189,7 @@ ags_synth_util_triangle_float(float *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_double(double *buffer,
@@ -1221,7 +1219,7 @@ ags_synth_util_triangle_double(double *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle_complex(AgsComplex *buffer,
@@ -1277,7 +1275,7 @@ ags_synth_util_triangle_complex(AgsComplex *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_s8(gint8 *buffer,
@@ -1309,7 +1307,7 @@ ags_synth_util_square_s8(gint8 *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_s16(gint16 *buffer,
@@ -1341,7 +1339,7 @@ ags_synth_util_square_s16(gint16 *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_s24(gint32 *buffer,
@@ -1373,7 +1371,7 @@ ags_synth_util_square_s24(gint32 *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_s32(gint32 *buffer,
@@ -1405,7 +1403,7 @@ ags_synth_util_square_s32(gint32 *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_s64(gint64 *buffer,
@@ -1437,7 +1435,7 @@ ags_synth_util_square_s64(gint64 *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_float(float *buffer,
@@ -1468,7 +1466,7 @@ ags_synth_util_square_float(float *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_double(double *buffer,
@@ -1499,7 +1497,7 @@ ags_synth_util_square_double(double *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square_complex(AgsComplex *buffer,
@@ -1556,7 +1554,7 @@ ags_synth_util_square_complex(AgsComplex *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_s8(gint8 *buffer,
@@ -1588,7 +1586,7 @@ ags_synth_util_impulse_s8(gint8 *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_s16(gint16 *buffer,
@@ -1620,7 +1618,7 @@ ags_synth_util_impulse_s16(gint16 *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_s24(gint32 *buffer,
@@ -1652,7 +1650,7 @@ ags_synth_util_impulse_s24(gint32 *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_s32(gint32 *buffer,
@@ -1684,7 +1682,7 @@ ags_synth_util_impulse_s32(gint32 *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_s64(gint64 *buffer,
@@ -1716,7 +1714,7 @@ ags_synth_util_impulse_s64(gint64 *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_float(float *buffer,
@@ -1747,7 +1745,7 @@ ags_synth_util_impulse_float(float *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_double(double *buffer,
@@ -1778,7 +1776,7 @@ ags_synth_util_impulse_double(double *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse_complex(AgsComplex *buffer,
@@ -1836,7 +1834,7 @@ ags_synth_util_impulse_complex(AgsComplex *buffer,
  *
  * Generate sin wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sin(void *buffer,
@@ -1929,7 +1927,7 @@ ags_synth_util_sin(void *buffer,
  *
  * Generate sawtooth wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_sawtooth(void *buffer,
@@ -2022,7 +2020,7 @@ ags_synth_util_sawtooth(void *buffer,
  *
  * Generate triangle wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_triangle(void *buffer,
@@ -2115,7 +2113,7 @@ ags_synth_util_triangle(void *buffer,
  *
  * Generate square wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_square(void *buffer,
@@ -2208,7 +2206,7 @@ ags_synth_util_square(void *buffer,
  *
  * Generate impulse wave.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_synth_util_impulse(void *buffer,

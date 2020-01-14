@@ -81,7 +81,7 @@ ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface)
  * 
  * Returns: %TRUE if operation was successful, otherwise %FALSE.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sound_resource_open(AgsSoundResource *sound_resource,
@@ -105,14 +105,16 @@ ags_sound_resource_open(AgsSoundResource *sound_resource,
  * ags_sound_resource_rw_open:
  * @sound_resource: the #AgsSoundResource
  * @filename: the filename as string
- * @create: create
+ * @audio_channels: the audio channels count
+ * @samplerate: the samplerate
+ * @create: if %TRUE create file, otherwise don't
  * 
  * Open @sound_resource for reading/writing and assign filename. Setting
  * @create to %TRUE causes to create the file if it doesn't exist.
  * 
  * Returns: %TRUE if operation was successful, otherwise %FALSE.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
@@ -142,7 +144,7 @@ ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
  * 
  * Load audio data of @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_load(AgsSoundResource *sound_resource)
@@ -164,7 +166,7 @@ ags_sound_resource_load(AgsSoundResource *sound_resource)
  * 
  * Get information about @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_info(AgsSoundResource *sound_resource,
@@ -191,7 +193,7 @@ ags_sound_resource_info(AgsSoundResource *sound_resource,
  * 
  * Set presets of @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_set_presets(AgsSoundResource *sound_resource,
@@ -222,7 +224,7 @@ ags_sound_resource_set_presets(AgsSoundResource *sound_resource,
  * 
  * Get presets of @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
@@ -257,7 +259,7 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  * 
  * Returns: the count of frames actually read
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
@@ -293,7 +295,7 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  * Write @sbuffer to @sound_resource @frame_count number of 
  * frames having @format by skipping @saudio_channels.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
@@ -318,7 +320,7 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
  * 
  * Flush @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_flush(AgsSoundResource *sound_resource)
@@ -339,7 +341,7 @@ ags_sound_resource_flush(AgsSoundResource *sound_resource)
  * 
  * Seek the @sound_resource @frame_count from @whence.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_seek(AgsSoundResource *sound_resource,
@@ -360,7 +362,7 @@ ags_sound_resource_seek(AgsSoundResource *sound_resource,
  * 
  * Close @sound_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_resource_close(AgsSoundResource *sound_resource)
@@ -381,9 +383,9 @@ ags_sound_resource_close(AgsSoundResource *sound_resource)
  * 
  * Read audio signal from @sound_resource.
  * 
- * Returns: a #GList-struct containing #AgsAudioSignal
+ * Returns: (element-type AgsAudio.AudioSignal) (transfer full): a #GList-struct containing #AgsAudioSignal
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
@@ -451,7 +453,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 						  ags_audio_buffer_util_format_from_soundcard(format));
 
   data = NULL;
-
+  target_data = NULL;
+  
   if(samplerate != target_samplerate){
     buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
     
@@ -463,6 +466,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     
     data = ags_stream_alloc(buffer_size,
 			    format);
+    target_data = ags_stream_alloc(target_buffer_size,
+				   format);
   }
     
   for(i = i_start; i < i_stop; i++){
@@ -514,16 +519,18 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				i,
 				buffer_size, format);
 
-	target_data = ags_audio_buffer_util_resample(data, 1,
-						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						     buffer_size,
-						     target_samplerate);
+	ags_audio_buffer_util_clear_buffer(target_data, 1,
+					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	ags_audio_buffer_util_resample_with_buffer(data, 1,
+						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+						   buffer_size,
+						   target_samplerate,
+						   target_buffer_size,
+						   target_data);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
 						    target_data, 1, 0,
 						    target_buffer_size, copy_mode);
-
-	free(target_data);
       }else{
 	ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 				stream->data, 1,
@@ -540,6 +547,10 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     free(data);
   }
 
+  if(target_data != NULL){
+    free(target_data);
+  }
+  
   start_list = g_list_reverse(start_list);
 
   g_list_foreach(start_list,
@@ -560,9 +571,9 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
  * 
  * Read wave from @sound_resource.
  * 
- * Returns: a #GList-struct containing #AgsWave
+ * Returns: (element-type AgsAudio.Wave) (transfer full): a #GList-struct containing #AgsWave
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
@@ -635,7 +646,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 						  ags_audio_buffer_util_format_from_soundcard(format));
   
   data = NULL;
-
+  target_data = NULL;
+  
   if(samplerate != target_samplerate){
     buffer_size = (guint) ceil((double) target_buffer_size / (double) target_samplerate * (double) samplerate);
     
@@ -647,6 +659,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     
     data = ags_stream_alloc(buffer_size,
 			    format);
+    target_data = ags_stream_alloc(target_buffer_size,
+				   format);
   }
   
   for(i = i_start; i < i_stop; i++){
@@ -717,16 +731,18 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 					   i,
 					   buffer_size, format);
 
-	target_data = ags_audio_buffer_util_resample(data, 1,
-						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
-						     buffer_size,
-						     target_samplerate);
+	ags_audio_buffer_util_clear_buffer(target_data, 1,
+					   target_buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	ags_audio_buffer_util_resample_with_buffer(data, 1,
+						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+						   buffer_size,
+						   target_samplerate,
+						   target_buffer_size,
+						   target_data);
 
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						    target_data, 1, 0,
 						    frame_count, copy_mode);
-
-	free(target_data);
 
 	num_read = (guint) (ceil((double) num_read / (double) buffer_size * (double) frame_count));
       }else{
@@ -780,6 +796,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   if(data != NULL){
     free(data);
   }
+  
+  if(target_data != NULL){
+    free(target_data);
+  }  
 
   g_list_foreach(start_list,
 		 (GFunc) g_object_ref,

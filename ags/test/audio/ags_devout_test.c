@@ -98,7 +98,6 @@ ags_devout_test_dispose()
   gboolean success;
   
   devout = g_object_new(AGS_TYPE_DEVOUT,
-			"application-context", audio_application_context,
 			NULL);
   g_object_ref(devout);
   
@@ -106,8 +105,7 @@ ags_devout_test_dispose()
   /* run dispose */
   g_object_run_dispose(devout);
 
-  /* assert no application context */
-  CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(devout)) == NULL);
+  success = TRUE;
   
   /* assert */
   CU_ASSERT(success == TRUE);
@@ -122,7 +120,6 @@ ags_devout_test_finalize()
   guint i;
   
   devout = g_object_new(AGS_TYPE_DEVOUT,
-			"application-context", audio_application_context,
 			NULL);
 
   /* run dispose */

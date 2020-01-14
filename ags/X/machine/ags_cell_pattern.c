@@ -20,14 +20,9 @@
 #include <ags/X/machine/ags_cell_pattern.h>
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -74,7 +69,6 @@ gchar* ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 static gpointer ags_cell_pattern_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *cell_pattern_style = NULL;
 GHashTable *ags_cell_pattern_led_queue_draw = NULL;
 
 GType
@@ -334,9 +328,12 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
   cell_pattern = AGS_CELL_PATTERN(connectable);
 
   cell_pattern->flags |= AGS_CELL_PATTERN_CONNECTED;
-
+  
   g_signal_connect_after(G_OBJECT(cell_pattern), "focus_in_event",
 			 G_CALLBACK(ags_cell_pattern_focus_in_callback), (gpointer) cell_pattern);
+
+  g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "draw",
+		   G_CALLBACK(ags_cell_pattern_draw_callback), (gpointer) cell_pattern);
   
   g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "key_press_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event), (gpointer) cell_pattern);
@@ -344,16 +341,10 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "key_release_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event), (gpointer) cell_pattern);
 
-  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "configure_event",
-			 G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback), (gpointer) cell_pattern);
-
-  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "expose_event",
-			 G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback), (gpointer) cell_pattern);
-
   g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "button_press_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback), (gpointer) cell_pattern);
 
-  g_signal_connect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment), "value_changed",
+  g_signal_connect(G_OBJECT(gtk_range_get_adjustment(GTK_RANGE(cell_pattern->vscrollbar))), "value_changed",
 		   G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback), (gpointer) cell_pattern);
 }
 
@@ -378,24 +369,21 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect(G_OBJECT(cell_pattern->drawing_area),
+		      "any_signal::draw",
+		      G_CALLBACK(ags_cell_pattern_draw_callback),
+		      (gpointer) cell_pattern,
 		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),
 		      (gpointer) cell_pattern,
 		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event),
 		      (gpointer) cell_pattern,
-		      "any_signal::configure_event",
-		      G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback),
-		      (gpointer) cell_pattern,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback),
-		      (gpointer) cell_pattern,
 		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment),
+  g_object_disconnect(G_OBJECT(gtk_range_get_adjustment(GTK_RANGE(cell_pattern->vscrollbar))),
 		      "any_signal::value_changed",
 		      G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback),
 		      (gpointer) cell_pattern,
@@ -433,18 +421,6 @@ ags_cell_pattern_realize(GtkWidget *widget)
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
-
-#if 0
-  if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_rc_get_style((GtkWidget *) cell_pattern));
-  }
-#endif
-  
-  gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
-		       NULL);  
-
-  gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
-		       NULL);
 }
 
 void
@@ -655,20 +631,16 @@ ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 }
 
 void
-ags_cell_pattern_paint(AgsCellPattern *cell_pattern)
-{
-  ags_cell_pattern_draw_gutter(cell_pattern);
-  ags_cell_pattern_draw_matrix(cell_pattern);
-
-  ags_cell_pattern_draw_cursor(cell_pattern);
-}
-
-void
-ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
+ags_cell_pattern_draw_grid(AgsCellPattern *cell_pattern, cairo_t *cr)
 {
   AgsMachine *machine;
   
-  AgsChannel *start_channel;
+  GtkStyleContext *cell_pattern_style_context;
+
+  GdkRGBA *fg_color;
+  GdkRGBA *bg_color;
+
+  AgsChannel *start_channel, *nth_channel;
   AgsChannel *channel, *prev_pad;
 
   guint input_pads;
@@ -676,30 +648,16 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *audio_mutex;
+  GValue value = {0,};
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = machine->audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
   /* retrieve some audio fields */
-  pthread_mutex_lock(audio_mutex);
-  
-  input_pads = machine->audio->input_pads;
-
-  start_channel = machine->audio->input;
-
-  if(start_channel != NULL){
-    g_object_ref(start_channel);
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(machine->audio,
+	       "input-pads", &input_pads,
+	       "input", &start_channel,
+	       NULL);
 
   if(input_pads == 0){
     if(start_channel != NULL){
@@ -708,6 +666,25 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 
     return;
   }
+
+  /* style context */
+  cell_pattern_style_context = gtk_widget_get_style_context(GTK_WIDGET(cell_pattern->drawing_area));
+
+  gtk_style_context_get_property(cell_pattern_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cell_pattern_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
   
   if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
@@ -715,46 +692,76 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
     gutter = input_pads;
   }
 
-  current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
+  current_gutter = (guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
   
-  /* clear bg */
-  gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
-		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
-		     TRUE,
-		     0, 0,
-		     cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * cell_pattern->cell_height);
+  /* clear bg */  
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  (gdouble) cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, (gdouble) gutter * cell_pattern->cell_height);
+
+  cairo_fill(cr);
 
   if(input_pads - ((guint) current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(start_channel,
-			      input_pads - (current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY));
+    nth_channel = ags_channel_nth(start_channel,
+				  input_pads - (current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY));
   }else if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(start_channel,
-			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
+    nth_channel = ags_channel_nth(start_channel,
+				  AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
   }else{
-    channel = ags_channel_nth(start_channel,
-			      input_pads - 1);
+    nth_channel = ags_channel_nth(start_channel,
+				  input_pads - 1);
   }
   
-  if(channel == NULL){
+  if(nth_channel == NULL){
     if(start_channel != NULL){
       g_object_unref(start_channel);
     }
     
+    g_boxed_free(GDK_TYPE_RGBA, fg_color);
+    g_boxed_free(GDK_TYPE_RGBA, bg_color);
+    
     return;
   }
 
+  channel = nth_channel;
+  g_object_ref(channel);
+  
   prev_pad = NULL;
+
+  /* the grid */
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->green,
+			fg_color->blue,
+			fg_color->alpha);
+
+  cairo_set_line_width(cr,
+		       0.625);
+
+  for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
+    cairo_move_to(cr,
+		  (double) j * (double) cell_pattern->cell_width, 0.0);
+
+    cairo_line_to(cr,
+		  (double) j * (double) cell_pattern->cell_width, (double) gutter * (double) cell_pattern->cell_height);
+
+    cairo_stroke(cr);
+  }
   
   for (i = 0; channel != NULL && i < gutter; i++){
-    for (j = 0; j < 32; j++){
-      gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
-			 GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
-			 FALSE,
-			 j * cell_pattern->cell_width, i * cell_pattern->cell_height,
-			 cell_pattern->cell_width, cell_pattern->cell_height);
+    cairo_move_to(cr,
+		  0.0, (double) i * (double) cell_pattern->cell_height);
 
-      ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
-    }
+    cairo_line_to(cr,
+		  (double) AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY * (double) cell_pattern->cell_width, (double) i * (double) cell_pattern->cell_height);
+
+    cairo_stroke(cr);
 
     /* iterate */
     prev_pad = ags_channel_prev_pad(channel);
@@ -764,22 +771,24 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
     channel = prev_pad;
   }
 
+  /* unref */
+  g_object_unref(start_channel);
+  g_object_unref(nth_channel);
+
   if(prev_pad != NULL){
     g_object_unref(prev_pad);
   }
 
-  /* unref */
-  if(start_channel != NULL){
-    g_object_unref(start_channel);
-  }
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
 }
 
 void
-ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
+ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern, cairo_t *cr)
 {
   AgsMachine *machine;
 
-  AgsChannel *start_channel;
+  AgsChannel *start_channel, *nth_channel;
   AgsChannel *channel, *prev_pad;
 
   guint input_pads;
@@ -787,30 +796,14 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *audio_mutex;
-
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = machine->audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
   /* get some audio fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input_pads = machine->audio->input_pads;
-
-  start_channel = machine->audio->input;
-
-  if(start_channel != NULL){
-    g_object_ref(start_channel);
-  }
-    
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(machine->audio,
+	       "input-pads", &input_pads,
+	       "input", &start_channel,
+	       NULL);
 
   if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
@@ -818,12 +811,12 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     gutter = input_pads;
   }
 
-  current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
+  current_gutter = (guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
 
-  channel = ags_channel_nth(start_channel,
-			    input_pads - current_gutter - 1);
+  nth_channel = ags_channel_nth(start_channel,
+				input_pads - current_gutter - 1);
 
-  if(channel == NULL){
+  if(nth_channel == NULL){
     if(start_channel != NULL){
       g_object_unref(start_channel);
     }
@@ -831,11 +824,16 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     return;
   }
 
+  channel = nth_channel;
+  g_object_ref(channel);
+  
   prev_pad = NULL;
 
   for (i = 0; channel != NULL && i < gutter; i++){
     for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
-      ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
+      ags_cell_pattern_redraw_gutter_point(cell_pattern, cr,
+					   channel,
+					   j, i);
     }
     
     /* iterate */
@@ -846,44 +844,45 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     channel = prev_pad;
   }
 
+  /* unref */
+  g_object_unref(start_channel);
+  g_object_unref(nth_channel);
+
   if(prev_pad != NULL){
     g_object_unref(prev_pad);
-  }
-
-  /* unref */
-  if(start_channel != NULL){
-    g_object_unref(start_channel);
   }
 }
 
 void
-ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern)
+ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern, cairo_t *cr)
 {
   guint i, j;
 
-  if(cell_pattern->cursor_y >= GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value &&
-     cell_pattern->cursor_y < GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + cell_pattern->n_rows){
-    i = cell_pattern->cursor_y - GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
+  if(cell_pattern->cursor_y >= gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) &&
+     cell_pattern->cursor_y < gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + cell_pattern->n_rows){
+    i = cell_pattern->cursor_y - gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar));
     j = cell_pattern->cursor_x;
     
     if((AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)) != 0){
-      ags_cell_pattern_highlight_gutter_point(cell_pattern, j, i);
+      ags_cell_pattern_highlight_gutter_point(cell_pattern, cr,
+					      j, i);
     }else{
-      ags_cell_pattern_unpaint_gutter_point(cell_pattern, j, i);
+      ags_cell_pattern_unpaint_gutter_point(cell_pattern, cr,
+					    j, i);
     }
   }
 }
 
 void
-ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *channel, guint j, guint i)
+ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+				     AgsChannel *channel,
+				     guint j, guint i)
 {
   AgsMachine *machine;
 
-  AgsPattern *pattern;
+  GList *start_pattern;
   
   gboolean do_highlight;
-  
-  pthread_mutex_t *channel_mutex;
 
   if(channel == NULL ||
      channel->pattern == NULL){
@@ -893,50 +892,97 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = channel->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  /* get channel fields */
+  g_object_get(channel,
+	       "pattern", &start_pattern,
+	       NULL);
 
   /* redraw */
-  pthread_mutex_lock(channel_mutex);
-
-  pattern = channel->pattern->data;
-  
-  pthread_mutex_unlock(channel_mutex);
-
-  do_highlight = ags_pattern_get_bit(pattern,
+  do_highlight = ags_pattern_get_bit(start_pattern->data,
 				     machine->bank_0,
 				     machine->bank_1,
 				     j);
   
   if(do_highlight){
-    ags_cell_pattern_highlight_gutter_point(cell_pattern, j, i);
+    ags_cell_pattern_highlight_gutter_point(cell_pattern, cr,
+					    j, i);
   }else{
-    ags_cell_pattern_unpaint_gutter_point(cell_pattern, j, i);
+    ags_cell_pattern_unpaint_gutter_point(cell_pattern, cr,
+					  j, i);
   }
+
+  g_list_free_full(start_pattern,
+		   g_object_unref);
 }
 
 void
-ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i)
+ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+					guint j, guint i)
 {
-  gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
-		     GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
-		     TRUE,
-		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height + 1,
-		     cell_pattern->cell_width - 1, cell_pattern->cell_height - 1);
+  GtkStyleContext *cell_pattern_style_context;
+
+  GdkRGBA *fg_color;
+  
+  GValue value = {0,};
+
+  cell_pattern_style_context = gtk_widget_get_style_context(GTK_WIDGET(cell_pattern->drawing_area));
+
+  gtk_style_context_get_property(cell_pattern_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+  
+  cairo_set_source_rgba(cr,
+			fg_color->red,
+			fg_color->green,
+			fg_color->blue,
+			fg_color->alpha);
+  
+  cairo_rectangle(cr,
+		  (gdouble) j * (gdouble) cell_pattern->cell_width + 1.0, (gdouble) i * (gdouble) cell_pattern->cell_height + 1.0,
+		  (gdouble) cell_pattern->cell_width - 1.0, (gdouble) cell_pattern->cell_height - 1.0);
+
+  cairo_fill(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
 }
 
 void
-ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i)
+ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, cairo_t *cr,
+				      guint j, guint i)
 {
-  gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
-		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
-		     TRUE,
-		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height +1,
-		     cell_pattern->cell_width - 1, cell_pattern->cell_height - 1);
+  GtkStyleContext *cell_pattern_style_context;
+
+  GdkRGBA *bg_color;
+  
+  GValue value = {0,};
+
+  cell_pattern_style_context = gtk_widget_get_style_context(GTK_WIDGET(cell_pattern->drawing_area));
+
+  gtk_style_context_get_property(cell_pattern_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+  
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+  
+  cairo_rectangle(cr,
+		  (gdouble) j * (gdouble) cell_pattern->cell_width + 1.0, (gdouble) i * (gdouble) cell_pattern->cell_height + 1.0,
+		  (gdouble) cell_pattern->cell_width - 1.0, (gdouble) cell_pattern->cell_height - 1.0);
+
+  cairo_fill(cr);
+
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
 }
 
 void
@@ -1012,7 +1058,7 @@ ags_cell_pattern_play(AgsCellPattern *cell_pattern, guint line)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
@@ -1140,7 +1186,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
  *
  * Returns: a new #AgsCellPattern
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCellPattern*
 ags_cell_pattern_new()

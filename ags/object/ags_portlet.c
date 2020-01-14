@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/object/ags_portlet.h>
-
-#include <stdio.h>
 
 void ags_portlet_base_init(AgsPortletInterface *ginterface);
 
@@ -66,12 +64,12 @@ ags_portlet_base_init(AgsPortletInterface *ginterface)
 
 /**
  * ags_portlet_set_port:
- * @portlet: an #AgsPortlet
+ * @portlet: the #AgsPortlet
  * @port: the #GObject
  *
  * Set port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
@@ -86,13 +84,13 @@ ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
 
 /**
  * ags_portlet_get_port:
- * @portlet: an #AgsPortlet
+ * @portlet: the #AgsPortlet
  *
  * Get port.
  *
- * Returns: the #GObject
+ * Returns: (transfer full): the #GObject
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_portlet_get_port(AgsPortlet *portlet)
@@ -102,18 +100,19 @@ ags_portlet_get_port(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->get_port, NULL);
+  
   return(portlet_interface->get_port(portlet));
 }
 
 /**
  * ags_portlet_list_safe_properties:
- * @portlet: an #AgsPortlet
+ * @portlet: the #AgsPortlet
  *
  * Retrieve thread-safe properties.
  *
- * Returns: a #GList containing properties
+ * Returns: (element-type utf8) (transfer full): a #GList containing properties
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_portlet_list_safe_properties(AgsPortlet *portlet)
@@ -123,18 +122,19 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->list_safe_properties, NULL);
+  
   return(portlet_interface->list_safe_properties(portlet));
 }
 
 /**
  * ags_portlet_safe_get_property:
- * @portlet: an #AgsPortlet
+ * @portlet: the #AgsPortlet
  * @property_name: propertie's name
  * @value: the #GValue
  *
  * Get property thread safe.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
@@ -149,13 +149,13 @@ ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
 
 /**
  * ags_portlet_safe_set_property:
- * @portlet: an #AgsPortlet
+ * @portlet: the #AgsPortlet
  * @property_name: propertie's name
  * @value: the #GValue
  *
  * Set property thread safe.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_portlet_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)

@@ -144,7 +144,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -166,7 +166,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    *
    * The ::set-machine notify about modified machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   connection_editor_signals[SET_MACHINE] =
     g_signal_new("set-machine",
@@ -219,7 +219,7 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   connection_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.vbox, (GtkWidget*) notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(connection_editor), (GtkWidget*) notebook, TRUE, TRUE, 0);
 
   /* output listing editor */
   connection_editor->output_listing_editor_scrolled_window =
@@ -239,13 +239,13 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 
   /* GtkButton's in GtkDialog->action_area  */
   connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
 
   connection_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
 
   connection_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_action_area(connection_editor), (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
 }
 
 void
@@ -312,10 +312,6 @@ ags_connection_editor_connect(AgsConnectable *connectable)
   g_signal_connect(connection_editor, "delete-event",
 		   G_CALLBACK(ags_connection_editor_delete_event), connection_editor);
   
-  /* GtkNotebook */
-  g_signal_connect((GtkNotebook *) connection_editor->notebook, "switch-page",
-		   G_CALLBACK(ags_connection_editor_switch_page_callback), (gpointer) connection_editor);
-
   /* AgsConnectionEditor tabs */
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_listing_editor));
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->input_listing_editor));
@@ -403,7 +399,7 @@ ags_connection_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
@@ -506,7 +502,7 @@ ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, A
  *
  * Is emitted as machine gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
@@ -528,7 +524,7 @@ ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMac
  *
  * Returns: the new #AgsConnectionEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsConnectionEditor*
 ags_connection_editor_new(AgsMachine *machine)

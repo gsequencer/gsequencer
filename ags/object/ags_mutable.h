@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MUTABLE                    (ags_mutable_get_type())
 #define AGS_MUTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MUTABLE, AgsMutable))
 #define AGS_MUTABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_MUTABLE, AgsMutableInterface))
@@ -43,5 +45,7 @@ struct _AgsMutableInterface
 GType ags_mutable_get_type();
 
 void ags_mutable_set_muted(AgsMutable *mutable, gboolean muted);
+
+G_END_DECLS
 
 #endif /*__AGS_MUTABLE_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,12 +22,21 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_input_editor.h>
 
-int ags_input_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsInputEditor *input_editor);
+G_BEGIN_DECLS
+
+void ags_input_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsInputEditor *input_editor);
 
 void ags_input_editor_soundcard_callback(GtkComboBoxText *combo_box, AgsInputEditor *input_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_INPUT_EDITOR_CALLBACKS_H__*/

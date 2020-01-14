@@ -23,14 +23,21 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TIME_ZERO "0000:00.000"
 
-#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
-#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+#define AGS_USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
+#define AGS_NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
 gchar* ags_time_get_uptime_from_offset(guint offset,
 				       gdouble bpm,
 				       gdouble delay,
 				       gdouble delay_factor);
+
+gboolean ags_time_timeout_expired(struct timespec *start_time,
+				  struct timespec *timeout_delay);
+
+G_END_DECLS
 
 #endif /*__AGS_TIME__*/

@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PRESET                (ags_preset_get_type())
 #define AGS_PRESET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PRESET, AgsPreset))
@@ -32,13 +32,14 @@
 #define AGS_IS_PRESET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PRESET))
 #define AGS_PRESET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PRESET, AgsPresetClass))
 
-#define AGS_PRESET_GET_OBJ_MUTEX(obj) (((AgsPreset *) obj)->obj_mutex)
+#define AGS_PRESET_GET_OBJ_MUTEX(obj) (&(((AgsPreset *) obj)->obj_mutex))
 
 typedef struct _AgsPreset AgsPreset;
 typedef struct _AgsPresetClass AgsPresetClass;
 
 /**
  * AgsPresetFlags:
+ * @AGS_PRESET_ADDED_TO_REGISTRY: the preset was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_PRESET_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
  * 
  * Enum values to control the behavior or indicate internal state of #AgsPreset by
@@ -61,8 +62,7 @@ struct _AgsPreset
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   GObject *audio;
 
@@ -92,8 +92,6 @@ GType ags_preset_get_type();
 
 GQuark ags_preset_error_quark();
 
-pthread_mutex_t* ags_preset_get_class_mutex();
-
 gboolean ags_preset_test_flags(AgsPreset *preset, guint flags);
 void ags_preset_set_flags(AgsPreset *preset, guint flags);
 void ags_preset_unset_flags(AgsPreset *preset, guint flags);
@@ -113,5 +111,7 @@ void ags_preset_get_parameter(AgsPreset *preset,
 			      GError **error);
 
 AgsPreset* ags_preset_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PRESET_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_XML_AUTHENTICATION                (ags_xml_authentication_get_type())
 #define AGS_XML_AUTHENTICATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XML_AUTHENTICATION, AgsXmlAuthentication))
 #define AGS_XML_AUTHENTICATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_XML_AUTHENTICATION, AgsXmlAuthenticationClass))
@@ -32,12 +34,16 @@
 #define AGS_IS_XML_AUTHENTICATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XML_AUTHENTICATION))
 #define AGS_XML_AUTHENTICATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XML_AUTHENTICATION, AgsXmlAuthenticationClass))
 
+#define AGS_XML_AUTHENTICATION_GET_OBJ_MUTEX(obj) (&(((AgsXmlAuthentication *) obj)->obj_mutex))
+
 typedef struct _AgsXmlAuthentication AgsXmlAuthentication;
 typedef struct _AgsXmlAuthenticationClass AgsXmlAuthenticationClass;
 
 struct _AgsXmlAuthentication
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
 
   gchar *filename;
   gchar *encoding;
@@ -54,9 +60,14 @@ struct _AgsXmlAuthenticationClass
 
 GType ags_xml_authentication_get_type();
 
+void ags_xml_authentication_open_filename(AgsXmlAuthentication *xml_authentication,
+					  gchar *filename);
+
 xmlNode* ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
 					       gchar *user_uuid);
 
 AgsXmlAuthentication* ags_xml_authentication_new();
+
+G_END_DECLS
 
 #endif /*__AGS_XML_AUTHENTICATION_H__*/

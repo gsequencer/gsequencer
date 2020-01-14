@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ANIMATION_WINDOW                (ags_animation_window_get_type())
 #define AGS_ANIMATION_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ANIMATION_WINDOW, AgsAnimationWindow))
 #define AGS_ANIMATION_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ANIMATION_WINDOW, AgsAnimationWindowClass))
@@ -48,6 +55,11 @@ struct _AgsAnimationWindow
   guint image_size;
   unsigned char *bg_data;
   unsigned char *cache_data;
+
+  guint text_box_x0;
+  guint text_box_y0;
+
+  GdkRGBA *text_color;
 };
 
 struct _AgsAnimationWindowClass
@@ -60,5 +72,7 @@ GType ags_animation_window_get_type(void);
 gboolean ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window);
 
 AgsAnimationWindow* ags_animation_window_new();
+
+G_END_DECLS
 
 #endif /*__AGS_ANIMATION_WINDOW_H__*/

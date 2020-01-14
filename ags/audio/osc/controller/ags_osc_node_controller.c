@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/controller/ags_osc_node_controller.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -123,7 +121,7 @@ enum{
 static gpointer ags_osc_node_controller_parent_class = NULL;
 static guint osc_node_controller_signals[LAST_SIGNAL];
 
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_osc_node_controller_get_type()
@@ -190,7 +188,7 @@ ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controlle
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_node_controller_signals[GET_DATA] =
     g_signal_new("get-data",
@@ -221,7 +219,7 @@ ags_osc_node_controller_set_property(GObject *gobject,
 {
   AgsOscNodeController *osc_node_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_node_controller = AGS_OSC_NODE_CONTROLLER(gobject);
 
@@ -243,7 +241,7 @@ ags_osc_node_controller_get_property(GObject *gobject,
 {
   AgsOscNodeController *osc_node_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_node_controller = AGS_OSC_NODE_CONTROLLER(gobject);
 
@@ -1267,7 +1265,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
     }
     
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -1279,7 +1277,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       gchar *endptr;
@@ -1549,7 +1547,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
     static const size_t index_max_matches = 2;
 
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -1563,7 +1561,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
       type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
@@ -2276,7 +2274,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
     static const size_t index_max_matches = 2;
 
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2290,7 +2288,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
 
     if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
       type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
@@ -2724,7 +2722,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 {
   AgsOscResponse *osc_response;
 
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -2744,7 +2742,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
   
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   real_packet_size = 0;
   packet_size = 0;
@@ -2778,7 +2776,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
     
     return(start_response);
   }else if(!strncmp(path + path_offset,
@@ -2808,7 +2806,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
     path_offset += 8;
 
     /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
+    g_mutex_lock(&regex_mutex);
   
     if(!regex_compiled){
       regex_compiled = TRUE;
@@ -2820,7 +2818,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
     }
 
-    pthread_mutex_unlock(&regex_mutex);
+    g_mutex_unlock(&regex_mutex);
     
     g_object_get(recall,
 		 "port", &start_port,
@@ -2913,7 +2911,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -2932,7 +2930,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -2970,7 +2968,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -3019,7 +3017,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	g_list_free_full(start_port,
 			 g_object_unref);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 	
 	return(start_response);
       }
@@ -3061,7 +3059,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       g_list_free_full(start_port,
 		       g_object_unref);      
 
-      g_object_unref(task_thread);
+      g_object_unref(task_launcher);
 
       return(start_response);
     }    
@@ -3080,12 +3078,12 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
-    g_object_unref(task_thread);
+    g_object_unref(task_launcher);
 
     return(start_response);
   }
 
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
   
   return(start_response);
 }
@@ -3191,17 +3189,17 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
       guint port_value_length;
       gboolean port_value_is_pointer;
       
-      pthread_mutex_t *port_mutex;
+      GRecMutex *port_mutex;
 
       /* get port mutex */
       port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* create current path */
-      pthread_mutex_lock(port_mutex);
+      g_rec_mutex_lock(port_mutex);
 
       specifier = g_strdup(port->specifier);
       
-      pthread_mutex_unlock(port_mutex);
+      g_rec_mutex_unlock(port_mutex);
       
       if(channel != NULL){
 	current_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]/%s[%d]/%s/AgsPort[%s]:value",
@@ -3259,7 +3257,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	type_tag[port_value_length + 4] = ']';
 	
 	if(port_value_type == G_TYPE_BOOLEAN){	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    gboolean is_active;
@@ -3273,7 +3271,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    }
 	  }
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 	  
 	  /* node path */
 	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
@@ -3338,7 +3336,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    gint64 value;
@@ -3349,7 +3347,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 					  value);
 	  }
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
 	  ags_osc_buffer_util_put_int32(packet,
@@ -3392,7 +3390,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    guint64 value;
@@ -3404,7 +3402,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 					  value);
 	  }
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
 	  ags_osc_buffer_util_put_int32(packet,
@@ -3447,7 +3445,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    gfloat value;
@@ -3458,7 +3456,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 					  value);
 	  }
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
 	  ags_osc_buffer_util_put_int32(packet,
@@ -3501,7 +3499,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	    return(start_response);
 	  }
 	  
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  for(i = 0; i < port_value_length; i++){
 	    gdouble value;
@@ -3512,7 +3510,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 					   value);
 	  }
 
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  /* packet size */
 	  ags_osc_buffer_util_put_int32(packet,
@@ -3523,11 +3521,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  gboolean is_active;
 	    
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  is_active = port->port_value.ags_port_boolean;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  if(is_active){
 	    ags_osc_buffer_util_put_string(packet + packet_size,
@@ -3566,11 +3564,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  gint64 value;
 	  
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  value = port->port_value.ags_port_int;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 ",sh", -1);
@@ -3609,11 +3607,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  guint64 value;
 	  
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  value = port->port_value.ags_port_uint;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 ",sh", -1);
@@ -3653,11 +3651,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  gfloat value;
 	  
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  value = port->port_value.ags_port_float;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 ",sf", -1);
@@ -3696,11 +3694,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  gdouble value;
 	  
 	  /* message type tag */
-	  pthread_mutex_lock(port_mutex);
+	  g_rec_mutex_lock(port_mutex);
 
 	  value = port->port_value.ags_port_double;
 	  
-	  pthread_mutex_unlock(port_mutex);
+	  g_rec_mutex_unlock(port_mutex);
 
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 ",sd", -1);
@@ -3850,7 +3848,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       path_offset += 13;
 
       /* compile regex */
-      pthread_mutex_lock(&regex_mutex);
+      g_mutex_lock(&regex_mutex);
   
       if(!regex_compiled){
 	regex_compiled = TRUE;
@@ -3862,7 +3860,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
       }
 
-      pthread_mutex_unlock(&regex_mutex);
+      g_mutex_unlock(&regex_mutex);
 
       soundcard = 
 	start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
@@ -4085,7 +4083,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       path_offset += 13;
 
       /* compile regex */
-      pthread_mutex_lock(&regex_mutex);
+      g_mutex_lock(&regex_mutex);
   
       if(!regex_compiled){
 	regex_compiled = TRUE;
@@ -4097,7 +4095,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
       }
 
-      pthread_mutex_unlock(&regex_mutex);
+      g_mutex_unlock(&regex_mutex);
 
       sequencer = 
 	start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
@@ -4317,7 +4315,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       path_offset += 9;
       
       /* compile regex */
-      pthread_mutex_lock(&regex_mutex);
+      g_mutex_lock(&regex_mutex);
   
       if(!regex_compiled){
 	regex_compiled = TRUE;
@@ -4329,7 +4327,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
       }
 
-      pthread_mutex_unlock(&regex_mutex);
+      g_mutex_unlock(&regex_mutex);
 
       audio = 
 	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -4627,7 +4625,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
@@ -4656,7 +4654,7 @@ ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
  * 
  * Returns: the #AgsOscNodeController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscNodeController*
 ags_osc_node_controller_new()

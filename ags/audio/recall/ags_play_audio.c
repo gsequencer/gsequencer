@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_play_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
 void ags_play_audio_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_play_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_audio_init(AgsPlayAudio *play_audio);
 void ags_play_audio_set_property(GObject *gobject,
 				 guint prop_id,
@@ -39,8 +36,6 @@ void ags_play_audio_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_play_audio_dispose(GObject *gobject);
 void ags_play_audio_finalize(GObject *gobject);
-
-void ags_play_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_play_audio_set_muted(AgsMutable *mutable, gboolean muted);
 
@@ -62,7 +57,6 @@ enum{
 };
 
 static gpointer ags_play_audio_parent_class = NULL;
-static AgsPluginInterface *ags_play_audio_parent_plugin_interface;
 
 static const gchar *ags_play_audio_plugin_name = "ags-play";
 static const gchar *ags_play_audio_specifier[] = {
@@ -98,12 +92,6 @@ ags_play_audio_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						 "AgsPlayAudio",
 						 &ags_play_audio_info,
@@ -112,10 +100,6 @@ ags_play_audio_get_type()
     g_type_add_interface_static(ags_type_play_audio,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_audio);
   }
@@ -127,12 +111,6 @@ void
 ags_play_audio_mutable_interface_init(AgsMutableInterface *mutable)
 {
   mutable->set_muted = ags_play_audio_set_muted;
-}
-
-void
-ags_play_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  /* empty */
 }
 
 void
@@ -159,7 +137,7 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
    *
    * The mute port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute audio"),
@@ -218,7 +196,7 @@ ags_play_audio_set_property(GObject *gobject,
 {
   AgsPlayAudio *play_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_audio = AGS_PLAY_AUDIO(gobject);
 
@@ -232,10 +210,10 @@ ags_play_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == play_audio->muted){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -250,7 +228,7 @@ ags_play_audio_set_property(GObject *gobject,
 
       play_audio->muted = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -267,7 +245,7 @@ ags_play_audio_get_property(GObject *gobject,
 {
   AgsPlayAudio *play_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_audio = AGS_PLAY_AUDIO(gobject);
 
@@ -277,32 +255,16 @@ ags_play_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_MUTED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_audio->muted);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
-  }
-}
-
-void
-ags_play_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "muted", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
   }
 }
 
@@ -370,9 +332,9 @@ ags_play_audio_get_muted_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -400,7 +362,7 @@ ags_play_audio_get_muted_plugin_port()
 		      1.0);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(plugin_port);
 }
@@ -413,7 +375,7 @@ ags_play_audio_get_muted_plugin_port()
  *
  * Returns: a new #AgsPlayAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayAudio*
 ags_play_audio_new(AgsAudio *audio)

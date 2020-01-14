@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling_context.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_ID                (ags_recall_id_get_type ())
 #define AGS_RECALL_ID(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RECALL_ID, AgsRecallID))
@@ -33,7 +37,7 @@
 #define AGS_IS_RECALL_ID_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECALL_ID))
 #define AGS_RECALL_ID_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECALL_ID, AgsRecallIDClass))
 
-#define AGS_RECALL_ID_GET_OBJ_MUTEX(obj) (((AgsRecallID *) obj)->obj_mutex)
+#define AGS_RECALL_ID_GET_OBJ_MUTEX(obj) (&(((AgsRecallID *) obj)->obj_mutex))
 
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
@@ -47,8 +51,7 @@ struct _AgsRecallID
   guint staging_flags;
   guint state_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsRecyclingContext *recycling_context;
 };
@@ -59,8 +62,6 @@ struct _AgsRecallIDClass
 };
 
 GType ags_recall_id_get_type(void);
-
-pthread_mutex_t* ags_recall_id_get_class_mutex();
 
 /* scope */
 void ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope);
@@ -89,5 +90,7 @@ AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id,
 
 /* instantiate */
 AgsRecallID* ags_recall_id_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_ID_H__*/

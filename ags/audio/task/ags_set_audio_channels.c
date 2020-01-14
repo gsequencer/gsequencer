@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -110,7 +110,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The assigned #AgsSoundcard instance.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of set audio channels"),
@@ -126,7 +126,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The count of audio channels to apply to soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("audio channels"),
@@ -266,6 +266,8 @@ ags_set_audio_channels_launch(AgsTask *task)
 
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
 
+  g_return_if_fail(AGS_IS_SOUNDCARD(set_audio_channels->soundcard));
+  
   /* set audio channels */
   ags_soundcard_get_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
 			    &channels,
@@ -289,7 +291,7 @@ ags_set_audio_channels_launch(AgsTask *task)
  *
  * Returns: the new #AgsSetAudioChannels.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSetAudioChannels*
 ags_set_audio_channels_new(GObject *soundcard, guint audio_channels)

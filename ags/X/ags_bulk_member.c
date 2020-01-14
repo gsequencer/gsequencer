@@ -20,10 +20,6 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
@@ -46,8 +42,16 @@ void ags_bulk_member_finalize(GObject *gobject);
 void ags_bulk_member_connect(AgsConnectable *connectable);
 void ags_bulk_member_disconnect(AgsConnectable *connectable);
 
+void ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
+				     GList *list,
+				     gpointer port_data);
+
 void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				      gpointer port_data);
+
+AgsPort* ags_bulk_member_find_specifier(GList *recall,
+					gchar *specifier);
+
 GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
 
 /**
@@ -151,7 +155,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("widget-type",
 				  i18n_pspec("widget type of bulk member"),
@@ -168,7 +172,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget's label to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("widget-label",
 				   i18n_pspec("label to display"),
@@ -184,7 +188,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin name to control"),
@@ -200,7 +204,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("port specifier"),
@@ -216,7 +220,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin filename of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -232,7 +236,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin effect of the recall to apply.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -248,7 +252,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The port index.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("port-index",
 				 i18n_pspec("port index"),
@@ -266,7 +270,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The control port of the recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control port index"),
@@ -282,7 +286,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * If bulk member has integer ports, this is the number of steps.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-precision",
 				 i18n_pspec("scale precision of bulk members port"),
@@ -300,7 +304,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * If bulk member has logarithmic ports, this is the number of step count.
    * 
-   * Since: 2.2.8
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("step-count",
 				   i18n_pspec("step count of bulk members port"),
@@ -318,7 +322,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The conversion of the plugin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion"),
@@ -334,7 +338,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The playback bulk port to be added.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("bulk-port",
 				   i18n_pspec("a bulk port"),
@@ -350,7 +354,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The recall bulk port to be added.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-bulk-port",
 				   i18n_pspec("a recall bulk port"),
@@ -366,7 +370,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The task type to apply the ports.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_ulong("task-type",
 				  i18n_pspec("task type to apply"),
@@ -390,7 +394,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The ::change-port signal notifies modified port.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   bulk_member_signals[CHANGE_PORT] =
     g_signal_new("change-port",
@@ -410,7 +414,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * Returns: a #GList with associated ports
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   bulk_member_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -974,9 +978,9 @@ ags_bulk_member_connect(AgsConnectable *connectable)
     if(AGS_IS_DIAL(control)){
       adjustment = AGS_DIAL(control)->adjustment;
     }else if(GTK_IS_RANGE(control)){
-      adjustment = GTK_RANGE(control)->adjustment;
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(control));
     }else if(GTK_IS_SPIN_BUTTON(control)){
-      adjustment = GTK_SPIN_BUTTON(control)->adjustment;
+      adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(control));
     }else if(GTK_IS_TOGGLE_BUTTON(control)){
       
       active = gtk_toggle_button_get_active((GtkToggleButton *) control);
@@ -988,8 +992,12 @@ ags_bulk_member_connect(AgsConnectable *connectable)
       ags_bulk_member_change_port(bulk_member,
 				  &(active));
     }else if(adjustment != NULL){
+      gdouble value;
+
+      value = gtk_adjustment_get_value(adjustment);
+      
       ags_bulk_member_change_port(bulk_member,
-				  &(adjustment->value));
+				  &value);
     }
     
     bulk_member->flags &= (~AGS_BULK_MEMBER_APPLY_INITIAL);
@@ -1098,7 +1106,7 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
  *
  * Returns: the newly allocated #AgsBulkPort-struct
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBulkPort*
 ags_bulk_port_alloc(AgsPort *port,
@@ -1126,7 +1134,7 @@ ags_bulk_port_alloc(AgsPort *port,
  * 
  * Free @bulk_port.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_bulk_port_free(AgsBulkPort *bulk_port)
@@ -1145,7 +1153,7 @@ ags_bulk_port_free(AgsBulkPort *bulk_port)
  *
  * Returns: the #GList-struct containing port if found otherwise %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_bulk_port_find(GList *list, AgsPort *port)
@@ -1183,8 +1191,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
   }else{
     gtk_frame_set_label_widget((GtkFrame *) bulk_member,
 			       (GtkWidget *) g_object_new(GTK_TYPE_LABEL,
-							  "wrap", TRUE,
-							  "wrap-mode", PANGO_WRAP_CHAR,
+							  "wrap", FALSE,
 							  "use-markup", TRUE,
 							  "label", g_markup_printf_escaped("<small>%s</small>", label),
 							  NULL));
@@ -1195,183 +1202,185 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 }
 
 void
+ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
+				GList *list,
+				gpointer port_data)
+{
+  AgsPort *port;
+
+  GRecMutex *port_mutex;
+    
+  while(list != NULL){
+    GValue value = {0,};
+
+    port = AGS_BULK_PORT(list->data)->port;
+
+    /* get port mutex */
+    port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
+
+    /* change */
+    g_rec_mutex_lock(port_mutex);
+
+    if(!port->port_value_is_pointer){
+      if(port->port_value_type == G_TYPE_BOOLEAN){
+	g_value_init(&value,
+		     G_TYPE_BOOLEAN);
+
+	g_value_set_boolean(&value,
+			    ((gboolean *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_INT64){
+	g_value_init(&value,
+		     G_TYPE_INT64);
+	g_value_set_int64(&value,
+			  ((gint *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_UINT64){
+	g_value_init(&value,
+		     G_TYPE_UINT64);
+
+	g_value_set_uint64(&value,
+			   ((guint *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_FLOAT){
+	gdouble val;
+	gfloat port_val;
+	  
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+
+	port_val = (gfloat) val;
+	  
+	if(bulk_member->conversion != NULL){
+	  gboolean success;
+
+	  success = FALSE;
+	    
+	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	    AgsDial *dial;
+
+	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	    success = TRUE;
+	  }else{
+	    g_warning("unsupported child type in conversion");
+	  }
+
+	  if(success){
+	    port_val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+						       val,
+						       FALSE);
+	  }
+	}
+	  
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  port_val);
+      }else if(port->port_value_type == G_TYPE_DOUBLE){
+	gdouble val;
+	gdouble port_val;
+	  
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+
+	port_val = val;
+	  
+	if(bulk_member->conversion != NULL){
+	  gboolean success;
+
+	  success = FALSE;
+	    
+	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	    AgsDial *dial;
+
+	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	    success = TRUE;
+	  }else{
+	    g_warning("unsupported child type in conversion");
+	  }
+
+	  if(success){
+	    port_val = ags_conversion_convert(bulk_member->conversion,
+					      val,
+					      TRUE);
+	  }
+	}
+
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+
+	g_value_set_double(&value,
+			   port_val);
+      }
+    }else{
+      if(port->port_value_type == G_TYPE_OBJECT){
+	g_value_init(&value,
+		     G_TYPE_OBJECT);
+	g_value_set_object(&value,
+			   port_data);
+      }else{
+	if(port->port_value_type == G_TYPE_BOOLEAN ||
+	   port->port_value_type == G_TYPE_INT64 ||
+	   port->port_value_type == G_TYPE_UINT64 ||
+	   port->port_value_type == G_TYPE_FLOAT ||
+	   port->port_value_type == G_TYPE_DOUBLE ||
+	   port->port_value_type == G_TYPE_POINTER){
+	  g_value_init(&value,
+		       G_TYPE_POINTER);
+
+	  g_value_set_pointer(&value,
+			      port_data);
+
+	}
+      }
+    }
+
+    g_rec_mutex_unlock(port_mutex);
+      
+    //      g_message("change %f", g_value_get_float(&value));
+    ags_port_safe_write(port,
+			&value);
+
+    list = list->next;
+  }
+}
+
+void
 ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
   AgsWindow *window;
   
   AgsApplicationContext *application_context;
-
-  auto void ags_bulk_member_real_change_port_iter(GList *list);
-
-  void ags_bulk_member_real_change_port_iter(GList *list){
-    AgsPort *port;
-
-    pthread_mutex_t *port_mutex;
-    
-    while(list != NULL){
-      GValue value = {0,};
-
-      port = AGS_BULK_PORT(list->data)->port;
-
-      /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
-
-      /* change */
-      pthread_mutex_lock(port_mutex);
-
-      if(!port->port_value_is_pointer){
-	if(port->port_value_type == G_TYPE_BOOLEAN){
-	  g_value_init(&value,
-		       G_TYPE_BOOLEAN);
-
-	  g_value_set_boolean(&value,
-			      ((gboolean *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_INT64){
-	  g_value_init(&value,
-		       G_TYPE_INT64);
-	  g_value_set_int64(&value,
-			    ((gint *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_UINT64){
-	  g_value_init(&value,
-		       G_TYPE_UINT64);
-
-	  g_value_set_uint64(&value,
-			     ((guint *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_FLOAT){
-	  gdouble val;
-	  gfloat port_val;
-	  
-	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
-	    if(((gboolean *) port_data)[0]){
-	      val = 1.0;
-	    }else{
-	      val = 0.0;
-	    }
-	  }else{
-	    val = ((gdouble *) port_data)[0];
-	  }
-
-	  port_val = (gfloat) val;
-	  
-	  if(bulk_member->conversion != NULL){
-	    gboolean success;
-
-	    success = FALSE;
-	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	      AgsDial *dial;
-
-	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
-	      success = TRUE;
-	    }else{
-	      g_warning("unsupported child type in conversion");
-	    }
-
-	    if(success){
-	      port_val = (gfloat) ags_conversion_convert(bulk_member->conversion,
-							 val,
-							 FALSE);
-	    }
-	  }
-	  
-	  g_value_init(&value,
-		       G_TYPE_FLOAT);
-
-	  g_value_set_float(&value,
-			    port_val);
-	}else if(port->port_value_type == G_TYPE_DOUBLE){
-	  gdouble val;
-	  gdouble port_val;
-	  
-	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
-	    if(((gboolean *) port_data)[0]){
-	      val = 1.0;
-	    }else{
-	      val = 0.0;
-	    }
-	  }else{
-	    val = ((gdouble *) port_data)[0];
-	  }
-
-	  port_val = val;
-	  
-	  if(bulk_member->conversion != NULL){
-	    gboolean success;
-
-	    success = FALSE;
-	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	      AgsDial *dial;
-
-	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
-	      success = TRUE;
-	    }else{
-	      g_warning("unsupported child type in conversion");
-	    }
-
-	    if(success){
-	      port_val = ags_conversion_convert(bulk_member->conversion,
-						val,
-						TRUE);
-	    }
-	  }
-
-	  g_value_init(&value,
-		       G_TYPE_DOUBLE);
-
-	  g_value_set_double(&value,
-			     port_val);
-	}
-      }else{
-	if(port->port_value_type == G_TYPE_OBJECT){
-	  g_value_init(&value,
-		       G_TYPE_OBJECT);
-	  g_value_set_object(&value,
-			     port_data);
-	}else{
-	  if(port->port_value_type == G_TYPE_BOOLEAN ||
-	     port->port_value_type == G_TYPE_INT64 ||
-	     port->port_value_type == G_TYPE_UINT64 ||
-	     port->port_value_type == G_TYPE_FLOAT ||
-	     port->port_value_type == G_TYPE_DOUBLE ||
-	     port->port_value_type == G_TYPE_POINTER){
-	    g_value_init(&value,
-			 G_TYPE_POINTER);
-
-	    g_value_set_pointer(&value,
-				port_data);
-
-	  }
-	}
-      }
-
-      pthread_mutex_unlock(port_mutex);
-      
-      //      g_message("change %f", g_value_get_float(&value));
-      ags_port_safe_write(port,
-			  &value);
-
-      list = list->next;
-    }
-  }
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) bulk_member,
 						 AGS_TYPE_WINDOW);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
-    ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
+    ags_bulk_member_change_port_all(bulk_member,
+				    bulk_member->bulk_port,
+				    port_data);
 
     if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
-      ags_bulk_member_real_change_port_iter(bulk_member->recall_bulk_port);
+      ags_bulk_member_change_port_all(bulk_member,
+				      bulk_member->recall_bulk_port,
+				      port_data);
     }
   }
 
@@ -1386,8 +1395,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				    bulk_member->control_port, port_data,
 				    NULL);
 
-    ags_xorg_application_context_schedule_task(application_context,
-					       G_OBJECT(task));
+    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				  task);
   }
 }
 
@@ -1398,7 +1407,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_bulk_member_change_port(AgsBulkMember *bulk_member,
@@ -1413,6 +1422,51 @@ ags_bulk_member_change_port(AgsBulkMember *bulk_member,
   g_object_unref((GObject *) bulk_member);
 }
 
+AgsPort*
+ags_bulk_member_find_specifier(GList *recall,
+			       gchar *specifier){
+  AgsPort *current_port;
+    
+  GList *start_port, *port;
+
+  current_port = NULL;
+    
+  while(recall != NULL){
+    if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      recall = recall->next;
+
+      continue;
+    }
+
+    g_object_get(recall->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   specifier);
+      
+#ifdef AGS_DEBUG
+    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+#endif
+
+    if(port != NULL){
+      current_port = port->data;
+    }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
+
+    if(current_port != NULL){
+      break;
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  return(current_port);
+}
+
 GList*
 ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 {
@@ -1425,51 +1479,6 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   AgsPort *recall_audio_port, *recall_channel_port;
   
   gchar *specifier;
-
-  auto AgsPort* ags_bulk_member_find_specifier(GList *recall);
-
-  AgsPort* ags_bulk_member_find_specifier(GList *recall){
-    AgsPort *current_port;
-    
-    GList *start_port, *port;
-
-    current_port = NULL;
-    
-    while(recall != NULL){
-      if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-	recall = recall->next;
-
-	continue;
-      }
-
-      g_object_get(recall->data,
-		   "port", &start_port,
-		   NULL);
-
-      port = ags_port_find_specifier(start_port,
-				     specifier);
-      
-#ifdef AGS_DEBUG
-      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
-#endif
-
-      if(port != NULL){
-	current_port = port->data;
-      }
-
-      g_list_free_full(start_port,
-		       g_object_unref);
-
-      if(current_port != NULL){
-	break;
-      }
-
-      /* iterate */
-      recall = recall->next;
-    }
-
-    return(current_port);
-  }
 
   if(!AGS_IS_BULK_MEMBER(bulk_member)){
     return(NULL);
@@ -1520,7 +1529,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "play", &list_start,
 		 NULL);
     
-    channel_port = ags_bulk_member_find_specifier(list_start);
+    channel_port = ags_bulk_member_find_specifier(list_start,
+						  specifier);
 
     if(channel_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, channel_port) == NULL){
@@ -1537,7 +1547,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "recall", &list_start,
 		 NULL);
     
-    recall_channel_port = ags_bulk_member_find_specifier(list_start);
+    recall_channel_port = ags_bulk_member_find_specifier(list_start,
+							 specifier);
     
     if(recall_channel_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_channel_port) == NULL){
@@ -1575,7 +1586,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "play", &list_start,
 		 NULL);
 
-    audio_port = ags_bulk_member_find_specifier(list_start);
+    audio_port = ags_bulk_member_find_specifier(list_start,
+						specifier);
 
     if(audio_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, audio_port) == NULL){
@@ -1592,7 +1604,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "recall", &list_start,
 		 NULL);
 
-    recall_audio_port = ags_bulk_member_find_specifier(list_start);
+    recall_audio_port = ags_bulk_member_find_specifier(list_start,
+						       specifier);
     
     if(recall_audio_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_audio_port) == NULL){
@@ -1616,7 +1629,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
  *
  * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_bulk_member_find_port(AgsBulkMember *bulk_member)
@@ -1647,7 +1660,7 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
  * 
  * Returns: the next matching #GList-struct or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
@@ -1690,7 +1703,7 @@ ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
  *
  * Returns: a new #AgsBulkMember
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBulkMember*
 ags_bulk_member_new()

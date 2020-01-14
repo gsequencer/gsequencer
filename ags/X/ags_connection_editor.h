@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_property_collection_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CONNECTION_EDITOR                (ags_connection_editor_get_type())
 #define AGS_CONNECTION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONNECTION_EDITOR, AgsConnectionEditor))
@@ -92,5 +98,7 @@ void ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor,
 				       AgsMachine *machine);
 
 AgsConnectionEditor* ags_connection_editor_new(AgsMachine *machine);
+
+G_END_DECLS
 
 #endif /*__AGS_CONNECTION_EDITOR_H__*/

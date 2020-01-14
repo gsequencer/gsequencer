@@ -71,7 +71,7 @@ main(int argc, char **argv)
   struct timespec req;
 
   req.tv_sec = 0;
-  req.tv_nsec = NSEC_PER_SEC * (16384.0 / 44100.0);
+  req.tv_nsec = AGS_NSEC_PER_SEC * (16384.0 / 44100.0);
   
   GError *error;
   
@@ -164,7 +164,7 @@ main(int argc, char **argv)
       ags_soundcard_play(AGS_SOUNDCARD(devout),
 			 &error);
 
-      usleep(USEC_PER_SEC / 44100 * 16384);
+      usleep(AGS_USEC_PER_SEC / 44100 * 16384);
       //      g_list_free(start_buffer);
 
       /* iterate */      

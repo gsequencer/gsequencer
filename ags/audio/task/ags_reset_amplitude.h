@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/recall/ags_analyse_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RESET_AMPLITUDE                (ags_reset_amplitude_get_type())
 #define AGS_RESET_AMPLITUDE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RESET_AMPLITUDE, AgsResetAmplitude))
@@ -59,5 +61,7 @@ void ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
 AgsResetAmplitude* ags_reset_amplitude_get_instance();
 
 AgsResetAmplitude* ags_reset_amplitude_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RESET_AMPLITUDE_H__*/

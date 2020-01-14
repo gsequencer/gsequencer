@@ -27,6 +27,9 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LINE_MEMBER                (ags_line_member_get_type())
 #define AGS_LINE_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER, AgsLineMember))
@@ -118,5 +121,7 @@ GList* ags_line_member_find_port(AgsLineMember *line_member);
 void ags_line_member_chained_event(AgsLineMember *line_member);
 
 AgsLineMember* ags_line_member_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_MEMBER_H__*/

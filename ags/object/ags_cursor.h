@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CURSOR                    (ags_cursor_get_type())
 #define AGS_CURSOR(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CURSOR, AgsCursor))
@@ -61,13 +63,13 @@ GType ags_cursor_get_type();
 
 gdouble ags_cursor_get_default_offset(AgsCursor *cursor);
 
-gdouble ags_cursor_cursor_get_tact(AgsCursor *cursor);
-gdouble ags_cursor_cursor_get_bpm(AgsCursor *cursor);
+gdouble ags_cursor_get_tact(AgsCursor *cursor);
+gdouble ags_cursor_get_bpm(AgsCursor *cursor);
 
-guint ags_cursor_cursor_get_rate(AgsCursor *cursor);
+guint ags_cursor_get_rate(AgsCursor *cursor);
 
-gdouble ags_cursor_cursor_get_delay(AgsCursor *cursor);
-guint64 ags_cursor_cursor_get_duration(AgsCursor *cursor);
+gdouble ags_cursor_get_delay(AgsCursor *cursor);
+guint64 ags_cursor_get_duration(AgsCursor *cursor);
 
 gdouble ags_cursor_get_delay_counter(AgsCursor *cursor);
 guint64 ags_cursor_get_offset(AgsCursor *cursor);
@@ -77,5 +79,7 @@ GList* ags_cursor_get_next(AgsCursor *cursor);
 
 GList* ags_cursor_get_current_copy(AgsCursor *cursor);
 GList* ags_cursor_get_current(AgsCursor *cursor);
+
+G_END_DECLS
 
 #endif /*__AGS_CURSOR_H__*/

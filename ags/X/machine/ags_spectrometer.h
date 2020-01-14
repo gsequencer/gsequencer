@@ -25,9 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SPECTROMETER                (ags_spectrometer_get_type())
 #define AGS_SPECTROMETER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SPECTROMETER, AgsSpectrometer))
@@ -42,7 +46,7 @@
 #define AGS_SPECTROMETER_DEFAULT_Y_START (AGS_CARTESIAN_DEFAULT_Y_START)
 #define AGS_SPECTROMETER_DEFAULT_Y_END (239.0)
 
-#define AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT (48)
+#define AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT (192)
 #define AGS_SPECTROMETER_EXTRA_SCALE (5.0)
 
 typedef struct _AgsSpectrometer AgsSpectrometer;
@@ -85,5 +89,7 @@ AgsPlot* ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
 gboolean ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget);
 
 AgsSpectrometer* ags_spectrometer_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_SPECTROMETER_H__*/

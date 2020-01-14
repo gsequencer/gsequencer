@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/object/ags_application_context.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_ADD_SOUNDCARD                (ags_add_soundcard_get_type())
 #define AGS_ADD_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ADD_SOUNDCARD, AgsAddSoundcard))
@@ -41,8 +41,6 @@ struct _AgsAddSoundcard
 {
   AgsTask task;
 
-  AgsApplicationContext *application_context;
-
   GObject *soundcard;
 };
 
@@ -53,7 +51,8 @@ struct _AgsAddSoundcardClass
 
 GType ags_add_soundcard_get_type();
 
-AgsAddSoundcard* ags_add_soundcard_new(AgsApplicationContext *application_context,
-				       GObject *soundcard);
+AgsAddSoundcard* ags_add_soundcard_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_ADD_SOUNDCARD_H__*/

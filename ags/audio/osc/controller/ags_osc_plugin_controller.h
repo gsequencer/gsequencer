@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,7 @@
 
 #include <ags/audio/osc/ags_osc_connection.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_PLUGIN_CONTROLLER                    (ags_osc_plugin_controller_get_type())
 #define AGS_OSC_PLUGIN_CONTROLLER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_PLUGIN_CONTROLLER, AgsOscPluginController))
@@ -53,5 +53,7 @@ GType ags_osc_plugin_controller_get_type();
 gpointer ags_osc_plugin_controller_do_request(AgsOscPluginController *osc_plugin_controller,
 					      AgsOscConnection *osc_connection,
 					      unsigned char *message, guint message_size);
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_PLUGIN_CONTROLLER_H__*/

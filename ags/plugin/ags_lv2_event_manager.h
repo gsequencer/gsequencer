@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_EVENT_MANAGER                (ags_lv2_event_manager_get_type())
 #define AGS_LV2_EVENT_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_EVENT_MANAGER, AgsLv2EventManager))
@@ -55,5 +59,7 @@ uint32_t ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_
 
 AgsLv2EventManager* ags_lv2_event_manager_get_instance();
 AgsLv2EventManager* ags_lv2_event_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_EVENT_MANAGER_H__*/

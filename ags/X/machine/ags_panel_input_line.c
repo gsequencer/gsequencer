@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_panel_input_line.h>
 #include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
 #include <ags/X/ags_line_member.h>
@@ -32,17 +28,11 @@
 
 void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
 void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_panel_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
 void ags_panel_input_line_finalize(GObject *gobject);
 
 void ags_panel_input_line_connect(AgsConnectable *connectable);
 void ags_panel_input_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_panel_input_line_get_name(AgsPlugin *plugin);
-void ags_panel_input_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_panel_input_line_get_xml_type(AgsPlugin *plugin);
-void ags_panel_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_panel_input_line_show(GtkWidget *line);
 void ags_panel_input_line_show_all(GtkWidget *line);
@@ -91,12 +81,6 @@ ags_panel_input_line_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_panel_input_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_panel_input_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsPanelInputLine", &ags_panel_input_line_info,
 						       0);
@@ -104,10 +88,6 @@ ags_panel_input_line_get_type()
     g_type_add_interface_static(ags_type_panel_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_panel_input_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_panel_input_line);
   }
@@ -149,15 +129,6 @@ ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect = ags_panel_input_line_connect;
   connectable->disconnect = ags_panel_input_line_disconnect;
-}
-
-void
-ags_panel_input_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_panel_input_line_get_name;
-  plugin->set_name = ags_panel_input_line_set_name;
-  plugin->get_xml_type = ags_panel_input_line_get_xml_type;
-  plugin->set_xml_type = ags_panel_input_line_set_xml_type;
 }
 
 void
@@ -225,30 +196,6 @@ ags_panel_input_line_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-gchar*
-ags_panel_input_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_PANEL_INPUT_LINE(plugin)->name);
-}
-
-void
-ags_panel_input_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_PANEL_INPUT_LINE(plugin)->name = name;
-}
-
-gchar*
-ags_panel_input_line_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_PANEL_INPUT_LINE(plugin)->xml_type);
-}
-
-void
-ags_panel_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_PANEL_INPUT_LINE(plugin)->xml_type = xml_type;
-}
-
 void
 ags_panel_input_line_show(GtkWidget *line)
 {
@@ -302,25 +249,27 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 		 "output-soundcard-channel", output_soundcard_channel,
 		 NULL);
   }
-  
-  device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
 
-  /* label */
-  str = g_strdup_printf("%s:%s[%d]",
-			G_OBJECT_TYPE_NAME(output_soundcard),
-			device,
-			output_soundcard_channel);
-  gtk_label_set_label(panel_input_line->soundcard_connection,
-		      str);
+  if(AGS_IS_SOUNDCARD(output_soundcard)){
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
+
+    /* label */
+    str = g_strdup_printf("%s:%s[%d]",
+			  G_OBJECT_TYPE_NAME(output_soundcard),
+			  device,
+			  output_soundcard_channel);
+    gtk_label_set_label(panel_input_line->soundcard_connection,
+			str);
     
-  g_free(str);
- 
+    g_free(str);
+
+    g_object_unref(output_soundcard);
+  }
+  
 #ifdef AGS_DEBUG
   g_message("ags_panel_input_line_set_channel - channel: %u",
 	    channel->line);
 #endif
-
-  g_object_unref(output_soundcard);
 }
 
 void
@@ -405,7 +354,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
  *
  * Returns: the new #AgsPanelInputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPanelInputLine*
 ags_panel_input_line_new(AgsChannel *channel)

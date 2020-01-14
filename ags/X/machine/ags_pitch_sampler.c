@@ -20,14 +20,8 @@
 #include <ags/X/machine/ags_pitch_sampler.h>
 #include <ags/X/machine/ags_pitch_sampler_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
-
-#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
 
@@ -35,22 +29,11 @@
 
 void ags_pitch_sampler_class_init(AgsPitchSamplerClass *pitch_sampler);
 void ags_pitch_sampler_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pitch_sampler_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler);
 void ags_pitch_sampler_finalize(GObject *gobject);
 
 void ags_pitch_sampler_connect(AgsConnectable *connectable);
 void ags_pitch_sampler_disconnect(AgsConnectable *connectable);
-
-gchar* ags_pitch_sampler_get_name(AgsPlugin *plugin);
-void ags_pitch_sampler_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_pitch_sampler_get_xml_type(AgsPlugin *plugin);
-void ags_pitch_sampler_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_pitch_sampler_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_pitch_sampler_read_resolve_audio(AgsFileLookup *file_lookup,
-					  AgsMachine *machine);
-void ags_pitch_sampler_launch_task(AgsFileLaunch *file_launch, AgsPitchSampler *pitch_sampler);
-xmlNode* ags_pitch_sampler_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_pitch_sampler_resize_audio_channels(AgsMachine *machine,
 					     guint audio_channels, guint audio_channels_old,
@@ -77,7 +60,6 @@ static gpointer ags_pitch_sampler_parent_class = NULL;
 static AgsConnectableInterface *ags_pitch_sampler_parent_connectable_interface;
 
 GHashTable *ags_pitch_sampler_sfz_loader_completed = NULL;
-extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
 ags_pitch_sampler_get_type(void)
@@ -105,12 +87,6 @@ ags_pitch_sampler_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_pitch_sampler_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_pitch_sampler = g_type_register_static(AGS_TYPE_MACHINE,
 						    "AgsPitchSampler", &ags_pitch_sampler_info,
 						    0);
@@ -118,10 +94,6 @@ ags_pitch_sampler_get_type(void)
     g_type_add_interface_static(ags_type_pitch_sampler,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_pitch_sampler,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_pitch_sampler);
   }
@@ -158,17 +130,6 @@ ags_pitch_sampler_connectable_interface_init(AgsConnectableInterface *connectabl
 
   connectable->connect = ags_pitch_sampler_connect;
   connectable->disconnect = ags_pitch_sampler_disconnect;
-}
-
-void
-ags_pitch_sampler_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_pitch_sampler_get_name;
-  plugin->set_name = ags_pitch_sampler_set_name;
-  plugin->get_xml_type = ags_pitch_sampler_get_xml_type;
-  plugin->set_xml_type = ags_pitch_sampler_set_xml_type;
-  plugin->read = ags_pitch_sampler_read;
-  plugin->write = ags_pitch_sampler_write;
 }
 
 void
@@ -350,7 +311,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									     0.001);
   gtk_spin_button_set_digits(pitch_sampler->lfo_freq,
 			     3);
-  pitch_sampler->lfo_freq->adjustment->value = AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ;
+  gtk_spin_button_set_value(pitch_sampler->lfo_freq, AGS_PITCH_SAMPLER_DEFAULT_LFO_FREQ);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_freq,
 		   2, 3,
@@ -369,7 +330,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   pitch_sampler->lfo_phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									      G_MAXDOUBLE,
 									      1.0);
-  pitch_sampler->lfo_phase->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_phase, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_phase,
 		   2, 3,
@@ -390,7 +351,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									      1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_depth,
 			     3);
-  pitch_sampler->lfo_depth->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_depth, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_depth,
 		   2, 3,
@@ -411,7 +372,7 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
 									       1.0);
   gtk_spin_button_set_digits(pitch_sampler->lfo_tuning,
 			     2);
-  pitch_sampler->lfo_tuning->adjustment->value = 0.0;
+  gtk_spin_button_set_value(pitch_sampler->lfo_tuning, 0.0);
   gtk_table_attach(lfo_table,
 		   (GtkWidget *) pitch_sampler->lfo_tuning,
 		   2, 3,
@@ -432,24 +393,12 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   g_hash_table_insert(ags_pitch_sampler_sfz_loader_completed,
 		      pitch_sampler, ags_pitch_sampler_sfz_loader_completed_timeout);
   g_timeout_add(1000 / 4, (GSourceFunc) ags_pitch_sampler_sfz_loader_completed_timeout, (gpointer) pitch_sampler);
-  
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      pitch_sampler,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) pitch_sampler);
 }
 
 void
 ags_pitch_sampler_finalize(GObject *gobject)
 {
   g_hash_table_remove(ags_pitch_sampler_sfz_loader_completed,
-		      gobject);
-  
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
 		      gobject);
 
   /* call parent */
@@ -577,189 +526,6 @@ ags_pitch_sampler_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_pitch_sampler_lfo_tuning_callback),
 		      (gpointer) pitch_sampler,
 		      NULL);
-}
-
-gchar*
-ags_pitch_sampler_get_name(AgsPlugin *plugin)
-{
-  return(AGS_PITCH_SAMPLER(plugin)->name);
-}
-
-void
-ags_pitch_sampler_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_PITCH_SAMPLER(plugin)->name = name;
-}
-
-gchar*
-ags_pitch_sampler_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_PITCH_SAMPLER(plugin)->xml_type);
-}
-
-void
-ags_pitch_sampler_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_PITCH_SAMPLER(plugin)->xml_type = xml_type;
-}
-
-void
-ags_pitch_sampler_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsPitchSampler *gobject;
-  AgsFileLookup *file_lookup;
-  AgsFileLaunch *file_launch;
-  GList *list;
-  
-  gobject = AGS_PITCH_SAMPLER(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  /* lookup */
-  list = file->lookup;
-
-  while((list = ags_file_lookup_find_by_node(list,
-					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(list->data);
-    
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
-			     G_CALLBACK(ags_pitch_sampler_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_pitch_sampler_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_pitch_sampler_read_resolve_audio(AgsFileLookup *file_lookup,
-				     AgsMachine *machine)
-{
-  AgsPitchSampler *pitch_sampler;
-
-  pitch_sampler = AGS_PITCH_SAMPLER(machine);
-
-  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
-			 G_CALLBACK(ags_pitch_sampler_resize_audio_channels), pitch_sampler);
-
-  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
-			 G_CALLBACK(ags_pitch_sampler_resize_pads), pitch_sampler);
-
-  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
-    /* ags-play-notation */
-    ags_recall_factory_create(machine->audio,
-			      NULL, NULL,
-			      "ags-play-notation",
-			      0, machine->audio->audio_channels,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_REMAP |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-
-    ags_pitch_sampler_output_map_recall(pitch_sampler, 0);
-    ags_pitch_sampler_input_map_recall(pitch_sampler, 0);
-  }else{
-    pitch_sampler->mapped_output_pad = machine->audio->output_pads;
-    pitch_sampler->mapped_input_pad = machine->audio->input_pads;
-  }
-}
-
-void
-ags_pitch_sampler_launch_task(AgsFileLaunch *file_launch, AgsPitchSampler *pitch_sampler)
-{
-  AgsWindow *window;
-  AgsPitchSampler *gobject;
-  
-  GtkTreeModel *list_store;
-  GtkTreeIter iter;
-
-  xmlNode *node;
-
-  gchar *filename;
-  gchar *preset, *instrument;
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(pitch_sampler)));
-  node = file_launch->node;
-
-  filename = xmlGetProp(node,
-			"filename");
-
-  if(filename == NULL){
-    return;
-  }
-
-  if(g_str_has_suffix(filename, ".sfz")){
-    AgsAudioContainer *audio_container;
-    
-    gchar **sample;
-
-    //TODO:JK: implement me
-  }
-}
-
-xmlNode*
-ags_pitch_sampler_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsPitchSampler *pitch_sampler;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  pitch_sampler = AGS_PITCH_SAMPLER(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-pitch-sampler");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", pitch_sampler,
-				   NULL));
-
-  if(pitch_sampler->audio_container != NULL && pitch_sampler->audio_container->filename != NULL){
-    xmlNewProp(node,
-	       "filename",
-	       g_strdup(pitch_sampler->audio_container->filename));
-  }
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void
@@ -1285,7 +1051,7 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1297,13 +1063,13 @@ ags_pitch_sampler_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
@@ -1706,7 +1472,7 @@ ags_pitch_sampler_output_map_recall(AgsPitchSampler *pitch_sampler, guint output
  * 
  * Add @file to @pitch_sampler.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
@@ -1746,7 +1512,7 @@ ags_pitch_sampler_add_file(AgsPitchSampler *pitch_sampler,
  * 
  * Remove nth file.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
@@ -1773,7 +1539,7 @@ ags_pitch_sampler_remove_file(AgsPitchSampler *pitch_sampler,
  * 
  * Open @filename.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
@@ -1800,7 +1566,7 @@ ags_pitch_sampler_open_filename(AgsPitchSampler *pitch_sampler,
  * 
  * Update @pitch_sampler.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
@@ -1810,13 +1576,13 @@ ags_pitch_sampler_update(AgsPitchSampler *pitch_sampler)
 
 /**
  * ags_pitch_sampler_sfz_loader_completed_timeout:
- * @widget: the widget
+ * @pitch_sampler: the #AgsPitchSampler
  *
  * Queue draw widget
  *
  * Returns: %TRUE if proceed poll completed, otherwise %FALSE
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
@@ -1884,7 +1650,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
       
 	  str_key = ags_sfz_group_lookup_control(group,
 						 "key");
-
+	  
 	  if(str_pitch_keycenter != NULL){
 	    retval = sscanf(str_pitch_keycenter, "%lu", &current_pitch_keycenter);
 
@@ -1895,14 +1661,14 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 							   &current_key);
 
 	      if(retval > 0){
-		pitch_keycenter = current_pitch_keycenter;
+		pitch_keycenter = current_key;
 	      }
 	    }		
 	  }else if(str_key != NULL){
 	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
-	      pitch_keycenter = current_key;
+	      pitch_keycenter = current_pitch_keycenter;
 	    }else{
 	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
 							   &current_key);
@@ -1930,14 +1696,14 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
 							   &current_key);
 
 	      if(retval > 0){
-		pitch_keycenter = current_pitch_keycenter;
+		pitch_keycenter = current_key;
 	      }
 	    }		
 	  }else if(str_key != NULL){
 	    retval = sscanf(str_key, "%lu", &current_pitch_keycenter);
 
 	    if(retval > 0){
-	      pitch_keycenter = current_key;
+	      pitch_keycenter = current_pitch_keycenter;
 	    }else{
 	      retval = ags_diatonic_scale_note_to_midi_key(str_key,
 							   &current_key);
@@ -2054,7 +1820,7 @@ ags_pitch_sampler_sfz_loader_completed_timeout(AgsPitchSampler *pitch_sampler)
  *
  * Returns: the new #AgsPitchSampler
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsPitchSampler*
 ags_pitch_sampler_new(GObject *output_soundcard)

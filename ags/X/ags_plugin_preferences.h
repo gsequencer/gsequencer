@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PLUGIN_PREFERENCES                (ags_plugin_preferences_get_type())
 #define AGS_PLUGIN_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLUGIN_PREFERENCES, AgsPluginPreferences))
@@ -59,5 +66,7 @@ GType ags_plugin_preferences_get_type(void);
 AgsLadspaPluginPreferences* ags_ladspa_plugin_preferences_alloc();
 
 AgsPluginPreferences* ags_plugin_preferences_new();
+
+G_BEGIN_DECLS
 
 #endif /*__AGS_PLUGIN_PREFERENCES_H__*/

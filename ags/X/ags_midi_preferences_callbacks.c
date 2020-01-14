@@ -19,41 +19,34 @@
 
 #include <ags/X/ags_midi_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_sequencer_editor.h>
 
 #include <ags/config.h>
 
-int
-ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMidiPreferences *midi_preferences)
+void
+ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences)
 {  
   AgsPreferences *preferences;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
 
   midi_preferences->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
+  gtk_box_pack_end((GtkBox *) gtk_dialog_get_action_area(GTK_DIALOG(preferences)),
 		   (GtkWidget *) midi_preferences->add,
 		   TRUE, FALSE,
 		   0);  
-
-  return(0);
 }
 
 void
 ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
@@ -69,9 +62,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   

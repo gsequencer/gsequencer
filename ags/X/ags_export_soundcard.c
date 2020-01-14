@@ -20,9 +20,6 @@
 #include <ags/X/ags_export_soundcard.h>
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
@@ -43,8 +40,8 @@ void ags_export_soundcard_finalize(GObject *gobject);
 
 void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
-void ags_export_soundcard_show(GtkWidget *widget);
 
+void ags_export_soundcard_show(GtkWidget *widget);
 gboolean ags_export_soundcard_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -127,7 +124,7 @@ ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -293,6 +290,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_combo_box_text_append_text(export_soundcard->output_format,
 				 AGS_EXPORT_SOUNDCARD_FORMAT_FLAC);
   gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_AIFF);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
 				 AGS_EXPORT_SOUNDCARD_FORMAT_OGG);
 
   gtk_combo_box_set_active((GtkComboBox *) export_soundcard->output_format,
@@ -439,7 +438,7 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
@@ -490,7 +489,7 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
  * 
  * Refresh cards.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
@@ -498,6 +497,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   AgsExportWindow *export_window;
   
   GtkTreeModel *model;
+
+  AgsApplicationContext *application_context;
   
   GList *start_soundcard, *soundcard;
   GList *card, *card_start;
@@ -507,12 +508,13 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
- 
+
+  application_context = ags_application_context_get_instance();
+  
   start_soundcard = NULL;
   
-  if(export_window != NULL &&
-     export_window->application_context != NULL){
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
+  if(export_window != NULL){
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
   card_start = NULL;
@@ -647,7 +649,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
  * 
  * Set card.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
@@ -695,7 +697,7 @@ ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
  * 
  * Set filename.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
@@ -712,7 +714,7 @@ ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
  * 
  * Set format.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
@@ -758,7 +760,7 @@ ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
  * 
  * Returns: the new #AgsExportSoundcard
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportSoundcard*
 ags_export_soundcard_new()

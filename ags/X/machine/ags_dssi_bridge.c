@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -46,7 +42,6 @@
 
 void ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge);
 void ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge);
 void ags_dssi_bridge_set_property(GObject *gobject,
 				  guint prop_id,
@@ -60,16 +55,6 @@ void ags_dssi_bridge_finalize(GObject *gobject);
 
 void ags_dssi_bridge_connect(AgsConnectable *connectable);
 void ags_dssi_bridge_disconnect(AgsConnectable *connectable);
-
-gchar* ags_dssi_bridge_get_version(AgsPlugin *plugin);
-void ags_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_dssi_bridge_get_build_id(AgsPlugin *plugin);
-void ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_dssi_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_bridge);
-xmlNode* ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 					   guint audio_channels, guint audio_channels_old,
@@ -100,10 +85,6 @@ enum{
 
 static gpointer ags_dssi_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_dssi_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_dssi_bridge_parent_plugin_interface;
-
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GType
 ags_dssi_bridge_get_type(void)
@@ -131,12 +112,6 @@ ags_dssi_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_dssi_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_dssi_bridge = g_type_register_static(AGS_TYPE_MACHINE,
 						  "AgsDssiBridge", &ags_dssi_bridge_info,
 						  0);
@@ -144,10 +119,6 @@ ags_dssi_bridge_get_type(void)
     g_type_add_interface_static(ags_type_dssi_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_dssi_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_dssi_bridge);
   }
@@ -179,7 +150,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -195,7 +166,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The effect's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -211,7 +182,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The effect's index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("index",
 				  i18n_pspec("index of effect"),
@@ -239,23 +210,6 @@ ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_dssi_bridge_connect;
   connectable->disconnect = ags_dssi_bridge_disconnect;
-}
-
-void
-ags_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_dssi_bridge_get_version;
-  plugin->set_version = ags_dssi_bridge_set_version;
-  plugin->get_build_id = ags_dssi_bridge_get_build_id;
-  plugin->set_build_id = ags_dssi_bridge_set_build_id;
-  plugin->get_xml_type = ags_dssi_bridge_get_xml_type;
-  plugin->set_xml_type = ags_dssi_bridge_set_xml_type;
-  plugin->read = ags_dssi_bridge_read;
-  plugin->write = ags_dssi_bridge_write;
-  plugin->get_ports = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -372,24 +326,6 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      dssi_bridge,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) dssi_bridge);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      dssi_bridge,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) dssi_bridge);
 }
 
 void
@@ -512,12 +448,6 @@ ags_dssi_bridge_finalize(GObject *gobject)
   AgsDssiBridge *dssi_bridge;
 
   dssi_bridge = (AgsDssiBridge *) gobject;
-
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
   
   g_object_disconnect(G_OBJECT(dssi_bridge),
 		      "any_signal::resize-audio-channels",
@@ -570,233 +500,6 @@ ags_dssi_bridge_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_dssi_bridge_program_changed_callback),
 		      dssi_bridge,
 		      NULL);
-}
-
-gchar*
-ags_dssi_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_DSSI_BRIDGE(plugin)->version);
-}
-
-void
-ags_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsDssiBridge *dssi_bridge;
-
-  dssi_bridge = AGS_DSSI_BRIDGE(plugin);
-
-  dssi_bridge->version = version;
-}
-
-gchar*
-ags_dssi_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_DSSI_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsDssiBridge *dssi_bridge;
-
-  dssi_bridge = AGS_DSSI_BRIDGE(plugin);
-
-  dssi_bridge->build_id = build_id;
-}
-
-gchar*
-ags_dssi_bridge_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DSSI_BRIDGE(plugin)->xml_type);
-}
-
-void
-ags_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DSSI_BRIDGE(plugin)->xml_type = xml_type;
-}
-
-void
-ags_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsDssiBridge *gobject;
-  AgsFileLaunch *file_launch;
-
-  gobject = AGS_DSSI_BRIDGE(plugin);
-
-  g_object_set(gobject,
-	       "filename", xmlGetProp(node,
-					"filename"),
-	       "effect", xmlGetProp(node,
-				      "effect"),
-	       NULL);
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_dssi_bridge_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_bridge)
-{
-  GtkTreeModel *model;
-
-  GtkTreeIter iter;
-
-  GList *list, *list_start;
-  GList *recall;
-
-  gchar *str;
-  
-  ags_dssi_bridge_load(dssi_bridge);
-
-  /* block update bulk port */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
-    }
-
-    list = list->next;
-  }
-  
-  /* update program */
-  str = xmlGetProp(file_launch->node,
-		   "program");
-
-  model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
-
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    gchar *value;
-    
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-
-      if(!g_strcmp0(str,
-		    value)){
-	break;
-      }
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
-
-    gtk_combo_box_set_active_iter((GtkComboBox *) dssi_bridge->program,
-				  &iter);
-  }
-
-  /* update value and unblock update bulk port */
-  recall = NULL;
-  
-  if(AGS_MACHINE(dssi_bridge)->audio->input != NULL){
-    recall = AGS_MACHINE(dssi_bridge)->audio->input->recall;
-    
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
-		  dssi_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
-		    dssi_bridge->effect)){
-	break;
-      }
-
-      recall = recall->next;
-    }
-  }
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      GtkWidget *child_widget;
-      
-      GList *port;
-
-      child_widget = gtk_bin_get_child((GtkBin *) list->data);
-      
-      if(recall != NULL){
-	port = AGS_RECALL(recall->data)->port;
-
-	while(port != port->next){
-	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-			AGS_PORT(port->data)->specifier)){
-	    if(AGS_IS_DIAL(child_widget)){
-	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw((AgsDial *) child_widget);
-	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
-	    }
-
-	    break;
-	  }
-
-	  port = port->next;
-	}
-      }
-     
-      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-xmlNode*
-ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsDssiBridge *dssi_bridge;
-
-  GtkTreeIter iter;
-  xmlNode *node;
-  
-  gchar *id;
-  gchar *program;
-  
-  dssi_bridge = AGS_DSSI_BRIDGE(plugin);
-
-  id = ags_id_generator_create_uuid();
-    
-  node = xmlNewNode(NULL,
-		    "ags-dssi-bridge");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(dssi_bridge->filename));
-
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(dssi_bridge->effect));
-
-  if((program = gtk_combo_box_text_get_active_text(dssi_bridge->program)) != NULL){
-    xmlNewProp(node,
-	       "program",
-	       g_strdup(program));
-  }
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", dssi_bridge,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void
@@ -1230,7 +933,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1242,13 +945,13 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
@@ -1809,7 +1512,7 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
  *
  * Returns: the new #AgsDssiBridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiBridge*
 ags_dssi_bridge_new(GObject *soundcard,

@@ -75,12 +75,14 @@ gchar* ags_accessible_level_get_localized_name(AtkAction *action,
 
 void ags_level_map(GtkWidget *widget);
 void ags_level_realize(GtkWidget *widget);
-void ags_level_size_request(GtkWidget *widget,
-			    GtkRequisition   *requisition);
 void ags_level_size_allocate(GtkWidget *widget,
 			     GtkAllocation *allocation);
-gboolean ags_level_expose(GtkWidget *widget,
-			  GdkEventExpose *event);
+void ags_level_get_preferred_width(GtkWidget *widget,
+				   gint *minimal_width,
+				   gint *natural_width);
+void ags_level_get_preferred_height(GtkWidget *widget,
+				    gint *minimal_height,
+				    gint *natural_height);
 gboolean ags_level_button_press(GtkWidget *widget,
 				GdkEventButton *event);
 gboolean ags_level_button_release(GtkWidget *widget,
@@ -92,7 +94,9 @@ gboolean ags_level_key_release(GtkWidget *widget,
 gboolean ags_level_motion_notify(GtkWidget *widget,
 				 GdkEventMotion *event);
 
-void ags_level_draw(AgsLevel *level);
+void ags_level_send_configure(AgsLevel *level);
+
+void ags_level_draw(AgsLevel *level, cairo_t *cr);
 
 /**
  * SECTION:ags_level
@@ -224,7 +228,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level width to use for drawing a level.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("level-width",
 				 "level width",
@@ -242,7 +246,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level height to use for drawing a level.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("level-height",
 				 "level height",
@@ -260,7 +264,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's lower range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -278,7 +282,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's upper range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -296,7 +300,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The level's default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("normalized-volume",
 				   "normalized volume",
@@ -315,14 +319,15 @@ ags_level_class_init(AgsLevelClass *level)
   widget->get_accessible = ags_level_get_accessible;
   //  widget->map = ags_level_map;
   widget->realize = ags_level_realize;
-  widget->expose_event = ags_level_expose;
-  widget->size_request = ags_level_size_request;
   widget->size_allocate = ags_level_size_allocate;
+  widget->get_preferred_width = ags_level_get_preferred_width;
+  widget->get_preferred_height = ags_level_get_preferred_height;
   widget->button_press_event = ags_level_button_press;
   widget->button_release_event = ags_level_button_release;
   widget->key_press_event = ags_level_key_press;
   widget->key_release_event = ags_level_key_release;
   widget->motion_notify_event = ags_level_motion_notify;
+  widget->draw = ags_level_draw;
   widget->show = ags_level_show;
 
   /* AgsLevelClass */  
@@ -336,7 +341,7 @@ ags_level_class_init(AgsLevelClass *level)
    *
    * The ::value-changed signal notifies about modified default value.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   level_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -746,8 +751,7 @@ ags_level_map(GtkWidget *widget)
   if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
     GTK_WIDGET_CLASS(ags_level_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_level_draw((AgsLevel *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
   }
 }
 
@@ -756,6 +760,9 @@ ags_level_realize(GtkWidget *widget)
 {
   AgsLevel *level;
 
+  GdkWindow *window;
+
+  GtkAllocation allocation;
   GdkWindowAttr attributes;
 
   gint attributes_mask;
@@ -767,33 +774,120 @@ ags_level_realize(GtkWidget *widget)
 
   gtk_widget_set_realized(widget, TRUE);
 
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
   attributes.width = level->level_width;
   attributes.height = level->level_height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.visual = gtk_widget_get_visual(widget);
+  attributes.event_mask = gtk_widget_get_events(widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, level);
+  window = gdk_window_new(gtk_widget_get_parent_window(widget),
+			  &attributes, attributes_mask);
 
-  widget->style = gtk_style_attach(widget->style,
-				   widget->window);
-  gtk_style_set_background(widget->style,
-			   widget->window,
-			   GTK_STATE_NORMAL);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
 
-  gtk_widget_queue_resize(widget);
+  ags_level_send_configure(level);
+}
+
+void
+ags_level_size_allocate(GtkWidget *widget,
+			GtkAllocation *allocation)
+{
+  AgsLevel *level;
+
+  GdkWindow *window;
+    
+  g_return_if_fail(AGS_IS_LEVEL(widget));
+  g_return_if_fail(allocation != NULL);
+
+  level = AGS_LEVEL(widget);
+  
+  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
+    allocation->height = level->level_height;
+    allocation->width = level->level_width;
+  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
+    allocation->width = level->level_height;
+    allocation->height = level->level_width;
+  }
+
+  gtk_widget_set_allocation(widget, allocation);
+  
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_level_send_configure(level);
+  }
+}
+
+void
+ags_level_send_configure(AgsLevel *level)
+{
+  GtkAllocation allocation;
+  GtkWidget *widget;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
+
+  widget = GTK_WIDGET(level);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
+}
+
+void
+ags_level_get_preferred_width(GtkWidget *widget,
+			      gint *minimal_width,
+			      gint *natural_width)
+{
+  AgsLevel *level;
+
+  level = AGS_LEVEL(widget);
+
+  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
+    minimal_width[0] =
+      natural_width[0] = level->level_width;
+  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
+    minimal_width[0] =
+      natural_width[0] = level->level_height;
+  }
+}
+
+void
+ags_level_get_preferred_height(GtkWidget *widget,
+			       gint *minimal_height,
+			       gint *natural_height)
+{
+  AgsLevel *level;
+
+  level = AGS_LEVEL(widget);
+
+  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
+    minimal_height[0] =
+      natural_height[0] = level->level_height;
+  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
+    minimal_height[0] =
+      natural_height[0] = level->level_width;
+  }
 }
 
 AtkObject*
@@ -824,74 +918,24 @@ ags_level_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_level_parent_class)->show(widget);
 }
 
-void
-ags_level_size_request(GtkWidget *widget,
-		       GtkRequisition *requisition)
-{
-  AgsLevel *level;
-
-  level = AGS_LEVEL(widget);
-
-  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
-    requisition->width = level->level_width;
-    requisition->height = level->level_height;
-  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
-    requisition->width = level->level_height;
-    requisition->height = level->level_width;
-  }
-}
-
-void
-ags_level_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
-{
-  AgsLevel *level;
-
-  GdkWindow *window;
-    
-  level = AGS_LEVEL(widget);
-  
-  widget->allocation = *allocation;
-  
-  window = gtk_widget_get_window(widget);
-  gdk_window_move(window,
-		  allocation->x, allocation->y);
-
-  if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
-    widget->allocation.width = level->level_width;
-    widget->allocation.height = level->level_height;
-
-    allocation->height = level->level_height;
-  }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
-    widget->allocation.width = level->level_height;
-    widget->allocation.height = level->level_width;
-
-    allocation->width = level->level_height;
-  }
-}
-
-gboolean
-ags_level_expose(GtkWidget *widget,
-		 GdkEventExpose *event)
-{
-  ags_level_draw(AGS_LEVEL(widget));
-
-  return(FALSE);
-}
-
 gboolean
 ags_level_button_press(GtkWidget *widget,
 		       GdkEventButton *event)
 {
   AgsLevel *level;
 
+  GtkAllocation allocation;
+  
   guint width, height;
   guint x_start, y_start;
 
   level = AGS_LEVEL(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -972,7 +1016,7 @@ ags_level_key_press(GtkWidget *widget,
 		    GdkEventKey *event)
 {
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -994,7 +1038,7 @@ ags_level_key_release(GtkWidget *widget,
   //TODO:JK: implement me
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -1106,13 +1150,18 @@ ags_level_motion_notify(GtkWidget *widget,
 {
   AgsLevel *level;
 
+  GtkAllocation allocation;
+  
   guint width, height;
   guint x_start, y_start;
   
   level = AGS_LEVEL(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -1146,44 +1195,35 @@ ags_level_motion_notify(GtkWidget *widget,
 }
 
 void
-ags_level_draw(AgsLevel *level)
+ags_level_draw(AgsLevel *level, cairo_t *cr)
 {
-  cairo_t *cr;
-
   PangoLayout *layout;
   PangoFontDescription *desc;
 
   PangoRectangle ink_rect, logical_rect;
     
+  GtkAllocation allocation;
+
   gchar *font_name;
   gchar *text;
 
   guint width, height;
   guint x_start, y_start;
 
-  static const gdouble white_gc = 65535.0;
-
-  if(!AGS_IS_LEVEL(level)){
-    return;
-  }
-
-  cr = gdk_cairo_create(GTK_WIDGET(level)->window);
-  
-  if(cr == NULL){
-    return;
-  }
-
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);
   
-  width = GTK_WIDGET(level)->allocation.width;
-  height = GTK_WIDGET(level)->allocation.height;
+  gtk_widget_get_allocation(level,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
   
   x_start = 0;
   y_start = 0;
 
-  cairo_surface_flush(cairo_get_target(cr));
+//  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* background */
@@ -1251,8 +1291,7 @@ ags_level_draw(AgsLevel *level)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**
@@ -1262,7 +1301,7 @@ ags_level_draw(AgsLevel *level)
  * 
  * Emits ::value-changed event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_level_value_changed(AgsLevel *level,
@@ -1284,7 +1323,7 @@ ags_level_value_changed(AgsLevel *level,
  * 
  * Returns: the new #AgsLevel instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLevel*
 ags_level_new()

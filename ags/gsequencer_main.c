@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -49,141 +51,15 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include "config.h"
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
 
-#ifdef AGS_MAC_BUNDLE
-void premain() __attribute__ ((constructor));
-#endif
-
 void* ags_setup_thread(void *ptr);
 void ags_setup(int argc, char **argv);
 
 extern AgsApplicationContext *ags_application_context;
-
-gchar *base_dir;
-
-#ifdef AGS_MAC_BUNDLE
-void
-premain()
-{
-  gchar path[PATH_MAX];
-  uint32_t size = sizeof(path);  
-
-  if(_NSGetExecutablePath(path, &size) == 0){
-    gchar *ld_library_path;
-    gchar *gdk_pixbuf_module_file;
-    gchar *frameworks_dir;
-    gchar *data_dir;
-    gchar *plugin_dir;
-    gchar *str;
-    
-    base_dir = strndup(path,
-		       rindex(path, '/') - path);
-    printf("base dir %s\n", base_dir);
-
-    sprintf(path, "%s/../Frameworks",
-	    base_dir);
-    gdk_pixbuf_module_file = realpath(path,
-				      NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "GDK_PIXBUF_MODULE_FILE=%s/gdk-pixbuf-2.0/2.10.0/loaders.cache",
-	    gdk_pixbuf_module_file);
-    putenv(str);
-
-    ld_library_path = realpath(path,
-			       NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "DT_RUNPATH=%s/gdk-pixbuf-2.0/2.10.0/loaders",
-	    ld_library_path);
-    putenv(str);
-
-    frameworks_dir = realpath(path,
-			      NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "DYLD_FALLBACK_LIBRARY_PATH=%s",
-	    frameworks_dir);
-    putenv(str);
-
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "GDK_PIXBUF_MODULEDIR=%s",
-	    frameworks_dir);
-    putenv(str);
-
-    printf(".. %s", str);
-    
-    sprintf(path, "%s/../Resources",
-	    base_dir);
-    data_dir = realpath(path,
-			NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "GSEQUENCER_DATA_DIR=%s",
-	    data_dir);
-    putenv(str);
-
-    sprintf(path, "%s/../Resources",
-	    base_dir);
-    data_dir = realpath(path,
-			NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "AGS_RC_FILENAME=%s/ags.rc",
-	    data_dir);
-    putenv(str);
-
-    sprintf(path, "%s/../Resources",
-	    base_dir);
-    data_dir = realpath(path,
-			NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "AGS_ANIMATION_FILENAME=%s/ags_supermoon-800x450.png",
-	    data_dir);
-    putenv(str);
-
-    sprintf(path, "%s/../Resources",
-	    base_dir);
-    data_dir = realpath(path,
-			NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "AGS_LOGO_FILENAME=%s/ags.png",
-	    data_dir);
-    putenv(str);
-
-    sprintf(path, "%s/../Resources",
-	    base_dir);
-    data_dir = realpath(path,
-			NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "AGS_LICENSE_FILENAME=%s/GPL-3",
-	    data_dir);
-    putenv(str);
-
-    sprintf(path, "%s/../Plugins",
-	    base_dir);
-    plugin_dir = realpath(path,
-			  NULL);
-    str = malloc(PATH_MAX * sizeof(gchar));
-    sprintf(str,
-	    "GSEQUENCER_PLUGIN_DIR=%s",
-	    plugin_dir);
-    putenv(str);
-  }else{
-    base_dir = NULL;
-  }
-}
-#endif
 
 void*
 ags_setup_thread(void *ptr)
@@ -196,13 +72,9 @@ ags_setup_thread(void *ptr)
     usleep(500000);
   }
 
-  //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
-  
   ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
-
-  //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
   return(NULL);
 }
@@ -212,8 +84,6 @@ ags_setup(int argc, char **argv)
 {
   AgsApplicationContext *application_context;
   AgsLog *log;
-
-  pthread_t thread;
 
   /* application context */
   application_context = 
@@ -229,8 +99,9 @@ ags_setup(int argc, char **argv)
 		      "Welcome to Advanced Gtk+ Sequencer");
   
   /* application context */
-  pthread_create(&thread, NULL,
-		 ags_setup_thread, application_context);
+  g_thread_new("Advanced Gtk+ Sequencer - setup",
+	       ags_setup_thread,
+	       application_context);
   
   ags_application_context_prepare(application_context);
 }
@@ -238,6 +109,8 @@ ags_setup(int argc, char **argv)
 int
 main(int argc, char **argv)
 {  
+  GtkCssProvider *css_provider;
+  
   AgsConfig *config;
   AgsPriority *priority;
   
@@ -247,9 +120,7 @@ main(int argc, char **argv)
   gchar *app_dir;
   gchar *path;
 #endif
-  gchar *str;
-  
-  gboolean single_thread_enabled;
+
   gboolean builtin_theme_disabled;
   guint i;
 
@@ -264,9 +135,12 @@ main(int argc, char **argv)
   uid_t uid;
 #endif
   
-  gchar *wdir, *config_file;
-  gchar *rc_filename;
-
+  gchar *wdir;
+  gchar *config_filename;
+  gchar *priority_filename;
+  gchar *css_filename;
+  gchar *str;
+  
   gboolean has_file;
   int result;
   
@@ -278,11 +152,15 @@ main(int argc, char **argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
   
-  single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
 
   config = NULL;
   priority = ags_priority_get_instance();
+  
+  priority = ags_priority_get_instance();  
+  ags_priority_load_defaults(priority);
+
+//  mtrace();
   
 #if defined (AGS_W32API)
 #else
@@ -292,7 +170,7 @@ main(int argc, char **argv)
   wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
-    
+  
   priority_filename = g_strdup_printf("%s/priority.conf",
 				      wdir);
 
@@ -302,8 +180,8 @@ main(int argc, char **argv)
   g_free(priority_filename);
   g_free(wdir);
 #endif
-  //  mtrace();
 
+  /* real-time setup */
 #ifdef AGS_WITH_RT
   result = getrlimit(RLIMIT_STACK, &rl);
 
@@ -319,11 +197,11 @@ main(int argc, char **argv)
     }
   }
 
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+  param.sched_priority = 1;
 
   str = ags_priority_get_value(priority,
 			       AGS_PRIORITY_RT_THREAD,
-			       "gsequencer");
+			       AGS_PRIORITY_KEY_GUI_MAIN_LOOP);
 
   if(str != NULL){
     param.sched_priority = (int) g_ascii_strtoull(str,
@@ -346,10 +224,9 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--single-thread     run in single thread mode",
 	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
@@ -359,15 +236,13 @@ main(int argc, char **argv)
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
-	     "Copyright (C) 2005-2018 Joël Krähemann",
+	     "Copyright (C) 2005-2020 Joël Krähemann",
 	     "This is free software; see the source for copying conditions.  There is NO",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[i], "--single-thread", 16)){
-      single_thread_enabled = TRUE;
     }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[i], "--filename", 11)){
@@ -383,6 +258,8 @@ main(int argc, char **argv)
     }
   }
 
+  css_filename = NULL;
+  
 #ifdef AGS_W32API
   if(!builtin_theme_disabled){
     app_dir = NULL;
@@ -392,32 +269,29 @@ main(int argc, char **argv)
 			  strlen(argv[0]) - strlen("\\gsequencer.exe"));
     }
     
-    if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-      rc_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.rc",
+    if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
+      css_filename = g_strdup_printf("%s\\share\\gsequencer\\styles\\ags.css",
 				    g_get_current_dir());
     
-      if(!g_file_test(rc_filename,
+      if(!g_file_test(css_filename,
 		      G_FILE_TEST_IS_REGULAR)){
-	g_free(rc_filename);
+	g_free(css_filename);
 
 	if(g_path_is_absolute(app_dir)){
-	  rc_filename = g_strdup_printf("%s\\%s",
+	  css_filename = g_strdup_printf("%s\\%s",
 					app_dir,
-					"\\share\\gsequencer\\styles\\ags.rc");
+					"\\share\\gsequencer\\styles\\ags.css");
 	}else{
-	  rc_filename = g_strdup_printf("%s\\%s\\%s",
+	  css_filename = g_strdup_printf("%s\\%s\\%s",
 					g_get_current_dir(),
 					app_dir,
-					"\\share\\gsequencer\\styles\\ags.rc");
+					"\\share\\gsequencer\\styles\\ags.css");
 	}
       }
     }else{
-      rc_filename = g_strdup(rc_filename);
+      css_filename = g_strdup(css_filename);
     }
   
-    gtk_rc_parse(rc_filename);
-    
-    g_free(rc_filename);
     g_free(app_dir);
   }
 #else
@@ -426,29 +300,26 @@ main(int argc, char **argv)
   
   /* parse rc file */
   if(!builtin_theme_disabled){
-    rc_filename = g_strdup_printf("%s/%s/ags.rc",
-				  pw->pw_dir,
-				  AGS_DEFAULT_DIRECTORY);
+    css_filename = g_strdup_printf("%s/%s/ags.css",
+				   pw->pw_dir,
+				   AGS_DEFAULT_DIRECTORY);
 
-    if(!g_file_test(rc_filename,
+    if(!g_file_test(css_filename,
 		    G_FILE_TEST_IS_REGULAR)){
-      g_free(rc_filename);
+      g_free(css_filename);
 
-#ifdef AGS_RC_FILENAME
-      rc_filename = g_strdup(AGS_RC_FILENAME);
+#ifdef AGS_CSS_FILENAME
+      css_filename = g_strdup(AGS_CSS_FILENAME);
 #else
-      if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
-	rc_filename = g_strdup_printf("%s%s",
-				      DESTDIR,
-				      "/gsequencer/styles/ags.rc");
+      if((css_filename = getenv("AGS_CSS_FILENAME")) == NULL){
+	css_filename = g_strdup_printf("%s%s",
+				       DESTDIR,
+				       "/gsequencer/styles/ags.css");
       }else{
-	rc_filename = g_strdup(rc_filename);
+	css_filename = g_strdup(css_filename);
       }
 #endif
     }
-  
-    gtk_rc_parse(rc_filename);
-    g_free(rc_filename);
   }
 #endif
   
@@ -460,13 +331,14 @@ main(int argc, char **argv)
 
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
-  ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
 
   if(!builtin_theme_disabled){
+#if 0
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
 		 NULL);
+
     g_signal_handlers_block_matched(gtk_settings_get_default(),
 				    G_SIGNAL_MATCH_DETAIL,
 				    g_signal_lookup("set-property",
@@ -475,6 +347,7 @@ main(int argc, char **argv)
 				    NULL,
 				    NULL,
 				    NULL);
+#endif
   }
   
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -500,8 +373,18 @@ main(int argc, char **argv)
 
   g_set_application_name(i18n("Advanced Gtk+ Sequencer"));
   gtk_window_set_default_icon_name("gsequencer");
-  g_setenv("PULSE_PROP_media.role", "production", TRUE);
+  g_setenv("PULSE_PROP_media.role", "production", TRUE);  
   
+  css_provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(css_provider,
+				  css_filename,
+				  NULL);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+					    GTK_STYLE_PROVIDER(css_provider),
+					    GTK_STYLE_PROVIDER_PRIORITY_USER);    
+    
+  g_free(css_filename);
+
   /* setup */
   if(!has_file){
 #ifdef AGS_W32API
@@ -531,9 +414,9 @@ main(int argc, char **argv)
     }
   }
     
-  config_file = g_strdup_printf("%s\\%s",
-				path,
-				AGS_DEFAULT_CONFIG);
+  config_filename = g_strdup_printf("%s\\%s",
+				    path,
+				    AGS_DEFAULT_CONFIG);
 
   g_free(path);
 #else
@@ -541,9 +424,9 @@ main(int argc, char **argv)
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
     
-  config_file = g_strdup_printf("%s/%s",
-				wdir,
-				AGS_DEFAULT_CONFIG);
+  config_filename = g_strdup_printf("%s/%s",
+				    wdir,
+				    AGS_DEFAULT_CONFIG);
 
   g_free(wdir);
 #endif
@@ -551,15 +434,15 @@ main(int argc, char **argv)
     config = ags_config_get_instance();
 
     ags_config_load_from_file(config,
-			      config_file);
+			      config_filename);
 
-    g_free(config_file);
+    g_free(config_filename);
   }
 
   /* some GUI scaling */
   if(!builtin_theme_disabled &&
      !has_file){
-    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+//    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
   }
 
   ags_setup(argc, argv);

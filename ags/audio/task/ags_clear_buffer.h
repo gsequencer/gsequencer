@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CLEAR_BUFFER                (ags_clear_buffer_get_type())
 #define AGS_CLEAR_BUFFER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CLEAR_BUFFER, AgsClearBuffer))
@@ -50,5 +52,7 @@ struct _AgsClearBufferClass
 GType ags_clear_buffer_get_type();
 
 AgsClearBuffer* ags_clear_buffer_new(GObject *device);
+
+G_END_DECLS
 
 #endif /*__AGS_CLEAR_BUFFER_H__*/

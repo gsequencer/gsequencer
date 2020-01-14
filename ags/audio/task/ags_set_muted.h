@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SET_MUTED                (ags_set_muted_get_type())
 #define AGS_SET_MUTED(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_MUTED, AgsSetMuted))
@@ -53,5 +55,7 @@ GType ags_set_muted_get_type();
 
 AgsSetMuted* ags_set_muted_new(GObject *scope,
 			       gboolean muted);
+
+G_END_DECLS
 
 #endif /*__AGS_SET_MUTED_H__*/

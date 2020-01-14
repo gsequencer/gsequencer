@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_INFO_CONTROLLER                (ags_osc_info_controller_get_type())
 #define AGS_OSC_INFO_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_INFO_CONTROLLER, AgsOscInfoController))
@@ -44,17 +48,19 @@ struct _AgsOscInfoControllerClass
 {
   AgsOscControllerClass osc_controller;
 
-  gpointer (*get_info)(AgsOscInfoController *info_controller,
+  gpointer (*get_info)(AgsOscInfoController *osc_info_controller,
 		       AgsOscConnection *osc_connection,
-		       unsigned char *message, guint message_size);
+		       guchar *message, guint message_size);
 };
 
 GType ags_osc_info_controller_get_type();
 
-gpointer ags_osc_info_controller_get_info(AgsOscInfoController *info_controller,
+gpointer ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
 					  AgsOscConnection *osc_connection,
-					  unsigned char *message, guint message_size);
+					  guchar *message, guint message_size);
 
 AgsOscInfoController* ags_osc_info_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_INFO_CONTROLLER_H__*/

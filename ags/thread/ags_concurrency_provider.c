@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,7 @@ void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginter
 
 /**
  * SECTION:ags_concurrency_provider
- * @short_description: concurrency interface
+ * @short_description: concurrency provider interface
  * @title: AgsConcurrencyProvider
  * @section_id: AgsConcurrencyProvider
  * @include: ags/thread/ags_concurrency_provider.h
@@ -60,36 +60,14 @@ ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginterface)
 }
 
 /**
- * ags_concurrency_provider_get_mutex_manager:
- * @concurrency_provider: the #AgsConcurrencyProvider
- *
- * Get mutex manager of application context.
- *
- * Returns: the assigned #AgsMutexManager
- *
- * Since: 2.0.0
- */
-AgsMutexManager*
-ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider)
-{
-  AgsConcurrencyProviderInterface *concurrency_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider), NULL);
-  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
-  g_return_val_if_fail(concurrency_provider_interface->get_mutex_manager, NULL);
-
-  return(concurrency_provider_interface->get_mutex_manager(concurrency_provider));
-}
-
-/**
  * ags_concurrency_provider_get_main_loop:
  * @concurrency_provider: the #AgsConcurrencyProvider
  *
  * Get main loop of application context.
  *
- * Returns: the #AgsThread implementing #AgsMainLoop interface
- *
- * Since: 2.0.0
+ * Returns: (transfer full): the #AgsThread implementing #AgsMainLoop
+ * 
+ * Since: 3.0.0
  */
 AgsThread*
 ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
@@ -104,25 +82,71 @@ ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provi
 }
 
 /**
- * ags_concurrency_provider_get_task_thread:
+ * ags_concurrency_provider_set_main_loop:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ * @main_loop: the #AgsThread implementing #AgsMainLoop
+ * 
+ * Set main loop of application context.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_concurrency_provider_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+				       AgsThread *main_loop)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider));
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_if_fail(concurrency_provider_interface->set_main_loop);
+
+  concurrency_provider_interface->set_main_loop(concurrency_provider,
+						main_loop);
+}
+
+/**
+ * ags_concurrency_provider_get_task_launcher:
  * @concurrency_provider: the #AgsConcurrencyProvider
  *
- * Get task thread of application context.
+ * Get task launcher of application context.
  *
- * Returns: the #AgsThread implementing #AgsAsyncQueue interface
+ * Returns: (transfer full): the #AgsTaskLauncher
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-AgsThread*
-ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+AgsTaskLauncher*
+ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider *concurrency_provider)
 {
   AgsConcurrencyProviderInterface *concurrency_provider_interface;
 
   g_return_val_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider), NULL);
   concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
-  g_return_val_if_fail(concurrency_provider_interface->get_task_thread, NULL);
+  g_return_val_if_fail(concurrency_provider_interface->get_task_launcher, NULL);
 
-  return(concurrency_provider_interface->get_task_thread(concurrency_provider));
+  return(concurrency_provider_interface->get_task_launcher(concurrency_provider));
+}
+
+/**
+ * ags_concurrency_provider_set_task_launcher:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ * @task_launcher: the #AgsTaskLauncher
+ * 
+ * Set task launcher of application context.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_concurrency_provider_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+					   AgsTaskLauncher *task_launcher)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider));
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_if_fail(concurrency_provider_interface->set_task_launcher);
+
+  concurrency_provider_interface->set_task_launcher(concurrency_provider,
+						    task_launcher);
 }
 
 /**
@@ -131,9 +155,9 @@ ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_pro
  *
  * Get thread pool of application context.
  *
- * Returns: the #AgsThreadPool
+ * Returns: (transfer full): the #AgsThreadPool
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsThreadPool*
 ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
@@ -148,14 +172,37 @@ ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_pro
 }
 
 /**
+ * ags_concurrency_provider_set_thread_pool:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ * @thread_pool: the #AgsThreadPool
+ * 
+ * Set thread pool of application context.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_concurrency_provider_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+					 AgsThreadPool *thread_pool)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider));
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_if_fail(concurrency_provider_interface->set_thread_pool);
+
+  concurrency_provider_interface->set_thread_pool(concurrency_provider,
+						  thread_pool);
+}
+
+/**
  * ags_concurrency_provider_get_worker:
  * @concurrency_provider: the #AgsConcurrencyProvider
  *
  * Get workers of application context.
  *
- * Returns: the #GList-struct containing workers
+ * Returns: (element-type Ags.WorkerThread) (transfer full): the #GList-struct containing workers
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider)
@@ -172,11 +219,11 @@ ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider
 /**
  * ags_concurrency_provider_set_worker:
  * @concurrency_provider: the #AgsConcurrencyProvider
- * @worker: the #GList-struct containing workers
+ * @worker: (element-type Ags.WorkerThread): the #GList-struct containing workers
  * 
  * Set workers of application context.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,

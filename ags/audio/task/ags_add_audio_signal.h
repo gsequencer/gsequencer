@@ -28,6 +28,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ADD_AUDIO_SIGNAL                (ags_add_audio_signal_get_type())
 #define AGS_ADD_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ADD_AUDIO_SIGNAL, AgsAddAudioSignal))
 #define AGS_ADD_AUDIO_SIGNAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ADD_AUDIO_SIGNAL, AgsAddAudioSignalClass))
@@ -64,5 +66,6 @@ AgsAddAudioSignal* ags_add_audio_signal_new(AgsRecycling *recycling,
 					    GObject *soundcard,
 					    AgsRecallID *recall_id,
 					    guint audio_signal_flags);
+G_END_DECLS
 
 #endif /*__AGS_ADD_AUDIO_SIGNAL_H__*/

@@ -25,7 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_export_soundcard.h>
+
+G_BEGIN_DECLS
 
 void ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 					   AgsExportSoundcard *export_soundcard);
@@ -35,5 +42,7 @@ void ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
 void ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						       AgsExportSoundcard *export_soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_SOUNDCARD_CALLBACKS_H__*/

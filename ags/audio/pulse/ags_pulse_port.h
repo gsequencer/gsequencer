@@ -31,6 +31,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PULSE_PORT                (ags_pulse_port_get_type())
 #define AGS_PULSE_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_PORT, AgsPulsePort))
 #define AGS_PULSE_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_PORT, AgsPulsePort))
@@ -38,7 +40,7 @@
 #define AGS_IS_PULSE_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_PORT))
 #define AGS_PULSE_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_PORT, AgsPulsePortClass))
 
-#define AGS_PULSE_PORT_GET_OBJ_MUTEX(obj) (((AgsPulsePort *) obj)->obj_mutex)
+#define AGS_PULSE_PORT_GET_OBJ_MUTEX(obj) (&(((AgsPulsePort *) obj)->obj_mutex))
 
 #define AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
@@ -74,8 +76,7 @@ struct _AgsPulsePort
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *pulse_client;
 
@@ -129,8 +130,6 @@ struct _AgsPulsePortClass
 
 GType ags_pulse_port_get_type();
 
-pthread_mutex_t* ags_pulse_port_get_class_mutex();
-
 gboolean ags_pulse_port_test_flags(AgsPulsePort *pulse_port, guint flags);
 void ags_pulse_port_set_flags(AgsPulsePort *pulse_port, guint flags);
 void ags_pulse_port_unset_flags(AgsPulsePort *pulse_port, guint flags);
@@ -161,5 +160,7 @@ void ags_pulse_port_set_cache_buffer_size(AgsPulsePort *pulse_port,
 guint ags_pulse_port_get_latency(AgsPulsePort *pulse_port);
 
 AgsPulsePort* ags_pulse_port_new(GObject *pulse_client);
+
+G_END_DECLS
 
 #endif /*__AGS_PULSE_PORT_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_STREAM_CHANNEL                (ags_stream_channel_get_type())
 #define AGS_STREAM_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STREAM_CHANNEL, AgsStreamChannel))
 #define AGS_STREAM_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_STREAM_CHANNEL, AgsStreamChannelClass))
@@ -54,5 +56,7 @@ struct _AgsStreamChannelClass
 GType ags_stream_channel_get_type();
 
 AgsStreamChannel* ags_stream_channel_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_STREAM_CHANNEL_H__*/

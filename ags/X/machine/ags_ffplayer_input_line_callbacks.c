@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 void
 ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
 						GParamSpec *pspec,
@@ -32,8 +29,8 @@ ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
   AgsChannel *channel;
 
   gchar *str;
-  
-  pthread_mutex_t *channel_mutex;
+
+  guint pad, audio_channel;
 
   ffplayer_input_line = AGS_FFPLAYER_INPUT_LINE(gobject);
 
@@ -43,21 +40,16 @@ ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
 
   channel = AGS_EFFECT_LINE(ffplayer_input_line)->channel;
   
-  /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-
-  channel_mutex = channel->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  /* get channel properties */
+  g_object_get(channel,
+	       "pad", &pad,
+	       "audio-channel", &audio_channel,
+	       NULL);
 
   /* create label */
-  pthread_mutex_lock(channel_mutex);
-
   str = g_strdup_printf("in: %d, %d",
-			channel->pad + 1,
-			channel->audio_channel + 1);
-
-  pthread_mutex_unlock(channel_mutex);
+			pad + 1,
+			audio_channel + 1);
 
   gtk_label_set_text(AGS_EFFECT_LINE(ffplayer_input_line)->label,
 		     str);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,16 +24,11 @@
 #include <glib-object.h>
 
 #include <sys/types.h>
-
-#include <pthread.h>
-
-#include <ags/config.h>
-
-#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
-#endif
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDIIN                (ags_midiin_get_type())
 #define AGS_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDIIN, AgsMidiin))
@@ -42,7 +37,7 @@
 #define AGS_IS_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDIIN))
 #define AGS_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIDIIN, AgsMidiinClass))
 
-#define AGS_MIDIIN_GET_OBJ_MUTEX(obj) (((AgsMidiin *) obj)->obj_mutex)
+#define AGS_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsMidiin *) obj)->obj_mutex))
 
 #define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00"
@@ -61,6 +56,8 @@ typedef struct _AgsMidiinClass AgsMidiinClass;
  * @AGS_MIDIIN_BUFFER3: ring-buffer 3
  * @AGS_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
  * @AGS_MIDIIN_RECORD: is recording
+ * @AGS_MIDIIN_OSS: use OSS4 backend
+ * @AGS_MIDIIN_ALSA: use ALSA backend
  * @AGS_MIDIIN_SHUTDOWN: stop recording
  * @AGS_MIDIIN_START_RECORD: just started recording
  * @AGS_MIDIIN_NONBLOCKING: do non-blocking calls
@@ -128,17 +125,14 @@ struct _AgsMidiin
   guint flags;
   volatile guint sync_flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
   char **ring_buffer;
   guint ring_buffer_size[2];
   
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   char **buffer;
   guint buffer_size[4];
 
@@ -171,14 +165,6 @@ struct _AgsMidiin
 #endif
     }alsa;
   }in;
-
-  pthread_t *poll_thread;
-  
-  pthread_mutex_t *poll_mutex;
-  pthread_cond_t *poll_cond;
-
-  pthread_mutex_t *poll_finish_mutex;
-  pthread_cond_t *poll_finish_cond;
 };
 
 struct _AgsMidiinClass
@@ -190,14 +176,14 @@ GType ags_midiin_get_type();
 
 GQuark ags_midiin_error_quark();
 
-pthread_mutex_t* ags_midiin_get_class_mutex();
-
 gboolean ags_midiin_test_flags(AgsMidiin *midiin, guint flags);
 void ags_midiin_set_flags(AgsMidiin *midiin, guint flags);
 void ags_midiin_unset_flags(AgsMidiin *midiin, guint flags);
 
 void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
 
-AgsMidiin* ags_midiin_new(GObject *application_context);
+AgsMidiin* ags_midiin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_MIDIIN_H__*/

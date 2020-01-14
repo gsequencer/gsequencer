@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -153,22 +151,12 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   guint length;
   
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *recycling_mutex;
-  
+    
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* set flags */
   ags_recall_unset_behaviour_flags(recall,
 				   AGS_SOUND_BEHAVIOUR_PERSISTENT);
@@ -279,20 +267,11 @@ ags_copy_audio_signal_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
+  /* get parent class */  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* call parent */
   parent_class_run_pre(recall);
 
@@ -354,19 +333,10 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   void (*parent_class_run_inter)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS();
-
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -529,10 +499,19 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   attack = (destination_samplerate / source_samplerate) * attack;
 
   if(source_samplerate != destination_samplerate){
-    buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						   ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-						   source_buffer_size,
-						   destination_samplerate);
+    void *tmp_buffer_source;
+
+    tmp_buffer_source = ags_stream_alloc(destination_buffer_size,
+					 source_format);
+
+    ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+					       ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+					       source_buffer_size,
+					       destination_samplerate,
+					       destination_buffer_size,
+					       tmp_buffer_source);
+      
+    buffer_source = tmp_buffer_source;
       
     resample = TRUE;
   }
@@ -550,11 +529,19 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
       buffer_source_prev = stream_source->prev->data;
 
       if(resample){
-	buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
-							    ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-							    source_buffer_size,
-							    destination_samplerate);
+	void *tmp_buffer_source_prev;
 
+	tmp_buffer_source_prev = ags_stream_alloc(destination_buffer_size,
+						  source_format);
+	  
+	ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
+						   ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						   source_buffer_size,
+						   destination_samplerate,
+						   destination_buffer_size,
+						   tmp_buffer_source_prev);
+      
+	buffer_source_prev = tmp_buffer_source_prev;
       }
 
       ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
@@ -596,7 +583,7 @@ ags_copy_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsCopyAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,

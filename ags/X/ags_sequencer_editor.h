@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SEQUENCER_EDITOR                (ags_sequencer_editor_get_type())
 #define AGS_SEQUENCER_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SEQUENCER_EDITOR, AgsSequencerEditor))
@@ -81,5 +88,7 @@ void ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor);
 
 AgsSequencerEditor* ags_sequencer_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SEQUENCER_EDITOR_H__*/

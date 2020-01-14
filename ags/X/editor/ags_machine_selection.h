@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_window.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_SELECTION                (ags_machine_selection_get_type())
 #define AGS_MACHINE_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_SELECTION, AgsMachineSelection))
@@ -66,5 +72,7 @@ GType ags_machine_selection_get_type(void);
 void ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection);
 
 AgsMachineSelection* ags_machine_selection_new(AgsWindow *window);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_SELECTION_H__*/

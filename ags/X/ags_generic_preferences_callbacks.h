@@ -20,14 +20,25 @@
 #ifndef __AGS_GENERIC_PREFERENCES_CALLBACKS_H__
 #define __AGS_GENERIC_PREFERENCES_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_generic_preferences.h>
+
+G_BEGIN_DECLS
 
 void ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button,
 							      AgsGenericPreferences *generic_preferences);
 
 void ags_generic_preferences_rt_safe_callback(GtkWidget *check_button,
 					      AgsGenericPreferences *generic_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_GENERIC_PREFERENCES_CALLBACKS_H__*/

@@ -1,4 +1,4 @@
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2019 Joël Krähemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
@@ -23,9 +23,6 @@
 <!ELEMENT ags-srv-auth-group-list (ags-srv-auth-group*)>
 
 <!ELEMENT ags-srv-auth-group (#CDATA)>
-<!ATTLIST ags-srv-auth-group
-	  permission       CDATA      #REQUIRED
-	  >
 
 <!-- session node -->
 <!ELEMENT ags-srv-auth-session-list (ags-srv-auth-session*)>

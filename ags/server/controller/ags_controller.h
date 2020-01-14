@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CONTROLLER                (ags_controller_get_type())
 #define AGS_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONTROLLER, AgsController))
@@ -32,7 +32,9 @@
 #define AGS_IS_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONTROLLER))
 #define AGS_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CONTROLLER, AgsControllerClass))
 
-#define AGS_CONTROLLER_BASE_PATH "/ags-server"
+#define AGS_CONTROLLER_GET_OBJ_MUTEX(obj) (&(((AgsController *) obj)->obj_mutex))
+
+#define AGS_CONTROLLER_BASE_PATH "/ags-xmlrpc"
 
 typedef struct _AgsController AgsController;
 typedef struct _AgsControllerClass AgsControllerClass;
@@ -42,13 +44,12 @@ struct _AgsController
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *server;
 
   gchar *context_path;
-
+  
   GHashTable *resource;
 };
 
@@ -62,6 +63,7 @@ struct _AgsControllerClass
 
 /**
  * AgsControllerResource:
+ * @ref_count: the reference count
  * @group_id: the group id of permissions
  * @user_id: the user id of permissions
  * @access_mode: the access mode of permissions
@@ -70,6 +72,8 @@ struct _AgsControllerClass
  */
 struct _AgsControllerResource
 {
+  gint ref_count;
+
   gchar *group_id;
   gchar *user_id;
 
@@ -78,11 +82,12 @@ struct _AgsControllerResource
 
 GType ags_controller_get_type();
 
-pthread_mutex_t* ags_controller_get_class_mutex();
-
 AgsControllerResource* ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
 						     guint access_mode);
 void ags_controller_resource_free(AgsControllerResource *controller_resource);
+
+void ags_controller_resource_ref(AgsControllerResource *controller_resource);
+void ags_controller_resource_unref(AgsControllerResource *controller_resource);
 
 void ags_controller_add_resource(AgsController *controller,
 				 gchar *resource_name, AgsControllerResource *controller_resource);
@@ -96,5 +101,7 @@ gboolean ags_controller_query_security_context(AgsController *controller,
 					       GObject *security_context, gchar *login);
 
 AgsController* ags_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CONTROLLER_H__*/

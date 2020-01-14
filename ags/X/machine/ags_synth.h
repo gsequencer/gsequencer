@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SYNTH                (ags_synth_get_type())
 #define AGS_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH, AgsSynth))
@@ -76,5 +82,7 @@ GType ags_synth_get_type(void);
 void ags_synth_update(AgsSynth *synth);
 
 AgsSynth* ags_synth_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_SYNTH_H__*/

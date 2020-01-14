@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,11 +29,11 @@
 
 void ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_pad);
 void ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad);
+void ags_ffplayer_input_pad_finalize(GObject *gobject);
+
 void ags_ffplayer_input_pad_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
-void ags_ffplayer_input_pad_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ffplayer_input_pad
@@ -75,12 +75,6 @@ ags_ffplayer_input_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_ffplayer_input_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_ffplayer_input_pad = g_type_register_static(AGS_TYPE_EFFECT_PAD,
 							 "AgsFFPlayerInputPad", &ags_ffplayer_input_pad_info,
 							 0);
@@ -88,10 +82,6 @@ ags_ffplayer_input_pad_get_type(void)
     g_type_add_interface_static(ags_type_ffplayer_input_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_ffplayer_input_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer_input_pad);
   }
@@ -124,22 +114,15 @@ ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *conne
 }
 
 void
-ags_ffplayer_input_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
-}
-
-void
 ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_input_pad_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_ffplayer_input_pad_parent_class)->finalize(gobject);
 }
 
 void
@@ -166,12 +149,6 @@ ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-void
-ags_ffplayer_input_pad_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_ffplayer_input_pad_parent_class)->finalize(gobject);
-}
-
 /**
  * ags_ffplayer_input_pad_new:
  * @channel: the #AgsChannel to visualize
@@ -180,7 +157,7 @@ ags_ffplayer_input_pad_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFFPlayerInputPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFFPlayerInputPad*
 ags_ffplayer_input_pad_new(AgsChannel *channel)

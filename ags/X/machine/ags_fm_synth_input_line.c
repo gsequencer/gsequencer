@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_fm_synth_input_line.h>
 #include <ags/X/machine/ags_fm_synth_input_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
@@ -32,21 +28,11 @@
 #include <ags/X/machine/ags_fm_oscillator.h>
 
 void ags_fm_synth_input_line_class_init(AgsFMSynthInputLineClass *fm_synth_input_line);
-void ags_fm_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_fm_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_fm_synth_input_line_init(AgsFMSynthInputLine *fm_synth_input_line);
 
 void ags_fm_synth_input_line_connect(AgsConnectable *connectable);
 void ags_fm_synth_input_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_fm_synth_input_line_get_name(AgsPlugin *plugin);
-void ags_fm_synth_input_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_fm_synth_input_line_get_xml_type(AgsPlugin *plugin);
-void ags_fm_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_fm_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_fm_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
-					  AgsFMSynthInputLine *fm_synth_input_line);
-xmlNode* ags_fm_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_fm_synth_input_line_show(GtkWidget *line);
 void ags_fm_synth_input_line_show_all(GtkWidget *line);
@@ -94,12 +80,6 @@ ags_fm_synth_input_line_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_fm_synth_input_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_fm_synth_input_line = g_type_register_static(AGS_TYPE_LINE,
 							  "AgsFMSynthInputLine", &ags_fm_synth_input_line_info,
 							  0);
@@ -107,10 +87,6 @@ ags_fm_synth_input_line_get_type()
     g_type_add_interface_static(ags_type_fm_synth_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_fm_synth_input_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_fm_synth_input_line);
   }
@@ -146,17 +122,6 @@ ags_fm_synth_input_line_connectable_interface_init(AgsConnectableInterface *conn
 
   connectable->connect = ags_fm_synth_input_line_connect;
   connectable->disconnect = ags_fm_synth_input_line_disconnect;
-}
-
-void
-ags_fm_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_fm_synth_input_line_get_name;
-  plugin->set_name = ags_fm_synth_input_line_set_name;
-  plugin->get_xml_type = ags_fm_synth_input_line_get_xml_type;
-  plugin->set_xml_type = ags_fm_synth_input_line_set_xml_type;
-  plugin->read = ags_fm_synth_input_line_read;
-  plugin->write = ags_fm_synth_input_line_write;
 }
 
 void
@@ -244,30 +209,6 @@ ags_fm_synth_input_line_map_recall(AgsLine *line,
 								   output_pad_start);
 }
 
-gchar*
-ags_fm_synth_input_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_FM_SYNTH_INPUT_LINE(plugin)->name);
-}
-
-void
-ags_fm_synth_input_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_FM_SYNTH_INPUT_LINE(plugin)->name = name;
-}
-
-gchar*
-ags_fm_synth_input_line_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_FM_SYNTH_INPUT_LINE(plugin)->xml_type);
-}
-
-void
-ags_fm_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_FM_SYNTH_INPUT_LINE(plugin)->xml_type = xml_type;
-}
-
 void
 ags_fm_synth_input_line_show(GtkWidget *line)
 {
@@ -284,95 +225,6 @@ ags_fm_synth_input_line_show_all(GtkWidget *line)
   gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
-void
-ags_fm_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFMSynthInputLine *gobject;
-  AgsFileLookup *file_lookup;
-  xmlNode *child;
-
-  gobject = AGS_FM_SYNTH_INPUT_LINE(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  gobject->fm_oscillator = ags_fm_oscillator_new();
-
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file", file,
-					       "node", node,
-					       "reference", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		   G_CALLBACK(ags_fm_synth_input_line_resolve_line), gobject);
-
-  /* child elements */
-  child = node->children;
-
-  while(child != NULL){
-    if(XML_ELEMENT_NODE == child->type){
-      if(!xmlStrncmp(child->name,
-		     "ags-fm_oscillator",
-		     15)){
-	ags_file_read_fm_oscillator(file, child, &(gobject->fm_oscillator));
-      }
-    }
-
-    child = child->next;
-  }
-}
-
-void
-ags_fm_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
-				     AgsFMSynthInputLine *fm_synth_input_line)
-{
-  ags_expander_add(AGS_LINE(fm_synth_input_line)->expander,
-		   GTK_WIDGET(fm_synth_input_line->fm_oscillator),
-		   0, 0,
-		   1, 1);
-}
-
-xmlNode*
-ags_fm_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFMSynthInputLine *fm_synth_input_line;
-  xmlNode *node;
-  gchar *id;
-
-  fm_synth_input_line = AGS_FM_SYNTH_INPUT_LINE(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-fm_synth-input-line");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", fm_synth_input_line,
-				   NULL));
-
-  ags_file_write_fm_oscillator(file, node, fm_synth_input_line->fm_oscillator);
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_fm_synth_input_line_new:
  * @channel: the assigned channel
@@ -381,7 +233,7 @@ ags_fm_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: the new #AgsFMSynthInputLine
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMSynthInputLine*
 ags_fm_synth_input_line_new(AgsChannel *channel)

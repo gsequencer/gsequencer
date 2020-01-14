@@ -19,14 +19,8 @@
 
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/config.h>
 

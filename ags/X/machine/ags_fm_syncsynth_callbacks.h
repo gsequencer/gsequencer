@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_fm_syncsynth.h>
 
-void ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFMSyncsynth *fm_syncsynth);
+G_BEGIN_DECLS
+
+void ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSyncsynth *fm_syncsynth);
 
 void ags_fm_syncsynth_samplerate_changed_callback(AgsMachine *machine,
 						  guint samplerate, guint old_samplerate,
@@ -52,5 +58,7 @@ void ags_fm_syncsynth_lfo_freq_callback(GtkSpinButton *spin_button, AgsFMSyncsyn
 void ags_fm_syncsynth_lfo_phase_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_lfo_depth_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
 void ags_fm_syncsynth_lfo_tunint_callback(GtkSpinButton *spin_button, AgsFMSyncsynth *fm_syncsynth);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNCSYNTH_CALLBACKS_H__ */

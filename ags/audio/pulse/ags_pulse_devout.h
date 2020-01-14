@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PULSE_DEVOUT                (ags_pulse_devout_get_type())
 #define AGS_PULSE_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_DEVOUT, AgsPulseDevout))
@@ -34,7 +34,7 @@
 #define AGS_IS_PULSE_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_DEVOUT))
 #define AGS_PULSE_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_DEVOUT, AgsPulseDevoutClass))
 
-#define AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsPulseDevout *) obj)->obj_mutex)
+#define AGS_PULSE_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsPulseDevout *) obj)->obj_mutex))
 
 typedef struct _AgsPulseDevout AgsPulseDevout;
 typedef struct _AgsPulseDevoutClass AgsPulseDevoutClass;
@@ -117,10 +117,7 @@ struct _AgsPulseDevout
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -130,10 +127,10 @@ struct _AgsPulseDevout
   guint buffer_size;
   guint samplerate;
 
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
 
   guint sub_block_count;
-  pthread_mutex_t **sub_block_mutex;
+  GRecMutex **sub_block_mutex;
 
   void **buffer;
 
@@ -163,11 +160,11 @@ struct _AgsPulseDevout
   gchar **port_name;
   GList *pulse_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -181,8 +178,6 @@ GType ags_pulse_devout_get_type();
 
 GQuark ags_pulse_devout_error_quark();
 
-pthread_mutex_t* ags_pulse_devout_get_class_mutex();
-
 gboolean ags_pulse_devout_test_flags(AgsPulseDevout *pulse_devout, guint flags);
 void ags_pulse_devout_set_flags(AgsPulseDevout *pulse_devout, guint flags);
 void ags_pulse_devout_unset_flags(AgsPulseDevout *pulse_devout, guint flags);
@@ -192,6 +187,8 @@ void ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout);
 void ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout);
 void ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout);
 
-AgsPulseDevout* ags_pulse_devout_new(AgsApplicationContext *application_context);
+AgsPulseDevout* ags_pulse_devout_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PULSE_DEVOUT_H__*/

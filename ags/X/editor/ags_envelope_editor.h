@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,11 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/widget/ags_cartesian.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_ENVELOPE_EDITOR                (ags_envelope_editor_get_type())
 #define AGS_ENVELOPE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_EDITOR, AgsEnvelopeEditor))
@@ -36,8 +38,8 @@
 #define AGS_IS_ENVELOPE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_EDITOR))
 #define AGS_ENVELOPE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_EDITOR, AgsEnvelopeEditorClass))
 
-#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "0.8.2\0"
-#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "CEST 24-05-2017 10:16\0"
+#define AGS_ENVELOPE_EDITOR_DEFAULT_VERSION "0.8.2"
+#define AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID "CEST 24-05-2017 10:16"
 
 typedef struct _AgsEnvelopeEditor AgsEnvelopeEditor;
 typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
@@ -101,5 +103,7 @@ void ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor);
 void ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor);
 
 AgsEnvelopeEditor* ags_envelope_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_ENVELOPE_EDITOR_H__*/

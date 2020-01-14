@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,7 +29,11 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
+void
+ags_line_check_message_callback(GObject *application_context, AgsLine *line)
+{
+  ags_line_check_message(line);
+}
 
 void
 ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)

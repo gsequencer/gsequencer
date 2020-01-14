@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/plugin/ags_lv2_log_manager.h>
-
-#include <ags/object/ags_connectable.h>
 
 void ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager);
 void ags_lv2_log_manager_init(AgsLv2LogManager *lv2_log_manager);
@@ -101,8 +99,8 @@ ags_lv2_log_manager_finalize(GObject *gobject)
 
 /**
  * ags_lv2_log_manager_printf:
- * @handle: the log handle
- * @type: LV2 URID
+ * @handle: (type gpointer) (transfer none): the log handle
+ * @type: (type gpointer) (transfer none): LV2 URID
  * @fmt: format
  * @...: %NULL terminated variable arguments
  * 
@@ -110,7 +108,7 @@ ags_lv2_log_manager_finalize(GObject *gobject)
  * 
  * Returns: 0
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_lv2_log_manager_printf(LV2_Log_Handle handle,
@@ -131,8 +129,8 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
 
 /**
  * ags_lv2_log_manager_vprintf:
- * @handle: the log handle
- * @type: LV2 URID
+ * @handle: (type gpointer) (transfer none): the log handle
+ * @type: (type gpointer) (transfer none): LV2 URID
  * @fmt: format
  * @ap: argument pointer
  *
@@ -140,7 +138,7 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
  *
  * Returns: 0
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 int
 ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
@@ -161,9 +159,9 @@ ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2LogManager
+ * Returns: (transfer none): an instance of #AgsLv2LogManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_get_instance()
@@ -184,7 +182,7 @@ ags_lv2_log_manager_get_instance()
  *
  * Returns: a new #AgsLv2LogManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_new()

@@ -26,8 +26,8 @@
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_line_editor.h>
 
-int
-ags_input_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsInputEditor *input_editor)
+void
+ags_input_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsInputEditor *input_editor)
 {
   AgsMachine *machine;
   AgsLineEditor *line_editor;
@@ -36,7 +36,7 @@ ags_input_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, A
   AgsChannel *channel;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   //TODO:JK: missing mutex
@@ -60,8 +60,6 @@ ags_input_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, A
       }
     }
   }
-  
-  return(0);
 }
 
 void

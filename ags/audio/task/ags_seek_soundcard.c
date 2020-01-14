@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of seek soundcard"),
@@ -131,7 +131,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The offset to seek.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int64("offset",
 				 i18n_pspec("offset"),
@@ -149,7 +149,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * Whence either AGS_SEEK_SET, AGS_SEEK_CUR or AGS_SEEK_END
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("whence",
 				 i18n_pspec("whence"),
@@ -305,9 +305,12 @@ ags_seek_soundcard_launch(AgsTask *task)
 
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
-  soundcard = seek_soundcard->soundcard;
-
   application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_SOUNDCARD(seek_soundcard->soundcard));
+  
+  soundcard = seek_soundcard->soundcard;
 
   audio = 
     audio_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -402,7 +405,7 @@ ags_seek_soundcard_launch(AgsTask *task)
  *
  * Returns: the new #AgsSeekSoundcard
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSeekSoundcard*
 ags_seek_soundcard_new(GObject *soundcard,

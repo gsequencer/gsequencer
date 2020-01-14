@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,7 +18,6 @@
  */
 
 #include <ags/X/ags_sheet_editor.h>
-//#include <ags/X/ags_sheet_editor_callbacks.h>
 
 #include <ags/i18n.h>
 
@@ -135,7 +134,7 @@ ags_sheet_editor_class_init(AgsSheetEditorClass *sheet_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -157,7 +156,7 @@ ags_sheet_editor_class_init(AgsSheetEditorClass *sheet_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.2.0
+   * Since: 3.0.0
    */
   sheet_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -308,7 +307,7 @@ ags_sheet_editor_real_machine_changed(AgsSheetEditor *sheet_editor,
  *
  * Is emitted as machine changed of sheet_editor.
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 void
 ags_sheet_editor_machine_changed(AgsSheetEditor *sheet_editor,
@@ -383,7 +382,7 @@ ags_sheet_editor_cut(AgsSheetEditor *sheet_editor)
  *
  * Returns: a new #AgsSheetEditor
  *
- * Since: 2.2.0
+ * Since: 3.0.0
  */
 AgsSheetEditor*
 ags_sheet_editor_new()

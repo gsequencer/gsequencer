@@ -32,6 +32,8 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PLAY_NOTATION_AUDIO_RUN                (ags_play_notation_audio_run_get_type())
 #define AGS_PLAY_NOTATION_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION_AUDIO_RUN, AgsPlayNotationAudioRun))
 #define AGS_PLAY_NOTATION_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_NOTATION_AUDIO_RUN, AgsPlayNotationAudioRun))
@@ -66,5 +68,7 @@ GType ags_play_notation_audio_run_get_type();
 AgsPlayNotationAudioRun* ags_play_notation_audio_run_new(AgsAudio *audio,
 							 AgsDelayAudioRun *delay_audio_run,
 							 AgsCountBeatsAudioRun *count_beats_audio_run);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAY_NOTATION_AUDIO_RUN_H__*/

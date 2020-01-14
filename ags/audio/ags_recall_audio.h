@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_recall.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_AUDIO                (ags_recall_audio_get_type())
 #define AGS_RECALL_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_AUDIO, AgsRecallAudio))
@@ -54,5 +57,7 @@ struct _AgsRecallAudioClass
 GType ags_recall_audio_get_type();
 
 AgsRecallAudio* ags_recall_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_AUDIO_H__*/

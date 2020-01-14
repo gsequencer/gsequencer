@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,7 +114,7 @@ ags_start_audio_class_init(AgsStartAudioClass *start_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of start audio"),
@@ -130,7 +130,7 @@ ags_start_audio_class_init(AgsStartAudioClass *start_audio)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -272,11 +272,13 @@ ags_start_audio_launch(AgsTask *task)
 
   start_audio = AGS_START_AUDIO(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(start_audio->audio));
+
   g_object_get(start_audio,
 	       "audio", &audio,
 	       "sound-scope", &sound_scope,
 	       NULL);
-  
+
   recall_id = ags_audio_start(audio,
 			      sound_scope);
 
@@ -295,7 +297,7 @@ ags_start_audio_launch(AgsTask *task)
  *
  * Returns: the new #AgsStartAudio.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStartAudio*
 ags_start_audio_new(AgsAudio *audio,

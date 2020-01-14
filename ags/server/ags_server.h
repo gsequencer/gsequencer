@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,27 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
+#include <gio/gio.h>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
-
-#include <ags/config.h>
-
-#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
-#include <xmlrpc-c/util.h>
-
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/abyss.h>
-#include <xmlrpc-c/server.h>
-#include <xmlrpc-c/server_abyss.h>
-#endif
-
-#include <pthread.h>
+#include <libsoup/soup.h>
 
 #include <ags/lib/ags_uuid.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
@@ -52,12 +38,16 @@
 #define AGS_IS_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER))
 #define AGS_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER, AgsServerClass))
 
+#define AGS_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsServer *) obj)->obj_mutex))
+
 #define AGS_SERVER_DEFAULT_SERVER_PORT (8080)
 #define AGS_SERVER_DEFAULT_DOMAIN "localhost"
 #define AGS_SERVER_DEFAULT_INET4_ADDRESS "127.0.0.1"
 #define AGS_SERVER_DEFAULT_INET6_ADDRESS "::1"
 
-#define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-password-store"
+#define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-authentication"
+
+#define AGS_SERVER_DEFAULT_BACKLOG (512)
 
 typedef struct _AgsServer AgsServer;
 typedef struct _AgsServerClass AgsServerClass;
@@ -65,25 +55,25 @@ typedef struct _AgsServerInfo AgsServerInfo;
 
 /**
  * AgsServerFlags:
- * @AGS_SERVER_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
- * @AGS_SERVER_CONNECTED: the server was connected by #AgsConnectable::connect()
  * @AGS_SERVER_STARTED: the server was started
  * @AGS_SERVER_RUNNING: the server is up and running
+ * @AGS_SERVER_TERMINATING: the server is closing connections and terminating
  * @AGS_SERVER_INET4: use IPv4
  * @AGS_SERVER_INET6: use IPv6
  * @AGS_SERVER_ANY_ADDRESS: listen on any address
+ * @AGS_SERVER_AUTO_START: start the server
  * 
  * Enum values to control the behavior or indicate internal state of #AgsServer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SERVER_ADDED_TO_REGISTRY  = 1,
-  AGS_SERVER_CONNECTED          = 1 <<  1,
-  AGS_SERVER_STARTED            = 1 <<  2,
-  AGS_SERVER_RUNNING            = 1 <<  3,
-  AGS_SERVER_INET4              = 1 <<  4,
-  AGS_SERVER_INET6              = 1 <<  5,
-  AGS_SERVER_ANY_ADDRESS        = 1 <<  6,
+  AGS_SERVER_STARTED            = 1,
+  AGS_SERVER_RUNNING            = 1 <<  1,
+  AGS_SERVER_TERMINATING        = 1 <<  2,
+  AGS_SERVER_INET4              = 1 <<  3,
+  AGS_SERVER_INET6              = 1 <<  4,
+  AGS_SERVER_ANY_ADDRESS        = 1 <<  5,
+  AGS_SERVER_AUTO_START         = 1 <<  6,
 }AgsServerFlags;
 
 struct _AgsServer
@@ -92,43 +82,38 @@ struct _AgsServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
   AgsServerInfo *server_info;
 
-#if defined AGS_WITH_XMLRPC_C && !AGS_W32API
-  TServer *abyss_server;
-  TSocket *socket;
-#else
-  void *abyss_server;
-  void *socket;  
-#endif
-
   gchar *ip4;
   gchar *ip6;
-
+  
   gchar *domain;
   guint server_port;
-  
+
   int ip4_fd;
   int ip6_fd;
+
+  GSocket *ip4_socket;
+  GSocket *ip6_socket;
+
+  GSocketAddress *ip4_address;
+  GSocketAddress *ip6_address;
+
+  gchar *realm;
   
-#if defined AGS_W32API
-  gpointer ip4_address;
-  gpointer ip6_address;
-#else
-  struct sockaddr_in *ip4_address;
-  struct sockaddr_in6 *ip6_address;
-#endif
-  
+  SoupServer *soup_server;
+
   gchar *auth_module;
+
+  SoupAuthDomain *auth_domain;
   
+  GObject *front_controller;
+
   GList *controller;
-  
-  GObject *application_context;
 };
 
 struct _AgsServerClass
@@ -137,6 +122,8 @@ struct _AgsServerClass
   
   void (*start)(AgsServer *server);
   void (*stop)(AgsServer *server);
+
+  gboolean (*listen)(AgsServer *server);
 };
 
 /**
@@ -154,19 +141,25 @@ struct _AgsServerInfo
 
 GType ags_server_get_type();
 
-pthread_mutex_t* ags_server_get_class_mutex();
-
 gboolean ags_server_test_flags(AgsServer *server, guint flags);
 void ags_server_set_flags(AgsServer *server, guint flags);
 void ags_server_unset_flags(AgsServer *server, guint flags);
 
 AgsServerInfo* ags_server_info_alloc(gchar *server_name, gchar *uuid);
 
+/* fields */
+void ags_server_add_controller(AgsServer *server,
+			       GObject *controller);
+void ags_server_remove_controller(AgsServer *server,
+				  GObject *controller);
+
 void ags_server_start(AgsServer *server);
 void ags_server_stop(AgsServer *server);
 
-AgsServer* ags_server_lookup(AgsServerInfo *server_info);
+gboolean ags_server_listen(AgsServer *server);
 
-AgsServer* ags_server_new(GObject *application_context);
+AgsServer* ags_server_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SERVER_H__*/

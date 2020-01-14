@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_notation.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FREE_SELECTION                (ags_free_selection_get_type())
 #define AGS_FREE_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FREE_SELECTION, AgsFreeSelection))
 #define AGS_FREE_SELECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FREE_SELECTION, AgsFreeSelectionClass))
@@ -52,5 +54,7 @@ struct _AgsFreeSelectionClass
 GType ags_free_selection_get_type();
 
 AgsFreeSelection* ags_free_selection_new(AgsNotation *notation);
+
+G_END_DECLS
 
 #endif /*__AGS_FREE_SELECTION_H__*/

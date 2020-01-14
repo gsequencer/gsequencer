@@ -107,7 +107,7 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    *
    * The fixed width of a scale.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("fixed-scale-width",
 				 "fixed scale width",
@@ -125,7 +125,7 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    *
    * The fixed height of a scale.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("fixed-scale-height",
 				 "fixed scale height",
@@ -237,7 +237,7 @@ ags_scale_box_child_type(GtkContainer *container)
  * 
  * Returns: the new #AgsScaleBox instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScaleBox*
 ags_scale_box_new()

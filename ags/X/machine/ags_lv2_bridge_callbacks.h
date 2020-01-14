@@ -25,12 +25,18 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_lv2_bridge.h>
 
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
-void ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLv2Bridge *lv2_bridge);
+G_BEGIN_DECLS
+
+void ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLv2Bridge *lv2_bridge);
 
 void ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge);
 gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
@@ -48,5 +54,7 @@ void ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2B
 void ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_bridge);
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_BRIDGE_CALLBACKS_H__*/

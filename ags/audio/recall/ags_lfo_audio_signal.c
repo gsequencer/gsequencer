@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_lfo_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_channel_run.h>
@@ -136,11 +134,7 @@ ags_lfo_audio_signal_run_init_pre(AgsRecall *recall)
   lfo_audio_signal = (AgsLfoAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_lfo_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(lfo_audio_signal,
 	       "parent", &lfo_recycling,
@@ -191,11 +185,7 @@ ags_lfo_audio_signal_run_inter(AgsRecall *recall)
   lfo_audio_signal = (AgsLfoAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_lfo_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -460,7 +450,7 @@ ags_lfo_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsLfoAudioSignal
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoAudioSignal*
 ags_lfo_audio_signal_new(AgsAudioSignal *source)

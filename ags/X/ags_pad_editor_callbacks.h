@@ -25,14 +25,20 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_pad_editor.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad_editor.h>
 
-int ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPadEditor *pad_editor);
+G_BEGIN_DECLS
 
 void ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 						   guint audio_channels, guint audio_channels_old,
 						   AgsPadEditor *pad_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_PAD_EDITOR_CALLBACKS_H__*/

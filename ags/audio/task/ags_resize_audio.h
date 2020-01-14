@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RESIZE_AUDIO                (ags_resize_audio_get_type())
 #define AGS_RESIZE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RESIZE_AUDIO, AgsResizeAudio))
@@ -59,5 +61,7 @@ AgsResizeAudio* ags_resize_audio_new(AgsAudio *audio,
 				     guint output_pads,
 				     guint input_pads,
 				     guint audio_channels);
+
+G_END_DECLS
 
 #endif /*__AGS_RESIZE_AUDIO_H__*/

@@ -19,12 +19,10 @@
 
 #include <ags/plugin/ags_plugin_port.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_plugin_port_class_init(AgsPluginPortClass *plugin_port);
-void ags_plugin_port_init (AgsPluginPort *plugin_port);
+void ags_plugin_port_init(AgsPluginPort *plugin_port);
 void ags_plugin_port_set_property(GObject *gobject,
 				  guint prop_id,
 				  const GValue *value,
@@ -61,8 +59,6 @@ enum{
 };
 
 static gpointer ags_plugin_port_parent_class = NULL;
-
-static pthread_mutex_t ags_plugin_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_plugin_port_get_type (void)
@@ -118,7 +114,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The assigned port-index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("port-index",
 				 i18n_pspec("port index of the plugin"),
@@ -136,7 +132,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The port's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("name of the port"),
@@ -152,7 +148,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The port's symbol.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("port-symbol",
 				   i18n_pspec("symbol of the port"),
@@ -168,7 +164,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The number of scale steps.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("scale-steps",
 				i18n_pspec("port index of the plugin"),
@@ -186,7 +182,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The scale point string vector.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("scale-point",
 				    i18n_pspec("string vector of scale points"),
@@ -201,7 +197,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The scale value array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("scale-value",
 				    i18n_pspec("array of scale values"),
@@ -216,7 +212,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The lower value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("lower-value",
 				    i18n_pspec("lower value"),
@@ -231,7 +227,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The upper value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("upper-value",
 				    i18n_pspec("upper value"),
@@ -246,7 +242,7 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
    *
    * The default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("default-value",
 				    i18n_pspec("default value"),
@@ -260,27 +256,10 @@ ags_plugin_port_class_init(AgsPluginPortClass *plugin_port)
 void
 ags_plugin_port_init(AgsPluginPort *plugin_port)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   plugin_port->flags = 0;
 
   /* add base plugin mutex */
-  plugin_port->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  plugin_port->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(plugin_port->obj_mutex));
 
   plugin_port->port_index = 0;
 
@@ -310,7 +289,7 @@ ags_plugin_port_set_property(GObject *gobject,
 {
   AgsPluginPort *plugin_port;
 
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
@@ -320,11 +299,11 @@ ags_plugin_port_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_PORT_INDEX:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       plugin_port->port_index = g_value_get_uint(value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
@@ -333,17 +312,17 @@ ags_plugin_port_set_property(GObject *gobject,
 
       port_name = g_value_get_string(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       if(port_name == plugin_port->port_name){
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 	
 	return;
       }      
 
       plugin_port->port_name = g_strdup(port_name);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_PORT_SYMBOL:
@@ -352,17 +331,17 @@ ags_plugin_port_set_property(GObject *gobject,
 
       port_symbol = g_value_get_string(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       if(port_symbol == plugin_port->port_symbol){
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 	
 	return;
       }      
 
       plugin_port->port_symbol = g_strdup(port_symbol);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_SCALE_STEPS:
@@ -372,10 +351,10 @@ ags_plugin_port_set_property(GObject *gobject,
       
       scale_steps = g_value_get_int(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       if(scale_steps == plugin_port->scale_steps){
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	return;
       }
@@ -416,7 +395,7 @@ ags_plugin_port_set_property(GObject *gobject,
 
       plugin_port->scale_steps = scale_steps;
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_LOWER_VALUE:
@@ -425,12 +404,12 @@ ags_plugin_port_set_property(GObject *gobject,
 
       lower_value = (GValue *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_copy(plugin_port->lower_value,
 		   lower_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);      
+      g_rec_mutex_unlock(plugin_port_mutex);      
     }
     break;
   case PROP_UPPER_VALUE:
@@ -439,12 +418,12 @@ ags_plugin_port_set_property(GObject *gobject,
 
       upper_value = (GValue *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_copy(plugin_port->upper_value,
 		   upper_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_DEFAULT_VALUE:
@@ -453,12 +432,12 @@ ags_plugin_port_set_property(GObject *gobject,
 
       default_value = (GValue *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_copy(plugin_port->default_value,
 		   default_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;  
   default:
@@ -475,7 +454,7 @@ ags_plugin_port_get_property(GObject *gobject,
 {
   AgsPluginPort *plugin_port;
 
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
@@ -485,92 +464,92 @@ ags_plugin_port_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PORT_INDEX:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_uint(value,
 		       plugin_port->port_index);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_string(value,
 			 plugin_port->port_name);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_PORT_SYMBOL:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_string(value,
 			 plugin_port->port_symbol);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_SCALE_STEPS:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_int(value,
 		      plugin_port->scale_steps);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_SCALE_POINT:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
 			  plugin_port->scale_point);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_SCALE_VALUE:
     {      
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
 			  plugin_port->scale_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_LOWER_VALUE:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
 			  plugin_port->lower_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_UPPER_VALUE:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
 			  plugin_port->upper_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_DEFAULT_VALUE:
     {
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
 			  plugin_port->default_value);
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;  
   default:
@@ -596,13 +575,6 @@ ags_plugin_port_finalize(GObject *gobject)
   AgsPluginPort *plugin_port;
 
   plugin_port = AGS_PLUGIN_PORT(gobject);
-
-  /* destroy object mutex */
-  pthread_mutex_destroy(plugin_port->obj_mutex);
-  free(plugin_port->obj_mutex);
-
-  pthread_mutexattr_destroy(plugin_port->obj_mutexattr);
-  free(plugin_port->obj_mutexattr);
   
   if(plugin_port->port_name != NULL){
     g_free(plugin_port->port_name);
@@ -626,21 +598,6 @@ ags_plugin_port_finalize(GObject *gobject)
 }
 
 /**
- * ags_plugin_port_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_plugin_port_get_class_mutex()
-{
-  return(&ags_plugin_port_class_mutex);
-}
-
-/**
  * ags_plugin_port_test_flags:
  * @plugin_port: the #AgsPluginPort
  * @flags: the flags
@@ -649,14 +606,14 @@ ags_plugin_port_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   if(!AGS_IS_PLUGIN_PORT(plugin_port)){
     return(FALSE);
@@ -666,11 +623,11 @@ ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
   plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* test */
-  pthread_mutex_lock(plugin_port_mutex);
+  g_rec_mutex_lock(plugin_port_mutex);
 
   retval = (flags & (plugin_port->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(plugin_port_mutex);
+  g_rec_mutex_unlock(plugin_port_mutex);
 
   return(retval);
 }
@@ -682,12 +639,12 @@ ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
  * 
  * Set @flags on @plugin_port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
 {
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   if(!AGS_IS_PLUGIN_PORT(plugin_port)){
     return;
@@ -697,11 +654,11 @@ ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
   plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* set */
-  pthread_mutex_lock(plugin_port_mutex);
+  g_rec_mutex_lock(plugin_port_mutex);
 
   plugin_port->flags |= flags;
   
-  pthread_mutex_unlock(plugin_port_mutex);
+  g_rec_mutex_unlock(plugin_port_mutex);
 }
 
 /**
@@ -711,12 +668,12 @@ ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
  * 
  * Unset @flags on @plugin_port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
 {
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   if(!AGS_IS_PLUGIN_PORT(plugin_port)){
     return;
@@ -726,23 +683,23 @@ ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
   plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* unset */
-  pthread_mutex_lock(plugin_port_mutex);
+  g_rec_mutex_lock(plugin_port_mutex);
 
   plugin_port->flags &= (~flags);
   
-  pthread_mutex_unlock(plugin_port_mutex);
+  g_rec_mutex_unlock(plugin_port_mutex);
 }
 
 /**
  * ags_plugin_port_find_symbol:
- * @plugin_port: the #GList-struct containing #AgsPluginPort
+ * @plugin_port: (element-type AgsAudio.PluginPort) (transfer none): the #GList-struct containing #AgsPluginPort
  * @port_symbol: the port symbol
  * 
  * Find @port_symbol within @plugin_port.
  * 
- * Returns: the matching #GList-struct containing #AgsPluginPort
+ * Returns: (element-type AgsAudio.PluginPort) (transfer none): the matching #GList-struct containing #AgsPluginPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_plugin_port_find_symbol(GList *plugin_port,
@@ -752,7 +709,7 @@ ags_plugin_port_find_symbol(GList *plugin_port,
 
   gboolean success;
   
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   if(port_symbol == NULL){
     return(NULL);
@@ -765,12 +722,12 @@ ags_plugin_port_find_symbol(GList *plugin_port,
     plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
     
     /* check port symbol */
-    pthread_mutex_lock(plugin_port_mutex);
+    g_rec_mutex_lock(plugin_port_mutex);
 
     success = (!g_strcmp0(port_symbol,
 			  current_plugin_port->port_symbol)) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(plugin_port_mutex);
+    g_rec_mutex_unlock(plugin_port_mutex);
 
     if(success){
       return(plugin_port);
@@ -784,14 +741,14 @@ ags_plugin_port_find_symbol(GList *plugin_port,
 
 /**
  * ags_plugin_port_find_port_index:
- * @plugin_port: the #GList-struct containing #AgsPluginPort
+ * @plugin_port: (element-type AgsAudio.PluginPort) (transfer none): the #GList-struct containing #AgsPluginPort
  * @port_index: the port index
  * 
  * Find @port_index within @plugin_port.
  * 
- * Returns: the matching #GList-struct containing #AgsPluginPort
+ * Returns: (element-type AgsAudio.PluginPort) (transfer none): the matching #GList-struct containing #AgsPluginPort
  * 
- * Since: 2.2.7
+ * Since: 3.0.0
  */
 GList*
 ags_plugin_port_find_port_index(GList *plugin_port,
@@ -801,7 +758,7 @@ ags_plugin_port_find_port_index(GList *plugin_port,
 
   gboolean success;
   
-  pthread_mutex_t *plugin_port_mutex;
+  GRecMutex *plugin_port_mutex;
 
   while(plugin_port != NULL){
     current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
@@ -810,11 +767,11 @@ ags_plugin_port_find_port_index(GList *plugin_port,
     plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
     
     /* check port symbol */
-    pthread_mutex_lock(plugin_port_mutex);
+    g_rec_mutex_lock(plugin_port_mutex);
 
     success = (port_index == current_plugin_port->port_index) ? TRUE: FALSE;
     
-    pthread_mutex_unlock(plugin_port_mutex);
+    g_rec_mutex_unlock(plugin_port_mutex);
 
     if(success){
       return(plugin_port);
@@ -833,7 +790,7 @@ ags_plugin_port_find_port_index(GList *plugin_port,
  *
  * Returns: a new #AgsPluginPort
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPluginPort*
 ags_plugin_port_new()

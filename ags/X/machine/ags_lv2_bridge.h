@@ -34,6 +34,8 @@
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LV2_BRIDGE                (ags_lv2_bridge_get_type())
 #define AGS_LV2_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_BRIDGE, AgsLv2Bridge))
 #define AGS_LV2_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_BRIDGE, AgsLv2BridgeClass))
@@ -132,5 +134,7 @@ gboolean ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget);
 AgsLv2Bridge* ags_lv2_bridge_new(GObject *soundcard,
 				 gchar *filename,
 				 gchar *effect);
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_BRIDGE_H__*/

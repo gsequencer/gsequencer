@@ -20,10 +20,6 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_soundcard_editor.h>
@@ -356,7 +352,6 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 void
 ags_audio_preferences_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
   AgsSoundcardEditor *soundcard_editor;
@@ -373,7 +368,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
   
   application_context = ags_application_context_get_instance();
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -432,7 +426,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsAudioPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAudioPreferences*
 ags_audio_preferences_new()

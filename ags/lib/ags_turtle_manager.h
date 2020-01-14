@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_TURTLE_MANAGER                (ags_turtle_manager_get_type())
 #define AGS_TURTLE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManager))
@@ -32,7 +32,7 @@
 #define AGS_IS_TURTLE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TURTLE_MANAGER))
 #define AGS_TURTLE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TURTLE_MANAGER, AgsTurtleManagerClass))
 
-#define AGS_TURTLE_MANAGER_GET_OBJ_MUTEX(obj) (((AgsTurtleManager *) obj)->obj_mutex)
+#define AGS_TURTLE_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsTurtleManager *) obj)->obj_mutex))
 
 typedef struct _AgsTurtleManager AgsTurtleManager;
 typedef struct _AgsTurtleManagerClass AgsTurtleManagerClass;
@@ -41,8 +41,7 @@ struct _AgsTurtleManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GList *turtle;
 };
@@ -54,8 +53,6 @@ struct _AgsTurtleManagerClass
 
 GType ags_turtle_manager_get_type(void);
 
-pthread_mutex_t* ags_turtle_manager_get_class_mutex();
-
 GObject* ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 				 gchar *filename);
 void ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
@@ -65,5 +62,7 @@ void ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
 AgsTurtleManager* ags_turtle_manager_get_instance();
 
 AgsTurtleManager* ags_turtle_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_TURTLE_MANAGER_H__*/

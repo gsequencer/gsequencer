@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2018 Joël Krähemann
+  * Copyright (C) 2005-2019 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -19,15 +19,12 @@
 
 #include <ags/audio/ags_fifoout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
-#include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -38,8 +35,6 @@
 #endif
 
 #include <errno.h>
-
-#include <poll.h>
 
 #include <string.h>
 #include <math.h>
@@ -80,10 +75,6 @@ gboolean ags_fifoout_is_connected(AgsConnectable *connectable);
 void ags_fifoout_connect(AgsConnectable *connectable);
 void ags_fifoout_disconnect(AgsConnectable *connectable);
 
-void ags_fifoout_set_application_context(AgsSoundcard *soundcard,
-					 AgsApplicationContext *application_context);
-AgsApplicationContext* ags_fifoout_get_application_context(AgsSoundcard *soundcard);
-
 void ags_fifoout_set_device(AgsSoundcard *soundcard,
 			    gchar *device);
 gchar* ags_fifoout_get_device(AgsSoundcard *soundcard);
@@ -107,7 +98,6 @@ void ags_fifoout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			  guint *buffer_size_min, guint *buffer_size_max,
 			  GError **error);
 
-GList* ags_fifoout_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_fifoout_is_available(AgsSoundcard *soundcard);
 
 gboolean ags_fifoout_is_starting(AgsSoundcard *soundcard);
@@ -172,7 +162,6 @@ guint ags_fifoout_get_loop_offset(AgsSoundcard *soundcard);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -186,8 +175,6 @@ enum{
 };
 
 static gpointer ags_fifoout_parent_class = NULL;
-
-static pthread_mutex_t ags_fifoout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_fifoout_get_type (void)
@@ -260,27 +247,11 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
 
   /* properties */
   /**
-   * AgsFifoout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsFifoout:device:
    *
    * The fifo soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -296,7 +267,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -314,7 +285,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -332,7 +303,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -350,7 +321,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -368,7 +339,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -386,7 +357,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -401,7 +372,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -419,7 +390,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -437,7 +408,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -481,9 +452,6 @@ ags_fifoout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_fifoout_set_application_context;
-  soundcard->get_application_context = ags_fifoout_get_application_context;
-
   soundcard->set_device = ags_fifoout_set_device;
   soundcard->get_device = ags_fifoout_get_device;
   
@@ -492,8 +460,8 @@ ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_fifoout_list_cards;
   soundcard->pcm_info = ags_fifoout_pcm_info;
+  soundcard->get_capability = NULL;
 
-  soundcard->get_poll_fd = ags_fifoout_get_poll_fd;
   soundcard->is_available = ags_fifoout_is_available;
 
   soundcard->is_starting =  ags_fifoout_is_starting;
@@ -551,31 +519,11 @@ ags_fifoout_init(AgsFifoout *fifoout)
   
   guint denumerator, numerator;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   fifoout->flags = 0;
   
   /* insert fifoout mutex */
-  fifoout->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  fifoout->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
-
-  /* parent */
-  fifoout->application_context = NULL;
-
+  g_rec_mutex_init(&(fifoout->obj_mutex));
+  
   /* uuid */
   fifoout->uuid = ags_uuid_alloc();
   ags_uuid_generate(fifoout->uuid);
@@ -657,10 +605,6 @@ ags_fifoout_init(AgsFifoout *fifoout)
   fifoout->do_loop = FALSE;
 
   fifoout->loop_offset = 0;
-  
-  /* poll fd and notify task */
-  fifoout->poll_fd = NULL;
-  fifoout->notify_soundcard = NULL;
 }
 
 void
@@ -671,56 +615,25 @@ ags_fifoout_set_property(GObject *gobject,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(gobject);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(fifoout_mutex);
-
-      if(fifoout->application_context == application_context){
-	pthread_mutex_unlock(fifoout_mutex);
-
-	return;
-      }
-
-      if(fifoout->application_context != NULL){
-	g_object_unref(G_OBJECT(fifoout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      fifoout->application_context = application_context;
-
-      pthread_mutex_unlock(fifoout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
 
       device = (char *) g_value_get_string(value);
       
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       fifoout->device = g_strdup(device);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -729,17 +642,17 @@ ags_fifoout_set_property(GObject *gobject,
 
       dsp_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(dsp_channels == fifoout->dsp_channels){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 	
 	return;
       }
 
       fifoout->dsp_channels = dsp_channels;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
@@ -748,17 +661,17 @@ ags_fifoout_set_property(GObject *gobject,
 
       pcm_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(pcm_channels == fifoout->pcm_channels){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 	
 	return;
       }
 
       fifoout->pcm_channels = pcm_channels;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_realloc_buffer(fifoout);
     }
@@ -769,17 +682,17 @@ ags_fifoout_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(format == fifoout->format){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 	
 	return;
       }
 
       fifoout->format = format;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_realloc_buffer(fifoout);
     }
@@ -790,17 +703,17 @@ ags_fifoout_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(buffer_size == fifoout->buffer_size){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 
 	return;
       }
 
       fifoout->buffer_size = buffer_size;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_realloc_buffer(fifoout);
       ags_fifoout_adjust_delay_and_attack(fifoout);
@@ -812,17 +725,17 @@ ags_fifoout_set_property(GObject *gobject,
 
       samplerate = g_value_get_uint(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(samplerate == fifoout->samplerate){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 
 	return;
       }
 
       fifoout->samplerate = samplerate;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_adjust_delay_and_attack(fifoout);
     }
@@ -838,17 +751,17 @@ ags_fifoout_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(bpm == fifoout->bpm){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 
 	return;
       }
 
       fifoout->bpm = bpm;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_adjust_delay_and_attack(fifoout);
     }
@@ -859,17 +772,17 @@ ags_fifoout_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       if(delay_factor == fifoout->delay_factor){
-	pthread_mutex_unlock(fifoout_mutex);
+	g_rec_mutex_unlock(fifoout_mutex);
 
 	return;
       }
 
       fifoout->delay_factor = delay_factor;
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_adjust_delay_and_attack(fifoout);
     }
@@ -888,115 +801,102 @@ ags_fifoout_get_property(GObject *gobject,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(gobject);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(fifoout_mutex);
-
-      g_value_set_object(value, fifoout->application_context);
-
-      pthread_mutex_unlock(fifoout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_string(value, fifoout->device);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_uint(value, fifoout->dsp_channels);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_uint(value, fifoout->pcm_channels);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_uint(value, fifoout->format);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_uint(value, fifoout->buffer_size);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_uint(value, fifoout->samplerate);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_BUFFER:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_pointer(value, fifoout->buffer);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_BPM:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_double(value, fifoout->bpm);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_double(value, fifoout->delay_factor);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   case PROP_ATTACK:
     {
-      pthread_mutex_lock(fifoout_mutex);
+      g_rec_mutex_lock(fifoout_mutex);
 
       g_value_set_pointer(value, fifoout->attack);
 
-      pthread_mutex_unlock(fifoout_mutex);
+      g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
   default:
@@ -1011,31 +911,6 @@ ags_fifoout_dispose(GObject *gobject)
   AgsFifoout *fifoout;
 
   fifoout = AGS_FIFOOUT(gobject);
-  
-  /* notify soundcard */
-  if(fifoout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-    
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) fifoout->notify_soundcard);
-
-
-    g_object_unref(fifoout->notify_soundcard);
-
-    fifoout->notify_soundcard = NULL;
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(fifoout->application_context != NULL){
-    g_object_unref(fifoout->application_context);
-
-    fifoout->application_context = NULL;
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->dispose(gobject);
@@ -1048,13 +923,6 @@ ags_fifoout_finalize(GObject *gobject)
 
   fifoout = AGS_FIFOOUT(gobject);
 
-  /* mutex */
-  pthread_mutex_destroy(fifoout->obj_mutex);
-  free(fifoout->obj_mutex);
-
-  pthread_mutexattr_destroy(fifoout->obj_mutexattr);
-  free(fifoout->obj_mutexattr);
-
   /* free output buffer */
   free(fifoout->buffer[0]);
   free(fifoout->buffer[1]);
@@ -1066,26 +934,6 @@ ags_fifoout_finalize(GObject *gobject)
 
   /* free AgsAttack */
   free(fifoout->attack);
-
-  /* notify soundcard */
-  if(fifoout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-      
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) fifoout->notify_soundcard);
-
-    g_object_unref(fifoout->notify_soundcard);
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(fifoout->application_context != NULL){
-    g_object_unref(fifoout->application_context);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->finalize(gobject);
@@ -1098,23 +946,19 @@ ags_fifoout_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(connectable);
 
   /* get fifoout signal mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get UUID */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   ptr = fifoout->uuid;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(ptr);
 }
@@ -1132,23 +976,10 @@ ags_fifoout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *fifoout_mutex;
-
   fifoout = AGS_FIFOOUT(connectable);
 
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
   /* check is added */
-  pthread_mutex_lock(fifoout_mutex);
-
-  is_ready = (((AGS_FIFOOUT_ADDED_TO_REGISTRY & (fifoout->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(fifoout_mutex);
+  is_ready = ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -1219,23 +1050,10 @@ ags_fifoout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *fifoout_mutex;
-
   fifoout = AGS_FIFOOUT(connectable);
 
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
   /* check is connected */
-  pthread_mutex_lock(fifoout_mutex);
-
-  is_connected = (((AGS_FIFOOUT_CONNECTED & (fifoout->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(fifoout_mutex);
+  is_connected = ags_fifoout_test_flags(fifoout, AGS_FIFOOUT_CONNECTED);
   
   return(is_connected);
 }
@@ -1270,21 +1088,6 @@ ags_fifoout_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_fifoout_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_fifoout_get_class_mutex()
-{
-  return(&ags_fifoout_class_mutex);
-}
-
-/**
  * ags_fifoout_test_flags:
  * @fifoout: the #AgsFifoout
  * @flags: the flags
@@ -1293,32 +1096,28 @@ ags_fifoout_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   if(!AGS_IS_FIFOOUT(fifoout)){
     return(FALSE);
   }
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* test */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   retval = (flags & (fifoout->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(retval);
 }
@@ -1330,32 +1129,28 @@ ags_fifoout_test_flags(AgsFifoout *fifoout, guint flags)
  *
  * Enable a feature of @fifoout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags)
 {
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   if(!AGS_IS_FIFOOUT(fifoout)){
     return;
   }
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->flags |= flags;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
     
 /**
@@ -1365,86 +1160,30 @@ ags_fifoout_set_flags(AgsFifoout *fifoout, guint flags)
  *
  * Disable a feature of @fifoout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_unset_flags(AgsFifoout *fifoout, guint flags)
 {  
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   if(!AGS_IS_FIFOOUT(fifoout)){
     return;
   }
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->flags &= (~flags);
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
-void
-ags_fifoout_set_application_context(AgsSoundcard *soundcard,
-				    AgsApplicationContext *application_context)
-{
-  AgsFifoout *fifoout;
-
-  pthread_mutex_t *fifoout_mutex;
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
-  /* set application context */
-  pthread_mutex_lock(fifoout_mutex);
-  
-  fifoout->application_context = (GObject *) application_context;
-  
-  pthread_mutex_unlock(fifoout_mutex);
-}
-
-AgsApplicationContext*
-ags_fifoout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *fifoout_mutex;
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
-
-  /* get application context */
-  pthread_mutex_lock(fifoout_mutex);
-
-  application_context = (AgsApplicationContext *) fifoout->application_context;
-
-  pthread_mutex_unlock(fifoout_mutex);
-  
-  return(application_context);
-}
 
 void
 ags_fifoout_set_device(AgsSoundcard *soundcard,
@@ -1452,23 +1191,19 @@ ags_fifoout_set_device(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set device */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->device = g_strdup(device);
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 gchar*
@@ -1478,23 +1213,19 @@ ags_fifoout_get_device(AgsSoundcard *soundcard)
 
   gchar *device;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get device */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   device = fifoout->device;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(device);
 }
@@ -1527,20 +1258,16 @@ ags_fifoout_get_presets(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(soundcard);
 
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get presets */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   if(channels != NULL){
     *channels = fifoout->pcm_channels;
@@ -1558,7 +1285,7 @@ ags_fifoout_get_presets(AgsSoundcard *soundcard,
     *format = fifoout->format;
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
@@ -1603,21 +1330,6 @@ ags_fifoout_pcm_info(AgsSoundcard *soundcard,
   //TODO:JK: implement me  
 }
 
-GList*
-ags_fifoout_get_poll_fd(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  GList *list;
-
-  fifoout = AGS_FIFOOUT(soundcard);
-  list = NULL;
-  
-  //TODO:JK: implement me  
-  
-  return(list);
-}
-
 gboolean
 ags_fifoout_is_available(AgsSoundcard *soundcard)
 {
@@ -1635,23 +1347,19 @@ ags_fifoout_is_starting(AgsSoundcard *soundcard)
 
   gboolean is_starting;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* check is starting */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   is_starting = ((AGS_FIFOOUT_START_PLAY & (fifoout->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(is_starting);
 }
@@ -1663,23 +1371,19 @@ ags_fifoout_is_playing(AgsSoundcard *soundcard)
 
   gboolean is_playing;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   fifoout = AGS_FIFOOUT(soundcard);
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* check is starting */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   is_playing = ((AGS_FIFOOUT_PLAY & (fifoout->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(is_playing);
 }
@@ -1756,19 +1460,15 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
   guint loop_left, loop_right;
   gboolean do_loop;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
   
   /* determine if attack should be switched */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   delay = fifoout->delay[fifoout->tic_counter];
   delay_counter = fifoout->delay_counter;
@@ -1781,7 +1481,7 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
   
   do_loop = fifoout->do_loop;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   if((guint) delay_counter + 1 >= (guint) delay){
     if(do_loop &&
@@ -1801,18 +1501,18 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
 				 note_offset);
     
     /* reset - delay counter */
-    pthread_mutex_lock(fifoout_mutex);
+    g_rec_mutex_lock(fifoout_mutex);
     
     fifoout->delay_counter = 0.0;
     fifoout->tact_counter += 1.0;
 
-    pthread_mutex_unlock(fifoout_mutex);
+    g_rec_mutex_unlock(fifoout_mutex);
   }else{
-    pthread_mutex_lock(fifoout_mutex);
+    g_rec_mutex_lock(fifoout_mutex);
     
     fifoout->delay_counter += 1.0;
 
-    pthread_mutex_unlock(fifoout_mutex);
+    g_rec_mutex_unlock(fifoout_mutex);
   }
 }
 
@@ -1822,19 +1522,15 @@ ags_fifoout_offset_changed(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* offset changed */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->tic_counter += 1;
 
@@ -1843,7 +1539,7 @@ ags_fifoout_offset_changed(AgsSoundcard *soundcard,
     fifoout->tic_counter = 0;
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
@@ -1852,23 +1548,19 @@ ags_fifoout_set_bpm(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set bpm */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->bpm = bpm;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   ags_fifoout_adjust_delay_and_attack(fifoout);
 }
@@ -1880,23 +1572,19 @@ ags_fifoout_get_bpm(AgsSoundcard *soundcard)
 
   gdouble bpm;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get bpm */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   bpm = fifoout->bpm;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(bpm);
 }
@@ -1907,23 +1595,19 @@ ags_fifoout_set_delay_factor(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set delay factor */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->delay_factor = delay_factor;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   ags_fifoout_adjust_delay_and_attack(fifoout);
 }
@@ -1935,23 +1619,19 @@ ags_fifoout_get_delay_factor(AgsSoundcard *soundcard)
 
   gdouble delay_factor;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get delay factor */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   delay_factor = fifoout->delay_factor;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(delay_factor);
 }
@@ -1964,25 +1644,21 @@ ags_fifoout_get_delay(AgsSoundcard *soundcard)
   guint index;
   gdouble delay;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get delay */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   index = fifoout->tic_counter;
 
   delay = fifoout->delay[index];
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(delay);
 }
@@ -1994,23 +1670,19 @@ ags_fifoout_get_absolute_delay(AgsSoundcard *soundcard)
 
   gdouble absolute_delay;
   
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get absolute delay */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   absolute_delay = (60.0 * (((gdouble) fifoout->samplerate / (gdouble) fifoout->buffer_size) / (gdouble) fifoout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) fifoout->delay_factor)));
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(absolute_delay);
 }
@@ -2023,25 +1695,21 @@ ags_fifoout_get_attack(AgsSoundcard *soundcard)
   guint index;
   guint attack;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get attack */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   index = fifoout->tic_counter;
 
   attack = fifoout->attack[index];
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(attack);
 }
@@ -2130,23 +1798,19 @@ ags_fifoout_get_delay_counter(AgsSoundcard *soundcard)
 
   guint delay_counter;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* delay counter */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   delay_counter = fifoout->delay_counter;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(delay_counter);
 }
@@ -2157,23 +1821,19 @@ ags_fifoout_set_note_offset(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set note offset */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->note_offset = note_offset;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 guint
@@ -2183,23 +1843,19 @@ ags_fifoout_get_note_offset(AgsSoundcard *soundcard)
 
   guint note_offset;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set note offset */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   note_offset = fifoout->note_offset;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(note_offset);
 }
@@ -2210,23 +1866,19 @@ ags_fifoout_set_note_offset_absolute(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set note offset */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->note_offset_absolute = note_offset_absolute;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 guint
@@ -2236,23 +1888,19 @@ ags_fifoout_get_note_offset_absolute(AgsSoundcard *soundcard)
 
   guint note_offset_absolute;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set note offset */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   note_offset_absolute = fifoout->note_offset_absolute;
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(note_offset_absolute);
 }
@@ -2264,19 +1912,15 @@ ags_fifoout_set_loop(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* set loop */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   fifoout->loop_left = loop_left;
   fifoout->loop_right = loop_right;
@@ -2286,7 +1930,7 @@ ags_fifoout_set_loop(AgsSoundcard *soundcard,
     fifoout->loop_offset = fifoout->note_offset;
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
@@ -2296,19 +1940,15 @@ ags_fifoout_get_loop(AgsSoundcard *soundcard,
 {
   AgsFifoout *fifoout;
 
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get loop */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   if(loop_left != NULL){
     *loop_left = fifoout->loop_left;
@@ -2322,7 +1962,7 @@ ags_fifoout_get_loop(AgsSoundcard *soundcard,
     *do_loop = fifoout->do_loop;
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 guint
@@ -2332,23 +1972,19 @@ ags_fifoout_get_loop_offset(AgsSoundcard *soundcard)
 
   guint loop_offset;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   fifoout = AGS_FIFOOUT(soundcard);
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get loop offset */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   loop_offset = fifoout->loop_offset;
   
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   return(loop_offset);
 }
@@ -2359,26 +1995,22 @@ ags_fifoout_get_loop_offset(AgsSoundcard *soundcard)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
 {
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
   
   if(!AGS_IS_FIFOOUT(fifoout)){
     return;
   }
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* switch buffer flag */
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   if((AGS_FIFOOUT_BUFFER0 & (fifoout->flags)) != 0){
     fifoout->flags &= (~AGS_FIFOOUT_BUFFER0);
@@ -2394,7 +2026,7 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
     fifoout->flags |= AGS_FIFOOUT_BUFFER0;
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 /**
@@ -2403,7 +2035,7 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
@@ -2413,18 +2045,14 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
   guint default_period;
   guint i;
 
-  pthread_mutex_t *fifoout_mutex;
+  GRecMutex *fifoout_mutex;
 
   if(!AGS_IS_FIFOOUT(fifoout)){
     return;
   }
   
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
   
   /* get some initial values */
   delay = (60.0 * (((gdouble) fifoout->samplerate / (gdouble) fifoout->buffer_size) / (gdouble) fifoout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) fifoout->delay_factor)));
@@ -2433,7 +2061,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
   g_message("delay : %f", delay);
 #endif
   
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   default_tact_frames = (guint) (delay * fifoout->buffer_size);
   default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
@@ -2457,7 +2085,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
 #endif
   }
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 /**
@@ -2466,7 +2094,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
@@ -2475,21 +2103,17 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
   guint buffer_size;
   guint word_size;
   
-  pthread_mutex_t *fifoout_mutex;  
+  GRecMutex *fifoout_mutex;  
 
   if(!AGS_IS_FIFOOUT(fifoout)){
     return;
   }
 
   /* get fifoout mutex */
-  pthread_mutex_lock(ags_fifoout_get_class_mutex());
-  
-  fifoout_mutex = fifoout->obj_mutex;
-  
-  pthread_mutex_unlock(ags_fifoout_get_class_mutex());
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
   /* get word size */  
-  pthread_mutex_lock(fifoout_mutex);
+  g_rec_mutex_lock(fifoout_mutex);
 
   pcm_channels = fifoout->pcm_channels;
   buffer_size = fifoout->buffer_size;
@@ -2525,7 +2149,7 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
     return;
   }  
 
-  pthread_mutex_unlock(fifoout_mutex);
+  g_rec_mutex_unlock(fifoout_mutex);
 
   //NOTE:JK: there is no lock applicable to buffer
   
@@ -2560,21 +2184,19 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
 
 /**
  * ags_fifoout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsFifoout.
  *
  * Returns: the new #AgsFifoout
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFifoout*
-ags_fifoout_new(GObject *application_context)
+ags_fifoout_new()
 {
   AgsFifoout *fifoout;
 
   fifoout = (AgsFifoout *) g_object_new(AGS_TYPE_FIFOOUT,
-					"application-context", application_context,
 					NULL);
   
   return(fifoout);

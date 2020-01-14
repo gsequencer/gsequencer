@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/task/ags_move_note.h>
-
-#include <ags/audio/ags_audio.h>
 
 #include <ags/i18n.h>
 
@@ -54,6 +52,7 @@ static gpointer ags_move_note_parent_class = NULL;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_SELECTION,
   PROP_FIRST_X,
@@ -116,11 +115,27 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
 
   /* properties */
   /**
+   * AgsMoveNote:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 3.0.0
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of move note"),
+				   i18n_pspec("The audio of move note task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
    * AgsMoveNote:notation:
    *
    * The assigned #AgsNotation
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of move note"),
@@ -136,7 +151,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("selection",
 				    i18n_pspec("selection to move"),
@@ -151,7 +166,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation from x offset.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("first-x",
 				  i18n_pspec("move from x offset"),
@@ -169,7 +184,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation with x padding.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("first-y",
 				  i18n_pspec("move with x padding"),
@@ -187,7 +202,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-x amount.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_int("move-x",
 				i18n_pspec("move with move-x amount"),
@@ -205,7 +220,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-y amount.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("move-y",
 				 i18n_pspec("move with move-y amount"),
@@ -223,7 +238,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by relative position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("relative",
 				     i18n_pspec("move relative"),
@@ -239,7 +254,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by absolute position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("absolute",
 				     i18n_pspec("move absolute"),
@@ -259,6 +274,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
 void
 ags_move_note_init(AgsMoveNote *move_note)
 {
+  move_note->audio = NULL;
   move_note->notation = NULL;
 
   move_note->selection = NULL;
@@ -283,6 +299,27 @@ ags_move_note_set_property(GObject *gobject,
   move_note = AGS_MOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(move_note->audio == audio){
+	return;
+      }
+
+      if(move_note->audio != NULL){
+	g_object_unref(move_note->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      move_note->audio = audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -306,19 +343,18 @@ ags_move_note_set_property(GObject *gobject,
     break;
   case PROP_SELECTION:
     {
-      GList *selection;
+      AgsNote *note;
 
-      selection = (GList *) g_value_get_pointer(value);
+      note = (AgsNote *) g_value_get_pointer(value);
 
-      if(move_note->selection == selection){
+      if(note == NULL ||
+	 g_list_find(move_note->selection, note) != NULL){
 	return;
       }
 
-      if(move_note->selection != NULL){
-	g_list_free(move_note->selection);
-      }
-      
-      move_note->selection = g_list_copy(selection);
+      g_object_ref(note);
+      move_note->selection = g_list_prepend(move_note->selection,
+					    note);
     }
     break;
   case PROP_FIRST_X:
@@ -368,6 +404,11 @@ ags_move_note_get_property(GObject *gobject,
   move_note = AGS_MOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, move_note->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, move_note->notation);
@@ -424,6 +465,12 @@ ags_move_note_dispose(GObject *gobject)
 
   move_note = AGS_MOVE_NOTE(gobject);
 
+  if(move_note->audio != NULL){
+    g_object_unref(move_note->audio);
+
+    move_note->audio = NULL;
+  }
+
   if(move_note->notation != NULL){
     g_object_unref(move_note->notation);
 
@@ -446,6 +493,10 @@ ags_move_note_finalize(GObject *gobject)
   AgsMoveNote *move_note;
 
   move_note = AGS_MOVE_NOTE(gobject);
+
+  if(move_note->audio != NULL){
+    g_object_unref(move_note->audio);
+  }
 
   if(move_note->notation != NULL){
     g_object_unref(move_note->notation);
@@ -481,12 +532,18 @@ ags_move_note_launch(AgsTask *task)
 
   move_note = AGS_MOVE_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(move_note->audio));
+  g_return_if_fail(AGS_IS_NOTATION(move_note->notation));
+
+  g_object_get(move_note,
+	       "audio", &audio,
+	       NULL);
+  
   /* get some properties */
   notation =
     current_notation = move_note->notation;
 
   g_object_get(notation,
-	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
 
@@ -570,8 +627,9 @@ ags_move_note_launch(AgsTask *task)
 
 /**
  * ags_move_note_new:
+ * @audio: the #AgsAudio
  * @notation: the #AgsNotation
- * @selection: the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * @first_x: the x offset to move from 
  * @first_y: the x padding to use
  * @move_x: the amout to move in x direction
@@ -584,10 +642,11 @@ ags_move_note_launch(AgsTask *task)
  *
  * Returns: a new #AgsMoveNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMoveNote*
-ags_move_note_new(AgsNotation *notation,
+ags_move_note_new(AgsAudio *audio,
+		  AgsNotation *notation,
 		  GList *selection,
 		  guint first_x, guint first_y,
 		  gint move_x, gint move_y,
@@ -596,8 +655,8 @@ ags_move_note_new(AgsNotation *notation,
   AgsMoveNote *move_note;
   
   move_note = (AgsMoveNote *) g_object_new(AGS_TYPE_MOVE_NOTE,
+					   "audio", audio,
 					   "notation", notation,
-					   "selection", selection,
 					   "first-x", first_x,
 					   "first-y", first_y,
 					   "move-x", move_x,
@@ -605,6 +664,12 @@ ags_move_note_new(AgsNotation *notation,
 					   "relative", relative,
 					   "absolute", absolute,
 					   NULL);
+
+  //FIXME:JK: argh, introspection!
+
+  move_note->selection = g_list_copy_deep(selection,
+					  (GCopyFunc) g_object_ref,
+					  NULL);
 
   return(move_note);
 }

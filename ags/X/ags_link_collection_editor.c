@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,16 +20,10 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_link_collection_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -142,7 +136,7 @@ ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collect
    *
    * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -462,7 +456,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     /* get window and application_context  */
     window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     /* get first line */
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
@@ -519,8 +513,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
     }else{
       guint first_link;
 
@@ -567,8 +561,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       }
 
       task = g_list_reverse(task);
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      task);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					task);
 
       g_object_unref(start_link);
 
@@ -597,7 +591,7 @@ ags_link_collection_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to link. And modifies its ranges.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor)
@@ -691,7 +685,7 @@ ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor
  *
  * Returns: the new #AgsLinkCollectionEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLinkCollectionEditor*
 ags_link_collection_editor_new(GType channel_type)

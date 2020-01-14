@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
-
-#include <ags/libags.h>
 
 #include <ags/plugin/ags_plugin_port.h>
 
@@ -154,20 +152,11 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint length;
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  
+    
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* get some fields */
   g_object_get(buffer_audio_signal,
@@ -301,20 +290,11 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   GValue value = {0,};
 
   void (*parent_class_run_inter)(AgsRecall *recall);
-  
-  pthread_mutex_t *recall_mutex;
-  
+    
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -399,10 +379,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
     attack = (destination_samplerate / source_samplerate) * attack;
     
     if(source_samplerate != destination_samplerate){
-      buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						     ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-						     source_buffer_size,
-						     destination_samplerate);
+      void *tmp_buffer_source;
+
+      tmp_buffer_source = ags_stream_alloc(destination_buffer_size,
+					   source_format);
+
+      ags_audio_buffer_util_resample_with_buffer(buffer_source, 1,
+						 ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						 source_buffer_size,
+						 destination_samplerate,
+						 destination_buffer_size,
+						 tmp_buffer_source);
+      
+      buffer_source = tmp_buffer_source;
       
       resample = TRUE;
     }
@@ -421,11 +410,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 	buffer_source_prev = stream_source->prev->data;
 
 	if(resample){
-	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
-							      ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
-							      source_buffer_size,
-							      destination_samplerate);
+	  void *tmp_buffer_source_prev;
 
+	  tmp_buffer_source_prev = ags_stream_alloc(destination_buffer_size,
+						    source_format);
+	  
+	  ags_audio_buffer_util_resample_with_buffer(buffer_source_prev, 1,
+						     ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						     source_buffer_size,
+						     destination_samplerate,
+						     destination_buffer_size,
+						     tmp_buffer_source_prev);
+      
+	  buffer_source_prev = tmp_buffer_source_prev;
 	}
 	
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
@@ -470,7 +467,7 @@ ags_buffer_audio_signal_run_inter_END:
  *
  * Returns: the new #AgsBufferAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferAudioSignal*
 ags_buffer_audio_signal_new(AgsAudioSignal *destination,

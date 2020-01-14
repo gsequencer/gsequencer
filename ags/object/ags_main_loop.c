@@ -19,26 +19,22 @@
 
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/object/ags_marshal.h>
-
 #include <stdio.h>
 
 void ags_main_loop_class_init(AgsMainLoopInterface *ginterface);
 
 /**
  * SECTION:ags_main_loop
- * @short_description: toplevel threads
+ * @short_description: main loop interface
  * @title: AgsMainLoop
  * @section_id: AgsMainLoop
  * @include: ags/object/ags_main_loop.h
  *
- * The #AgsMainLoop interface gives you a unique access to toplevel
- * threads.
+ * The #AgsMainLoop interface gives you a unique access to
+ * the main loop.
  */
 
 enum {
-  INTERRUPT,
-  MONITOR,
   CHANGE_FREQUENCY,
   LAST_SIGNAL,
 };
@@ -69,56 +65,13 @@ void
 ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
 {
   /**
-   * AgsMainLoop::interrupt:
-   * @main_loop: the #AgsMainLoop
-   * @sig: the signal number
-   * @time_cycle: the amount of time of a cycle
-   * @time_spent: the amount of time passed since last cycle
-   *
-   * Notify about interrupt threads.
-   *
-   * Since: 2.0.0
-   */
-  main_loop_signals[INTERRUPT] = 
-    g_signal_new("interrupt",
-		 G_TYPE_FROM_INTERFACE(ginterface),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
-		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__INT_UINT_POINTER,
-		 G_TYPE_NONE, 3,
-		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
-
-  /**
-   * AgsMainLoop::monitor:
-   * @main_loop: the #AgsMainLoop
-   * @time_cycle: the amount of time of a cycle
-   * @time_spent: the amount of time passed since last cycle
-   *
-   * Notify to monitor time.
-   *
-   * Returns: if monitor is allowed
-   * 
-   * Since: 2.0.0
-   */
-  main_loop_signals[MONITOR] =
-    g_signal_new("monitor",
-		 G_TYPE_FROM_INTERFACE(ginterface),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
-		 NULL, NULL,
-		 ags_cclosure_marshal_BOOLEAN__UINT_POINTER,
-		 G_TYPE_BOOLEAN, 2,
-		 G_TYPE_UINT, G_TYPE_POINTER);
-
-  /**
    * AgsMainLoop::change-frequency:
    * @main_loop: the #AgsMainLoop
    * @frequency: the new frequency
    *
    * Change frequency.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
@@ -137,11 +90,11 @@ ags_main_loop_class_init(AgsMainLoopInterface *ginterface)
  *
  * Retrieve the tree mutex.
  *
- * Returns: the mutex
+ * Returns: (transfer none): the mutex
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-pthread_mutex_t*
+GRecMutex*
 ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 {
   AgsMainLoopInterface *main_loop_interface;
@@ -154,222 +107,151 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 }
 
 /**
- * ags_main_loop_set_application_context:
+ * ags_main_loop_set_syncing:
  * @main_loop: the #AgsMainLoop
- * @application_context: the #AgsApplicationContext
+ * @is_syncing: set %TRUE if syncing
  *
- * Sets the application context.
+ * Set thread tree is syncing.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
+ags_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing)
 {
   AgsMainLoopInterface *main_loop_interface;
 
   g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_application_context);
-  main_loop_interface->set_application_context(main_loop, application_context);
+  g_return_if_fail(main_loop_interface->set_syncing);
+
+  main_loop_interface->set_syncing(main_loop, is_syncing);
 }
 
 /**
- * ags_main_loop_get_application_context:
+ * ags_main_loop_is_syncing:
  * @main_loop: the #AgsMainLoop
  *
- * Retrieve the #AgsApplicationContext.
+ * Check if thread tree is syncing.
  *
- * Returns: the #AgsApplicationContext
+ * Returns: %TRUE if sync in progress, otherwise %FALSE
  *
- * Since: 2.0.0
- */
-AgsApplicationContext*
-ags_main_loop_get_application_context(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_application_context, NULL);
-  return(main_loop_interface->get_application_context(main_loop));
-}
-
-/**
- * ags_main_loop_set_async_queue:
- * @main_loop: the #AgsMainLoop
- * @async_queue: the #AgsAsyncQueue
- *
- * Sets the asynchronous queue.
- *
- * Since: 2.0.0
- */
-void
-ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_async_queue);
-  main_loop_interface->set_async_queue(main_loop, async_queue);
-}
-
-/**
- * ags_main_loop_get_async_queue:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve the #AgsAsyncQueue.
- *
- * Returns: the #AgsAsyncQueue
- *
- * Since: 2.0.0
- */
-GObject*
-ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_async_queue, NULL);
-
-  return(main_loop_interface->get_async_queue(main_loop));
-}
-
-/**
- * ags_main_loop_set_tic:
- * @main_loop: the #AgsMainLoop
- * @tic: tic
- *
- * Sets tic to @tic. 
- *
- * Since: 2.0.0
- */
-void
-ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_tic);
-  main_loop_interface->set_tic(main_loop, tic);
-}
-
-/**
- * ags_main_loop_get_tic:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve current tic of synchronization context.
- *
- * Returns: current tic
- *
- * Since: 2.0.0
- */
-guint
-ags_main_loop_get_tic(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_tic, G_MAXUINT);
-
-  return(main_loop_interface->get_tic(main_loop));
-}
-
-/**
- * ags_main_loop_set_last_sync:
- * @main_loop: the #AgsMainLoop
- * @last_sync: last sync
- *
- * Sets last sync to @last_sync. 
- *
- * Since: 2.0.0
- */
-void
-ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_last_sync);
-  main_loop_interface->set_last_sync(main_loop, last_sync);
-}
-
-/**
- * ags_main_loop_get_last_sync:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve last sync as tic of synchronization context.
- *
- * Returns: last synced tic
- *
- * Since: 2.0.0
- */
-guint
-ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_last_sync, G_MAXUINT);
-
-  return(main_loop_interface->get_last_sync(main_loop));
-}
-
-/**
- * ags_main_loop_interrupt:
- * @main_loop: the #AgsMainLoop
- * @sig: the singal number
- * @time_cycle: the amount of time of a cycle
- * @time_spent: the amount of time passed since last cycle
- * 
- * Notify about interrupt threads.
- *
- * Since: 2.0.0
- */
-void
-ags_main_loop_interrupt(AgsMainLoop *main_loop,
-			int sig,
-			guint time_cycle, guint *time_spent)
-{
-  g_signal_emit(main_loop,
-		main_loop_signals[INTERRUPT],
-		0,
-		sig,
-		time_cycle,
-		time_spent);
-}
-
-/**
- * ags_main_loop_monitor:
- * @main_loop: the #AgsMainLoop
- * @time_cycle: the amount of time of a cycle
- * @time_spent: the amount of time passed since last cycle
- *
- * Notify to monitor time.
- *
- * Returns: if monitor is allowed
- *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
-ags_main_loop_monitor(AgsMainLoop *main_loop,
-		      guint time_cycle, guint *time_spent)
+ags_main_loop_is_syncing(AgsMainLoop *main_loop)
 {
-  gboolean has_monitor;
-  
-  g_signal_emit(main_loop,
-		main_loop_signals[MONITOR],
-		0,
-		time_cycle,
-		time_spent,
-		&has_monitor);
+  AgsMainLoopInterface *main_loop_interface;
 
-  return(has_monitor);
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->is_syncing, FALSE);
+
+  return(main_loop_interface->is_syncing(main_loop));
+}
+
+/**
+ * ags_main_loop_set_critical_region:
+ * @main_loop: the #AgsMainLoop
+ * @is_critical_region: set %TRUE if critical region
+ *
+ * Set main loop is in critical region.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->set_critical_region);
+
+  main_loop_interface->set_critical_region(main_loop, is_critical_region);
+}
+
+/**
+ * ags_main_loop_is_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Check if main loop is in critical region.
+ *
+ * Returns: %TRUE if sync in progress, otherwise %FALSE
+ *
+ * Since: 3.0.0
+ */
+gboolean
+ags_main_loop_is_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->is_critical_region, FALSE);
+
+  return(main_loop_interface->is_critical_region(main_loop));
+}
+
+/**
+ * ags_main_loop_inc_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Increment thread needs access to main loop's critical region field.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->inc_queued_critical_region);
+
+  main_loop_interface->inc_queued_critical_region(main_loop);
+}
+  
+/**
+ * ags_main_loop_dec_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Decrement thread needs access to main loop's critical region field.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->dec_queued_critical_region);
+
+  main_loop_interface->dec_queued_critical_region(main_loop);
+}
+  
+/**
+ * ags_main_loop_test_queued_critical_region:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Test main loop may enter critical region.
+ * 
+ * Returns: 0 if main loop may enter critical region, otherwise not
+ * 
+ * Since: 3.0.0
+ */
+guint
+ags_main_loop_test_queued_critical_region(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->test_queued_critical_region, 0);
+
+  return(main_loop_interface->test_queued_critical_region(main_loop));
 }
 
 /**
@@ -379,7 +261,7 @@ ags_main_loop_monitor(AgsMainLoop *main_loop,
  *
  * Change frequency.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_main_loop_change_frequency(AgsMainLoop *main_loop,
@@ -389,112 +271,4 @@ ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 		main_loop_signals[CHANGE_FREQUENCY],
 		0,
 		frequency);
-}
-
-/**
- * ags_main_loop_sync_counter_inc:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * Increment sync counter.
- *
- * Since: 2.2.10
- */
-void
-ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->sync_counter_inc);
-
-  main_loop_interface->sync_counter_inc(main_loop, tic);
-}
-
-/**
- * ags_main_loop_sync_counter_dec:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * Decrement sync counter.
- *
- * Since: 2.2.10
- */
-void
-ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->sync_counter_dec);
-
-  main_loop_interface->sync_counter_dec(main_loop, tic);
-}
-
-/**
- * ags_main_loop_sync_counter_inc:
- * @main_loop: the #AgsMainLoop
- * @tic: the current tic
- *
- * test sync counter.
- *
- * Returns: %TRUE if synced, otherwise %FALSE
- * 
- * Since: 2.2.10
- */
-gboolean
-ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->sync_counter_test, FALSE);
-
-  return(main_loop_interface->sync_counter_test(main_loop, tic));
-}
-
-/**
- * ags_main_loop_set_sync_tic:
- * @main_loop: the #AgsMainLoop
- * @tic: the current sync tic
- *
- * Set current tic of sync counter.
- *
- * Since: 2.2.15
- */
-void
-ags_main_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_if_fail(main_loop_interface->set_sync_tic);
-
-  main_loop_interface->set_sync_tic(main_loop, sync_tic);
-}
-
-/**
- * ags_main_loop_get_sync_tic:
- * @main_loop: the #AgsMainLoop
- *
- * Retrieve current tic of sync counter.
- *
- * Returns: current sync tic
- *
- * Since: 2.2.15
- */
-guint
-ags_main_loop_get_sync_tic(AgsMainLoop *main_loop)
-{
-  AgsMainLoopInterface *main_loop_interface;
-
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
-  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->get_sync_tic, G_MAXUINT);
-
-  return(main_loop_interface->get_sync_tic(main_loop));
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,21 +19,22 @@
 
 #include <ags/X/ags_animation_window.h>
 
-#include <ags/libags.h>
-
 #include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_context_menu.h>
+#include <ags/X/ags_menu_action_callbacks.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+#include <ags/i18n.h>
 
 void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_show(GtkWidget *widget);
 
-gboolean ags_animation_window_expose(GtkWidget *widget,
-				     GdkEventExpose *event);
-
-void ags_animation_window_draw(AgsAnimationWindow *animation_window);
+gboolean ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -74,9 +75,10 @@ ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
   
   ags_animation_window_parent_class = g_type_class_peek_parent(animation_window);
 
+  /* GtkWidgetClass */
   widget = (GtkWidgetClass *) animation_window;
 
-  widget->expose_event = ags_animation_window_expose;
+  widget->draw = ags_animation_window_draw;
 //  widget->show = ags_animation_window_show;
 }
 
@@ -92,6 +94,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 #endif
   
   gchar *filename;
+  gchar *str;
   
   unsigned char *image_data;
 
@@ -118,7 +121,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
 			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
     }
 
-    filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags_supermoon-800x450.png",
+    filename = g_strdup_printf("%s\\share\\gsequencer\\images\\gsequencer-800x450.png",
 			       g_get_current_dir());
     
     if(!g_file_test(filename,
@@ -128,16 +131,16 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
       if(g_path_is_absolute(app_dir)){
 	filename = g_strdup_printf("%s\\%s",
 				   app_dir,
-				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+				   "\\share\\gsequencer\\images\\gsequencer-800x450.png");
       }else{
 	filename = g_strdup_printf("%s\\%s\\%s",
 				   g_get_current_dir(),
 				   app_dir,
-				   "\\share\\gsequencer\\images\\ags_supermoon-800x450.png");
+				   "\\share\\gsequencer\\images\\gsequencer-800x450.png");
       }
     }
 #else
-    filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
+    filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/gsequencer-800x450.png");
 #endif
   }else{
     filename = g_strdup(filename);
@@ -162,20 +165,39 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
     
     cairo_surface_destroy(surface);
   }
+
+  animation_window->text_box_x0 = 4;
+  animation_window->text_box_y0 = 220;
+
+  if((str = getenv("AGS_ANIMATION_TEXT_BOX_X0")) != 0){
+    animation_window->text_box_x0 = g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }
+
+  if((str = getenv("AGS_ANIMATION_TEXT_BOX_Y0")) != 0){
+    animation_window->text_box_y0 = g_ascii_strtoull(str,
+						     NULL,
+						     10);
+  }
+
+  animation_window->text_color = g_new0(GdkRGBA,
+					1);
+
+  animation_window->text_color->red = 0.680067002;
+  animation_window->text_color->green = 1.0;
+  animation_window->text_color->blue = 0.998324958;
+  animation_window->text_color->alpha = 1.0;
   
+  if((str = getenv("AGS_ANIMATION_TEXT_COLOR")) != 0){
+    gdk_rgba_parse(animation_window->text_color,
+		   str);
+  }
+
   gtk_widget_set_size_request((GtkWidget *) animation_window,
 			      800, 450);
 
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_animation_window_progress_timeout, (gpointer) animation_window);
-}
-
-gboolean
-ags_animation_window_expose(GtkWidget *widget,
-			    GdkEventExpose *event)
-{
-  ags_animation_window_draw(AGS_ANIMATION_WINDOW(widget));
-
-  return(FALSE);
 }
 
 void
@@ -184,15 +206,14 @@ ags_animation_window_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_animation_window_parent_class)->show(widget);
 }
 
-void
-ags_animation_window_draw(AgsAnimationWindow *animation_window)
+gboolean
+ags_animation_window_draw(AgsAnimationWindow *animation_window, cairo_t *cr)
 {
   AgsLog *log;
 
   PangoLayout *layout;
   PangoFontDescription *desc;
     
-  cairo_t *cr;
   cairo_surface_t *surface;
 
   GList *start_list, *list;
@@ -203,13 +224,17 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
 
   gdouble x0, y0;
   guint i, i_stop;
+
+  GRecMutex *log_mutex;
   
   if(!AGS_IS_ANIMATION_WINDOW(animation_window)){
-    return;
+    return(FALSE);
   }
 
   log = ags_log_get_instance();
 
+  log_mutex = AGS_LOG_GET_OBJ_MUTEX(log);
+  
   list = 
     start_list = ags_log_get_messages(log);
   
@@ -221,12 +246,6 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   }
 #endif
   
-  cr = gdk_cairo_create(GTK_WIDGET(animation_window)->window);
-
-  if(cr == NULL){
-    return;
-  }
-
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
 				       800, 600);
 
@@ -242,13 +261,14 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
 	       NULL);
 
   /*  */
-  x0 = 4.0;
-  y0 = 4.0 + (i_stop * 12.0);
+  x0 = (gdouble) animation_window->text_box_x0;
+  y0 = (gdouble) animation_window->text_box_y0 + (i_stop * 12.0);
 
-  cairo_set_source_rgb(cr,
-		       1.0,
-		       0.0,
-		       1.0);
+  cairo_set_source_rgba(cr,
+			animation_window->text_color->red,
+			animation_window->text_color->green,
+			animation_window->text_color->blue,
+			animation_window->text_color->alpha);
   
   /* text */
   layout = pango_cairo_create_layout(cr);
@@ -274,13 +294,13 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   for(i = 0; i < i_stop; i++){
     gchar *str;
     
-    pthread_mutex_lock(log->mutex);
+    g_rec_mutex_lock(log_mutex);
 
     str = g_strdup(list->data);
     
     list = list->next;
 
-    pthread_mutex_unlock(log->mutex);
+    g_rec_mutex_unlock(log_mutex);
 
     /* text */
     layout = pango_cairo_create_layout(cr);
@@ -313,9 +333,11 @@ ags_animation_window_draw(AgsAnimationWindow *animation_window)
   g_free(font_name);
   
   cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+//  cairo_destroy(cr);
 
   cairo_surface_destroy(surface);
+
+  return(FALSE);
 }
 
 gboolean
@@ -339,13 +361,136 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
     i_stop = g_list_length(start_list);
     
     if(animation_window->message_count < i_stop){
-      ags_animation_window_draw(animation_window);
+      gtk_widget_queue_draw((GtkWidget *) animation_window);
     }
 
     return(TRUE);
   }else{
-    gtk_widget_hide(animation_window);
-    gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));    
+    AgsWindow *window;
+    AgsMenuBar *menu_bar;
+    AgsContextMenu *context_menu;
+    
+    GtkMenuItem *item;
+
+    GtkAccelGroup *accel_group;
+    GClosure *closure;
+    
+    gtk_widget_hide((GtkWidget *) animation_window);
+
+    window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+    /* accel group */
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_open_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_O,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_save_as_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_S,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_quit_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_Q,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+    accel_group = gtk_accel_group_new();
+
+    closure = g_cclosure_new(ags_menu_action_online_help_callback,
+			     NULL,
+			     NULL);
+    gtk_accel_group_connect(accel_group,
+                            GDK_KEY_H,
+                            GDK_CONTROL_MASK,
+                            0,
+                            closure);
+    gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+    
+    /* menu */
+    menu_bar = window->menu_bar;
+    context_menu = window->context_menu;
+    
+    /* menu - bridge */
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    /* menu - live */
+    menu_bar->live = (GtkMenu *) gtk_menu_new();
+  
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget *) menu_bar->live);
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
+
+    /* context menu - bridge */
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    /* context menu - live */
+    context_menu->live = (GtkMenu *) gtk_menu_new();
+  
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) context_menu->live);
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+    gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+    gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
+
+    /* connect and show window */
+    ags_connectable_connect(AGS_CONNECTABLE(window));
+    gtk_widget_show_all(window);    
 
     return(FALSE);
   }
@@ -358,7 +503,7 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
  *
  * Returns: a new #AgsAnimationWindow
  *
- * Since: 2.2.33
+ * Since: 3.0.0
  */
 AgsAnimationWindow*
 ags_animation_window_new()

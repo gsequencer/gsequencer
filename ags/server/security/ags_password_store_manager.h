@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/server/security/ags_password_store.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PASSWORD_STORE_MANAGER                (ags_password_store_manager_get_type())
 #define AGS_PASSWORD_STORE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManager))
 #define AGS_PASSWORD_STORE_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManagerClass))
@@ -32,12 +34,18 @@
 #define AGS_IS_PASSWORD_STORE_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PASSWORD_STORE_MANAGER))
 #define AGS_PASSWORD_STORE_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManagerClass))
 
+#define AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsPasswordStoreManager *) obj)->obj_mutex))
+
 typedef struct _AgsPasswordStoreManager AgsPasswordStoreManager;
 typedef struct _AgsPasswordStoreManagerClass AgsPasswordStoreManagerClass;
 
 struct _AgsPasswordStoreManager
 {
   GObject gobject;
+
+  GRecMutex obj_mutex;
+
+  gchar *salt;
   
   GList *password_store;
 };
@@ -58,12 +66,14 @@ void ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *p
 
 /*  */
 gboolean ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
-						   gchar *login,
+						   gchar *user_uuid,
 						   gchar *password);
 
 /*  */
 AgsPasswordStoreManager* ags_password_store_manager_get_instance();
 
 AgsPasswordStoreManager* ags_password_store_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PASSWORD_STORE_MANAGER_H__*/

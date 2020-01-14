@@ -39,9 +39,9 @@
  * 
  * Escape all occurence of single quotes.
  * 
- * Returns: the newly allocated string
+ * Returns: (transfer full): the newly allocated string
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_string_util_escape_single_quote(gchar *str)
@@ -94,13 +94,13 @@ ags_string_util_escape_single_quote(gchar *str)
 
 /**
  * ags_strv_length:
- * @str_array: the string vector
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * 
  * Count the number of non-%NULL entries in the array.
  * 
  * Returns: the length of the vector
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_strv_length(gchar **str_array)
@@ -118,14 +118,14 @@ ags_strv_length(gchar **str_array)
 
 /**
  * ags_strv_contains:
- * @str_array: the string vector
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * @str: the string to match
  * 
  * Check occurence of @str within @str_array
  * 
  * Returns: %TRUE if found, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_strv_contains(gchar **str_array,
@@ -149,15 +149,15 @@ ags_strv_contains(gchar **str_array,
 }
 
 /**
- * ags_strv_contains:
- * @str_array: the string vector
+ * ags_strv_index:
+ * @str_array: (element-type utf8) (array zero-terminated=1) (transfer none): the string vector
  * @str: the string to match
  * 
  * Check by comparing @str against @str_array items.
  * 
  * Returns: the first matching position or -1, if not found
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_strv_index(gchar **str_array,
@@ -169,8 +169,8 @@ ags_strv_index(gchar **str_array,
     return(-1);
   }
 
-  for(i = 0; *str_array != NULL; i++, str_array++){
-    if(!g_strcmp0(*str_array, str)){
+  for(i = 0; str_array[0] != NULL; i++, str_array++){
+    if(!g_strcmp0(str_array[0], str)){
       return(i);
     }
   }

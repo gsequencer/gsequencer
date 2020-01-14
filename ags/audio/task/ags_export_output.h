@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/thread/ags_export_thread.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())
 #define AGS_EXPORT_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutput))
 #define AGS_EXPORT_OUTPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_OUTPUT, AgsExportOutputClass))
@@ -42,6 +44,7 @@ typedef struct _AgsExportOutputClass AgsExportOutputClass;
  * @AGS_EXPORT_OUTPUT_FORMAT_WAV: use WAV format
  * @AGS_EXPORT_OUTPUT_FORMAT_OGG: use OGG format
  * @AGS_EXPORT_OUTPUT_FORMAT_FLAC: use FLAC format
+ * @AGS_EXPORT_OUTPUT_FORMAT_AIFF: use AIFF format
  * 
  * Enum values to control output format of #AgsExportOutput.
  */
@@ -78,5 +81,6 @@ AgsExportOutput* ags_export_output_new(AgsExportThread *export_thread,
 				       gchar *filename,
 				       guint tic,
 				       gboolean live_performance);
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_OUTPUT_H__*/

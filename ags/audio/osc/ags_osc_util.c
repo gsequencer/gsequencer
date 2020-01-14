@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_util.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
@@ -32,6 +30,16 @@
 #endif
 
 /**
+ * SECTION:ags_osc_util
+ * @short_description: OSC util
+ * @title: AgsOscUtil
+ * @section_id:
+ * @include: ags/audio/osc/ags_osc_util.h
+ *
+ * Utility functions for OSC.
+ */
+
+/**
  * ags_osc_util_type_tag_string_count_type:
  * @type_tag: the type tag string
  * 
@@ -39,7 +47,7 @@
  * 
  * Returns: the count of types specified
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 guint
 ags_osc_util_type_tag_string_count_type(gchar *type_tag)
@@ -71,7 +79,7 @@ ags_osc_util_type_tag_string_count_type(gchar *type_tag)
  * 
  * Returns: the byte array containing meta data
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_meta_data(gchar *uri,
@@ -99,7 +107,7 @@ ags_osc_util_meta_data(gchar *uri,
  * 
  * Returns: the byte array containing MIME header
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_mime_header(gchar *uri,
@@ -129,7 +137,7 @@ ags_osc_util_mime_header(gchar *uri,
  * 
  * Returns: the encoded byte array
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_slip_encode(unsigned char *osc_buffer,
@@ -198,7 +206,7 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  * 
  * Returns: the OSC buffer as byte array
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 unsigned char*
 ags_osc_util_slip_decode(unsigned char *slip_buffer,
@@ -243,15 +251,15 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 
 /**
  * ags_osc_util_timetag_now:
- * @tv_secs: the return location of number of seconds since midnight on January 1, 1900
+ * @tv_sec: the return location of number of seconds since midnight on January 1, 1900
  * @tv_fraction: the return location of fraction of seconds to a precision of about 200 picoseconds
  * 
  * Get current time.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
-ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
+ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction)
 {
   struct timespec time_now;
 
@@ -260,7 +268,7 @@ ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
   mach_timespec_t mts;
 #endif
   
-  static const guint secs_since_1900_to_1970 = 2208988800;
+  static const guint sec_since_1900_to_1970 = 2208988800;
   
 #ifdef __APPLE__
   host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
@@ -274,8 +282,8 @@ ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
   clock_gettime(CLOCK_MONOTONIC, &time_now);
 #endif
 
-  if(tv_secs != NULL){
-    tv_secs[0] = time_now.tv_sec + 2208988800;
+  if(tv_sec != NULL){
+    tv_sec[0] = time_now.tv_sec + 2208988800;
   }
 
   if(tv_fraction != NULL){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_APPLY_SOUND_CONFIG                (ags_apply_sound_config_get_type())
 #define AGS_APPLY_SOUND_CONFIG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SOUND_CONFIG, AgsApplySoundConfig))
 #define AGS_APPLY_SOUND_CONFIG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPLY_SOUND_CONFIG, AgsApplySoundConfigClass))
@@ -40,8 +42,6 @@ struct _AgsApplySoundConfig
   AgsTask task;
 
   gchar *config_data;
-
-  AgsApplicationContext *application_context;
 };
 
 struct _AgsApplySoundConfigClass
@@ -51,7 +51,8 @@ struct _AgsApplySoundConfigClass
 
 GType ags_apply_sound_config_get_type();
 
-AgsApplySoundConfig* ags_apply_sound_config_new(AgsApplicationContext *application_context,
-						gchar *config_data);
+AgsApplySoundConfig* ags_apply_sound_config_new(gchar *config_data);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLY_SOUND_CONFIG_H__*/

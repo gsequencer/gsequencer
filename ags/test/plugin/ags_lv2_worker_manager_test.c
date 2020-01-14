@@ -36,12 +36,20 @@ void ags_lv2_worker_manager_test_pull_worker();
 
 #define AGS_LV2_WORKER_MANAGER_TEST_PULL_WORKER_DELAY (5000000)
 
+AgsApplicationContext *application_context;
+
 /* Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
 ags_lv2_worker_manager_test_init_suite()
 {
+  application_context = ags_audio_application_context_new();
+  g_object_ref(application_context);
+  
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+  
   return(0);
 }
 

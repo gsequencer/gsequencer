@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_stream_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
@@ -162,11 +160,7 @@ ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
   void (*parent_class_run_init_pre)(AgsRecall *recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -188,11 +182,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   stream_audio_signal = (AgsStreamAudioSignal *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_post = AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(stream_audio_signal,
 	       "parent", &stream_recycling,
@@ -343,7 +333,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
  *
  * Returns: the new #AgsStreamAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsStreamAudioSignal*
 ags_stream_audio_signal_new(AgsAudioSignal *source)

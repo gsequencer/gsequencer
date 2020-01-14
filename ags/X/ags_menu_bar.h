@@ -25,15 +25,18 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MENU_BAR                (ags_menu_bar_get_type ())
 #define AGS_MENU_BAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MENU_BAR, AgsMenuBar))
 #define AGS_MENU_BAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
 #define AGS_IS_MENU_BAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MENU_BAR))
 #define AGS_IS_MENU_BAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MENU_BAR))
 #define AGS_MENU_BAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
-
-#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key"
-#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key"
 
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
@@ -80,5 +83,7 @@ GtkMenu* ags_live_dssi_bridge_menu_new();
 GtkMenu* ags_live_lv2_bridge_menu_new();
 
 AgsMenuBar* ags_menu_bar_new();
+
+G_END_DECLS
 
 #endif /*__AGS_MENU_BAR_H__*/

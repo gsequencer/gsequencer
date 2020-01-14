@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,15 +26,25 @@
 #include <math.h>
 
 /**
+ * SECTION:ags_buffer_util
+ * @short_description: buffer util
+ * @title: AgsBufferUtil
+ * @section_id:
+ * @include: ags/lib/ags_buffer_util.h
+ *
+ * Common utility functions related to char buffers.
+ */
+
+/**
  * ags_buffer_util_s8_to_char_buffer:
  * @buffer: the gint8 buffer
  * @buffer_length: the buffer length
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
@@ -85,9 +95,9 @@ ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
@@ -154,9 +164,9 @@ ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
@@ -176,42 +186,42 @@ ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
     limit = buffer_length - 8;
 
     for(; i < limit; i += 8){
-      cbuffer[0] = 0x0;
+      cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
       cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
       cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
       cbuffer[3] = (guchar) (0xff & buffer[0]);
       
-      cbuffer[4] = 0x0;
+      cbuffer[4] = (guchar) ((0xff000000 & buffer[1]) >> 24);
       cbuffer[5] = (guchar) ((0xff0000 & buffer[1]) >> 16);
       cbuffer[6] = (guchar) ((0xff00 & buffer[1]) >> 8);
       cbuffer[7] = (guchar) (0xff & buffer[1]);
 
-      cbuffer[8] = 0x0;
+      cbuffer[8] = (guchar) ((0xff000000 & buffer[2]) >> 24);
       cbuffer[9] = (guchar) ((0xff0000 & buffer[2]) >> 16);
       cbuffer[10] = (guchar) ((0xff00 & buffer[2]) >> 8);
       cbuffer[11] = (guchar) (0xff & buffer[2]);
 
-      cbuffer[12] = 0x0;
+      cbuffer[12] = (guchar) ((0xff000000 & buffer[3]) >> 24);
       cbuffer[13] = (guchar) ((0xff0000 & buffer[3]) >> 16);
       cbuffer[14] = (guchar) ((0xff00 & buffer[3]) >> 8);
       cbuffer[15] = (guchar) (0xff & buffer[3]);
 
-      cbuffer[16] = 0x0;
+      cbuffer[16] = (guchar) ((0xff000000 & buffer[4]) >> 24);
       cbuffer[17] = (guchar) ((0xff0000 & buffer[4]) >> 16);
       cbuffer[18] = (guchar) ((0xff00 & buffer[4]) >> 8);
       cbuffer[19] = (guchar) (0xff & buffer[4]);
 
-      cbuffer[20] = 0x0;
+      cbuffer[20] = (guchar) ((0xff000000 & buffer[5]) >> 24);
       cbuffer[21] = (guchar) ((0xff0000 & buffer[5]) >> 16);
       cbuffer[22] = (guchar) ((0xff00 & buffer[5]) >> 8);
       cbuffer[23] = (guchar) (0xff & buffer[5]);
 
-      cbuffer[24] = 0x0;
+      cbuffer[24] = (guchar) ((0xff000000 & buffer[6]) >> 24);
       cbuffer[25] = (guchar) ((0xff0000 & buffer[6]) >> 16);
       cbuffer[26] = (guchar) ((0xff00 & buffer[6]) >> 8);
       cbuffer[27] = (guchar) (0xff & buffer[6]);
 
-      cbuffer[28] = 0x0;
+      cbuffer[28] = (guchar) ((0xff000000 & buffer[7]) >> 24);
       cbuffer[29] = (guchar) ((0xff0000 & buffer[7]) >> 16);
       cbuffer[30] = (guchar) ((0xff00 & buffer[7]) >> 8);
       cbuffer[31] = (guchar) (0xff & buffer[7]);
@@ -222,7 +232,7 @@ ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
   }
 
   for(; i < buffer_length; i++){
-    cbuffer[0] = 0x0;
+    cbuffer[0] = (guchar) ((0xff000000 & buffer[0]) >> 24);
     cbuffer[1] = (guchar) ((0xff0000 & buffer[0]) >> 16);
     cbuffer[2] = (guchar) ((0xff00 & buffer[0]) >> 8);
     cbuffer[3] = (guchar) (0xff & buffer[0]);
@@ -241,9 +251,9 @@ ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_s32_to_char_buffer(gint32 *buffer,
@@ -328,9 +338,9 @@ ags_buffer_util_s32_to_char_buffer(gint32 *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_s64_to_char_buffer(gint64 *buffer,
@@ -451,9 +461,9 @@ ags_buffer_util_s64_to_char_buffer(gint64 *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_float_to_char_buffer(gfloat *buffer,
@@ -476,9 +486,9 @@ ags_buffer_util_float_to_char_buffer(gfloat *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_double_to_char_buffer(gdouble *buffer,
@@ -501,9 +511,9 @@ ags_buffer_util_double_to_char_buffer(gdouble *buffer,
  * 
  * Pack @buffer into an guchar buffer.
  * 
- * Returns: the guchar buffer
+ * Returns: (transfer full): the guchar buffer
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 guchar*
 ags_buffer_util_complex_to_char_buffer(AgsComplex *buffer,
@@ -526,9 +536,9 @@ ags_buffer_util_complex_to_char_buffer(AgsComplex *buffer,
  *
  * Unpack @cbuffer to a gint8 buffer
  *
- * Returns: the gint8 buffer
+ * Returns: (transfer full): the gint8 buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint8*
 ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
@@ -580,9 +590,9 @@ ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gint16 buffer
  *
- * Returns: the gint16 buffer
+ * Returns: (transfer full): the gint16 buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint16*
 ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
@@ -652,9 +662,9 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gint32 buffer
  *
- * Returns: the gint32 buffer
+ * Returns: (transfer full): the gint32 buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
@@ -677,37 +687,45 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
     limit = (buffer_size / 4) - 8;
 
     for(; i < limit; i += 8){
-      buffer[0] |= ((0xff & cbuffer[0]) << 16);
-      buffer[0] |= ((0xff & cbuffer[1]) << 8);
-      buffer[0] |= (0xff & cbuffer[2]);
+      buffer[0] |= ((0xff & cbuffer[0]) << 24);
+      buffer[0] |= ((0xff & cbuffer[1]) << 16);
+      buffer[0] |= ((0xff & cbuffer[2]) << 8);
+      buffer[0] |= (0xff & cbuffer[3]);
       
-      buffer[1] |= ((0xff & cbuffer[4]) << 16);
-      buffer[1] |= ((0xff & cbuffer[5]) << 8);
-      buffer[1] |= (0xff & cbuffer[6]);
+      buffer[1] |= ((0xff & cbuffer[4]) << 24);
+      buffer[1] |= ((0xff & cbuffer[5]) << 16);
+      buffer[1] |= ((0xff & cbuffer[6]) << 8);
+      buffer[1] |= (0xff & cbuffer[7]);
+      
+      buffer[2] |= ((0xff & cbuffer[8]) << 24);
+      buffer[2] |= ((0xff & cbuffer[9]) << 16);
+      buffer[2] |= ((0xff & cbuffer[10]) << 8);
+      buffer[2] |= (0xff & cbuffer[11]);
 
-      buffer[2] |= ((0xff & cbuffer[8]) << 16);
-      buffer[2] |= ((0xff & cbuffer[9]) << 8);
-      buffer[2] |= (0xff & cbuffer[10]);
-      
-      buffer[3] |= ((0xff & cbuffer[12]) << 16);
-      buffer[3] |= ((0xff & cbuffer[13]) << 8);
-      buffer[3] |= (0xff & cbuffer[14]);
-      
-      buffer[4] |= ((0xff & cbuffer[16]) << 16);
-      buffer[4] |= ((0xff & cbuffer[17]) << 8);
-      buffer[4] |= (0xff & cbuffer[18]);
-      
-      buffer[5] |= ((0xff & cbuffer[20]) << 16);
-      buffer[5] |= ((0xff & cbuffer[21]) << 8);
-      buffer[5] |= (0xff & cbuffer[22]);
-      
-      buffer[6] |= ((0xff & cbuffer[24]) << 16);
-      buffer[6] |= ((0xff & cbuffer[25]) << 8);
-      buffer[6] |= (0xff & cbuffer[26]);
-      
-      buffer[7] |= ((0xff & cbuffer[28]) << 16);
-      buffer[7] |= ((0xff & cbuffer[29]) << 8);
-      buffer[7] |= (0xff & cbuffer[30]);
+      buffer[3] |= ((0xff & cbuffer[12]) << 24);
+      buffer[3] |= ((0xff & cbuffer[13]) << 16);
+      buffer[3] |= ((0xff & cbuffer[14]) << 8);
+      buffer[3] |= (0xff & cbuffer[15]);
+
+      buffer[4] |= ((0xff & cbuffer[16]) << 24);
+      buffer[4] |= ((0xff & cbuffer[17]) << 16);
+      buffer[4] |= ((0xff & cbuffer[18]) << 8);
+      buffer[4] |= (0xff & cbuffer[19]);
+
+      buffer[5] |= ((0xff & cbuffer[20]) << 24);
+      buffer[5] |= ((0xff & cbuffer[21]) << 16);
+      buffer[5] |= ((0xff & cbuffer[22]) << 8);
+      buffer[5] |= (0xff & cbuffer[23]);
+
+      buffer[6] |= ((0xff & cbuffer[24]) << 24);
+      buffer[6] |= ((0xff & cbuffer[25]) << 16);
+      buffer[6] |= ((0xff & cbuffer[26]) << 8);
+      buffer[6] |= (0xff & cbuffer[27]);
+
+      buffer[7] |= ((0xff & cbuffer[28]) << 24);
+      buffer[7] |= ((0xff & cbuffer[29]) << 16);
+      buffer[7] |= ((0xff & cbuffer[30]) << 8);
+      buffer[7] |= (0xff & cbuffer[31]);
       
       buffer += 8;
       cbuffer += (4 * 8);
@@ -715,9 +733,10 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
   }
 
   for(; i < buffer_size / 4; i++){
-    buffer[0] |= ((0xff & cbuffer[0]) << 16);
-    buffer[0] |= ((0xff & cbuffer[1]) << 8);
-    buffer[0] |= (0xff & cbuffer[2]);
+    buffer[0] |= ((0xff & cbuffer[0]) << 24);
+    buffer[0] |= ((0xff & cbuffer[1]) << 16);
+    buffer[0] |= ((0xff & cbuffer[2]) << 8);
+    buffer[0] |= (0xff & cbuffer[3]);
       
     buffer++;
     cbuffer += 4;
@@ -733,9 +752,9 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gint32 buffer
  *
- * Returns: the gint32 buffer
+ * Returns: (transfer full): the gint32 buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
@@ -823,9 +842,9 @@ ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gint64 buffer
  *
- * Returns: the gint64 buffer
+ * Returns: (transfer full): the gint64 buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint64*
 ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
@@ -949,9 +968,9 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gfloat buffer
  *
- * Returns: the gfloat buffer
+ * Returns: (transfer full): the gfloat buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gfloat*
 ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
@@ -976,9 +995,9 @@ ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
  *
  * Unpack @cbuffer to a gdouble buffer
  *
- * Returns: the gdouble buffer
+ * Returns: (transfer full): the gdouble buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble*
 ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
@@ -1003,9 +1022,9 @@ ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
  *
  * Unpack @cbuffer to a #AgsComplex buffer
  *
- * Returns: the #AgsComplex buffer
+ * Returns: (transfer full): the #AgsComplex buffer
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_buffer_util_char_buffer_to_complex(guchar *cbuffer,
@@ -1032,7 +1051,7 @@ ags_buffer_util_char_buffer_to_complex(guchar *cbuffer,
  * 
  * Returns: the gint8 value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint8
 ags_buffer_util_char_buffer_read_s8(guchar *cbuffer,
@@ -1055,7 +1074,7 @@ ags_buffer_util_char_buffer_read_s8(guchar *cbuffer,
  * 
  * Returns: the gint16 value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint16
 ags_buffer_util_char_buffer_read_s16(guchar *cbuffer,
@@ -1085,7 +1104,7 @@ ags_buffer_util_char_buffer_read_s16(guchar *cbuffer,
  * 
  * Returns: the gint32 value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32
 ags_buffer_util_char_buffer_read_s24(guchar *cbuffer,
@@ -1117,7 +1136,7 @@ ags_buffer_util_char_buffer_read_s24(guchar *cbuffer,
  * 
  * Returns: the gint32 value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32
 ags_buffer_util_char_buffer_read_s32(guchar *cbuffer,
@@ -1151,7 +1170,7 @@ ags_buffer_util_char_buffer_read_s32(guchar *cbuffer,
  * 
  * Returns: the gint64 value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint64
 ags_buffer_util_char_buffer_read_s64(guchar *cbuffer,
@@ -1193,9 +1212,9 @@ ags_buffer_util_char_buffer_read_s64(guchar *cbuffer,
  * 
  * Returns: the gfloat value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-float
+gfloat
 ags_buffer_util_char_buffer_read_float(guchar *cbuffer,
 				       guint byte_order)
 {
@@ -1230,9 +1249,9 @@ ags_buffer_util_char_buffer_read_float(guchar *cbuffer,
  * 
  * Returns: the gdouble value
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-double
+gdouble
 ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
 					guint byte_order)
 {
@@ -1275,7 +1294,7 @@ ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
  * 
  * Returns: the #AgsComplex value
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_buffer_util_char_buffer_read_complex(guchar *cbuffer,
@@ -1307,7 +1326,7 @@ ags_buffer_util_char_buffer_read_complex(guchar *cbuffer,
  * 
  * Write a gint8 quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_s8(guchar *cbuffer,
@@ -1325,7 +1344,7 @@ ags_buffer_util_char_buffer_write_s8(guchar *cbuffer,
  * 
  * Write a gint16 quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_s16(guchar *cbuffer,
@@ -1349,7 +1368,7 @@ ags_buffer_util_char_buffer_write_s16(guchar *cbuffer,
  * 
  * Write a gint32 quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_s24(guchar *cbuffer,
@@ -1375,7 +1394,7 @@ ags_buffer_util_char_buffer_write_s24(guchar *cbuffer,
  * 
  * Write a gint32 quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_s32(guchar *cbuffer,
@@ -1403,7 +1422,7 @@ ags_buffer_util_char_buffer_write_s32(guchar *cbuffer,
  * 
  * Write a gint64 quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_s64(guchar *cbuffer,
@@ -1439,7 +1458,7 @@ ags_buffer_util_char_buffer_write_s64(guchar *cbuffer,
  * 
  * Write a gfloat quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_float(guchar *cbuffer,
@@ -1474,7 +1493,7 @@ ags_buffer_util_char_buffer_write_float(guchar *cbuffer,
  * 
  * Write a gdouble quantity to @cbuffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
@@ -1517,7 +1536,7 @@ ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
  * 
  * Write a #AgsComplex quantity to @cbuffer.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_write_complex(guchar *cbuffer,
@@ -1552,7 +1571,7 @@ ags_buffer_util_char_buffer_write_complex(guchar *cbuffer,
  * 
  * Swap bytes in view of Little/Big-Endian.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_buffer_util_char_buffer_swap_bytes(guchar *cbuffer, guint word_size,

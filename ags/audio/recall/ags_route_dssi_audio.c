@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_route_dssi_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
 #include <ags/i18n.h>
 
 void ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio);
 void ags_route_dssi_audio_init(AgsRouteDssiAudio *route_dssi_audio);
-void ags_route_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_route_dssi_audio_set_property(GObject *gobject,
 				       guint prop_id,
 				       const GValue *value,
@@ -38,8 +35,6 @@ void ags_route_dssi_audio_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_route_dssi_audio_dispose(GObject *gobject);
 void ags_route_dssi_audio_finalize(GObject *gobject);
-
-void ags_route_dssi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_route_dssi_audio
@@ -88,32 +83,16 @@ ags_route_dssi_audio_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_route_dssi_audio_init,
     };
-    
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_route_dssi_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
+        
     ags_type_route_dssi_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						       "AgsRouteDssiAudio",
 						       &ags_route_dssi_audio_info,
 						       0);
 
-    g_type_add_interface_static(ags_type_route_dssi_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave (&g_define_type_id__volatile, ags_type_route_dssi_audio);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_route_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_route_dssi_audio_set_ports;
 }
 
 void
@@ -138,7 +117,7 @@ ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio)
    *
    * If enabled input is taken of #AgsNotation.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation-input",
 				   i18n_pspec("route notation input"),
@@ -154,7 +133,7 @@ ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio)
    *
    * If enabled input is taken of #AgsSequencer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sequencer-input",
 				   i18n_pspec("route sequencer input"),
@@ -228,7 +207,7 @@ ags_route_dssi_audio_set_property(GObject *gobject,
 {
   AgsRouteDssiAudio *route_dssi_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(gobject);
 
@@ -242,10 +221,10 @@ ags_route_dssi_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == route_dssi_audio->notation_input){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -260,7 +239,7 @@ ags_route_dssi_audio_set_property(GObject *gobject,
 
       route_dssi_audio->notation_input = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_INPUT:
@@ -269,10 +248,10 @@ ags_route_dssi_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == route_dssi_audio->sequencer_input){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -287,7 +266,7 @@ ags_route_dssi_audio_set_property(GObject *gobject,
 
       route_dssi_audio->sequencer_input = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -304,7 +283,7 @@ ags_route_dssi_audio_get_property(GObject *gobject,
 {
   AgsRouteDssiAudio *route_dssi_audio;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(gobject);
 
@@ -314,20 +293,20 @@ ags_route_dssi_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_NOTATION_INPUT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, route_dssi_audio->notation_input);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SEQUENCER_INPUT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, route_dssi_audio->sequencer_input);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -380,28 +359,6 @@ ags_route_dssi_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_route_dssi_audio_parent_class)->finalize(gobject);
 }
 
-void
-ags_route_dssi_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./notation-input[0]",
-		18)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-input", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./sequencer-input[0]",
-		18)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-input", AGS_PORT(port->data),
-		   NULL);
-    }
-    
-    port = port->next;
-  }
-}
-
 /**
  * ags_route_dssi_audio_new:
  * @audio: the #AgsAudio
@@ -410,7 +367,7 @@ ags_route_dssi_audio_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: the new #AgsRouteDssiAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRouteDssiAudio*
 ags_route_dssi_audio_new(AgsAudio *audio)

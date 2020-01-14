@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,10 +25,19 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_ffplayer.h>
 
-void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer);
+G_BEGIN_DECLS
+
+void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFFPlayer *ffplayer);
 void ags_ffplayer_destroy_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
+
+void ags_ffplayer_draw_callback(GtkWidget *drawing_area, cairo_t *cr,
+				AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
@@ -36,10 +45,10 @@ void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response
 void ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer);
 void ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer);
 
-gboolean ags_ffplayer_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsFFPlayer *ffplayer);
-gboolean ags_ffplayer_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsFFPlayer *ffplayer);
 gboolean ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer);
+
+G_END_DECLS
 
 #endif /*__AGS_FFPLAYER_CALLBACKS_H__ */

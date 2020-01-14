@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,21 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
+
+/**
+ * AgsSoundAbilityFlags:
+ * @AGS_SOUND_ABILITY_PLAYBACK: playback ability
+ * @AGS_SOUND_ABILITY_SEQUENCER: sequenecer ability
+ * @AGS_SOUND_ABILITY_NOTATION: notation abilitiy
+ * @AGS_SOUND_ABILITY_WAVE: wave abilitiy
+ * @AGS_SOUND_ABILITY_MIDI: MIDI ability
+ * 
+ * Enum values to specify particular ability. Mark an object to be
+ * able to handle matching scope.
+ */
 typedef enum{
   AGS_SOUND_ABILITY_PLAYBACK            = 1,
   AGS_SOUND_ABILITY_SEQUENCER           = 1 <<  1,
@@ -31,6 +46,25 @@ typedef enum{
   AGS_SOUND_ABILITY_MIDI                = 1 <<  4,
 }AgsSoundAbilityFlags;
 
+/**
+ * AgsSoundBehaviourFlags:
+ * @AGS_SOUND_BEHAVIOUR_PATTERN_MODE: pattern mode
+ * @AGS_SOUND_BEHAVIOUR_BULK_MODE: bulk mode
+ * @AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING: reverse mapping
+ * @AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT: defaults to output
+ * @AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT: defaults to input
+ * @AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: chained to output
+ * @AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT: chained to input
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT: persistend
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK: persistend playback
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION: persistend notation
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER: persistend sequencer
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE: persistend wave
+ * @AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI: persistend MIDI
+ * @AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE: propagate done
+ * 
+ * Enum values to describe behaviour.
+ */
 typedef enum{
   AGS_SOUND_BEHAVIOUR_PATTERN_MODE           = 1,
   AGS_SOUND_BEHAVIOUR_BULK_MODE              = 1 <<  1,
@@ -48,6 +82,17 @@ typedef enum{
   AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE         = 1 << 13,
 }AgsSoundBehaviourFlags;
 
+/**
+ * AgsSoundScope:
+ * @AGS_SOUND_SCOPE_PLAYBACK: playback scope
+ * @AGS_SOUND_SCOPE_SEQUENCER: sequenecer scope
+ * @AGS_SOUND_SCOPE_NOTATION: notation abilitiy
+ * @AGS_SOUND_SCOPE_WAVE: wave abilitiy
+ * @AGS_SOUND_SCOPE_MIDI: MIDI scope
+ * @AGS_SOUND_SCOPE_LAST: the last scope
+ * 
+ * Enum values to specify current scope. Request current scope.
+ */
 typedef enum{
   AGS_SOUND_SCOPE_PLAYBACK,
   AGS_SOUND_SCOPE_SEQUENCER,
@@ -57,6 +102,27 @@ typedef enum{
   AGS_SOUND_SCOPE_LAST,
 }AgsSoundScope;
 
+/**
+ * AgsSoundStagingFlags:
+ * @AGS_SOUND_STAGING_CHECK_RT_DATA: check rt-data
+ * @AGS_SOUND_STAGING_RUN_INIT_PRE: run init pre
+ * @AGS_SOUND_STAGING_RUN_INIT_INTER: run init inter
+ * @AGS_SOUND_STAGING_RUN_INIT_POST: run init post
+ * @AGS_SOUND_STAGING_FEED_INPUT_QUEUE: feed input queue
+ * @AGS_SOUND_STAGING_AUTOMATE: automate
+ * @AGS_SOUND_STAGING_RUN_PRE: run pre
+ * @AGS_SOUND_STAGING_RUN_INTER: run inter
+ * @AGS_SOUND_STAGING_RUN_POST: run post
+ * @AGS_SOUND_STAGING_DO_FEEDBACK: do feedback
+ * @AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE: feed output queue
+ * @AGS_SOUND_STAGING_FINI: fini
+ * @AGS_SOUND_STAGING_CANCEL: cancel
+ * @AGS_SOUND_STAGING_DONE: done
+ * @AGS_SOUND_STAGING_REMOVE: remove
+ * @AGS_SOUND_STAGING_RESET: reset
+ * 
+ * Enum values to stage the specified action.
+ */
 typedef enum{
   AGS_SOUND_STAGING_CHECK_RT_DATA       = 1,
   AGS_SOUND_STAGING_RUN_INIT_PRE        = 1 <<  1,
@@ -76,11 +142,22 @@ typedef enum{
   AGS_SOUND_STAGING_RESET               = 1 << 15,
 }AgsSoundStagingFlags;
 
+/**
+ * AgsSoundStateFlags:
+ * @AGS_SOUND_STATE_IS_WAITING: is waiting
+ * @AGS_SOUND_STATE_IS_ACTIVE: is active
+ * @AGS_SOUND_STATE_IS_PROCESSING: is processing
+ * @AGS_SOUND_STATE_IS_TERMINATING: is terminating
+ * 
+ * Enum values to indicate state.
+ */
 typedef enum{
   AGS_SOUND_STATE_IS_WAITING                  = 1,
   AGS_SOUND_STATE_IS_ACTIVE                   = 1 <<  1,
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
   AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
 }AgsSoundStateFlags;
+
+G_END_DECLS
 
 #endif /*__AGS_SOUND_ENUMS_H__*/

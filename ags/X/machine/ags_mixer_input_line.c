@@ -145,11 +145,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 		      widget, ags_line_indicator_queue_draw_timeout);
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
-  g_object_set(widget,
-	       "adjustment", adjustment,
-	       NULL);
-
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", GTK_TYPE_VSCALE,
@@ -294,7 +289,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
  *
  * Returns: the new #AgsMixerInputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMixerInputLine*
 ags_mixer_input_line_new(AgsChannel *channel)

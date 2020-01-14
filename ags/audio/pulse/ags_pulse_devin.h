@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PULSE_DEVIN                (ags_pulse_devin_get_type())
 #define AGS_PULSE_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_DEVIN, AgsPulseDevin))
@@ -34,7 +34,7 @@
 #define AGS_IS_PULSE_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_DEVIN))
 #define AGS_PULSE_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_DEVIN, AgsPulseDevinClass))
 
-#define AGS_PULSE_DEVIN_GET_OBJ_MUTEX(obj) (((AgsPulseDevin *) obj)->obj_mutex)
+#define AGS_PULSE_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsPulseDevin *) obj)->obj_mutex))
 
 typedef struct _AgsPulseDevin AgsPulseDevin;
 typedef struct _AgsPulseDevinClass AgsPulseDevinClass;
@@ -117,10 +117,7 @@ struct _AgsPulseDevin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -158,11 +155,11 @@ struct _AgsPulseDevin
   gchar **port_name;
   GList *pulse_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -176,8 +173,6 @@ GType ags_pulse_devin_get_type();
 
 GQuark ags_pulse_devin_error_quark();
 
-pthread_mutex_t* ags_pulse_devin_get_class_mutex();
-
 gboolean ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags);
 void ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags);
 void ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags);
@@ -187,6 +182,8 @@ void ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin);
 void ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin);
 void ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin);
 
-AgsPulseDevin* ags_pulse_devin_new(AgsApplicationContext *application_context);
+AgsPulseDevin* ags_pulse_devin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PULSE_DEVIN_H__*/

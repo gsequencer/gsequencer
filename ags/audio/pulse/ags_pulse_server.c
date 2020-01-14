@@ -21,8 +21,6 @@
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
@@ -100,7 +98,6 @@ void* ags_pulse_server_do_poll_loop(void *ptr);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_PULSE_CLIENT,
@@ -108,8 +105,6 @@ enum{
 };
 
 static gpointer ags_pulse_server_parent_class = NULL;
-
-static pthread_mutex_t ags_pulse_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_server_get_type()
@@ -182,27 +177,11 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
 
   /* properties */
   /**
-   * AgsPulseServer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsPulseServer:url:
    *
    * The assigned URL.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -218,7 +197,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -234,7 +213,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default pulse client.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("default-pulse-client",
 				   i18n_pspec("default pulse client"),
@@ -250,7 +229,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The pulse client list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("pulse-client",
 				    i18n_pspec("pulse client list"),
@@ -303,30 +282,16 @@ ags_pulse_server_sound_server_interface_init(AgsSoundServerInterface *sound_serv
 void
 ags_pulse_server_init(AgsPulseServer *pulse_server)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   /* flags */
   pulse_server->flags = 0;
 
   /* server mutex */
-  pulse_server->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  pulse_server->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
+  g_rec_mutex_init(&(pulse_server->obj_mutex)); 
 
   g_atomic_int_set(&(pulse_server->running),
 		   TRUE);
-  pulse_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
-
-  /* parent */
-  pulse_server->application_context = NULL;
+  
+  pulse_server->thread = NULL;
 
   /* uuid */
   pulse_server->uuid = ags_uuid_alloc();
@@ -362,7 +327,7 @@ ags_pulse_server_set_property(GObject *gobject,
 {
   AgsPulseServer *pulse_server;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(gobject);
 
@@ -370,43 +335,16 @@ ags_pulse_server_set_property(GObject *gobject,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(pulse_server_mutex);
-
-      if(pulse_server->application_context == application_context){
-	pthread_mutex_unlock(pulse_server_mutex);
-
-	return;
-      }
-
-      if(pulse_server->application_context != NULL){
-	g_object_unref(G_OBJECT(pulse_server->application_context));
-      }
-
-      if(application_context != NULL){
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      pulse_server->application_context = application_context;
-
-      pthread_mutex_unlock(pulse_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
       gchar *url;
 
       url = g_value_get_string(value);
 
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       if(pulse_server->url == url){
-	pthread_mutex_unlock(pulse_server_mutex);
+	g_rec_mutex_unlock(pulse_server_mutex);
 
 	return;
       }
@@ -417,7 +355,7 @@ ags_pulse_server_set_property(GObject *gobject,
 
       pulse_server->url = g_strdup(url);
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_DEFAULT_SOUNDCARD:
@@ -426,10 +364,10 @@ ags_pulse_server_set_property(GObject *gobject,
 
       default_soundcard = (GObject *) g_value_get_object(value);
 
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       if(pulse_server->default_soundcard == (GObject *) default_soundcard){
-	pthread_mutex_unlock(pulse_server_mutex);
+	g_rec_mutex_unlock(pulse_server_mutex);
 
 	return;
       }
@@ -444,7 +382,7 @@ ags_pulse_server_set_property(GObject *gobject,
 
       pulse_server->default_soundcard = (GObject *) default_soundcard;
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_DEFAULT_PULSE_CLIENT:
@@ -453,10 +391,10 @@ ags_pulse_server_set_property(GObject *gobject,
 
       default_client = (AgsPulseClient *) g_value_get_object(value);
 
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       if(pulse_server->default_client == (GObject *) default_client){
-	pthread_mutex_unlock(pulse_server_mutex);
+	g_rec_mutex_unlock(pulse_server_mutex);
 
 	return;
       }
@@ -471,7 +409,7 @@ ags_pulse_server_set_property(GObject *gobject,
 
       pulse_server->default_client = (GObject *) default_client;
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_PULSE_CLIENT:
@@ -480,11 +418,11 @@ ags_pulse_server_set_property(GObject *gobject,
 
       client = (GObject *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       if(!AGS_IS_PULSE_CLIENT(client) ||
 	 g_list_find(pulse_server->client, client) != NULL){
-	pthread_mutex_unlock(pulse_server_mutex);
+	g_rec_mutex_unlock(pulse_server_mutex);
 
 	return;
       }
@@ -493,7 +431,7 @@ ags_pulse_server_set_property(GObject *gobject,
       pulse_server->client = g_list_prepend(pulse_server->client,
 					    client);
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   default:
@@ -510,7 +448,7 @@ ags_pulse_server_get_property(GObject *gobject,
 {
   AgsPulseServer *pulse_server;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(gobject);
 
@@ -518,52 +456,43 @@ ags_pulse_server_get_property(GObject *gobject,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(pulse_server_mutex);
-
-      g_value_set_object(value, pulse_server->application_context);
-
-      pthread_mutex_unlock(pulse_server_mutex);
-    }
-    break;
   case PROP_URL:
     {
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       g_value_set_string(value, pulse_server->url);
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_DEFAULT_SOUNDCARD:
     {
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       g_value_set_object(value, pulse_server->default_soundcard);
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_DEFAULT_PULSE_CLIENT:
     {
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       g_value_set_object(value, pulse_server->default_client);
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   case PROP_PULSE_CLIENT:
     {
-      pthread_mutex_lock(pulse_server_mutex);
+      g_rec_mutex_lock(pulse_server_mutex);
 
       g_value_set_pointer(value,
 			  g_list_copy_deep(pulse_server->client,
 					   (GCopyFunc) g_object_ref,
 					   NULL));
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     }
     break;
   default:
@@ -580,13 +509,6 @@ ags_pulse_server_dispose(GObject *gobject)
   GList *list;
   
   pulse_server = AGS_PULSE_SERVER(gobject);
-
-  /* application context */
-  if(pulse_server->application_context != NULL){
-    g_object_unref(G_OBJECT(pulse_server->application_context));
-    
-    pulse_server->application_context = NULL;
-  }
 
   /* default soundcard */
   if(pulse_server->default_soundcard != NULL){
@@ -629,17 +551,6 @@ ags_pulse_server_finalize(GObject *gobject)
 
   pulse_server = AGS_PULSE_SERVER(gobject);
 
-  pthread_mutex_destroy(pulse_server->obj_mutex);
-  free(pulse_server->obj_mutex);
-
-  pthread_mutexattr_destroy(pulse_server->obj_mutexattr);
-  free(pulse_server->obj_mutexattr);
-  
-  /* application context */
-  if(pulse_server->application_context != NULL){
-    g_object_unref(G_OBJECT(pulse_server->application_context));
-  }
-
   /* url */
   g_free(pulse_server->url);
 
@@ -670,7 +581,7 @@ ags_pulse_server_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(connectable);
 
@@ -678,11 +589,11 @@ ags_pulse_server_get_uuid(AgsConnectable *connectable)
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get UUID */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   ptr = pulse_server->uuid;
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
   
   return(ptr);
 }
@@ -700,19 +611,10 @@ ags_pulse_server_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *pulse_server_mutex;
-
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  /* get pulse server mutex */
-  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
-
   /* check is added */
-  pthread_mutex_lock(pulse_server_mutex);
-
-  is_ready = (((AGS_PULSE_SERVER_ADDED_TO_REGISTRY & (pulse_server->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(pulse_server_mutex);
+  is_ready = ags_pulse_server_test_flags(pulse_server, AGS_PULSE_SERVER_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -783,19 +685,10 @@ ags_pulse_server_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *pulse_server_mutex;
-
   pulse_server = AGS_PULSE_SERVER(connectable);
 
-  /* get pulse server mutex */
-  pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
-
   /* check is connected */
-  pthread_mutex_lock(pulse_server_mutex);
-
-  is_connected = (((AGS_PULSE_SERVER_CONNECTED & (pulse_server->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(pulse_server_mutex);
+  is_connected = ags_pulse_server_test_flags(pulse_server, AGS_PULSE_SERVER_CONNECTED);
   
   return(is_connected);
 }
@@ -807,7 +700,7 @@ ags_pulse_server_connect(AgsConnectable *connectable)
 
   GList *list_start, *list;  
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
   
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -839,7 +732,7 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
 
   GList *list_start, *list;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -866,21 +759,6 @@ ags_pulse_server_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_pulse_server_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_pulse_server_get_class_mutex()
-{
-  return(&ags_pulse_server_class_mutex);
-}
-
-/**
  * ags_pulse_server_test_flags:
  * @pulse_server: the #AgsPulseServer
  * @flags: the flags
@@ -889,14 +767,14 @@ ags_pulse_server_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return(FALSE);
@@ -906,11 +784,11 @@ ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags)
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* test */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   retval = (flags & (pulse_server->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 
   return(retval);
 }
@@ -922,12 +800,12 @@ ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags)
  *
  * Enable a feature of @pulse_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags)
 {
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
@@ -939,11 +817,11 @@ ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   pulse_server->flags |= flags;
   
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
     
 /**
@@ -953,12 +831,12 @@ ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags)
  *
  * Disable a feature of @pulse_server.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags)
 {  
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
@@ -970,11 +848,11 @@ ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   pulse_server->flags &= (~flags);
   
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 void
@@ -983,7 +861,7 @@ ags_pulse_server_set_url(AgsSoundServer *sound_server,
 {
   AgsPulseServer *pulse_server;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
@@ -991,11 +869,11 @@ ags_pulse_server_set_url(AgsSoundServer *sound_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* set URL */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   pulse_server->url = g_strdup(url);
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 gchar*
@@ -1005,7 +883,7 @@ ags_pulse_server_get_url(AgsSoundServer *sound_server)
 
   gchar *url;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
@@ -1013,11 +891,11 @@ ags_pulse_server_get_url(AgsSoundServer *sound_server)
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* set URL */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   url = pulse_server->url;
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
   
   return(url);
 }
@@ -1029,7 +907,7 @@ ags_pulse_server_set_ports(AgsSoundServer *sound_server,
 {
   AgsPulseServer *pulse_server;
 
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
@@ -1037,12 +915,12 @@ ags_pulse_server_set_ports(AgsSoundServer *sound_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* set ports */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   pulse_server->port = port;
   pulse_server->port_count = port_count;
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 guint*
@@ -1053,7 +931,7 @@ ags_pulse_server_get_ports(AgsSoundServer *sound_server,
 
   guint *port;
   
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
@@ -1061,7 +939,7 @@ ags_pulse_server_get_ports(AgsSoundServer *sound_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get ports */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   if(port_count != NULL){
     *port_count = AGS_PULSE_SERVER(sound_server)->port_count;
@@ -1069,7 +947,7 @@ ags_pulse_server_get_ports(AgsSoundServer *sound_server,
 
   port = pulse_server->port;
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
   
   return(port);
 }
@@ -1135,6 +1013,7 @@ ags_pulse_server_get_soundcard(AgsSoundServer *sound_server,
        AGS_IS_PULSE_DEVIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;
@@ -1208,6 +1087,7 @@ ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
     if(AGS_IS_PULSE_MIDIIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
+      g_object_ref(device->data);
     }
 
     device = device->next;
@@ -1246,10 +1126,12 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   gboolean initial_set;
   guint i;  
 
-  pthread_mutex_t *pulse_server_mutex;
-  pthread_mutex_t *pulse_client_mutex;
+  GRecMutex *pulse_server_mutex;
+  GRecMutex *pulse_client_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
+
+  application_context= ags_application_context_get_instance();
 
   /* get pulse server mutex */
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
@@ -1258,7 +1140,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   initial_set = FALSE;
   
   /* get some fields */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   if(pulse_server->main_loop == NULL){
 #ifdef AGS_WITH_PULSE
@@ -1270,13 +1152,11 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 #endif
   }
   
-  application_context= pulse_server->application_context;
-
   default_client = (AgsPulseClient *) pulse_server->default_client;
 
   n_soundcards = pulse_server->n_soundcards;
   
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 
   /* the default client */
   if(default_client == NULL){
@@ -1297,11 +1177,11 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* get context */
-  pthread_mutex_lock(pulse_client_mutex);
+  g_rec_mutex_lock(pulse_client_mutex);
 
   context = default_client->context;
 
-  pthread_mutex_unlock(pulse_client_mutex);
+  g_rec_mutex_unlock(pulse_client_mutex);
   
   if(context == NULL){
     g_warning("ags_pulse_server.c - can't open pulseaudio client");
@@ -1312,7 +1192,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    pulse_devout = ags_pulse_devout_new(application_context);
+    pulse_devout = ags_pulse_devout_new();
     soundcard = (GObject *) pulse_devout;
     
     str = g_strdup_printf("ags-pulse-devout-%d",
@@ -1356,13 +1236,13 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 		 NULL);
 
     /* increment n-soundcards */
-    pthread_mutex_lock(pulse_server_mutex);
+    g_rec_mutex_lock(pulse_server_mutex);
 
     pulse_server->n_soundcards += 1;
 
-    pthread_mutex_unlock(pulse_server_mutex);
+    g_rec_mutex_unlock(pulse_server_mutex);
   }else{
-    pulse_devin = ags_pulse_devin_new(application_context);
+    pulse_devin = ags_pulse_devin_new();
     soundcard = (GObject *) pulse_devin;
 
     str = g_strdup_printf("ags-pulse-devin-%d",
@@ -1409,11 +1289,11 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 		 NULL);
     
     /* increment n-soundcards */
-    pthread_mutex_lock(pulse_server_mutex);
+    g_rec_mutex_lock(pulse_server_mutex);
 
     pulse_server->n_soundcards += 1;
 
-    pthread_mutex_unlock(pulse_server_mutex);
+    g_rec_mutex_unlock(pulse_server_mutex);
   }
   
   return((GObject *) soundcard);
@@ -1429,7 +1309,7 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
   GList *list_start, *list;
   GList *port;
   
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   pulse_server = AGS_PULSE_SERVER(sound_server);
 
@@ -1492,11 +1372,11 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
   
   if(port == NULL){
     /* reset n-soundcards */
-    pthread_mutex_lock(pulse_server_mutex);
+    g_rec_mutex_lock(pulse_server_mutex);
 
     pulse_server->n_soundcards = 0;
 
-    pthread_mutex_unlock(pulse_server_mutex);
+    g_rec_mutex_unlock(pulse_server_mutex);
   }
 
   g_object_unref(default_client);
@@ -1529,7 +1409,7 @@ ags_pulse_server_unregister_sequencer(AgsSoundServer *sound_server,
  * 
  * Returns: the instantiated #AgsPulseDevout
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
@@ -1550,8 +1430,8 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   
   guint i;
 
-  pthread_mutex_t *pulse_server_mutex;
-  pthread_mutex_t *pulse_client_mutex;
+  GRecMutex *pulse_server_mutex;
+  GRecMutex *pulse_client_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return(NULL);
@@ -1563,11 +1443,11 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get some fields */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   default_client = (AgsPulseClient *) pulse_server->default_client;
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
     
   /* the default client */
   if(default_client == NULL){
@@ -1587,18 +1467,18 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* get context */
-  pthread_mutex_lock(pulse_client_mutex);
+  g_rec_mutex_lock(pulse_client_mutex);
 
   context = default_client->context;
 
-  pthread_mutex_unlock(pulse_client_mutex);
+  g_rec_mutex_unlock(pulse_client_mutex);
   
   if(context == NULL){
     g_warning("ags_pulse_server.c - can't open pulseaudio client");
   }
 
   /* the soundcard */
-  pulse_devout = ags_pulse_devout_new(application_context);
+  pulse_devout = ags_pulse_devout_new();
   
   g_object_set(AGS_PULSE_DEVOUT(pulse_devout),
 	       "pulse-client", default_client,
@@ -1643,14 +1523,14 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
 
 /**
  * ags_pulse_server_find_url:
- * @pulse_server: the #GList-struct containing #AgsPulseServer
+ * @pulse_server: (element-type AgsAudio.PulseServer) (transfer none): the #GList-struct containing #AgsPulseServer
  * @url: the url to find
  *
  * Find #AgsPulseServer by url.
  *
- * Returns: the #GList-struct containing a #AgsPulseServer matching @url or %NULL
+ * Returns: (element-type AgsAudio.PulseServer) (transfer none): the #GList-struct containing a #AgsPulseServer matching @url or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_pulse_server_find_url(GList *pulse_server,
@@ -1658,7 +1538,7 @@ ags_pulse_server_find_url(GList *pulse_server,
 {
   GList *retval;
   
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   retval = NULL;
   
@@ -1667,18 +1547,18 @@ ags_pulse_server_find_url(GList *pulse_server,
     pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server->data);
 
     /* check URL */
-    pthread_mutex_lock(pulse_server_mutex);
+    g_rec_mutex_lock(pulse_server_mutex);
     
     if(!g_ascii_strcasecmp(AGS_PULSE_SERVER(pulse_server->data)->url,
 			   url)){
       retval = pulse_server;
 
-      pthread_mutex_unlock(pulse_server_mutex);
+      g_rec_mutex_unlock(pulse_server_mutex);
     
       break;
     }
 
-    pthread_mutex_unlock(pulse_server_mutex);
+    g_rec_mutex_unlock(pulse_server_mutex);
     
     pulse_server = pulse_server->next;
   }
@@ -1693,9 +1573,9 @@ ags_pulse_server_find_url(GList *pulse_server,
  *
  * Find #AgsPulseClient by uuid.
  *
- * Returns: the #AgsPulseClient found or %NULL
+ * Returns: (transfer none): the #AgsPulseClient found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_find_client(AgsPulseServer *pulse_server,
@@ -1705,8 +1585,8 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
   
   GList *list_start, *list;
 
-  pthread_mutex_t *pulse_server_mutex;
-  pthread_mutex_t *pulse_client_mutex;
+  GRecMutex *pulse_server_mutex;
+  GRecMutex *pulse_client_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return(NULL);
@@ -1716,12 +1596,12 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get some fields */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   list =
     list_start = g_list_copy(pulse_server->client);
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 
   retval = NULL;
   
@@ -1730,18 +1610,18 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
     pulse_client_mutex = AGS_PULSE_CLIENT_GET_OBJ_MUTEX(list->data);
 
     /* check client UUID */
-    pthread_mutex_lock(pulse_client_mutex);
+    g_rec_mutex_lock(pulse_client_mutex);
     
     if(!g_ascii_strcasecmp(AGS_PULSE_CLIENT(list->data)->client_uuid,
 			   client_uuid)){
       retval = list->data;
 
-      pthread_mutex_unlock(pulse_client_mutex);
+      g_rec_mutex_unlock(pulse_client_mutex);
 
       break;
     }
 
-    pthread_mutex_unlock(pulse_client_mutex);
+    g_rec_mutex_unlock(pulse_client_mutex);
     
     list = list->next;
   }
@@ -1758,9 +1638,9 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
  *
  * Find #AgsPulsePort by uuid.
  *
- * Returns: the #AgsPulsePort found or %NULL
+ * Returns: (transfer none): the #AgsPulsePort found or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_pulse_server_find_port(AgsPulseServer *pulse_server,
@@ -1771,7 +1651,7 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
 
   gboolean success;
   
-  pthread_mutex_t *pulse_port_mutex;
+  GRecMutex *pulse_port_mutex;
 
   g_object_get(pulse_server,
 	       "pulse-client", &client_start,
@@ -1791,20 +1671,24 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
       pulse_port_mutex = AGS_PULSE_PORT_GET_OBJ_MUTEX(port->data);
       
       /* check port UUID */
-      pthread_mutex_lock(pulse_port_mutex);
+      g_rec_mutex_lock(pulse_port_mutex);
       
       success = (!g_ascii_strcasecmp(AGS_PULSE_PORT(port->data)->port_uuid,
 				     port_uuid)) ? TRUE: FALSE;
 
-      pthread_mutex_unlock(pulse_port_mutex);
+      g_rec_mutex_unlock(pulse_port_mutex);
       
       if(success){
+	AgsPulsePort *retval;
+
+	retval = port->data;
+	
 	g_list_free_full(client_start,
 			 g_object_unref);
 	g_list_free_full(port_start,
 			 g_object_unref);
 	
-	return(port->data);
+	return(retval);
       }
 
       /* iterate */
@@ -1831,13 +1715,13 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
  *
  * Add @pulse_client to @pulse_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_add_client(AgsPulseServer *pulse_server,
 			    GObject *pulse_client)
 {
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server) ||
      !AGS_IS_PULSE_CLIENT(pulse_client)){
@@ -1848,7 +1732,7 @@ ags_pulse_server_add_client(AgsPulseServer *pulse_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get some fields */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   if(g_list_find(pulse_server->client, pulse_client) == NULL){
     g_object_ref(pulse_client);
@@ -1856,7 +1740,7 @@ ags_pulse_server_add_client(AgsPulseServer *pulse_server,
 					  pulse_client);
   }
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 /**
@@ -1866,13 +1750,13 @@ ags_pulse_server_add_client(AgsPulseServer *pulse_server,
  *
  * Remove @pulse_client to @pulse_server
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
 			       GObject *pulse_client)
 {
-  pthread_mutex_t *pulse_server_mutex;
+  GRecMutex *pulse_server_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server) ||
      !AGS_IS_PULSE_CLIENT(pulse_client)){
@@ -1883,7 +1767,7 @@ ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
   /* get some fields */
-  pthread_mutex_lock(pulse_server_mutex);
+  g_rec_mutex_lock(pulse_server_mutex);
 
   if(g_list_find(pulse_server->client, pulse_client) != NULL){
     pulse_server->client = g_list_remove(pulse_server->client,
@@ -1891,7 +1775,7 @@ ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
     g_object_unref(pulse_client);
   }
 
-  pthread_mutex_unlock(pulse_server_mutex);
+  g_rec_mutex_unlock(pulse_server_mutex);
 }
 
 /**
@@ -1900,7 +1784,7 @@ ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
  *
  * Connect all clients.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
@@ -1909,7 +1793,7 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 
   gchar *client_name;
   
-  pthread_mutex_t *pulse_client_mutex;
+  GRecMutex *pulse_client_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
@@ -1946,7 +1830,7 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
  *
  * Disconnect all clients.
  *
- * Since: 2.1.14
+ * Since: 3.0.0
  */
 void
 ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server)
@@ -1983,16 +1867,35 @@ ags_pulse_server_do_poll_loop(void *ptr)
 {
   AgsPulseServer *pulse_server;
 
-#ifndef __APPLE__
+#ifdef AGS_WITH_RT
+  AgsPriority *priority;
+
   struct sched_param param;
+    
+  gchar *str;
 #endif
 
   pulse_server = (AgsPulseServer *) ptr;
     
   /* Declare ourself as a real time task */
-#ifndef __APPLE__
-  param.sched_priority = AGS_RT_PRIORITY;
-  
+#ifdef AGS_WITH_RT
+  priority = ags_priority_get_instance();
+    
+  /* Declare ourself as a real time task */
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_AUDIO);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
+      
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }
@@ -2003,7 +1906,7 @@ ags_pulse_server_do_poll_loop(void *ptr)
 		  NULL);
 #endif
 
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
 
   return(NULL);
 }
@@ -2011,29 +1914,27 @@ ags_pulse_server_do_poll_loop(void *ptr)
 void
 ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
 {
-  pthread_create(pulse_server->thread, NULL,
-		 ags_pulse_server_do_poll_loop, pulse_server);
+  pulse_server->thread = g_thread_new("Advanced Gtk+ Sequencer - pulseaudio server",
+				      ags_pulse_server_do_poll_loop,
+				      pulse_server);
 }
 
 /**
  * ags_pulse_server_new:
- * @application_context: the #AgsApplicationContext
  * @url: the URL as string
  *
  * Create a new instance of #AgsPulseServer.
  *
  * Returns: the new #AgsPulseServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPulseServer*
-ags_pulse_server_new(AgsApplicationContext *application_context,
-		     gchar *url)
+ags_pulse_server_new(gchar *url)
 {
   AgsPulseServer *pulse_server;
 
   pulse_server = (AgsPulseServer *) g_object_new(AGS_TYPE_PULSE_SERVER,
-						 "application-context", application_context,
 						 "url", url,
 						 NULL);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_property_collection_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <string.h>
 
@@ -237,7 +233,7 @@ ags_property_collection_editor_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsPropertyCollectionEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,

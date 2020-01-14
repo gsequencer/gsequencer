@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
 #define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
@@ -34,7 +34,7 @@
 #define AGS_IS_PATTERN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PATTERN))
 #define AGS_PATTERN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PATTERN, AgsPatternClass))
 
-#define AGS_PATTERN_GET_OBJ_MUTEX(obj) (((AgsPattern *) obj)->obj_mutex)
+#define AGS_PATTERN_GET_OBJ_MUTEX(obj) (&(((AgsPattern *) obj)->obj_mutex))
 
 #define AGS_PATTERN_DEFAULT_BPM (120.0)
 
@@ -44,7 +44,7 @@
 
 #define AGS_PATTERN_DEFAULT_LENGTH (65535.0 / AGS_PATTERN_TICS_PER_BEAT - AGS_PATTERN_MAXIMUM_NOTE_LENGTH)
 #define AGS_PATTERN_DEFAULT_JIFFIE (60.0 / AGS_PATTERN_DEFAULT_BPM / AGS_PATTERN_TICS_PER_BEAT)
-#define AGS_PATTERN_DEFAULT_DURATION (AGS_PATTERN_DEFAULT_LENGTH * AGS_PATTERN_DEFAULT_JIFFIE * USEC_PER_SEC)
+#define AGS_PATTERN_DEFAULT_DURATION (AGS_PATTERN_DEFAULT_LENGTH * AGS_PATTERN_DEFAULT_JIFFIE * AGS_USEC_PER_SEC)
 #define AGS_PATTERN_DEFAULT_OFFSET (64)
 
 typedef struct _AgsPattern AgsPattern;
@@ -69,8 +69,7 @@ struct _AgsPattern
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -95,8 +94,6 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-pthread_mutex_t* ags_pattern_get_class_mutex();
-
 gboolean ags_pattern_test_flags(AgsPattern *pattern, guint flags);
 void ags_pattern_set_flags(AgsPattern *pattern, guint flags);
 void ags_pattern_unset_flags(AgsPattern *pattern, guint flags);
@@ -111,5 +108,7 @@ gboolean ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 void ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 
 AgsPattern* ags_pattern_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_H__*/

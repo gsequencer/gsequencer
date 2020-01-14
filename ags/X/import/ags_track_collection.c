@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/import/ags_track_collection.h>
 #include <ags/X/import/ags_track_collection_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/import/ags_track_collection_mapper.h>
 
@@ -139,7 +136,7 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("midi-document",
 				    i18n_pspec("midi document of track collection"),
@@ -176,6 +173,9 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   track_collection->first_offset = 0;
   track_collection->bpm = 120.0;
+
+  track_collection->division = 96;
+  track_collection->tempo = 500000;
   
   track_collection->default_length = 4;
   
@@ -214,6 +214,8 @@ ags_track_collection_set_property(GObject *gobject,
       }
 
       track_collection->midi_doc = midi_document;
+
+      
     }
     break;
   default:
@@ -356,13 +358,14 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   xmlNode **node, **instrument_node, **sequence_node;
 
   GList *list, *list_start;
-  
+
+  xmlChar *str;
   gchar *instrument, *sequence;
 
   gdouble sec_val;
   guint denominator, numerator;
   guint i, j;
-
+  
   /* bpm and first_offset */
   header_node = NULL;
   
@@ -396,27 +399,35 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     }
   }
 
-  if(header_node == NULL ||
-     tempo_node == NULL){
+  if(header_node == NULL){
     return;
   }
+
+  str = xmlGetProp(header_node,
+		   "division");
+  track_collection->division = g_ascii_strtoull(str,
+						NULL,
+						10);
   
-  track_collection->first_offset = 0;
-  sec_val = ags_midi_parser_ticks_to_sec(NULL,
-					 (guint) g_ascii_strtoull(xmlGetProp(header_node,
-									     "division"),
-								  NULL,
-								  10),
-					 (gint) g_ascii_strtoll(xmlGetProp(header_node,
-									   "division"),
-								NULL,
-								10),
-					 (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
-									     "tempo"),
-								  NULL,
-								  10));
-  //  g_message("", sec_val);
-  track_collection->bpm = 60.0 / sec_val;
+  xmlFree(str);
+  
+  if(tempo_node != NULL){
+    track_collection->first_offset = 0;
+    
+    str = xmlGetProp(tempo_node,
+		     "tempo");
+    track_collection->tempo = g_ascii_strtoull(str,
+					       NULL,
+					       10);
+    xmlFree(str);
+    
+    sec_val = ags_midi_parser_ticks_to_sec(NULL,
+					   (guint) track_collection->division,
+					   (gint) track_collection->division,
+					   (guint) track_collection->tempo);
+    //  g_message("", sec_val);
+    track_collection->bpm = 60.0 / sec_val;
+  }
   //  g_message("bpm %f", track_collection->bpm);
 
   /* default length */
@@ -592,7 +603,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_STOP_SOUNDCARD                (ags_stop_soundcard_get_type())
 #define AGS_STOP_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STOP_SOUNDCARD, AgsStopSoundcard))
 #define AGS_STOP_SOUNDCARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_STOP_SOUNDCARD, AgsStopSoundcardClass))
@@ -38,8 +40,6 @@ typedef struct _AgsStopSoundcardClass AgsStopSoundcardClass;
 struct _AgsStopSoundcard
 {
   AgsTask task;
-
-  AgsApplicationContext *application_context;
 };
 
 struct _AgsStopSoundcardClass
@@ -49,7 +49,9 @@ struct _AgsStopSoundcardClass
 
 GType ags_stop_soundcard_get_type();
 
-AgsStopSoundcard* ags_stop_soundcard_new(AgsApplicationContext *application_context);
+AgsStopSoundcard* ags_stop_soundcard_new();
+
+G_END_DECLS
 
 #endif /*__AGS_STOP_SOUNDCARD_H__*/
 

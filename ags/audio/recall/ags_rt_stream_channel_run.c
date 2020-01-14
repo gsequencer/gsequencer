@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_rt_stream_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -218,11 +216,7 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
   rt_stream_channel_run = (AgsRtStreamChannelRun *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_done = AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->done;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(rt_stream_channel_run,
@@ -302,7 +296,7 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
  *
  * Returns: the new #AgsRtStreamChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamChannelRun*
 ags_rt_stream_channel_run_new(AgsChannel *source)

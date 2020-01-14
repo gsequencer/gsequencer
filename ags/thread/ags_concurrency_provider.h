@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,15 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-
+#include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_task_launcher.h>
 #include <ags/thread/ags_thread_pool.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CONCURRENCY_PROVIDER                    (ags_concurrency_provider_get_type())
 #define AGS_CONCURRENCY_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONCURRENCY_PROVIDER, AgsConcurrencyProvider))
@@ -47,12 +43,17 @@ struct _AgsConcurrencyProviderInterface
 {
   GTypeInterface ginterface;
 
-  AgsMutexManager* (*get_mutex_manager)(AgsConcurrencyProvider *concurrency_provider);
-
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
-  AgsThread* (*get_task_thread)(AgsConcurrencyProvider *concurrency_provider);
-  
+  void (*set_main_loop)(AgsConcurrencyProvider *concurrency_provider,
+			AgsThread *main_loop);
+
+  AgsTaskLauncher* (*get_task_launcher)(AgsConcurrencyProvider *concurrency_provider);
+  void (*set_task_launcher)(AgsConcurrencyProvider *concurrency_provider,
+			    AgsTaskLauncher *task_launcher);
+
   AgsThreadPool* (*get_thread_pool)(AgsConcurrencyProvider *concurrency_provider);
+  void (*set_thread_pool)(AgsConcurrencyProvider *concurrency_provider,
+			  AgsThreadPool *thread_pool);
   
   GList* (*get_worker)(AgsConcurrencyProvider *concurrency_provider);
   void (*set_worker)(AgsConcurrencyProvider *concurrency_provider,
@@ -61,15 +62,22 @@ struct _AgsConcurrencyProviderInterface
 
 GType ags_concurrency_provider_get_type();
 
-AgsMutexManager* ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider);
-
 AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+void ags_concurrency_provider_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+					    AgsThread *main_loop);
+
+AgsTaskLauncher* ags_concurrency_provider_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+void ags_concurrency_provider_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+						AgsTaskLauncher *task_launcher);
 
 AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+void ags_concurrency_provider_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+					      AgsThreadPool *thread_pool);
 
 GList* ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider);
 void ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,
 					 GList *worker);
+
+G_END_DECLS
 
 #endif /*__AGS_CONCURRENCY_PROVIDER_H__*/

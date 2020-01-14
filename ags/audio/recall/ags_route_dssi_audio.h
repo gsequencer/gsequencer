@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ROUTE_DSSI_AUDIO                (ags_route_dssi_audio_get_type())
 #define AGS_ROUTE_DSSI_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ROUTE_DSSI_AUDIO, AgsRouteDssiAudio))
 #define AGS_ROUTE_DSSI_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ROUTE_DSSI_AUDIO, AgsRouteDssiAudio))
@@ -55,5 +57,7 @@ struct _AgsRouteDssiAudioClass
 GType ags_route_dssi_audio_get_type();
 
 AgsRouteDssiAudio* ags_route_dssi_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_ROUTE_DSSI_AUDIO_H__*/

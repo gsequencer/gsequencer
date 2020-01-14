@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/machine/ags_oscillator.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SYNCSYNTH                (ags_syncsynth_get_type())
 #define AGS_SYNCSYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNCSYNTH, AgsSyncsynth))
@@ -86,5 +92,7 @@ void ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth);
 void ags_syncsynth_update(AgsSyncsynth *syncsynth);
 
 AgsSyncsynth* ags_syncsynth_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_SYNCSYNTH_H__*/

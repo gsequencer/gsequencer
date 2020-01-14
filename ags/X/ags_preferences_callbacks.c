@@ -19,15 +19,21 @@
 
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/object/ags_applicable.h>
-
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 gboolean
 ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
 				      gpointer user_data)
 {
-  AGS_WINDOW(AGS_PREFERENCES(widget)->window)->preferences = NULL;
+  AgsWindow *window;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+  window->preferences = NULL;
   
   return(FALSE);
 }
@@ -58,8 +64,18 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     }
   case GTK_RESPONSE_CANCEL:
     {
+      AgsWindow *window;
+
+      AgsApplicationContext *application_context;
+
+      application_context = ags_application_context_get_instance();
+  
+      window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
       AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-      AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
+
+      window->preferences = NULL;
+      
       gtk_widget_destroy(GTK_WIDGET(dialog));
     }
   }
@@ -74,7 +90,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   GList *list, *list_start;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(preferences)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(preferences)));
   list = g_list_nth(list,
 		    3);
   

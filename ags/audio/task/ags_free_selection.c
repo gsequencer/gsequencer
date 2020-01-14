@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,7 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of free selection"),
@@ -247,7 +247,7 @@ ags_free_selection_launch(AgsTask *task)
  *
  * Returns: the new #AgsFreeSelection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFreeSelection*
 ags_free_selection_new(AgsNotation *notation)

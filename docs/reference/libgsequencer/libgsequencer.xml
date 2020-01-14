@@ -37,6 +37,7 @@
       <xi:include href="xml/ags_ui_provider.xml"/>
       <xi:include href="xml/ags_xorg_application_context.xml"/>
 
+      <xi:include href="xml/ags_animation_window.xml"/>
       <xi:include href="xml/ags_window.xml"/>
       <xi:include href="xml/ags_window_callbacks.xml"/>
 
@@ -90,7 +91,7 @@
 
       <xi:include href="xml/ags_performance_preferences.xml"/>
 
-      <xi:include href="xml/ags_server_preferences.xml"/>
+      <xi:include href="xml/ags_osc_server_preferences.xml"/>
 
       <xi:include href="xml/ags_plugin_preferences.xml"/>      
     </chapter>
@@ -200,6 +201,9 @@
       <xi:include href="xml/ags_envelope_info_callbacks.xml"/>
       <xi:include href="xml/ags_pattern_envelope.xml"/>
       <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
+
+      <xi:include href="xml/ags_wave_export_dialog.xml"/>
+      <xi:include href="xml/ags_wave_export_dialog_callbacks.xml"/>
     </chapter>      
 
     <chapter id="editor-misc">
@@ -237,6 +241,8 @@
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_crop_note_dialog.xml"/>
       <xi:include href="xml/ags_crop_note_dialog_callbacks.xml"/>    
+      <xi:include href="xml/ags_position_notation_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_notation_cursor_dialog_callbacks.xml"/>
     </chapter>
     
     <chapter id="automation-editor">
@@ -263,6 +269,8 @@
       <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_select_acceleration_dialog.xml"/>
       <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_position_automation_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_automation_cursor_dialog_callbacks.xml"/>
     </chapter>
 
     <chapter id="wave-editor">
@@ -288,6 +296,8 @@
       
       <xi:include href="xml/ags_select_buffer_dialog.xml"/>
       <xi:include href="xml/ags_select_buffer_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_position_wave_cursor_dialog.xml"/>
+      <xi:include href="xml/ags_position_wave_cursor_dialog_callbacks.xml"/>
     </chapter>
 
     <chapter id="machine">
@@ -343,14 +353,21 @@
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
+      <xi:include href="xml/ags_pitch_sampler.xml"/>
       <xi:include href="xml/ags_spectrometer.xml"/>
       <xi:include href="xml/ags_spectrometer_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
+      <xi:include href="xml/ags_fm_synth.xml"/>
+      <xi:include href="xml/ags_fm_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_fm_synth_input_line.xml"/>
+      <xi:include href="xml/ags_fm_synth_input_pad.xml"/>
       <xi:include href="xml/ags_syncsynth.xml"/>
       <xi:include href="xml/ags_syncsynth_callbacks.xml"/>
+      <xi:include href="xml/ags_fm_syncsynth.xml"/>
+      <xi:include href="xml/ags_fm_syncsynth_callbacks.xml"/>
     </chapter>
     
     <chapter id="file">
@@ -359,18 +376,7 @@
 	The persistency layer.
       </para>
       
-      <xi:include href="xml/ags_gui_file_xml.xml"/>
       <xi:include href="xml/ags_simple_file.xml"/>
-    </chapter>
-
-    <chapter id="thread">
-      <title>GUI threads</title>
-      <para>
-	Threads related to UI.
-      </para>
-      
-      <xi:include href="xml/ags_gui_thread.xml"/>
-      <xi:include href="xml/ags_simple_autosave_thread.xml"/>
     </chapter>
 
     <chapter id="task">
@@ -383,19 +389,6 @@
       <xi:include href="xml/ags_simple_file_write.xml"/>
     </chapter>
 
-    <chapter id="various">
-      <title>Various</title>
-      <para>
-	Unrelated/unimplemented widgets.
-      </para>
-      
-      <xi:include href="xml/ags_file_selection.xml"/>
-      <xi:include href="xml/ags_file_selection_callbacks.xml"/>
-      <xi:include href="xml/ags_history_browser.xml"/>
-      <xi:include href="xml/ags_inline_player.xml"/>    
-      <xi:include href="xml/ags_sf2_chooser.xml"/>
-      <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>  
-    </chapter>
   </part>
   
   <chapter id="object-tree">

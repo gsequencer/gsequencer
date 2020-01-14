@@ -29,9 +29,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/X/ags_window.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_XORG_APPLICATION_CONTEXT                (ags_xorg_application_context_get_type())
 #define AGS_XORG_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContext))
@@ -40,55 +38,79 @@
 #define AGS_IS_XORG_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XORG_APPLICATION_CONTEXT))
 #define AGS_XORG_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContextClass))
 
-#define AGS_XORG_VERSION "2.1.0"
-#define AGS_XORG_BUILD_ID "Fri Nov 30 07:15:57 UTC 2018"
+#define AGS_XORG_VERSION "3.0.0"
+#define AGS_XORG_BUILD_ID "Thu Nov  7 01:44:21 UTC 2019"
 
 typedef struct _AgsXorgApplicationContext AgsXorgApplicationContext;
 typedef struct _AgsXorgApplicationContextClass AgsXorgApplicationContextClass;
-
-typedef enum{
-  AGS_XORG_APPLICATION_CONTEXT_SHOW_GUI      = 1,
-}AgsXorgApplicationContextFlags;
 
 struct _AgsXorgApplicationContext
 {
   AgsApplicationContext application_context;
 
-  volatile gboolean gui_ready;
-  volatile gboolean show_animation;
-  volatile gboolean file_ready;
-
-  GList *collected_task;
-  GList *task_completion;
+  guint flags;
   
   AgsThreadPool *thread_pool;
 
-  AgsPollingThread *polling_thread;
-
   GList *worker;
+
+  GMainContext *server_main_context;
+
+  gboolean is_operating;
+
+  AgsServerStatus *server_status;
+  
+  AgsRegistry *registry;
+  
+  GList *server;
+
+  GMainContext *audio_main_context;
+  GMainContext *osc_server_main_context;
   
   GObject *default_soundcard;
 
   AgsThread *default_soundcard_thread;
   AgsThread *default_export_thread;
-
-  AgsThread *gui_thread;
-  
-  AgsThread *autosave_thread;
-
-  AgsServer *server;
   
   GList *soundcard;
   GList *sequencer;
 
-  GList *sound_server;
   GList *audio;
 
-  GList *osc_server;
-  
-  AgsWindow *window;
+  GList *sound_server;
 
-  GtkWindow *animation_window;
+  GList *osc_server;
+
+  gboolean gui_ready;
+  gboolean show_animation;
+  gboolean file_ready;
+
+  gdouble gui_scale_factor;
+  
+  GList *task;
+
+  GtkWidget *animation_window;
+  GtkWidget *window;
+  GtkWidget *automation_window;
+  GtkWidget *wave_window;
+  GtkWidget *sheet_window;
+
+  GtkWidget *export_window;
+
+  GtkWidget *preferences;
+  
+  GtkWidget *history_browser;
+  GtkWidget *midi_browser;
+  GtkWidget *sample_browser;
+
+  GtkWidget *midi_import_wizard;
+  GtkWidget *midi_export_wizard;
+
+  GList *machine;
+
+  GtkWidget *composite_editor;
+
+  GtkWidget *navigation;
 };
 
 struct _AgsXorgApplicationContextClass
@@ -98,16 +120,11 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-void ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context);
-
-void ags_xorg_application_schedule_task(AgsXorgApplicationContext *xorg_application_context,
-					GObject *task);
-void ags_xorg_application_schedule_task_list(AgsXorgApplicationContext *xorg_application_context,
-					     GList *task);
-
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
 gboolean ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
+
+G_END_DECLS
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/

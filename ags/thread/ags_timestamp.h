@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #define AGS_TYPE_TIMESTAMP                (ags_timestamp_get_type())
 #define AGS_TIMESTAMP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMESTAMP, AgsTimestamp))
 #define AGS_TIMESTAMP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TIMESTAMP, AgsTimestampClass))
@@ -32,7 +30,7 @@
 #define AGS_IS_TIMESTAMP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TIMESTAMP))
 #define AGS_TIMESTAMP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TIMESTAMP, AgsTimestampClass))
 
-#define AGS_TIMESTAMP_GET_OBJ_MUTEX(obj) (((AgsTimestamp *) obj)->obj_mutex)
+#define AGS_TIMESTAMP_GET_OBJ_MUTEX(obj) (&(((AgsTimestamp *) obj)->obj_mutex))
 
 typedef struct _AgsTimestamp AgsTimestamp;
 typedef struct _AgsTimestampClass AgsTimestampClass;
@@ -58,8 +56,7 @@ struct _AgsTimestamp
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   union{
     struct _unix{
@@ -80,8 +77,6 @@ struct _AgsTimestampClass
 };
 
 GType ags_timestamp_get_type(void);
-
-pthread_mutex_t* ags_timestamp_get_class_mutex();
 
 /* flags */
 gboolean ags_timestamp_test_flags(AgsTimestamp *timestamp,

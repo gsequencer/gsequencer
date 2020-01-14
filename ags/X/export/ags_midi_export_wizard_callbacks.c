@@ -19,9 +19,6 @@
 
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 
 void
@@ -36,9 +33,9 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     {
       if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
 	/* show/hide */
-	gtk_widget_hide(midi_export_wizard->file_chooser->parent);
+	gtk_widget_hide(gtk_widget_get_parent(midi_export_wizard->file_chooser));
 
-	gtk_widget_show(midi_export_wizard->machine_collection->parent);
+	gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->machine_collection));
 	gtk_widget_show_all(midi_export_wizard->machine_collection);
 
 	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
@@ -53,9 +50,9 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER;
 	midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
 
-	gtk_widget_hide(midi_export_wizard->machine_collection->parent);
+	gtk_widget_hide(gtk_widget_get_parent(midi_export_wizard->machine_collection));
 
-	gtk_widget_show(midi_export_wizard->file_chooser->parent);
+	gtk_widget_show(gtk_widget_get_parent(midi_export_wizard->file_chooser));
 	gtk_widget_show_all(midi_export_wizard->file_chooser);
       }
     }

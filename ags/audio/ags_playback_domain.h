@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PLAYBACK_DOMAIN                (ags_playback_domain_get_type())
 #define AGS_PLAYBACK_DOMAIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomain))
@@ -36,7 +36,7 @@
 #define AGS_IS_PLAYBACK_DOMAIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAYBACK_DOMAIN))
 #define AGS_PLAYBACK_DOMAIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomainClass))
 
-#define AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(obj) (((AgsPlaybackDomain *) obj)->obj_mutex)
+#define AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(obj) (&(((AgsPlaybackDomain *) obj)->obj_mutex))
 
 typedef struct _AgsPlaybackDomain AgsPlaybackDomain;
 typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
@@ -62,8 +62,7 @@ struct _AgsPlaybackDomain
 
   guint flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio;
 
@@ -79,8 +78,6 @@ struct _AgsPlaybackDomainClass
 };
 
 GType ags_playback_domain_get_type();
-
-pthread_mutex_t* ags_playback_domain_get_class_mutex();
 
 gboolean ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, guint flags);
 void ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, guint flags);
@@ -101,5 +98,7 @@ void ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
 
 /* instance */
 AgsPlaybackDomain* ags_playback_domain_new(GObject *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAYBACK_DOMAIN_H__*/

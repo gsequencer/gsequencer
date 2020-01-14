@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_channel_run.h>
@@ -130,11 +128,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   volume_audio_signal = (AgsVolumeAudioSignal *) recall;
     
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -256,7 +250,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsVolumeAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeAudioSignal*
 ags_volume_audio_signal_new(AgsAudioSignal *source)

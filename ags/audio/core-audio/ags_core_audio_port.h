@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CORE_AUDIO_PORT                (ags_core_audio_port_get_type())
 #define AGS_CORE_AUDIO_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPort))
 #define AGS_CORE_AUDIO_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPort))
@@ -44,7 +46,7 @@
 #define AGS_IS_CORE_AUDIO_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_PORT))
 #define AGS_CORE_AUDIO_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPortClass))
 
-#define AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(obj) (((AgsCoreAudioPort *) obj)->obj_mutex)
+#define AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioPort *) obj)->obj_mutex))
 
 #define AGS_CORE_AUDIO_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
@@ -80,8 +82,7 @@ struct _AgsCoreAudioPort
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *core_audio_client;
 
@@ -143,8 +144,6 @@ struct _AgsCoreAudioPortClass
 
 GType ags_core_audio_port_get_type();
 
-pthread_mutex_t* ags_core_audio_port_get_class_mutex();
-
 gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags);
 void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags);
 void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags);
@@ -173,5 +172,7 @@ void ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port
 guint ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port);
 
 AgsCoreAudioPort* ags_core_audio_port_new(GObject *core_audio_client);
+
+G_END_DECLS
 
 #endif /*__AGS_CORE_AUDIO_PORT_H__*/

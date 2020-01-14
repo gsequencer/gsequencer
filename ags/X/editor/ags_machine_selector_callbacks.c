@@ -128,7 +128,7 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
   if(response == GTK_RESPONSE_ACCEPT){
     /* retrieve machine */
     machine = NULL;
-    vbox = (GtkVBox *) GTK_DIALOG(machine_selection)->vbox;
+    vbox = (GtkVBox *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
 
     if(response == GTK_RESPONSE_ACCEPT){
       list_start =

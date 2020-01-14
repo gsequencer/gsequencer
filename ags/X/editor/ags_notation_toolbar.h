@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,12 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTATION_TOOLBAR                (ags_notation_toolbar_get_type())
 #define AGS_NOTATION_TOOLBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_TOOLBAR, AgsNotationToolbar))
@@ -80,5 +86,7 @@ GType ags_notation_toolbar_get_type(void);
 GtkMenu* ags_notation_toolbar_tool_popup_new(AgsNotationToolbar *notation_toolbar);
 
 AgsNotationToolbar* ags_notation_toolbar_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_TOOLBAR_H__*/

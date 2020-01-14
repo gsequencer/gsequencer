@@ -72,7 +72,7 @@ ags_plugin_base_init(AgsPluginInterface *ginterface)
  *
  * Returns: the plugins name
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_plugin_get_name(AgsPlugin *plugin)
@@ -95,7 +95,7 @@ ags_plugin_get_name(AgsPlugin *plugin)
  *
  * Set the name of the plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
@@ -116,7 +116,7 @@ ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
  *
  * Returns: the plugins version
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_plugin_get_version(AgsPlugin *plugin)
@@ -139,7 +139,7 @@ ags_plugin_get_version(AgsPlugin *plugin)
  *
  * Set the version of the plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
@@ -160,7 +160,7 @@ ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
  *
  * Returns: the plugins build id
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_plugin_get_build_id(AgsPlugin *plugin)
@@ -183,7 +183,7 @@ ags_plugin_get_build_id(AgsPlugin *plugin)
  *
  * Set the build id of the plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
@@ -204,7 +204,7 @@ ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
  *
  * Returns: the plugins xml type
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_plugin_get_xml_type(AgsPlugin *plugin)
@@ -227,7 +227,7 @@ ags_plugin_get_xml_type(AgsPlugin *plugin)
  *
  * Set the build id of the plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
@@ -246,9 +246,9 @@ ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
  *
  * Retrieve the ports of the plugin.
  *
- * Returns: the plugins ports
+ * Returns: (element-type GObject) (transfer full): the plugins ports
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_plugin_get_ports(AgsPlugin *plugin)
@@ -267,11 +267,11 @@ ags_plugin_get_ports(AgsPlugin *plugin)
 /**
  * ags_plugin_set_ports:
  * @plugin: an @AgsPlugin
- * @ports: the build id of plugin
+ * @ports: (element-type GObject) (transfer none): the build id of plugin
  *
  * Set the build id of the plugin.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
@@ -286,16 +286,16 @@ ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
 
 /**
  * ags_plugin_read:
- * @file: the #AgsFile
+ * @file: the #GObject
  * @node: the node
  * @plugin: the #AgsPlugin
  *
  * Read of file.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
-ags_plugin_read(AgsFile *file,
+ags_plugin_read(GObject *file,
 		xmlNode *node,
 		AgsPlugin *plugin)
 {
@@ -310,28 +310,28 @@ ags_plugin_read(AgsFile *file,
 
 /**
  * ags_plugin_write:
- * @file: the #AgsFile
+ * @file: the #GObject
  * @parent: the parent node
  * @plugin: the #AgsPlugin
  *
  * Write to file.
  *
- * Returns: the new node you created
+ * Returns: (transfer none): the new node you created
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlNode*
-ags_plugin_write(AgsFile *file,
+ags_plugin_write(GObject *file,
 		 xmlNode *parent,
 		 AgsPlugin *plugin)
 {
   AgsPluginInterface *plugin_interface;
-  xmlNode *ret_val;
+  xmlNode *retval;
 
   g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
   g_return_val_if_fail(plugin_interface->write, NULL);
-  ret_val = plugin_interface->write(file, parent, plugin);
+  retval = plugin_interface->write(file, parent, plugin);
 
-  return(ret_val);
+  return(retval);
 }

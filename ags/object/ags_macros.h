@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 #define AGS_DECLARE_INTERFACE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, PrerequisiteName) \
   GType module_obj_name##_get_type (void);				\
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS					\
@@ -39,5 +41,7 @@
     return G_TYPE_INSTANCE_GET_INTERFACE (ptr, module_obj_name##_get_type (), ModuleObjName##Interface); } \
   G_GNUC_END_IGNORE_DEPRECATIONS
 
+
+G_END_DECLS
 
 #endif /*__AGS_MACROS_H__*/

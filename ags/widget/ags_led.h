@@ -44,14 +44,14 @@ typedef enum{
 
 struct _AgsLed
 {
-  GtkBin bin;
+  GtkWidget widget;
 
   guint flags;
 };
 
 struct _AgsLedClass
 {
-  GtkBinClass bin;
+  GtkWidgetClass widget;
 };
 
 GType ags_led_get_type(void);

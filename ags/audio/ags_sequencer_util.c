@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,40 +26,38 @@
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 /**
+ * SECTION:ags_sequencer_util
+ * @short_description: sequencer util
+ * @title: AgsSequencerUtil
+ * @section_id:
+ * @include: ags/audio/ags_sequencer_util.h
+ *
+ * Sequencer utility functions.
+ */
+
+/**
  * ags_sequencer_util_get_obj_mutex:
  * @sequencer: the #GObject sub-type implementing #AgsSoundcard
  * 
  * Get object mutex of @sequencer.
  * 
- * Returns: pthread_mutex_t pointer
+ * Returns: (transfer none): GRecMutex pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-pthread_mutex_t*
+GRecMutex*
 ags_sequencer_util_get_obj_mutex(GObject *sequencer)
 {
-  pthread_mutex_t *obj_mutex;
+  GRecMutex *obj_mutex;
 
   obj_mutex = NULL;
   
   if(AGS_IS_MIDIIN(sequencer)){
-    pthread_mutex_lock(ags_midiin_get_class_mutex());
-
-    obj_mutex = AGS_MIDIIN(sequencer)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_midiin_get_class_mutex());
+    obj_mutex = AGS_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else if(AGS_IS_JACK_MIDIIN(sequencer)){
-    pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-
-    obj_mutex = AGS_JACK_MIDIIN(sequencer)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+    obj_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
-    pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-
-    obj_mutex = AGS_CORE_AUDIO_MIDIIN(sequencer)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+    obj_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(sequencer);
   }else{
     g_warning("unknown sequencer implementation");
   }

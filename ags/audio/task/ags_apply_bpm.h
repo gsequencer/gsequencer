@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLY_BPM                (ags_apply_bpm_get_type())
 #define AGS_APPLY_BPM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_BPM, AgsApplyBpm))
@@ -53,5 +55,7 @@ GType ags_apply_bpm_get_type();
 
 AgsApplyBpm* ags_apply_bpm_new(GObject *scope,
 			       gdouble bpm);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLY_BPM_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 
 #include <ladspa.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LADSPA_PLUGIN                (ags_ladspa_plugin_get_type())
 #define AGS_LADSPA_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LADSPA_PLUGIN, AgsLadspaPlugin))
 #define AGS_LADSPA_PLUGIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LADSPA_PLUGIN, AgsLadspaPluginClass))
@@ -56,5 +58,7 @@ struct _AgsLadspaPluginClass
 GType ags_ladspa_plugin_get_type(void);
 
 AgsLadspaPlugin* ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index);
+
+G_END_DECLS
 
 #endif /*__AGS_LADSPA_PLUGIN_H__*/

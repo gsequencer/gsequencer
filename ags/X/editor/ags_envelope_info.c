@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/editor/ags_envelope_info.h>
 #include <ags/X/editor/ags_envelope_info_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -345,28 +341,30 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   while(notation != NULL){
     guint audio_channel;
 
-    pthread_mutex_t *notation_mutex;
+    GRecMutex *notation_mutex;
 
     /* get notation mutex */
-    pthread_mutex_lock(ags_notation_get_class_mutex());
-  
-    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_notation_get_class_mutex());
+    notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
 
     /**/
-    pthread_mutex_lock(notation_mutex);
+    g_rec_mutex_lock(notation_mutex);
 
     selection =
-      start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+      start_selection = g_list_copy_deep(AGS_NOTATION(notation->data)->selection,
+					 (GCopyFunc) g_object_ref,
+					 NULL);
 
-    pthread_mutex_unlock(notation_mutex);
+    g_rec_mutex_unlock(notation_mutex);
 
     if(envelope_info->selection == NULL){
-      envelope_info->selection = ags_list_util_copy_and_ref(selection);
+      envelope_info->selection = g_list_copy_deep(start_selection,
+						  (GCopyFunc) g_object_ref,
+						  NULL);
     }else{
       envelope_info->selection = g_list_concat(envelope_info->selection,
-					       ags_list_util_copy_and_ref(selection));
+					       g_list_copy_deep(start_selection,
+								(GCopyFunc) g_object_ref,
+								NULL));
     }
 
     g_object_get(AGS_NOTATION(notation->data),
@@ -376,19 +374,15 @@ ags_envelope_info_reset(AgsApplicable *applicable)
     while(selection != NULL){
       AgsNote *current_note;
       
-      pthread_mutex_t *note_mutex;
+      GRecMutex *note_mutex;
       
       current_note = AGS_NOTE(selection->data);
 
       /* get note mutex */
-      pthread_mutex_lock(ags_note_get_class_mutex());
-  
-      note_mutex = current_note->obj_mutex;
-  
-      pthread_mutex_unlock(ags_note_get_class_mutex());
+      note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current_note);
 
       /* apply */
-      pthread_mutex_lock(note_mutex);
+      g_rec_mutex_lock(note_mutex);
 
       gtk_list_store_append(model,
 			    &iter);
@@ -399,12 +393,13 @@ ags_envelope_info_reset(AgsApplicable *applicable)
 			 AGS_ENVELOPE_INFO_COLUMN_NOTE_Y, current_note->y,
 			 -1);
       
-      pthread_mutex_unlock(note_mutex);
+      g_rec_mutex_unlock(note_mutex);
       
       selection = selection->next;
     }
 
-    g_list_free(start_selection);
+    g_list_free_full(start_selection,
+		     g_object_unref);
 
     notation = notation->next;
   }
@@ -453,7 +448,7 @@ ags_envelope_info_y_label_func(gdouble value,
  * 
  * Plot envelope.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
@@ -512,16 +507,12 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
       if(do_plot){
 	gdouble ratio;
 	
-	pthread_mutex_t *note_mutex;
+	GRecMutex *note_mutex;
       
 	note = AGS_NOTE(selection->data);
 
 	/* get note mutex */
-	pthread_mutex_lock(ags_note_get_class_mutex());
-  
-	note_mutex = note->obj_mutex;
-  
-	pthread_mutex_unlock(ags_note_get_class_mutex());
+	note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
 	/* AgsPlot struct */
 	plot = ags_plot_alloc(5, 0, 0);
@@ -548,7 +539,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	plot->point_color[4][2] = 1.0;
 
 	/* set plot points */
-	pthread_mutex_lock(note_mutex);
+	g_rec_mutex_lock(note_mutex);
 	
 	z = ags_complex_get(&(note->ratio));
 	ratio = cimag(z);
@@ -582,7 +573,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	plot->point[4][0] = offset + default_width * creal(z);
 	plot->point[4][1] = default_height * (cimag(z) + ratio);
 
-	pthread_mutex_unlock(note_mutex);
+	g_rec_mutex_unlock(note_mutex);
 	
 	/* add plot */
 	ags_cartesian_add_plot(cartesian,
@@ -610,7 +601,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
  *
  * Returns: a new #AgsEnvelopeInfo
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeInfo*
 ags_envelope_info_new()

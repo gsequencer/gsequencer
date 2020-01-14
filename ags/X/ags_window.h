@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
@@ -34,7 +38,9 @@
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_preferences.h>
-#include <ags/X/ags_history_browser.h>
+
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
 #define AGS_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WINDOW, AgsWindow))
@@ -66,12 +72,7 @@ struct _AgsWindow
   gchar *filename;
   
   char *name;
-
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
   
-  GObject *soundcard;
-
   AgsMenuBar *menu_bar;
   AgsContextMenu *context_menu;
   
@@ -96,7 +97,6 @@ struct _AgsWindow
   GtkWidget *midi_file_chooser;
   
   AgsPreferences *preferences;
-  AgsHistoryBrowser *history_browser;
 };
 
 struct _AgsWindowClass
@@ -135,6 +135,8 @@ void ags_window_show_error(AgsWindow *window,
 
 gboolean ags_window_load_file_timeout(AgsWindow *window);
 
-AgsWindow* ags_window_new(GObject *application_context);
+AgsWindow* ags_window_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WINDOW_H__*/

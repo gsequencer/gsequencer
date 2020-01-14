@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,6 +57,7 @@ typedef enum{
   AGS_DIAL_MOTION_CAPTURING_INIT  = 1 <<  4,
   AGS_DIAL_MOTION_CAPTURING       = 1 <<  5,
   AGS_DIAL_SEEMLESS_MODE          = 1 <<  6,
+  AGS_DIAL_INVERSE_LIGHT          = 1 <<  7,
 }AgsDialFlags;
 
 typedef enum{
@@ -100,8 +101,6 @@ struct _AgsDialClass
 };
 
 GType ags_dial_get_type(void);
-
-void ags_dial_draw(AgsDial *dial);
 
 void ags_dial_value_changed(AgsDial *dial);
 

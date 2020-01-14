@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/file/ags_sfz_file.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/ags_diatonic_scale.h>
 
@@ -85,6 +83,9 @@ GList* ags_sfz_file_get_resource_by_index(AgsSoundContainer *sound_container,
 GList* ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container);
 void ags_sfz_file_close(AgsSoundContainer *sound_container);
 
+gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
+						   gchar **iter);
+
 /**
  * SECTION:ags_sfz_file
  * @short_description: SFZ file
@@ -107,8 +108,7 @@ enum{
 
 static gpointer ags_sfz_file_parent_class = NULL;
 
-static pthread_mutex_t ags_sfz_file_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
+static GMutex regex_mutex;
 
 GType
 ags_sfz_file_get_type()
@@ -184,7 +184,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The assigned soundcard.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of sfz_file"),
@@ -200,7 +200,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The assigned filename.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -216,7 +216,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The assigned mode.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("mode",
 				   i18n_pspec("the mode"),
@@ -232,7 +232,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The containing groups.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("group",
 				    i18n_pspec("containing group"),
@@ -247,7 +247,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The containing regions.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("region",
 				    i18n_pspec("containing region"),
@@ -262,7 +262,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
    *
    * The containing samples.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("sample",
 				    i18n_pspec("containing sample"),
@@ -326,27 +326,10 @@ ags_sfz_file_init(AgsSFZFile *sfz_file)
 {
   guint i;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   sfz_file->flags = 0;
 
   /* add audio file mutex */
-  sfz_file->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  sfz_file->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  g_rec_mutex_init(&(sfz_file->obj_mutex));
 
   /* uuid */
   sfz_file->uuid = ags_uuid_alloc();
@@ -394,7 +377,7 @@ ags_sfz_file_set_property(GObject *gobject,
 {
   AgsSFZFile *sfz_file;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   sfz_file = AGS_SFZ_FILE(gobject);
 
@@ -408,10 +391,10 @@ ags_sfz_file_set_property(GObject *gobject,
       
     soundcard = (GObject *) g_value_get_object(value);
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     if(soundcard == ((GObject *) sfz_file->soundcard)){
-      pthread_mutex_unlock(sfz_file_mutex);
+      g_rec_mutex_unlock(sfz_file_mutex);
 
       return;
     }
@@ -426,7 +409,7 @@ ags_sfz_file_set_property(GObject *gobject,
       
     sfz_file->soundcard = (GObject *) soundcard;
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_FILENAME:
@@ -444,11 +427,11 @@ ags_sfz_file_set_property(GObject *gobject,
       
     mode = (gchar *) g_value_get_string(value);
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
       
     sfz_file->mode = mode;
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
   }
   break;
   case PROP_GROUP:
@@ -457,11 +440,11 @@ ags_sfz_file_set_property(GObject *gobject,
 
     group = g_value_get_pointer(value);
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     if(group == NULL ||
        g_list_find(sfz_file->group, group) != NULL){
-      pthread_mutex_unlock(sfz_file_mutex);
+      g_rec_mutex_unlock(sfz_file_mutex);
 
       return;	
     }
@@ -470,7 +453,7 @@ ags_sfz_file_set_property(GObject *gobject,
     sfz_file->group = g_list_prepend(sfz_file->group,
 				     group);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_REGION:
@@ -479,11 +462,11 @@ ags_sfz_file_set_property(GObject *gobject,
 
     region = g_value_get_pointer(value);
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     if(region == NULL ||
        g_list_find(sfz_file->region, region) != NULL){
-      pthread_mutex_unlock(sfz_file_mutex);
+      g_rec_mutex_unlock(sfz_file_mutex);
 
       return;	
     }
@@ -492,7 +475,7 @@ ags_sfz_file_set_property(GObject *gobject,
     sfz_file->region = g_list_prepend(sfz_file->region,
 				      region);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_SAMPLE:
@@ -501,11 +484,11 @@ ags_sfz_file_set_property(GObject *gobject,
 
     sample = g_value_get_pointer(value);
 
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     if(sample == NULL ||
        g_list_find(sfz_file->sample, sample) != NULL){
-      pthread_mutex_unlock(sfz_file_mutex);
+      g_rec_mutex_unlock(sfz_file_mutex);
 
       return;	
     }
@@ -514,7 +497,7 @@ ags_sfz_file_set_property(GObject *gobject,
     sfz_file->sample = g_list_prepend(sfz_file->sample,
 				      sample);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   default:
@@ -531,7 +514,7 @@ ags_sfz_file_get_property(GObject *gobject,
 {
   AgsSFZFile *sfz_file;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   sfz_file = AGS_SFZ_FILE(gobject);
 
@@ -541,62 +524,62 @@ ags_sfz_file_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_object(value, sfz_file->soundcard);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_FILENAME:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_string(value, sfz_file->filename);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_MODE:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_string(value, sfz_file->mode);
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_GROUP:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_pointer(value, g_list_copy_deep(sfz_file->group,
 						(GCopyFunc) g_object_ref,
 						NULL));
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_REGION:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_pointer(value, g_list_copy_deep(sfz_file->region,
 						(GCopyFunc) g_object_ref,
 						NULL));
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   case PROP_SAMPLE:
   {
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     g_value_set_pointer(value, g_list_copy_deep(sfz_file->sample,
 						(GCopyFunc) g_object_ref,
 						NULL));
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
   break;
   default:
@@ -643,12 +626,6 @@ ags_sfz_file_finalize(GObject *gobject)
   AgsSFZFile *sfz_file;
 
   sfz_file = AGS_SFZ_FILE(gobject);
-
-  pthread_mutex_destroy(sfz_file->obj_mutex);
-  free(sfz_file->obj_mutex);
-
-  pthread_mutexattr_destroy(sfz_file->obj_mutexattr);
-  free(sfz_file->obj_mutexattr);
   
   if(sfz_file->soundcard != NULL){
     g_object_unref(sfz_file->soundcard);
@@ -690,7 +667,7 @@ ags_sfz_file_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   sfz_file = AGS_SFZ_FILE(connectable);
 
@@ -698,11 +675,11 @@ ags_sfz_file_get_uuid(AgsConnectable *connectable)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   /* get UUID */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   ptr = sfz_file->uuid;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
   
   return(ptr);
 }
@@ -720,19 +697,10 @@ ags_sfz_file_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *sfz_file_mutex;
-
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  /* get audio file mutex */
-  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
-
   /* check is ready */
-  pthread_mutex_lock(sfz_file_mutex);
-  
-  is_ready = (((AGS_SFZ_FILE_ADDED_TO_REGISTRY & (sfz_file->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(sfz_file_mutex);
+  is_ready = ags_sfz_file_test_flags(sfz_file, AGS_SFZ_FILE_ADDED_TO_REGISTRY);
 
   return(is_ready);
 }
@@ -816,19 +784,10 @@ ags_sfz_file_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *sfz_file_mutex;
-
   sfz_file = AGS_SFZ_FILE(connectable);
 
-  /* get audio file mutex */
-  sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
-
   /* check is connected */
-  pthread_mutex_lock(sfz_file_mutex);
-
-  is_connected = (((AGS_SFZ_FILE_CONNECTED & (sfz_file->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(sfz_file_mutex);
+  is_connected = ags_sfz_file_test_flags(sfz_file, AGS_SFZ_FILE_CONNECTED);
 
   return(is_connected);
 }
@@ -872,7 +831,7 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
 
   gboolean retval;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -880,11 +839,11 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   /* get some fields */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   old_filename = sfz_file->filename;
   
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   /* close current */
   if(old_filename != NULL){
@@ -906,11 +865,11 @@ ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename)
   file = fopen(filename,
 	       "r");
 
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   sfz_file->file = file;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   if(file == NULL){
     g_message("failed to open file");
@@ -943,7 +902,7 @@ ags_sfz_file_get_nesting_level(AgsSoundContainer *sound_container)
 
   guint nesting_level;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -951,11 +910,11 @@ ags_sfz_file_get_nesting_level(AgsSoundContainer *sound_container)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   /* get nesting level */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   nesting_level = sfz_file->nesting_level;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
   
   return(nesting_level);
 }
@@ -967,7 +926,7 @@ ags_sfz_file_get_level_id(AgsSoundContainer *sound_container)
 
   gchar *level_id;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -975,11 +934,11 @@ ags_sfz_file_get_level_id(AgsSoundContainer *sound_container)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   /* get level id */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   level_id = sfz_file->level_id;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
   
   return(level_id);
 }
@@ -991,7 +950,7 @@ ags_sfz_file_get_level_index(AgsSoundContainer *sound_container)
 
   guint level_index;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -999,11 +958,11 @@ ags_sfz_file_get_level_index(AgsSoundContainer *sound_container)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
   
   /* get nesting level */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   level_index = sfz_file->level_index;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
   
   return(level_index);
 }
@@ -1015,7 +974,7 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
 
   guint sublevel;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -1026,7 +985,7 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(sfz_file));
 
   switch(sublevel){
-  case AGS_SFZ_FILENAME:
+  case AGS_SFZ_LEVEL_FILENAME:
   {
     gchar **sublevel_name;
 	
@@ -1037,7 +996,7 @@ ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container)
 
     return(sublevel_name);
   }
-  case AGS_SFZ_SAMPLE:
+  case AGS_SFZ_LEVEL_SAMPLE:
   {
     GList *start_list, *list;
 
@@ -1087,7 +1046,7 @@ ags_sfz_file_level_up(AgsSoundContainer *sound_container,
   
   guint retval;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   if(level_count == 0){
     return(0);
@@ -1101,22 +1060,22 @@ ags_sfz_file_level_up(AgsSoundContainer *sound_container,
   /* check boundaries */
   if(ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(sfz_file)) >= level_count){
     /* level up */
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     retval = level_count;
 
     sfz_file->nesting_level -= level_count;
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }else{
     /* level up */
-    pthread_mutex_lock(sfz_file_mutex);
+    g_rec_mutex_lock(sfz_file_mutex);
 
     retval = sfz_file->nesting_level;
     
     sfz_file->nesting_level = 0;
 
-    pthread_mutex_unlock(sfz_file_mutex);
+    g_rec_mutex_unlock(sfz_file_mutex);
   }
 
   return(retval);
@@ -1138,7 +1097,7 @@ ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
   guint sublevel;
   guint retval;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -1150,16 +1109,16 @@ ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
   retval = 0;
   
   switch(sublevel){
-  case AGS_SFZ_FILENAME:
+  case AGS_SFZ_LEVEL_FILENAME:
   {
     if(ags_sfz_file_select_sample(sfz_file, level_index)){
-      retval = AGS_SFZ_FILENAME;
+      retval = AGS_SFZ_LEVEL_FILENAME;
     }
   }
   break;
-  case AGS_SFZ_SAMPLE:
+  case AGS_SFZ_LEVEL_SAMPLE:
   {
-    retval = AGS_SFZ_SAMPLE;
+    retval = AGS_SFZ_LEVEL_SAMPLE;
   }
   break;
   };
@@ -1208,7 +1167,7 @@ ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container)
 
   GList *sound_resource;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
   
   sfz_file = AGS_SFZ_FILE(sound_container);
 
@@ -1230,20 +1189,6 @@ ags_sfz_file_close(AgsSoundContainer *sound_container)
 {
   //TODO:JK: implement me
 }
-/**
- * ags_sfz_file_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.3.0
- */
-pthread_mutex_t*
-ags_sfz_file_get_class_mutex()
-{
-  return(&ags_sfz_file_class_mutex);
-}
 
 /**
  * ags_sfz_file_test_flags:
@@ -1254,14 +1199,14 @@ ags_sfz_file_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return(FALSE);
@@ -1271,11 +1216,11 @@ ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags)
   sfz_file_mutex = AGS_SFZ_FILE_GET_OBJ_MUTEX(sfz_file);
 
   /* test */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   retval = (flags & (sfz_file->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   return(retval);
 }
@@ -1287,12 +1232,12 @@ ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags)
  *
  * Enable a feature of @sfz_file.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags)
 {
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return;
@@ -1304,11 +1249,11 @@ ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   sfz_file->flags |= flags;
   
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 }
     
 /**
@@ -1318,12 +1263,12 @@ ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags)
  *
  * Disable a feature of @sfz_file.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
 {  
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return;
@@ -1335,11 +1280,11 @@ ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   sfz_file->flags &= (~flags);
   
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 }
 
 /**
@@ -1351,7 +1296,7 @@ ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags)
  * 
  * Returns: %TRUE on success, else %FALSE on failure
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
@@ -1383,15 +1328,15 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 			sample_index);
 
       /* selected index and name */
-      sfz_file->index_selected[AGS_SFZ_SAMPLE] = sample_index;
+      sfz_file->index_selected[AGS_SFZ_LEVEL_SAMPLE] = sample_index;
 
-      g_free(sfz_file->name_selected[AGS_SFZ_SAMPLE]);
+      g_free(sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE]);
 
       g_object_get(list->data,
 		   "filename", &filename,
 		   NULL);
       
-      sfz_file->name_selected[AGS_SFZ_SAMPLE] = filename;
+      sfz_file->name_selected[AGS_SFZ_LEVEL_SAMPLE] = filename;
 
       /* container */
       sfz_file->current_sample = (AgsSFZSample *) list->data;
@@ -1402,14 +1347,14 @@ ags_sfz_file_select_sample(AgsSFZFile *sfz_file,
 }
 
 /**
- * ags_sfz_file_check_suffix:
+ * ags_sfz_file_get_range:
  * @sfz_file: the #AgsSFZFile
- * @hikey: the return location of key high
- * @lokey: the return location of key low
+ * @hikey: (out): the return location of key high
+ * @lokey: (out): the return location of key low
  * 
  * Get range of @sfz_file, set return location @hikey and @lokey.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_file_get_range(AgsSFZFile *sfz_file,
@@ -1582,7 +1527,7 @@ ags_sfz_file_get_range(AgsSFZFile *sfz_file,
  * 
  * Returns: %TRUE if supported, else %FALSE
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_sfz_file_check_suffix(gchar *filename)
@@ -1594,13 +1539,72 @@ ags_sfz_file_check_suffix(gchar *filename)
   return(FALSE);
 }
 
+gchar*
+ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
+					    gchar **iter)
+{
+  gchar *look_ahead;
+  gchar *next;
+    
+  if(iter == NULL){
+    return(NULL);
+  }
+
+  look_ahead = *iter;
+
+  if(look_ahead == NULL){
+    return(NULL);
+  }
+    
+  /* skip whitespaces and comments */
+  for(; (look_ahead < &(buffer[buffer_length])) && *look_ahead != '\0';){
+    /* skip comments */
+    if(buffer == look_ahead){
+      if(look_ahead + 1 < &(buffer[buffer_length]) && buffer[0] == '/' && buffer[1] == '/'){
+	next = strchr(look_ahead, '\n');
+
+	if(next != NULL){
+	  look_ahead = next + 1;
+	}else{
+	  look_ahead = &(buffer[buffer_length]);
+
+	  break;
+	}
+	  
+	continue;
+      }
+    }else if(buffer[look_ahead - buffer - 1] == '\n' && look_ahead + 1 < &(buffer[buffer_length]) && look_ahead[0] == '/' && look_ahead[1] == '/'){
+      next = strchr(look_ahead, '\n');
+      
+      if(next != NULL){
+	look_ahead = next + 1;
+      }else{
+	look_ahead = &(buffer[buffer_length]);
+
+	break;
+      }
+	
+      continue;
+    }
+
+    /* spaces */
+    if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n' || look_ahead[0] == '\r')){
+      break;
+    }else{
+      look_ahead++;
+    }
+  }
+
+  return(look_ahead);
+}
+
 /**
  * ags_sfz_file_parse:
  * @sfz_file: the #AgsSFZFile
  *
  * Parse @sfz_file.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_sfz_file_parse(AgsSFZFile *sfz_file)
@@ -1627,7 +1631,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   gboolean region_active;
   gboolean sample_active;
 
-  pthread_mutex_t *sfz_file_mutex;
+  GRecMutex *sfz_file_mutex;
 
   static regex_t opcode_regex;
   static regex_t opcode_regex_next;
@@ -1637,64 +1641,6 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
 
   static const size_t max_matches = 2;
   static gboolean regex_compiled = FALSE;
-
-  auto gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar **iter);
-
-  gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar **iter){
-    gchar *look_ahead;
-    gchar *next;
-    
-    if(iter == NULL){
-      return(NULL);
-    }
-
-    look_ahead = *iter;
-
-    if(look_ahead == NULL){
-      return(NULL);
-    }
-    
-    /* skip whitespaces and comments */
-    for(; (look_ahead < &(buffer[sb->st_size])) && *look_ahead != '\0';){
-      /* skip comments */
-      if(buffer == look_ahead){
-	if(look_ahead + 1 < &(buffer[sb->st_size]) && buffer[0] == '/' && buffer[1] == '/'){
-	  next = strchr(look_ahead, '\n');
-
-	  if(next != NULL){
-	    look_ahead = next + 1;
-	  }else{
-	    look_ahead = &(buffer[sb->st_size]);
-
-	    break;
-	  }
-	  
-	  continue;
-	}
-      }else if(buffer[look_ahead - buffer - 1] == '\n' && look_ahead + 1 < &(buffer[sb->st_size]) && look_ahead[0] == '/' && look_ahead[1] == '/'){
-	next = strchr(look_ahead, '\n');
-      
-	if(next != NULL){
-	  look_ahead = next + 1;
-	}else{
-	  look_ahead = &(buffer[sb->st_size]);
-
-	  break;
-	}
-	
-	continue;
-      }
-
-      /* spaces */
-      if(!(look_ahead[0] == ' ' || look_ahead[0] == '\t' || look_ahead[0] == '\n' || look_ahead[0] == '\r')){
-	break;
-      }else{
-	look_ahead++;
-      }
-    }
-
-    return(look_ahead);
-  }
 
   if(!AGS_IS_SFZ_FILE(sfz_file)){
     return;
@@ -1725,11 +1671,11 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   g_free(filename);
   
   /* read SFZ */
-  pthread_mutex_lock(sfz_file_mutex);
+  g_rec_mutex_lock(sfz_file_mutex);
 
   file = sfz_file->file;
 
-  pthread_mutex_unlock(sfz_file_mutex);
+  g_rec_mutex_unlock(sfz_file_mutex);
 
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
@@ -1760,7 +1706,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
   region_active = FALSE;
   sample_active = FALSE;
 
-  pthread_mutex_lock(&regex_mutex);
+  g_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
@@ -1769,11 +1715,12 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
     ags_regcomp(&opcode_regex_next, opcode_pattern_next, REG_EXTENDED);
   }
 
-  pthread_mutex_unlock(&regex_mutex);
+  g_mutex_unlock(&regex_mutex);
   
   do{    
     /* skip blanks and comments */
-    iter = ags_sfz_file_parse_skip_comments_and_blanks(&iter);
+    iter = ags_sfz_file_parse_skip_comments_and_blanks(buffer, sb->st_size,
+						       &iter);
 
     if(iter >= &(buffer[sb->st_size])){
       break;
@@ -2044,7 +1991,7 @@ ags_sfz_file_parse(AgsSFZFile *sfz_file)
  *
  * Returns: an empty #AgsSFZFile.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsSFZFile*
 ags_sfz_file_new()
