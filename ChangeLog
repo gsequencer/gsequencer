@@ -1,23 +1,30 @@
+ags (3.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential recursive callback call
+	* fixed potential data-race in ags_audio_stop() by stop thread first
+	* fixed potential data-race in ags_channel_stop() by stop thread first
+
 ags (3.0.0)
 
-       [ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-       * migrated to Gtk3
-       * migrated AgsOscServer and AgsOscClient to GIO sockets
-       * migrated AgsServer to Libsoup XMLRPC
-       * migrated AgsThread to GThread API
-       * implemented introspection support
-       * added G_BEGIN_DECLS and G_END_DECLS to header files
-       * moved ags_thread-posix.[ch] to ags_thread.[ch]
-       * removed ags_thread_file_xml.[ch], ags_audio_file_xml.[ch] and ags_gui_file_xml.[ch]
-       * removed AgsTaskThread
-       * removed AgsPollingThread
-       * removed AgsPollFD
-       * removed AgsAsyncQueue
-       * removed AgsSingleThread
-       * removed AgsNotifySoundcard
-       * removed barriers of AgsThread
-       * replaced nested functions
-       * stripped AgsPlugin from machines
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* migrated to Gtk3
+	* migrated AgsOscServer and AgsOscClient to GIO sockets
+	* migrated AgsServer to Libsoup XMLRPC
+	* migrated AgsThread to GThread API
+	* implemented introspection support
+	* added G_BEGIN_DECLS and G_END_DECLS to header files
+	* moved ags_thread-posix.[ch] to ags_thread.[ch]
+	* removed ags_thread_file_xml.[ch], ags_audio_file_xml.[ch] and ags_gui_file_xml.[ch]
+	* removed AgsTaskThread
+	* removed AgsPollingThread
+	* removed AgsPollFD
+	* removed AgsAsyncQueue
+	* removed AgsSingleThread
+	* removed AgsNotifySoundcard
+	* removed barriers of AgsThread
+	* replaced nested functions
+	* stripped AgsPlugin from machines
 
 ags (2.4.8)
 
