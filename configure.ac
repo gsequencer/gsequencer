@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.0],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.1],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -313,24 +313,24 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.56.0])
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
-PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
+PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
 AC_CHECK_LIB(glib-2.0, g_strv_length,
-	     AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
+            AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
 AC_CHECK_LIB(glib-2.0, g_strv_contains,
-	     AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
+            AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
 AC_CHECK_LIB(glib-2.0, g_object_setv,
-	     AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
+            AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
-PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
+PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2.0 >= 2.56.0 gthread-2.0 >= 2.56.0])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.62.0])
+PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.52.0])
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 
@@ -358,11 +358,11 @@ PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
-PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.0])
+PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.18.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.24.0])
+PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
 AC_SUBST(WEBKITGTK_CFLAGS)
 AC_SUBST(WEBKITGTK_LIBS)
 

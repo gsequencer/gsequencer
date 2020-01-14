@@ -10632,7 +10632,8 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 
   gint sound_scope;
   
-  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){    
+  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) &&
+     !ags_recall_test_state_flags(recall, AGS_SOUND_STATE_IS_TERMINATING)){
     sound_scope = ags_recall_get_sound_scope(recall);
 
     application_context = ags_application_context_get_instance();
@@ -11106,10 +11107,6 @@ ags_audio_real_stop(AgsAudio *audio,
 	       NULL);
 
   if(sound_scope >= 0){
-    /* cancel */
-    ags_audio_recursive_run_stage(audio,
-				  sound_scope, staging_flags);
-
     /* stop thread */
     audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							sound_scope);
@@ -11144,6 +11141,10 @@ ags_audio_real_stop(AgsAudio *audio,
       output_playback = output_playback->next;
     }
 
+    /* cancel */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, staging_flags);
+
     /* clean - fini */
     ags_audio_recursive_run_stage(audio,
 				  sound_scope, AGS_SOUND_STAGING_FINI);
@@ -11162,10 +11163,6 @@ ags_audio_real_stop(AgsAudio *audio,
     }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      /* cancel */
-      ags_audio_recursive_run_stage(audio,
-				    i, staging_flags);
-
       /* stop thread */
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  i);
@@ -11202,6 +11199,10 @@ ags_audio_real_stop(AgsAudio *audio,
     }
     
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* cancel */
+      ags_audio_recursive_run_stage(audio,
+				    i, staging_flags);
+
       /* clean - fini */
       ags_audio_recursive_run_stage(audio,
 				    i, AGS_SOUND_STAGING_FINI);
