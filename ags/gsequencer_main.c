@@ -115,7 +115,6 @@ main(int argc, char **argv)
   AgsPriority *priority;
   
   gchar *filename;
-  gchar *priority_filename;
 #if defined AGS_W32API
   gchar *app_dir;
   gchar *path;
@@ -143,7 +142,7 @@ main(int argc, char **argv)
   
   gboolean has_file;
   int result;
-  
+
 #ifdef AGS_WITH_RT
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 #endif
@@ -155,7 +154,6 @@ main(int argc, char **argv)
   builtin_theme_disabled = FALSE;
 
   config = NULL;
-  priority = ags_priority_get_instance();
   
   priority = ags_priority_get_instance();  
   ags_priority_load_defaults(priority);

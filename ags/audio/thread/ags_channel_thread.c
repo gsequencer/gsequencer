@@ -427,18 +427,6 @@ ags_channel_thread_run(AgsThread *thread)
     /* Declare ourself as a real time task */
     param.sched_priority = 1;
       
-    str = ags_priority_get_value(priority,
-				 AGS_PRIORITY_RT_THREAD,
-				 "default");
-
-    if(str != NULL){
-      param.sched_priority = (int) g_ascii_strtoull(str,
-						    NULL,
-						    10);
-
-      g_free(str);
-    }
-
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
     }

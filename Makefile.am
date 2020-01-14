@@ -20,11 +20,11 @@ else
 if WITH_OSXAPI
 AM_CPPFLAGS += -fnested-functions -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
 else
-AM_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -I/usr/include -DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+AM_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -I/usr/include -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 endif
 endif
 
-AM_CPPFLAGS += -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -Wall -Wformat -Werror=format-security
+AM_CPPFLAGS += -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
 
 if WITH_LIBINSTPATCH
 AM_CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1

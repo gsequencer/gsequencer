@@ -361,8 +361,6 @@ ags_thread_pool_creation_thread(void *ptr)
 
     priority = ags_priority_get_instance();  
     
-    priority = ags_priority_get_instance();
-
     /* Declare ourself as a real time task */
     param.sched_priority = 1;
 
@@ -378,18 +376,6 @@ ags_thread_pool_creation_thread(void *ptr)
       g_free(str);
     }
       
-    str = ags_priority_get_value(priority,
-				 AGS_PRIORITY_RT_THREAD,
-				 "thread-pool");
-
-    if(str != NULL){
-      param.sched_priority = (int) g_ascii_strtoull(str,
-						    NULL,
-						    10);
-
-      g_free(str);
-    }
-
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
     }

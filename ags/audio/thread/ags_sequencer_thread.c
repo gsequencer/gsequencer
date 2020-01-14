@@ -389,8 +389,6 @@ ags_sequencer_thread_run(AgsThread *thread)
     AgsPriority *priority;
 
     struct sched_param param;
-
-    gchar *str;
     
     gchar *str;
 

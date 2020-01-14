@@ -407,9 +407,6 @@ ags_ffplayer_finalize(GObject *gobject)
   g_hash_table_remove(ags_ffplayer_sf2_loader_completed,
 		      gobject);
 
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_ffplayer_parent_class)->finalize(gobject);
 }

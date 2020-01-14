@@ -1606,7 +1606,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   license_filename = g_strdup(AGS_LICENSE_FILENAME);
 #else
   if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
-#if defined(AGS_W32API)
+#if defined (AGS_W32API)
     application_context = ags_application_context_get_instance();
 
     if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
@@ -1663,7 +1663,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
       logo_filename = g_strdup(AGS_LOGO_FILENAME);
 #else
       if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
-#if defined(AGS_W32API)
+#if defined AGS_W32API
 	logo_filename = g_strdup_printf("%s\\share\\gsequencer\\images\\ags.png",
 				      g_get_current_dir());
     
@@ -1720,4 +1720,10 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 			"title", "Advanced Gtk+ Sequencer",
 			"logo", logo,
 			NULL);
+
+  g_free(license_filename);
+
+#if defined AGS_W32API
+  g_free(app_dir);
+#endif
 }
