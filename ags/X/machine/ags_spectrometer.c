@@ -662,7 +662,15 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 	for(; nth < spectrometer->buffer_size; k++){
 	  frequency = ((double) nth) / ((double) spectrometer->buffer_size) * (nyquist);
 
-	  gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * (100.0)) / 12.0) - 1.0);
+	  if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+	     AGS_SPECTROMETER_DEFAULT_X_START < 0.0){
+	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END + AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	  }else if(AGS_SPECTROMETER_DEFAULT_X_END >= 0.0 &&
+		   AGS_SPECTROMETER_DEFAULT_X_START >= 0.0){
+	    gfrequency = (correction / 2.0) * (exp((((double) j) / (gdouble) AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT * ((AGS_SPECTROMETER_DEFAULT_X_END - AGS_SPECTROMETER_DEFAULT_X_START) / AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH)) / 12.0) - 1.0);
+	  }else{
+	    g_message("only positive frequencies allowed");
+	  }
 //	  gfrequency_next = (correction / 2.0) * (exp((((double) j + 1.0)) / 12.0) - 1.0);
 
 #if 1

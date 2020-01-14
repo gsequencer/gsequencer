@@ -921,8 +921,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		    current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
 		  }
 
+		  /* velocity */
+#if 0
 		  current_note->attack.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
-
+#endif
+		  
 #ifdef AGS_DEBUG
 		  g_message("add %d", current_note->y);
 #endif
@@ -958,8 +961,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  ags_note_unset_flags(current_note,
 				       AGS_NOTE_FEED);
 
+		  /* velocity */
+#if 0		  
 		  current_note->release.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
-
+#endif
+		  
 		  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							      current_note);
 		  g_object_unref(current_note);
@@ -1016,7 +1022,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 	    /* remove current note */
 	    if(current_note != NULL){
+	      /* velocity */
+#if 0
 	      current_note->release.imag = (gdouble) (0x7f & (midi_iter[2])) / 127.0;
+#endif
 	      
 	      ags_note_unset_flags(current_note,
 				   AGS_NOTE_FEED);

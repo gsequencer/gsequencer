@@ -716,8 +716,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
 	    note->y = y;
-	    note->attack.imag = (gdouble) velocity / 127.0;
 
+	    /* velocity */
+#if 0	    
+	    note->attack.imag = (gdouble) velocity / 127.0;
+#endif
+	    
 	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
 	      current_notation = ags_notation_new(NULL,
 						  i);
@@ -794,8 +798,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 		}
 	      
 		note->y = y;
-		note->release.imag = (gdouble) velocity / 127.0;
 
+		/* velocity */
+#if 0	    
+		note->release.imag = (gdouble) velocity / 127.0;
+#endif
+		
 		break;
 	      }
 	    

@@ -491,7 +491,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 					      delta_time - prev_delta_time,
 					      0,
 					      active_y,
-					      (guint) 127 * AGS_NOTE(active_note->data)->release.imag);
+					      (guint) 127);  /* * AGS_NOTE(active_note->data)->release.imag */
 
 	      prev_delta_time = delta_time;
 	      
@@ -522,7 +522,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 					   delta_time - prev_delta_time,
 					   0,
 					   note_y,
-					   (guint) 127 * AGS_NOTE(note->data)->attack.imag);
+					   (guint) 127); /*  * AGS_NOTE(note->data)->attack.imag */
 
 	    prev_delta_time = delta_time;
 	  }
