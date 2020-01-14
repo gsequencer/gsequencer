@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_WAVE_EDIT                (ags_wave_edit_get_type())
 #define AGS_WAVE_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_EDIT, AgsWaveEdit))
 #define AGS_WAVE_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_WAVE_EDIT, AgsWaveEditClass))
@@ -46,6 +48,8 @@
 
 #define AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y (0.0)
+
+#define AGS_WAVE_EDIT_DEFAULT_SELECTED_BUFFER_BORDER (2)
 
 #define AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH (3)
 
@@ -114,6 +118,8 @@ struct _AgsWaveEdit
   guint cursor_position_x;
   gdouble cursor_position_y;
 
+  guint selected_buffer_border;
+  
   guint selection_x0;
   guint selection_x1;
   guint selection_y0;
@@ -143,21 +149,23 @@ GType ags_wave_edit_get_type(void);
 void ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit);
 void ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit);
 
-void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit);
-void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit, cairo_t *cr);
+void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr);
 
-void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit);
-void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit, cairo_t *cr);
+void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit, cairo_t *cr);
 
 void ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			       AgsBuffer *buffer,
 			       cairo_t *cr,
 			       gdouble bpm,
-			       double r, double g, double b, double a);
-void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
+			       gdouble opacity);
+void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr);
 
-void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw(AgsWaveEdit *wave_edit, cairo_t *cr);
 
 AgsWaveEdit* ags_wave_edit_new(guint line);
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_EDIT_H__*/

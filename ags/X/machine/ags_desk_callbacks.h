@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_desk.h>
 
-void ags_desk_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDesk *desk);
+G_BEGIN_DECLS
+
+void ags_desk_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsDesk *desk);
 
 void ags_desk_resize_audio_channels_callback(AgsDesk *desk,
 					     guint audio_channels, guint audio_channels_old,
@@ -36,5 +42,7 @@ void ags_desk_resize_pads_callback(AgsDesk *desk,
 				   GType channel_type,
 				   guint pads, guint pads_old,
 				   gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_DESK_CALLBACKS_H__*/

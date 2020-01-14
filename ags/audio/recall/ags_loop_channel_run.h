@@ -30,6 +30,8 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LOOP_CHANNEL_RUN                (ags_loop_channel_run_get_type())
 #define AGS_LOOP_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL_RUN, AgsLoopChannelRun))
 #define AGS_LOOP_CHANNEL_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LOOP_CHANNEL_RUN, AgsLoopChannelRunClass))
@@ -56,6 +58,8 @@ GType ags_loop_channel_run_get_type();
 
 AgsLoopChannelRun* ags_loop_channel_run_new(AgsChannel *source,
 					    AgsCountBeatsAudioRun *count_beats_audio_run);
+
+G_END_DECLS
 
 #endif /*__AGS_LOOP_CHANNEL_RUN_H__*/
 

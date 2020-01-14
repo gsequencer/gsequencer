@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -151,7 +149,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::sequencer-alloc-output signal is emited while allocating
    * sequencer output.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT] =
     g_signal_new("sequencer-alloc-output",
@@ -174,7 +172,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::sequencer-alloc-input signal is emited while allocating
    * sequencer input.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[SEQUENCER_ALLOC_INPUT] =
     g_signal_new("sequencer-alloc-input",
@@ -197,7 +195,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::sequencer-count signal is emited while counting
    * sequencer.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[SEQUENCER_COUNT] =
     g_signal_new("sequencer-count",
@@ -220,7 +218,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::notation-alloc-output signal is emited while allocating
    * notation output.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[NOTATION_ALLOC_OUTPUT] =
     g_signal_new("notation-alloc-output",
@@ -243,7 +241,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::notation-alloc-input signal is emited while allocating
    * notation input.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[NOTATION_ALLOC_INPUT] =
     g_signal_new("notation-alloc-input",
@@ -266,7 +264,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::notation-count signal is emited while counting
    * notation.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[NOTATION_COUNT] =
     g_signal_new("notation-count",
@@ -289,7 +287,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::wave-alloc-output signal is emited while allocating
    * wave output.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[WAVE_ALLOC_OUTPUT] =
     g_signal_new("wave-alloc-output",
@@ -312,7 +310,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::wave-alloc-input signal is emited while allocating
    * wave input.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[WAVE_ALLOC_INPUT] =
     g_signal_new("wave-alloc-input",
@@ -335,7 +333,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::wave-count signal is emited while counting
    * wave.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[WAVE_COUNT] =
     g_signal_new("wave-count",
@@ -358,7 +356,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::midi-alloc-output signal is emited while allocating
    * midi output.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[MIDI_ALLOC_OUTPUT] =
     g_signal_new("midi-alloc-output",
@@ -381,7 +379,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::midi-alloc-input signal is emited while allocating
    * midi input.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[MIDI_ALLOC_INPUT] =
     g_signal_new("midi-alloc-input",
@@ -404,7 +402,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * The ::midi-count signal is emited while counting
    * midi.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   delay_audio_run_signals[MIDI_COUNT] =
     g_signal_new("midi-count",
@@ -461,7 +459,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -477,7 +475,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   /* run order */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->output_soundcard));
   
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   delay_audio_run->hide_ref_counter = 0;
 
@@ -486,7 +484,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   delay_audio_run->wave_counter = floor(absolute_delay);
   delay_audio_run->midi_counter = floor(absolute_delay);
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 void
@@ -505,16 +503,12 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   void (*parent_class_run_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -526,22 +520,22 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   
 
   /* check done */  
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   dependency_ref = delay_audio_run->dependency_ref;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   if(!ags_recall_test_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT) &&
      dependency_ref == 0){
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
   
     delay_audio_run->sequencer_counter = 0.0;
     delay_audio_run->notation_counter = 0.0;
     delay_audio_run->wave_counter = 0.0;
     delay_audio_run->midi_counter = 0.0;
 
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     ags_recall_done(recall);
 
@@ -586,7 +580,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_sequencer = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->sequencer_counter + 1.0 >= current_delay){
       alloc_sequencer = TRUE;
@@ -598,7 +592,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     sequencer_counter = delay_audio_run->sequencer_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* sequencer */
     if(alloc_sequencer){
@@ -662,7 +656,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_notation = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->notation_counter + 1.0 >= current_delay){
       alloc_notation = TRUE;
@@ -674,7 +668,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     notation_counter = delay_audio_run->notation_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* notation */
     if(alloc_notation){
@@ -738,7 +732,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_wave = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->wave_counter + 1.0 >= current_delay){
       alloc_wave = TRUE;
@@ -750,7 +744,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     wave_counter = delay_audio_run->wave_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* wave */
     if(alloc_wave){
@@ -814,7 +808,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* counter */
     alloc_midi = FALSE;
     
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     if(delay_audio_run->midi_counter + 1.0 >= current_delay){
       alloc_midi = TRUE;
@@ -826,7 +820,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     midi_counter = delay_audio_run->midi_counter;
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
 
     /* midi */
     if(alloc_midi){
@@ -879,16 +873,12 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
 				       AgsRecallID *recall_id,
 				       guint *n_params, gchar **parameter_name, GValue *value);
 	      
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
   
   delay_audio_run = (AgsDelayAudioRun *) recall;
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_duplicate = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -899,7 +889,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
 								     n_params, parameter_name, value);
   
   /* initial values copied */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   copy_delay_audio_run->dependency_ref = delay_audio_run->dependency_ref;
 
@@ -912,7 +902,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   copy_delay_audio_run->wave_counter = delay_audio_run->wave_counter;
   copy_delay_audio_run->midi_counter = delay_audio_run->midi_counter;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   return((AgsRecall *) copy_delay_audio_run);
 }
@@ -923,7 +913,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
 {
   AgsDelayAudioRun *delay_audio_run;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -931,7 +921,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* notify */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   switch(dependency){
   case AGS_RECALL_NOTIFY_RUN:
@@ -961,7 +951,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
     g_message("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify");
   }
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -973,7 +963,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
  *
  * Emitted as notation allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -998,7 +988,7 @@ ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, gui
  *
  * Emitted as notation allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1023,7 +1013,7 @@ ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guin
  *
  * Emitted as notation counts.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1048,7 +1038,7 @@ ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_
  *
  * Emitted as sequencer allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1073,7 +1063,7 @@ ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, gu
  *
  * Emitted as sequencer allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1098,7 +1088,7 @@ ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, gui
  *
  * Emitted as sequencer counts.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1123,7 +1113,7 @@ ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth
  *
  * Emitted as wave allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_wave_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1148,7 +1138,7 @@ ags_delay_audio_run_wave_alloc_output(AgsDelayAudioRun *delay_audio_run, guint n
  *
  * Emitted as wave allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_wave_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1173,7 +1163,7 @@ ags_delay_audio_run_wave_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nt
  *
  * Emitted as wave counts.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_wave_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1198,7 +1188,7 @@ ags_delay_audio_run_wave_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
  *
  * Emitted as midi allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_midi_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1223,7 +1213,7 @@ ags_delay_audio_run_midi_alloc_output(AgsDelayAudioRun *delay_audio_run, guint n
  *
  * Emitted as midi allocs output.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_midi_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1248,7 +1238,7 @@ ags_delay_audio_run_midi_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nt
  *
  * Emitted as midi counts.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_delay_audio_run_midi_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -1272,7 +1262,7 @@ ags_delay_audio_run_midi_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
  *
  * Returns: the new #AgsDelayAudioRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDelayAudioRun*
 ags_delay_audio_run_new(AgsAudio *audio)

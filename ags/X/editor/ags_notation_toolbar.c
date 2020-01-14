@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,6 @@
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_notation_toolbar_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 
@@ -30,8 +27,6 @@
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_position_notation_cursor_dialog.h>
-
-#include <gtk/gtkstock.h>
 
 #include <ags/i18n.h>
 
@@ -108,59 +103,96 @@ ags_notation_toolbar_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 {
+  GtkToolItem *tool_item;
   GtkLabel *label;
   GtkMenu *menu;
   GtkMenuItem *item;
-
+  GtkHBox *hbox;
+  
   notation_toolbar->flags = 0;
   
   /* position */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+  
   notation_toolbar->position = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								    "label", i18n("Position"),
 								    "stock-id", GTK_STOCK_JUMP_TO,
 								    NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->position, i18n("position cursor"), NULL);
-
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->position);
+  
   /* edit */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->edit = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								"stock-id", GTK_STOCK_EDIT,
 								"active", TRUE,
 								NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->edit, i18n("edit notes"), NULL);
   notation_toolbar->selected_edit_mode = notation_toolbar->edit;
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->edit);
 
   /* clear */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								 "stock-id", GTK_STOCK_CLEAR,
 								 NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->clear, i18n("clear notes"), NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->clear);
 
   /* select */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 								  "label", i18n("Select"),
 								  "stock-id", GTK_STOCK_SELECT_ALL,
 								  NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
-			    (GtkWidget *) notation_toolbar->select,
-			    i18n("select notes"),
-			    NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->select);
 
   /* copy */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 							  "stock-id", GTK_STOCK_COPY,
 							  NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
-			    (GtkWidget *) notation_toolbar->copy,
-			    i18n("copy notes"),
-			    NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->copy);
 
   /* cut */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 							 "stock-id", GTK_STOCK_CUT,
 							 NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->cut, i18n("cut notes"), NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->cut);
 
   /* paste */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								    "stock-id", GTK_STOCK_PASTE,
 								    NULL);
@@ -185,22 +217,35 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 				(GtkWidget *) menu);
   gtk_widget_show_all((GtkWidget *) menu);
   
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->paste_tool, i18n("paste notes"), NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->paste_tool);
 
   /* invert */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 							"icon-widget", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
 														  GTK_ICON_SIZE_LARGE_TOOLBAR),
 							"label", i18n("Invert"),
 							NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->invert, i18n("invert notes"), NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->invert);
 
   /* menu tool */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
   notation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 								   "label", i18n("Tool"),
 								   "stock-id", GTK_STOCK_EXECUTE,
 								   NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->menu_tool, i18n("additional tools"), NULL);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) notation_toolbar->menu_tool);
 
   /* menu tool - tool popup */
   notation_toolbar->tool_popup = ags_notation_toolbar_tool_popup_new(notation_toolbar);
@@ -214,25 +259,53 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->position_notation_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new(NULL);
   
   /* zoom */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
+  hbox = gtk_hbox_new(FALSE,
+		      0);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) hbox);
+
   label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) label, NULL, NULL);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
 
   notation_toolbar->zoom_history = 2;
   notation_toolbar->zoom = (GtkComboBoxText *) ags_zoom_combo_box_new();
   gtk_combo_box_set_active((GtkComboBox *) notation_toolbar->zoom, 2);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->zoom, NULL , NULL);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) notation_toolbar->zoom,
+		     FALSE, FALSE,
+		     0);
 
   /* opacity */
+  tool_item = gtk_tool_item_new();
+  gtk_toolbar_insert((GtkToolbar *) notation_toolbar,
+		     (GtkWidget *) tool_item,
+		     -1);
+
+  hbox = gtk_hbox_new(FALSE,
+		      0);
+  gtk_container_add((GtkContainer *) tool_item,
+		    (GtkWidget *) hbox);
+
   label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
-  gtk_container_add(GTK_CONTAINER(notation_toolbar),
-		    (GtkWidget *) label);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
 
   notation_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
   gtk_spin_button_set_value(notation_toolbar->opacity, 0.8);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
-			    (GtkWidget *) notation_toolbar->opacity,
-			    NULL,
-			    NULL);
+  gtk_box_pack_start(hbox,
+		     (GtkWidget *) notation_toolbar->opacity,
+		     FALSE, FALSE,
+		     0);
 }
 
 void
@@ -428,12 +501,13 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_notation_toolbar_tool_popup_new:
+ * @notation_toolbar: the #AgsNotationToolbar
  *
  * Create a new #GtkMenu suitable for menu tool button.
  *
  * Returns: a new #GtkMenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkMenu*
 ags_notation_toolbar_tool_popup_new(AgsNotationToolbar *notation_toolbar)
@@ -508,7 +582,7 @@ ags_notation_toolbar_tool_popup_new(AgsNotationToolbar *notation_toolbar)
  *
  * Returns: a new #AgsNotationToolbar
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNotationToolbar*
 ags_notation_toolbar_new()

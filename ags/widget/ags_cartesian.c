@@ -37,14 +37,21 @@ void ags_cartesian_show(GtkWidget *widget);
 
 void ags_cartesian_map(GtkWidget *widget);
 void ags_cartesian_realize(GtkWidget *widget);
-void ags_cartesian_size_request(GtkWidget *widget,
-				GtkRequisition   *requisition);
 void ags_cartesian_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation);
-gboolean ags_cartesian_expose(GtkWidget *widget,
-			      GdkEventExpose *event);
+void ags_cartesian_get_preferred_width(GtkWidget *widget,
+				       gint *minimum_width,
+				       gint *natural_width);
+void ags_cartesian_get_preferred_height(GtkWidget *widget,
+					gint *minimum_height,
+					gint *natural_height);
 
-void ags_cartesian_draw(AgsCartesian *cartesian);
+void ags_cartesian_draw_putpixel(unsigned char *data,
+				 gdouble width, gdouble height,
+				 guint stride,
+				 int x, int y, unsigned long int pixel);
+
+void ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr);
 
 /**
  * SECTION:ags_cartesian
@@ -167,7 +174,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The horizontal x margin.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-margin",
 				   "x margin",
@@ -185,7 +192,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The horizontal y margin. 
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-margin",
 				   "y margin",
@@ -203,7 +210,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The center of lines
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("center",
 				   "center of lines",
@@ -221,7 +228,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The line width.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("line-width",
 				   "line width",
@@ -239,7 +246,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The points radius.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("point-radius",
 				   "point radius",
@@ -257,7 +264,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The font's size to draw labels and units.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("font-size",
 				   "font size",
@@ -275,7 +282,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The width of a x step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-step-width",
 				   "x step width",
@@ -293,7 +300,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The height of a y step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-step-height",
 				   "y step height",
@@ -311,7 +318,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The width of a x scale step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-scale-step-width",
 				   "x scale step width",
@@ -329,7 +336,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The height of a y scale step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-scale-step-height",
 				   "y scale step height",
@@ -347,7 +354,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-step",
 				   "x step",
@@ -365,7 +372,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y step.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-step",
 				   "y step",
@@ -383,7 +390,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-start",
 				   "x start",
@@ -401,7 +408,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-end",
 				   "x end",
@@ -419,7 +426,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y start.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-start",
 				   "y start",
@@ -437,7 +444,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y end.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-end",
 				   "y end",
@@ -455,7 +462,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit's x0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-unit-x0",
 				   "x unit x0",
@@ -473,7 +480,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit's y0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-unit-y0",
 				   "x unit y0",
@@ -491,7 +498,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x unit label.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("x-unit",
 				   "x unit",
@@ -507,7 +514,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit's x0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-unit-x0",
 				   "y unit x0",
@@ -525,7 +532,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit's y0 position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-unit-y0",
 				   "y unit y0",
@@ -543,7 +550,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y unit label.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("y-unit",
 				   "y unit",
@@ -559,7 +566,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x label start position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-label-start",
 				   "x label start",
@@ -577,7 +584,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x label step width.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("x-label-step-width",
 				   "x label step width",
@@ -595,7 +602,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The x labels as a string array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("x-label",
 				    "x label",
@@ -610,7 +617,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y label start position.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-label-start",
 				   "y label start",
@@ -628,7 +635,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y label step height.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y-label-step-height",
 				   "y label step height",
@@ -646,7 +653,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    *
    * The y labels as a string array.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("y-label",
 				    "y label",
@@ -661,10 +668,11 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
 
   //  widget->map = ags_cartesian_map;
   widget->realize = ags_cartesian_realize;
-  widget->expose_event = ags_cartesian_expose;
-  widget->size_request = ags_cartesian_size_request;
   widget->size_allocate = ags_cartesian_size_allocate;
+  widget->get_preferred_width = ags_cartesian_get_preferred_width;
+  widget->get_preferred_height = ags_cartesian_get_preferred_height;
   widget->show = ags_cartesian_show;
+  widget->draw = ags_cartesian_draw;
 }
 
 void
@@ -839,8 +847,8 @@ ags_cartesian_map(GtkWidget *widget)
   if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
     GTK_WIDGET_CLASS(ags_cartesian_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_cartesian_draw((AgsCartesian *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
+//    ags_cartesian_draw((AgsCartesian *) widget);
   }
 }
 
@@ -849,6 +857,10 @@ ags_cartesian_realize(GtkWidget *widget)
 {
   AgsCartesian *cartesian;
 
+  GdkWindow *window;
+  
+  GtkAllocation allocation;
+  
   GdkWindowAttr attributes;
 
   gint attributes_mask;
@@ -862,31 +874,28 @@ ags_cartesian_realize(GtkWidget *widget)
 
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
-  
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.window_type = GDK_WINDOW_CHILD;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, cartesian);
-
-  widget->style = gtk_style_attach(widget->style,
-				   widget->window);
-  gtk_style_set_background(widget->style,
-			   widget->window,
-			   GTK_STATE_NORMAL);
+  window = gdk_window_new(gtk_widget_get_parent_window (widget),
+			  &attributes, attributes_mask);
+  gtk_widget_set_window(widget, window);
+  gdk_window_set_user_data(window, cartesian);
 
   gtk_widget_queue_resize(widget);
 }
@@ -895,16 +904,6 @@ void
 ags_cartesian_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_cartesian_parent_class)->show(widget);
-}
-
-void
-ags_cartesian_size_request(GtkWidget *widget,
-			   GtkRequisition *requisition)
-{
-  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->size_request(widget,
-							     requisition);
-
-  //TODO:JK: implement me
 }
 
 void
@@ -917,23 +916,75 @@ ags_cartesian_size_allocate(GtkWidget *widget,
   //TODO:JK: implement me
 }
 
-gboolean
-ags_cartesian_expose(GtkWidget *widget,
-		     GdkEventExpose *event)
+void
+ags_cartesian_get_preferred_width(GtkWidget *widget,
+				  gint *minimum_width,
+				  gint *natural_width)
 {
-  ags_cartesian_draw(AGS_CARTESIAN(widget));
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_width(widget,
+								    minimum_width,
+								    natural_width);
 
-  return(FALSE);
+  //TODO:JK: implement me
 }
 
 void
-ags_cartesian_draw(AgsCartesian *cartesian)
+ags_cartesian_get_preferred_height(GtkWidget *widget,
+				   gint *minimum_height,
+				   gint *natural_height)
+{
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->get_preferred_height(widget,
+								     minimum_height,
+								     natural_height);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_cartesian_draw_putpixel(unsigned char *data,
+			    gdouble width, gdouble height,
+			    guint stride,
+			    int x, int y, unsigned long int pixel)
+{
+  int bpp = stride / width;
+  /* Here p is the address to the pixel we want to set */
+  unsigned char *p = data + y * stride + x * bpp;
+
+  switch(bpp) {
+  case 1:
+    *p = pixel;
+    break;
+
+  case 2:
+    *(gint16 *)p = pixel;
+    break;
+
+  case 3:
+    p[0] = pixel & 0xff;
+    p[1] = (pixel >> 8) & 0xff;
+    p[2] = (pixel >> 16) & 0xff;
+    break;
+
+  case 4:
+    *(gint32 *)p = pixel;
+    break;
+  }
+}
+
+void
+ags_cartesian_draw(AgsCartesian *cartesian, cairo_t *cr)
 {
   GtkWidget *widget;
 
-  GtkStyle *cartesian_style;
-  cairo_t *cr;
+  GtkStyleContext *cartesian_style_context;
+
+  GtkAllocation allocation;
   
+  GdkRGBA *fg_color;
+  GdkRGBA *fg_color_active;
+  GdkRGBA *bg_color;
+  GdkRGBA *border_color;
+
   GList *list;
   
   unsigned char *data;
@@ -950,24 +1001,226 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   guint stride;
   guint i_stop;
   guint i;
-  
-  static const gdouble white_gc = 65535.0;
 
-  auto void ags_cartesian_draw_area();
+  GValue value = {0,};  
+  
+  /* entry point */
+  if(!AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+  
+  widget = GTK_WIDGET(cartesian);
 
-  auto void ags_cartesian_draw_x_label();
-  auto void ags_cartesian_draw_y_label();
-  
-  auto void ags_cartesian_draw_x_small_scale();
-  auto void ags_cartesian_draw_x_big_scale();
+  gtk_widget_get_allocation(GTK_WIDGET(cartesian),
+			    &allocation);
 
-  auto void ags_cartesian_draw_y_small_scale();
-  auto void ags_cartesian_draw_y_big_scale();
+  /* style context */
+  cartesian_style_context = gtk_widget_get_style_context(GTK_WIDGET(cartesian));
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  fg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "color",
+				 GTK_STATE_FLAG_ACTIVE,
+				 &value);
+
+  fg_color_active = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "background-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  bg_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  gtk_style_context_get_property(cartesian_style_context,
+				 "border-color",
+				 GTK_STATE_FLAG_NORMAL,
+				 &value);
+
+  border_color = g_value_dup_boxed(&value);
+  g_value_unset(&value);
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
-  auto void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel);
-  auto void ags_cartesian_draw_plot(AgsPlot *plot);
+  /* clear bg */
+#if 0
+  cairo_set_source_rgba(cr,
+			bg_color->red,
+			bg_color->green,
+			bg_color->blue,
+			bg_color->alpha);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  allocation.width, allocation.height);
+  cairo_fill(cr);
+#else
+  gtk_render_background(cartesian_style_context,
+			cr,
+			0.0, 0.0,
+			(gdouble) allocation.width, (gdouble) allocation.height);
+#endif
   
-  void ags_cartesian_draw_area(){
+  /* cartesian offset, width and height */
+  width = (cartesian->x_end - cartesian->x_start);
+  height = (cartesian->y_end - cartesian->y_start);
+
+  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
+  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
+  
+  /* clear surface */
+  data = cairo_image_surface_get_data(cartesian->surface);
+  stride = cairo_image_surface_get_stride(cartesian->surface);
+
+  data_ptr = data;
+  
+  clear_color = (((guint) (255.0 * bg_color->red) << 16) |
+		 ((guint) (255.0 * bg_color->green) << 8) |
+		 ((guint) (255.0 * bg_color->blue)));
+  
+  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
+  for(i = 0; i < width * height; i++){
+    data_ptr[i] = clear_color;
+  }
+  
+//  cairo_surface_flush(cartesian->surface);
+
+  /* surface */
+  cairo_set_source_surface(cr,
+  			   cartesian->surface,
+  			   cartesian->x_margin, cartesian->y_margin);
+  cairo_surface_mark_dirty(cartesian->surface);
+
+  cairo_paint(cr);
+
+  /* draw plot */
+  list = cartesian->plot;
+
+  while(list != NULL){
+    AgsPlot *plot;
+      
+    guint i;
+
+    plot = list->data;
+      
+    cairo_set_source_rgba(cr,
+			  fg_color_active->red,
+			  fg_color_active->blue,
+			  fg_color_active->green,
+			  fg_color_active->alpha);
+
+    /* points */
+    for(i = 0; i < plot->n_points; i++){
+      if(plot->point[i] != NULL){
+	if(plot->point_color != NULL &&
+	   plot->point_color[i] != NULL){
+	  cairo_set_source_rgb(cr,
+			       plot->point_color[i][0],
+			       plot->point_color[i][1],
+			       plot->point_color[i][2]);
+	}
+	
+#ifdef AGS_DEBUG
+	g_message("%f %f", plot->point[i][0], plot->point[i][1]);
+#endif
+	
+	cairo_arc(cr,
+		  x_offset + plot->point[i][0] - cartesian->point_radius,
+		  y_offset - (plot->point[i][1] - cartesian->point_radius),
+		  cartesian->point_radius,
+		  -1.0 * M_PI,
+		  1.0 * M_PI);
+
+	if(plot->join_points){
+	  if(i == 0){
+	    cairo_move_to(cr,
+			  x_offset, y_offset);
+	    
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }else{
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }
+	}
+      }
+    }
+    
+    cairo_stroke(cr);
+    cairo_fill(cr);
+
+    /* bitmaps */
+    for(i = 0; i < plot->n_bitmaps; i++){
+      if(plot->bitmap[i] != NULL){
+	unsigned long int pixel;
+	guint nth;
+	guint x, y;
+
+	if(plot->bitmap_color != NULL &&
+	   plot->bitmap_color[i] != NULL){
+	  pixel = ((255 << 16) * plot->bitmap_color[i][0] +
+		   (255 << 8) * plot->bitmap_color[i][1] +
+		   255 * plot->bitmap_color[i][0]);
+	}else{
+	  pixel = 0xffffff;
+	}
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(((1 << (nth % 8)) & (plot->bitmap[i][(guint) floor(nth / 8.0)])) != 0){
+	      ags_cartesian_draw_putpixel(data,
+					  width, height,
+					  stride,
+					  x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+
+    /* pixmaps */
+    for(i = 0; i < plot->n_pixmaps; i++){
+      if(plot->pixmap[i] != NULL){
+	guint nth;
+	guint x, y;
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(plot->pixmap[i][nth] != NULL){
+	      unsigned long int pixel;
+
+	      pixel = ((255 << 16) * plot->pixmap[i][nth][0] +
+		       (255 << 8) * plot->pixmap[i][nth][1] +
+		       255 * plot->pixmap[i][nth][0]);
+	      
+	      ags_cartesian_draw_putpixel(data,
+					  width, height,
+					  stride,
+					  x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+
+    list = list->next;
+  }
+
+  /* push group */
+  cairo_push_group(cr);
+
+  {
     static const double dashes[] = {
       2.0,
       3.0
@@ -977,10 +1230,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     cairo_set_line_width(cr, cartesian->line_width);
 
     /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->mid[0].red / white_gc,
-			 cartesian_style->mid[0].green / white_gc,
-			 cartesian_style->mid[0].blue / white_gc);
+    cairo_set_source_rgba(cr,
+			  fg_color->red,
+			  fg_color->blue,
+			  fg_color->green,
+			  fg_color->alpha);
     
     /* dash */
     cairo_set_dash(cr,
@@ -1112,7 +1366,209 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     }
   }
 
-  void ags_cartesian_draw_x_label(){
+  /* abscissae */
+  if((AGS_CARTESIAN_ABSCISSAE & (cartesian->flags)) != 0){
+    if((cartesian->x_end == 0.0) ||
+       (cartesian->x_start == 0.0) ||
+       (cartesian->x_start < 0.0 &&
+	cartesian->x_end > 0.0)){
+      /* small scale */
+      {
+	/*  line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+    
+	/* draw line */
+	cairo_move_to(cr,
+		      x_offset + cartesian->x_start,
+		      y_offset);
+	cairo_line_to(cr,
+		      x_offset + cartesian->x_start + width,
+		      y_offset);
+	cairo_stroke(cr);
+    
+	/* draw small scale steps */
+	factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
+      
+	for(x = cartesian->x_start; ; ){
+	  scale_point = cartesian->x_small_scale_func(x,
+						      cartesian->x_scale_data);
+
+	  if(scale_point < factor * cartesian->x_start){
+	    x += cartesian->x_step_width;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset + scale_point,
+			  y_offset - 4.0);
+	    cairo_line_to(cr,
+			  x_offset + scale_point,
+			  y_offset + 4.0);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  x += cartesian->x_step_width;
+	}
+      }
+
+      /* big scale */
+      {
+	/* line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+
+	/* draw big scale steps */
+	factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
+      
+	for(x = cartesian->x_start; ; ){
+	  scale_point = cartesian->x_big_scale_func(x,
+						    cartesian->x_scale_data);
+
+	  if(scale_point < factor * cartesian->x_start){
+	    x += cartesian->x_step_width;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset + scale_point,
+			  y_offset - 6.0);
+	    cairo_line_to(cr,
+			  x_offset + scale_point,
+			  y_offset + 6.0);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  x += cartesian->x_step_width;
+	}
+      }
+    }
+  }
+
+  /* ordinate */
+  if((AGS_CARTESIAN_ORDINATE & (cartesian->flags)) != 0){
+    if((cartesian->y_end == 0.0) ||
+       (cartesian->y_start == 0.0) ||
+       (cartesian->y_start < 0.0 &&
+	cartesian->y_end > 0.0)){
+      /* small scale */
+      {
+	/* color and line width */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+    
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* draw line */
+	cairo_move_to(cr,
+		      x_offset,
+		      y_offset - cartesian->y_start);
+	cairo_line_to(cr,
+		      x_offset,
+		      y_offset - cartesian->y_start - height);
+	cairo_stroke(cr);
+
+	/* draw small scale steps */
+	factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
+      
+	for(y = cartesian->y_start; ; ){
+	  scale_point = cartesian->y_small_scale_func(y,
+						      cartesian->y_scale_data);
+
+	  if(scale_point < factor * cartesian->y_start){
+	    y += cartesian->y_step_height;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset - 4.0,
+			  y_offset - scale_point);
+	    cairo_line_to(cr,
+			  x_offset + 4.0,
+			  y_offset - scale_point);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  y += cartesian->y_step_height;
+	}
+      }
+
+      /* big scale */
+      {
+	/* line width */
+	cairo_set_line_width(cr, cartesian->line_width);
+
+	/* color */
+	cairo_set_source_rgba(cr,
+			      fg_color->red,
+			      fg_color->blue,
+			      fg_color->green,
+			      fg_color->alpha);
+
+	/* draw big scale steps */
+	factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
+      
+	for(y = cartesian->y_start; ; ){
+	  scale_point = cartesian->y_big_scale_func(y,
+						    cartesian->y_scale_data);
+
+	  if(scale_point < factor * cartesian->y_start){
+	    y += cartesian->y_step_height;
+
+	    continue;
+	  }
+      
+	  if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
+	    /* draw scale step */
+	    cairo_move_to(cr,
+			  x_offset - 6.0,
+			  y_offset - scale_point);
+	    cairo_line_to(cr,
+			  x_offset + 6.0,
+			  y_offset - scale_point);
+	    cairo_stroke(cr);
+	  }else{
+	    break;
+	  }
+	
+	  y += cartesian->y_step_height;
+	}
+      }
+    }
+  }
+
+  /* x and y label */
+  if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
     guint i;
 
     for(i = 0; i < width / cartesian->x_label_step_width; i++){
@@ -1150,8 +1606,8 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       g_object_unref(layout);
     }
   }
-
-  void ags_cartesian_draw_y_label(){
+  
+  if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
     guint i;
 
     for(i = 0; i < height / cartesian->y_label_step_height; i++){
@@ -1190,417 +1646,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     }
 
     cairo_stroke(cr);
-  }
-    
-  void ags_cartesian_draw_x_small_scale(){
-    /*  line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
-    
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset + cartesian->x_start,
-		  y_offset);
-    cairo_line_to(cr,
-		  x_offset + cartesian->x_start + width,
-		  y_offset);
-    cairo_stroke(cr);
-    
-    /* draw small scale steps */
-    factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
-      
-    for(x = cartesian->x_start; ; ){
-      scale_point = cartesian->x_small_scale_func(x,
-						  cartesian->x_scale_data);
-
-      if(scale_point < factor * cartesian->x_start){
-	x += cartesian->x_step_width;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset + scale_point,
-		      y_offset - 4.0);
-	cairo_line_to(cr,
-		      x_offset + scale_point,
-		      y_offset + 4.0);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      x += cartesian->x_step_width;
-    }
-  }
-
-  void ags_cartesian_draw_x_big_scale(){
-    /* line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);    
-
-    /* draw big scale steps */
-    factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
-      
-    for(x = cartesian->x_start; ; ){
-      scale_point = cartesian->x_big_scale_func(x,
-						cartesian->x_scale_data);
-
-      if(scale_point < factor * cartesian->x_start){
-	x += cartesian->x_step_width;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->x_end + cartesian->x_scale_step_width){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset + scale_point,
-		      y_offset - 6.0);
-	cairo_line_to(cr,
-		      x_offset + scale_point,
-		      y_offset + 6.0);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      x += cartesian->x_step_width;
-    }
-  }
-
-  void ags_cartesian_draw_y_small_scale(){
-    /* color and line width */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
-    
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset,
-		  y_offset - cartesian->y_start);
-    cairo_line_to(cr,
-		  x_offset,
-		  y_offset - cartesian->y_start - height);
-    cairo_stroke(cr);
-
-    /* draw small scale steps */
-    factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
-      
-    for(y = cartesian->y_start; ; ){
-      scale_point = cartesian->y_small_scale_func(y,
-						  cartesian->y_scale_data);
-
-      if(scale_point < factor * cartesian->y_start){
-	y += cartesian->y_step_height;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset - 4.0,
-		      y_offset - scale_point);
-	cairo_line_to(cr,
-		      x_offset + 4.0,
-		      y_offset - scale_point);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      y += cartesian->y_step_height;
-    }
-  }
-
-  void ags_cartesian_draw_y_big_scale(){
-    /* line width */
-    cairo_set_line_width(cr, cartesian->line_width);
-
-    /* color */
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);    
-
-    /* draw big scale steps */
-    factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
-      
-    for(y = cartesian->y_start; ; ){
-      scale_point = cartesian->y_big_scale_func(y,
-						cartesian->y_scale_data);
-
-      if(scale_point < factor * cartesian->y_start){
-	y += cartesian->y_step_height;
-
-	continue;
-      }
-      
-      if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
-	/* draw scale step */
-	cairo_move_to(cr,
-		      x_offset - 6.0,
-		      y_offset - scale_point);
-	cairo_line_to(cr,
-		      x_offset + 6.0,
-		      y_offset - scale_point);
-	cairo_stroke(cr);
-      }else{
-	break;
-      }
-	
-      y += cartesian->y_step_height;
-    }
-  }
-
-  void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel){
-    int bpp = stride / width;
-    /* Here p is the address to the pixel we want to set */
-    unsigned char *p = data + y * stride + x * bpp;
-
-    switch(bpp) {
-    case 1:
-      *p = pixel;
-      break;
-
-    case 2:
-      *(gint16 *)p = pixel;
-      break;
-
-    case 3:
-      p[0] = pixel & 0xff;
-      p[1] = (pixel >> 8) & 0xff;
-      p[2] = (pixel >> 16) & 0xff;
-      break;
-
-    case 4:
-      *(gint32 *)p = pixel;
-      break;
-    }
-  }
-  
-  void ags_cartesian_draw_plot(AgsPlot *plot){
-    unsigned char *data;
-    guint i;
-
-    cairo_set_source_rgb(cr,
-			 cartesian_style->fg[0].red / white_gc,
-			 cartesian_style->fg[0].green / white_gc,
-			 cartesian_style->fg[0].blue / white_gc);
-
-    /* points */
-    for(i = 0; i < plot->n_points; i++){
-      if(plot->point[i] != NULL){
-	if(plot->point_color != NULL &&
-	   plot->point_color[i] != NULL){
-	  cairo_set_source_rgb(cr,
-			       plot->point_color[i][0],
-			       plot->point_color[i][1],
-			       plot->point_color[i][2]);
-	}
-	
-#ifdef AGS_DEBUG
-	g_message("%f %f", plot->point[i][0], plot->point[i][1]);
-#endif
-	
-	cairo_arc(cr,
-		  x_offset + plot->point[i][0] - cartesian->point_radius,
-		  y_offset - (plot->point[i][1] - cartesian->point_radius),
-		  cartesian->point_radius,
-		  -1.0 * M_PI,
-		  1.0 * M_PI);
-
-	if(plot->join_points){
-	  if(i == 0){
-	    cairo_move_to(cr,
-			  x_offset, y_offset);
-	    
-	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
-	  }else{
-	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
-	  }
-	}
-      }
-    }
-    
-    cairo_stroke(cr);
-    cairo_fill(cr);
-
-    /* bitmaps */
-    for(i = 0; i < plot->n_bitmaps; i++){
-      if(plot->bitmap[i] != NULL){
-	unsigned long int pixel;
-	guint nth;
-	guint x, y;
-
-	if(plot->bitmap_color != NULL &&
-	   plot->bitmap_color[i] != NULL){
-	  pixel = ((255 << 16) * plot->bitmap_color[i][0] +
-		   (255 << 8) * plot->bitmap_color[i][1] +
-		   255 * plot->bitmap_color[i][0]);
-	}else{
-	  pixel = 0xffffff;
-	}
-	
-	for(y = 0, nth = 0; y < height; y++){
-	  for(x = 0; x < width; x++, nth++){
-	    if(((1 << (nth % 8)) & (plot->bitmap[i][(guint) floor(nth / 8.0)])) != 0){
-	      ags_cartesian_draw_putpixel(x, y, pixel);
-	    }
-	  }
-	}
-      }
-    }
-
-    /* pixmaps */
-    for(i = 0; i < plot->n_pixmaps; i++){
-      if(plot->pixmap[i] != NULL){
-	guint nth;
-	guint x, y;
-	
-	for(y = 0, nth = 0; y < height; y++){
-	  for(x = 0; x < width; x++, nth++){
-	    if(plot->pixmap[i][nth] != NULL){
-	      unsigned long int pixel;
-
-	      pixel = ((255 << 16) * plot->pixmap[i][nth][0] +
-		       (255 << 8) * plot->pixmap[i][nth][1] +
-		       255 * plot->pixmap[i][nth][0]);
-	      
-	      ags_cartesian_draw_putpixel(x, y, pixel);
-	    }
-	  }
-	}
-      }
-    }
-  }
-  
-  /* entry point */
-  if(!AGS_IS_CARTESIAN(cartesian)){
-    return;
-  }
-  
-  widget = GTK_WIDGET(cartesian);
-  cartesian_style = gtk_widget_get_style(widget);
-
-  cr = gdk_cairo_create(widget->window);
-
-  if(cr == NULL){
-    return;
-  }
-
-  g_object_get(gtk_settings_get_default(),
-	       "gtk-font-name", &font_name,
-	       NULL);
-  
-  /* clear bg */
-  cairo_set_source_rgb(cr,
-		       cartesian_style->bg[0].red / white_gc,
-		       cartesian_style->bg[0].green / white_gc,
-		       cartesian_style->bg[0].blue / white_gc);
-
-  cairo_rectangle(cr,
-		  0.0, 0.0,
-		  widget->allocation.width, widget->allocation.height);
-  cairo_fill(cr);
-  
-  /* cartesian offset, width and height */
-  width = (cartesian->x_end - cartesian->x_start);
-  height = (cartesian->y_end - cartesian->y_start);
-
-  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
-  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
-  
-  /* clear surface to white */
-  data = cairo_image_surface_get_data(cartesian->surface);
-  stride = cairo_image_surface_get_stride(cartesian->surface);
-
-  data_ptr = data;
-  clear_color = (cartesian_style->base[0].red << 16) |
-    (cartesian_style->base[0].green << 8) |
-    (cartesian_style->base[0].blue);
-  
-  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
-  for(i = 0; i < width * height; i++){
-    data_ptr[i] = clear_color;
-  }
-  
-  cairo_surface_flush(cartesian->surface);
-
-  /* surface */
-  cairo_set_source_surface(cr,
-  			   cartesian->surface,
-  			   cartesian->x_margin, cartesian->y_margin);
-  cairo_surface_mark_dirty(cartesian->surface);
-
-  cairo_paint(cr);
-
-  /* draw plot */
-  list = cartesian->plot;
-
-  while(list != NULL){
-    ags_cartesian_draw_plot(list->data);
-
-    list = list->next;
-  }
-
-  /* push group */
-  cairo_push_group(cr);
-
-  ags_cartesian_draw_area();
-
-  /* abscissae */
-  if((AGS_CARTESIAN_ABSCISSAE & (cartesian->flags)) != 0){
-    if((cartesian->x_end == 0.0) ||
-       (cartesian->x_start == 0.0) ||
-       (cartesian->x_start < 0.0 &&
-	cartesian->x_end > 0.0)){
-      ags_cartesian_draw_y_small_scale();
-      ags_cartesian_draw_y_big_scale();
-    }
-  }
-
-  /* ordinate */
-  if((AGS_CARTESIAN_ORDINATE & (cartesian->flags)) != 0){
-    if((cartesian->y_end == 0.0) ||
-       (cartesian->y_start == 0.0) ||
-       (cartesian->y_start < 0.0 &&
-	cartesian->y_end > 0.0)){
-      ags_cartesian_draw_x_small_scale();
-      ags_cartesian_draw_x_big_scale();
-    }
-  }
-
-  /* x and y label */
-  cairo_select_font_face(cr, "Georgia",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  
-  cairo_set_font_size(cr, (gdouble) cartesian->font_size);
-  
-  if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
-    ags_cartesian_draw_x_label();
-  }
-  
-  if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
-    ags_cartesian_draw_y_label();
   }
 
   /* x unit */
@@ -1675,8 +1720,12 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   /* paint */
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+  g_boxed_free(GDK_TYPE_RGBA, fg_color);
+  g_boxed_free(GDK_TYPE_RGBA, fg_color_active);
+  g_boxed_free(GDK_TYPE_RGBA, bg_color);
+  g_boxed_free(GDK_TYPE_RGBA, border_color);
+
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 AgsPlot*
@@ -1698,8 +1747,8 @@ ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
     plot->point = NULL;
     plot->point_color = NULL;
   }else{
-    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble));
-    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble));
+    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble *));
+    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble *));
     plot->point_label = (gchar **) malloc((n_points + 1) * sizeof(gchar *));
 
     for(i = 0; i < n_points; i++){
@@ -2039,23 +2088,29 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
     i_stop = (guint) ceil((1.0 / cartesian->x_label_step_width) *
 			  (cartesian->x_end - cartesian->x_start));
 
-    for(i = 0; i < i_stop; i++){
-      /* fill x label */
-      cartesian->x_label[i] = cartesian->x_label_func((cartesian->x_label_factor *
-						       (gdouble) i + (cartesian->x_start / cartesian->x_step_width) +
-						       (cartesian->x_label_start / cartesian->x_step_width)),
-						      cartesian->x_label_data);
+    if(cartesian->x_label != NULL &&
+       cartesian->x_label_func != NULL){
+      for(i = 0; i < i_stop; i++){
+	/* fill x label */
+	cartesian->x_label[i] = cartesian->x_label_func((cartesian->x_label_factor *
+							 (gdouble) i + (cartesian->x_start / cartesian->x_step_width) +
+							 (cartesian->x_label_start / cartesian->x_step_width)),
+							cartesian->x_label_data);
+      }
     }
   }else{
     i_stop = (guint) ceil((1.0 / cartesian->y_label_step_height) *
 			  (cartesian->y_end - cartesian->y_start));
 
-    for(i = 0; i < i_stop; i++){
-      /* fill y label */
-      cartesian->y_label[i] = cartesian->y_label_func((cartesian->y_label_factor *
-						       (gdouble) i + (cartesian->y_start / cartesian->y_step_height) +
-						       (cartesian->y_label_start / cartesian->y_step_height)),
-						      cartesian->y_label_data);
+    if(cartesian->y_label != NULL &&
+       cartesian->y_label_func != NULL){
+      for(i = 0; i < i_stop; i++){
+	/* fill y label */
+	cartesian->y_label[i] = cartesian->y_label_func((cartesian->y_label_factor *
+							 (gdouble) i + (cartesian->y_start / cartesian->y_step_height) +
+							 (cartesian->y_label_start / cartesian->y_step_height)),
+							cartesian->y_label_data);
+      }
     }
   }
 }
@@ -2067,7 +2122,7 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
  *
  * Returns: the new #AgsCartesian
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCartesian*
 ags_cartesian_new()

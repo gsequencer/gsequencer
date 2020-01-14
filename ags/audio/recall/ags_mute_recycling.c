@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_mute_recycling.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_mute_audio_signal.h>
 
@@ -114,7 +112,7 @@ ags_mute_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsMuteRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteRecycling*
 ags_mute_recycling_new(AgsRecycling *source)

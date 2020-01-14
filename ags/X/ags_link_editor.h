@@ -27,8 +27,11 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LINK_EDITOR                (ags_link_editor_get_type())
 #define AGS_LINK_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LINK_EDITOR, AgsLinkEditor))
@@ -68,5 +71,7 @@ struct _AgsLinkEditorClass
 GType ags_link_editor_get_type(void);
 
 AgsLinkEditor* ags_link_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LINK_EDITOR_H__*/

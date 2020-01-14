@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MACHINE_COLLECTION_ENTRY                (ags_machine_collection_entry_get_type())
 #define AGS_MACHINE_COLLECTION_ENTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_COLLECTION_ENTRY, AgsMachineCollectionEntry))
@@ -63,5 +70,7 @@ struct _AgsMachineCollectionEntryClass
 GType ags_machine_collection_entry_get_type(void);
 
 AgsMachineCollectionEntry* ags_machine_collection_entry_new(GtkWidget *machine);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_COLLECTION_ENTRY_H__*/

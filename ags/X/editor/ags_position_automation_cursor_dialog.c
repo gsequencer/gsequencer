@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/editor/ags_position_automation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -67,7 +64,6 @@ gboolean ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, G
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -143,27 +139,11 @@ ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDial
 
   /* properties */
   /**
-   * AgsPositionAutomationCursorDialog:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsPositionAutomationCursorDialog:main-window:
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -211,7 +191,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 	       NULL);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) position_automation_cursor_dialog->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) gtk_dialog_get_content_area(position_automation_cursor_dialog),
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);  
@@ -269,27 +249,6 @@ ags_position_automation_cursor_dialog_set_property(GObject *gobject,
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) position_automation_cursor_dialog->application_context == application_context){
-	return;
-      }
-      
-      if(position_automation_cursor_dialog->application_context != NULL){
-	g_object_unref(position_automation_cursor_dialog->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      position_automation_cursor_dialog->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -328,11 +287,6 @@ ags_position_automation_cursor_dialog_get_property(GObject *gobject,
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, position_automation_cursor_dialog->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, position_automation_cursor_dialog->main_window);
@@ -387,10 +341,6 @@ ags_position_automation_cursor_dialog_finalize(GObject *gobject)
   AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
 
   position_automation_cursor_dialog = (AgsPositionAutomationCursorDialog *) gobject;
-
-  if(position_automation_cursor_dialog->application_context != NULL){
-    g_object_unref(position_automation_cursor_dialog->application_context);
-  }
   
   G_OBJECT_CLASS(ags_position_automation_cursor_dialog_parent_class)->finalize(gobject);
 }
@@ -448,14 +398,14 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   automation_edit->cursor_position_x = 16 * x;
   automation_edit->cursor_position_y = 0.0;
 
-  hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
+  hadjustment = gtk_range_get_adjustment(GTK_RANGE(automation_edit->hscrollbar));
 
   widget = (GtkWidget *) automation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
+			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
   }
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) position_automation_cursor_dialog->set_focus)){
@@ -487,7 +437,7 @@ ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAn
  *
  * Returns: a new #AgsPositionAutomationCursorDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPositionAutomationCursorDialog*
 ags_position_automation_cursor_dialog_new(GtkWidget *main_window)

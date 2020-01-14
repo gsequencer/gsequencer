@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_rt_stream_audio_signal.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_rt_stream_channel.h>
@@ -169,11 +167,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   void (*parent_class_run_pre)(AgsRecall *recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_pre(recall);
@@ -459,7 +453,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
  *
  * Returns: the new #AgsRtStreamAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRtStreamAudioSignal*
 ags_rt_stream_audio_signal_new(AgsAudioSignal *source)

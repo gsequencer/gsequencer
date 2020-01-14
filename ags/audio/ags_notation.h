@@ -23,13 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_note.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTATION                (ags_notation_get_type())
 #define AGS_NOTATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION, AgsNotation))
@@ -38,7 +38,7 @@
 #define AGS_IS_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTATION))
 #define AGS_NOTATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTATION, AgsNotationClass))
 
-#define AGS_NOTATION_GET_OBJ_MUTEX(obj) (((AgsNotation *) obj)->obj_mutex)
+#define AGS_NOTATION_GET_OBJ_MUTEX(obj) (&(((AgsNotation *) obj)->obj_mutex))
 
 #define AGS_NOTATION_DEFAULT_BPM (120.0)
 
@@ -48,7 +48,7 @@
 
 #define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
 #define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
-#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * USEC_PER_SEC)
+#define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_USEC_PER_SEC)
 #define AGS_NOTATION_DEFAULT_OFFSET (64 * (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
 
 #define AGS_NOTATION_DEFAULT_END (64 * 64 * 1200)
@@ -79,8 +79,7 @@ struct _AgsNotation
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *audio;
   guint audio_channel;
@@ -103,8 +102,6 @@ struct _AgsNotationClass
 
 GType ags_notation_get_type();
 
-pthread_mutex_t* ags_notation_get_class_mutex();
-
 gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
 void ags_notation_set_flags(AgsNotation *notation, guint flags);
 void ags_notation_unset_flags(AgsNotation *notation, guint flags);
@@ -114,6 +111,9 @@ GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 
 GList* ags_notation_add(GList *notation,
 			AgsNotation *new_notation);
+
+gint ags_notation_sort_func(gconstpointer a,
+			    gconstpointer b);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
@@ -173,12 +173,12 @@ void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 						 gboolean reset_y_offset, guint y_offset,
 						 gboolean match_channel, gboolean no_duplicates);
 
-unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,
-					gdouble bpm, gdouble delay_factor,
-					glong nn, glong dd, glong cc, glong bb,
-					glong tempo,
-					guint *buffer_length);
-AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
+guchar* ags_notation_to_raw_midi(AgsNotation *notation,
+				 gdouble bpm, gdouble delay_factor,
+				 glong nn, glong dd, glong cc, glong bb,
+				 glong tempo,
+				 guint *buffer_length);
+AgsNotation* ags_notation_from_raw_midi(guchar *raw_midi,
 					glong nn, glong dd, glong cc, glong bb,
 					glong tempo,
 					gdouble bpm, gdouble delay_factor,
@@ -186,5 +186,7 @@ AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
 
 AgsNotation* ags_notation_new(GObject *audio,
 			      guint audio_channel);
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_H__*/

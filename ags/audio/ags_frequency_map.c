@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_frequency_map.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_synth_util.h>
@@ -85,8 +83,6 @@ enum{
 static gpointer ags_frequency_map_parent_class = NULL;
 static guint frequency_map_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_frequency_map_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_frequency_map_get_type(void)
 {
@@ -142,7 +138,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The z-index as position of this frequency map.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("z-index",
 				 i18n_pspec("z-index as position"),
@@ -160,7 +156,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The the window count of total z-indexes.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("window-count",
 				 i18n_pspec("window count"),
@@ -179,7 +175,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The samplerate to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -197,7 +193,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -215,7 +211,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The initial size of audio data.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("frame-count",
 				 i18n_pspec("frame count of audio data"),
@@ -233,7 +229,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The attack to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("using attack"),
@@ -251,7 +247,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The oscillator mode to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("oscillator-mode",
 				 i18n_pspec("using oscillator mode"),
@@ -269,7 +265,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The freq to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("freq",
 				   i18n_pspec("using frequency"),
@@ -296,7 +292,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The ::process signal notifies about processed buffer.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   frequency_map_signals[PROCESS] =
     g_signal_new("process",
@@ -314,7 +310,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The ::factorize signal notifies about factorizing map.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   frequency_map_signals[FACTORIZE] =
     g_signal_new("factorize",
@@ -334,7 +330,7 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
    *
    * The ::compute-max-likelihood signal notifies about max likelihooded commputed.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   frequency_map_signals[COMPUTE_MAX_LIKELIHOOD] =
     g_signal_new("compute-max-likelihood",
@@ -351,27 +347,10 @@ ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map)
 void
 ags_frequency_map_init(AgsFrequencyMap *frequency_map)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   frequency_map->flags = 0;
 
   /* add audio signal mutex */
-  frequency_map->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  frequency_map->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  g_rec_mutex_init(&(frequency_map->obj_mutex)); 
 
   /* uuid */
 #if 0
@@ -408,7 +387,7 @@ ags_frequency_map_set_property(GObject *gobject,
 {
   AgsFrequencyMap *frequency_map;
 
-  pthread_mutex_t *frequency_map_mutex;
+  GRecMutex *frequency_map_mutex;
 
   frequency_map = AGS_FREQUENCY_MAP(gobject);
 
@@ -422,11 +401,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     z_index = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->z_index = z_index;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_WINDOW_COUNT:
@@ -435,11 +414,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     window_count = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->window_count = window_count;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_SAMPLERATE:
@@ -448,11 +427,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     samplerate = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->samplerate = samplerate;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
@@ -461,7 +440,7 @@ ags_frequency_map_set_property(GObject *gobject,
 
     buffer_size = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     if(frequency_map->buffer_size != buffer_size){
       frequency_map->buffer_size = buffer_size;
@@ -472,7 +451,7 @@ ags_frequency_map_set_property(GObject *gobject,
 					       frequency_map->buffer_size);
     }
     
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
@@ -481,11 +460,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     frame_count = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->frame_count = frame_count;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_ATTACK:
@@ -494,11 +473,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     attack = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->attack = attack;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_OSCILLATOR_MODE:
@@ -507,11 +486,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     oscillator_mode = g_value_get_uint(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->oscillator_mode = oscillator_mode;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_FREQ:
@@ -520,11 +499,11 @@ ags_frequency_map_set_property(GObject *gobject,
 
     freq = g_value_get_double(value);
 
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     frequency_map->freq = freq;
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   default:
@@ -541,8 +520,7 @@ ags_frequency_map_get_property(GObject *gobject,
 {
   AgsFrequencyMap *frequency_map;
 
-  pthread_mutex_t *frequency_map_mutex;
-  pthread_mutex_t *stream_mutex;
+  GRecMutex *frequency_map_mutex;
 
   frequency_map = AGS_FREQUENCY_MAP(gobject);
 
@@ -552,74 +530,74 @@ ags_frequency_map_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_Z_INDEX:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->z_index);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_WINDOW_COUNT:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->window_count);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_SAMPLERATE:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->samplerate);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_BUFFER_SIZE:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->buffer_size);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_FRAME_COUNT:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->frame_count);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_ATTACK:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->attack);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_OSCILLATOR_MODE:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_uint(value, frequency_map->oscillator_mode);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   case PROP_FREQ:
   {
-    pthread_mutex_lock(frequency_map_mutex);
+    g_rec_mutex_lock(frequency_map_mutex);
 
     g_value_set_double(value, frequency_map->freq);
 
-    pthread_mutex_unlock(frequency_map_mutex);
+    g_rec_mutex_unlock(frequency_map_mutex);
   }
   break;
   default:
@@ -646,13 +624,6 @@ ags_frequency_map_finalize(GObject *gobject)
 
   frequency_map = AGS_FREQUENCY_MAP(gobject);
 
-
-  pthread_mutex_destroy(frequency_map->obj_mutex);
-  free(frequency_map->obj_mutex);
-
-  pthread_mutexattr_destroy(frequency_map->obj_mutexattr);
-  free(frequency_map->obj_mutexattr);
-
   ags_uuid_free(frequency_map->uuid);
 
   /* call parent */
@@ -668,7 +639,7 @@ ags_frequency_map_finalize(GObject *gobject)
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gint
 ags_frequency_map_sort_func(gconstpointer a,
@@ -730,14 +701,14 @@ ags_frequency_map_sort_func(gconstpointer a,
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *frequency_map_mutex;
+  GRecMutex *frequency_map_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
     return(FALSE);
@@ -747,11 +718,11 @@ ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
   frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
 
   /* test flags */
-  pthread_mutex_lock(frequency_map_mutex);
+  g_rec_mutex_lock(frequency_map_mutex);
 
   retval = ((flags & (frequency_map->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(frequency_map_mutex);
+  g_rec_mutex_unlock(frequency_map_mutex);
 
   return(retval);
 }
@@ -763,12 +734,12 @@ ags_frequency_map_test_flags(AgsFrequencyMap *frequency_map, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
 {
-  pthread_mutex_t *frequency_map_mutex;
+  GRecMutex *frequency_map_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
     return;
@@ -778,11 +749,11 @@ ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
   frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
 
   /* set flags */
-  pthread_mutex_lock(frequency_map_mutex);
+  g_rec_mutex_lock(frequency_map_mutex);
 
   frequency_map->flags |= flags;
   
-  pthread_mutex_unlock(frequency_map_mutex);
+  g_rec_mutex_unlock(frequency_map_mutex);
 }
 
 /**
@@ -792,12 +763,12 @@ ags_frequency_map_set_flags(AgsFrequencyMap *frequency_map, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags)
 {
-  pthread_mutex_t *frequency_map_mutex;
+  GRecMutex *frequency_map_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP(frequency_map)){
     return;
@@ -807,11 +778,11 @@ ags_frequency_map_unset_flags(AgsFrequencyMap *frequency_map, guint flags)
   frequency_map_mutex = AGS_FREQUENCY_MAP_GET_OBJ_MUTEX(frequency_map);
 
   /* unset flags */
-  pthread_mutex_lock(frequency_map_mutex);
+  g_rec_mutex_lock(frequency_map_mutex);
 
   frequency_map->flags &= (~flags);
   
-  pthread_mutex_unlock(frequency_map_mutex);
+  g_rec_mutex_unlock(frequency_map_mutex);
 }
 
 void
@@ -867,7 +838,7 @@ ags_frequency_map_real_process(AgsFrequencyMap *frequency_map)
  * 
  * Process @frequency_map.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_process(AgsFrequencyMap *frequency_map)
@@ -887,9 +858,9 @@ ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
   guint i;
 
   for(i = frequency_map->attack; i < frequency_map->frame_count; i++){
-    z = ags_complex_get(factorized_frequency_map->buffer[i]) * ags_complex_get(frequency_map->buffer[i]);
+    z = ags_complex_get(&(factorized_frequency_map->buffer[i])) * ags_complex_get(&(frequency_map->buffer[i]));
     
-    ags_complex_set(factorized_frequency_map->buffer[i],
+    ags_complex_set(&(factorized_frequency_map->buffer[i]),
 		    z);
   }
 }
@@ -901,7 +872,7 @@ ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
  * 
  * Factorize @frequency_map.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_factorize(AgsFrequencyMap *frequency_map,
@@ -925,9 +896,9 @@ ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
   guint i;
 
   for(i = 0; i < frequency_map->buffer_size; i++){
-    z = ags_complex_get(frequency_map->buffer[i]) * ags_complex_get(source[i]);
+    z = ags_complex_get(&(frequency_map->buffer[i])) * ags_complex_get(&(source[i]));
         
-    ags_complex_set(retval[0][i],
+    ags_complex_set(&(retval[0][i]),
 		    z);
   }
 }
@@ -940,7 +911,7 @@ ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
  * 
  * Compute maximum likelihood @source and store in @retval.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
@@ -965,7 +936,7 @@ ags_frequency_map_compute_max_likelihood(AgsFrequencyMap *frequency_map,
  *
  * Returns: a new #AgsFrequencyMap
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFrequencyMap*
 ags_frequency_map_new()

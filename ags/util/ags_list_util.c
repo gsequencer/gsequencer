@@ -31,14 +31,14 @@
 
 /**
  * ags_list_util_find_type:
- * @list: the #GList-struct
- * @gtype: the GType to find
+ * @list: (transfer none) (element-type GObject): the #GList-struct
+ * @gtype: the #GType to find
  * 
  * Find @gtype within @list.
  * 
- * Returns: the next matching #GList-struct
+ * Returns: (transfer none) (element-type GObject): the next matching #GList-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_list_util_find_type(GList *list,
@@ -59,31 +59,3 @@ ags_list_util_find_type(GList *list,
   
   return(NULL);
 }
-
-/**
- * ags_list_util_copy_and_ref:
- * @list: the #GList-struct
- * 
- * Copy @list and increase ref count on entries.
- * 
- * Returns: the start of the copied #GList-struct
- * 
- * Since: 2.0.0
- */
-GList*
-ags_list_util_copy_and_ref(GList *list)
-{
-  GList *list_start;
-
-  list = 
-    list_start = g_list_copy(list);
-  
-  while(list != NULL){
-    g_object_ref(G_OBJECT(list->data));
-    
-    list = list->next;
-  }
-
-  return(list_start);
-}
-

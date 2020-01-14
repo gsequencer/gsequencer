@@ -23,14 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
-pthread_mutex_t* ags_globals_get_class_mutex();
+G_BEGIN_DECLS
 
 GHashTable* ags_globals_get_hash_table();
 
 void ags_globals_set(gchar *key,
 		     GValue *value);
 GValue* ags_globals_get(gchar *key);
+
+G_END_DECLS
 
 #endif /*__AGS_GLOBALS_H__*/

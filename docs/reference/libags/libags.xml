@@ -32,8 +32,9 @@
     <xi:include href="xml/ags_conversion.xml"/>
     <xi:include href="xml/ags_endian.xml"/>
     <xi:include href="xml/ags_function.xml"/>
+    <xi:include href="xml/ags_solver_matrix.xml"/>
+    <xi:include href="xml/ags_solver_vector.xml"/>
     <xi:include href="xml/ags_log.xml"/>
-    <xi:include href="xml/ags_parameter.xml"/>
     <xi:include href="xml/ags_regex.xml"/>
     <xi:include href="xml/ags_string_util.xml"/>
     <xi:include href="xml/ags_time.xml"/>
@@ -56,8 +57,8 @@
 
     <xi:include href="xml/ags_applicable.xml"/>
     <xi:include href="xml/ags_application_context.xml"/>
-    <xi:include href="xml/ags_async_queue.xml"/>
     <xi:include href="xml/ags_config.xml"/>
+    <xi:include href="xml/ags_priority.xml"/>
     <xi:include href="xml/ags_connectable.xml"/>
     <xi:include href="xml/ags_countable.xml"/>
     <xi:include href="xml/ags_cursor.xml"/>
@@ -78,45 +79,31 @@
   <part id="xml-io">
     <title>XML Input/Output - Persist project</title>
     
-    <xi:include href="xml/ags_file_stock.xml"/>
     <xi:include href="xml/ags_file.xml"/>
     <xi:include href="xml/ags_file_id_ref.xml"/>
     <xi:include href="xml/ags_file_link.xml"/>
     <xi:include href="xml/ags_file_lookup.xml"/>
     <xi:include href="xml/ags_file_launch.xml"/>
-    <xi:include href="xml/ags_file_util.xml"/>
   </part>
 
   <part id="thread">
     <title>Thread - Multi-threaded tree</title>
 
-    <xi:include href="xml/ags_autosave_thread.xml"/>
     <xi:include href="xml/ags_concurrency_provider.xml"/>
-    <xi:include href="xml/ags_condition_manager.xml"/>
     <xi:include href="xml/ags_destroy_worker.xml"/>
     <xi:include href="xml/ags_generic_main_loop.xml"/>
-    <xi:include href="xml/ags_history.xml"/>
     <xi:include href="xml/ags_message_delivery.xml"/>
     <xi:include href="xml/ags_message_queue.xml"/>
-    <xi:include href="xml/ags_mutex_manager.xml"/>
-    <xi:include href="xml/ags_polling_thread.xml"/>
-    <xi:include href="xml/ags_poll_fd.xml"/>
+    <xi:include href="xml/ags_message_envelope.xml"/>
     <xi:include href="xml/ags_returnable_thread.xml"/>
-    <xi:include href="xml/ags_single_thread.xml"/>
+    <xi:include href="xml/ags_task_launcher.xml"/>
     <xi:include href="xml/ags_task.xml"/>
     <xi:include href="xml/ags_task_completion.xml"/>
-    <xi:include href="xml/ags_task_thread.xml"/>
-    <xi:include href="xml/ags_thread-posix.xml"/>
+    <xi:include href="xml/ags_thread.xml"/>
     <xi:include href="xml/ags_thread_application_context.xml"/>
     <xi:include href="xml/ags_thread_pool.xml"/>
     <xi:include href="xml/ags_timestamp.xml"/>
     <xi:include href="xml/ags_worker_thread.xml"/>
-
-    <chapter id="thread-file">
-      <title>Thread files - Reading/Writing audio data from disk</title>
-      
-      <xi:include href="xml/ags_thread_file_xml.xml"/>
-    </chapter>
   </part>
 
   <part id="xml-rpc">
@@ -133,10 +120,7 @@
 
       <xi:include href="xml/ags_controller.xml"/>
       <xi:include href="xml/ags_front_controller.xml"/>
-      <xi:include href="xml/ags_local_factory_controller.xml"/>
-      <xi:include href="xml/ags_local_registry_controller.xml"/>
-      <xi:include href="xml/ags_local_serialization_controller.xml"/>
-      <xi:include href="xml/ags_local_task_controller.xml"/>
+      <xi:include href="xml/ags_plugin_controller.xml"/>
     </chapter>
 
     <chapter id="server-security">
@@ -145,23 +129,19 @@
       <xi:include href="xml/ags_authentication.xml"/>
       <xi:include href="xml/ags_authentication_manager.xml"/>
       <xi:include href="xml/ags_business_group.xml"/>
+      <xi:include href="xml/ags_business_group_manager.xml"/>
       <xi:include href="xml/ags_certificate.xml"/>
       <xi:include href="xml/ags_certificate_manager.xml"/>
       <xi:include href="xml/ags_password_store.xml"/>
       <xi:include href="xml/ags_password_store_manager.xml"/>
+      <xi:include href="xml/ags_auth_security_context.xml"/>
       <xi:include href="xml/ags_security_context.xml"/>
       <xi:include href="xml/ags_xml_authentication.xml"/>
+      <xi:include href="xml/ags_xml_business_group.xml"/>
       <xi:include href="xml/ags_xml_certificate.xml"/>
       <xi:include href="xml/ags_xml_password_store.xml"/>
     </chapter>
-
-    <chapter id="server-thread">
-      <title>Thread - multi-threaded routines</title>
-
-      <xi:include href="xml/ags_remote_task.xml"/>
-      <xi:include href="xml/ags_remote_task_thread.xml"/>
-    </chapter>
-</part>
+  </part>
   
   <index id="api-index-full">
     <title>API Index</title>

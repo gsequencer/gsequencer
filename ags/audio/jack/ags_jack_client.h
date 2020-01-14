@@ -31,6 +31,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_JACK_CLIENT                (ags_jack_client_get_type())
 #define AGS_JACK_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_CLIENT, AgsJackClient))
 #define AGS_JACK_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_CLIENT, AgsJackClient))
@@ -38,7 +40,7 @@
 #define AGS_IS_JACK_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_CLIENT))
 #define AGS_JACK_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_CLIENT, AgsJackClientClass))
 
-#define AGS_JACK_CLIENT_GET_OBJ_MUTEX(obj) (((AgsJackClient *) obj)->obj_mutex)
+#define AGS_JACK_CLIENT_GET_OBJ_MUTEX(obj) (&(((AgsJackClient *) obj)->obj_mutex))
 
 typedef struct _AgsJackClient AgsJackClient;
 typedef struct _AgsJackClientClass AgsJackClientClass;
@@ -64,8 +66,7 @@ struct _AgsJackClient
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *jack_server;
   
@@ -92,8 +93,6 @@ struct _AgsJackClientClass
 };
 
 GType ags_jack_client_get_type();
-
-pthread_mutex_t* ags_jack_client_get_class_mutex();
 
 gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
 void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);
@@ -122,5 +121,7 @@ void ags_jack_client_activate(AgsJackClient *jack_client);
 void ags_jack_client_deactivate(AgsJackClient *jack_client);
 
 AgsJackClient* ags_jack_client_new(GObject *jack_server);
+
+G_END_DECLS
 
 #endif /*__AGS_JACK_CLIENT_H__*/

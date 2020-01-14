@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PLAY_CHANNEL_RUN_MASTER                (ags_play_channel_run_master_get_type())
 #define AGS_PLAY_CHANNEL_RUN_MASTER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMaster))
 #define AGS_PLAY_CHANNEL_RUN_MASTER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMasterClass))
@@ -72,5 +74,7 @@ void ags_play_channel_run_master_set_flags(AgsPlayChannelRunMaster *play_channel
 void ags_play_channel_run_master_unset_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
 
 AgsPlayChannelRunMaster* ags_play_channel_run_master_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_MASTER_H__*/

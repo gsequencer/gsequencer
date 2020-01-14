@@ -20,16 +20,12 @@
 #include <ags/X/machine/ags_fm_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_fm_oscillator.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <math.h>
 
 void
-ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFMSyncsynth *fm_syncsynth)
+ags_fm_syncsynth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsFMSyncsynth *fm_syncsynth)
 {
   AgsWindow *window;
 

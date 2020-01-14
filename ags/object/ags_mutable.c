@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,7 +69,7 @@ ags_mutable_base_init(AgsMutableInterface *ginterface)
  *
  * Mute a class instance.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_mutable_set_muted(AgsMutable *mutable, gboolean muted)

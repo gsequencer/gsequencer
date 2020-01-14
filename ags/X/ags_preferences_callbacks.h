@@ -20,10 +20,18 @@
 #ifndef __AGS_PREFERENCES_CALLBACKS_H__
 #define __AGS_PREFERENCES_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_preferences.h>
+
+G_BEGIN_DECLS
 
 gboolean ags_preferences_delete_event_callback(GtkWidget *widget, GdkEventAny *event,
 					       gpointer user_data);
@@ -34,5 +42,7 @@ void ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
 						   gpointer page,
 						   guint page_n,
 						   AgsPreferences *preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_PREFERENCES_CALLBACKS_H__*/

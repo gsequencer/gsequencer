@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,7 +119,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of open file"),
@@ -135,7 +135,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -151,7 +151,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The audio channel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel"),
@@ -329,6 +329,8 @@ ags_open_single_file_launch(AgsTask *task)
 
   open_single_file = AGS_OPEN_SINGLE_FILE(task);
 
+  g_return_if_fail(AGS_IS_CHANNEL(open_single_file->channel));
+  
   channel = open_single_file->channel;
 
   g_object_get(channel,
@@ -411,12 +413,14 @@ ags_open_single_file_launch(AgsTask *task)
   /* unref audio file */
   g_object_unref(audio_file);
 
-  g_object_unref(soundcard);
+  if(soundcard != NULL){
+    g_object_unref(soundcard);
+  }
 }
 
 /**
  * ags_open_single_file_new:
- * @channe: the #AgsChannel
+ * @channel: the #AgsChannel
  * @filename: the filename to be opened
  * @audio_channel: the audio channel
  *
@@ -424,7 +428,7 @@ ags_open_single_file_launch(AgsTask *task)
  *
  * Returns: the new #AgsOpenSingleFile.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOpenSingleFile*
 ags_open_single_file_new(AgsChannel *channel,

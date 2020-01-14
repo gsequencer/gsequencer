@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 /* fm sin oscillator */
 void ags_fm_synth_util_sin_s8(gint8 *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
@@ -355,5 +357,7 @@ void ags_fm_synth_util_impulse(void *buffer,
 			       guint lfo_osc_mode,
 			       gdouble lfo_freq, gdouble lfo_depth,
 			       gdouble tuning);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNTH_UTIL_H__*/

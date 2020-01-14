@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_prepare_recycling.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
 
@@ -116,7 +114,7 @@ ags_prepare_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPrepareRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPrepareRecycling*
 ags_prepare_recycling_new(AgsRecycling *source)

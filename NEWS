@@ -1,7 +1,7 @@
 Advanced Gtk+ Sequencer
 ====
 
-Copyright (C) 2005-2019 Joël Krähemann
+Copyright (C) 2005-2020 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
@@ -9,6 +9,30 @@ or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
+
+Overview of Changes in AGS 3.0.0
+================================
+
+* Implemented support for GObject-Introspection. Many gtk-doc annotations
+  fixed and extended symbol descriptions.
+* Refactored AgsComplex and AgsUUID in order to work with introspection. The
+  typedef doesn't use array types, anymore. But derived from a struct, now.
+* Implemented the AgsServer API dropped xmlrpc-c in favor of Libsoup2.4. Session
+  support using HTTP cookies.
+* Yay, AGS-OSC-OVER-XMLRPC has arrived. You can send your OSC packets now over
+  HTTP based on AgsServer supporting authentication and responses arrive on a
+  Websocket.
+* Migrated to Gtk+-3.0, dropped builtin theme. Minimal CSS file enabling stepper
+  for editors.
+* Migrated to GThread API, this was a quiet big refactoring. AgsThread core functions
+  have been rewritten, mainly AgsThread::clock() and AgsThread::run().
+  Removed exotic functions like lock, unlock, wait and signal the tree.
+* Major API changes, dropped many old functions like writing the "Wall of XML" file.
+* Supporting LLVM's clang compiler for now. Replaced all nested functions.
+* Fixed some potential SIGSEGVs.
+* Added online help browser along the WebKitGtk dependency.
+* Added basic key accelerators like: Ctrl-o, Ctrl-s, Ctrl-q and Ctrl-h. To open or
+  save files, quit the application or open online help browser.
 
 Overview of Changes in AGS 2.3.0
 ================================

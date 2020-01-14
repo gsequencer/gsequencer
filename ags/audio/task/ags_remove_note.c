@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2018 Joël Krähemann
+  * Copyright (C) 2005-2020 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -114,7 +114,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of remove note"),
@@ -130,7 +130,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of remove note"),
@@ -146,7 +146,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned audio channel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel of notation"),
@@ -164,7 +164,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The notation's use-selection-list.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("use-selection-list",
 				     i18n_pspec("use selection list"),
@@ -355,10 +355,13 @@ ags_remove_note_launch(AgsTask *task)
   guint audio_channel;
   guint x0;
   
-  pthread_mutex_t *audio_mutex;
+  GRecMutex *audio_mutex;
 
   remove_note = AGS_REMOVE_NOTE(task);
 
+  g_return_if_fail(AGS_IS_AUDIO(remove_note->audio));
+  g_return_if_fail(AGS_IS_NOTE(remove_note->note));
+  
   /* get some fields */
   audio = remove_note->audio;
 
@@ -383,12 +386,12 @@ ags_remove_note_launch(AgsTask *task)
   audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* find near timestamp */
-  pthread_mutex_lock(audio_mutex);
+  g_rec_mutex_lock(audio_mutex);
 
   list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
 					  timestamp);
 
-  pthread_mutex_unlock(audio_mutex);
+  g_rec_mutex_unlock(audio_mutex);
 					  
   if(list == NULL){
     return;
@@ -408,13 +411,14 @@ ags_remove_note_launch(AgsTask *task)
  * ags_remove_note_new:
  * @audio: the #AgsAudio
  * @note: the #AgsNote to remove
+ * @audio_channel: the audio channel
  * @use_selection_list: if %TRUE remove of selection, otherwise of notation
  *
  * Create a new instance of #AgsRemoveNote.
  *
  * Returns: the new #AgsRemoveNote
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRemoveNote*
 ags_remove_note_new(AgsAudio *audio,

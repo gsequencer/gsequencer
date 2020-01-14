@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ADD_AUDIO                (ags_add_audio_get_type())
 #define AGS_ADD_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ADD_AUDIO, AgsAddAudio))
 #define AGS_ADD_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ADD_AUDIO, AgsAddAudioClass))
@@ -41,7 +43,6 @@ struct _AgsAddAudio
 {
   AgsTask task;
 
-  AgsApplicationContext *application_context;
   AgsAudio *audio;
 };
 
@@ -52,7 +53,8 @@ struct _AgsAddAudioClass
 
 GType ags_add_audio_get_type();
 
-AgsAddAudio* ags_add_audio_new(AgsApplicationContext *application_context,
-			       AgsAudio *audio);
+AgsAddAudio* ags_add_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_ADD_AUDIO_H__*/

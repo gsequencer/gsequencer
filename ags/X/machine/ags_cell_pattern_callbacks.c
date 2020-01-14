@@ -19,9 +19,6 @@
 
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -29,6 +26,31 @@
 #include <gdk/gdkkeysyms.h>
 
 #include <math.h>
+
+void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
+
+void
+ags_cell_pattern_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsCellPattern *cell_pattern)
+{
+//  cairo_surface_flush(cairo_get_target(cr));
+
+  cairo_push_group(cr);
+
+  /* the grid */
+  ags_cell_pattern_draw_grid(cell_pattern, cr);
+
+  /* the pattern */  
+  ags_cell_pattern_draw_matrix(cell_pattern, cr);
+
+  ags_cell_pattern_draw_cursor(cell_pattern, cr);
+
+  /* paint */
+  cairo_pop_group_to_source(cr);
+
+  cairo_paint(cr);
+  
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
+}
 
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
@@ -39,59 +61,30 @@ ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPa
 }
 
 gboolean
-ags_cell_pattern_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsCellPattern *cell_pattern)
-{
-  ags_cell_pattern_paint(cell_pattern);
-  
-  return(FALSE);
-}
-
-gboolean
-ags_cell_pattern_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsCellPattern *cell_pattern)
-{
-  ags_cell_pattern_paint(cell_pattern);
-
-  return(FALSE);
-}
-
-gboolean
 ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *cell_pattern)
 {
   if(event->button == 1){
     AgsMachine *machine;
 
     AgsAudio *audio;
-    AgsChannel *start_input;
-    AgsChannel *channel, *nth_channel;
-    AgsPattern *pattern;
+    AgsChannel *start_input, *nth_channel;
+
+    GList *start_pattern;
     
     guint input_lines;
     guint i, j;
     guint index1;
-    
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *channel_mutex;
 
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						     AGS_TYPE_MACHINE);
 
     audio = machine->audio;
     
-    /* get audio mutex */
-    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
-
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-
-    input_lines = audio->input_lines;
-
-    start_input = audio->input;
-
-    if(start_input != NULL){
-      g_object_ref(start_input);
-    }
-    
-    pthread_mutex_unlock(audio_mutex);
+    /* get some audio fields */
+    g_object_get(audio,
+		 "input-lines", &input_lines,
+		 "input", &start_input,
+		 NULL);
     
     /* get pattern position */        
     i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
@@ -100,26 +93,22 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     index1 = machine->bank_1;
 
     nth_channel = ags_channel_nth(start_input,
-				  input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + i) - 1);
+				  input_lines - ((guint) gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + i) - 1);
 
-    channel = nth_channel;
-    
-    if(channel != NULL){
-      /* get channel mutex */
-      channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
+    if(nth_channel != NULL){
       /* toggle pattern */
-      pthread_mutex_lock(channel_mutex);
+      g_object_get(nth_channel,
+		   "pattern", &start_pattern,
+		   NULL);
 
-      pattern = channel->pattern->data;
-
-      pthread_mutex_unlock(channel_mutex);
-
-      ags_pattern_toggle_bit(pattern,
+      ags_pattern_toggle_bit(start_pattern->data,
 			     0, index1,
 			     j);
       
-      g_object_unref(channel);
+      g_object_unref(nth_channel);
+
+      g_list_free_full(start_pattern,
+		       g_object_unref);
     }
 
     /* unref */
@@ -181,8 +170,6 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   AgsChannel *channel, *nth_channel;
 
   guint input_lines;
-
-  pthread_mutex_t *channel_mutex;  
   
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -217,7 +204,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_leftarrow:
     {
       if(cell_pattern->cursor_x > 0){
-	AgsPattern *pattern;
+	GList *start_pattern;
 	
 	gboolean bit_is_on;
 	
@@ -230,31 +217,33 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = nth_channel;
 
 	if(channel != NULL){
-	  /* get channel mutex */
-	  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
 	  /* check bit */
-	  pthread_mutex_lock(channel_mutex);
+	  g_object_get(channel,
+		       "pattern", &start_pattern,
+		       NULL);
 
-	  pattern = channel->pattern->data;
-	
-	  pthread_mutex_unlock(channel_mutex);
-
-	  bit_is_on = (ags_pattern_get_bit(pattern,
+	  bit_is_on = (ags_pattern_get_bit(start_pattern->data,
 					   0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	  if(bit_is_on){
-	    guint line;
-
+	    AgsPlayback *playback;
+	    
 	    g_object_get(channel,
-			 "line", &line,
+			 "playback", &playback,
 			 NULL);
 	    
-	    ags_cell_pattern_play(cell_pattern,
-				  line);
+	    ags_machine_playback_set_active(machine,
+					    playback,
+					    TRUE);
+	  
+	    g_object_unref(playback);
 	  }
 
+	  /* unref */
 	  g_object_unref(channel);
+	  
+	  g_list_free_full(start_pattern,
+			   g_object_unref);
 	}
       }
     }
@@ -263,7 +252,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_rightarrow:
     {
       if(cell_pattern->cursor_x < cell_pattern->n_cols){
-	AgsPattern *pattern;
+	GList *start_pattern;
 	
 	gboolean bit_is_on;
 	
@@ -276,31 +265,33 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = nth_channel;
 
 	if(channel != NULL){
-	  /* get channel mutex */
-	  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
 	  /* check bit */
-	  pthread_mutex_lock(channel_mutex);
+	  g_object_get(channel,
+		       "pattern", &start_pattern,
+		       NULL);
 
-	  pattern = channel->pattern->data;
-	
-	  pthread_mutex_unlock(channel_mutex);
-
-	  bit_is_on = ags_pattern_get_bit(pattern,
+	  bit_is_on = ags_pattern_get_bit(start_pattern->data,
 					  0, machine->bank_1, cell_pattern->cursor_x);
 	
 	  if(bit_is_on){
-	    guint line;
-
+	    AgsPlayback *playback;
+	    
 	    g_object_get(channel,
-			 "line", &line,
+			 "playback", &playback,
 			 NULL);
 	    
-	    ags_cell_pattern_play(cell_pattern,
-				  line);
+	    ags_machine_playback_set_active(machine,
+					    playback,
+					    TRUE);
+	  
+	    g_object_unref(playback);
 	  }
 
+	  /* unref */
 	  g_object_unref(channel);
+
+	  g_list_free_full(start_pattern,
+			   g_object_unref);
 	}
       }
     }
@@ -309,7 +300,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_uparrow:
     {
       if(cell_pattern->cursor_y > 0){
-	AgsPattern *pattern;
+	GList *start_pattern;
 	
 	gboolean bit_is_on;
 	
@@ -322,37 +313,39 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = nth_channel;
 
 	if(channel != NULL){
-	  /* get channel mutex */
-	  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
 	  /* check bit */
-	  pthread_mutex_lock(channel_mutex);
+	  g_object_get(channel,
+		       "pattern", &start_pattern,
+		       NULL);
 
-	  pattern = channel->pattern->data;
-	
-	  pthread_mutex_unlock(channel_mutex);
-
-	  bit_is_on = (ags_pattern_get_bit(pattern,
+	  bit_is_on = (ags_pattern_get_bit(start_pattern->data,
 					   0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	  if(bit_is_on){
-	    guint line;
-
+	    AgsPlayback *playback;
+	    
 	    g_object_get(channel,
-			 "line", &line,
+			 "playback", &playback,
 			 NULL);
 	    
-	    ags_cell_pattern_play(cell_pattern,
-				  line);
+	    ags_machine_playback_set_active(machine,
+					    playback,
+					    TRUE);
+	  
+	    g_object_unref(playback);
 	  }
 
+	  /* unref */
 	  g_object_unref(channel);
+
+	  g_list_free_full(start_pattern,
+			   g_object_unref);
 	}
       }
       
-      if(cell_pattern->cursor_y < GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value){
+      if(cell_pattern->cursor_y < gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar))){
 	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value - 1.0);
+			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) - 1.0);
       }
     }
     break;
@@ -360,7 +353,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_downarrow:
     {
       if(cell_pattern->cursor_y < cell_pattern->n_rows){
-	AgsPattern *pattern;
+	GList *start_pattern;
 	
 	gboolean bit_is_on;
 	
@@ -373,43 +366,45 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = nth_channel;
 
 	if(channel != NULL){
-	  /* get channel mutex */
-	  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-
 	  /* check bit */
-	  pthread_mutex_lock(channel_mutex);
+	  g_object_get(channel,
+		       "pattern", &start_pattern,
+		       NULL);
 
-	  pattern = channel->pattern->data;
-	
-	  pthread_mutex_unlock(channel_mutex);
-
-	  bit_is_on = (ags_pattern_get_bit(pattern,
-					   0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
+	  bit_is_on = ags_pattern_get_bit(start_pattern->data,
+					  0, machine->bank_1, cell_pattern->cursor_x);
 		
 	  if(bit_is_on){
-	    guint line;
-
+	    AgsPlayback *playback;
+	    
 	    g_object_get(channel,
-			 "line", &line,
+			 "playback", &playback,
 			 NULL);
 	    
-	    ags_cell_pattern_play(cell_pattern,
-				  line);
+	    ags_machine_playback_set_active(machine,
+					    playback,
+					    TRUE);
+	  
+	    g_object_unref(playback);
 	  }
 
+	  /* unref */
 	  g_object_unref(channel);
+
+	  g_list_free_full(start_pattern,
+			   g_object_unref);
 	}
       }
       
-      if(cell_pattern->cursor_y >= GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+      if(cell_pattern->cursor_y >= gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
 	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
-			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + 1.0);
+			    gtk_range_get_value(GTK_RANGE(cell_pattern->vscrollbar)) + 1.0);
       }
     }
     break;
   case GDK_KEY_space:
     {
-      AgsPattern *pattern;
+      GList *start_pattern;
 
       guint i, j;
       guint index1;
@@ -425,34 +420,36 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       channel = nth_channel;
 
       if(channel != NULL){
-	/* get channel mutex */
-	channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-      
 	/* toggle pattern */
-	pthread_mutex_lock(channel_mutex);
+	g_object_get(channel,
+		     "pattern", &start_pattern,
+		     NULL);
 
-	pattern = channel->pattern->data;
-	
-	pthread_mutex_unlock(channel_mutex);
-
-	ags_pattern_toggle_bit(pattern,
+	ags_pattern_toggle_bit(start_pattern->data,
 			       0, index1,
 			       j);
 
 	/* play pattern */
-	if(ags_pattern_get_bit(pattern,
+	if(ags_pattern_get_bit(start_pattern->data,
 			       0, index1, j)){
-	  guint line;
-
+	  AgsPlayback *playback;
+	    
 	  g_object_get(channel,
-		       "line", &line,
+		       "playback", &playback,
 		       NULL);
 	    
-	  ags_cell_pattern_play(cell_pattern,
-				line);
+	  ags_machine_playback_set_active(machine,
+					  playback,
+					  TRUE);
+	  
+	  g_object_unref(playback);
 	}
 
+	/* unref */
 	g_object_unref(channel);
+
+	g_list_free_full(start_pattern,
+			 g_object_unref);
       }
       
       /* queue draw */
@@ -472,5 +469,5 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern)
 {
-  ags_cell_pattern_paint(cell_pattern);
+  gtk_widget_queue_draw(cell_pattern->drawing_area);
 }

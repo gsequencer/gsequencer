@@ -19,15 +19,12 @@
 
 #include <ags/audio/recall/ags_mute_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio);
 void ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_mute_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mute_audio_init(AgsMuteAudio *mute_audio);
 void ags_mute_audio_set_property(GObject *gobject,
 				 guint prop_id,
@@ -39,8 +36,6 @@ void ags_mute_audio_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_mute_audio_dispose(GObject *gobject);
 void ags_mute_audio_finalize(GObject *gobject);
-
-void ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted);
 
@@ -97,12 +92,6 @@ ags_mute_audio_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_mute_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						 "AgsMuteAudio",
@@ -112,10 +101,6 @@ ags_mute_audio_get_type()
     g_type_add_interface_static(ags_type_mute_audio,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
-
-    g_type_add_interface_static(ags_type_mute_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_mute_audio);
   }
@@ -146,7 +131,7 @@ ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio)
    *
    * The mute port.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute audio"),
@@ -162,14 +147,6 @@ void
 ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable)
 {
   mutable->set_muted = ags_mute_audio_set_muted;
-}
-
-void
-ags_mute_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_mute_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_mute_audio_set_ports;
 }
 
 void
@@ -219,7 +196,7 @@ ags_mute_audio_set_property(GObject *gobject,
 {
   AgsMuteAudio *mute_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   mute_audio = AGS_MUTE_AUDIO(gobject);
 
@@ -233,10 +210,10 @@ ags_mute_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == mute_audio->muted){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -251,7 +228,7 @@ ags_mute_audio_set_property(GObject *gobject,
 
       mute_audio->muted = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -268,7 +245,7 @@ ags_mute_audio_get_property(GObject *gobject,
 {
   AgsMuteAudio *mute_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   mute_audio = AGS_MUTE_AUDIO(gobject);
 
@@ -278,32 +255,16 @@ ags_mute_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_MUTED:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, mute_audio->muted);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
-  }
-}
-
-void
-ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "muted", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
   }
 }
 
@@ -370,9 +331,9 @@ ags_mute_audio_get_muted_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -400,7 +361,7 @@ ags_mute_audio_get_muted_plugin_port()
 		      1.0);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
   
   return(plugin_port);
 }
@@ -413,7 +374,7 @@ ags_mute_audio_get_muted_plugin_port()
  *
  * Returns: the new #AgsMuteAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMuteAudio*
 ags_mute_audio_new(AgsAudio *audio)

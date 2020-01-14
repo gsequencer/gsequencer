@@ -29,6 +29,8 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_OPEN_SF2_INSTRUMENT                (ags_open_sf2_instrument_get_type())
 #define AGS_OPEN_SF2_INSTRUMENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSf2Instrument))
 #define AGS_OPEN_SF2_INSTRUMENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_INSTRUMENT, AgsOpenSf2InstrumentClass))
@@ -68,5 +70,7 @@ AgsOpenSf2Instrument* ags_open_sf2_instrument_new(AgsAudio *audio,
 						  gchar *preset,
 						  gchar *instrument,
 						  guint start_pad);
+
+G_END_DECLS
 
 #endif /*__AGS_OPEN_SF2_INSTRUMENT_H__*/

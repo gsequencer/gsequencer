@@ -25,7 +25,7 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_LAUNCH                (ags_file_launch_get_type())
 #define AGS_FILE_LAUNCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LAUNCH, AgsFileLaunch))
@@ -34,7 +34,7 @@
 #define AGS_IS_FILE_LAUNCH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LAUNCH))
 #define AGS_FILE_LAUNCH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_LAUNCH, AgsFileLaunchClass))
 
-#define AGS_FILE_LAUNCH_GET_OBJ_MUTEX(obj) (((AgsFileLaunch *) obj)->obj_mutex)
+#define AGS_FILE_LAUNCH_GET_OBJ_MUTEX(obj) (&(((AgsFileLaunch *) obj)->obj_mutex))
 
 typedef struct _AgsFileLaunch AgsFileLaunch;
 typedef struct _AgsFileLaunchClass AgsFileLaunchClass;
@@ -43,10 +43,7 @@ struct _AgsFileLaunch
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  GObject *application_context;
+  GRecMutex obj_mutex;
 
   gpointer reference;
   
@@ -62,8 +59,6 @@ struct _AgsFileLaunchClass
 };
 
 GType ags_file_launch_get_type(void);
-
-pthread_mutex_t* ags_file_launch_get_class_mutex();
 
 void ags_file_launch_start(AgsFileLaunch *file_launch);
 

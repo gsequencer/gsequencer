@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <gio/gio.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
-#endif
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_CONNECTION                (ags_osc_connection_get_type ())
 #define AGS_OSC_CONNECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CONNECTION, AgsOscConnection))
@@ -36,7 +36,7 @@
 #define AGS_IS_OSC_CONNECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CONNECTION))
 #define AGS_OSC_CONNECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CONNECTION, AgsOscConnectionClass))
 
-#define AGS_OSC_CONNECTION_GET_OBJ_MUTEX(obj) (((AgsOscConnection *) obj)->obj_mutex)
+#define AGS_OSC_CONNECTION_GET_OBJ_MUTEX(obj) (&(((AgsOscConnection *) obj)->obj_mutex))
 
 #define AGS_OSC_CONNECTION_TIMEOUT_USEC (250)
 #define AGS_OSC_CONNECTION_DEAD_LINE_USEC (60000000)
@@ -47,6 +47,14 @@
 typedef struct _AgsOscConnection AgsOscConnection;
 typedef struct _AgsOscConnectionClass AgsOscConnectionClass;
 
+/**
+ * AgsOscConnectionFlags:
+ * @AGS_OSC_CONNECTION_ACTIVE: is active
+ * @AGS_OSC_CONNECTION_INET4: IPv4 connection
+ * @AGS_OSC_CONNECTION_INET6: IPv6 connection
+ * 
+ * Enum values to configure OSC connection.
+ */
 typedef enum{
   AGS_OSC_CONNECTION_ACTIVE     = 1,
   AGS_OSC_CONNECTION_INET4      = 1 <<  1,
@@ -59,8 +67,7 @@ struct _AgsOscConnection
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *osc_server;
   
@@ -69,13 +76,15 @@ struct _AgsOscConnection
   
   int fd;
 
+  GSocket *socket;
+
   struct timespec *start_time;
 
-  unsigned char *cache_data;
+  guchar *cache_data;
 
   guint cache_data_length;
   
-  unsigned char *buffer;
+  guchar *buffer;
   guint allocated_buffer_size;
   
   guint read_count;
@@ -89,8 +98,8 @@ struct _AgsOscConnectionClass
 {
   GObjectClass gobject;
 
-  unsigned char* (*read_bytes)(AgsOscConnection *osc_connection,
-			       guint *data_length);
+  guchar* (*read_bytes)(AgsOscConnection *osc_connection,
+			guint *data_length);
   gint64 (*write_response)(AgsOscConnection *osc_connection,
 			   GObject *osc_response);
   
@@ -98,8 +107,6 @@ struct _AgsOscConnectionClass
 };
 
 GType ags_osc_connection_get_type(void);
-
-pthread_mutex_t* ags_osc_connection_get_class_mutex();
 
 gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint flags);
 void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags);
@@ -109,7 +116,7 @@ gboolean ags_osc_connection_timeout_expired(struct timespec *start_time,
 					    struct timespec *timeout_delay);
 
 /* events */
-unsigned char* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
+guchar* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 					     guint *data_length);
 
 gint64 ags_osc_connection_write_response(AgsOscConnection *osc_connection,
@@ -119,5 +126,7 @@ void ags_osc_connection_close(AgsOscConnection *osc_connection);
 
 /* instance */
 AgsOscConnection* ags_osc_connection_new(GObject *osc_server);
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_CONNECTION_H__*/

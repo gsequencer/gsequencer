@@ -20,10 +20,6 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -259,7 +255,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 		 NULL);
 
     /* application context */  
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
 
     /* get model */
     model = gtk_combo_box_get_model(link_editor->combo);
@@ -289,8 +285,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 						      filename,
 						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button));
 	  /* append AgsLinkChannel */
-	  ags_xorg_application_context_schedule_task(application_context,
-						     (GObject *) open_single_file);
+	  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					(AgsTask *) open_single_file);
 	}
       }else{
 	/* create task */
@@ -298,8 +294,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 					    NULL);
 	
 	/* append AgsLinkChannel */
-	ags_xorg_application_context_schedule_task(application_context,
-						   (GObject *) link_channel);
+	ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				      (AgsTask *) link_channel);
       }
     }else{
       guint link_line;
@@ -338,8 +334,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       }
       
       /* append AgsLinkChannel */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) link_channel);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) link_channel);
     }
 
     g_object_unref(audio);
@@ -470,23 +466,11 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
 	guint audio_channel;
 
-	pthread_mutex_t *file_link_mutex;
-
-	/* get file link mutex */
-	pthread_mutex_lock(ags_file_link_get_class_mutex());
-	
-	file_link_mutex = file_link->obj_mutex;
-
-	pthread_mutex_unlock(ags_file_link_get_class_mutex());
-
 	/* get some fields */
-	pthread_mutex_lock(file_link_mutex);
-	
-	filename = g_strdup(file_link->filename);
-
-	audio_channel = AGS_AUDIO_FILE_LINK(file_link)->audio_channel;
-	
-	pthread_mutex_unlock(file_link_mutex);
+	g_object_get(file_link,
+		     "filename", &filename,
+		     "audio-channel", &audio_channel,
+		     NULL);
 
 	/* add file link */
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
@@ -532,7 +516,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsLinkEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLinkEditor*
 ags_link_editor_new()

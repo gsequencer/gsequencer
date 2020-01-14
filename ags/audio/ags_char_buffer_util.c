@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,16 @@
 
 #include <ags/audio/ags_char_buffer_util.h>
 
-#include <ags/libags.h>
+/**
+ * SECTION:ags_char_buffer_util
+ * @short_description: util functions to handle char buffer
+ * @title: AgsCharBufferUtil
+ * @section_id:
+ * @include: ags/audio/ags_char_buffer_util.h
+ *
+ * These utility functions allow you to store/restore PCM data from 
+ * char buffer.
+ */
 
 /**
  * ags_char_buffer_util_copy_s8_to_cbuffer:
@@ -33,7 +42,7 @@
  * 
  * Copy gint8 to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -173,7 +182,7 @@ ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, gu
  * 
  * Copy gint16 to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -313,7 +322,7 @@ ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, g
  * 
  * Copy gint32 to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -453,7 +462,7 @@ ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, g
  * 
  * Copy gint32 to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -593,7 +602,7 @@ ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, g
  * 
  * Copy gint64 to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -733,7 +742,7 @@ ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, g
  * 
  * Copy float to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -877,7 +886,7 @@ ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size,
  * 
  * Copy double to char buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
@@ -1021,7 +1030,7 @@ ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size
  * 
  * Copy char to gint8 buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_s8(gint8 *destination, guint dchannels,
@@ -1155,7 +1164,7 @@ ags_char_buffer_util_copy_cbuffer_to_s8(gint8 *destination, guint dchannels,
  * 
  * Copy char to gint16 buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_s16(gint16 *destination, guint dchannels,
@@ -1289,7 +1298,7 @@ ags_char_buffer_util_copy_cbuffer_to_s16(gint16 *destination, guint dchannels,
  * 
  * Copy char to gint32 buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_s24(gint32 *destination, guint dchannels,
@@ -1423,7 +1432,7 @@ ags_char_buffer_util_copy_cbuffer_to_s24(gint32 *destination, guint dchannels,
  * 
  * Copy char to gint32 buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchannels,
@@ -1557,7 +1566,7 @@ ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchannels,
  * 
  * Copy char to gint64 buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
@@ -1691,7 +1700,7 @@ ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
  * 
  * Copy char to float buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
@@ -1825,7 +1834,7 @@ ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
  * 
  * Copy char to double buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels,
@@ -1960,7 +1969,7 @@ ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels
  * 
  * Copy char buffer to buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_char_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,

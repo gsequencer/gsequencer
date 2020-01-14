@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,6 @@ void ags_turtle_manager_finalize(GObject *gobject);
 static gpointer ags_turtle_manager_parent_class = NULL;
 
 AgsTurtleManager *ags_turtle_manager = NULL;
-
-static pthread_mutex_t ags_turtle_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_turtle_manager_get_type (void)
@@ -91,19 +89,7 @@ ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager)
 void
 ags_turtle_manager_init(AgsTurtleManager *turtle_manager)
 {
-  turtle_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(turtle_manager->obj_mutexattr);
-  pthread_mutexattr_settype(turtle_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(turtle_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  turtle_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(turtle_manager->obj_mutex, turtle_manager->obj_mutexattr);
+  g_rec_mutex_init(&(turtle_manager->obj_mutex));
 
   turtle_manager->turtle = NULL;
 }
@@ -136,13 +122,6 @@ ags_turtle_manager_finalize(GObject *gobject)
 
   turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
-  /* turtle manager mutex */
-  pthread_mutexattr_destroy(turtle_manager->obj_mutexattr);
-  free(turtle_manager->obj_mutexattr);
-
-  pthread_mutex_destroy(turtle_manager->obj_mutex);
-  free(turtle_manager->obj_mutex);
-
   /* turtle */
   turtle = turtle_manager->turtle;
 
@@ -160,62 +139,82 @@ ags_turtle_manager_finalize(GObject *gobject)
 }
 
 /**
- * ags_turtle_manager_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_turtle_manager_get_class_mutex()
-{
-  return(&ags_turtle_manager_class_mutex);
-}
-
-/**
  * ags_turtle_manager_find:
  * @turtle_manager: the #AgsTurtleManager
  * @filename: the filename as string
  * 
  * Find @filename in @turtle_manager.
  *
- * Since: 2.0.0
+ * Returns: (transfer full): the matching #AgsTurtle, or %NULL
+ * 
+ * Since: 3.0.0
  */
 GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 			gchar *filename)
 {
-  GList *turtle;
+  GObject *retval;
+  
+  GList *start_turtle, *turtle;
+
+  gboolean success;
+  
+  GRecMutex *turtle_manager_mutex;
+  GRecMutex *turtle_mutex;
 
   if(!AGS_IS_TURTLE_MANAGER(turtle_manager) ||
      filename == NULL){
     return(NULL);
   }
 
-  turtle = turtle_manager->turtle;
+  turtle_manager_mutex = AGS_TURTLE_MANAGER_GET_OBJ_MUTEX(turtle_manager);
 
+  g_rec_mutex_lock(turtle_manager_mutex);
+  
+  turtle =
+    start_turtle = g_list_copy_deep(turtle_manager->turtle,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
+
+  g_rec_mutex_unlock(turtle_manager_mutex);
+
+  retval = NULL;
+  
   while(turtle != NULL){
-    if(!g_ascii_strcasecmp(AGS_TURTLE(turtle->data)->filename,
-			   filename)){
-      return(turtle->data);
+    turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle->data);
+
+    g_rec_mutex_lock(turtle_mutex);
+  
+    success = (!g_ascii_strcasecmp(AGS_TURTLE(turtle->data)->filename,
+				   filename)) ? TRUE: FALSE;
+
+    g_rec_mutex_unlock(turtle_mutex);    
+    
+    if(success){
+      retval = turtle->data;
+
+      g_object_ref(retval);
+      
+      break;
     }
     
     turtle = turtle->next;
   }
 
-  return(NULL);
+  g_list_free_full(start_turtle,
+		   g_object_unref);
+  
+  return(retval);
 }
 
 /**
  * ags_turtle_manager_add:
  * @turtle_manager: the #AgsTurtleManager
- * @turtle: the #AgsTurtle
+ * @turtle: (transfer full): the #AgsTurtle
  * 
  * Adds @turtle to @turtle_manager.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
@@ -239,22 +238,22 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
  *
  * Get instance of #AgsTurtleManager.
  *
- * Returns: the #AgsTurtleManager
+ * Returns: (transfer none): the #AgsTurtleManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&(mutex));
+  g_mutex_lock(&(mutex));
 
   if(ags_turtle_manager == NULL){
     ags_turtle_manager = ags_turtle_manager_new();
   }
 
-  pthread_mutex_unlock(&(mutex));
+  g_mutex_unlock(&(mutex));
   
   return(ags_turtle_manager);
 }
@@ -266,7 +265,7 @@ ags_turtle_manager_get_instance()
  *
  * Returns: a new #AgsTurtleManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_new()

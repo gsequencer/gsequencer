@@ -119,7 +119,6 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
-#include <ags/audio/file/ags_audio_file_xml.h>
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
@@ -151,6 +150,9 @@
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_server.h>
 #include <ags/audio/osc/ags_osc_util.h>
+#include <ags/audio/osc/ags_osc_websocket_connection.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_message.h>
+#include <ags/audio/osc/ags_osc_xmlrpc_server.h>
 
 #include <ags/audio/osc/controller/ags_osc_action_controller.h>
 #include <ags/audio/osc/controller/ags_osc_config_controller.h>
@@ -162,6 +164,8 @@
 #include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
 #include <ags/audio/osc/controller/ags_osc_renew_controller.h>
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
+
+#include <ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.h>
 
 /* audio wasapi */
 #include <ags/audio/wasapi/ags_wasapi_devout.h>
@@ -303,7 +307,6 @@
 #include <ags/audio/task/ags_free_selection.h>
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_move_note.h>
-#include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_open_file.h>
 #include <ags/audio/task/ags_open_sf2_instrument.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>

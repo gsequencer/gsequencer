@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_lfo_recycling.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_lfo_audio_signal.h>
 
@@ -112,7 +110,7 @@ ags_lfo_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsLfoRecycling
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoRecycling*
 ags_lfo_recycling_new(AgsRecycling *source)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUNDCARD_THREAD                (ags_soundcard_thread_get_type())
 #define AGS_SOUNDCARD_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD_THREAD, AgsSoundcardThread))
@@ -61,5 +63,7 @@ AgsSoundcardThread* ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soun
 
 AgsSoundcardThread* ags_soundcard_thread_new(GObject *soundcard,
 					     guint soundcard_capability);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_THREAD_H__*/

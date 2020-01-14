@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_envelope_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/i18n.h>
 
 void ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel);
@@ -157,7 +155,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use note length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("use-note-length",
 				   i18n_pspec("use note length"),
@@ -173,7 +171,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use fixed length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("use-fixed-length",
 				   i18n_pspec("use fixed length"),
@@ -189,7 +187,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The fixed length to compute envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("fixed-length",
 				   i18n_pspec("fixed length"),
@@ -205,7 +203,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The attack of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("attack",
 				   i18n_pspec("attack channel"),
@@ -221,7 +219,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The decay of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("decay",
 				   i18n_pspec("decay channel"),
@@ -237,7 +235,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The sustain of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("sustain",
 				   i18n_pspec("sustain channel"),
@@ -253,7 +251,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The release of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("release",
 				   i18n_pspec("release channel"),
@@ -269,7 +267,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The ratio of envelope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ratio",
 				   i18n_pspec("envelope ratio"),
@@ -438,7 +436,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 {
   AgsEnvelopeChannel *envelope_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
 
@@ -452,10 +450,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->use_note_length){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -470,7 +468,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->use_note_length = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_USE_FIXED_LENGTH:
@@ -479,10 +477,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->use_fixed_length){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -497,7 +495,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->use_fixed_length = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FIXED_LENGTH:
@@ -506,10 +504,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->fixed_length){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -524,7 +522,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->fixed_length = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_ATTACK:
@@ -533,10 +531,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->attack){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -551,7 +549,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->attack = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DECAY:
@@ -560,10 +558,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->decay){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -578,7 +576,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->decay = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SUSTAIN:
@@ -587,10 +585,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->sustain){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -605,7 +603,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->sustain = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RELEASE:
@@ -614,10 +612,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->release){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -632,7 +630,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->release = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RATIO:
@@ -641,10 +639,10 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == envelope_channel->ratio){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -659,7 +657,7 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       envelope_channel->ratio = port;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -676,7 +674,7 @@ ags_envelope_channel_get_property(GObject *gobject,
 {
   AgsEnvelopeChannel *envelope_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
 
@@ -686,74 +684,74 @@ ags_envelope_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_USE_NOTE_LENGTH:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->use_note_length);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_USE_FIXED_LENGTH:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->use_fixed_length);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FIXED_LENGTH:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->fixed_length);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_ATTACK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->attack);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DECAY:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->decay);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SUSTAIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->sustain);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RELEASE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->release);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RATIO:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, envelope_channel->ratio);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -914,7 +912,7 @@ ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: the new #AgsEnvelopeChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEnvelopeChannel*
 ags_envelope_channel_new(AgsChannel *source)

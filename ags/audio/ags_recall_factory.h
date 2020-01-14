@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_container.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_FACTORY                (ags_recall_factory_get_type())
 #define AGS_RECALL_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_FACTORY, AgsRecallFactory))
@@ -78,7 +82,8 @@ GList* ags_recall_factory_create(AgsAudio *audio,
 				 guint create_flags, guint recall_flags);
 
 /*  */
-AgsRecallFactory* ags_recall_factory_get_instance();
 AgsRecallFactory* ags_recall_factory_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_FACTORY_H__*/

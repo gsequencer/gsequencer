@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_play_notation_audio.h>
-
-#include <ags/libags.h>
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
@@ -119,7 +117,7 @@ ags_play_notation_audio_finalize(GObject *gobject)
  *
  * Returns: the new #AgsPlayNotationAudio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayNotationAudio*
 ags_play_notation_audio_new(AgsAudio *audio)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,20 +85,10 @@ ags_log_class_init(AgsLogClass *log)
 void
 ags_log_init(AgsLog *log)
 {
-  pthread_mutexattr_t *attr;
-
   log->flags = 0;
 
   /* create mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  log->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(log->mutex,
-		     attr);
+  g_rec_mutex_init(&(log->obj_mutex));
   
   log->messages = NULL;
 }
@@ -127,22 +117,22 @@ ags_log_finalize(GObject *gobject)
  * 
  * Get your logging instance.
  *
- * Returns: the #AgsLog instance
+ * Returns: (transfer none): the #AgsLog instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLog*
 ags_log_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(ags_log == NULL){
     ags_log = ags_log_new();
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_log);
 }
@@ -150,23 +140,23 @@ ags_log_get_instance()
 /**
  * ags_log_add_message:
  * @log: the #AgsLog
- * @str: the message
+ * @str: (transfer full): the message
  * 
  * Add a message to @log.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_log_add_message(AgsLog *log,
 		    gchar *str)
 {
-  pthread_mutex_lock(log->mutex);
+  g_rec_mutex_lock(&(log->obj_mutex));
   
   g_atomic_pointer_set(&(log->messages),
 		       g_list_prepend(g_atomic_pointer_get(&(log->messages)),
 				      g_strdup(str)));
 
-  pthread_mutex_unlock(log->mutex);
+  g_rec_mutex_unlock(&(log->obj_mutex));
 }
 
 /**
@@ -175,9 +165,9 @@ ags_log_add_message(AgsLog *log,
  * 
  * Get log messages as #GList-struct containing strings.
  *
- * Returns: the #GList-struct containing log messages
+ * Returns: (element-type utf8) (transfer none): the #GList-struct containing log messages
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_log_get_messages(AgsLog *log)
@@ -192,7 +182,7 @@ ags_log_get_messages(AgsLog *log)
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLog*
 ags_log_new()

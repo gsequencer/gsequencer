@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_peak_audio_signal.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_channel_run.h>
@@ -116,7 +114,7 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
    * 
    * The peak.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("peak",
 				   i18n_pspec("resulting peak"),
@@ -151,7 +149,7 @@ ags_peak_audio_signal_set_property(GObject *gobject,
 {
   AgsPeakAudioSignal *peak_audio_signal;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
 
@@ -165,11 +163,11 @@ ags_peak_audio_signal_set_property(GObject *gobject,
 
       peak = g_value_get_double(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       peak_audio_signal->peak = peak;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -186,7 +184,7 @@ ags_peak_audio_signal_get_property(GObject *gobject,
 {
   AgsPeakAudioSignal *peak_audio_signal;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
 
@@ -196,11 +194,11 @@ ags_peak_audio_signal_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PEAK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_double(value, peak_audio_signal->peak);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -231,19 +229,10 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
   
   void (*parent_class_run_inter)(AgsRecall *recall);  
 
-  pthread_mutex_t *recall_mutex;
-
   peak_audio_signal = (AgsPeakAudioSignal *) recall;
 
-  /* get mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_audio_signal);
-
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-
   parent_class_run_inter = AGS_RECALL_CLASS(ags_peak_audio_signal_parent_class)->run_inter;
-
-  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -297,7 +286,7 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
  *
  * Returns: the new #AgsPeakAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPeakAudioSignal*
 ags_peak_audio_signal_new(AgsAudioSignal *source)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,17 +18,6 @@
  */
 
 #include <ags/X/ags_machine_editor_callbacks.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-int
-ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor)
-{
-  /* empty */
-
-  return(0);
-}
 
 int
 ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)

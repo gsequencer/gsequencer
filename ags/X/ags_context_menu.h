@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,15 +25,19 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CONTEXT_MENU                (ags_context_menu_get_type ())
 #define AGS_CONTEXT_MENU(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONTEXT_MENU, AgsContextMenu))
 #define AGS_CONTEXT_MENU_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CONTEXT_MENU, AgsContextMenuClass))
 #define AGS_IS_CONTEXT_MENU(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CONTEXT_MENU))
 #define AGS_IS_CONTEXT_MENU_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONTEXT_MENU))
 #define AGS_CONTEXT_MENU_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_CONTEXT_MENU, AgsContextMenuClass))
-
-#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key"
-#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key"
 
 typedef struct _AgsContextMenu AgsContextMenu;
 typedef struct _AgsContextMenuClass AgsContextMenuClass;
@@ -67,5 +71,7 @@ struct _AgsContextMenuClass
 GType ags_context_menu_get_type(void);
 
 AgsContextMenu* ags_context_menu_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CONTEXT_MENU_H__*/

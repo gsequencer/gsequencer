@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 /* sin LFO */
 void ags_lfo_synth_util_sin_s8(gint8 *buffer,
 			       gdouble freq, gdouble phase,
@@ -310,5 +312,7 @@ void ags_lfo_synth_util_impulse(void *buffer,
 				gdouble tuning,
 				guint samplerate, guint audio_buffer_util_format,
 				guint offset, guint n_frames);
+
+G_END_DECLS
 
 #endif /*__AGS_LFO_SYNTH_UTIL_H__*/

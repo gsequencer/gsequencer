@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -34,7 +30,6 @@
 
 void ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge);
 void ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ladspa_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge);
 void ags_ladspa_bridge_set_property(GObject *gobject,
 				    guint prop_id,
@@ -48,16 +43,6 @@ void ags_ladspa_bridge_finalize(GObject *gobject);
 
 void ags_ladspa_bridge_connect(AgsConnectable *connectable);
 void ags_ladspa_bridge_disconnect(AgsConnectable *connectable);
-
-gchar* ags_ladspa_bridge_get_version(AgsPlugin *plugin);
-void ags_ladspa_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_ladspa_bridge_get_build_id(AgsPlugin *plugin);
-void ags_ladspa_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_ladspa_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_ladspa_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladspa_bridge);
-xmlNode* ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_ladspa_bridge
@@ -79,10 +64,6 @@ enum{
 
 static gpointer ags_ladspa_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_ladspa_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_ladspa_bridge_parent_plugin_interface;
-
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GType
 ags_ladspa_bridge_get_type(void)
@@ -110,12 +91,6 @@ ags_ladspa_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_ladspa_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_ladspa_bridge = g_type_register_static(AGS_TYPE_MACHINE,
 						    "AgsLadspaBridge", &ags_ladspa_bridge_info,
 						    0);
@@ -123,10 +98,6 @@ ags_ladspa_bridge_get_type(void)
     g_type_add_interface_static(ags_type_ladspa_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_ladspa_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_bridge);
   }
@@ -156,7 +127,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -172,7 +143,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -188,7 +159,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of effect"),
@@ -211,23 +182,6 @@ ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectabl
   connectable->is_connected = NULL;
   connectable->connect = ags_ladspa_bridge_connect;
   connectable->disconnect = ags_ladspa_bridge_disconnect;
-}
-
-void
-ags_ladspa_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_ladspa_bridge_get_version;
-  plugin->set_version = ags_ladspa_bridge_set_version;
-  plugin->get_build_id = ags_ladspa_bridge_get_build_id;
-  plugin->set_build_id = ags_ladspa_bridge_set_build_id;
-  plugin->get_xml_type = ags_ladspa_bridge_get_xml_type;
-  plugin->set_xml_type = ags_ladspa_bridge_set_xml_type;
-  plugin->read = ags_ladspa_bridge_read;
-  plugin->write = ags_ladspa_bridge_write;
-  plugin->get_ports = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -285,24 +239,6 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      ladspa_bridge,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) ladspa_bridge);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      ladspa_bridge,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) ladspa_bridge);
 }
 
 void
@@ -420,12 +356,6 @@ ags_ladspa_bridge_finalize(GObject *gobject)
   AgsLadspaBridge *ladspa_bridge;
 
   ladspa_bridge = (AgsLadspaBridge *) gobject;
-
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
   
   g_free(ladspa_bridge->filename);
   g_free(ladspa_bridge->effect);
@@ -454,199 +384,6 @@ ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
   ags_ladspa_bridge_parent_connectable_interface->disconnect(connectable);
 }
 
-gchar*
-ags_ladspa_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_LADSPA_BRIDGE(plugin)->version);
-}
-
-void
-ags_ladspa_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsLadspaBridge *ladspa_bridge;
-
-  ladspa_bridge = AGS_LADSPA_BRIDGE(plugin);
-
-  ladspa_bridge->version = version;
-}
-
-gchar*
-ags_ladspa_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_LADSPA_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_ladspa_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsLadspaBridge *ladspa_bridge;
-
-  ladspa_bridge = AGS_LADSPA_BRIDGE(plugin);
-
-  ladspa_bridge->build_id = build_id;
-}
-
-
-gchar*
-ags_ladspa_bridge_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_LADSPA_BRIDGE(plugin)->xml_type);
-}
-
-void
-ags_ladspa_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_LADSPA_BRIDGE(plugin)->xml_type = xml_type;
-}
-
-void
-ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsLadspaBridge *gobject;
-  AgsFileLaunch *file_launch;
-
-  gobject = AGS_LADSPA_BRIDGE(plugin);
-
-  g_object_set(gobject,
-	       "filename", xmlGetProp(node,
-					"filename"),
-	       "effect", xmlGetProp(node,
-				      "effect"),
-	       NULL);
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_ladspa_bridge_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladspa_bridge)
-{
-  GtkTreeModel *model;
-
-  GtkTreeIter iter;
-
-  GList *list, *list_start;
-  GList *recall;
-
-  ags_ladspa_bridge_load(ladspa_bridge);
-
-  /* block update bulk port */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
-    }
-
-    list = list->next;
-  }
-
-  /* update value and unblock update bulk port */
-  recall = NULL;
-  
-  if(AGS_MACHINE(ladspa_bridge)->audio->input != NULL){
-    recall = AGS_MACHINE(ladspa_bridge)->audio->input->recall;
-    
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA)) != NULL){
-      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
-		  ladspa_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
-		    ladspa_bridge->effect)){
-	break;
-      }
-
-      recall = recall->next;
-    }
-  }
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      GtkWidget *child_widget;
-      
-      GList *port;
-
-      child_widget = gtk_bin_get_child(list->data);
-      
-      if(recall != NULL){
-	port = AGS_RECALL(recall->data)->port;
-
-	while(port != port->next){
-	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-			AGS_PORT(port->data)->specifier)){
-	    if(AGS_IS_DIAL(child_widget)){
-	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw((AgsDial *) child_widget);
-	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
-	    }
-
-	    break;
-	  }
-
-	  port = port->next;
-	}
-      }
-     
-      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-xmlNode*
-ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsLadspaBridge *ladspa_bridge;
-
-  xmlNode *node;
-
-  gchar *id;
-  
-  ladspa_bridge = AGS_LADSPA_BRIDGE(plugin);
-
-  id = ags_id_generator_create_uuid();
-    
-  node = xmlNewNode(NULL,
-		    "ags-ladspa-bridge");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     "filename",
-	     ladspa_bridge->filename);
-
-  xmlNewProp(node,
-	     "effect",
-	     ladspa_bridge->effect);
-  
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", ladspa_bridge,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 void
 ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
 {
@@ -671,7 +408,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLadspaBridge*
 ags_ladspa_bridge_new(GObject *soundcard,

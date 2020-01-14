@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,7 +114,7 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of clear audio signal"),
@@ -243,6 +243,8 @@ ags_clear_audio_signal_launch(AgsTask *task)
   
   clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(task);
 
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(clear_audio_signal->audio_signal));
+  
   /* clear */
   audio_signal = clear_audio_signal->audio_signal;
   
@@ -311,7 +313,7 @@ ags_clear_audio_signal_launch(AgsTask *task)
  *
  * Returns: the new #AgsClearAudioSignal.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsClearAudioSignal*
 ags_clear_audio_signal_new(AgsAudioSignal *audio_signal)

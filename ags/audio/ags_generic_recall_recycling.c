@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_generic_recall_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_recall_audio_signal.h>
 
 void ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling);
@@ -116,7 +114,7 @@ ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recy
  *
  * Returns: a new #AgsGenericRecallRecycling.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsGenericRecallRecycling*
 ags_generic_recall_recycling_new(AgsRecycling *recycling, GType child_type)

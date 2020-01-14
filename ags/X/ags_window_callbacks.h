@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,13 +20,23 @@
 #ifndef __AGS_WINDOW_CALLBACKS_H__
 #define __AGS_WINDOW_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_window.h>
+
+G_BEGIN_DECLS
 
 gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
 
 void ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window);
+
+G_END_DECLS
 
 #endif /*__AGS_WINDOW_CALLBACKS_H__*/

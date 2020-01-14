@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,12 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_CROP_NOTE_DIALOG                (ags_crop_note_dialog_get_type())
 #define AGS_CROP_NOTE_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CROP_NOTE_DIALOG, AgsCropNoteDialog))
 #define AGS_CROP_NOTE_DIALOG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CROP_NOTE_DIALOG, AgsCropNoteDialogClass))
@@ -47,8 +53,6 @@ struct _AgsCropNoteDialog
 
   guint flags;
 
-  GObject *application_context;
-  
   GtkWidget *main_window;
 
   GtkCheckButton *absolute;
@@ -68,5 +72,7 @@ struct _AgsCropNoteDialogClass
 GType ags_crop_note_dialog_get_type(void);
 
 AgsCropNoteDialog* ags_crop_note_dialog_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_CROP_NOTE_DIALOG_H__*/

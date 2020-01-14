@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,6 @@
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_line_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/i18n.h>
 
 void ags_line_editor_class_init(AgsLineEditorClass *line_editor);
@@ -37,6 +34,7 @@ void ags_line_editor_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_line_editor_finalize(GObject *gobject);
 
 void ags_line_editor_connect(AgsConnectable *connectable);
 void ags_line_editor_disconnect(AgsConnectable *connectable);
@@ -60,6 +58,8 @@ enum{
   PROP_0,
   PROP_CHANNEL,
 };
+
+static gpointer ags_line_editor_parent_class = NULL;
 
 GType
 ags_line_editor_get_type(void)
@@ -115,19 +115,26 @@ void
 ags_line_editor_class_init(AgsLineEditorClass *line_editor)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
+  ags_line_editor_parent_class = g_type_class_peek_parent(line_editor);
+
+  /* GObjectClass */
   gobject = (GObjectClass *) line_editor;
 
   gobject->set_property = ags_line_editor_set_property;
   gobject->get_property = ags_line_editor_get_property;
 
+  gobject->finalize = ags_line_editor_finalize;
+
+  /* properties */
   /**
    * AgsLineEditor:channel:
    *
    * The assigned #AgsChannel to edit.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -164,6 +171,8 @@ ags_line_editor_init(AgsLineEditor *line_editor)
   line_editor->version = AGS_LINE_EDITOR_DEFAULT_VERSION;
   line_editor->build_id = AGS_LINE_EDITOR_DEFAULT_BUILD_ID;
 
+  line_editor->channel = NULL;
+  
   line_editor->link_editor = NULL;
   line_editor->member_editor = NULL;
 }
@@ -214,6 +223,21 @@ ags_line_editor_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_line_editor_finalize(GObject *gobject)
+{
+  AgsLineEditor *line_editor;
+
+  line_editor = (AgsLineEditor *) gobject;
+
+  if(line_editor->channel != NULL){
+    g_object_unref(line_editor->channel);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_editor_parent_class)->finalize(gobject);
 }
 
 void
@@ -348,7 +372,7 @@ ags_line_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
@@ -362,8 +386,18 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
     gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 
-  line_editor->channel = channel;
+  if(line_editor->channel != channel){
+    if(line_editor->channel != NULL){
+      g_object_unref(line_editor->channel);
+    }  
 
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    line_editor->channel = channel;
+  }
+  
   if(channel != NULL){
     guint i;
 
@@ -415,7 +449,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
  *
  * Returns: the new #AgsLineEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLineEditor*
 ags_line_editor_new(AgsChannel *channel)

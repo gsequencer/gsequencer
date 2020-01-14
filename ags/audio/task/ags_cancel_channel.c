@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,7 +111,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of cancel channel"),
@@ -127,7 +127,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The effects sound-scope.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -269,6 +269,8 @@ ags_cancel_channel_launch(AgsTask *task)
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
+  g_return_if_fail(AGS_IS_CHANNEL(cancel_channel->channel));
+
   g_object_get(cancel_channel,
 	       "channel", &channel,
 	       "sound-scope", &sound_scope,
@@ -294,7 +296,7 @@ ags_cancel_channel_launch(AgsTask *task)
  *
  * Returns: the new #AgsCancelChannel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel,

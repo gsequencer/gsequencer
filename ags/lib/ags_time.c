@@ -41,10 +41,10 @@
  * Calculates uptime from @offset by applying factors @bpm, @delay and @delay_factor
  * giving you the result as string.
  *
- * Returns: the string containing the time, a minus sign is prepend if factors
+ * Returns: (transfer full): the string containing the time, a minus sign is prepend if factors
  *   are invalid
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_time_get_uptime_from_offset(guint offset,
@@ -89,4 +89,64 @@ ags_time_get_uptime_from_offset(guint offset,
   uptime = g_strdup_printf("%.4d:%.2d.%.3d", min, sec, msec);
 
   return(uptime);
+}
+
+/**
+ * ags_time_timeout_expired:
+ * @start_time: the start time #timespec-struct
+ * @timeout_delay: the delay #timespec-struct
+ * 
+ * Check @start_time plus @timeout_delay against current time.
+ * 
+ * Returns: %TRUE if timeout expired, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
+gboolean
+ags_time_timeout_expired(struct timespec *start_time,
+			 struct timespec *timeout_delay)
+{
+  struct timespec current_time;
+  struct timespec deadline;
+
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+  
+  if(start_time == NULL ||
+     timeout_delay == NULL){
+    return(TRUE);
+  }
+
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  current_time.tv_sec = mts.tv_sec;
+  current_time.tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, &current_time);
+#endif
+
+  if(start_time->tv_nsec + timeout_delay->tv_nsec > AGS_NSEC_PER_SEC){
+    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec + 1;
+    deadline.tv_nsec = (start_time->tv_nsec + timeout_delay->tv_nsec) - AGS_NSEC_PER_SEC;
+  }else{
+    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec;
+    deadline.tv_nsec = start_time->tv_nsec + timeout_delay->tv_nsec;
+  }
+  
+  if(current_time.tv_sec > deadline.tv_sec){
+    return(TRUE);
+  }else{
+    if(current_time.tv_sec == deadline.tv_sec &&
+       current_time.tv_nsec > deadline.tv_nsec){
+      return(TRUE);
+    }
+  }
+
+  return(FALSE);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,8 +66,6 @@ enum{
 static gpointer ags_conversion_parent_class = NULL;
 static guint conversion_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_conversion_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_conversion_get_type(void)
 {
@@ -121,7 +119,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The name of the conversion.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("name",
 				   i18n_pspec("name of conversion"),
@@ -137,7 +135,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The description of the conversion.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("description",
 				   i18n_pspec("description of conversion"),
@@ -163,7 +161,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * Returns: the converted value
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert",
@@ -180,20 +178,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 void
 ags_conversion_init(AgsConversion *conversion)
 {
-  conversion->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(conversion->obj_mutexattr);
-  pthread_mutexattr_settype(conversion->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(conversion->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  
-  conversion->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(conversion->obj_mutex, conversion->obj_mutexattr);
+  g_rec_mutex_init(&(conversion->obj_mutex));
 
   conversion->name = NULL;
   conversion->description = NULL;
@@ -207,7 +192,7 @@ ags_conversion_set_property(GObject *gobject,
 {
   AgsConversion *conversion;
 
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
   
   conversion = AGS_CONVERSION(gobject);
 
@@ -221,10 +206,10 @@ ags_conversion_set_property(GObject *gobject,
 
       name = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(conversion_mutex);
+      g_rec_mutex_lock(conversion_mutex);
       
       if(conversion->name == name){
-	pthread_mutex_unlock(conversion_mutex);
+	g_rec_mutex_unlock(conversion_mutex);
 	
 	return;
       }
@@ -235,7 +220,7 @@ ags_conversion_set_property(GObject *gobject,
 
       conversion->name = g_strdup(name);
 
-      pthread_mutex_unlock(conversion_mutex);
+      g_rec_mutex_unlock(conversion_mutex);
     }
     break;
   case PROP_DESCRIPTION:
@@ -244,10 +229,10 @@ ags_conversion_set_property(GObject *gobject,
 
       description = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(conversion_mutex);
+      g_rec_mutex_lock(conversion_mutex);
 
       if(conversion->description == description){
-	pthread_mutex_unlock(conversion_mutex);
+	g_rec_mutex_unlock(conversion_mutex);
 
 	return;
       }
@@ -258,7 +243,7 @@ ags_conversion_set_property(GObject *gobject,
 
       conversion->description = g_strdup(description);
 
-      pthread_mutex_unlock(conversion_mutex);
+      g_rec_mutex_unlock(conversion_mutex);
     }
     break;
   default:
@@ -275,7 +260,7 @@ ags_conversion_get_property(GObject *gobject,
 {
   AgsConversion *conversion;
 
-  pthread_mutex_t *conversion_mutex;
+  GRecMutex *conversion_mutex;
   
   conversion = AGS_CONVERSION(gobject);
 
@@ -285,20 +270,20 @@ ags_conversion_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_NAME:
     {
-      pthread_mutex_lock(conversion_mutex);
+      g_rec_mutex_lock(conversion_mutex);
 
       g_value_set_string(value, conversion->name);
 
-      pthread_mutex_unlock(conversion_mutex);
+      g_rec_mutex_unlock(conversion_mutex);
     }
     break;
   case PROP_DESCRIPTION:
     {
-      pthread_mutex_lock(conversion_mutex);
+      g_rec_mutex_lock(conversion_mutex);
 
       g_value_set_string(value, conversion->description);
 
-      pthread_mutex_unlock(conversion_mutex);
+      g_rec_mutex_unlock(conversion_mutex);
     }
     break;
   default:
@@ -314,13 +299,6 @@ ags_conversion_finalize(GObject *gobject)
   
   conversion = AGS_CONVERSION(gobject);
 
-  /* conversion mutex */
-  pthread_mutexattr_destroy(conversion->obj_mutexattr);
-  free(conversion->obj_mutexattr);
-
-  pthread_mutex_destroy(conversion->obj_mutex);
-  free(conversion->obj_mutex);
-
   /* name */
   if(conversion->name != NULL){
     g_free(conversion->name);
@@ -333,21 +311,6 @@ ags_conversion_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_conversion_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_conversion_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_conversion_get_class_mutex()
-{
-  return(&ags_conversion_class_mutex);
 }
 
 gdouble
@@ -369,7 +332,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
  *
  * Returns: the converted value as gdouble
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
@@ -399,7 +362,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsConversion*
 ags_conversion_new()

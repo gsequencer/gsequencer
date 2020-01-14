@@ -27,6 +27,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EXPORT_THREAD                (ags_export_thread_get_type())
 #define AGS_EXPORT_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_THREAD, AgsExportThread))
 #define AGS_EXPORT_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
@@ -74,5 +76,7 @@ AgsExportThread* ags_export_thread_find_soundcard(AgsExportThread *export_thread
 						  GObject *soundcard);
 
 AgsExportThread* ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file);
+
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_THREAD_H__*/

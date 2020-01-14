@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_START_CHANNEL                (ags_start_channel_get_type())
 #define AGS_START_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_CHANNEL, AgsStartChannel))
 #define AGS_START_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_START_CHANNEL, AgsStartChannelClass))
@@ -55,5 +57,7 @@ GType ags_start_channel_get_type();
 
 AgsStartChannel* ags_start_channel_new(AgsChannel *channel,
 				       gint sound_scope);
+
+G_END_DECLS
 
 #endif /*__AGS_START_CHANNEL_H__*/

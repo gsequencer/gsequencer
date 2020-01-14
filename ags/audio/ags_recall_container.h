@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_recall.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RECALL_CONTAINER                (ags_recall_container_get_type())
 #define AGS_RECALL_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CONTAINER, AgsRecallContainer))
 #define AGS_RECALL_CONTAINER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_CONTAINER, AgsRecallContainerClass))
@@ -34,7 +36,7 @@
 #define AGS_IS_RECALL_CONTAINER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL_CONTAINER))
 #define AGS_RECALL_CONTAINER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL_CONTAINER, AgsRecallContainerClass))
 
-#define AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(obj) (((AgsRecallContainer *) obj)->obj_mutex)
+#define AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(obj) (&(((AgsRecallContainer *) obj)->obj_mutex))
 
 typedef struct _AgsRecallContainer AgsRecallContainer;
 typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
@@ -74,8 +76,7 @@ struct _AgsRecallContainer
   
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -98,8 +99,6 @@ struct _AgsRecallContainerClass
 };
 
 GType ags_recall_container_get_type();
-
-pthread_mutex_t* ags_recall_container_get_class_mutex();
 
 gboolean ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flags);
 void ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags);
@@ -124,5 +123,7 @@ GList* ags_recall_container_find(GList *recall_container,
 
 /* instantiate */
 AgsRecallContainer* ags_recall_container_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_CONTAINER_H__*/

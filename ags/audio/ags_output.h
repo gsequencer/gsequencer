@@ -26,6 +26,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_OUTPUT                (ags_output_get_type())
 #define AGS_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OUTPUT, AgsOutput))
 #define AGS_OUTPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OUTPUT, AgsOutputClass))
@@ -52,5 +54,7 @@ AgsRecycling* ags_output_find_first_input_recycling(AgsOutput *output);
 AgsRecycling* ags_output_find_last_input_recycling(AgsOutput *output);
 
 AgsOutput* ags_output_new(GObject *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_OUTPUT_H__*/

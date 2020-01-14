@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_BROWSER                (ags_lv2_browser_get_type())
 #define AGS_LV2_BROWSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LV2_BROWSER, AgsLv2Browser))
@@ -76,5 +83,7 @@ GtkWidget* ags_lv2_browser_combo_box_controls_new();
 GtkWidget* ags_lv2_browser_preview_new();
 
 AgsLv2Browser* ags_lv2_browser_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_BROWSER_H__*/

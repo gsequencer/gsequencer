@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_effect_bridge.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 void ags_effect_bridge_resize_audio_channels_callback(AgsMachine *machine,
 						      guint audio_channels, guint audio_channels_old,
@@ -37,5 +43,7 @@ void ags_effect_bridge_resize_pads_callback(AgsMachine *machine,
 					    GType channel_type,
 					    guint pads, guint pads_old,
 					    AgsEffectBridge *effect_bridge);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_BRIDGE_CALLBACKS_H__*/

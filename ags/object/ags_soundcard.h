@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
@@ -103,6 +101,14 @@ typedef enum{
   AGS_SOUNDCARD_COMPLEX         = 0xfffffff8,
 }AgsSoundcardFormat;
 
+/**
+ * AgsSoundcardCapability:
+ * @AGS_SOUNDCARD_CAPABILITY_PLAYBACK: capability playback
+ * @AGS_SOUNDCARD_CAPABILITY_CAPTURE: capability capture
+ * @AGS_SOUNDCARD_CAPABILITY_DUPLEX: capability duplex
+ * 
+ * Enum values to tell about capability.
+ */
 typedef enum{
   AGS_SOUNDCARD_CAPABILITY_PLAYBACK  = 1,
   AGS_SOUNDCARD_CAPABILITY_CAPTURE   = 1 <<  1,
@@ -112,10 +118,6 @@ typedef enum{
 struct _AgsSoundcardInterface
 {
   GTypeInterface ginterface;
-
-  void (*set_application_context)(AgsSoundcard *soundcard,
-				  AgsApplicationContext *application_context);
-  AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
 
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
@@ -143,7 +145,6 @@ struct _AgsSoundcardInterface
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
   
-  GList* (*get_poll_fd)(AgsSoundcard *soundcard);
   gboolean (*is_available)(AgsSoundcard *soundcard);
   
   gboolean (*is_starting)(AgsSoundcard *soundcard);
@@ -193,7 +194,7 @@ struct _AgsSoundcardInterface
   guint (*get_delay_counter)(AgsSoundcard *soundcard);
 
   void (*set_start_note_offset)(AgsSoundcard *soundcard,
-				guint note_offset);
+				guint start_note_offset);
   guint (*get_start_note_offset)(AgsSoundcard *soundcard);
   
   void (*set_note_offset)(AgsSoundcard *soundcard,
@@ -223,12 +224,8 @@ struct _AgsSoundcardInterface
 
 GType ags_soundcard_get_type();
 
-void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
-					   AgsApplicationContext *application_context);
-AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
-
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
-			      gchar *device_id);
+			      gchar *card_id);
 gchar* ags_soundcard_get_device(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_presets(AgsSoundcard *soundcard,
@@ -252,7 +249,6 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 
 guint ags_soundcard_get_capability(AgsSoundcard *soundcard);
 
-GList* ags_soundcard_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);
 
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
@@ -328,5 +324,7 @@ gboolean ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
 					 void *buffer, guint sub_block);
 void ags_soundcard_unlock_sub_block(AgsSoundcard *soundcard,
 				    void *buffer, guint sub_block);
+
+G_END_DECLS
 
 #endif /*__AGS_SOUNDCARD_H__*/

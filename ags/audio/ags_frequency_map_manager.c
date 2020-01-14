@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_frequency_map_manager.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 #include <complex.h>
 
@@ -29,9 +27,17 @@ void ags_frequency_map_manager_init (AgsFrequencyMapManager *frequency_map_manag
 void ags_frequency_map_manager_dispose(GObject *gobject);
 void ags_frequency_map_manager_finalize(GObject *gobject);
 
-static gpointer ags_frequency_map_manager_parent_class = NULL;
+/**
+ * SECTION:ags_frequency_map_manager
+ * @short_description: frequency map manager
+ * @title: AgsFrequencyMapManager
+ * @section_id:
+ * @include: ags/audio/ags_frequency_map_manager.h
+ *
+ * #AgsFrequencyMapManager is a singleton that organizes your frequency maps.
+ */
 
-static pthread_mutex_t ags_frequency_map_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+static gpointer ags_frequency_map_manager_parent_class = NULL;
 
 AgsFrequencyMapManager *ags_frequency_map_manager = NULL;
 
@@ -104,19 +110,7 @@ ags_frequency_map_manager_init(AgsFrequencyMapManager *frequency_map_manager)
   frequency_map_manager->flags = 0;
   
   /* frequency_map manager mutex */
-  frequency_map_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(frequency_map_manager->obj_mutexattr);
-  pthread_mutexattr_settype(frequency_map_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(frequency_map_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  frequency_map_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(frequency_map_manager->obj_mutex,
-		     frequency_map_manager->obj_mutexattr);
+  g_rec_mutex_init(&(frequency_map_manager->obj_mutex));
 
   /* frequency map */
   frequency_map_manager->frequency_map = NULL;
@@ -157,12 +151,6 @@ ags_frequency_map_manager_finalize(GObject *gobject)
 
   frequency_map_manager = AGS_FREQUENCY_MAP_MANAGER(gobject);
 
-  pthread_mutex_destroy(frequency_map_manager->obj_mutex);
-  free(frequency_map_manager->obj_mutex);
-
-  pthread_mutexattr_destroy(frequency_map_manager->obj_mutexattr);
-  free(frequency_map_manager->obj_mutexattr);
-
   /* frequency map */
   g_list_free_full(frequency_map_manager->frequency_map,
 		   (GDestroyNotify) g_object_unref);
@@ -189,14 +177,14 @@ ags_frequency_map_manager_finalize(GObject *gobject)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gboolean
 ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
     return(FALSE);
@@ -206,11 +194,11 @@ ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manag
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
 
   /* test flags */
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
 
   retval = ((flags & (frequency_map_manager->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
 
   return(retval);
 }
@@ -222,12 +210,12 @@ ags_frequency_map_manager_test_flags(AgsFrequencyMapManager *frequency_map_manag
  *
  * Set flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
 {
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
     return;
@@ -237,11 +225,11 @@ ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manage
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
 
   /* set flags */
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
 
   frequency_map_manager->flags |= flags;
   
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
 }
 
 /**
@@ -251,12 +239,12 @@ ags_frequency_map_manager_set_flags(AgsFrequencyMapManager *frequency_map_manage
  *
  * Unset flags.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_manager, guint flags)
 {
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
     return;
@@ -266,11 +254,11 @@ ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_mana
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
 
   /* unset flags */
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
 
   frequency_map_manager->flags &= (~flags);
   
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
 }
 
 /**
@@ -280,13 +268,13 @@ ags_frequency_map_manager_unset_flags(AgsFrequencyMapManager *frequency_map_mana
  * 
  * Add @frequency_map to @frequency_map_manager.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 					    AgsFrequencyMap *frequency_map)
 {
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
   
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager) ||
      !AGS_IS_FREQUENCY_MAP(frequency_map)){
@@ -295,7 +283,7 @@ ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_ma
 
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
 
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
   
   if(g_list_find(frequency_map_manager->frequency_map, frequency_map) == NULL){
     g_object_ref(frequency_map);
@@ -305,7 +293,7 @@ ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_ma
 								(GCompareFunc) ags_frequency_map_sort_func);
   }
 
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
 }
 
 /**
@@ -315,13 +303,13 @@ ags_frequency_map_manager_add_frequency_map(AgsFrequencyMapManager *frequency_ma
  * 
  * Add @frequency_map to @frequency_map_manager.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
 						       AgsFrequencyMap *frequency_map)
 {
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
   
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager) ||
      !AGS_IS_FREQUENCY_MAP(frequency_map)){
@@ -330,7 +318,7 @@ ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *f
 
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
 
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
   
   if(g_list_find(frequency_map_manager->factorized_frequency_map, frequency_map) == NULL){
     g_object_ref(frequency_map);
@@ -339,7 +327,7 @@ ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *f
 								     frequency_map);
   }
 
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
 }
 
 /**
@@ -351,9 +339,9 @@ ags_frequency_map_manager_add_factorized_frequency_map(AgsFrequencyMapManager *f
  * 
  * Find #AgsFrequencyMap by @samplerate, @buffer_size and @freq.
  * 
- * Returns: the matching #AgsFrequencyMap if found, otherwise %NULL
+ * Returns: (transfer full): the matching #AgsFrequencyMap if found, otherwise %NULL
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFrequencyMap*
 ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
@@ -364,7 +352,7 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
 
   GList *start_list, *list;
   
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
     return(NULL);
@@ -372,14 +360,14 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
 
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
   
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
 
   list =
     start_list = g_list_copy_deep(frequency_map_manager->frequency_map,
 				  (GCopyFunc) g_object_ref,
 				  NULL);
   
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
   
   frequency_map = NULL;
 
@@ -436,9 +424,9 @@ ags_frequency_map_manager_find_frequency_map(AgsFrequencyMapManager *frequency_m
  * 
  * Find #AgsFrequencyMap by @samplerate and @buffer_size.
  * 
- * Returns: the matching #AgsFrequencyMap if found, otherwise %NULL
+ * Returns: (transfer full): the matching #AgsFrequencyMap if found, otherwise %NULL
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFrequencyMap*
 ags_frequency_map_manager_find_factorized_frequency_map(AgsFrequencyMapManager *frequency_map_manager,
@@ -448,7 +436,7 @@ ags_frequency_map_manager_find_factorized_frequency_map(AgsFrequencyMapManager *
 
   GList *start_list, *list;
   
-  pthread_mutex_t *frequency_map_manager_mutex;
+  GRecMutex *frequency_map_manager_mutex;
 
   if(!AGS_IS_FREQUENCY_MAP_MANAGER(frequency_map_manager)){
     return(NULL);
@@ -456,14 +444,14 @@ ags_frequency_map_manager_find_factorized_frequency_map(AgsFrequencyMapManager *
 
   frequency_map_manager_mutex = AGS_FREQUENCY_MAP_MANAGER_GET_OBJ_MUTEX(frequency_map_manager);
   
-  pthread_mutex_lock(frequency_map_manager_mutex);
+  g_rec_mutex_lock(frequency_map_manager_mutex);
 
   list =
     start_list = g_list_copy_deep(frequency_map_manager->frequency_map,
 				  (GCopyFunc) g_object_ref,
 				  NULL);
   
-  pthread_mutex_unlock(frequency_map_manager_mutex);
+  g_rec_mutex_unlock(frequency_map_manager_mutex);
   
   frequency_map = NULL;
 
@@ -500,7 +488,7 @@ ags_frequency_map_manager_find_factorized_frequency_map(AgsFrequencyMapManager *
  * 
  * Load default #AgsFrequencyMap.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_manager)
@@ -538,7 +526,7 @@ ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_man
       for(k = 0; k < k_stop; k++){
 	static const complex z = 1.0 + I * 0.0;
 
-	ags_complex_set(factorized_frequency_map->buffer[k],
+	ags_complex_set(&(factorized_frequency_map->buffer[k]),
 			z);
       }
       
@@ -581,41 +569,26 @@ ags_frequency_map_manager_load_default(AgsFrequencyMapManager *frequency_map_man
 }
 
 /**
- * ags_frequency_map_manager_get_class_mutex:
- * 
- * Get class mutex.
- * 
- * Returns: the class mutex of #AgsFrequencyMapManager
- * 
- * Since: 2.3.0
- */
-pthread_mutex_t*
-ags_frequency_map_manager_get_class_mutex()
-{
-  return(&ags_frequency_map_manager_class_mutex);
-}
-
-/**
  * ags_frequency_map_manager_get_instance:
  *
  * Get instance.
  *
- * Returns: the #AgsFrequencyMapManager
+ * Returns: (transfer none): the #AgsFrequencyMapManager
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFrequencyMapManager*
 ags_frequency_map_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_frequency_map_manager == NULL){
     ags_frequency_map_manager = ags_frequency_map_manager_new();
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_frequency_map_manager);
 }
@@ -627,7 +600,7 @@ ags_frequency_map_manager_get_instance()
  *
  * Returns: the new #AgsFrequencyMapManager
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFrequencyMapManager*
 ags_frequency_map_manager_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/ags_midi_preferences.h>
 #include <ags/X/ags_midi_preferences_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_sequencer_editor.h>
@@ -244,7 +240,6 @@ ags_midi_preferences_apply(AgsApplicable *applicable)
 void
 ags_midi_preferences_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsMidiPreferences *midi_preferences;
   AgsSequencerEditor *sequencer_editor;
@@ -259,11 +254,11 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   GList *list_start, *list;
 
   midi_preferences = AGS_MIDI_PREFERENCES(applicable);
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
@@ -321,7 +316,7 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsMidiPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMidiPreferences*
 ags_midi_preferences_new()

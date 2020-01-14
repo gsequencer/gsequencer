@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PORTLET                    (ags_portlet_get_type())
 #define AGS_PORTLET(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORTLET, AgsPortlet))
@@ -55,5 +57,7 @@ GList* ags_portlet_list_safe_properties(AgsPortlet *portlet);
 
 void ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_portlet_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
+
+G_END_DECLS
 
 #endif /*__AGS_PORTLET_H__*/

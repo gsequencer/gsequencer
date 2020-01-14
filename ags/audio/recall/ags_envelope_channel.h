@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_ENVELOPE_CHANNEL                (ags_envelope_channel_get_type())
 #define AGS_ENVELOPE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_CHANNEL, AgsEnvelopeChannel))
@@ -63,5 +65,7 @@ struct _AgsEnvelopeChannelClass
 GType ags_envelope_channel_get_type();
 
 AgsEnvelopeChannel* ags_envelope_channel_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_ENVELOPE_CHANNEL_H__*/

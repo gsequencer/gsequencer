@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,10 +24,9 @@
 #include <glib-object.h>
 
 #include <ags/server/ags_server_status.h>
+#include <ags/server/ags_registry.h>
 
-#include <ags/server/security/ags_authentication_manager.h>
-#include <ags/server/security/ags_certificate_manager.h>
-#include <ags/server/security/ags_password_store_manager.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SERVICE_PROVIDER                    (ags_service_provider_get_type())
 #define AGS_SERVICE_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVICE_PROVIDER, AgsServiceProvider))
@@ -44,56 +43,32 @@ struct _AgsServiceProviderInterface
   GTypeInterface ginterface;
   
   gboolean (*is_operating)(AgsServiceProvider *service_provider);
-  AgsServerStatus* (*server_status)(AgsServiceProvider *service_provider);
 
-  gpointer (*get_env)(AgsServiceProvider *service_provider);
+  AgsServerStatus* (*server_status)(AgsServiceProvider *service_provider);
   
   void (*set_registry)(AgsServiceProvider *service_provider,
-		       GObject *registry);
-  GObject* (*get_registry)(AgsServiceProvider *service_provider);
+		       AgsRegistry *registry);
+  AgsRegistry* (*get_registry)(AgsServiceProvider *service_provider);
   
   void (*set_server)(AgsServiceProvider *service_provider,
 		     GList *server);
   GList* (*get_server)(AgsServiceProvider *service_provider);
-
-  void (*set_certificate_manager)(AgsServiceProvider *service_provider,
-				  AgsCertificateManager *certificate_manager);
-  AgsCertificateManager* (*get_certificate_manager)(AgsServiceProvider *service_provider);
-
-  void (*set_password_store_manager)(AgsServiceProvider *service_provider,
-				     AgsPasswordStoreManager *password_store_manager);
-  AgsPasswordStoreManager* (*get_password_store_manager)(AgsServiceProvider *service_provider);
-
-  void (*set_authentication_manager)(AgsServiceProvider *service_provider,
-				     AgsAuthenticationManager *authentication_manager);
-  AgsAuthenticationManager* (*get_authentication_manager)(AgsServiceProvider *service_provider);
 };
 
 GType ags_service_provider_get_type();
 
 gboolean ags_service_provider_is_operating(AgsServiceProvider *service_provider);
+
 AgsServerStatus* ags_service_provider_server_status(AgsServiceProvider *service_provider);
 
-gpointer ags_service_provider_get_env(AgsServiceProvider *service_provider);
-
 void ags_service_provider_set_registry(AgsServiceProvider *service_provider,
-				       GObject *registry);
-GObject* ags_service_provider_get_registry(AgsServiceProvider *service_provider);
+				       AgsRegistry *registry);
+AgsRegistry* ags_service_provider_get_registry(AgsServiceProvider *service_provider);
 
 void ags_service_provider_set_server(AgsServiceProvider *service_provider,
 				     GList *server);
 GList* ags_service_provider_get_server(AgsServiceProvider *service_provider);
 
-void ags_service_provider_set_certificate_manager(AgsServiceProvider *service_provider,
-						  AgsCertificateManager *certificate_manager);
-AgsCertificateManager* ags_service_provider_get_certificate_manager(AgsServiceProvider *service_provider);
-
-void ags_service_provider_set_password_store_manager(AgsServiceProvider *service_provider,
-						     AgsPasswordStoreManager *password_store_manager);
-AgsPasswordStoreManager* ags_service_provider_get_password_store_manager(AgsServiceProvider *service_provider);
-
-void ags_service_provider_set_authentication_manager(AgsServiceProvider *service_provider,
-						     AgsAuthenticationManager *authentication_manager);
-AgsAuthenticationManager* ags_service_provider_get_authentication_manager(AgsServiceProvider *service_provider);
+G_END_DECLS
 
 #endif /*__AGS_SERVICE_PROVIDER_H__*/

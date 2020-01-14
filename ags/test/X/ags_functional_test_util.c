@@ -30,7 +30,8 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
-#include <pthread.h>
+#include <gdk/gdkx.h>
+#include <X11/extensions/XTest.h>
 
 #ifdef AGS_FAST_FUNCTIONAL_TESTS
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
@@ -51,8 +52,6 @@ gboolean ags_functional_test_util_driver_dispatch(GSource *source,
 void* ags_functional_test_util_add_test_thread(void *ptr);
 void* ags_functional_test_util_do_run_thread(void *ptr);
 
-pthread_t *ags_functional_test_util_thread = NULL;
-
 extern AgsApplicationContext *ags_application_context;
 
 extern AgsLadspaManager *ags_ladspa_manager;
@@ -60,8 +59,9 @@ extern AgsDssiManager *ags_dssi_manager;
 extern AgsLv2Manager *ags_lv2_manager;
 extern AgsLv2uiManager *ags_lv2ui_manager;
 
-AgsTaskThread *task_thread;
-AgsGuiThread *gui_thread;
+GThread *ags_functional_test_util_thread;
+
+AgsTaskLauncher *task_launcher;
 
 struct _AddTest{
   AgsFunctionalTestUtilAddTest add_test;
@@ -99,11 +99,11 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   g_main_context_iteration(g_main_context_default(),
 			   FALSE);
 
-  pthread_mutex_unlock(ags_test_get_driver_mutex());
+  g_rec_mutex_unlock(ags_test_get_driver_mutex());
   
   usleep(4000);
   
-  pthread_mutex_lock(ags_test_get_driver_mutex());
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
 
   g_main_context_iteration(g_main_context_default(),
 			   FALSE);
@@ -111,10 +111,16 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   return(G_SOURCE_CONTINUE);
 }
 
-pthread_t*
-ags_functional_test_util_self()
+GThread*
+ags_functional_test_util_test_runner_thread()
 {
   return(ags_functional_test_util_thread);
+}
+
+struct timespec*
+ags_functional_test_util_get_default_timeout()
+{
+  return(&ags_functional_test_util_default_timeout);
 }
 
 void*
@@ -122,7 +128,7 @@ ags_functional_test_util_add_test_thread(void *ptr)
 {
   struct _AddTest *test;
 
-  ags_functional_test_util_thread = pthread_self();
+  ags_functional_test_util_thread = g_thread_self();
   
   test = ptr;
   
@@ -132,7 +138,9 @@ ags_functional_test_util_add_test_thread(void *ptr)
 
   test->add_test();
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -141,15 +149,16 @@ ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 {
   struct _AddTest *test;
 
-  pthread_t thread;
+  GThread *thread;
 
   test = (struct _AddTest *) malloc(sizeof(struct _AddTest));
 
   test->add_test = add_test;
   test->is_available = is_available;
 
-  pthread_create(&thread, NULL,
-		 ags_functional_test_util_add_test_thread, test);
+  thread = g_thread_new("libgsequencer.so - functional test",
+			ags_functional_test_util_add_test_thread,
+			test);
 }
 
 void
@@ -187,15 +196,13 @@ ags_functional_test_util_do_run_thread(void *ptr)
   usleep(1000000);
 
   /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
   
   ags_functional_test_util_notify_add_test(is_available);
   
-  pthread_exit(NULL);
+  g_thread_exit(NULL);
+
+  return(NULL);
 }
 
 void
@@ -205,8 +212,8 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsApplicationContext *application_context;
   AgsLog *log;
 
-  pthread_t thread;
-  pthread_mutex_t *mutex;
+  GThread *thread;
+  GRecMutex *mutex;
   
   GSource *driver_source;
   GSourceFuncs driver_funcs;
@@ -228,10 +235,11 @@ ags_functional_test_util_do_run(int argc, char **argv,
   
   /* application context */
   mutex = ags_test_get_driver_mutex();
-  pthread_mutex_lock(mutex);
+  g_rec_mutex_lock(mutex);
 
-  pthread_create(&thread, NULL,
-		 ags_functional_test_util_do_run_thread, is_available);
+  thread = g_thread_new("libgsequencer.so - functional test",
+			ags_functional_test_util_do_run_thread,
+			is_available);
 
   driver_funcs.prepare = ags_functional_test_util_driver_prepare;
   driver_funcs.check = ags_functional_test_util_driver_check;
@@ -273,11 +281,7 @@ ags_functional_test_util_setup_and_launch()
   ags_test_setup(1, start_arg);
 
   /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(ags_application_context));
 
   /* launch application */
   ags_test_launch(FALSE);
@@ -306,18 +310,13 @@ ags_functional_test_util_setup_and_launch_filename(gchar *filename)
   ags_test_setup(3, start_arg);
 
   /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(ags_application_context));
 
   /* launch application */
-  ags_test_launch_filename(filename,
-			   FALSE);
+  ags_test_launch_filename(filename);
 
   /* do the work */
-  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
+  while(!ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(ags_application_context))){
     usleep(500000);
   }
 
@@ -377,7 +376,7 @@ ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget)
   
   if(*widget != NULL &&
      GTK_IS_WIDGET(*widget) &&
-     GTK_WIDGET_VISIBLE(*widget)){
+     gtk_widget_is_visible(*widget)){
     do_idle = FALSE;
   }
 
@@ -397,7 +396,7 @@ ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget)
   
   if(*widget != NULL &&
      GTK_IS_WIDGET(*widget) &&
-     !GTK_WIDGET_VISIBLE(*widget)){
+     !gtk_widget_is_visible(*widget)){
     do_idle = FALSE;
   }
 
@@ -417,7 +416,7 @@ ags_functional_test_util_idle_test_widget_realized(GtkWidget **widget)
   
   if(*widget != NULL &&
      GTK_IS_WIDGET(*widget) &&
-     GTK_WIDGET_REALIZED(*widget)){
+     gtk_widget_get_realized(*widget)){
     do_idle = FALSE;
   }
 
@@ -487,6 +486,43 @@ ags_functional_test_util_leave(GtkWidget *window)
   ags_functional_test_util_reaction_time_long();
 }
 
+void
+ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x, guint y)
+{
+  static const gulong delay = 1;
+
+  XTestFakeMotionEvent((Display *) display, screen, x, y, delay);
+  XSync((Display *) display, 0);
+}
+
+void
+ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 1, delay);
+  XFlush((Display *) display);
+}
+
+void
+ags_functional_test_util_fake_mouse_button_release(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 0, delay);
+  XFlush((Display *) display);
+}
+
+void
+ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
+{
+  static const gulong delay = 1;
+  
+  XTestFakeButtonEvent((Display *) display, button, 1, delay);
+  XTestFakeButtonEvent((Display *) display, button, 0, delay);
+  XFlush((Display *) display);
+}
+
 GtkMenu*
 ags_functional_test_util_submenu_find(GtkMenu *menu,
 				      gchar *item_label)
@@ -554,7 +590,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
   ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
-  menu_bar = xorg_application_context->window->menu_bar;
+  menu_bar = AGS_WINDOW(xorg_application_context->window)->menu_bar;
 
   list =
     list_start = gtk_container_get_children(menu_bar);
@@ -573,68 +609,64 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 			     item_label)){
 	GtkWidget *widget;
 
+	GtkAllocation allocation;
+	
 	GdkWindow *window;
 	GdkEvent *event_motion;
 
+	Display *x_display;
+	
 	struct timespec spec;
 	
 	gint x, y;
 	gint origin_x, origin_y;
+	gint position_x, position_y;
 	
 	widget = GTK_WIDGET(list->data);
 
-	if(!GTK_WIDGET_REALIZED(widget)){
+	if(!gtk_widget_get_realized(widget)){
 	  ags_functional_test_util_reaction_time_long();
 	}
 
 	/*  */
 	ags_test_enter();
 
-	x = widget->allocation.x + widget->allocation.width / 2.0;
-	y = widget->allocation.y + widget->allocation.height / 2.0;
+	gtk_widget_get_allocation(widget,
+				  &allocation);
+	
+	x = allocation.x;
+	y = allocation.y;
+
+	position_x = allocation.width / 2.0;
+	position_y = allocation.height / 2.0;
 
 	window = gtk_widget_get_window(widget);
 
-	x = widget->allocation.x;
-	y = widget->allocation.y;
-
 	gdk_window_get_origin(window, &origin_x, &origin_y);
 
-	gdk_display_warp_pointer(gtk_widget_get_display(widget),
-				 gtk_widget_get_screen(widget),
-				 origin_x + x + 15, origin_y + y + 5);
+	x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 	
 	ags_test_leave();
 
-	/*  */
-	ags_functional_test_util_reaction_time();
-
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_PRESS);
+	/* warp and click */
+	ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
 	ags_functional_test_util_reaction_time();
 
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_RELEASE);
+	ags_functional_test_util_fake_mouse_button_click(x_display, 1);
 
 	ags_functional_test_util_reaction_time();
 
 	/*  */
+#if 0	
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item");
 	
 	ags_test_leave();
-
+#endif
+	
 	success = TRUE;
 
 	break;
@@ -690,10 +722,15 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 			     item_label)){
 	GtkWidget *widget;
 
+	GtkAllocation allocation;
+	
 	GdkWindow *window;
+	
+	Display *x_display;
 	
 	gint x, y;
 	gint origin_x, origin_y;
+	gint position_x, position_y;
 	gboolean is_realized;
 	
 	widget = GTK_WIDGET(list->data);
@@ -705,7 +742,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	/*  */
 	ags_test_enter();
 
-	is_realized = GTK_WIDGET_REALIZED(widget);
+	is_realized = gtk_widget_get_realized(widget);
 	
 	ags_test_leave();
 
@@ -714,49 +751,43 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 
 	  window = gtk_widget_get_window(widget);
 
-	  x = widget->allocation.x + widget->allocation.width / 2.0;
-	  y = widget->allocation.y + widget->allocation.height / 2.0;
+	  gtk_widget_get_allocation(widget,
+				    &allocation);
+	  
+	  x = allocation.x;
+	  y = allocation.y;
+
+	  position_x = allocation.width / 2.0;
+	  position_y = allocation.height / 2.0;
 
 	  gdk_window_get_origin(window, &origin_x, &origin_y);
 
-	  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-				   gtk_widget_get_screen(widget),
-				   origin_x + x + 15, origin_y + y + 5);
+	  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 
 	  ags_test_leave();
 
-	  ags_functional_test_util_reaction_time();
-	
-	  gdk_test_simulate_button(window,
-				   x + 5,
-				   y + 5,
-				   1,
-				   GDK_BUTTON1_MASK,
-				   GDK_BUTTON_PRESS);
-
+	  /* warp and click */
+	  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
 	  ags_functional_test_util_reaction_time();
 
-	  gdk_test_simulate_button(window,
-				   x + 5,
-				   y + 5,
-				   1,
-				   GDK_BUTTON1_MASK,
-				   GDK_BUTTON_RELEASE);
-  	
+	  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
 	  ags_functional_test_util_reaction_time();
 	}
 	
 	success = TRUE;
 
 	/*  */
+#if 0
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item");
 	
 	ags_test_leave();
-
+#endif
+	
 	break;
       }
     }
@@ -777,10 +808,15 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 {
   GtkWidget *widget;
 
+  GtkAllocation allocation;
+  
   GdkWindow *window;
+  
+  Display *x_display;
   
   gint x, y;
   gint origin_x, origin_y;	
+  gint position_x, position_y;
   
   if(combo_box == NULL ||
      !GTK_IS_COMBO_BOX(combo_box)){
@@ -798,16 +834,24 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + widget->allocation.width / 2.0;
-  y = widget->allocation.y + widget->allocation.height / 2.0;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));
 
   ags_test_leave();
+
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
+
+  ags_functional_test_util_reaction_time();
 
   /*
   ags_functional_test_util_reaction_time();
@@ -850,10 +894,15 @@ ags_functional_test_util_button_click(GtkButton *button)
 {
   GtkWidget *widget;
 
+  GtkAllocation allocation;
+  
   GdkWindow *window;
+
+  Display *x_display;
 
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
   gboolean is_realized;
   
   if(button == NULL ||
@@ -872,39 +921,40 @@ ags_functional_test_util_button_click(GtkButton *button)
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + widget->allocation.width / 2.0;
-  y = widget->allocation.y + widget->allocation.height / 2.0;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  /*  */
-  ags_functional_test_util_reaction_time();
-	
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
   ags_functional_test_util_reaction_time();
 
+  /* */
+#if 0
+  ags_test_enter();
+
+  g_signal_emit_by_name(widget,
+			"clicked");
+  
+  ags_test_leave();
+#endif
+  
   ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
@@ -915,10 +965,15 @@ ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
 {
   GtkWidget *widget;
 
+  GtkAllocation allocation;
+  
   GdkWindow *window;
+
+  Display *x_display;
 
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
   gboolean is_realized;
   
   if(tool_button == NULL ||
@@ -937,39 +992,40 @@ ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + widget->allocation.width / 2.0;
-  y = widget->allocation.y + widget->allocation.height / 2.0;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  /*  */
-  ags_functional_test_util_reaction_time();
-	
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
+
   ags_functional_test_util_reaction_time();
 
+  /* */
+#if 0
+  ags_test_enter();
+
+  g_signal_emit_by_name(widget,
+			"clicked");
+  
+  ags_test_leave();
+#endif
+  
   ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
@@ -979,12 +1035,18 @@ gboolean
 ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 {
   GtkWidget *widget;
-  GtkWidget *arrow_button = NULL;
+  GtkWidget *arrow_box;
+  GtkWidget *arrow_button;
+
+  GtkAllocation allocation;
   
   GdkWindow *window;
 
+  Display *x_display;
+
   gint x, y;
   gint origin_x, origin_y;
+  gint position_x, position_y;
 	
   if(button == NULL ||
      !GTK_IS_MENU_TOOL_BUTTON(button)){
@@ -993,10 +1055,9 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   ags_test_enter();
 
-  if(arrow_button == NULL){
-    arrow_button = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
-  }
-
+  arrow_box = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
+  arrow_button = gtk_container_get_children(arrow_box)->data;
+  
   ags_test_leave();
 
   widget = arrow_button;
@@ -1009,41 +1070,35 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + (arrow_button->allocation.width / 2.0);
-  y = widget->allocation.y + (arrow_button->allocation.height / 2.0);
+  gtk_widget_get_allocation(widget,
+			    &allocation);  
+
+  x = allocation.x;
+  y = allocation.y;
+
+  position_x = allocation.width / 2.0;
+  position_y = allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
-  gdk_display_warp_pointer(gtk_widget_get_display(widget),
-			   gtk_widget_get_screen(widget),
-			   origin_x + x, origin_y + y);
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
 
   ags_test_leave();
 
-  ags_functional_test_util_reaction_time();
-	
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
-
+  /* warp and click */
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x + position_x, origin_y + y + position_y);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x + 5,
-			   y + 5,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
-  	
-  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_fake_mouse_button_click(x_display, 1);
 
+  ags_functional_test_util_reaction_time();
+
+  /* */
+#if 0
   ags_test_enter();
 
-  if(!GTK_WIDGET_REALIZED(widget)){
+  if(!gtk_widget_get_realized(widget)){
     /*  */
 
     g_signal_emit_by_name(widget,
@@ -1051,14 +1106,13 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   }
 
   ags_test_leave();
-
+  
   ags_functional_test_util_reaction_time_long();
 
-#if 0
   /*  */
   ags_test_enter();
 
-  gtk_menu_popup(gtk_menu_tool_button_get_menu(widget),
+  gtk_menu_popup(gtk_menu_tool_button_get_menu(button),
 		 NULL,
 		 NULL,
 		 NULL,
@@ -1067,9 +1121,9 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 		 gtk_get_current_event_time());
   
   ags_test_leave();
+#endif
 
   ags_functional_test_util_reaction_time_long();
-#endif
   
   return(TRUE);
 }
@@ -1281,7 +1335,7 @@ ags_functional_test_util_file_default_window_resize()
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   gdk_window_move_resize(gtk_widget_get_window(window),
 			 64, 0,
@@ -1309,7 +1363,7 @@ ags_functional_test_util_file_default_editor_resize()
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
 
   main_paned = window->paned;
@@ -1337,7 +1391,7 @@ ags_functional_test_util_file_default_automation_window_resize()
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   gdk_window_move_resize(gtk_widget_get_window(window->automation_window),
 			 64, 0,
@@ -1364,7 +1418,7 @@ ags_functional_test_util_file_default_automation_editor_resize()
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   automation_editor = window->automation_window->automation_editor;
 
@@ -1394,14 +1448,14 @@ ags_functional_test_util_open()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
 
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  menu = xorg_application_context->window->menu_bar->file;
+  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"open");
@@ -1422,14 +1476,14 @@ ags_functional_test_util_save()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
     
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  menu = xorg_application_context->window->menu_bar->file;
+  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save");
@@ -1450,14 +1504,14 @@ ags_functional_test_util_save_as()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
     
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  menu = xorg_application_context->window->menu_bar->file;
+  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save as");
@@ -1479,16 +1533,16 @@ ags_functional_test_util_export_open()
   
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+  if(!ags_functional_test_util_menu_bar_click("_File")){
     return(FALSE);
   }
 
   ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
-  menu = xorg_application_context->window->menu_bar->file;
+  menu = AGS_WINDOW(xorg_application_context->window)->menu_bar->file;
 
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   ags_test_leave();
   
@@ -1514,7 +1568,7 @@ ags_functional_test_util_export_close()
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   ags_test_leave();
 
@@ -1544,7 +1598,7 @@ ags_functional_test_util_export_add()
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   add_button = export_window->add;
 
@@ -1576,7 +1630,7 @@ ags_functional_test_util_export_tact(gdouble tact)
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   gtk_spin_button_set_value(export_window->tact,
 			    tact);
@@ -1607,7 +1661,7 @@ ags_functional_test_util_export_remove(guint nth)
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   container_test.container = &(export_window->export_soundcard);
 
@@ -1677,7 +1731,7 @@ ags_functional_test_util_export_set_backend(guint nth,
   ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1754,7 +1808,7 @@ ags_functional_test_util_export_set_device(guint nth,
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1831,7 +1885,7 @@ ags_functional_test_util_export_set_filename(guint nth,
   ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
-  export_window = xorg_application_context->window->export_window;
+  export_window = AGS_WINDOW(xorg_application_context->window)->export_window;
 
   list_start =
     list = gtk_container_get_children(export_window->export_soundcard);
@@ -1917,7 +1971,7 @@ ags_functional_test_util_add_machine(gchar *submenu,
     return(FALSE);
   }
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+  if(!ags_functional_test_util_menu_bar_click("_Edit")){    
     return(FALSE);
   }
 
@@ -1925,7 +1979,7 @@ ags_functional_test_util_add_machine(gchar *submenu,
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   menu_bar = window->menu_bar;
 
   container_test.container = &(window->machines);
@@ -1938,14 +1992,14 @@ ags_functional_test_util_add_machine(gchar *submenu,
   success = FALSE;
   
   success = ags_functional_test_util_menu_click(menu_bar->edit,
-						GTK_STOCK_ADD);
+						"Add");
 
   if(!success){
     return(FALSE);
   }
   
   add_menu = ags_functional_test_util_submenu_find(menu_bar->edit,
-						   GTK_STOCK_ADD);
+						   "Add");
 
   if(submenu == NULL){
     success = ags_functional_test_util_menu_click(add_menu,
@@ -2003,7 +2057,7 @@ ags_functional_test_util_preferences_open()
 
   gboolean success;
 
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+  if(!ags_functional_test_util_menu_bar_click("_Edit")){    
     return(FALSE);
   }
 
@@ -2011,13 +2065,13 @@ ags_functional_test_util_preferences_open()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   menu_bar = window->menu_bar;
 
   ags_test_leave();
 
   success = ags_functional_test_util_menu_click(menu_bar->edit,
-						GTK_STOCK_PREFERENCES);
+						"Preferences");
 
   if(!success){
     return(FALSE);
@@ -2039,7 +2093,7 @@ ags_functional_test_util_preferences_close()
   ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -2159,7 +2213,7 @@ ags_functional_test_util_notation_toolbar_cursor_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2188,7 +2242,7 @@ ags_functional_test_util_notation_toolbar_edit_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2217,7 +2271,7 @@ ags_functional_test_util_notation_toolbar_delete_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2246,7 +2300,7 @@ ags_functional_test_util_notation_toolbar_select_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2275,7 +2329,7 @@ ags_functional_test_util_notation_toolbar_invert_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2304,7 +2358,7 @@ ags_functional_test_util_notation_toolbar_paste_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2333,7 +2387,7 @@ ags_functional_test_util_notation_toolbar_copy_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2362,7 +2416,7 @@ ags_functional_test_util_notation_toolbar_cut_click()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2391,7 +2445,7 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
@@ -2422,7 +2476,7 @@ ags_functional_test_util_machine_selector_select(gchar *editor_type,
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   machine_selector = NULL;
   
@@ -2490,7 +2544,7 @@ ags_functional_test_util_machine_selection_select(gchar *editor_type,
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   machine_selector = NULL;
   
@@ -2517,7 +2571,7 @@ ags_functional_test_util_machine_selection_select(gchar *editor_type,
   machine_selection = machine_selector->machine_selection;
 
   list = 
-    list_start = gtk_container_get_children(GTK_DIALOG(machine_selection)->vbox);
+    list_start = gtk_container_get_children(gtk_dialog_get_content_area(GTK_DIALOG(machine_selection)));
 
   success = FALSE;
 
@@ -2571,7 +2625,7 @@ ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   machine_selector = NULL;
   
@@ -2632,7 +2686,7 @@ ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   machine_selector = NULL;
   
@@ -2693,7 +2747,7 @@ ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
 
   machine_selector = NULL;
   
@@ -2755,7 +2809,7 @@ ags_functional_test_util_machine_selection_reverse_mapping()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   notation_editor = window->notation_editor;
   machine_selector = notation_editor->machine_selector;
   
@@ -2806,10 +2860,12 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   GtkScrollbar *hscrollbar;
   GtkScrollbar *vscrollbar;
   GtkAdjustment *adjustment;
+
+  GtkAllocation allocation;
   
-  GdkDisplay *display;
-  GdkScreen *screen;
   GdkWindow *window;
+
+  Display *x_display;
 
   gdouble zoom;
   guint history;
@@ -2823,7 +2879,7 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   
   xorg_application_context = ags_application_context_get_instance();
 
-  notation_editor = xorg_application_context->window->notation_editor;
+  notation_editor = AGS_WINDOW(xorg_application_context->window)->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
   if(notation_editor->selected_machine == NULL){
@@ -2834,9 +2890,6 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   
   notation_edit = notation_editor->notation_edit;
   widget = notation_edit->drawing_area;
-  
-  display = gtk_widget_get_display(widget);
-  screen = gtk_widget_get_screen(widget);
   
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
@@ -2851,78 +2904,69 @@ ags_functional_test_util_notation_edit_add_point(guint x0, guint x1,
   
   window = gtk_widget_get_window(widget);
 
-  widget_x = widget->allocation.x;
-  widget_y = widget->allocation.y;
+  gtk_widget_get_allocation(widget,
+			    &allocation);  
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  widget_x = allocation.x;
+  widget_y = allocation.y;
+
+  width = allocation.width;
+  height = allocation.height;
   
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
+  x_display = GDK_SCREEN_XDISPLAY(gdk_window_get_screen(window));	
+
   /* make visible */
-  adjustment = GTK_RANGE(hscrollbar)->adjustment;
+  adjustment = gtk_range_get_adjustment(GTK_RANGE(hscrollbar));
   
-  if((x0 * notation_edit->control_width) > adjustment->value + adjustment->page_size){
+  if((x0 * notation_edit->control_width) / zoom > gtk_adjustment_get_value(adjustment) + width - ((x1 - x0) * notation_edit->control_width) / zoom){
     gtk_adjustment_set_value(adjustment,
-			     x0 * notation_edit->control_width);
+			     x0 * notation_edit->control_width / zoom);
 
     ags_functional_test_util_reaction_time_long();
-  }else if((x0 * notation_edit->control_width) < adjustment->value){
+  }else if((x0 * notation_edit->control_width) / zoom < gtk_adjustment_get_value(adjustment)){
     gtk_adjustment_set_value(adjustment,
-			     x0 * notation_edit->control_width);
+			     x0 * notation_edit->control_width / zoom);
 
     ags_functional_test_util_reaction_time_long();
   }
 
-  x0 = (x0 * notation_edit->control_width) - (adjustment->value);
-  x1 = (x1 * notation_edit->control_width) - (adjustment->value);
+  x0 = (x0 * notation_edit->control_width) / zoom - (gtk_adjustment_get_value(adjustment));
+  x1 = (x1 * notation_edit->control_width) / zoom - (gtk_adjustment_get_value(adjustment));
 
-  adjustment = GTK_RANGE(vscrollbar)->adjustment;
+  adjustment = gtk_range_get_adjustment(GTK_RANGE(vscrollbar));
   
-  if((y * notation_edit->control_height) > (adjustment->value + adjustment->page_size)){
+  if((y * notation_edit->control_height) > gtk_adjustment_get_value(adjustment) + height){
     gtk_adjustment_set_value(adjustment,
 			     (y * notation_edit->control_height));
 
     ags_functional_test_util_reaction_time_long();
-  }else if((y * notation_edit->control_height) < adjustment->value){
+  }else if((y * notation_edit->control_height) < gtk_adjustment_get_value(adjustment)){
     gtk_adjustment_set_value(adjustment,
 			     (y * notation_edit->control_height));
 
     ags_functional_test_util_reaction_time_long();
   }
 
-  y = (y * notation_edit->control_height) - (adjustment->value);
+  y = (y * notation_edit->control_height) - (gtk_adjustment_get_value(adjustment));
   
   ags_test_leave();
 
   /*  */
-  gdk_display_warp_pointer(display,
-			   screen,
-			   origin_x + x0 + 8, origin_y + y + 7);
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x0 + 8, origin_y + y + 7);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x0 + 8,
-			   y + 7,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_PRESS);
+  ags_functional_test_util_fake_mouse_button_press(x_display, 1);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_display_warp_pointer(display,
-			   screen,
-			   origin_x + x1 + 8, origin_y + y + 7);
+  ags_functional_test_util_fake_mouse_warp(x_display, 0, origin_x + x1 + 8, origin_y + y + 7);
 
   ags_functional_test_util_reaction_time();
 
-  gdk_test_simulate_button(window,
-			   x1 + 8,
-			   y + 7,
-			   1,
-			   GDK_BUTTON1_MASK,
-			   GDK_BUTTON_RELEASE);
+  ags_functional_test_util_fake_mouse_button_release(x_display, 1);
   
   ags_functional_test_util_reaction_time_long();
   
@@ -3038,7 +3082,7 @@ ags_functional_test_util_preferences_click_tab(guint nth_tab)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3075,7 +3119,7 @@ ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
 
   xorg_application_context = ags_application_context_get_instance();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3131,7 +3175,7 @@ ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
 
   xorg_application_context = ags_application_context_get_instance();
 
-  preferences = xorg_application_context->window->preferences;
+  preferences = AGS_WINDOW(xorg_application_context->window)->preferences;
 
   ags_test_leave();
 
@@ -3200,7 +3244,7 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3254,7 +3298,7 @@ ags_functional_test_util_machine_show(guint nth_machine)
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3305,7 +3349,7 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   
   /* retrieve machine */
   container_test.container = &(window->machines);
@@ -3442,7 +3486,7 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   
   xorg_application_context = ags_application_context_get_instance();
 
-  window = xorg_application_context->window;
+  window = AGS_WINDOW(xorg_application_context->window);
   
   /* retrieve machine */
   list_start = gtk_container_get_children(window->machines);
@@ -3480,6 +3524,8 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
 						      &ags_functional_test_util_default_timeout,
 						      properties);
 
+  ags_functional_test_util_reaction_time_long();
+
   return(success);
 }
 
@@ -3500,7 +3546,7 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3550,7 +3596,7 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
   /* retrieve machine */
   enable_button = NULL;
   
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3637,7 +3683,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3804,7 +3850,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -3941,7 +3987,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4105,7 +4151,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4243,7 +4289,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4381,7 +4427,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4519,7 +4565,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4657,7 +4703,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4784,7 +4830,7 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4869,7 +4915,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -4984,7 +5030,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5080,7 +5126,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5177,7 +5223,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5262,7 +5308,7 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */  
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5306,7 +5352,7 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5350,7 +5396,7 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5615,7 +5661,7 @@ ags_functional_test_util_drum_open(guint nth_machine)
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve drum */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -5833,7 +5879,7 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   xorg_application_context = ags_application_context_get_instance();
 
   /* retrieve ffplayer */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(AGS_WINDOW(xorg_application_context->window)->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 

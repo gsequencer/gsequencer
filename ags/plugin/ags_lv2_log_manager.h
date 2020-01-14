@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_LOG_MANAGER                (ags_lv2_log_manager_get_type())
 #define AGS_LV2_LOG_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_LOG_MANAGER, AgsLv2LogManager))
@@ -59,5 +63,7 @@ int ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
 
 AgsLv2LogManager* ags_lv2_log_manager_get_instance();
 AgsLv2LogManager* ags_lv2_log_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_LOG_MANAGER_H__*/

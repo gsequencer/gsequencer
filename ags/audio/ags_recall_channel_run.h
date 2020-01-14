@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECALL_CHANNEL_RUN                (ags_recall_channel_run_get_type())
 #define AGS_RECALL_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CHANNEL_RUN, AgsRecallChannelRun))
@@ -60,5 +63,7 @@ struct _AgsRecallChannelRunClass
 GType ags_recall_channel_run_get_type();
 
 AgsRecallChannelRun* ags_recall_channel_run_new();
+
+G_END_DECLS
 
 #endif /*__AGS_RECALL_CHANNEL_RUN_H__*/

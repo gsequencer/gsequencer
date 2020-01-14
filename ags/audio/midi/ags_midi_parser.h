@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,13 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MIDI_PARSER                (ags_midi_parser_get_type ())
 #define AGS_MIDI_PARSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_PARSER, AgsMidiParser))
@@ -38,7 +40,7 @@
 #define AGS_IS_MIDI_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_PARSER))
 #define AGS_MIDI_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_PARSER, AgsMidiParserClass))
 
-#define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (((AgsMidiParser *) obj)->obj_mutex)
+#define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (&(((AgsMidiParser *) obj)->obj_mutex))
 
 #define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 
@@ -67,19 +69,18 @@ struct _AgsMidiParser
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   FILE *file;
   guint nth_chunk;
 
-  unsigned char *buffer;
+  guchar *buffer;
   
   size_t file_length;
   size_t offset;
 
   guint current_time;
-  unsigned char current_status;
+  guchar current_status;
   
   xmlDoc *doc;
 };
@@ -94,7 +95,7 @@ struct _AgsMidiParserClass
   
   xmlDoc* (*parse_full)(AgsMidiParser *midi_parser);
   xmlNode* (*parse_bytes)(AgsMidiParser *midi_parser,
-			  unsigned char *midi_buffer,
+			  guchar *midi_buffer,
 			  guint buffer_length);
   
   xmlNode* (*parse_header)(AgsMidiParser *midi_parser);
@@ -126,8 +127,6 @@ struct _AgsMidiParserClass
 
 GType ags_midi_parser_get_type(void);
 
-pthread_mutex_t* ags_midi_parser_get_class_mutex();
-
 gint16 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser);
@@ -145,7 +144,7 @@ void ags_midi_parser_on_error(AgsMidiParser *midi_parser,
 
 xmlDoc* ags_midi_parser_parse_full(AgsMidiParser *midi_parser);
 xmlNode* ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
-				     unsigned char *midi_buffer,
+				     guchar *midi_buffer,
 				     guint buffer_length);
 
 xmlNode* ags_midi_parser_parse_header(AgsMidiParser *midi_parser);
@@ -176,5 +175,7 @@ xmlNode* ags_midi_parser_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type);
 
 AgsMidiParser* ags_midi_parser_new(FILE *file);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_PARSER_H__*/

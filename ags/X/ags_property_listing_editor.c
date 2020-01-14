@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_property_listing_editor.h>
 
-#include <ags/libags.h>
+#include <ags/i18n.h>
 
 void ags_property_listing_editor_class_init(AgsPropertyListingEditorClass *property_listing_editor);
 void ags_property_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -127,7 +127,7 @@ ags_property_listing_editor_disconnect(AgsConnectable *connectable)
  * 
  * Returns: the new #AgsPropertyListingEditor
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPropertyListingEditor*
 ags_property_listing_editor_new()

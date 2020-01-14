@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_COUNT_BEATS_AUDIO_RUN                (ags_count_beats_audio_run_get_type())
 #define AGS_COUNT_BEATS_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COUNT_BEATS_AUDIO_RUN, AgsCountBeatsAudioRun))
@@ -69,19 +71,19 @@ struct _AgsCountBeatsAudioRunClass
 {
   AgsRecallAudioRunClass recall_audio_run;
   
-  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			 guint nth_run);
-  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			guint nth_run);
-  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
-			guint nth_run);
-  
   void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
 			  guint nth_run);
   void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
 			 guint nth_run);
   void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
 			 guint nth_run);
+  
+  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint nth_run);
+  void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint nth_run);
+  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint nth_run);
 
   void (*wave_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
 		     guint nth_run);
@@ -130,5 +132,7 @@ void ags_count_beats_audio_run_midi_stop(AgsCountBeatsAudioRun *count_beats_audi
 
 AgsCountBeatsAudioRun* ags_count_beats_audio_run_new(AgsAudio *audio,
 						     AgsDelayAudioRun *delay_audio_run);
+
+G_END_DECLS
 
 #endif /*__AGS_COUNT_BEATS_AUDIO_RUN_H__*/

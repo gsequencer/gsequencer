@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -67,9 +67,9 @@ ags_authentication_base_init(AgsAuthenticationInterface *ginterface)
  * 
  * Available authentication modules.
  *
- * Returns: a %NULL terminated array of strings of available authentication modules
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): a %NULL terminated array of strings of available authentication modules
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar**
 ags_authentication_get_authentication_module(AgsAuthentication *authentication)
@@ -88,20 +88,22 @@ ags_authentication_get_authentication_module(AgsAuthentication *authentication)
  * @authentication: the #AgsAuthentication
  * @login: the login
  * @password: the password
- * @user_uuid: return location of the user's uuid
- * @security_token: return location of the security token
+ * @user_uuid: (out) (transfer full): return location of the user's uuid
+ * @security_token: (out) (transfer full): return location of the security token
  * @error: the #GError-struct
  * 
  * Login.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_login(AgsAuthentication *authentication,
-			 gchar *login, gchar *password,
-			 gchar **user_uuid, gchar **security_token,
+			 gchar *login,
+			 gchar *password,
+			 gchar **user_uuid,
+			 gchar **security_token,
 			 GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -113,8 +115,43 @@ ags_authentication_login(AgsAuthentication *authentication,
   return(authentication_interface->login(authentication,
 					 login,
 					 password,
-					 user_uuid, security_token,
+					 user_uuid,
+					 security_token,
 					 error));
+}
+
+/**
+ * ags_authentication_get_digest:
+ * @authentication: the #AgsAuthentication
+ * @realm: the realm
+ * @login: the login
+ * @security_token: the security token
+ * @error: the #GError-struct
+ * 
+ * Get digest of @login.
+ *
+ * Returns: (transfer full): the encrypted password
+ *
+ * Since: 3.0.0
+ */
+gchar*
+ags_authentication_get_digest(AgsAuthentication *authentication,
+			      gchar *realm,
+			      gchar *login,
+			      gchar *security_token,
+			      GError **error)
+{
+  AgsAuthenticationInterface *authentication_interface;
+
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
+  g_return_val_if_fail(authentication_interface->get_digest, NULL);
+
+  return(authentication_interface->get_digest(authentication,
+					      realm,
+					      login,
+					      security_token,
+					      error));
 }
 
 /**
@@ -129,7 +166,7 @@ ags_authentication_login(AgsAuthentication *authentication,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_logout(AgsAuthentication *authentication,
@@ -158,9 +195,9 @@ ags_authentication_logout(AgsAuthentication *authentication,
  * 
  * Generate token.
  *
- * Returns: the generated token
+ * Returns: (transfer full): the generated token
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_authentication_generate_token(AgsAuthentication *authentication,
@@ -177,81 +214,10 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
 }
 
 /**
- * ags_authentication_get_groups:
- * @authentication: the #AgsAuthentication
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @error: the #GError-struct
- * 
- * Get groups.
- * 
- * Returns: a %NULL-terminated string array containing groups
- * 
- * Since: 2.0.0
- */
-gchar**
-ags_authentication_get_groups(AgsAuthentication *authentication,
-			      GObject *security_context,
-			      gchar *login,
-			      gchar *security_token,
-			      GError **error)
-{
-  AgsAuthenticationInterface *authentication_interface;
-
-  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
-  authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
-  g_return_val_if_fail(authentication_interface->get_groups, NULL);
-
-  return(authentication_interface->get_groups(authentication,
-					      security_context,
-					      login,
-					      security_token,
-					      error));
-}
-
-/**
- * ags_authentication_get_permission:
- * @authentication: the #AgsAuthentication
- * @security_context: the #AgsSecurityContext
- * @login: the login
- * @security_token: the security token
- * @group_name: the group name to query
- * @error: the #GError-struct
- * 
- * Get permission of group.
- *
- * Returns: one or more of 'r', 'w' and 'x'.
- * 
- * Since: 2.0.0
- */
-gchar*
-ags_authentication_get_permission(AgsAuthentication *authentication,
-				  GObject *security_context,
-				  gchar *login,
-				  gchar *security_token,
-				  gchar *group_name,
-				  GError **error)
-{
-  AgsAuthenticationInterface *authentication_interface;
-
-  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
-  authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
-  g_return_val_if_fail(authentication_interface->get_permission, NULL);
-
-  return(authentication_interface->get_permission(authentication,
-						  security_context,
-						  login,
-						  security_token,
-						  group_name,
-						  error));
-}
-
-/**
  * ags_authentication_is_session_active:
  * @authentication: the #AgsAuthentication
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user's UUID
  * @security_token: the security token
  * @error: the #GError-struct
  * 
@@ -259,12 +225,12 @@ ags_authentication_get_permission(AgsAuthentication *authentication,
  *
  * Returns: %TRUE if session active, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_authentication_is_session_active(AgsAuthentication *authentication,
 				     GObject *security_context,
-				     gchar *login,
+				     gchar *user_uuid,
 				     gchar *security_token,
 				     GError **error)
 {
@@ -276,7 +242,7 @@ ags_authentication_is_session_active(AgsAuthentication *authentication,
 
   return(authentication_interface->is_session_active(authentication,
 						     security_context,
-						     login,
+						     user_uuid,
 						     security_token,
 						     error));
 }

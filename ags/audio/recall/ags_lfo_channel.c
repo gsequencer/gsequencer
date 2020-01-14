@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_lfo_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_synth_enums.h>
@@ -28,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel);
-void ags_lfo_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_lfo_channel_init(AgsLfoChannel *lfo_channel);
 void ags_lfo_channel_set_property(GObject *gobject,
 				  guint prop_id,
@@ -40,8 +37,6 @@ void ags_lfo_channel_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_lfo_channel_dispose(GObject *gobject);
 void ags_lfo_channel_finalize(GObject *gobject);
-
-void ags_lfo_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_lfo_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_lfo_channel_get_lfo_wave_plugin_port();
@@ -110,31 +105,15 @@ ags_lfo_channel_get_type()
       (GInstanceInitFunc) ags_lfo_channel_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_lfo_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lfo_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						  "AgsLfoChannel",
 						  &ags_lfo_channel_info,
 						  0);
     
-    g_type_add_interface_static(ags_type_lfo_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_lfo_channel);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_lfo_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_lfo_channel_set_ports;
 }
 
 void
@@ -161,7 +140,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The enabled port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("enabled",
 				   i18n_pspec("enabled"),
@@ -177,7 +156,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-wave port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-wave",
 				   i18n_pspec("lfo wave to apply"),
@@ -193,7 +172,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-freq port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-freq",
 				   i18n_pspec("lfo frequency to apply"),
@@ -209,7 +188,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-phase port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-phase",
 				   i18n_pspec("lfo phase to apply"),
@@ -225,7 +204,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-depth port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-depth",
 				   i18n_pspec("lfo depth to apply"),
@@ -241,7 +220,7 @@ ags_lfo_channel_class_init(AgsLfoChannelClass *lfo_channel)
    * 
    * The lfo-tuning port.
    * 
-   * Since: 2.3.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("lfo-tuning",
 				   i18n_pspec("lfo tuning to apply"),
@@ -416,7 +395,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 {
   AgsLfoChannel *lfo_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   lfo_channel = AGS_LFO_CHANNEL(gobject);
 
@@ -430,10 +409,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->enabled){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -448,7 +427,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->enabled = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_WAVE:
@@ -457,10 +436,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->lfo_wave){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -475,7 +454,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->lfo_wave = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_FREQ:
@@ -484,10 +463,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->lfo_freq){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -502,7 +481,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->lfo_freq = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_PHASE:
@@ -511,10 +490,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->lfo_phase){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -529,7 +508,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->lfo_phase = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_DEPTH:
@@ -538,10 +517,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->lfo_depth){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -556,7 +535,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->lfo_depth = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_TUNING:
@@ -565,10 +544,10 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     port = (AgsPort *) g_value_get_object(value);
 
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     if(port == lfo_channel->lfo_tuning){      
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
 
       return;
     }
@@ -583,7 +562,7 @@ ags_lfo_channel_set_property(GObject *gobject,
 
     lfo_channel->lfo_tuning = port;
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   default:
@@ -600,7 +579,7 @@ ags_lfo_channel_get_property(GObject *gobject,
 {
   AgsLfoChannel *lfo_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   lfo_channel = AGS_LFO_CHANNEL(gobject);
 
@@ -610,56 +589,56 @@ ags_lfo_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_ENABLED:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->enabled);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_WAVE:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->lfo_wave);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_FREQ:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->lfo_freq);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_PHASE:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->lfo_phase);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_DEPTH:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->lfo_depth);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   case PROP_LFO_TUNING:
   {
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
     g_value_set_object(value, lfo_channel->lfo_tuning);
       
-    pthread_mutex_unlock(recall_mutex);	
+    g_rec_mutex_unlock(recall_mutex);	
   }
   break;
   default:
@@ -750,30 +729,14 @@ ags_lfo_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_lfo_channel_parent_class)->finalize(gobject);
 }
 
-void
-ags_lfo_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./lfo[0]",
-		12)){
-      g_object_set(G_OBJECT(plugin),
-		   "lfo", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
-}
-
 static AgsPluginPort*
 ags_lfo_channel_get_enabled_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -801,7 +764,7 @@ ags_lfo_channel_get_enabled_plugin_port()
 		      1.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -811,9 +774,9 @@ ags_lfo_channel_get_lfo_wave_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -841,7 +804,7 @@ ags_lfo_channel_get_lfo_wave_plugin_port()
 		      (gdouble) AGS_SYNTH_OSCILLATOR_LAST - 1.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -851,9 +814,9 @@ ags_lfo_channel_get_lfo_freq_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -880,7 +843,7 @@ ags_lfo_channel_get_lfo_freq_plugin_port()
 		      20.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -890,9 +853,9 @@ ags_lfo_channel_get_lfo_phase_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -919,7 +882,7 @@ ags_lfo_channel_get_lfo_phase_plugin_port()
 		      G_MAXDOUBLE);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -929,9 +892,9 @@ ags_lfo_channel_get_lfo_depth_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -958,7 +921,7 @@ ags_lfo_channel_get_lfo_depth_plugin_port()
 		      1200.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -968,9 +931,9 @@ ags_lfo_channel_get_lfo_tuning_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -997,7 +960,7 @@ ags_lfo_channel_get_lfo_tuning_plugin_port()
 		      -1200.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -1010,7 +973,7 @@ ags_lfo_channel_get_lfo_tuning_plugin_port()
  *
  * Returns: the new #AgsLfoChannel
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsLfoChannel*
 ags_lfo_channel_new(AgsChannel *source)

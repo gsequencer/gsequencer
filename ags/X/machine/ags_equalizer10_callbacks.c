@@ -22,7 +22,7 @@
 #include <ags/X/ags_window.h>
 
 void
-ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsEqualizer10 *equalizer10)
+ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsEqualizer10 *equalizer10)
 {
   AgsWindow *window;
 

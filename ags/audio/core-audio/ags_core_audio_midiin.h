@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_CORE_AUDIO_MIDIIN                (ags_core_audio_midiin_get_type())
 #define AGS_CORE_AUDIO_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_MIDIIN, AgsCoreAudioMidiin))
@@ -34,7 +34,7 @@
 #define AGS_IS_CORE_AUDIO_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_MIDIIN))
 #define AGS_CORE_AUDIO_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_MIDIIN, AgsCoreAudioMidiinClass))
 
-#define AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(obj) (((AgsCoreAudioMidiin *) obj)->obj_mutex)
+#define AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(obj) (&(((AgsCoreAudioMidiin *) obj)->obj_mutex))
 
 #define AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
@@ -88,6 +88,7 @@ typedef enum
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE: sync done, soundcard conditional lock
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
  * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * @AGS_CORE_AUDIO_MIDIIN_DO_SYNC: do synchronize
  * 
  * Enum values to control the synchronization between soundcard and client.
  */
@@ -114,14 +115,11 @@ struct _AgsCoreAudioMidiin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
   
   AgsUUID *uuid;
   
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   char **buffer;
   guint buffer_size[4];
 
@@ -145,11 +143,11 @@ struct _AgsCoreAudioMidiin
   gchar **port_name;
   GList *core_audio_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 };
 
 struct _AgsCoreAudioMidiinClass
@@ -161,14 +159,14 @@ GType ags_core_audio_midiin_get_type();
 
 GQuark ags_core_audio_midiin_error_quark();
 
-pthread_mutex_t* ags_core_audio_midiin_get_class_mutex();
-
 gboolean ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
 void ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
 void ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
 
 void ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin);
 
-AgsCoreAudioMidiin* ags_core_audio_midiin_new(AgsApplicationContext *application_context);
+AgsCoreAudioMidiin* ags_core_audio_midiin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_CORE_AUDIO_MIDIIN_H__*/

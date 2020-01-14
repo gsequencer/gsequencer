@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_START_AUDIO                (ags_start_audio_get_type())
 #define AGS_START_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_AUDIO, AgsStartAudio))
 #define AGS_START_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_START_AUDIO, AgsStartAudioClass))
@@ -55,5 +57,7 @@ GType ags_start_audio_get_type();
 
 AgsStartAudio* ags_start_audio_new(AgsAudio *audio,
 				   gint sound_scope);
+
+G_END_DECLS
 
 #endif /*__AGS_START_AUDIO_H__*/

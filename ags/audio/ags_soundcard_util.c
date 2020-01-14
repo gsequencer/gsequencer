@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,41 +25,43 @@
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 
+#include <ags/audio/wasapi/ags_wasapi_devout.h>
+
+/**
+ * SECTION:ags_soundcard_util
+ * @short_description: soundcard util
+ * @title: AgsSoundcardUtil
+ * @section_id:
+ * @include: ags/audio/ags_soundcard_util.h
+ *
+ * Soundcard utility functions.
+ */
+
 /**
  * ags_soundcard_util_get_obj_mutex:
  * @soundcard: the #GObject sub-type implementing #AgsSoundcard
  * 
  * Get object mutex of @soundcard.
  * 
- * Returns: pthread_mutex_t pointer
+ * Returns: (transfer none): GRecMutex pointer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-pthread_mutex_t*
+GRecMutex*
 ags_soundcard_util_get_obj_mutex(GObject *soundcard)
 {
-  pthread_mutex_t *obj_mutex;
+  GRecMutex *obj_mutex;
 
   obj_mutex = NULL;
   
   if(AGS_IS_DEVOUT(soundcard)){
-    pthread_mutex_lock(ags_devout_get_class_mutex());
-
-    obj_mutex = AGS_DEVOUT(soundcard)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_devout_get_class_mutex());
+    obj_mutex = AGS_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
-    pthread_mutex_lock(ags_jack_devout_get_class_mutex());
-
-    obj_mutex = AGS_JACK_DEVOUT(soundcard)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+    obj_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-    pthread_mutex_lock(ags_core_audio_devout_get_class_mutex());
-
-    obj_mutex = AGS_CORE_AUDIO_DEVOUT(soundcard)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_core_audio_devout_get_class_mutex());
+    obj_mutex = AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(soundcard);
+  }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
+    obj_mutex = AGS_WASAPI_DEVOUT_GET_OBJ_MUTEX(soundcard);
   }else{
     g_warning("unknown soundcard implementation");
   }

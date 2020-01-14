@@ -20,9 +20,6 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_soundcard.h>
@@ -42,8 +39,10 @@ void ags_export_window_get_property(GObject *gobject,
 				    GValue *value,
 				    GParamSpec *param_spec);
 void ags_export_window_finalize(GObject *gobject);
+
 void ags_export_window_connect(AgsConnectable *connectable);
 void ags_export_window_disconnect(AgsConnectable *connectable);
+
 void ags_export_window_show(GtkWidget *widget);
 gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
@@ -60,7 +59,6 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_MAIN_WINDOW,
 };
 
@@ -126,27 +124,11 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 
   /* properties */
   /**
-   * AgsExportWindow:application-context:
-   *
-   * The assigned #AgsApplicationContext to give control of application.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsExportWindow:main-window:
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -189,8 +171,6 @@ ags_export_window_init(AgsExportWindow *export_window)
   g_object_set(export_window,
 	       "title", i18n("export to audio data"),
 	       NULL);
-
-  export_window->application_context = NULL;
 
   export_window->main_window = NULL;
 
@@ -363,27 +343,6 @@ ags_export_window_set_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) export_window->application_context == application_context){
-	return;
-      }
-      
-      if(export_window->application_context != NULL){
-	g_object_unref(export_window->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      export_window->application_context = (GObject *) application_context;
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       AgsWindow *main_window;
@@ -422,11 +381,6 @@ ags_export_window_get_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, export_window->application_context);
-    }
-    break;
   case PROP_MAIN_WINDOW:
     {
       g_value_set_object(value, export_window->main_window);
@@ -534,10 +488,6 @@ ags_export_window_finalize(GObject *gobject)
   AgsExportWindow *export_window;
 
   export_window = (AgsExportWindow *) gobject;
-
-  if(export_window->application_context != NULL){
-    g_object_unref(export_window->application_context);
-  }
   
   G_OBJECT_CLASS(ags_export_window_parent_class)->finalize(gobject);
 }
@@ -564,7 +514,7 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Reload soundcard editor.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
@@ -584,11 +534,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   guint i;
   
   /* retrieve main window and application context */
-  application_context = (AgsApplicationContext *) export_window->application_context;
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
   
   list =
     start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
@@ -694,7 +640,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
  * 
  * Returns: the #AgsExportWindow
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportWindow*
 ags_export_window_new()

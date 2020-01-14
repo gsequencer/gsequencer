@@ -78,11 +78,9 @@ ags_remove_soundcard_test_launch()
 				   g_list_append(list,
 						 devout));
   
-  remove_soundcard = ags_remove_soundcard_new(application_context,
-					      devout);
+  remove_soundcard = ags_remove_soundcard_new(devout);
 
   CU_ASSERT(AGS_IS_REMOVE_SOUNDCARD(remove_soundcard));
-  CU_ASSERT(remove_soundcard->application_context == application_context);
   CU_ASSERT(remove_soundcard->soundcard == devout);
 
   /* test */

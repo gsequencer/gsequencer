@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_SIGNAL                (ags_audio_signal_get_type())
 #define AGS_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_SIGNAL, AgsAudioSignal))
@@ -34,8 +34,8 @@
 #define AGS_IS_AUDIO_SIGNAL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_SIGNAL))
 #define AGS_AUDIO_SIGNAL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_AUDIO_SIGNAL, AgsAudioSignalClass))
 
-#define AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(obj) (((AgsAudioSignal *) obj)->obj_mutex)
-#define AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(obj) (((AgsAudioSignal *) obj)->stream_mutex)
+#define AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(obj) (&(((AgsAudioSignal *) obj)->obj_mutex))
+#define AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(obj) (&(((AgsAudioSignal *) obj)->stream_mutex))
 
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
@@ -65,8 +65,7 @@ struct _AgsAudioSignal
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
   
@@ -106,8 +105,7 @@ struct _AgsAudioSignal
 
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
 
-  pthread_mutexattr_t *stream_mutexattr;
-  pthread_mutex_t *stream_mutex;
+  GRecMutex stream_mutex;
   
   GList *stream;
   GList *stream_current;
@@ -127,8 +125,6 @@ struct _AgsAudioSignalClass
 };
 
 GType ags_audio_signal_get_type();
-
-pthread_mutex_t* ags_audio_signal_get_class_mutex();
 
 gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
@@ -191,5 +187,7 @@ AgsAudioSignal* ags_audio_signal_new_with_length(GObject *output_soundcard,
 						 GObject *recycling,
 						 GObject *recall_id,
 						 guint length);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_SIGNAL_H__*/

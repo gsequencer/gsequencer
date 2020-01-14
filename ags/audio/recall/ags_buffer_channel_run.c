@@ -20,8 +20,6 @@
 #include <ags/audio/recall/ags_buffer_channel_run.h>
 #include <ags/audio/recall/ags_buffer_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_enums.h>
 
 #include <ags/audio/recall/ags_buffer_recycling.h>
@@ -124,7 +122,7 @@ ags_buffer_channel_run_finalize(GObject *gobject)
  *
  * Returns: the new #AgsBufferChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferChannelRun*
 ags_buffer_channel_run_new(AgsChannel *destination,

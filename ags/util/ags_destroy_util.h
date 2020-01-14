@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 void ags_destroy_util_dispose_and_unref(GObject *gobject);
+
+G_END_DECLS
 
 #endif /*__AGS_DESTROY_UTIL_H__*/

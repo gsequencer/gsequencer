@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))
 #define AGS_LOOP_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannelClass))
@@ -55,5 +57,7 @@ struct _AgsLoopChannelClass
 GType ags_loop_channel_get_type();
 
 AgsLoopChannel* ags_loop_channel_new(AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_LOOP_CHANNEL_H__*/

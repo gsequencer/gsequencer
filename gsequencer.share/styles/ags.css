@@ -1,0 +1,6 @@
+.editor * {
+    -GtkScrollbar-has-backward-stepper: true;
+    -GtkScrollbar-has-forward-stepper: true;
+}
+
+  

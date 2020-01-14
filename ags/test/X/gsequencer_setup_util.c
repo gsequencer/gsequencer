@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,13 +29,11 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/file/ags_simple_file.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
-#include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <ags/X/task/ags_simple_file_read.h>
 
@@ -52,8 +50,6 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
-
-#include <pthread.h>
 
 #include <string.h>
 
@@ -75,18 +71,16 @@
 
 static void ags_test_driver_mutex_create();
 
-static pthread_mutex_t *ags_test_driver_mutex = NULL;
+static GRecMutex ags_test_driver_mutex;
 
 struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
 
-extern volatile gboolean ags_show_start_animation;
-
 void
 ags_test_enter()
 {
-  pthread_mutex_lock(ags_test_get_driver_mutex());
+  g_rec_mutex_lock(ags_test_get_driver_mutex());
   gdk_threads_enter();
 }
 
@@ -94,41 +88,13 @@ void
 ags_test_leave()
 {
   gdk_threads_leave();
-  pthread_mutex_unlock(ags_test_get_driver_mutex());
+  g_rec_mutex_unlock(ags_test_get_driver_mutex());
 }
 
-static void
-ags_test_driver_mutex_create()
-{
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
-
-  ags_test_driver_mutex = mutex;
-}
-
-pthread_mutex_t*
+GRecMutex*
 ags_test_get_driver_mutex()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
-  
-  if(ags_test_driver_mutex == NULL){
-    ags_test_driver_mutex_create();
-  }
-
-  pthread_mutex_unlock(&mutex);
-  
-  return(ags_test_driver_mutex);
+  return(&ags_test_driver_mutex);
 }
 
 void
@@ -136,10 +102,10 @@ ags_test_init(int *argc, char ***argv,
 	      gchar *conf_str)
 {
   AgsConfig *config;
-
+  AgsPriority *priority;
+  
   gchar *filename;
 
-  gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
   guint i;
 
@@ -211,8 +177,10 @@ ags_test_init(int *argc, char ***argv,
   textdomain(PACKAGE);
 
   /* parameters */
-  single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
+
+  priority = ags_priority_get_instance();  
+  ags_priority_load_defaults(priority);
   
   //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
@@ -232,7 +200,21 @@ ags_test_init(int *argc, char ***argv,
     }
   }
 
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+  priority = ags_priority_get_instance();  
+
+  param.sched_priority = 1;
+
+  str = ags_priority_get_value(priority,
+			       AGS_PRIORITY_RT_THREAD,
+			       AGS_PRIORITY_KEY_GUI_MAIN_LOOP);
+
+  if(str != NULL){
+    param.sched_priority = (int) g_ascii_strtoull(str,
+						  NULL,
+						  10);
+
+    g_free(str);
+  }
       
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
@@ -250,10 +232,9 @@ ags_test_init(int *argc, char ***argv,
     if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n",
 	     "--filename file     open file",
-	     "--single-thread     run in single thread mode",
 	     "--no-builtin-theme  disable built-in theme",
 	     "--help              display this help and exit",
 	     "--version           output version information and exit");
@@ -263,15 +244,13 @@ ags_test_init(int *argc, char ***argv,
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
-	     "Copyright (C) 2005-2017 Joël Krähemann",
+	     "Copyright (C) 2005-2020 Joël Krähemann",
 	     "This is free software; see the source for copying conditions.  There is NO",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[0][i], "--single-thread", 16)){
-      single_thread_enabled = TRUE;
     }else if(!strncmp(argv[0][i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[0][i], "--filename", 11)){
@@ -313,8 +292,6 @@ ags_test_init(int *argc, char ***argv,
   /**/
   LIBXML_TEST_VERSION;
 
-  ags_gui_init(argc, argv);
-  
   gtk_init(argc, argv);
 
   if(!builtin_theme_disabled){
@@ -364,8 +341,6 @@ ags_test_quit()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  
-  AgsGuiThread *gui_thread;
 
   xorg_application_context = ags_application_context_get_instance();
 
@@ -373,8 +348,6 @@ ags_test_quit()
   
   window = xorg_application_context->window;
   
-  gui_thread = xorg_application_context->gui_thread;
-
   window->flags |= AGS_WINDOW_TERMINATING;
 
   ags_test_leave();
@@ -412,10 +385,6 @@ ags_test_signal_handler(int signr)
     exit(-1);
   }else{
     sigemptyset(&(ags_test_sigact.sa_mask));
-
-    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-      // pthread_yield();
-    //    }
   }
 }
 
@@ -572,432 +541,109 @@ ags_test_setup(int argc, char **argv)
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
 
-  g_atomic_int_set(&(ags_show_start_animation),
-		   FALSE);
+  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(ags_application_context), FALSE);
 }
 
 void
-ags_test_start_animation(pthread_t *thread)
+ags_test_launch()
 {
-  GtkWindow *window;
-
-  GdkWindowAttr *attr;
-
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_object_set(window,
-	       "decorated\0", FALSE,
-	       0);
-  gtk_widget_set_size_request(window,
-			      800, 450);
-  gtk_widget_show_all(window);
-
-  pthread_create(thread, NULL,
-		 ags_test_start_animation_thread, window);
-}
-void*
-ags_test_start_animation_thread(void *ptr)
-{
-  GtkWidget *window;
-  GdkRectangle rectangle;
-
-  cairo_t *gdk_cr, *cr;
-  cairo_surface_t *surface;
-
-  AgsLog *log;
-
-  gchar *filename;
-  unsigned char *bg_data, *image_data;
-  
-  /* create a buffer suitable to image size */
-  GList *list, *start;
-
-  guint image_size;
-  gdouble x0, y0;
-  guint i, nth;
-  
-  gdk_threads_enter();
-  
-  window = (GtkWidget *) ptr;
-
-  rectangle.x = 0;
-  rectangle.y = 0;
-  rectangle.width = 800;
-  rectangle.height = 450;
-
-  image_size = 4 * 800 * 450;
-  
-  gdk_cr = gdk_cairo_create(window->window);
-  
-  filename = g_strdup_printf("%s/%s\0",
-			     SRCDIR,
-			     "gsequencer.share/images/ags_supermoon-800x450.png\0");
-
-  surface = cairo_image_surface_create_from_png(filename);
-  image_data = cairo_image_surface_get_data(surface);
-  
-  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
-
-  if(image_data != NULL){
-    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
-  }
-  
-  cr = cairo_create(surface);
-  
-  cairo_select_font_face(cr, "Georgia\0",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, (gdouble) 11.0);
-  
-  gdk_window_show(window->window);
-  
-  gdk_threads_leave();
-
-  log = ags_log_get_instance();  
-  nth = 0;
-  
-  while(g_atomic_int_get(&(ags_show_start_animation))){
-    start = 
-      list = ags_log_get_messages(log);
-
-    i = g_list_length(start);
-
-    if(i > nth){
-      if(image_data != NULL){
-	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
-      }
-      
-      cairo_set_source_surface(cr, surface, 0, 0);
-      cairo_paint(cr);
-      cairo_surface_flush(surface);
-    
-      x0 = 4.0;
-      y0 = 4.0 + (i * 12.0);
-
-      while(y0 > 4.0 && list != NULL){
-	cairo_set_source_rgb(cr,
-			     1.0,
-			     0.0,
-			     1.0);
-	
-	cairo_move_to(cr,
-		      x0, y0);
-
-	cairo_show_text(cr, list->data);
-
-	list = list->next;
-	y0 -= 12.0;
-      }
-
-      cairo_move_to(cr,
-		    x0, 4.0 + (i + 1) * 12.0);
-      cairo_show_text(cr, "...\0");
-      
-      nth = g_list_length(start);
-    }
-
-    cairo_set_source_surface(gdk_cr, surface, 0, 0);
-    cairo_paint(gdk_cr);
-    cairo_surface_flush(surface);
-    gdk_flush();
-  }
-
-  free(bg_data);
-  
-  gdk_threads_enter();
-
-  gtk_widget_destroy(window);
-  
-  gdk_threads_leave();
-}
-
-void
-ags_test_launch(gboolean single_thread)
-{
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
+  AgsThread *audio_loop;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
 
-  GList *start_queue;  
-
-  g_object_get(ags_application_context,
-	       "config", &config,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
-
-  g_object_get(task_thread,
-	       "thread-pool", &thread_pool,
-	       NULL);
-  
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* start engine */
-  pthread_mutex_lock(audio_loop->start_mutex);
-  
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       polling_thread);
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  //  start_queue = g_list_prepend(start_queue,
-  //			       gui_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-  
-  pthread_mutex_unlock(audio_loop->start_mutex);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context));
 
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);
-  
-  ags_thread_pool_start(thread_pool);
 
-  if(!single_thread){
-    /* wait for audio loop */
-    pthread_mutex_lock(audio_loop->start_mutex);
+  /* wait for audio loop */
+  g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-    if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-      g_atomic_int_set(&(audio_loop->start_done),
-		       FALSE);
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-      while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	pthread_cond_wait(audio_loop->start_cond,
-			  audio_loop->start_mutex);
-      }
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+      g_cond_wait(AGS_THREAD_GET_START_COND(audio_loop),
+		  AGS_THREAD_GET_START_MUTEX(audio_loop));
     }
-    
-    pthread_mutex_unlock(audio_loop->start_mutex);
-
-    /* start gui thread */
-    ags_thread_start(gui_thread);
-
-    /* wait for gui thread */
-    pthread_mutex_lock(gui_thread->start_mutex);
-
-    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-      g_atomic_int_set(&(gui_thread->start_wait),
-    		       TRUE);
-
-      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-    	g_atomic_int_set(&(gui_thread->start_wait),
-    			 TRUE);
-	
-    	pthread_cond_wait(gui_thread->start_cond,
-			  gui_thread->start_mutex);
-      }
-    }
-    
-    pthread_mutex_unlock(gui_thread->start_mutex);
-
-    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
-		     1);
-    
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-  }else{
-    AgsSingleThread *single_thread;
-
-    /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(ags_application_context))->data);
-
-    /* add known threads to single_thread */
-    ags_thread_add_child(AGS_THREAD(single_thread),
-			 audio_loop);
-    
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-
-    /* start thread tree */
-    ags_thread_start((AgsThread *) single_thread);
   }
+
+  g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(audio_loop));
+
+  ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(ags_application_context),
+				TRUE);
 }
 
 void
-ags_test_launch_filename(gchar *filename,
-			 gboolean single_thread)
+ags_test_launch_filename(gchar *filename)
 {
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
-  AgsThreadPool *thread_pool;
+  AgsSimpleFile *simple_file;
 
+  AgsSimpleFileRead *simple_file_read;
+      
+  AgsThread *audio_loop;
+  AgsThreadPool *thread_pool;
+  AgsTaskLauncher *task_launcher;
+  
   AgsConfig *config;
 
   GList *start_queue;  
+
+  GError *error;
     
-  /* get threads, thread pool and config */
-  g_object_get(ags_application_context,
-	       "config", &config,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  /* get main loop and thread pool */
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(ags_application_context));
 
-  g_object_get(task_thread,
-	       "thread-pool", &thread_pool,
-	       NULL);
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(ags_application_context));
 
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* open file */
-  if(g_strcmp0(ags_config_get_value(config,
-				    AGS_CONFIG_GENERIC,
-				    "simple-file\0"),
-		 "false\0")){
-    AgsSimpleFile *simple_file;
-
-    AgsSimpleFileRead *simple_file_read;
-      
-    GError *error;
-
-    simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", ags_application_context,
-						 "filename\0", filename,
-						 NULL);
-    error = NULL;
-    ags_simple_file_open(simple_file,
-			 &error);
-
-    if(error != NULL){
-      ags_test_show_file_error(filename,
-			       error);
-      ags_application_context_quit(ags_application_context);
-    }
-    
-    /* start engine */  
-    pthread_mutex_lock(audio_loop->start_mutex);
-    
-    start_queue = NULL;
-    start_queue = g_list_prepend(start_queue,
-				 polling_thread);
-    start_queue = g_list_prepend(start_queue,
-				 task_thread);
-    //    start_queue = g_list_prepend(start_queue,
-    //				 gui_thread);
-    g_atomic_pointer_set(&(audio_loop->start_queue),
-			 start_queue);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(ags_application_context));
   
-    pthread_mutex_unlock(audio_loop->start_mutex);
+  /* open file */
+  simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+					       "filename", filename,
+					       NULL);
+  error = NULL;
+  ags_simple_file_open(simple_file,
+		       &error);
 
-    /* start audio loop and thread pool */
-    ags_thread_start(audio_loop);
+  if(error != NULL){
+    ags_test_show_file_error(filename,
+			     error);
+    ags_application_context_quit(ags_application_context);
+  }
+    
+  /* start engine */  
+  g_mutex_lock(audio_loop->start_mutex);
+    
+  start_queue = NULL;
+  
+  g_mutex_unlock(audio_loop->start_mutex);
 
-    ags_thread_pool_start(thread_pool);
+  /* start audio loop and thread pool */
+  ags_thread_start(audio_loop);
 
-    if(!single_thread){
-      /* wait for audio loop */
-      pthread_mutex_lock(audio_loop->start_mutex);
+  ags_thread_pool_start(thread_pool);
 
-      if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-	g_atomic_int_set(&(audio_loop->start_done),
-			 FALSE);
+  /* wait for audio loop */
+  g_mutex_lock(&(audio_loop->start_mutex));
+
+  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
       
-	while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	  pthread_cond_wait(audio_loop->start_cond,
-			    audio_loop->start_mutex);
-	}
-      }
-    
-      pthread_mutex_unlock(audio_loop->start_mutex);
-
-      /* start gui thread */
-      ags_thread_start(gui_thread);
-
-      /* wait for gui thread */
-      pthread_mutex_lock(gui_thread->start_mutex);
-
-      if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-      	g_atomic_int_set(&(gui_thread->start_wait),
-      			 TRUE);
-
-    	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-    	  g_atomic_int_set(&(gui_thread->start_wait),
-    			   TRUE);
-	
-    	  pthread_cond_wait(gui_thread->start_cond,
-    			    gui_thread->start_mutex);
-    	}
-      }
-    
-      pthread_mutex_unlock(gui_thread->start_mutex);     
-      
-      /* autosave thread */
-      if(!g_strcmp0(ags_config_get_value(config,
-					 AGS_CONFIG_GENERIC,
-					 "autosave-thread\0"),
-		    "true\0")){
-	pthread_mutex_lock(audio_loop->start_mutex);
-
-	start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-	start_queue = g_list_prepend(start_queue,
-				     task_thread);
-
-	g_atomic_pointer_set(&(audio_loop->start_queue),
-			     start_queue);
-	
-	pthread_mutex_unlock(audio_loop->start_mutex);
-      }
-    
-      /* now start read task */
-      simple_file_read = ags_simple_file_read_new(simple_file);
-      ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				  (AgsTask *) simple_file_read);      
-    }else{
-      AgsFile *file;
-
-      GError *error;
-    
-      file = g_object_new(AGS_TYPE_FILE,
-			  "application-context\0", ags_application_context,
-			  "filename\0", filename,
-			  NULL);
-      error = NULL;
-      ags_file_open(file,
-		    &error);
-
-      if(error != NULL){
-	ags_test_show_file_error(filename,
-				 error);
-	
-	ags_application_context_quit(ags_application_context);
-      }
-    
-      ags_file_read(file);
-      ags_file_close(file);
+    while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
+	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+      g_cond_wait(&(audio_loop->start_cond),
+		  &(audio_loop->start_mutex));
     }
   }
+    
+  g_mutex_unlock(&(audio_loop->start_mutex));
+    
+  /* now start read task */
+  simple_file_read = ags_simple_file_read_new(simple_file);
+
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) simple_file_read);      
 }

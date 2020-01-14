@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
 #include <ags/X/ags_ui_provider.h>
@@ -36,7 +32,6 @@
 
 void ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge);
 void ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_set_property(GObject *gobject,
 				      guint prop_id,
@@ -50,16 +45,6 @@ void ags_live_lv2_bridge_finalize(GObject *gobject);
 
 void ags_live_lv2_bridge_connect(AgsConnectable *connectable);
 void ags_live_lv2_bridge_disconnect(AgsConnectable *connectable);
-
-gchar* ags_live_lv2_bridge_get_version(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge);
-xmlNode* ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					       guint audio_channels, guint audio_channels_old,
@@ -95,10 +80,6 @@ enum{
 
 static gpointer ags_live_lv2_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_live_lv2_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_live_lv2_bridge_parent_plugin_interface;
-
-extern GHashTable *ags_machine_generic_output_message_monitor;
-extern GHashTable *ags_machine_generic_input_message_monitor;
 
 extern GHashTable *ags_effect_bulk_indicator_queue_draw;
 
@@ -131,12 +112,6 @@ ags_live_lv2_bridge_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_live_lv2_bridge_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_live_lv2_bridge = g_type_register_static(AGS_TYPE_MACHINE,
 						      "AgsLiveLv2Bridge", &ags_live_lv2_bridge_info,
 						      0);
@@ -144,10 +119,6 @@ ags_live_lv2_bridge_get_type(void)
     g_type_add_interface_static(ags_type_live_lv2_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_live_lv2_bridge,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_live_lv2_bridge);
   }
@@ -178,7 +149,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The plugin's filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    "the object file",
@@ -194,7 +165,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The effect's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    "the effect",
@@ -210,7 +181,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The uri's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    "the uri",
@@ -226,7 +197,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The uri's index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   "index of uri",
@@ -245,7 +216,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    * If has-midi is set to %TRUE appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("has-midi",
 				     "has-midi",
@@ -262,7 +233,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    * If has-gui is set to %TRUE 128 inputs are allocated and appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("has-gui",
 				     "has-gui",
@@ -278,7 +249,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The plugin's GUI filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("gui-filename",
 				    "the GUI object file",
@@ -294,7 +265,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The GUI's uri name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("gui-uri",
 				    "the gui-uri",
@@ -320,23 +291,6 @@ ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connecta
   connectable->is_connected = NULL;
   connectable->connect = ags_live_lv2_bridge_connect;
   connectable->disconnect = ags_live_lv2_bridge_disconnect;
-}
-
-void
-ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_live_lv2_bridge_get_version;
-  plugin->set_version = ags_live_lv2_bridge_set_version;
-  plugin->get_build_id = ags_live_lv2_bridge_get_build_id;
-  plugin->set_build_id = ags_live_lv2_bridge_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -495,24 +449,6 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   live_lv2_bridge->ui_widget = NULL;
 
   live_lv2_bridge->lv2_window = NULL;
-
-  /* output - discard messages */
-  g_hash_table_insert(ags_machine_generic_output_message_monitor,
-		      live_lv2_bridge,
-		      ags_machine_generic_output_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
-		(gpointer) live_lv2_bridge);
-
-  /* input - discard messages */
-  g_hash_table_insert(ags_machine_generic_input_message_monitor,
-		      live_lv2_bridge,
-		      ags_machine_generic_input_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
-		(gpointer) live_lv2_bridge);
 }
 
 void
@@ -731,13 +667,6 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   AgsLiveLv2Bridge *live_lv2_bridge;
 
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
-
-  /* message queue */
-  g_hash_table_remove(ags_machine_generic_output_message_monitor,
-		      gobject);
-
-  g_hash_table_remove(ags_machine_generic_input_message_monitor,
-		      gobject);
   
   /* lv2 plugin */
   if(live_lv2_bridge->lv2_plugin != NULL){
@@ -845,199 +774,6 @@ void
 ags_live_lv2_bridge_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
-}
-
-gchar*
-ags_live_lv2_bridge_get_version(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->version);
-}
-
-void
-ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  live_lv2_bridge->version = version;
-}
-
-gchar*
-ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->build_id);
-}
-
-void
-ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  live_lv2_bridge->build_id = build_id;
-}
-
-
-gchar*
-ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_LIVE_LV2_BRIDGE(plugin)->xml_type);
-}
-
-void
-ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_LIVE_LV2_BRIDGE(plugin)->xml_type = xml_type;
-}
-
-void
-ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsLiveLv2Bridge *gobject;
-  AgsFileLaunch *file_launch;
-
-  gobject = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  g_object_set(gobject,
-	       "filename", xmlGetProp(node,
-					"filename"),
-	       "effect", xmlGetProp(node,
-				      "effect"),
-	       NULL);
-
-  /* launch */
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_live_lv2_bridge_launch_task), gobject);
-  ags_file_add_launch(file,
-		      G_OBJECT(file_launch));
-}
-
-void
-ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge)
-{
-  GtkTreeModel *model;
-
-  GtkTreeIter iter;
-
-  GList *list, *list_start;
-  GList *recall;
-  
-  ags_live_lv2_bridge_load(live_lv2_bridge);
-
-  /* block update bulk port */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
-    }
-
-    list = list->next;
-  }
-
-  /* update value and unblock update bulk port */
-  recall = NULL;
-  
-  if(AGS_MACHINE(live_lv2_bridge)->audio->input != NULL){
-    recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
-    
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
-		    live_lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
-		    live_lv2_bridge->effect)){
-	break;
-      }
-
-      recall = recall->next;
-    }
-  }
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      GtkWidget *child_widget;
-      
-      GList *port;
-
-      child_widget = gtk_bin_get_child(list->data);
-      
-      if(recall != NULL){
-	port = AGS_RECALL(recall->data)->port;
-
-	while(port != port->next){
-	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-			AGS_PORT(port->data)->specifier)){
-	    if(AGS_IS_DIAL(child_widget)){
-	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw((AgsDial *) child_widget);
-	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
-	    }
-
-	    break;
-	  }
-
-	  port = port->next;
-	}
-      }
-     
-      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-}
-
-xmlNode*
-ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsLiveLv2Bridge *live_lv2_bridge;
-
-  xmlNode *node;
-
-  gchar *id;
-  
-  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
-
-  id = ags_id_generator_create_uuid();
-    
-  node = xmlNewNode(NULL,
-		    "ags-live-lv2-bridge");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  xmlNewProp(node,
-	     "filename",
-	     live_lv2_bridge->filename);
-
-  xmlNewProp(node,
-	     "effect",
-	     live_lv2_bridge->effect);
-  
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", live_lv2_bridge,
-				   NULL));
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
 }
 
 void
@@ -1466,7 +1202,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      (gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 		      AGS_SEEK_SET);
 
     /* notation loop */
@@ -1478,13 +1214,13 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
@@ -1901,7 +1637,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AgsLv2Plugin *lv2_plugin;
   
-  GList *list;
+  GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
@@ -1916,8 +1652,6 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   guint x, y;
   unsigned long i, j;
   guint k;
-
-  pthread_mutex_t *base_plugin_mutex;
   
   /* retrieve lv2 plugin */
   lv2_plugin = live_lv2_bridge->lv2_plugin;
@@ -1936,19 +1670,10 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
     return;
   }
 
-  /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
   /* get uri */
-  pthread_mutex_lock(base_plugin_mutex);
-
-  uri = g_strdup(lv2_plugin->uri);
-  
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_object_get(lv2_plugin,
+	       "uri", &uri,
+	       NULL);
   
   /* URI */
   g_object_set(live_lv2_bridge,
@@ -1966,15 +1691,25 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   x = 0;
   y = 0;
   
-  list = effect_bulk->table->children;
+  list =
+    start_list = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
 
   while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    guint top_attach;
+
+    gtk_container_child_get(GTK_CONTAINER(effect_bulk->table),
+			    list->data,
+			    "top-attach", &top_attach,
+			    NULL);
+    
+    if(y <= top_attach){
+      y = top_attach + 1;
     }
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 
   /* load ports */
   g_object_get(lv2_plugin,
@@ -2003,7 +1738,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       gboolean disable_seemless;
       gboolean do_step_conversion;
 
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
 
       disable_seemless = FALSE;
       do_step_conversion = FALSE;
@@ -2046,19 +1781,15 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       }
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-
-      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
-      
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
 
       /* get port name */
-      pthread_mutex_lock(plugin_port_mutex);
+      g_rec_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
       port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
       
-      pthread_mutex_unlock(plugin_port_mutex);
+      g_rec_mutex_unlock(plugin_port_mutex);
 
       /* add bulk member */
       plugin_name = g_strdup_printf("lv2-<%s>",
@@ -2128,12 +1859,12 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	}
 
 	/* add controls of ports and apply range  */
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 	
 	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	if(do_step_conversion){
 	  g_object_set(lv2_conversion,
@@ -2177,11 +1908,11 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 				 upper);
 
 	/* get/set default value */
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 	
 	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	control_value = default_value;
 	
@@ -2250,7 +1981,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
@@ -2295,7 +2026,7 @@ ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
  *
  * Returns: the new #AgsLiveLv2Bridge
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLiveLv2Bridge*
 ags_live_lv2_bridge_new(GObject *soundcard,

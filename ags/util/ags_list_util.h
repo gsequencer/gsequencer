@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+G_BEGIN_DECLS
+
 GList* ags_list_util_find_type(GList *list,
 			       GType gtype);
-GList* ags_list_util_copy_and_ref(GList *list);
+
+G_END_DECLS
 
 #endif /*__AGS_LIST_UTIL_H__*/

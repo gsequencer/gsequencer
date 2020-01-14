@@ -266,7 +266,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsConfigTest\0", ags_config_test_init_suite, ags_config_test_clean_suite);
+  pSuite = CU_add_suite("AgsConfigTest", ags_config_test_init_suite, ags_config_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -275,14 +275,14 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsConfig load defaults\0", ags_config_test_load_defaults) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig load from file\0", ags_config_test_load_from_file) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig load from data\0", ags_config_test_load_from_data) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig set value\0", ags_config_test_set_value) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig get value\0", ags_config_test_get_value) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig to data\0", ags_config_test_to_data) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig save\0", ags_config_test_save) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsConfig clear\0", ags_config_test_clear) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsConfig load defaults", ags_config_test_load_defaults) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig load from file", ags_config_test_load_from_file) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig load from data", ags_config_test_load_from_data) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig set value", ags_config_test_set_value) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig get value", ags_config_test_get_value) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig to data", ags_config_test_to_data) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig save", ags_config_test_save) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsConfig clear", ags_config_test_clear) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

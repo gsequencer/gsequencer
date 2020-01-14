@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/X/ags_server_preferences.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
-
-#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -274,7 +272,7 @@ ags_server_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: the new #AgsServerPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsServerPreferences*
 ags_server_preferences_new()

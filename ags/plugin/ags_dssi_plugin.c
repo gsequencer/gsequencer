@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/plugin/ags_dssi_plugin.h>
-
-#include <ags/libags.h>
 
 #include <ags/plugin/ags_plugin_port.h>
 
@@ -149,7 +147,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -167,7 +165,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("program",
 				   i18n_pspec("program of the plugin"),
@@ -204,7 +202,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -234,7 +232,7 @@ ags_dssi_plugin_set_property(GObject *gobject,
 {
   AgsDssiPlugin *dssi_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
@@ -244,11 +242,11 @@ ags_dssi_plugin_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       dssi_plugin->unique_id = g_value_get_uint(value);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PROGRAM:
@@ -257,10 +255,10 @@ ags_dssi_plugin_set_property(GObject *gobject,
 
       program = (gchar *) g_value_get_string(value);
 
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       if(dssi_plugin->program == program){
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
 
 	return;
       }
@@ -271,7 +269,7 @@ ags_dssi_plugin_set_property(GObject *gobject,
 
       dssi_plugin->program = g_strdup(program);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -288,7 +286,7 @@ ags_dssi_plugin_get_property(GObject *gobject,
 {
   AgsDssiPlugin *dssi_plugin;
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
@@ -298,20 +296,20 @@ ags_dssi_plugin_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_uint(value, dssi_plugin->unique_id);
       
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, dssi_plugin->program);
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -344,19 +342,19 @@ ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
   LADSPA_Handle (*instantiate)(const struct _LADSPA_Descriptor *descriptor,
 			       unsigned long ramplerate);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get instantiate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   ladspa_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin;
   
   instantiate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* instantiate */
   ptr = instantiate(ladspa_descriptor,
@@ -375,17 +373,17 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 		       unsigned long port_index,
 		       LADSPA_Data *data_location);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get connect port */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   connect_port = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->connect_port;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* connect port */
   connect_port((LADSPA_Handle) plugin_handle,
@@ -399,17 +397,17 @@ ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
 {
   void (*activate)(LADSPA_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* activate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   activate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
@@ -422,17 +420,17 @@ ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
 {
   void (*deactivate)(LADSPA_Handle instance);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* deactivate */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   deactivate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
@@ -452,18 +450,18 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
   void (*run)(LADSPA_Handle instance,
 	      unsigned long sample_count);
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* run */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   run_synth = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth;
   run = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
   
   if(run_synth != NULL){
     run_synth((LADSPA_Handle) plugin_handle,
@@ -497,7 +495,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long i;
   gboolean success;
   
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
   
   dssi_plugin = AGS_DSSI_PLUGIN(base_plugin);  
 
@@ -505,7 +503,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* dlopen */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
 #ifdef AGS_W32API
   base_plugin->plugin_so = LoadLibrary(base_plugin->filename);
@@ -521,7 +519,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
     dlerror();
 #endif
     
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     return;
   }
@@ -542,31 +540,31 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   success = (dlerror() == NULL) ? TRUE: FALSE;
 #endif
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   if(success && dssi_descriptor){
     gpointer plugin_descriptor;
 
     guint unique_id;
     
-    pthread_mutex_lock(base_plugin_mutex);
+    g_rec_mutex_lock(base_plugin_mutex);
     
     effect_index = base_plugin->effect_index;
 
     plugin_descriptor = 
       base_plugin->plugin_descriptor = dssi_descriptor(effect_index);
 
-    pthread_mutex_unlock(base_plugin_mutex);
+    g_rec_mutex_unlock(base_plugin_mutex);
 
     if(plugin_descriptor != NULL){
-      pthread_mutex_lock(base_plugin_mutex);
+      g_rec_mutex_lock(base_plugin_mutex);
 
       unique_id = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID;
       
       port_count = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortCount;
       port_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortDescriptors;
 
-      pthread_mutex_unlock(base_plugin_mutex);
+      g_rec_mutex_unlock(base_plugin_mutex);
 
       g_object_set(base_plugin,
 		   "unique-id", unique_id,
@@ -582,7 +580,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	plugin_port = g_list_prepend(plugin_port,
 				     current_plugin_port);
 	
-	pthread_mutex_lock(base_plugin_mutex);
+	g_rec_mutex_lock(base_plugin_mutex);
 	
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
@@ -712,7 +710,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  }
 	}
 
-	pthread_mutex_unlock(base_plugin_mutex);
+	g_rec_mutex_unlock(base_plugin_mutex);
       }
 
       base_plugin->plugin_port = g_list_reverse(plugin_port);
@@ -730,17 +728,17 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
 			 unsigned long bank,
 			 unsigned long program);
 
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *base_plugin_mutex;
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
   /* get change program */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   select_program = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program;
   
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   /* change program */
   if(select_program != NULL){
@@ -776,7 +774,7 @@ ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
  *
  * Returns: the new #AgsDssiPlugin
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiPlugin*
 ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index)

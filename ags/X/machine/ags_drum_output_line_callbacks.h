@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,11 +20,24 @@
 #ifndef __AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__
 #define __AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum.h>
+
+G_BEGIN_DECLS
 
 void ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 					       guint pads_new, guint pads_old,
 					       AgsDrumOutputLine *output_line);
+
+G_END_DECLS
 
 #endif /*__AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__*/

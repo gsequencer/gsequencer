@@ -34,6 +34,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUDIO_UNIT_CLIENT                (ags_audio_unit_client_get_type())
 #define AGS_AUDIO_UNIT_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_UNIT_CLIENT, AgsAudioUnitClient))
 #define AGS_AUDIO_UNIT_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUDIO_UNIT_CLIENT, AgsAudioUnitClient))
@@ -41,7 +43,7 @@
 #define AGS_IS_AUDIO_UNIT_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_CLIENT))
 #define AGS_AUDIO_UNIT_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_CLIENT, AgsAudioUnitClientClass))
 
-#define AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(obj) (((AgsAudioUnitClient *) obj)->obj_mutex)
+#define AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(obj) (&(((AgsAudioUnitClient *) obj)->obj_mutex))
 
 typedef struct _AgsAudioUnitClient AgsAudioUnitClient;
 typedef struct _AgsAudioUnitClientClass AgsAudioUnitClientClass;
@@ -68,8 +70,8 @@ struct _AgsAudioUnitClient
   GObject gobject;
 
   guint flags;
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+
+  GRecMutex obj_mutex;
 
   GObject *audio_unit_server;
   
@@ -88,8 +90,6 @@ struct _AgsAudioUnitClientClass
 };
 
 GType ags_audio_unit_client_get_type();
-
-pthread_mutex_t* ags_audio_unit_client_get_class_mutex();
 
 gboolean ags_audio_unit_client_test_flags(AgsAudioUnitClient *audio_unit_client, guint flags);
 void ags_audio_unit_client_set_flags(AgsAudioUnitClient *audio_unit_client, guint flags);
@@ -117,5 +117,7 @@ void ags_audio_unit_client_activate(AgsAudioUnitClient *audio_unit_client);
 void ags_audio_unit_client_deactivate(AgsAudioUnitClient *audio_unit_client);
 
 AgsAudioUnitClient* ags_audio_unit_client_new(GObject *audio_unit_server);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_UNIT_CLIENT_H__*/

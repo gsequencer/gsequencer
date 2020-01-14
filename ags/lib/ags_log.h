@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LOG                (ags_log_get_type())
 #define AGS_LOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOG, AgsLog))
@@ -31,6 +31,8 @@
 #define AGS_IS_LOG(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LOG))
 #define AGS_IS_LOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOG))
 #define AGS_LOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_LOG, AgsLogClass))
+
+#define AGS_LOG_GET_OBJ_MUTEX(obj) (&(((AgsLog *) obj)->obj_mutex))
 
 typedef struct _AgsLog AgsLog;
 typedef struct _AgsLogClass AgsLogClass;
@@ -41,7 +43,7 @@ struct _AgsLog
 
   guint flags;
 
-  pthread_mutex_t *mutex;
+  GRecMutex obj_mutex;
   
   volatile GList *messages;
 };
@@ -60,5 +62,7 @@ GList* ags_log_get_messages(AgsLog *log);
 AgsLog* ags_log_get_instance();
 
 AgsLog* ags_log_new();
+
+G_END_DECLS
 
 #endif /*__AGS_LOG_H__*/

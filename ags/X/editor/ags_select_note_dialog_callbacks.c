@@ -19,8 +19,6 @@
 
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
 
-#include <ags/object/ags_applicable.h>
-
 void
 ags_select_note_dialog_response_callback(GtkWidget *dialog, gint response,
 					 AgsSelectNoteDialog *select_note_dialog)

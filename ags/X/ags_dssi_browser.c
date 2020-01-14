@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_dssi_browser_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -336,7 +333,7 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active dssi filename
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
@@ -356,7 +353,7 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
  *
  * Returns: the active dssi effect
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
@@ -375,7 +372,7 @@ ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkWidget*
 ags_dssi_browser_combo_box_controls_new()
@@ -418,7 +415,7 @@ ags_dssi_browser_preview_new()
  *
  * Returns: the new #AgsDssiBrowser
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDssiBrowser*
 ags_dssi_browser_new()

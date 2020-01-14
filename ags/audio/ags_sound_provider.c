@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,7 +64,7 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface)
  * 
  * Set default soundcard.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
@@ -86,9 +86,9 @@ ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
  * 
  * Get default soundcard thread.
  *
- * Returns: the #GObject implementing #AgsSoundcard
+ * Returns: (transfer full): the #GObject implementing #AgsSoundcard
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider)
@@ -109,7 +109,7 @@ ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider)
  * 
  * Set default soundcard thread.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -131,9 +131,9 @@ ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider
  * 
  * Get default soundcard thread.
  *
- * Returns: the #AgsThread
+ * Returns: (transfer full): the #AgsThread
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
@@ -150,11 +150,11 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
 /**
  * ags_sound_provider_set_soundcard:
  * @sound_provider: the #AgsSoundProvider
- * @soundcard: a #GList-struct containing #AgsSoundcard
+ * @soundcard: (element-type GObject) (transfer full): a #GList-struct containing #AgsSoundcard
  * 
  * Set soundcards.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
@@ -176,9 +176,9 @@ ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
  * 
  * Get soundcards.
  *
- * Returns: a #GList-struct containing #AgsSoundcard
+ * Returns: (element-type GObject) (transfer full): a #GList-struct containing #AgsSoundcard
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
@@ -195,11 +195,11 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_sequencer:
  * @sound_provider: the #AgsSoundProvider
- * @sequencer: a #GList-struct containing #AgsSequencer
+ * @sequencer: (element-type GObject) (transfer full): a #GList-struct containing #AgsSequencer
  * 
  * Set sequencers.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
@@ -221,9 +221,9 @@ ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
  * 
  * Get sequencers.
  *
- * Returns: a #GList-struct containing #AgsSequencer
+ * Returns: (element-type GObject) (transfer full): a #GList-struct containing #AgsSequencer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
@@ -240,11 +240,11 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_audio:
  * @sound_provider: the #AgsSoundProvider
- * @audio: a #GList-struct containing #AgsAudio
+ * @audio: (element-type AgsAudio.Audio) (transfer full): a #GList-struct containing #AgsAudio
  * 
  * Set audio objects.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
@@ -266,9 +266,9 @@ ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
  * 
  * Get audio objects.
  *
- * Returns: a #GList-struct containing #AgsAudio
+ * Returns: (element-type AgsAudio.Audio) (transfer full): a #GList-struct containing #AgsAudio
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
@@ -285,11 +285,11 @@ ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_sound_server:
  * @sound_provider: the #AgsSoundProvider
- * @sound_server: a #GList-struct containing #AgsSoundServer
+ * @sound_server: (element-type GObject) (transfer full): a #GList-struct containing #AgsSoundServer
  *
  * Get sound server.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
@@ -311,9 +311,9 @@ ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
  *
  * Set sound server.
  * 
- * Returns: a #GList-struct containing #AgsSoundServer
+ * Returns: (element-type GObject) (transfer full): a #GList-struct containing #AgsSoundServer
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
@@ -330,11 +330,11 @@ ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
 /**
  * ags_sound_provider_set_osc_server:
  * @sound_provider: the #AgsSoundProvider
- * @osc_server: a #GList-struct containing #AgsOscServer
+ * @osc_server: (element-type GObject) (transfer full): a #GList-struct containing #AgsOscServer
  *
  * Set OSC server.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
@@ -356,9 +356,9 @@ ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
  *
  * Set distributed manager.
  * 
- * Returns: a #GList-struct containing #AgsOscServer
+ * Returns: (element-type GObject) (transfer full): a #GList-struct containing #AgsOscServer
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 GList*
 ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider)

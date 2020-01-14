@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_move_note_dialog.h>
+
+G_BEGIN_DECLS
 
 void ags_move_note_dialog_response_callback(GtkWidget *dialog, gint response,
 					    AgsMoveNoteDialog *move_note_dialog);
@@ -34,5 +40,7 @@ void ags_move_note_dialog_relative_callback(GtkWidget *button,
 					    AgsMoveNoteDialog *move_note_dialog);
 void ags_move_note_dialog_absolute_callback(GtkWidget *button,
 					    AgsMoveNoteDialog *move_note_dialog);
+
+G_END_DECLS
 
 #endif /*__AGS_MOVE_NOTE_DIALOG_CALLBACKS_H__*/

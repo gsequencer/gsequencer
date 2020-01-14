@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_NOTATION_EDIT                (ags_notation_edit_get_type ())
 #define AGS_NOTATION_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_EDIT, AgsNotationEdit))
 #define AGS_NOTATION_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION_EDIT, AgsNotationEditClass))
@@ -44,6 +46,8 @@
 
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
+
+#define AGS_NOTATION_EDIT_DEFAULT_SELECTED_NOTE_BORDER (2)
 
 #define AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH (3)
 
@@ -103,6 +107,8 @@ struct _AgsNotationEdit
   guint cursor_position_x;
   guint cursor_position_y;
 
+  guint selected_note_border;
+  
   guint selection_x0;
   guint selection_x1;
   guint selection_y0;
@@ -128,20 +134,22 @@ GType ags_notation_edit_get_type(void);
 void ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit);
 void ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit);
-void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit, cairo_t *cr);
 
-void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit);
-void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr);
+void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 AgsNote *note,
 				 cairo_t *cr,
-				 double r, double g, double b, double a);
-void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
+				 gdouble opacity);
+void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr);
 
-void ags_notation_edit_draw(AgsNotationEdit *notation_edit);
+void ags_notation_edit_draw(AgsNotationEdit *notation_edit, cairo_t *cr);
 
 AgsNotationEdit* ags_notation_edit_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_EDIT_H__*/

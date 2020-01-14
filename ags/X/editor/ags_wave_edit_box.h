@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <gtk/gtk.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_WAVE_EDIT_BOX                (ags_wave_edit_box_get_type())
 #define AGS_WAVE_EDIT_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_EDIT_BOX, AgsWaveEditBox))
@@ -58,5 +64,7 @@ struct _AgsWaveEditBoxClass
 GType ags_wave_edit_box_get_type(void);
 
 AgsWaveEditBox* ags_wave_edit_box_new();
+
+G_END_DECLS
 
 #endif /*__AGS_WAVE_EDIT_BOX_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,10 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_MOVE_NOTE                (ags_move_note_get_type())
 #define AGS_MOVE_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MOVE_NOTE, AgsMoveNote))
@@ -44,6 +47,7 @@ struct _AgsMoveNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   GList *selection;
@@ -64,10 +68,13 @@ struct _AgsMoveNoteClass
 
 GType ags_move_note_get_type();
 
-AgsMoveNote* ags_move_note_new(AgsNotation *notation,
+AgsMoveNote* ags_move_note_new(AgsAudio *audio,
+			       AgsNotation *notation,
 			       GList *selection,
 			       guint first_x, guint first_y,
 			       gint move_x, gint move_y,
 			       gboolean relative, gboolean absolute);
+
+G_END_DECLS
 
 #endif /*__AGS_MOVE_NOTE_H__*/

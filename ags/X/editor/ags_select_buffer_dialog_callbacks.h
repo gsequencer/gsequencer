@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,12 +25,20 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_automation_editor.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_select_buffer_dialog.h>
 
+G_BEGIN_DECLS
+
 void ags_select_buffer_dialog_response_callback(GtkWidget *dialog, gint response,
 						AgsSelectBufferDialog *select_buffer_dialog);
+
+G_END_DECLS
 
 #endif /*__AGS_SELECT_BUFFER_DIALOG_CALLBACKS_H__*/

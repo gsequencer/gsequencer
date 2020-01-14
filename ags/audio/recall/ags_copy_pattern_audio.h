@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_COPY_PATTERN_AUDIO                (ags_copy_pattern_audio_get_type())
 #define AGS_COPY_PATTERN_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_PATTERN_AUDIO, AgsCopyPatternAudio))
@@ -60,5 +62,7 @@ GType ags_copy_pattern_audio_get_type();
 AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsAudio *audio,
 						guint bank_index_0,
 						guint bank_index_1);
+
+G_END_DECLS
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_H__*/

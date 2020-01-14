@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO_UNIT_DEVIN                (ags_audio_unit_devin_get_type())
 #define AGS_AUDIO_UNIT_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_UNIT_DEVIN, AgsAudioUnitDevin))
@@ -34,7 +34,7 @@
 #define AGS_IS_AUDIO_UNIT_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_UNIT_DEVIN))
 #define AGS_AUDIO_UNIT_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_UNIT_DEVIN, AgsAudioUnitDevinClass))
 
-#define AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(obj) (((AgsAudioUnitDevin *) obj)->obj_mutex)
+#define AGS_AUDIO_UNIT_DEVIN_GET_OBJ_MUTEX(obj) (&(((AgsAudioUnitDevin *) obj)->obj_mutex))
 
 typedef struct _AgsAudioUnitDevin AgsAudioUnitDevin;
 typedef struct _AgsAudioUnitDevinClass AgsAudioUnitDevinClass;
@@ -117,10 +117,7 @@ struct _AgsAudioUnitDevin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -130,7 +127,7 @@ struct _AgsAudioUnitDevin
   guint buffer_size;
   guint samplerate;
 
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
   void** buffer;
 
   double bpm; // beats per minute
@@ -159,11 +156,11 @@ struct _AgsAudioUnitDevin
   gchar **port_name;
   GList *audio_unit_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 
   GObject *notify_soundcard;
 };
@@ -177,8 +174,6 @@ GType ags_audio_unit_devin_get_type();
 
 GQuark ags_audio_unit_devin_error_quark();
 
-pthread_mutex_t* ags_audio_unit_devin_get_class_mutex();
-
 gboolean ags_audio_unit_devin_test_flags(AgsAudioUnitDevin *audio_unit_devin, guint flags);
 void ags_audio_unit_devin_set_flags(AgsAudioUnitDevin *audio_unit_devin, guint flags);
 void ags_audio_unit_devin_unset_flags(AgsAudioUnitDevin *audio_unit_devin, guint flags);
@@ -188,6 +183,8 @@ void ags_audio_unit_devin_switch_buffer_flag(AgsAudioUnitDevin *audio_unit_devin
 void ags_audio_unit_devin_adjust_delay_and_attack(AgsAudioUnitDevin *audio_unit_devin);
 void ags_audio_unit_devin_realloc_buffer(AgsAudioUnitDevin *audio_unit_devin);
 
-AgsAudioUnitDevin* ags_audio_unit_devin_new(AgsApplicationContext *application_context);
+AgsAudioUnitDevin* ags_audio_unit_devin_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_UNIT_DEVIN_H__*/

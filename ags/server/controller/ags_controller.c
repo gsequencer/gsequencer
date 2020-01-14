@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,9 +21,9 @@
 
 #include <ags/server/ags_server.h>
 
-#include <ags/i18n.h>
-
 #include <stdlib.h>
+
+#include <ags/i18n.h>
 
 void ags_controller_class_init(AgsControllerClass *controller);
 void ags_controller_init(AgsController *controller);
@@ -55,8 +55,6 @@ enum{
 };
 
 static gpointer ags_controller_parent_class = NULL;
-
-static pthread_mutex_t ags_controller_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_controller_get_type()
@@ -112,7 +110,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The assigned #AgsServer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("server",
 				   i18n("assigned server"),
@@ -128,7 +126,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The context path provided.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("context-path",
 				   i18n_pspec("context path to provide"),
@@ -143,27 +141,16 @@ ags_controller_class_init(AgsControllerClass *controller)
 void
 ags_controller_init(AgsController *controller)
 {
-  controller->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(controller->obj_mutexattr);
-  pthread_mutexattr_settype(controller->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(controller->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  controller->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(controller->obj_mutex,
-		     controller->obj_mutexattr);
+  g_rec_mutex_init(&(controller->obj_mutex));
 
   controller->server = NULL;
 
   controller->context_path = NULL;
-
-  controller->resource = g_hash_table_new_full(g_str_hash, g_str_equal,
+  
+  controller->resource = g_hash_table_new_full(g_str_hash,
+					       g_str_equal,
 					       g_free,
-					       (GDestroyNotify) ags_controller_resource_free);
+					       (GDestroyNotify) ags_controller_resource_unref);
 }
 
 void
@@ -174,16 +161,12 @@ ags_controller_set_property(GObject *gobject,
 {
   AgsController *controller;
 
-  pthread_mutex_t *controller_mutex;
+  GRecMutex *controller_mutex;
 
   controller = AGS_CONTROLLER(gobject);
 
   /* get controller mutex */
-  pthread_mutex_lock(ags_controller_get_class_mutex());
-  
-  controller_mutex = controller->obj_mutex;
-  
-  pthread_mutex_unlock(ags_controller_get_class_mutex());
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
   
   switch(prop_id){
   case PROP_SERVER:
@@ -192,10 +175,10 @@ ags_controller_set_property(GObject *gobject,
 
       server = (AgsServer *) g_value_get_object(value);
 
-      pthread_mutex_lock(controller_mutex);
+      g_rec_mutex_lock(controller_mutex);
 
       if(controller->server == (GObject *) server){
-	pthread_mutex_unlock(controller_mutex);
+	g_rec_mutex_unlock(controller_mutex);
 
 	return;
       }
@@ -210,7 +193,7 @@ ags_controller_set_property(GObject *gobject,
       
       controller->server = server;
 
-      pthread_mutex_unlock(controller_mutex);
+      g_rec_mutex_unlock(controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
@@ -219,11 +202,11 @@ ags_controller_set_property(GObject *gobject,
 
       context_path = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(controller_mutex);
+      g_rec_mutex_lock(controller_mutex);
 
       controller->context_path = g_strdup(context_path);
 
-      pthread_mutex_unlock(controller_mutex);
+      g_rec_mutex_unlock(controller_mutex);
     }
     break;
   default:
@@ -240,34 +223,30 @@ ags_controller_get_property(GObject *gobject,
 {
   AgsController *controller;
 
-  pthread_mutex_t *controller_mutex;
+  GRecMutex *controller_mutex;
 
   controller = AGS_CONTROLLER(gobject);
 
   /* get controller mutex */
-  pthread_mutex_lock(ags_controller_get_class_mutex());
-  
-  controller_mutex = controller->obj_mutex;
-  
-  pthread_mutex_unlock(ags_controller_get_class_mutex());
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
   
   switch(prop_id){
   case PROP_SERVER:
     {
-      pthread_mutex_lock(controller_mutex);
+      g_rec_mutex_lock(controller_mutex);
       
       g_value_set_object(value, controller->server);
 
-      pthread_mutex_unlock(controller_mutex);
+      g_rec_mutex_unlock(controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
     {
-      pthread_mutex_lock(controller_mutex);
+      g_rec_mutex_lock(controller_mutex);
       
       g_value_set_string(value, controller->context_path);
 
-      pthread_mutex_unlock(controller_mutex);
+      g_rec_mutex_unlock(controller_mutex);
     }
     break;
   default:
@@ -300,35 +279,16 @@ ags_controller_finalize(GObject *gobject)
 
   controller = AGS_CONTROLLER(gobject);
 
-  pthread_mutex_destroy(controller->obj_mutex);
-  free(controller->obj_mutex);
-
-  pthread_mutexattr_destroy(controller->obj_mutexattr);
-  free(controller->obj_mutexattr);
-
   if(controller->server != NULL){
     g_object_unref(controller->server);
   }
 
   g_free(controller->context_path);
+
+  g_hash_table_destroy(controller->resource);
   
   /* call parent */
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_controller_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_controller_get_class_mutex()
-{
-  return(&ags_controller_class_mutex);
 }
 
 /**
@@ -339,9 +299,9 @@ ags_controller_get_class_mutex()
  * 
  * Allocated #AgsControllerResource-struct.
  * 
- * Returns: the newly allocated #AgsControllerResource-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsControllerResource-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsControllerResource*
 ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
@@ -350,6 +310,8 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
   AgsControllerResource *controller_resource;
 
   controller_resource = (AgsControllerResource *) malloc(sizeof(AgsControllerResource));
+
+  controller_resource->ref_count = 1;
 
   controller_resource->group_id = g_strdup(group_id);
   controller_resource->user_id = g_strdup(user_id);
@@ -361,11 +323,11 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
 
 /**
  * ags_controller_resource_free:
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Free @controller_resource.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_resource_free(AgsControllerResource *controller_resource)
@@ -381,27 +343,79 @@ ags_controller_resource_free(AgsControllerResource *controller_resource)
 }
 
 /**
+ * ags_controller_resource_ref:
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
+ * 
+ * Increase ref-count of @controller_resource.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_controller_resource_ref(AgsControllerResource *controller_resource)
+{
+  if(controller_resource == NULL){
+    return;
+  }
+
+  controller_resource->ref_count += 1;
+}
+
+/**
+ * ags_controller_resource_unref:
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
+ * 
+ * Decrease ref-count of @controller_resource and free it if ref-count drops to 0.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_controller_resource_unref(AgsControllerResource *controller_resource)
+{
+  if(controller_resource == NULL){
+    return;
+  }
+
+  controller_resource->ref_count -= 1;
+
+  if(controller_resource->ref_count <= 0){
+    ags_controller_resource_free(controller_resource);
+  }
+}
+
+/**
  * ags_controller_add_resource:
  * @controller: the #AgsController
  * @resource_name: the resource name as string
- * @controller_resource: the #AgsControllerResource-struct
+ * @controller_resource: (type gpointer): the #AgsControllerResource-struct
  * 
  * Add @controller_resource with key @resource_name to hash table.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_add_resource(AgsController *controller,
 			    gchar *resource_name, AgsControllerResource *controller_resource)
 {
+  GRecMutex *controller_mutex;
+
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL ||
      controller_resource == NULL){
     return;
   }
   
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
+
+  /* add resource */
+  g_rec_mutex_lock(controller_mutex);
+
+  ags_controller_resource_ref(controller_resource);
+  
   g_hash_table_insert(controller->resource,
 		      g_strdup(resource_name), controller_resource);
+
+  g_rec_mutex_unlock(controller_mutex);
 }
 
 /**
@@ -411,19 +425,29 @@ ags_controller_add_resource(AgsController *controller,
  * 
  * Remove key @resource_name from hash table.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_controller_remove_resource(AgsController *controller,
 			       gchar *resource_name)
 {
+  GRecMutex *controller_mutex;
+
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL){
     return;
   }
+  
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
+
+  /* remove resource */
+  g_rec_mutex_lock(controller_mutex);
 
   g_hash_table_remove(controller->resource,
 		      resource_name);
+
+  g_rec_mutex_unlock(controller_mutex);
 }
 
 /**
@@ -433,25 +457,37 @@ ags_controller_remove_resource(AgsController *controller,
  * 
  * Lookup key @resource_name in hash table.
  * 
- * Returns: the matchin #AgsControllerResource-struct
+ * Returns: (type gpointer) (transfer none): the matching #AgsControllerResource-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsControllerResource*
 ags_controller_lookup_resource(AgsController *controller,
 			       gchar *resource_name)
 {
-  AgsControllerResource *resource;
+  AgsControllerResource *controller_resource;
+
+  GRecMutex *controller_mutex;
 
   if(!AGS_IS_CONTROLLER(controller) ||
      resource_name == NULL){
     return(NULL);
   }
 
-  resource = (AgsControllerResource *) g_hash_table_lookup(controller->resource,
-							   resource_name);
+  /* get controller mutex */
+  controller_mutex = AGS_CONTROLLER_GET_OBJ_MUTEX(controller);
 
-  return(resource);
+  /* lookup resource */
+  g_rec_mutex_lock(controller_mutex);
+
+  controller_resource = (AgsControllerResource *) g_hash_table_lookup(controller->resource,
+								      resource_name);
+  
+  ags_controller_resource_ref(controller_resource);
+  
+  g_rec_mutex_unlock(controller_mutex);
+
+  return(controller_resource);
 }
 
 /**
@@ -464,7 +500,7 @@ ags_controller_lookup_resource(AgsController *controller,
  * 
  * Returns: %TRUE if allowed to proceed, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_controller_query_security_context(AgsController *controller,
@@ -482,7 +518,7 @@ ags_controller_query_security_context(AgsController *controller,
  * 
  * Returns: the #AgsController
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsController*
 ags_controller_new()

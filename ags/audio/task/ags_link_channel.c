@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,7 +113,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of link channel"),
@@ -129,7 +129,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel link
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("link",
 				   i18n_pspec("link of link channel"),
@@ -145,7 +145,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #GError-struct
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("error",
 				    i18n_pspec("error of link channel"),
@@ -324,6 +324,13 @@ ags_link_channel_launch(AgsTask *task)
   channel = link_channel->channel;
   link = link_channel->link;
 
+  if((channel != NULL &&
+      channel->link == link) ||
+     (link != NULL &&
+      link->link == channel)){
+    return;
+  }
+  
   /* unset file-link */
   if(AGS_IS_INPUT(channel)){
     g_object_set(channel,
@@ -337,6 +344,14 @@ ags_link_channel_launch(AgsTask *task)
 		 "file-link", NULL,
 		 NULL);
   }
+
+  /* unlink first */
+  //NOTE:JK: may be we want to improve this
+  ags_channel_set_link(channel, NULL,
+  		       NULL);
+
+  ags_channel_set_link(link, NULL,
+  		       NULL);
   
   /* link channel */
   ags_channel_set_link(channel, link,
@@ -356,7 +371,7 @@ ags_link_channel_launch(AgsTask *task)
  *
  * Returns: the new #AgsLinkChannel.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLinkChannel*
 ags_link_channel_new(AgsChannel *channel, AgsChannel *link)

@@ -83,7 +83,7 @@ ags_hlevel_box_init(AgsHLevelBox *hlevel_box)
  * 
  * Returns: the new #AgsHLevelBox instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsHLevelBox*
 ags_hlevel_box_new()

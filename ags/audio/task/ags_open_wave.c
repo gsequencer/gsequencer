@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,7 +122,7 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of open sf2 instrument"),
@@ -138,7 +138,7 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
    *
    * The assigned #AgsAudioFile
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-file",
 				   i18n_pspec("audio file object"),
@@ -154,7 +154,7 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -170,7 +170,7 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
    *
    * The assigned start-pad.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("start-pad",
 				 i18n_pspec("the start pad"),
@@ -382,12 +382,16 @@ ags_open_wave_launch(AgsTask *task)
 
   open_wave = (AgsOpenWave *) task;
 
+  g_return_if_fail(AGS_IS_AUDIO(open_wave->audio));
+  
   audio = open_wave->audio;
 
   audio_file = open_wave->audio_file;
 
   if(audio_file == NULL){
     //TODO:JK: implement me
+
+    return;
   }
   
   /* get some fields */
@@ -459,7 +463,7 @@ ags_open_wave_launch(AgsTask *task)
  *
  * Returns: an new #AgsOpenWave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOpenWave*
 ags_open_wave_new(AgsAudio *audio,

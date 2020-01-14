@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -32,18 +28,10 @@
 
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
 
 void ags_drum_output_line_connect(AgsConnectable *connectable);
 void ags_drum_output_line_disconnect(AgsConnectable *connectable);
-
-gchar* ags_drum_output_line_get_name(AgsPlugin *plugin);
-void ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_drum_output_line_get_xml_type(AgsPlugin *plugin);
-void ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_drum_output_line_map_recall(AgsLine *line,
@@ -88,12 +76,6 @@ ags_drum_output_line_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_drum_output_line_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_drum_output_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsDrumOutputLine", &ags_drum_output_line_info,
 						       0);
@@ -101,10 +83,6 @@ ags_drum_output_line_get_type()
     g_type_add_interface_static(ags_type_drum_output_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_drum_output_line,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_drum_output_line);
   }
@@ -133,17 +111,6 @@ ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect = ags_drum_output_line_connect;
   connectable->disconnect = ags_drum_output_line_disconnect;
-}
-
-void
-ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_drum_output_line_get_name;
-  plugin->set_name = ags_drum_output_line_set_name;
-  plugin->get_xml_type = ags_drum_output_line_get_xml_type;
-  plugin->set_xml_type = ags_drum_output_line_set_xml_type;
-  plugin->read = ags_drum_output_line_read;
-  plugin->write = ags_drum_output_line_write;
 }
 
 void
@@ -194,30 +161,6 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 				       drum_output_line);
 }
 
-gchar*
-ags_drum_output_line_get_name(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_LINE(plugin)->name);
-}
-
-void
-ags_drum_output_line_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_DRUM_OUTPUT_LINE(plugin)->name = name;
-}
-
-gchar*
-ags_drum_output_line_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_DRUM_OUTPUT_LINE(plugin)->xml_type);
-}
-
-void
-ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_DRUM_OUTPUT_LINE(plugin)->xml_type = xml_type;
-}
-
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {  
@@ -246,7 +189,10 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     ags_recycling_add_audio_signal(first_recycling,
 				   audio_signal);
 
-    g_object_unref(output_soundcard);
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
+
     g_object_unref(first_recycling);
   }
 }
@@ -335,52 +281,6 @@ ags_drum_output_line_map_recall(AgsLine *line,
   g_object_unref(audio);
 }
 
-void
-ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsDrumOutputLine *gobject;
-
-  gobject = AGS_DRUM_OUTPUT_LINE(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-}
-
-xmlNode*
-ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsDrumOutputLine *drum_output_line;
-  xmlNode *node;
-  gchar *id;
-
-  drum_output_line = AGS_DRUM_OUTPUT_LINE(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-drum-output-line");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", drum_output_line,
-				   NULL));
-
-  return(node);
-}
-
 /**
  * ags_drum_output_line_new:
  * @channel: the assigned channel
@@ -389,7 +289,7 @@ ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: the new #AgsDrumOutputLine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsDrumOutputLine*
 ags_drum_output_line_new(AgsChannel *channel)

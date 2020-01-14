@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/plugin/ags_lv2_urid_manager.h>
-
-#include <ags/object/ags_connectable.h>
 
 void ags_lv2_urid_manager_class_init(AgsLv2UridManagerClass *lv2_urid_manager);
 void ags_lv2_urid_manager_init(AgsLv2UridManager *lv2_urid_manager);
@@ -40,8 +38,6 @@ gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user
  */
 
 static gpointer ags_lv2_urid_manager_parent_class = NULL;
-
-static pthread_mutex_t ags_lv2_urid_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsLv2UridManager *ags_lv2_urid_manager = NULL;
 
@@ -94,19 +90,7 @@ void
 ags_lv2_urid_manager_init(AgsLv2UridManager *lv2_urid_manager)
 {
   /* lv2 urid manager mutex */
-  lv2_urid_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(lv2_urid_manager->obj_mutexattr);
-  pthread_mutexattr_settype(lv2_urid_manager->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(lv2_urid_manager->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  lv2_urid_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(lv2_urid_manager->obj_mutex,
-		     lv2_urid_manager->obj_mutexattr);
+  g_rec_mutex_init(&(lv2_urid_manager->obj_mutex));
 
   lv2_urid_manager->id_counter = 1;
 
@@ -130,21 +114,6 @@ ags_lv2_urid_manager_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_urid_manager_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_lv2_urid_manager_get_class_mutex:
- * 
- * Get class mutex.
- * 
- * Returns: the class mutex of #AgsLv2UridManager
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_lv2_urid_manager_get_class_mutex()
-{
-  return(&ags_lv2_urid_manager_class_mutex);
 }
 
 void
@@ -173,13 +142,13 @@ ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user_data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
 			    gchar *uri, GValue *id)
 {
-  pthread_mutex_t *lv2_urid_manager_mutex;
+  GRecMutex *lv2_urid_manager_mutex;
 
   if(lv2_urid_manager == NULL ||
      uri == NULL ||
@@ -191,12 +160,12 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
   lv2_urid_manager_mutex = AGS_LV2_URID_MANAGER_GET_OBJ_MUTEX(lv2_urid_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_urid_manager_mutex);
+  g_rec_mutex_lock(lv2_urid_manager_mutex);
 
   g_hash_table_insert(lv2_urid_manager->urid,
 		      uri, id);
 
-  pthread_mutex_unlock(lv2_urid_manager_mutex);
+  g_rec_mutex_unlock(lv2_urid_manager_mutex);
 
   return(TRUE);
 }
@@ -210,7 +179,7 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
@@ -218,13 +187,13 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
 {
   GValue *id;
 
-  pthread_mutex_t *lv2_urid_manager_mutex;
+  GRecMutex *lv2_urid_manager_mutex;
 
   /* get lv2 uri map manager mutex */
   lv2_urid_manager_mutex = AGS_LV2_URID_MANAGER_GET_OBJ_MUTEX(lv2_urid_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_urid_manager_mutex);
+  g_rec_mutex_lock(lv2_urid_manager_mutex);
 
   id = g_hash_table_lookup(lv2_urid_manager->urid,
 			   uri);
@@ -234,7 +203,7 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
 			uri);
   }
 
-  pthread_mutex_unlock(lv2_urid_manager_mutex);
+  g_rec_mutex_unlock(lv2_urid_manager_mutex);
   
   return(TRUE);
 }
@@ -248,7 +217,7 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
  *
  * Returns: the id on success, else the newly created id
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GValue*
 ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
@@ -256,13 +225,13 @@ ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
 {
   GValue *value;
 
-  pthread_mutex_t *lv2_urid_manager_mutex;
+  GRecMutex *lv2_urid_manager_mutex;
 
   /* get lv2 uri map manager mutex */
   lv2_urid_manager_mutex = AGS_LV2_URID_MANAGER_GET_OBJ_MUTEX(lv2_urid_manager);
 
   /*  */
-  pthread_mutex_lock(lv2_urid_manager_mutex);
+  g_rec_mutex_lock(lv2_urid_manager_mutex);
 
   value = (GValue *) g_hash_table_lookup(lv2_urid_manager->urid,
 					 uri);
@@ -284,7 +253,7 @@ ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
     lv2_urid_manager->id_counter++;
   }
   
-  pthread_mutex_unlock(lv2_urid_manager_mutex);
+  g_rec_mutex_unlock(lv2_urid_manager_mutex);
     
   return(value);
 }
@@ -374,16 +343,16 @@ ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2UridManager
+ * Returns: (transfer none): an instance of #AgsLv2UridManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UridManager*
 ags_lv2_urid_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2_urid_manager == NULL){
     ags_lv2_urid_manager = ags_lv2_urid_manager_new();
@@ -391,7 +360,7 @@ ags_lv2_urid_manager_get_instance()
     //    ags_lv2_urid_manager_load_default(ags_lv2_urid_manager);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2_urid_manager);
 }
@@ -403,7 +372,7 @@ ags_lv2_urid_manager_get_instance()
  *
  * Returns: a new #AgsLv2UridManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2UridManager*
 ags_lv2_urid_manager_new()

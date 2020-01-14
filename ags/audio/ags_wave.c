@@ -19,12 +19,8 @@
 
 #include <ags/audio/ags_wave.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-
-#include <pthread.h>
 
 #include <ags/i18n.h>
 
@@ -42,6 +38,20 @@ void ags_wave_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_wave_dispose(GObject *gobject);
 void ags_wave_finalize(GObject *gobject);
+  
+void ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
+							       xmlNode *root_node, char *version,
+							       char *x_boundary,
+							       gboolean reset_x_offset, guint64 x_offset,
+							       gdouble delay, guint attack,
+							       gboolean match_line, gboolean do_replace,
+							       guint current_line,
+							       guint64 relative_offset,
+							       guint wave_samplerate,
+							       guint wave_buffer_size,
+							       guint wave_format,
+							       gboolean match_timestamp);
+
 void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 						 xmlNode *root_node, char *version,
 						 char *x_boundary,
@@ -71,8 +81,6 @@ enum{
 };
 
 static gpointer ags_wave_parent_class = NULL;
-
-static pthread_mutex_t ags_wave_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_wave_get_type()
@@ -127,7 +135,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of wave"),
@@ -143,7 +151,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The wave's line.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("line of wave"),
@@ -161,7 +169,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The audio buffer's samplerate.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("samplerate",
 				  i18n_pspec("samplerate of audio buffer"),
@@ -179,7 +187,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The audio buffer's buffer size.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("buffer-size",
 				  i18n_pspec("buffer size of audio buffer"),
@@ -197,7 +205,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The audio buffer's format.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("format",
 				  i18n_pspec("format of audio buffer"),
@@ -211,11 +219,11 @@ ags_wave_class_init(AgsWaveClass *wave)
 				  param_spec);
 
   /**
-   * AgsPattern:timestamp:
+   * AgsWave:timestamp:
    *
    * The pattern's timestamp.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp of pattern"),
@@ -231,7 +239,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The assigned #AgsBuffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("buffer of wave"),
@@ -247,27 +255,10 @@ ags_wave_init(AgsWave *wave)
 {
   AgsConfig *config;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   wave->flags = 0;
 
-  /* add wave mutex */
-  wave->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  wave->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  /* wave mutex */
+  g_rec_mutex_init(&(wave->obj_mutex));
 
   /* config */
   config = ags_config_get_instance();
@@ -301,7 +292,7 @@ ags_wave_set_property(GObject *gobject,
 {
   AgsWave *wave;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   wave = AGS_WAVE(gobject);
 
@@ -315,10 +306,10 @@ ags_wave_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       if(wave->audio == (GObject *) audio){
-	pthread_mutex_unlock(wave_mutex);
+	g_rec_mutex_unlock(wave_mutex);
 	
 	return;
       }
@@ -333,7 +324,7 @@ ags_wave_set_property(GObject *gobject,
 
       wave->audio = (GObject *) audio;
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_LINE:
@@ -342,11 +333,11 @@ ags_wave_set_property(GObject *gobject,
 
       line = g_value_get_uint(value);
 
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       wave->line = line;
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -385,10 +376,10 @@ ags_wave_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       if(timestamp == wave->timestamp){
-	pthread_mutex_unlock(wave_mutex);
+	g_rec_mutex_unlock(wave_mutex);
 	
 	return;
       }
@@ -403,7 +394,7 @@ ags_wave_set_property(GObject *gobject,
 
       wave->timestamp = timestamp;
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_BUFFER:
@@ -412,16 +403,16 @@ ags_wave_set_property(GObject *gobject,
 
       buffer = (AgsBuffer *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       if(buffer == NULL ||
 	 g_list_find(wave->buffer, buffer) != NULL){
-	pthread_mutex_unlock(wave_mutex);
+	g_rec_mutex_unlock(wave_mutex);
 
 	return;
       }
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
 
       ags_wave_add_buffer(wave,
 			  buffer,
@@ -442,7 +433,7 @@ ags_wave_get_property(GObject *gobject,
 {
   AgsWave *wave;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   wave = AGS_WAVE(gobject);
 
@@ -452,67 +443,67 @@ ags_wave_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_object(value, wave->audio);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_LINE:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_uint(value, wave->line);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_uint(value, wave->samplerate);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_uint(value, wave->buffer_size);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_uint(value, wave->format);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_object(value, wave->timestamp);
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_BUFFER:
     {
-      pthread_mutex_lock(wave_mutex);
+      g_rec_mutex_lock(wave_mutex);
 
       g_value_set_pointer(value, g_list_copy_deep(wave->buffer,
 						  (GCopyFunc) g_object_ref,
 						  NULL));
 
-      pthread_mutex_unlock(wave_mutex);
+      g_rec_mutex_unlock(wave_mutex);
     }
     break;
   default:
@@ -572,12 +563,6 @@ ags_wave_finalize(GObject *gobject)
 
   wave = AGS_WAVE(gobject);
 
-  pthread_mutex_destroy(wave->obj_mutex);
-  free(wave->obj_mutex);
-
-  pthread_mutexattr_destroy(wave->obj_mutexattr);
-  free(wave->obj_mutexattr);
-
   /* audio */
   if(wave->audio != NULL){
     g_object_unref(wave->audio);
@@ -600,21 +585,6 @@ ags_wave_finalize(GObject *gobject)
 }
 
 /**
- * ags_wave_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_wave_get_class_mutex()
-{
-  return(&ags_wave_class_mutex);
-}
-
-/**
  * ags_wave_test_flags:
  * @wave: the #AgsWave
  * @flags: the flags
@@ -623,14 +593,14 @@ ags_wave_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_wave_test_flags(AgsWave *wave, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(FALSE);
@@ -640,11 +610,11 @@ ags_wave_test_flags(AgsWave *wave, guint flags)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* test */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   retval = (flags & (wave->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   return(retval);
 }
@@ -656,12 +626,12 @@ ags_wave_test_flags(AgsWave *wave, guint flags)
  * 
  * Set @flags on @wave.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_set_flags(AgsWave *wave, guint flags)
 {
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -671,11 +641,11 @@ ags_wave_set_flags(AgsWave *wave, guint flags)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* set */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   wave->flags |= flags;
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -685,12 +655,12 @@ ags_wave_set_flags(AgsWave *wave, guint flags)
  * 
  * Unset @flags on @wave.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_unset_flags(AgsWave *wave, guint flags)
 {
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -700,11 +670,11 @@ ags_wave_unset_flags(AgsWave *wave, guint flags)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* set */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   wave->flags &= (~flags);
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -714,7 +684,7 @@ ags_wave_unset_flags(AgsWave *wave, guint flags)
  * 
  * Set samplerate. 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_set_samplerate(AgsWave *wave,
@@ -735,7 +705,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   guint copy_mode;
   guint i;    
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -745,18 +715,18 @@ ags_wave_set_samplerate(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* check resample */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   old_samplerate = wave->samplerate;
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   if(old_samplerate == samplerate){
     return;
   }
 
   /* apply samplerate */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   x = ags_timestamp_get_ags_offset(wave->timestamp);
 
@@ -767,11 +737,13 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   start_list = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   data = NULL;
 
   buffer_length = g_list_length(start_list);
+
+  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
 
   copy_mode = G_MAXUINT;
   
@@ -840,19 +812,19 @@ ags_wave_set_samplerate(AgsWave *wave,
   offset = 0;
   
   while(list != NULL){
-    pthread_mutex_t *buffer_mutex;
+    GRecMutex *buffer_mutex;
   
     /* get buffer mutex */
     buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
 						AGS_BUFFER(list->data)->data, 1, 0,
 						buffer_size, copy_mode);
 
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     /* iterate */
     list = list->next;
@@ -860,16 +832,19 @@ ags_wave_set_samplerate(AgsWave *wave,
     offset += buffer_size;
   }
 
-  resampled_data = ags_audio_buffer_util_resample(data, 1,
-						  ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
-						  buffer_length * buffer_size,
-						  samplerate);
+  resampled_data = ags_stream_alloc(new_buffer_length * buffer_size,
+				    format);
+  
+  ags_audio_buffer_util_resample_with_buffer(data, 1,
+					     ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
+					     buffer_length * buffer_size,
+					     samplerate,
+					     new_buffer_length * buffer_size,
+					     resampled_data);
 
   if(data != NULL){
     free(data);
   }
-
-  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
     
   if(samplerate < old_samplerate){
     list = g_list_nth(start_list,
@@ -911,7 +886,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   end_offset = (buffer_length * buffer_size);    
   
   while(list != NULL && offset < buffer_length * buffer_size){
-    pthread_mutex_t *buffer_mutex;
+    GRecMutex *buffer_mutex;
   
     /* get buffer mutex */
     buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
@@ -920,7 +895,7 @@ ags_wave_set_samplerate(AgsWave *wave,
     ags_buffer_set_samplerate(list->data,
 			      samplerate);
 
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
     
     ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
@@ -940,7 +915,7 @@ ags_wave_set_samplerate(AgsWave *wave,
       }
     }
     
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     /* iterate */
     list = list->next;
@@ -963,7 +938,7 @@ ags_wave_set_samplerate(AgsWave *wave,
  * 
  * Set buffer size.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_set_buffer_size(AgsWave *wave,
@@ -984,7 +959,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   guint copy_mode;
   guint i;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -993,18 +968,18 @@ ags_wave_set_buffer_size(AgsWave *wave,
   /* get wave mutex */
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   old_buffer_size = wave->buffer_size;
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   if(buffer_size == old_buffer_size){
     return;
   }
   
   /* apply buffer size */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   x = ags_timestamp_get_ags_offset(wave->timestamp);
 
@@ -1014,7 +989,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
 
   start_list = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   /* resize buffer */
   data = NULL;
@@ -1090,19 +1065,19 @@ ags_wave_set_buffer_size(AgsWave *wave,
   offset = 0;
   
   while(list != NULL){
-    pthread_mutex_t *buffer_mutex;
+    GRecMutex *buffer_mutex;
   
     /* get buffer mutex */
     buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
 						AGS_BUFFER(list->data)->data, 1, 0,
 						old_buffer_size, copy_mode);
 
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     /* iterate */
     list = list->next;
@@ -1152,7 +1127,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   end_offset = (buffer_length * buffer_size);    
   
   while(list != NULL){
-    pthread_mutex_t *buffer_mutex;
+    GRecMutex *buffer_mutex;
   
     /* get buffer mutex */
     buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
@@ -1164,7 +1139,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
     ags_buffer_set_buffer_size(list->data,
 			       buffer_size);
 
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
 
     ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
@@ -1181,7 +1156,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
       }
     }
     
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     /* iterate */
     list = list->next;
@@ -1204,7 +1179,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
  * 
  * Set format. 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_set_format(AgsWave *wave,
@@ -1212,7 +1187,7 @@ ags_wave_set_format(AgsWave *wave,
 {
   GList *list_start, *list;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -1222,14 +1197,14 @@ ags_wave_set_format(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* apply format */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
   
   wave->format = format;
 
   list =
     list_start = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
   
   while(list != NULL){
     ags_buffer_set_format(list->data,
@@ -1243,15 +1218,15 @@ ags_wave_set_format(AgsWave *wave,
 
 /**
  * ags_wave_find_near_timestamp:
- * @wave: a #GList containing #AgsWave
+ * @wave: (element-type AgsAudio.Wave) (transfer none): the #GList-struct containing #AgsWave
  * @line: the matching audio channel
  * @timestamp: the matching #AgsTimestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate wave for timestamp.
  *
- * Returns: Next matching #GList-struct or %NULL if not found
+ * Returns: (element-type AgsAudio.Wave) (transfer none): Next matching #GList-struct or %NULL if not found
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_wave_find_near_timestamp(GList *wave, guint line,
@@ -1497,55 +1472,54 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   return(retval);
 }
 
+gint
+ags_wave_sort_func(gconstpointer a,
+		   gconstpointer b)
+{
+  AgsTimestamp *timestamp_a, *timestamp_b;
+
+  guint64 offset_a, offset_b;
+
+  g_object_get(a,
+	       "timestamp", &timestamp_a,
+	       NULL);
+
+  g_object_get(b,
+	       "timestamp", &timestamp_b,
+	       NULL);
+    
+  offset_a = ags_timestamp_get_ags_offset(timestamp_a);
+  offset_b = ags_timestamp_get_ags_offset(timestamp_b);
+
+  g_object_unref(timestamp_a);
+  g_object_unref(timestamp_b);
+    
+  if(offset_a == offset_b){
+    return(0);
+  }else if(offset_a < offset_b){
+    return(-1);
+  }else if(offset_a > offset_b){
+    return(1);
+  }
+
+  return(0);
+}
+
 /**
  * ags_wave_add:
- * @wave: the #GList-struct containing #AgsWave
+ * @wave: (element-type AgsAudio.Wave) (transfer none): the #GList-struct containing #AgsWave
  * @new_wave: the #AgsWave to add
  * 
  * Add @new_wave sorted to @wave
  * 
- * Returns: the new beginning of @wave
+ * Returns: (element-type AgsAudio.Wave) (transfer none): the new beginning of @wave
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_wave_add(GList *wave,
 	     AgsWave *new_wave)
 {
-  auto gint ags_wave_add_compare(gconstpointer a,
-				 gconstpointer b);
-  
-  gint ags_wave_add_compare(gconstpointer a,
-			    gconstpointer b)
-  {
-    AgsTimestamp *timestamp_a, *timestamp_b;
-
-    guint64 offset_a, offset_b;
-
-    g_object_get(a,
-		 "timestamp", &timestamp_a,
-		 NULL);
-
-    g_object_get(b,
-		 "timestamp", &timestamp_b,
-		 NULL);
-    
-    offset_a = ags_timestamp_get_ags_offset(timestamp_a);
-    offset_b = ags_timestamp_get_ags_offset(timestamp_b);
-
-    g_object_unref(timestamp_a);
-    g_object_unref(timestamp_b);
-    
-    if(offset_a == offset_b){
-      return(0);
-    }else if(offset_a < offset_b){
-      return(-1);
-    }else if(offset_a > offset_b){
-      return(1);
-    }
-
-    return(0);
-  }
   
   if(!AGS_IS_WAVE(new_wave)){
     return(wave);
@@ -1553,7 +1527,7 @@ ags_wave_add(GList *wave,
   
   wave = g_list_insert_sorted(wave,
 			      new_wave,
-			      ags_wave_add_compare);
+			      ags_wave_sort_func);
   
   return(wave);
 }
@@ -1566,14 +1540,14 @@ ags_wave_add(GList *wave,
  *
  * Add @buffer to @wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_add_buffer(AgsWave *wave,
 		    AgsBuffer *buffer,
 		    gboolean use_selection_list)
 {
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave) ||
      !AGS_IS_BUFFER(buffer)){
@@ -1586,7 +1560,7 @@ ags_wave_add_buffer(AgsWave *wave,
   /* insert sorted */
   g_object_ref(buffer);
   
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   if(use_selection_list){
     wave->selection = g_list_insert_sorted(wave->selection,
@@ -1600,7 +1574,7 @@ ags_wave_add_buffer(AgsWave *wave,
 					(GCompareFunc) ags_buffer_sort_func);
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -1611,14 +1585,14 @@ ags_wave_add_buffer(AgsWave *wave,
  *
  * Removes @buffer from @wave.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_remove_buffer(AgsWave *wave,
 		       AgsBuffer *buffer,
 		       gboolean use_selection_list)
 {
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave) ||
      !AGS_IS_BUFFER(buffer)){
@@ -1629,7 +1603,7 @@ ags_wave_remove_buffer(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* remove if found */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
   
   if(!use_selection_list){
     if(g_list_find(wave->buffer,
@@ -1647,7 +1621,7 @@ ags_wave_remove_buffer(AgsWave *wave,
     }
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -1656,16 +1630,16 @@ ags_wave_remove_buffer(AgsWave *wave,
  *
  * Retrieve selection.
  *
- * Returns: the selection.
+ * Returns: (element-type AgsAudio.Buffer) (transfer none): the selection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_wave_get_selection(AgsWave *wave)
 {
   GList *selection;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(NULL);
@@ -1675,11 +1649,11 @@ ags_wave_get_selection(AgsWave *wave)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* selection */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   selection = wave->selection;
   
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
   
   return(selection);
 }
@@ -1693,7 +1667,7 @@ ags_wave_get_selection(AgsWave *wave)
  *
  * Returns: %TRUE if selected otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
@@ -1704,7 +1678,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
   guint64 current_x;
   gboolean retval;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave) ||
      !AGS_IS_BUFFER(buffer)){
@@ -1720,7 +1694,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 	       NULL);
   
   /* match buffer */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   selection = wave->selection;
   retval = FALSE;
@@ -1744,7 +1718,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
     selection = selection->next;
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   return(retval);
 }
@@ -1757,9 +1731,9 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
  *
  * Find buffers by offset.
  *
- * Returns: the matching buffer as #AgsBuffer.
+ * Returns: (transfer none): the matching buffer as #AgsBuffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBuffer*
 ags_wave_find_point(AgsWave *wave,
@@ -1776,7 +1750,7 @@ ags_wave_find_point(AgsWave *wave,
   guint length, position;
   gboolean success;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(NULL);
@@ -1786,7 +1760,7 @@ ags_wave_find_point(AgsWave *wave,
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* find buffer */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   buffer_size = wave->buffer_size;
   
@@ -1874,7 +1848,7 @@ ags_wave_find_point(AgsWave *wave,
 			 position);
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   return(retval);
 }
@@ -1888,9 +1862,9 @@ ags_wave_find_point(AgsWave *wave,
  *
  * Find buffers by offset and region.
  *
- * Returns: the matching buffers as #GList.
+ * Returns: (element-type AgsAudio.Buffer) (transfer container): the matching buffers as #GList.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_wave_find_region(AgsWave *wave,
@@ -1904,7 +1878,7 @@ ags_wave_find_region(AgsWave *wave,
   guint buffer_size;
   guint64 current_x;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(NULL);
@@ -1922,7 +1896,7 @@ ags_wave_find_region(AgsWave *wave,
   }
   
   /* find buffer */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   if(use_selection_list){
     buffer = wave->selection;
@@ -1960,7 +1934,7 @@ ags_wave_find_region(AgsWave *wave,
     buffer = buffer->next;
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   region = g_list_reverse(region);
 
@@ -1973,7 +1947,7 @@ ags_wave_find_region(AgsWave *wave,
  *
  * Clear selection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_free_selection(AgsWave *wave)
@@ -1982,7 +1956,7 @@ ags_wave_free_selection(AgsWave *wave)
 
   GList *list_start, *list;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -1992,7 +1966,7 @@ ags_wave_free_selection(AgsWave *wave)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* free selection */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   list =
     list_start = wave->selection;
@@ -2006,7 +1980,7 @@ ags_wave_free_selection(AgsWave *wave)
 
   wave->selection = NULL;
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
   
   g_list_free_full(list_start,
 		   g_object_unref);
@@ -2021,7 +1995,7 @@ ags_wave_free_selection(AgsWave *wave)
  *
  * Add buffer within region to selection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_add_region_to_selection(AgsWave *wave,
@@ -2032,7 +2006,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
 
   GList *region, *list;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -2087,11 +2061,11 @@ ags_wave_add_region_to_selection(AgsWave *wave,
     }
 
     /* replace */
-    pthread_mutex_lock(wave_mutex);
+    g_rec_mutex_lock(wave_mutex);
      
     wave->selection = region;
 
-    pthread_mutex_unlock(wave_mutex);
+    g_rec_mutex_unlock(wave_mutex);
   }else{
     list = region;
     
@@ -2163,7 +2137,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
  *
  * Remove buffers within region of selection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */ 
 void
 ags_wave_remove_region_from_selection(AgsWave *wave,
@@ -2174,7 +2148,7 @@ ags_wave_remove_region_from_selection(AgsWave *wave,
   GList *region;
   GList *list;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -2196,12 +2170,12 @@ ags_wave_remove_region_from_selection(AgsWave *wave,
 			   AGS_BUFFER_IS_SELECTED);
 
     /* remove */
-    pthread_mutex_lock(wave_mutex);
+    g_rec_mutex_lock(wave_mutex);
 
     wave->selection = g_list_remove(wave->selection,
 				    list->data);
 
-    pthread_mutex_unlock(wave_mutex);
+    g_rec_mutex_unlock(wave_mutex);
 
     g_object_unref(list->data);
 
@@ -2218,14 +2192,14 @@ ags_wave_remove_region_from_selection(AgsWave *wave,
  *
  * Select all buffer to selection.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_add_all_to_selection(AgsWave *wave)
 {
   GList *list;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -2235,7 +2209,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
   wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* select all */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   list = wave->buffer;
 
@@ -2258,7 +2232,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
     list = list->next;
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -2267,9 +2241,9 @@ ags_wave_add_all_to_selection(AgsWave *wave)
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: (transfer none): the selection as XML.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_wave_copy_selection(AgsWave *wave)
@@ -2288,7 +2262,7 @@ ags_wave_copy_selection(AgsWave *wave)
   guint format;
   guint64 x_boundary;
 
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(NULL);
@@ -2385,12 +2359,12 @@ ags_wave_copy_selection(AgsWave *wave)
   }
   
   /* selection */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   selection =
     start_selection = g_list_copy(wave->selection);
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   if(selection != NULL){
     g_object_get(selection->data,
@@ -2407,7 +2381,7 @@ ags_wave_copy_selection(AgsWave *wave)
 
     guint buffer_size;
 
-    pthread_mutex_t *buffer_mutex;
+    GRecMutex *buffer_mutex;
 
     buffer = AGS_BUFFER(selection->data);
 
@@ -2418,7 +2392,7 @@ ags_wave_copy_selection(AgsWave *wave)
 				 BAD_CAST "buffer",
 				 NULL);
 
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
 
     xmlNewProp(current_buffer,
 	       BAD_CAST "samplerate",
@@ -2525,7 +2499,7 @@ ags_wave_copy_selection(AgsWave *wave)
       break;
     }
 
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
 
     //    current_buffer->content = g_base64_encode(cbuffer,
     //					      buffer_size);
@@ -2553,9 +2527,9 @@ ags_wave_copy_selection(AgsWave *wave)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as xmlNode
+ * Returns: (transfer none): the selection as xmlNode
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 xmlNode*
 ags_wave_cut_selection(AgsWave *wave)
@@ -2564,7 +2538,7 @@ ags_wave_cut_selection(AgsWave *wave)
   
   GList *selection, *buffer;
   
-  pthread_mutex_t *wave_mutex;
+  GRecMutex *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return(NULL);
@@ -2577,7 +2551,7 @@ ags_wave_cut_selection(AgsWave *wave)
   wave_node = ags_wave_copy_selection(wave);
 
   /* cut */
-  pthread_mutex_lock(wave_mutex);
+  g_rec_mutex_lock(wave_mutex);
 
   selection = wave->selection;
 
@@ -2589,12 +2563,572 @@ ags_wave_cut_selection(AgsWave *wave)
     selection = selection->next;
   }
 
-  pthread_mutex_unlock(wave_mutex);
+  g_rec_mutex_unlock(wave_mutex);
 
   /* free selection */
   ags_wave_free_selection(wave);
 
   return(wave_node);
+}
+
+void
+ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
+							  xmlNode *root_node, char *version,
+							  char *x_boundary,
+							  gboolean reset_x_offset, guint64 x_offset,
+							  gdouble delay, guint attack,
+							  gboolean match_line, gboolean do_replace,
+							  guint current_line,
+							  guint64 relative_offset,
+							  guint wave_samplerate,
+							  guint wave_buffer_size,
+							  guint wave_format,
+							  gboolean match_timestamp)
+{
+  AgsBuffer *buffer;
+
+  AgsTimestamp *timestamp;
+
+  xmlNode *node;
+
+  void *clipboard_data;
+  unsigned char *clipboard_cdata;
+
+  xmlChar *samplerate;
+  xmlChar *buffer_size;
+  xmlChar *format;
+  xmlChar *x;
+  xmlChar *selection_x0, *selection_x1;
+  xmlChar *content;
+  gchar *offset;
+  char *endptr;
+
+  guint64 timestamp_offset;
+  guint samplerate_val;
+  guint buffer_size_val;
+  guint format_val;
+  guint64 x_boundary_val;
+  guint64 x_val;
+  guint64 base_x_difference;
+  guint64 selection_x0_val, selection_x1_val;
+  guint target_frame_count, frame_count;
+  guint word_size;
+  gsize clipboard_length;
+  gboolean subtract_x;
+
+  node = root_node->children;
+
+  /* retrieve x values for resetting */
+  base_x_difference = 0;
+  subtract_x = FALSE;
+
+  x_boundary_val = 0;
+    
+  if(reset_x_offset){
+    if(x_boundary != NULL){
+      errno = 0;
+	
+      x_boundary_val = strtoul(x_boundary,
+			       &endptr,
+			       10);
+
+      if(errno == ERANGE){
+	goto dont_reset_x_offset;
+      } 
+	
+      if(x_boundary == endptr){
+	goto dont_reset_x_offset;
+      }
+
+      if(x_boundary_val < x_offset){
+	base_x_difference = x_offset - x_boundary_val;
+	subtract_x = FALSE;
+      }else{
+	base_x_difference = x_boundary_val - x_offset;
+	subtract_x = TRUE;
+      }
+    }else{
+    dont_reset_x_offset:
+      reset_x_offset = FALSE;
+    }
+  }
+
+  /* parse */
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("buffer",
+		     node->name,
+		     7)){
+	void *target_data;
+
+	samplerate_val = 0;
+	samplerate = xmlGetProp(node,
+				"samplerate");
+
+	if(samplerate != NULL){
+	  samplerate_val = g_ascii_strtoull(samplerate,
+					    NULL,
+					    10);
+	}
+
+	buffer_size_val = 0;
+	buffer_size = xmlGetProp(node,
+				 "buffer-size");
+
+	if(buffer_size != NULL){
+	  buffer_size_val = g_ascii_strtoull(buffer_size,
+					     NULL,
+					     10);
+	}
+	  
+	/* retrieve format */
+	format = xmlGetProp(node,
+			    "format");
+
+	if(!g_ascii_strncasecmp("s8",
+				format,
+				3)){
+	  format_val = AGS_SOUNDCARD_SIGNED_8_BIT;
+	}else if(!g_ascii_strncasecmp("s16",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_16_BIT;
+	}else if(!g_ascii_strncasecmp("s24",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_24_BIT;
+	}else if(!g_ascii_strncasecmp("s32",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_32_BIT;
+	}else if(!g_ascii_strncasecmp("s64",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_SIGNED_64_BIT;
+	}else if(!g_ascii_strncasecmp("float",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_FLOAT;
+	}else if(!g_ascii_strncasecmp("double",
+				      format,
+				      4)){
+	  format_val = AGS_SOUNDCARD_DOUBLE;
+	}else{
+	  node = node->next;
+	  
+	  continue;
+	}
+	  
+	/* retrieve x offset */
+	x = xmlGetProp(node,
+		       "x");
+
+	if(x == NULL){
+	  node = node->next;
+	  
+	  continue;
+	}
+	  
+	errno = 0;
+	x_val = g_ascii_strtoull(x,
+				 &endptr,
+				 10);
+
+	if(errno == ERANGE){
+	  node = node->next;
+	  
+	  continue;
+	} 
+
+	if(x == endptr){
+	  node = node->next;
+	  
+	  continue;
+	}
+
+	/* calculate new offset */
+	if(reset_x_offset){
+	  errno = 0;
+
+	  if(subtract_x){
+	    x_val -= base_x_difference;
+
+	    if(errno != 0){
+	      node = node->next;
+	      
+	      continue;
+	    }
+	  }else{
+	    x_val += base_x_difference;
+
+	    if(errno != 0){
+	      node = node->next;
+	      
+	      continue;
+	    }
+	  }
+	}
+	  
+	/* selection x0 and x1 */
+	selection_x0_val = 0;
+	selection_x1_val = wave_buffer_size;
+	  
+	selection_x0 = xmlGetProp(node,
+				  "selection-x0");
+
+	if(selection_x0 != NULL){
+	  guint64 tmp;
+
+	  endptr = NULL;
+	  errno = 0;
+	  tmp = g_ascii_strtoull(selection_x0,
+				 &endptr,
+				 10);
+	    
+	  if(errno != ERANGE &&
+	     endptr != selection_x0 &&
+	     tmp < wave_buffer_size){
+	    selection_x0_val = tmp;
+	  }
+	}
+	  
+	selection_x1 = xmlGetProp(node,
+				  "selection-x1");
+
+	if(selection_x1 != NULL){
+	  guint64 tmp;
+
+	  endptr = NULL;
+	  errno = 0;
+	  tmp = g_ascii_strtoull(selection_x1,
+				 &endptr,
+				 10);
+	    
+	  if(errno != ERANGE &&
+	     endptr != selection_x1 &&
+	     selection_x0_val <= tmp &&
+	     tmp <= wave_buffer_size){
+	    selection_x1_val = tmp;
+	  }
+	}
+
+	frame_count = selection_x1_val - selection_x0_val;
+	  
+	if(frame_count == 0){
+	  node = node->next;
+	  
+	  continue;
+	}
+
+	content = xmlNodeGetContent(node);
+	//content = node->content;
+	  
+	if(content == NULL){
+	  node = node->next;
+	  
+	  continue;
+	}
+	  
+	clipboard_cdata = g_base64_decode(content,
+					  &clipboard_length);
+	  
+	switch(format_val){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  word_size = 1;
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s8(clipboard_cdata,
+							     clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  word_size = 2;
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
+							      clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  word_size = 4;
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+							      clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  word_size = 4;
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+							      clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  word_size = 8;
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_s64(clipboard_cdata,
+							      clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_FLOAT:
+	{
+	  word_size = sizeof(gfloat);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_float(clipboard_cdata,
+								clipboard_length);
+	}
+	break;
+	case AGS_SOUNDCARD_DOUBLE:
+	{
+	  word_size = sizeof(gdouble);
+
+	  clipboard_data = ags_buffer_util_char_buffer_to_double(clipboard_cdata,
+								 clipboard_length);
+	}
+	break;
+	default:
+	  node = node->next;
+		  
+	  continue;
+	}
+
+	if(clipboard_length % word_size != 0 ||
+	   clipboard_length / word_size != frame_count){
+	  g_warning("malformed clipboard");
+
+	  node = node->next;
+	    
+	  continue;
+	}
+
+	/* add buffer */
+	g_object_get(wave,
+		     "timestamp", &timestamp,
+		     NULL);
+
+	timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
+	g_object_unref(timestamp);
+
+	if(!match_timestamp ||
+	   x_val < timestamp_offset + relative_offset){
+	  guint copy_mode;
+	    
+	  /* find first */
+	  buffer = ags_wave_find_point(wave,
+				       wave_buffer_size * floor(x_val / wave_buffer_size),
+				       FALSE);
+
+	  if(buffer != NULL &&
+	     do_replace){
+	    void *data;
+
+	    //	      g_message("found %d", x_val);
+	      
+	    data = buffer->data;
+
+	    if(attack != 0){
+	      switch(wave_format){
+	      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	      {
+		data = ((gint8 *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	      {
+		data = ((gint16 *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	      {
+		data = ((gint32 *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	      {
+		data = ((gint32 *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	      {
+		data = ((gint64 *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_FLOAT:
+	      {
+		data = ((gfloat *) data) + attack;
+	      }
+	      break;
+	      case AGS_SOUNDCARD_DOUBLE:
+	      {
+		data = ((gdouble *) data) + attack;
+	      }
+	      break;
+	      default:
+		g_warning("unknown soundcard format");
+		  
+		node = node->next;
+		  
+		continue;
+	      }
+	    }
+		
+	    if(attack + frame_count <= wave_buffer_size){
+	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		ags_audio_buffer_util_clear_double(data, 1,
+						   frame_count);
+	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		ags_audio_buffer_util_clear_float(data, 1,
+						  frame_count);
+	      }else{		
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	      }
+	    }else{
+	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		ags_audio_buffer_util_clear_double(data, 1,
+						   wave_buffer_size);
+	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		ags_audio_buffer_util_clear_float(data, 1,
+						  wave_buffer_size);
+	      }else{		
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	      }
+	    }
+	  }
+	    
+	  if(buffer == NULL){
+	    buffer = ags_buffer_new();
+	    g_object_set(buffer,
+			 "samplerate", wave_samplerate,
+			 "buffer-size", wave_buffer_size,
+			 "format", wave_format,
+			 NULL);  
+	      
+	    buffer->x = x_val;
+	      
+	    //	      g_message("created %d", x_val);
+	      
+	    ags_wave_add_buffer(wave,
+				buffer,
+				FALSE);
+	  }
+
+	  //	    g_message("insert - buffer->x = %lu", buffer->x);
+	  //	    g_message("%d %d", wave_format, format_val);
+	  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
+							  ags_audio_buffer_util_format_from_soundcard(format_val));
+
+	  if(samplerate_val != wave_samplerate){
+	    target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
+
+	    target_data = ags_stream_alloc(target_frame_count,
+					   format_val);
+
+	    ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
+						       ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
+						       buffer_size_val,
+						       wave_samplerate,
+						       target_frame_count,
+						       target_data);
+	    
+	    if(attack + target_frame_count <= wave_buffer_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  target_data, 1, 0,
+							  target_frame_count, copy_mode);
+	    }else{
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  target_data, 1, 0,
+							  wave_buffer_size - attack, copy_mode);
+	    }
+
+	    free(target_data);
+	  }else{
+	    if(attack + frame_count <= wave_buffer_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  clipboard_data, 1, 0,
+							  frame_count, copy_mode);
+	    }else{
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  clipboard_data, 1, 0,
+							  wave_buffer_size - attack, copy_mode);
+	    }
+	  }
+	    
+	  /* find next */
+	  if(attack + frame_count > wave_buffer_size){
+	    buffer = ags_wave_find_point(wave,
+					 x_val + 1,
+					 FALSE);
+
+	    if(buffer != NULL &&
+	       do_replace){
+	      void *data;
+
+	      data = buffer->data;
+		
+	      if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		ags_audio_buffer_util_clear_double(data, 1,
+						   attack);
+	      }else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		ags_audio_buffer_util_clear_float(data, 1,
+						  attack);
+	      }else{		
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+	      }
+	    }
+	    
+	    if(buffer == NULL){
+	      buffer = ags_buffer_new();
+	      g_object_set(buffer,
+			   "samplerate", wave_samplerate,
+			   "buffer-size", wave_buffer_size,
+			   "format", wave_format,
+			   NULL);  
+	      buffer->x = x_val + 1;
+	      
+	      ags_wave_add_buffer(wave,
+				  buffer,
+				  FALSE);
+	    }
+
+	    //	      g_message("insert - buffer->x = %lu", buffer->x);
+
+	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
+							    ags_audio_buffer_util_format_from_soundcard(format_val));
+	      
+	    if(samplerate_val != wave_samplerate){
+	      target_data = ags_stream_alloc(wave_buffer_size,
+					     format_val);
+	      
+	      ags_audio_buffer_util_resample_with_buffer(clipboard_data, 1,
+							 ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
+							 buffer_size_val,
+							 wave_samplerate,
+							 wave_buffer_size,
+							 target_data);
+	      
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							  target_data, 1, wave_buffer_size - attack,
+							  attack, copy_mode);
+
+	      free(target_data);
+	    }else{
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							  clipboard_data, 1, wave_buffer_size - attack,
+							  attack, copy_mode);
+	    }
+	  }
+	}
+      }
+    }
+      
+    node = node->next;
+  }
 }
 
 /**
@@ -2612,7 +3146,7 @@ ags_wave_cut_selection(AgsWave *wave)
  *
  * Paste previously copied buffers. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
@@ -2628,546 +3162,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
   guint wave_buffer_size;
   guint wave_format;
   
-  gboolean match_timestamp;
-  
-  auto void ags_wave_insert_native_level_from_clipboard_version_1_4_0();
-  
-  void ags_wave_insert_native_level_from_clipboard_version_1_4_0()
-  {
-    AgsBuffer *buffer;
-
-    AgsTimestamp *timestamp;
-
-    xmlNode *node;
-
-    void *clipboard_data;
-    unsigned char *clipboard_cdata;
-
-    xmlChar *samplerate;
-    xmlChar *buffer_size;
-    xmlChar *format;
-    xmlChar *x;
-    xmlChar *selection_x0, *selection_x1;
-    xmlChar *content;
-    gchar *offset;
-    char *endptr;
-
-    guint64 timestamp_offset;
-    guint samplerate_val;
-    guint buffer_size_val;
-    guint format_val;
-    guint64 x_boundary_val;
-    guint64 x_val;
-    guint64 base_x_difference;
-    guint64 selection_x0_val, selection_x1_val;
-    guint target_frame_count, frame_count;
-    guint word_size;
-    gsize clipboard_length;
-    gboolean subtract_x;
-
-    node = root_node->children;
-
-    /* retrieve x values for resetting */
-    base_x_difference = 0;
-    subtract_x = FALSE;
-
-    x_boundary_val = 0;
-    
-    if(reset_x_offset){
-      if(x_boundary != NULL){
-	errno = 0;
-	
-	x_boundary_val = strtoul(x_boundary,
-				 &endptr,
-				 10);
-
-	if(errno == ERANGE){
-	  goto dont_reset_x_offset;
-	} 
-	
-	if(x_boundary == endptr){
-	  goto dont_reset_x_offset;
-	}
-
-	if(x_boundary_val < x_offset){
-	  base_x_difference = x_offset - x_boundary_val;
-	  subtract_x = FALSE;
-	}else{
-	  base_x_difference = x_boundary_val - x_offset;
-	  subtract_x = TRUE;
-	}
-      }else{
-      dont_reset_x_offset:
-	reset_x_offset = FALSE;
-      }
-    }
-
-    /* parse */
-    while(node != NULL){
-      if(node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp("buffer",
-		       node->name,
-		       7)){
-	  void *target_data;
-
-	  samplerate_val = 0;
-	  samplerate = xmlGetProp(node,
-				  "samplerate");
-
-	  if(samplerate != NULL){
-	    samplerate_val = g_ascii_strtoull(samplerate,
-					      NULL,
-					      10);
-	  }
-
-	  buffer_size_val = 0;
-	  buffer_size = xmlGetProp(node,
-				   "buffer-size");
-
-	  if(buffer_size != NULL){
-	    buffer_size_val = g_ascii_strtoull(buffer_size,
-					       NULL,
-					       10);
-	  }
-	  
-	  /* retrieve format */
-	  format = xmlGetProp(node,
-			      "format");
-
-	  if(!g_ascii_strncasecmp("s8",
-				  format,
-				  3)){
-	    format_val = AGS_SOUNDCARD_SIGNED_8_BIT;
-	  }else if(!g_ascii_strncasecmp("s16",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_SIGNED_16_BIT;
-	  }else if(!g_ascii_strncasecmp("s24",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_SIGNED_24_BIT;
-	  }else if(!g_ascii_strncasecmp("s32",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_SIGNED_32_BIT;
-	  }else if(!g_ascii_strncasecmp("s64",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_SIGNED_64_BIT;
-	  }else if(!g_ascii_strncasecmp("float",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_FLOAT;
-	  }else if(!g_ascii_strncasecmp("double",
-					format,
-					4)){
-	    format_val = AGS_SOUNDCARD_DOUBLE;
-	  }else{
-	    node = node->next;
-	  
-	    continue;
-	  }
-	  
-	  /* retrieve x offset */
-	  x = xmlGetProp(node,
-			 "x");
-
-	  if(x == NULL){
-	    node = node->next;
-	  
-	    continue;
-	  }
-	  
-	  errno = 0;
-	  x_val = g_ascii_strtoull(x,
-				   &endptr,
-				   10);
-
-	  if(errno == ERANGE){
-	    node = node->next;
-	  
-	    continue;
-	  } 
-
-	  if(x == endptr){
-	    node = node->next;
-	  
-	    continue;
-	  }
-
-	  /* calculate new offset */
-	  if(reset_x_offset){
-	    errno = 0;
-
-	    if(subtract_x){
-	      x_val -= base_x_difference;
-
-	      if(errno != 0){
-		node = node->next;
-	      
-		continue;
-	      }
-	    }else{
-	      x_val += base_x_difference;
-
-	      if(errno != 0){
-		node = node->next;
-	      
-		continue;
-	      }
-	    }
-	  }
-	  
-	  /* selection x0 and x1 */
-	  selection_x0_val = 0;
-	  selection_x1_val = wave_buffer_size;
-	  
-	  selection_x0 = xmlGetProp(node,
-				    "selection-x0");
-
-	  if(selection_x0 != NULL){
-	    guint64 tmp;
-
-	    endptr = NULL;
-	    errno = 0;
-	    tmp = g_ascii_strtoull(selection_x0,
-				   &endptr,
-				   10);
-	    
-	    if(errno != ERANGE &&
-	       endptr != selection_x0 &&
-	       tmp < wave_buffer_size){
-	      selection_x0_val = tmp;
-	    }
-	  }
-	  
-	  selection_x1 = xmlGetProp(node,
-				    "selection-x1");
-
-	  if(selection_x1 != NULL){
-	    guint64 tmp;
-
-	    endptr = NULL;
-	    errno = 0;
-	    tmp = g_ascii_strtoull(selection_x1,
-				   &endptr,
-				   10);
-	    
-	    if(errno != ERANGE &&
-	       endptr != selection_x1 &&
-	       selection_x0_val <= tmp &&
-	       tmp <= wave_buffer_size){
-	      selection_x1_val = tmp;
-	    }
-	  }
-
-	  frame_count = selection_x1_val - selection_x0_val;
-	  
-	  if(frame_count == 0){
-	    node = node->next;
-	  
-	    continue;
-	  }
-
-	  content = xmlNodeGetContent(node);
-	  //content = node->content;
-	  
-	  if(content == NULL){
-	    node = node->next;
-	  
-	    continue;
-	  }
-	  
-	  clipboard_cdata = g_base64_decode(content,
-					    &clipboard_length);
-	  
-	  switch(format_val){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	    {
-	      word_size = 1;
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_s8(clipboard_cdata,
-								 clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	    {
-	      word_size = 2;
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
-								  clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	    {
-	      word_size = 4;
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
-								  clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	    {
-	      word_size = 4;
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
-								  clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	    {
-	      word_size = 8;
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_s64(clipboard_cdata,
-								  clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_FLOAT:
-	    {
-	      word_size = sizeof(gfloat);
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_float(clipboard_cdata,
-								    clipboard_length);
-	    }
-	    break;
-	  case AGS_SOUNDCARD_DOUBLE:
-	    {
-	      word_size = sizeof(gdouble);
-
-	      clipboard_data = ags_buffer_util_char_buffer_to_double(clipboard_cdata,
-								     clipboard_length);
-	    }
-	    break;
-	  default:
-	    node = node->next;
-		  
-	    continue;
-	  }
-
-	  if(clipboard_length % word_size != 0 ||
-	     clipboard_length / word_size != frame_count){
-	    g_warning("malformed clipboard");
-
-	    node = node->next;
-	    
-	    continue;
-	  }
-
-	  /* add buffer */
-	  g_object_get(wave,
-		       "timestamp", &timestamp,
-		       NULL);
-
-	  timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
-	  g_object_unref(timestamp);
-
-	  if(!match_timestamp ||
-	     x_val < timestamp_offset + relative_offset){
-	    guint copy_mode;
-	    
-	    /* find first */
-	    buffer = ags_wave_find_point(wave,
-					 wave_buffer_size * floor(x_val / wave_buffer_size),
-					 FALSE);
-
-	    if(buffer != NULL &&
-	       do_replace){
-	      void *data;
-
-	      //	      g_message("found %d", x_val);
-	      
-	      data = buffer->data;
-
-	      if(attack != 0){
-		switch(wave_format){
-		case AGS_SOUNDCARD_SIGNED_8_BIT:
-		  {
-		    data = ((gint8 *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_SIGNED_16_BIT:
-		  {
-		    data = ((gint16 *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_SIGNED_24_BIT:
-		  {
-		    data = ((gint32 *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_SIGNED_32_BIT:
-		  {
-		    data = ((gint32 *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_SIGNED_64_BIT:
-		  {
-		    data = ((gint64 *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_FLOAT:
-		  {
-		    data = ((gfloat *) data) + attack;
-		  }
-		  break;
-		case AGS_SOUNDCARD_DOUBLE:
-		  {
-		    data = ((gdouble *) data) + attack;
-		  }
-		  break;
-		default:
-		  g_warning("unknown soundcard format");
-		  
-		  node = node->next;
-		  
-		  continue;
-		}
-	      }
-		
-	      if(attack + frame_count <= wave_buffer_size){
-		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
-						     frame_count);
-		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
-						    frame_count);
-		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
-		}
-	      }else{
-		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
-						     wave_buffer_size);
-		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
-						    wave_buffer_size);
-		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
-		}
-	      }
-	    }
-	    
-	    if(buffer == NULL){
-	      buffer = ags_buffer_new();
-	      g_object_set(buffer,
-			   "samplerate", wave_samplerate,
-			   "buffer-size", wave_buffer_size,
-			   "format", wave_format,
-			   NULL);  
-	      
-	      buffer->x = x_val;
-	      
-	      //	      g_message("created %d", x_val);
-	      
-	      ags_wave_add_buffer(wave,
-				  buffer,
-				  FALSE);
-	    }
-
-	    //	    g_message("insert - buffer->x = %lu", buffer->x);
-	    //	    g_message("%d %d", wave_format, format_val);
-	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							    ags_audio_buffer_util_format_from_soundcard(format_val));
-
-	    if(samplerate_val != wave_samplerate){
-	      target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							   ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-							   buffer_size_val,
-							   wave_samplerate);
-	      target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
-	      
-	      if(attack + target_frame_count <= wave_buffer_size){
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							    target_data, 1, 0,
-							    target_frame_count, copy_mode);
-	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							    target_data, 1, 0,
-							    wave_buffer_size - attack, copy_mode);
-	      }
-
-	      free(target_data);
-	    }else{
-	      if(attack + frame_count <= wave_buffer_size){
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							    clipboard_data, 1, 0,
-							    frame_count, copy_mode);
-	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							    clipboard_data, 1, 0,
-							    wave_buffer_size - attack, copy_mode);
-	      }
-	    }
-	    
-	    /* find next */
-	    if(attack + frame_count > wave_buffer_size){
-	      buffer = ags_wave_find_point(wave,
-					   x_val + 1,
-					   FALSE);
-
-	      if(buffer != NULL &&
-		 do_replace){
-		void *data;
-
-		data = buffer->data;
-		
-		if(wave_format == AGS_SOUNDCARD_DOUBLE){
-		  ags_audio_buffer_util_clear_double(data, 1,
-						     attack);
-		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
-		  ags_audio_buffer_util_clear_float(data, 1,
-						    attack);
-		}else{		
-		  ags_audio_buffer_util_clear_buffer(data, 1,
-						     attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
-		}
-	      }
-	    
-	      if(buffer == NULL){
-		buffer = ags_buffer_new();
-		g_object_set(buffer,
-			     "samplerate", wave_samplerate,
-			     "buffer-size", wave_buffer_size,
-			     "format", wave_format,
-			     NULL);  
-		buffer->x = x_val + 1;
-	      
-		ags_wave_add_buffer(wave,
-				    buffer,
-				    FALSE);
-	      }
-
-	      //	      g_message("insert - buffer->x = %lu", buffer->x);
-
-	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
-							      ags_audio_buffer_util_format_from_soundcard(format_val));
-	      
-	      if(samplerate_val != wave_samplerate){
-		target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							     ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
-							     buffer_size_val,
-							     wave_samplerate);
-	      
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
-							    target_data, 1, wave_buffer_size - attack,
-							    attack, copy_mode);
-
-		free(target_data);
-	      }else{
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
-							    clipboard_data, 1, wave_buffer_size - attack,
-							    attack, copy_mode);
-	      }
-	    }
-	  }
-	}
-      }
-      
-      node = node->next;
-    }
-  }
+  gboolean match_timestamp;  
 
   if(!AGS_IS_WAVE(wave)){
     return;
@@ -3198,7 +3193,18 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
       return;
     }
     
-    ags_wave_insert_native_level_from_clipboard_version_1_4_0();
+    ags_wave_insert_native_level_from_clipboard_version_1_4_0(wave,
+							      root_node, version,
+							      x_boundary,
+							      reset_x_offset, x_offset,
+							      delay, attack,
+							      match_line, do_replace,
+							      current_line,
+							      relative_offset,
+							      wave_samplerate,
+							      wave_buffer_size,
+							      wave_format,
+							      match_timestamp);
   }  
 }
 
@@ -3213,7 +3219,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
  *
  * Paste previously copied buffers. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
@@ -3241,7 +3247,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
  * 
  * Paste previously copied buffers. 
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
@@ -3297,7 +3303,7 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
  *
  * Returns: a new #AgsWave
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWave*
 ags_wave_new(GObject *audio,

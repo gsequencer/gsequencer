@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -39,7 +37,6 @@
 
 void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_dispose(GObject *gobject);
 void ags_copy_pattern_channel_run_finalize(GObject *gobject);
@@ -82,7 +79,6 @@ void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *del
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
-static AgsPluginInterface *ags_copy_pattern_channel_run_parent_plugin_interface;
 
 GType
 ags_copy_pattern_channel_run_get_type()
@@ -110,12 +106,6 @@ ags_copy_pattern_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_copy_pattern_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							       "AgsCopyPatternChannelRun",
 							       &ags_copy_pattern_channel_run_info,
@@ -124,10 +114,6 @@ ags_copy_pattern_channel_run_get_type()
     g_type_add_interface_static(ags_type_copy_pattern_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-    
-    g_type_add_interface_static(ags_type_copy_pattern_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_channel_run);
   }
@@ -168,12 +154,6 @@ ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface 
 
   connectable->connect_connection = ags_copy_pattern_channel_run_connect_connection;
   connectable->disconnect_connection = ags_copy_pattern_channel_run_disconnect_connection;
-}
-
-void
-ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_copy_pattern_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
@@ -373,7 +353,7 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -414,7 +394,7 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
@@ -534,8 +514,8 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *pattern_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *pattern_mutex;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
@@ -543,11 +523,7 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre;
-
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -582,11 +558,11 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
 
   /* i stop */  
-  pthread_mutex_lock(pattern_mutex);
+  g_rec_mutex_lock(pattern_mutex);
 
   i_stop = pattern->dim[2];
 
-  pthread_mutex_unlock(pattern_mutex);
+  g_rec_mutex_unlock(pattern_mutex);
   
   for(i = 0; i < i_stop; i++){
     note = ags_note_new();
@@ -618,19 +594,15 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
 
   void (*parent_class_done)(AgsRecall *recall);
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  /* get parent class */
-  AGS_RECALL_LOCK_CLASS();
-  
+  /* get parent class */  
   parent_class_done = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done;
-
-  AGS_RECALL_UNLOCK_CLASS();
   
   /* get AgsCopyPatternAudioRun */
   g_object_get(recall,
@@ -646,14 +618,14 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
 
   /* free notes */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   g_list_free_full(copy_pattern_channel_run->note,
 		   g_object_unref);
 
   copy_pattern_channel_run->note = NULL;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* call parent */
   parent_class_done(recall);
@@ -687,7 +659,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue i_value = { 0, };
   GValue j_value = { 0, };
 
-  pthread_mutex_t *pattern_mutex;
+  GRecMutex *pattern_mutex;
 
   if(delay != 0.0){
     return;
@@ -740,10 +712,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
   
   /* write pattern port - current offset */
+#if 0
   g_object_set(pattern,
 	       "first-index", (guint) g_value_get_float(&i_value),
 	       "second-index", (guint) g_value_get_float(&j_value),
 	       NULL);
+#endif
   
   /* get sequencer counter */
   g_object_get(count_beats_audio_run,
@@ -754,7 +728,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   current_bit = ags_pattern_get_bit(pattern,
 				    (guint) g_value_get_float(&i_value),
 				    (guint) g_value_get_float(&j_value),
-				    sequencer_counter);
+				    (guint) sequencer_counter);
   
   g_value_unset(&pattern_value);
 
@@ -1095,7 +1069,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
  *
  * Returns: the new #AgsCopyPatternChannelRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsCopyPatternChannelRun*
 ags_copy_pattern_channel_run_new(AgsChannel *destination,

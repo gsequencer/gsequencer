@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_RECYCLING_CONTEXT                (ags_recycling_context_get_type())
 #define AGS_RECYCLING_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING_CONTEXT, AgsRecyclingContext))
 #define AGS_RECYCLING_CONTEXT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECYCLING_CONTEXT, AgsRecyclingContextClass))
@@ -35,7 +37,7 @@
 #define AGS_IS_RECYCLING_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING_CONTEXT))
 #define AGS_RECYCLING_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECYCLING_CONTEXT, AgsRecyclingContextClass))
 
-#define AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(obj) (((AgsRecyclingContext *) obj)->obj_mutex)
+#define AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(obj) (&(((AgsRecyclingContext *) obj)->obj_mutex))
 
 typedef struct _AgsRecyclingContext AgsRecyclingContext;
 typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
@@ -53,8 +55,7 @@ struct _AgsRecyclingContext
   guint flags;
   gint sound_scope;
 
-  pthread_mutexattr_t *obj_mutexattr;
-  pthread_mutex_t *obj_mutex;
+  GRecMutex obj_mutex;
   
   GObject *recall_id;
 
@@ -71,8 +72,6 @@ struct _AgsRecyclingContextClass
 };
 
 GType ags_recycling_context_get_type();
-
-pthread_mutex_t* ags_recycling_context_get_class_mutex();
 
 GList* ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope);
 
@@ -115,5 +114,7 @@ AgsRecyclingContext* ags_recycling_context_reset_recycling(AgsRecyclingContext *
 
 /* instantiate */
 AgsRecyclingContext* ags_recycling_context_new(guint64 length);
+
+G_END_DECLS
 
 #endif /*__AGS_RECYCLING_CONTEXT_H__*/

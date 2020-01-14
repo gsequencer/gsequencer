@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,11 +22,17 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_effect_pad.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FFPLAYER_INPUT_PAD                (ags_ffplayer_input_pad_get_type())
 #define AGS_FFPLAYER_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER_INPUT_PAD, AgsFFPlayerInputPad))
@@ -51,5 +57,7 @@ struct _AgsFFPlayerInputPadClass
 GType ags_ffplayer_input_pad_get_type(void);
 
 AgsFFPlayerInputPad* ags_ffplayer_input_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_FFPLAYER_INPUT_PAD_H__*/

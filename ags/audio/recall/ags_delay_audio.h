@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DELAY_AUDIO                (ags_delay_audio_get_type())
 #define AGS_DELAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DELAY_AUDIO, AgsDelayAudio))
@@ -60,19 +62,21 @@ struct _AgsDelayAudioClass
 {
   AgsRecallAudioClass recall_audio;
 
-  void (*notation_duration_changed)(AgsDelayAudio *delay_audio);
   void (*sequencer_duration_changed)(AgsDelayAudio *delay_audio);
+  void (*notation_duration_changed)(AgsDelayAudio *delay_audio);
   void (*wave_duration_changed)(AgsDelayAudio *delay_audio);
   void (*midi_duration_changed)(AgsDelayAudio *delay_audio);
 };
 
 GType ags_delay_audio_get_type();
 
-void ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio);
 void ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio);
+void ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio);
 void ags_delay_audio_wave_duration_changed(AgsDelayAudio *delay_audio);
 void ags_delay_audio_midi_duration_changed(AgsDelayAudio *delay_audio);
 
 AgsDelayAudio* ags_delay_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_DELAY_AUDIO_H__*/

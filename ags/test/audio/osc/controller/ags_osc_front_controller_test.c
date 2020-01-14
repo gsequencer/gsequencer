@@ -35,8 +35,6 @@
 int ags_osc_front_controller_test_init_suite();
 int ags_osc_front_controller_test_clean_suite();
 
-void ags_osc_front_controller_test_message_alloc();
-void ags_osc_front_controller_test_message_free();
 void ags_osc_front_controller_test_add_message();
 void ags_osc_front_controller_test_remove_message();
 void ags_osc_front_controller_test_start_delegate();
@@ -110,39 +108,17 @@ ags_osc_front_controller_test_clean_suite()
 }
 
 void
-ags_osc_front_controller_test_message_alloc()
-{
-  AgsOscFrontControllerMessage *message;
-
-  message = ags_osc_front_controller_message_alloc();
-
-  CU_ASSERT(message != NULL);
-}
-
-void
-ags_osc_front_controller_test_message_free()
-{  
-  AgsOscFrontControllerMessage *message;
-
-  message = ags_osc_front_controller_message_alloc();
-
-  CU_ASSERT(message != NULL);
-
-  ags_osc_front_controller_message_free(message);
-}
-
-void
 ags_osc_front_controller_test_add_message()
 {
   AgsOscFrontController *front_controller;
   
-  AgsOscFrontControllerMessage *message;
+  AgsOscMessage *message;
 
   front_controller = ags_osc_front_controller_new();
 
   CU_ASSERT(front_controller->message == NULL);
   
-  message = ags_osc_front_controller_message_alloc();
+  message = ags_osc_message_new();
 
   CU_ASSERT(message != NULL);
 
@@ -159,11 +135,11 @@ ags_osc_front_controller_test_remove_message()
 {  
   AgsOscFrontController *front_controller;
   
-  AgsOscFrontControllerMessage *message;
+  AgsOscMessage *message;
 
   front_controller = ags_osc_front_controller_new();
   
-  message = ags_osc_front_controller_message_alloc();
+  message = ags_osc_message_new();
 
   CU_ASSERT(message != NULL);
 
@@ -257,9 +233,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsOscFrontController message alloc", ags_osc_front_controller_test_message_alloc) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscFrontController message free", ags_osc_front_controller_test_message_free) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscFrontController add message", ags_osc_front_controller_test_add_message) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsOscFrontController add message", ags_osc_front_controller_test_add_message) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscFrontController remove message", ags_osc_front_controller_test_remove_message) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscFrontController start delegate", ags_osc_front_controller_test_start_delegate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscFrontController stop delegate", ags_osc_front_controller_test_stop_delegate) == NULL) ||

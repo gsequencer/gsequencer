@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LADSPA_BRIDGE                (ags_ladspa_bridge_get_type())
 #define AGS_LADSPA_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LADSPA_BRIDGE, AgsLadspaBridge))
@@ -84,5 +86,7 @@ void ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge);
 AgsLadspaBridge* ags_ladspa_bridge_new(GObject *soundcard,
 				       gchar *filename,
 				       gchar *effect);
+
+G_END_DECLS
 
 #endif /*__AGS_LADSPA_BRIDGE_H__*/

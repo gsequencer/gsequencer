@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_RECORD_MIDI_AUDIO_RUN                (ags_record_midi_audio_run_get_type())
 #define AGS_RECORD_MIDI_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECORD_MIDI_AUDIO_RUN, AgsRecordMidiAudioRun))
@@ -67,5 +69,7 @@ GType ags_record_midi_audio_run_get_type();
 AgsRecordMidiAudioRun* ags_record_midi_audio_run_new(AgsAudio *audio,
 						     AgsDelayAudioRun *delay_audio_run,
 						     AgsCountBeatsAudioRun *count_beats_audio_run);
+
+G_END_DECLS
 
 #endif /*__AGS_RECORD_MIDI_AUDIO_RUN_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,6 @@ static gpointer ags_stop_sequencer_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -106,22 +105,7 @@ ags_stop_sequencer_class_init(AgsStopSequencerClass *stop_sequencer)
   gobject->finalize = ags_stop_sequencer_finalize;
 
   /* properties */
-  /**
-   * AgsStopSequencer:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.1.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of stop sequencer"),
-				   i18n_pspec("The application context of stop sequencer task"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
+  
   /* task */
   task = (AgsTaskClass *) stop_sequencer;
 
@@ -131,7 +115,7 @@ ags_stop_sequencer_class_init(AgsStopSequencerClass *stop_sequencer)
 void
 ags_stop_sequencer_init(AgsStopSequencer *stop_sequencer)
 {
-  stop_sequencer->application_context = NULL;
+  //empty
 }
 
 void
@@ -145,27 +129,6 @@ ags_stop_sequencer_set_property(GObject *gobject,
   stop_sequencer = AGS_STOP_SEQUENCER(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(stop_sequencer->application_context == application_context){
-	return;
-      }
-
-      if(stop_sequencer->application_context != NULL){
-	g_object_unref(stop_sequencer->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      stop_sequencer->application_context = application_context;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -183,11 +146,6 @@ ags_stop_sequencer_get_property(GObject *gobject,
   stop_sequencer = AGS_STOP_SEQUENCER(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, stop_sequencer->application_context);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -200,12 +158,6 @@ ags_stop_sequencer_dispose(GObject *gobject)
   AgsStopSequencer *stop_sequencer;
 
   stop_sequencer = AGS_STOP_SEQUENCER(gobject);
-
-  if(stop_sequencer->application_context != NULL){
-    g_object_unref(stop_sequencer->application_context);
-
-    stop_sequencer->application_context = NULL;
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_stop_sequencer_parent_class)->dispose(gobject);
@@ -214,18 +166,10 @@ ags_stop_sequencer_dispose(GObject *gobject)
 void
 ags_stop_sequencer_finalize(GObject *gobject)
 {
-  AgsAudioLoop *audio_loop;
-  AgsThread *sequencer_thread;
+  AgsStopSequencer *stop_sequencer;
 
-  AgsApplicationContext *application_context;
-  AgsSequencer *sequencer;
-
-  application_context = AGS_STOP_SEQUENCER(gobject)->application_context;  
-
-  if(application_context != NULL){    
-    g_object_unref(application_context);
-  }
-
+  stop_sequencer = AGS_STOP_SEQUENCER(gobject);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_stop_sequencer_parent_class)->finalize(gobject);
 }
@@ -242,7 +186,9 @@ ags_stop_sequencer_launch(AgsTask *task)
 
   stop_sequencer = AGS_STOP_SEQUENCER(task);
 
-  application_context = stop_sequencer->application_context;
+  application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(application_context));
 
   /* get main loop */
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -270,21 +216,19 @@ ags_stop_sequencer_launch(AgsTask *task)
 
 /**
  * ags_stop_sequencer_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates an #AgsStopSequencer.
  *
  * Returns: an new #AgsStopSequencer.
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsStopSequencer*
-ags_stop_sequencer_new(AgsApplicationContext *application_context)
+ags_stop_sequencer_new()
 {
   AgsStopSequencer *stop_sequencer;
 
   stop_sequencer = (AgsStopSequencer *) g_object_new(AGS_TYPE_STOP_SEQUENCER,
-						     "application-context", application_context,
 						     NULL);
 
   return(stop_sequencer);

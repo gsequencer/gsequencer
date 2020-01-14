@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,16 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_automation_edit.h>
 
-gboolean ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEdit *automation_edit);
+G_BEGIN_DECLS
+
+void ags_automation_edit_draw_callback(GtkWidget *drawing_area, cairo_t *cr, AgsAutomationEdit *automation_edit);
+
 gboolean ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit);
 
 gboolean ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit);
@@ -38,5 +45,7 @@ gboolean ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, G
 
 void ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
 void ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_EDIT_CALLBACKS_H__*/

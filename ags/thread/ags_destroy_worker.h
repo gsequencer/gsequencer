@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
 #include <time.h>
 
 #include <ags/thread/ags_worker_thread.h>
@@ -49,8 +48,7 @@ struct _AgsDestroyWorker
 
   struct timespec *destroy_interval;
   
-  pthread_mutex_t *destroy_mutex;
-  pthread_mutexattr_t *destroy_mutexattr;
+  GRecMutex destroy_mutex;
 
   GList *destroy_list;
 };

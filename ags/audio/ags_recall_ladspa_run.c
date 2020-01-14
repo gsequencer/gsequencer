@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -214,14 +214,10 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
                                unsigned long SampleRate);
   void (*activate)(LADSPA_Handle Instance);
 
-  pthread_mutex_t *recall_ladspa_mutex;
+  GRecMutex *recall_ladspa_mutex;
 
   /* get recall mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre;
-  
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -255,7 +251,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   recall_ladspa_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
-  pthread_mutex_lock(recall_ladspa_mutex);
+  g_rec_mutex_lock(recall_ladspa_mutex);
 
   output_lines = recall_ladspa->output_lines;
   input_lines = recall_ladspa->input_lines;
@@ -263,7 +259,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   instantiate = recall_ladspa->plugin_descriptor->instantiate;
   activate = recall_ladspa->plugin_descriptor->activate;
   
-  pthread_mutex_unlock(recall_ladspa_mutex);
+  g_rec_mutex_unlock(recall_ladspa_mutex);
   
   /* set up buffer */ 
   output = NULL;
@@ -298,7 +294,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   recall_ladspa_run->audio_channels = i_stop;
   
   /* instantiate ladspa */
-  pthread_mutex_lock(recall_ladspa_mutex);
+  g_rec_mutex_lock(recall_ladspa_mutex);
 
   for(i = 0; i < i_stop; i++){
     ladspa_handle[i] = instantiate(recall_ladspa->plugin_descriptor,
@@ -310,7 +306,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 
   }
 
-  pthread_mutex_unlock(recall_ladspa_mutex);
+  g_rec_mutex_unlock(recall_ladspa_mutex);
 
   /* load ports */
   recall_ladspa_run->ladspa_handle = ladspa_handle;
@@ -362,14 +358,10 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   void (*deactivate)(LADSPA_Handle Instance);
   void (*cleanup)(LADSPA_Handle Instance);
   
-  pthread_mutex_t *recall_ladspa_mutex;
+  GRecMutex *recall_ladspa_mutex;
 
   /* get recall mutex */
-  AGS_RECALL_LOCK_CLASS();
-  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter;
-  
-  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -430,7 +422,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 	       NULL);
 
   /* get some fields */
-  pthread_mutex_lock(recall_ladspa_mutex);
+  g_rec_mutex_lock(recall_ladspa_mutex);
 
   output_lines = recall_ladspa->output_lines;
   input_lines = recall_ladspa->input_lines;
@@ -440,7 +432,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   deactivate = recall_ladspa->plugin_descriptor->deactivate;
   cleanup = recall_ladspa->plugin_descriptor->cleanup;
 
-  pthread_mutex_unlock(recall_ladspa_mutex);
+  g_rec_mutex_unlock(recall_ladspa_mutex);
 
   if(audio_signal->stream_current == NULL){
     for(i = 0; i < input_lines; i++){
@@ -517,7 +509,7 @@ ags_recall_ladspa_run_run_inter_END:
  *
  * Set up LADSPA ports.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
@@ -543,8 +535,8 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 		       unsigned long Port,
 		       LADSPA_Data * DataLocation);
 
-  pthread_mutex_t *recall_ladspa_mutex;
-  pthread_mutex_t *port_mutex;
+  GRecMutex *recall_ladspa_mutex;
+  GRecMutex *port_mutex;
 
   if(!AGS_IS_RECALL_LADSPA_RUN(recall_ladspa_run)){
     return;
@@ -568,7 +560,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   recall_ladspa_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
-  pthread_mutex_lock(recall_ladspa_mutex);
+  g_rec_mutex_lock(recall_ladspa_mutex);
   
   output_lines = recall_ladspa->output_lines;
   input_lines = recall_ladspa->input_lines;
@@ -583,7 +575,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
   connect_port = recall_ladspa->plugin_descriptor->connect_port;
   
-  pthread_mutex_unlock(recall_ladspa_mutex);
+  g_rec_mutex_unlock(recall_ladspa_mutex);
 
   /* match port */
   if(input_lines < output_lines){
@@ -593,22 +585,22 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   }
 
   for(i = 0; i < port_count; i++){
-    pthread_mutex_lock(recall_ladspa_mutex);
+    g_rec_mutex_lock(recall_ladspa_mutex);
 
     current_port_descriptor = port_descriptor[i];
     
-    pthread_mutex_unlock(recall_ladspa_mutex);
+    g_rec_mutex_unlock(recall_ladspa_mutex);
 
     if(LADSPA_IS_PORT_CONTROL(current_port_descriptor)){
       if(LADSPA_IS_PORT_INPUT(current_port_descriptor) ||
 	 LADSPA_IS_PORT_OUTPUT(current_port_descriptor)){
 	LADSPA_Data *port_pointer;
 	
-	pthread_mutex_lock(recall_ladspa_mutex);
+	g_rec_mutex_lock(recall_ladspa_mutex);
 
 	specifier = g_strdup(plugin_descriptor->PortNames[i]);
 
-	pthread_mutex_unlock(recall_ladspa_mutex);
+	g_rec_mutex_unlock(recall_ladspa_mutex);
 
 	list = ags_port_find_specifier(list_start, specifier);
 	g_free(specifier);
@@ -623,11 +615,11 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 #ifdef AGS_DEBUG
 	    g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);
 #endif
-	    pthread_mutex_lock(port_mutex);
+	    g_rec_mutex_lock(port_mutex);
 	    
 	    port_pointer = (LADSPA_Data *) &(current_port->port_value.ags_port_ladspa);
 
-	    pthread_mutex_unlock(port_mutex);
+	    g_rec_mutex_unlock(port_mutex);
 	  
 	    connect_port(recall_ladspa_run->ladspa_handle[j],
 			 (unsigned long) i,
@@ -662,13 +654,13 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
 /**
  * ags_recall_ladspa_run_new:
- * @audio_signal: the #AgsAudioSignal as source
+ * @source: the #AgsAudioSignal as source
  *
  * Creates a new instance of #AgsRecallLadspaRun
  *
  * Returns: the new #AgsRecallLadspaRun
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallLadspaRun*
 ags_recall_ladspa_run_new(AgsAudioSignal *source)

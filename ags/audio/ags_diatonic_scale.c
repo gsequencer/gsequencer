@@ -19,9 +19,17 @@
 
 #include <ags/audio/ags_diatonic_scale.h>
 
-#include <ags/libags.h>
-
 #include <string.h>
+
+/**
+ * SECTION:ags_diatonic_scale
+ * @short_description: diatonic scale util
+ * @title: AgsDiatonicScale
+ * @section_id:
+ * @include: ags/audio/ags_diatonic_scale.h
+ *
+ * Utility functions to handle diatonic scale.
+ */
 
 /**
  * ags_diatonic_scale_note_to_midi_key:
@@ -32,7 +40,7 @@
  * 
  * Returns: the number of chars read
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 guint
 ags_diatonic_scale_note_to_midi_key(gchar *note,
@@ -177,7 +185,7 @@ ags_diatonic_scale_note_to_midi_key_COMPLETED:
  * 
  * Returns: the number of chars written
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 guint
 ags_diatonic_scale_midi_key_to_note(glong key,

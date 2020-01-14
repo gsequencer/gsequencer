@@ -19,8 +19,6 @@
 
 #include <ags/X/editor/ags_machine_selection.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 
@@ -178,7 +176,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
   machine = NULL;
 
-  vbox = (GtkVBox *) GTK_DIALOG(machine_selection)->vbox;
+  vbox = (GtkVBox *) gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
   group = NULL;
 
   while(list != NULL){
@@ -267,7 +265,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
  *
  * Returns: a new #AgsMachineSelection
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineSelection*
 ags_machine_selection_new(AgsWindow *window)

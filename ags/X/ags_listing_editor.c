@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_listing_editor_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -297,7 +293,7 @@ ags_listing_editor_reset(AgsApplicable *applicable)
  *
  * Creates new pad editors or destroys them.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_listing_editor_add_children(AgsListingEditor *listing_editor,
@@ -399,7 +395,7 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
  *
  * Returns: the new #AgsListingEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsListingEditor*
 ags_listing_editor_new(GType channel_type)

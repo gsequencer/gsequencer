@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,11 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_property_listing_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_INPUT_LISTING_EDITOR                (ags_input_listing_editor_get_type())
 #define AGS_INPUT_LISTING_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INPUT_LISTING_EDITOR, AgsInputListingEditor))
@@ -60,5 +64,7 @@ void ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_
 					   AgsAudio *audio, guint nth,
 					   gboolean connect);
 AgsInputListingEditor* ags_input_listing_editor_new(GType channel_type);
+
+G_END_DECLS
 
 #endif /*__AGS_INPUT_LISTING_EDITOR_H__*/

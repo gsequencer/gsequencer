@@ -25,7 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_line.h>
+
+G_BEGIN_DECLS
+
+void ags_line_check_message_callback(GObject *application_context, AgsLine *line);
 
 void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
@@ -37,5 +45,7 @@ void ags_line_volume_callback(GtkRange *range,
 void ags_line_stop_callback(AgsLine *line,
 			    GList *recall_id, gint sound_scope,
 			    gpointer data);
+
+G_END_DECLS
 
 #endif /*__AGS_LINE_CALLBACKS_H__*/

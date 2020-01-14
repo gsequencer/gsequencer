@@ -23,12 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recall_id.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PLAYBACK                (ags_playback_get_type())
 #define AGS_PLAYBACK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYBACK, AgsPlayback))
@@ -37,7 +37,7 @@
 #define AGS_IS_PLAYBACK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAYBACK))
 #define AGS_PLAYBACK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PLAYBACK, AgsPlaybackClass))
 
-#define AGS_PLAYBACK_GET_OBJ_MUTEX(obj) (((AgsPlayback *) obj)->obj_mutex)
+#define AGS_PLAYBACK_GET_OBJ_MUTEX(obj) (&(((AgsPlayback *) obj)->obj_mutex))
 
 typedef struct _AgsPlayback AgsPlayback;
 typedef struct _AgsPlaybackClass AgsPlaybackClass;
@@ -63,8 +63,7 @@ struct _AgsPlayback
   
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *playback_domain;
   
@@ -84,8 +83,6 @@ struct _AgsPlaybackClass
 };
 
 GType ags_playback_get_type();
-
-pthread_mutex_t* ags_playback_get_class_mutex();
 
 gboolean ags_playback_test_flags(AgsPlayback *playback, guint flags);
 void ags_playback_set_flags(AgsPlayback *playback, guint flags);
@@ -110,5 +107,7 @@ AgsPlayback* ags_playback_find_channel(GList *playback,
 
 /* instance */
 AgsPlayback* ags_playback_new(GObject *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_PLAYBACK_H__*/

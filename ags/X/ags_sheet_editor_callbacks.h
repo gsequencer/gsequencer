@@ -28,6 +28,8 @@
 #include <ags/X/ags_sheet_editor.h>
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 void ags_sheet_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					       AgsSheetEditor *sheet_editor);
 
@@ -37,5 +39,7 @@ void ags_sheet_editor_resize_audio_channels_callback(AgsMachine *machine,
 void ags_sheet_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 					   guint pads, guint pads_old,
 					   AgsSheetEditor *sheet_editor);
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_EDITOR_CALLBACKS_H__*/

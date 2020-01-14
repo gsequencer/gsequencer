@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,6 @@ static gpointer ags_remove_soundcard_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_SOUNDCARD,
 };
 
@@ -108,27 +107,11 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
   
   /* properties */
   /**
-   * AgsRemoveSoundcard:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of remove soundcard"),
-				   i18n_pspec("The application context of remove soundcard task"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsRemoveSoundcard:soundcard:
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of remove soundcard"),
@@ -148,8 +131,6 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
 void
 ags_remove_soundcard_init(AgsRemoveSoundcard *remove_soundcard)
 {
-  remove_soundcard->application_context = NULL;
-  
   remove_soundcard->soundcard = NULL;
 }
 
@@ -164,27 +145,6 @@ ags_remove_soundcard_set_property(GObject *gobject,
   remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(remove_soundcard->application_context == application_context){
-	return;
-      }
-
-      if(remove_soundcard->application_context != NULL){
-	g_object_unref(remove_soundcard->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      remove_soundcard->application_context = application_context;
-    }
-    break;
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
@@ -223,11 +183,6 @@ ags_remove_soundcard_get_property(GObject *gobject,
   remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, remove_soundcard->application_context);
-    }
-    break;
   case PROP_SOUNDCARD:
     {
       g_value_set_object(value, remove_soundcard->soundcard);
@@ -246,12 +201,6 @@ ags_remove_soundcard_dispose(GObject *gobject)
 
   remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
   
-  if(remove_soundcard->application_context != NULL){
-    g_object_unref(remove_soundcard->application_context);
-
-    remove_soundcard->application_context = NULL;
-  }
-
   if(remove_soundcard->soundcard != NULL){
     g_object_unref(remove_soundcard->soundcard);
 
@@ -269,10 +218,6 @@ ags_remove_soundcard_finalize(GObject *gobject)
 
   remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
   
-  if(remove_soundcard->application_context != NULL){
-    g_object_unref(remove_soundcard->application_context);
-  }
-
   if(remove_soundcard->soundcard != NULL){
     g_object_unref(remove_soundcard->soundcard);
   }
@@ -286,20 +231,22 @@ ags_remove_soundcard_launch(AgsTask *task)
 {
   AgsRemoveSoundcard *remove_soundcard;
 
+  AgsApplicationContext *application_context;
+  
   GList *list_start;
   
   remove_soundcard = AGS_REMOVE_SOUNDCARD(task);
 
-  if(!AGS_IS_SOUND_PROVIDER(remove_soundcard->application_context) ||
-     !AGS_IS_SOUNDCARD(remove_soundcard->soundcard)){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_SOUNDCARD(remove_soundcard->soundcard));
   
   /* remove soundcard */
-  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(remove_soundcard->application_context));
+  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   if(g_list_find(list_start, remove_soundcard->soundcard) != NULL){
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(remove_soundcard->application_context),
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(list_start,
 						   remove_soundcard->soundcard));
 
@@ -313,23 +260,20 @@ ags_remove_soundcard_launch(AgsTask *task)
 
 /**
  * ags_remove_soundcard_new:
- * @application_context: the #AgsApplicationContext
  * @soundcard: the #AgsSoundcard to remove
  *
  * Create a new instance of #AgsRemoveSoundcard.
  *
  * Returns: the new #AgsRemoveSoundcard.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRemoveSoundcard*
-ags_remove_soundcard_new(AgsApplicationContext *application_context,
-			 GObject *soundcard)
+ags_remove_soundcard_new(GObject *soundcard)
 {
   AgsRemoveSoundcard *remove_soundcard;
 
   remove_soundcard = (AgsRemoveSoundcard *) g_object_new(AGS_TYPE_REMOVE_SOUNDCARD,
-							 "application-context", application_context,
 							 "soundcard", soundcard,
 							 NULL);
 

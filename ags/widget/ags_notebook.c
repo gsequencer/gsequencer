@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,10 +33,14 @@ void ags_notebook_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notebook_finalize(GObject *gobject);
 
+void ags_notebook_get_preferred_width(GtkWidget *widget,
+				      gint *minimal_width,
+				      gint *natural_width);
+void ags_notebook_get_preferred_height(GtkWidget *widget,
+				       gint *minimal_height,
+				       gint *natural_height);
 void ags_notebook_size_allocate(AgsNotebook *notebook,
 				GtkAllocation *allocation);
-void ags_notebook_size_request(AgsNotebook *notebook,
-			       GtkRequisition *requisition);
 
 void ags_notebook_scroll_prev_callback(GtkWidget *button,
 				       AgsNotebook *notebook);
@@ -113,7 +117,7 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
    *
    * The prefix used to do enumerated labels.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("prefix",
 				   "enumeration prefix",
@@ -127,8 +131,9 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
 
+  widget->get_preferred_width = ags_notebook_get_preferred_width;
+  widget->get_preferred_height = ags_notebook_get_preferred_height;
   widget->size_allocate = ags_notebook_size_allocate;
-  widget->size_request = ags_notebook_size_request;
 }
 
 void
@@ -272,6 +277,24 @@ ags_notebook_finalize(GObject *gobject)
 }
 
 void
+ags_notebook_get_preferred_width(GtkWidget *widget,
+				 gint *minimal_width,
+				 gint *natural_width)
+{
+  minimal_width =
+    natural_width = NULL;
+}
+
+void
+ags_notebook_get_preferred_height(GtkWidget *widget,
+				  gint *minimal_height,
+				  gint *natural_height)
+{
+  minimal_height[0] =
+    natural_height[0] = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
+}
+
+void
 ags_notebook_size_allocate(AgsNotebook *notebook,
 			   GtkAllocation *allocation)
 {
@@ -282,13 +305,14 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
 
   guint x;
 
-  GTK_WIDGET(notebook->navigation)->allocation = *allocation;
-
   if(allocation->width < (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH)){
     allocation->width = (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH);
   }
 
   allocation->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
+
+  GTK_WIDGET_CLASS(ags_notebook_parent_class)->size_allocate(notebook,
+							     allocation);
 
   /*  */
   gtk_widget_get_child_requisition((GtkWidget *) notebook->navigation,
@@ -413,35 +437,6 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
 }
 
 void
-ags_notebook_size_request(AgsNotebook *notebook,
-			  GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-  
-  GList *list, *list_start;
-  
-  requisition->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  requisition->width = -1;
-  
-  list_start =
-    list = gtk_container_get_children((GtkContainer *) notebook);
-  
-  while(list != NULL){
-    gtk_widget_size_request((GtkWidget *) list->data,
-			    &child_requisition);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  //FIXME:JK: ugh
-  if(GTK_WIDGET(notebook)->parent == NULL){
-    return;
-  }
-}
-
-void
 ags_notebook_scroll_prev_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
@@ -449,9 +444,9 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
     
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
 
-  if(adjustment->value - adjustment->step_increment > 0){
+  if(gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment) > 0){
     gtk_adjustment_set_value(adjustment,
-			     adjustment->value - adjustment->step_increment);
+			     gtk_adjustment_get_value(adjustment) - gtk_adjustment_get_step_increment(adjustment));
   }else{
     gtk_adjustment_set_value(adjustment,
 			     0.0);
@@ -468,12 +463,12 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
   
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
   
-  if(adjustment->value + adjustment->step_increment < adjustment->upper - adjustment->page_size){
+  if(gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment) < gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment)){
     gtk_adjustment_set_value(adjustment,
-			     adjustment->value + adjustment->step_increment);
+			     gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
   }else{
     gtk_adjustment_set_value(adjustment,
-			     adjustment->upper - adjustment->page_size);
+			     gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment));
   }
 
   gtk_widget_show_all((GtkWidget *) notebook->hbox);
@@ -486,7 +481,7 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
  * 
  * Returns: the newly allocated #AgsNotebookTab-struct
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNotebookTab*
 ags_notebook_tab_alloc()
@@ -507,7 +502,7 @@ ags_notebook_tab_alloc()
  * 
  * Free @tab's memory.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_tab_free(AgsNotebookTab *tab)
@@ -529,7 +524,7 @@ ags_notebook_tab_free(AgsNotebookTab *tab)
  * 
  * Set the data field of #AgsNotebookTab-struct at @position.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_tab_set_data(AgsNotebook *notebook,
@@ -561,7 +556,7 @@ ags_notebook_tab_set_data(AgsNotebook *notebook,
  * 
  * Returns: the position as integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_notebook_tab_index(AgsNotebook *notebook,
@@ -596,7 +591,7 @@ ags_notebook_tab_index(AgsNotebook *notebook,
  * 
  * Returns: the position of next active tab as integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_notebook_next_active_tab(AgsNotebook *notebook,
@@ -641,7 +636,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
  * 
  * Returns: the position as integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_notebook_add_tab(AgsNotebook *notebook)
@@ -712,7 +707,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
  * 
  * Returns: the position as integer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_notebook_add_tab_with_label(AgsNotebook *notebook,
@@ -747,7 +742,7 @@ ags_notebook_add_tab_with_label(AgsNotebook *notebook,
  * 
  * Insert a new #AgsNotebookTab-struct to @notebook.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_insert_tab(AgsNotebook *notebook,
@@ -800,7 +795,7 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
  * 
  * Insert a new #AgsNotebookTab-struct to @notebook at @position and set specified @label.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
@@ -833,7 +828,7 @@ ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
  * 
  * Remove #AgsNotebookTab at @position.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_remove_tab(AgsNotebook *notebook,
@@ -872,7 +867,7 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
  * 
  * Remove #AgsNotebookTab assigned with @data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
@@ -897,7 +892,7 @@ ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
  *
  * Returns: a new #AgsNotebook
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNotebook*
 ags_notebook_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <ags/libags.h>
+
+#include <time.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_RESPONSE                (ags_osc_response_get_type ())
 #define AGS_OSC_RESPONSE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponse))
@@ -32,7 +36,7 @@
 #define AGS_IS_OSC_RESPONSE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_RESPONSE))
 #define AGS_OSC_RESPONSE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))
 
-#define AGS_OSC_RESPONSE_GET_OBJ_MUTEX(obj) (((AgsOscResponse *) obj)->obj_mutex)
+#define AGS_OSC_RESPONSE_GET_OBJ_MUTEX(obj) (&(((AgsOscResponse *) obj)->obj_mutex))
 
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE "server failure"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST "malformed request"
@@ -46,6 +50,14 @@
 typedef struct _AgsOscResponse AgsOscResponse;
 typedef struct _AgsOscResponseClass AgsOscResponseClass;
 
+/**
+ * AgsOscResponseFlags:
+ * @AGS_OSC_RESPONSE_EMPTY: is empty
+ * @AGS_OSC_RESPONSE_OK: is OK
+ * @AGS_OSC_RESPONSE_ERROR: has error
+ * 
+ * Enum values to configure OSC response.
+ */
 typedef enum{
   AGS_OSC_RESPONSE_EMPTY     = 1,
   AGS_OSC_RESPONSE_OK        = 1 <<  1,
@@ -58,13 +70,16 @@ struct _AgsOscResponse
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   guchar *packet;
   guint packet_size;
 
   gchar *error_message;
+
+  GObject *osc_message;
+
+  struct timespec *creation_time;
 };
 
 struct _AgsOscResponseClass
@@ -74,12 +89,12 @@ struct _AgsOscResponseClass
 
 GType ags_osc_response_get_type(void);
 
-pthread_mutex_t* ags_osc_response_get_class_mutex();
-
 gboolean ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags);
 
 AgsOscResponse* ags_osc_response_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_RESPONSE_H__*/

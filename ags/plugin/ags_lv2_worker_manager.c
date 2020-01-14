@@ -114,6 +114,16 @@ ags_lv2_worker_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_lv2_worker_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_lv2_worker_manager_pull_worker:
+ * @worker_manager: the #AgsLv2WorkerManager
+ * 
+ * Pull worker.
+ * 
+ * Returns: (transfer full): the #AgsWorkerThread
+ * 
+ * Since: 3.0.0
+ */
 GObject*
 ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 {
@@ -143,16 +153,16 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
  * 
  * Singleton function to optain the id manager instance.
  *
- * Returns: an instance of #AgsLv2WorkerManager
+ * Returns: (transfer none): an instance of #AgsLv2WorkerManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(ags_lv2_worker_manager == NULL){
     ags_lv2_worker_manager = ags_lv2_worker_manager_new();
@@ -160,7 +170,7 @@ ags_lv2_worker_manager_get_instance()
     //    ags_lv2_worker_manager_load_default(ags_lv2_worker_manager);
   }
 
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(ags_lv2_worker_manager);
 }
@@ -172,7 +182,7 @@ ags_lv2_worker_manager_get_instance()
  *
  * Returns: a new #AgsLv2WorkerManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_new()

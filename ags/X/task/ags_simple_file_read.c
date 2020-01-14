@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/X/task/ags_simple_file_read.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <gdk/gdk.h>
 
@@ -159,7 +157,7 @@ ags_simple_file_read_launch(AgsTask *task)
  *
  * Returns: the #AgsSimpleFileRead task
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSimpleFileRead*
 ags_simple_file_read_new(AgsSimpleFile *simple_file)

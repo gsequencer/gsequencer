@@ -33,6 +33,8 @@
 
 #include <ags/X/machine/ags_fm_oscillator.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_FM_SYNTH_INPUT_LINE                (ags_fm_synth_input_line_get_type())
 #define AGS_FM_SYNTH_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FM_SYNTH_INPUT_LINE, AgsFMSynthInputLine))
 #define AGS_FM_SYNTH_INPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FM_SYNTH_INPUT_LINE, AgsFMSynthInputLineClass))
@@ -61,5 +63,7 @@ struct _AgsFMSynthInputLineClass
 GType ags_fm_synth_input_line_get_type();
 
 AgsFMSynthInputLine* ags_fm_synth_input_line_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_FM_SYNTH_INPUT_LINE_H__*/

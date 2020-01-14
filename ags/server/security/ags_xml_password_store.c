@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,9 @@
 
 #include <ags/server/security/ags_xml_password_store.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
 #include <ags/server/security/ags_password_store.h>
+#include <ags/server/security/ags_auth_security_context.h>
 
 #include <unistd.h>
 
@@ -44,6 +46,7 @@ void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_st
 void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
 void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
 void ags_xml_password_store_finalize(GObject *gobject);
+
 gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
 					     GObject *security_context,
 					     gchar *user_uuid,
@@ -153,6 +156,8 @@ ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *
 void
 ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store)
 {
+  g_rec_mutex_init(&(xml_password_store->obj_mutex));
+
   xml_password_store->filename = NULL;
   xml_password_store->encoding = NULL;
   xml_password_store->dtd = NULL;
@@ -168,6 +173,15 @@ ags_xml_password_store_finalize(GObject *gobject)
 
   xml_password_store = AGS_XML_PASSWORD_STORE(gobject);
 
+  g_free(xml_password_store->filename);
+  g_free(xml_password_store->encoding);
+  g_free(xml_password_store->dtd);
+  
+  if(xml_password_store->doc != NULL){
+    xmlFreeDoc(xml_password_store->doc);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_xml_password_store_parent_class)->finalize(gobject);
 }
 
@@ -176,10 +190,107 @@ ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
 				      GObject *security_context,
 				      gchar *user_uuid,
 				      gchar *security_token,
-				      gchar *login_name,
+				      gchar *login,
 				      GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlPasswordStore *xml_password_store;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *user_node;
+  xmlNode *login_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+  
+  GRecMutex *xml_password_store_mutex;
+
+  /* authentication */
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
+    return;
+  }
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+      
+  xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
+
+  if(xml_password_store->doc == NULL ||
+     xml_password_store->root_node == NULL){
+    return;
+  }
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+
+  user_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_password_store->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	user_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
+
+  if(user_node != NULL){
+    login_node = NULL;
+    
+    child = user_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-user-login",
+				19)){
+	  login_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(login_node == NULL){
+      login_node = xmlNewNode(NULL,
+			      "ags-srv-user-login");
+      xmlAddChild(user_node,
+		  login_node);
+    }
+
+    xmlNodeSetContent(login_node,
+		      login);
+  }
 }
 
 gchar*
@@ -189,32 +300,327 @@ ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
 				      gchar *security_token,
 				      GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlPasswordStore *xml_password_store;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *user_node;
+  xmlNode *login_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  gchar *login;
+  
+  guint i;
+  
+  GRecMutex *xml_password_store_mutex;
 
-  return(NULL);
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
+
+  if(xml_password_store->doc == NULL ||
+     xml_password_store->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+  
+  user_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_password_store->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	user_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
+
+  login = NULL;
+  
+  if(user_node != NULL){
+    login_node = NULL;
+    
+    child = user_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-user-login",
+				19)){
+	  login_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(login_node != NULL){
+      xmlChar *tmp_login;
+      
+      tmp_login = xmlNodeGetContent(login_node);
+
+      login = g_strdup(tmp_login);
+
+      xmlFree(tmp_login);
+    }
+  }
+
+  return(login);
 }
 
 void
 ags_xml_password_store_set_password(AgsPasswordStore *password_store,
 				    GObject *security_context,
-				    gchar *user,
+				    gchar *user_uuid,
 				    gchar *security_token,
 				    gchar *password,
 				    GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlPasswordStore *xml_password_store;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *user_node;
+  xmlNode *password_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  
+  guint i;
+  
+  GRecMutex *xml_password_store_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
+    return;
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return;
+    }
+  }
+  
+  xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
+
+  if(xml_password_store->doc == NULL ||
+     xml_password_store->root_node == NULL){
+    return;
+  }
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+  
+  user_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_password_store->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	user_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  if(user_node != NULL){
+    password_node = NULL;
+    
+    child = user_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-user-password",
+				22)){
+	  password_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(password_node == NULL){
+      password_node = xmlNewNode(NULL,
+				 "ags-srv-user-password");
+      xmlAddChild(user_node,
+		  password_node);
+    }
+
+    xmlNodeSetContent(password_node,
+		      password);
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
 }
 
 gchar*
 ags_xml_password_store_get_password(AgsPasswordStore *password_store,
 				    GObject *security_context,
-				    gchar *user,
+				    gchar *user_uuid,
 				    gchar *security_token,
 				    GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlPasswordStore *xml_password_store;
+  
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *user_node;
+  xmlNode *password_node;
+  xmlNode *child;
+  
+  gchar *xpath;
+  gchar *password;
 
-  return(NULL);
+  guint i;
+  
+  GRecMutex *xml_password_store_mutex;
+
+  if(!AGS_IS_SECURITY_CONTEXT(security_context) ||
+     user_uuid == NULL){
+    return(NULL);
+  }    
+
+  if(!AGS_IS_AUTH_SECURITY_CONTEXT(security_context)){
+    if(!ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						     security_context,
+						     user_uuid,
+						     security_token)){
+      return(NULL);
+    }
+  }
+
+  xml_password_store = AGS_XML_PASSWORD_STORE(password_store);
+
+  if(xml_password_store->doc == NULL ||
+     xml_password_store->root_node == NULL){
+    return(NULL);
+  }
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+  
+  user_node = NULL;
+
+  xpath = g_strdup_printf("/ags-server-password-store/ags-srv-user-list/ags-srv-user/ags-srv-user-uuid[text() = '%s']",
+			  user_uuid);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+    
+  xpath_context = xmlXPathNewContext(xml_password_store->doc);
+  xpath_object = xmlXPathNodeEval(xml_password_store->root_node,
+				  xpath,
+				  xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	user_node = node[i]->parent;
+
+	break;
+      }
+    }
+  }
+
+  password = NULL;
+  
+  if(user_node != NULL){
+    password_node = NULL;
+    
+    child = user_node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"ags-srv-user-password",
+				22)){
+	  password_node = child;
+	  
+	  break;
+	}
+      }
+	
+      child = child->next;
+    }
+
+    if(password_node != NULL){
+      xmlChar *tmp_password;
+      
+      tmp_password = xmlNodeGetContent(password_node);
+
+      password = g_strdup(tmp_password);
+
+      xmlFree(tmp_password);
+    }
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
+  g_free(xpath);
+
+  return(password);
 }
 
 gchar*
@@ -229,12 +635,19 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 
   gchar *password_hash;
   
-#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
+#if 0 // !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__) && !defined(AGS_W32API)
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 
-  password_hash = crypt_r(password, salt,
-			  data);
+  password_hash = (gchar *) malloc((CRYPT_OUTPUT_SIZE + 1) * sizeof(gchar));
+
+  crypt_r(password, salt,
+	  data);
+
+  memcpy(password_hash, data->output, CRYPT_OUTPUT_SIZE * sizeof(gchar));
+  password_hash[CRYPT_OUTPUT_SIZE] = '\0';
+  
+  free(data);
 #else
   password_hash = crypt(password, salt);
 #endif
@@ -242,6 +655,62 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
   return(password_hash);
 }
 
+/**
+ * ags_xml_password_store_open_filename:
+ * @xml_password_store: the #AgsXmlPasswordStore
+ * @filename: the filename
+ * 
+ * Open @filename.
+ * 
+ * Since: 3.0.0
+ */
+void
+ags_xml_password_store_open_filename(AgsXmlPasswordStore *xml_password_store,
+				     gchar *filename)
+{
+  xmlDoc *doc;
+
+  GRecMutex *xml_password_store_mutex;
+
+  if(!AGS_IS_XML_PASSWORD_STORE(xml_password_store) ||
+     filename == NULL){
+    return;
+  }    
+
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+
+  /* open XML */
+  doc = xmlReadFile(filename,
+		    NULL,
+		    0);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+
+  xml_password_store->filename = g_strdup(filename);
+
+  xml_password_store->doc = doc;
+  
+  if(doc == NULL){
+    g_warning("AgsXmlPasswordStore - failed to read XML document %s", filename);
+  }else{
+    /* get the root node */
+    xml_password_store->root_node = xmlDocGetRootElement(doc);
+  }
+
+  g_rec_mutex_unlock(xml_password_store_mutex);
+}
+
+/**
+ * ags_xml_password_store_find_login:
+ * @xml_password_store: the #AgsXmlPasswordStore
+ * @login: the login
+ * 
+ * Find ags-srv-user xmlNode containing @login.
+ * 
+ * Returns: (transfer none): the matching xmlNode or %NULL
+ * 
+ * Since: 3.0.0
+ */
 xmlNode*
 ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
 				  gchar *login)
@@ -251,24 +720,32 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
   xmlNode **node;
   xmlNode *user_node;
   
-  xmlChar *xpath;
+  gchar *xpath;
 
   guint i;
   
+  GRecMutex *xml_password_store_mutex;
+
   if(!AGS_IS_XML_PASSWORD_STORE(xml_password_store) ||
      login == NULL){
     return(NULL);
   }    
 
+  xml_password_store_mutex = AGS_XML_PASSWORD_STORE_GET_OBJ_MUTEX(xml_password_store);
+
+  g_rec_mutex_lock(xml_password_store_mutex);
+  
   /* retrieve user node */
-  xpath = g_strdup_printf("(//ags-srv-user)/ags-srv-user-login[content()='%s']",
+  xpath = g_strdup_printf("(/ags-server-password-store/ags-srv-user-list/ags-srv-user)/ags-srv-user-login[text() = '%s']",
 			  login);
 
   /* Create xpath evaluation context */
   xpath_context = xmlXPathNewContext(xml_password_store->doc);
 
   if(xpath_context == NULL) {
-    g_warning("Error: unable to create new XPath context\0");
+    g_rec_mutex_unlock(xml_password_store_mutex);
+    
+    g_warning("Error: unable to create new XPath context");
 
     return(NULL);
   }
@@ -278,7 +755,10 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
 			      xpath_context);
 
   if(xpath_object == NULL) {
-    g_warning("Error: unable to evaluate xpath expression\0");
+    g_rec_mutex_unlock(xml_password_store_mutex);
+
+    g_warning("Error: unable to evaluate xpath expression");
+
     xmlXPathFreeContext(xpath_context); 
 
     return(NULL);
@@ -296,6 +776,8 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
     }
   }
 
+  g_rec_mutex_unlock(xml_password_store_mutex);
+
   /* free xpath and return */
   g_free(xpath);
 
@@ -309,7 +791,7 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
  *
  * Returns: the new #AgsXmlPasswordStore instance
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsXmlPasswordStore*
 ags_xml_password_store_new()

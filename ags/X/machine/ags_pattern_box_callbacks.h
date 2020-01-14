@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_pattern_box.h>
+
+G_BEGIN_DECLS
 
 /* controls */
 gboolean ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box);
@@ -36,5 +42,7 @@ gboolean ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event
 
 void ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box);
 void ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box);
+
+G_END_DECLS
 
 #endif /*__AGS_PATTERN_BOX_CALLBACKS_H__*/

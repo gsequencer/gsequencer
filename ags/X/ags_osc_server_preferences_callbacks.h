@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_osc_server_preferences.h>
+
+G_BEGIN_DECLS
 
 void ags_osc_server_preferences_start_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
 void ags_osc_server_preferences_stop_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
@@ -39,5 +45,7 @@ void ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscSer
 void ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences);
 
 void ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_SERVER_PREFERENCES_CALLBACKS_H__*/

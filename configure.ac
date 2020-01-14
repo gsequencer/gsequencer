@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2020 Joël Krähemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,8 +8,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.4.5],[jkraehemann@gmail.com])
-AM_INIT_AUTOMAKE([subdir-objects])
+AC_INIT([gsequencer],[3.0.0],[jkraehemann@gmail.com])
+AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_HEADERS([ags/ags_config.h])
@@ -20,11 +20,6 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
-AC_ARG_ENABLE(gnulib, [AS_HELP_STRING([--enable-gnulib],
-				      [gnulib builtin functions (default is no)])],
-	      [],			       
-	      [enable_gnulib=no])
-
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -95,11 +90,6 @@ AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
 	      [],
 	      [enable_pulse=yes])
 
-AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
-				      [enable xmlrpc (default is no)])],
-	      [],
-	      [enable_xmlrpc=no])
-
 AC_ARG_ENABLE(x11, [AS_HELP_STRING([--enable-x11],
 				   [enable X11 (default is yes)])],
 	      [],
@@ -132,7 +122,6 @@ AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
 
 # Checks for programs.
 AC_PROG_CC
-gl_EARLY
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -142,8 +131,6 @@ LT_PREREQ([2.4.2])
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
-
-AM_CONDITIONAL([WITH_GNULIB], [test "x$enable_gnulib" == xyes])
 
 AC_SUBST([GSEQUENCER_CFLAGS])
 AC_SUBST([GSEQUENCER_LDFLAGS])
@@ -322,7 +309,7 @@ PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.4])
 AC_SUBST(FFTW_CFLAGS)
 AC_SUBST(FFTW_LIBS)
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.32.3])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.56.0])
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
@@ -337,10 +324,15 @@ AC_CHECK_LIB(glib-2.0, g_strv_contains,
 AC_CHECK_LIB(glib-2.0, g_object_setv,
 	     AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
 
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
+
+PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.62.0])
+AC_SUBST(LIBSOUP_CFLAGS)
+AC_SUBST(LIBSOUP_LIBS)
 
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
@@ -362,37 +354,17 @@ AS_IF([test "x$enable_vst3" != xno],
       AC_MSG_NOTICE([VST3 enabled])],
       AC_MSG_NOTICE([VST3 disabled]))
 
-PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
-AC_SUBST(FONTCONFIG_CFLAGS)
-AC_SUBST(FONTCONFIG_LIBS)
-
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.32.2])
-AC_SUBST(GDKPIXBUF_CFLAGS)
-AC_SUBST(GDKPIXBUF_LIBS)
-
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
+PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.24.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-AS_IF([test "x$enable_xmlrpc" != xno],
-      [AC_CHECK_PROG([XMLRPC_C_CONFIG], [xmlrpc-c-config], [1], [0], [$PATH], [1])
-      AC_SUBST(XMLRPC_UTIL_CFLAGS, $(xmlrpc-c-config server-util --cflags))
-      AC_SUBST(XMLRPC_UTIL_LIBS, $(xmlrpc-c-config server-util --libs))
-      AC_SUBST(XMLRPC_CLIENT_CFLAGS, $(xmlrpc-c-config client --cflags))
-      AC_SUBST(XMLRPC_CLIENT_LIBS, $(xmlrpc-c-config client --libs))
-#      AC_SUBST(XMLRPC_SERVER_CFLAGS, $(xmlrpc-c-config abyss --cflags))
-#      AC_SUBST(XMLRPC_SERVER_LIBS, $(xmlrpc-c-config abyss --libs))
-      AC_SUBST(XMLRPC_SERVER_CGI_CFLAGS, $(xmlrpc-c-config cgi-server --cflags))
-      AC_SUBST(XMLRPC_SERVER_CGI_LIBS, $(xmlrpc-c-config cgi-server --libs))
-      AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS, $(xmlrpc-c-config abyss-server --cflags))
-      AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS, $(xmlrpc-c-config abyss-server --libs))
-      AC_MSG_NOTICE([xmlrpc-c enabled])
-      AC_DEFINE([AGS_WITH_XMLRPC_C], [1], [Disable if you don't want xmlrpc-c])],
-      AC_MSG_NOTICE([xmlrpc-c disabled]))
+PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.24.0])
+AC_SUBST(WEBKITGTK_CFLAGS)
+AC_SUBST(WEBKITGTK_LIBS)
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
@@ -434,12 +406,9 @@ AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
 
-gl_INIT
-
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
-lib/Makefile
 unit-system-tests.mk
 functional-system-tests.mk
 docs/reference/libags/Makefile

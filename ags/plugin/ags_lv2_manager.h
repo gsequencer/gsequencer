@@ -23,12 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/plugin/ags_lv2_plugin.h>
 
 #include <lv2.h>
 
 #include <math.h>
 #include <stdlib.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_LV2_MANAGER                (ags_lv2_manager_get_type())
 #define AGS_LV2_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_MANAGER, AgsLv2Manager))
@@ -37,7 +41,7 @@
 #define AGS_IS_LV2_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_MANAGER))
 #define AGS_LV2_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_MANAGER, AgsLv2ManagerClass))
 
-#define AGS_LV2_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2Manager *) obj)->obj_mutex)
+#define AGS_LV2_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsLv2Manager *) obj)->obj_mutex))
 
 #define AGS_LV2_MANAGER_DEFAULT_LOCALE "en-gb"
 
@@ -48,8 +52,7 @@ struct _AgsLv2Manager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gchar *locale;
 
@@ -65,8 +68,6 @@ struct _AgsLv2ManagerClass
 };
 
 GType ags_lv2_manager_get_type(void);
-
-pthread_mutex_t* ags_lv2_manager_get_class_mutex();
 
 gboolean ags_lv2_manager_global_get_parse_names();
 gboolean ags_lv2_manager_global_get_preserve_turtle();
@@ -96,5 +97,7 @@ void ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager);
 AgsLv2Manager* ags_lv2_manager_get_instance();
 
 AgsLv2Manager* ags_lv2_manager_new(gchar *locale);
+
+G_END_DECLS
 
 #endif /*__AGS_LV2_MANAGER_H__*/

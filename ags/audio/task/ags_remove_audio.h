@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_REMOVE_AUDIO                (ags_remove_audio_get_type())
 #define AGS_REMOVE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOVE_AUDIO, AgsRemoveAudio))
 #define AGS_REMOVE_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_REMOVE_AUDIO, AgsRemoveAudioClass))
@@ -41,7 +43,6 @@ struct _AgsRemoveAudio
 {
   AgsTask task;
 
-  AgsApplicationContext *application_context;
   AgsAudio *audio;
 };
 
@@ -52,7 +53,8 @@ struct _AgsRemoveAudioClass
 
 GType ags_remove_audio_get_type();
 
-AgsRemoveAudio* ags_remove_audio_new(AgsApplicationContext *application_context,
-				     AgsAudio *audio);
+AgsRemoveAudio* ags_remove_audio_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_REMOVE_AUDIO_H__*/

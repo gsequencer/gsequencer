@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <alsa/asoundlib.h>
 
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
@@ -36,11 +36,11 @@
 #define AGS_IS_NOTE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTE))
 #define AGS_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTE, AgsNoteClass))
 
-#define AGS_NOTE_GET_OBJ_MUTEX(obj) (((AgsNote *) obj)->obj_mutex)
+#define AGS_NOTE_GET_OBJ_MUTEX(obj) (&(((AgsNote *) obj)->obj_mutex))
 
 #define AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE (16.0)
 
-typedef struct _AgsNote AgsNote;
+  typedef struct _AgsNote AgsNote;
 typedef struct _AgsNoteClass AgsNoteClass;
 
 /**
@@ -72,8 +72,7 @@ struct _AgsNote
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   gboolean is_minor;
   guint sharp_flats;
@@ -107,8 +106,6 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
-pthread_mutex_t* ags_note_get_class_mutex();
-
 gboolean ags_note_test_flags(AgsNote *note, guint flags);
 void ags_note_set_flags(AgsNote *note, guint flags);
 void ags_note_unset_flags(AgsNote *note, guint flags);
@@ -130,14 +127,14 @@ guint ags_note_smf_delta_time_to_length(glong delta_time,
 					glong tempo,
 					gdouble bpm, gdouble delay_factor);
 
-unsigned char* ags_note_to_raw_midi(AgsNote *note,
-				    gdouble bpm, gdouble delay_factor,
-				    guint *buffer_length);
-unsigned char* ags_note_to_raw_midi_extended(AgsNote *note,
-					     gdouble bpm, gdouble delay_factor,
-					     glong nn, glong dd, glong cc, glong bb,
-					     glong tempo,
-					     guint *buffer_length);
+guchar* ags_note_to_raw_midi(AgsNote *note,
+			     gdouble bpm, gdouble delay_factor,
+			     guint *buffer_length);
+guchar* ags_note_to_raw_midi_extended(AgsNote *note,
+				      gdouble bpm, gdouble delay_factor,
+				      glong nn, glong dd, glong cc, glong bb,
+				      glong tempo,
+				      guint *buffer_length);
 snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
 				       gdouble bpm, gdouble delay_factor,
 				       guint *n_events);
@@ -147,10 +144,10 @@ snd_seq_event_t* ags_note_to_seq_event_extended(AgsNote *note,
 						glong tempo,
 						guint *n_events);
 
-GList* ags_note_from_raw_midi(unsigned char *raw_midi,
+GList* ags_note_from_raw_midi(guchar *raw_midi,
 			      gdouble bpm, gdouble delay_factor,
 			      guint length);
-GList* ags_note_from_raw_midi_extended(unsigned char *raw_midi,
+GList* ags_note_from_raw_midi_extended(guchar *raw_midi,
 				       glong nn, glong dd, glong cc, glong bb,
 				       glong tempo,
 				       gdouble bpm, gdouble delay_factor,
@@ -170,5 +167,7 @@ AgsNote* ags_note_new();
 AgsNote* ags_note_new_with_offset(guint x0, guint x1,
 				  guint y,
 				  gdouble stream_delay, gdouble stream_attack);
+
+G_END_DECLS
 
 #endif /*__AGS_NOTE_H__*/

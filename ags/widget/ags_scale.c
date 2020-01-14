@@ -75,12 +75,14 @@ gchar* ags_accessible_scale_get_localized_name(AtkAction *action,
 
 void ags_scale_map(GtkWidget *widget);
 void ags_scale_realize(GtkWidget *widget);
-void ags_scale_size_request(GtkWidget *widget,
-			    GtkRequisition   *requisition);
 void ags_scale_size_allocate(GtkWidget *widget,
 			     GtkAllocation *allocation);
-gboolean ags_scale_expose(GtkWidget *widget,
-			  GdkEventExpose *event);
+void ags_scale_get_preferred_width(GtkWidget *widget,
+				   gint *minimal_width,
+				   gint *natural_width);
+void ags_scale_get_preferred_height(GtkWidget *widget,
+				    gint *minimal_height,
+				    gint *natural_height);
 gboolean ags_scale_button_press(GtkWidget *widget,
 				GdkEventButton *event);
 gboolean ags_scale_button_release(GtkWidget *widget,
@@ -92,7 +94,9 @@ gboolean ags_scale_key_release(GtkWidget *widget,
 gboolean ags_scale_motion_notify(GtkWidget *widget,
 				 GdkEventMotion *event);
 
-void ags_scale_draw(AgsScale *scale);
+void ags_scale_send_configure(AgsScale *scale);
+
+void ags_scale_draw(AgsScale *scale, cairo_t *cr);
 
 /**
  * SECTION:ags_scale
@@ -225,7 +229,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale width to use for drawing a scale.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-width",
 				 "scale width",
@@ -243,7 +247,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale height to use for drawing a scale.
    * 
-   * Since: 2.2.22
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("scale-height",
 				 "scale height",
@@ -261,7 +265,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's control name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   "control name",
@@ -277,7 +281,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's lower range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -295,7 +299,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's upper range.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -313,7 +317,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's default value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("default-value",
 				   "default value",
@@ -332,14 +336,15 @@ ags_scale_class_init(AgsScaleClass *scale)
   widget->get_accessible = ags_scale_get_accessible;
   //  widget->map = ags_scale_map;
   widget->realize = ags_scale_realize;
-  widget->expose_event = ags_scale_expose;
-  widget->size_request = ags_scale_size_request;
   widget->size_allocate = ags_scale_size_allocate;
+  widget->get_preferred_width = ags_scale_get_preferred_width;
+  widget->get_preferred_height = ags_scale_get_preferred_height;
   widget->button_press_event = ags_scale_button_press;
   widget->button_release_event = ags_scale_button_release;
   widget->key_press_event = ags_scale_key_press;
   widget->key_release_event = ags_scale_key_release;
   widget->motion_notify_event = ags_scale_motion_notify;
+  widget->draw = ags_scale_draw;
   widget->show = ags_scale_show;
 
   /* AgsScaleClass */  
@@ -353,7 +358,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The ::value-changed signal notifies about modified default value.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   scale_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -783,8 +788,7 @@ ags_scale_map(GtkWidget *widget)
   if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
     GTK_WIDGET_CLASS(ags_scale_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
-    ags_scale_draw((AgsScale *) widget);
+    gdk_window_show(gtk_widget_get_window(widget));
   }
 }
 
@@ -793,6 +797,9 @@ ags_scale_realize(GtkWidget *widget)
 {
   AgsScale *scale;
 
+  GtkWindow *window;
+  
+  GtkAllocation allocation;
   GdkWindowAttr attributes;
 
   gint attributes_mask;
@@ -804,33 +811,120 @@ ags_scale_realize(GtkWidget *widget)
 
   gtk_widget_set_realized(widget, TRUE);
 
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
   attributes.width = scale->scale_width;
   attributes.height = scale->scale_height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, scale);
+  window = gdk_window_new(gtk_widget_get_parent_window(widget),
+			  &attributes, attributes_mask);
 
-  widget->style = gtk_style_attach(widget->style,
-				   widget->window);
-  gtk_style_set_background(widget->style,
-			   widget->window,
-			   GTK_STATE_NORMAL);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
 
-  gtk_widget_queue_resize(widget);
+  ags_scale_send_configure(scale);
+}
+
+void
+ags_scale_size_allocate(GtkWidget *widget,
+			GtkAllocation *allocation)
+{
+  AgsScale *scale;
+
+  GdkWindow *window;
+    
+  g_return_if_fail(AGS_IS_SCALE(widget));
+  g_return_if_fail(allocation != NULL);
+    
+  scale = AGS_SCALE(widget);
+  
+  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+    allocation->width = scale->scale_width;
+    allocation->height = scale->scale_height;
+  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+    allocation->width = scale->scale_height;
+    allocation->height = scale->scale_width;
+  }
+
+  gtk_widget_set_allocation(widget, allocation);
+  
+  if(gtk_widget_get_realized(widget)){
+    gdk_window_move_resize(gtk_widget_get_window(widget),
+			   allocation->x, allocation->y,
+			   allocation->width, allocation->height);
+
+    ags_scale_send_configure(scale);
+  }
+}
+
+void
+ags_scale_send_configure(AgsScale *scale)
+{
+  GtkAllocation allocation;
+  GtkWidget *widget;
+  GdkEvent *event = gdk_event_new (GDK_CONFIGURE);
+
+  widget = GTK_WIDGET(scale);
+  gtk_widget_get_allocation(widget, &allocation);
+
+  event->configure.window = g_object_ref(gtk_widget_get_window (widget));
+  event->configure.send_event = TRUE;
+  event->configure.x = allocation.x;
+  event->configure.y = allocation.y;
+  event->configure.width = allocation.width;
+  event->configure.height = allocation.height;
+
+  gtk_widget_event(widget, event);
+  gdk_event_free(event);
+}
+
+void
+ags_scale_get_preferred_width(GtkWidget *widget,
+			      gint *minimal_width,
+			      gint *natural_width)
+{
+  AgsScale *scale;
+
+  scale = AGS_SCALE(widget);
+
+  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+    minimal_width[0] =
+      natural_width[0] = scale->scale_width;
+  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+    minimal_width[0] =
+      natural_width[0] = scale->scale_height;
+  }
+}
+
+void
+ags_scale_get_preferred_height(GtkWidget *widget,
+			       gint *minimal_height,
+			       gint *natural_height)
+{
+  AgsScale *scale;
+
+  scale = AGS_SCALE(widget);
+
+  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+    minimal_height[0] =
+      natural_height[0] = scale->scale_height;
+  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+    minimal_height[0] =
+      natural_height[0] = scale->scale_width;
+  }
 }
 
 AtkObject*
@@ -861,74 +955,24 @@ ags_scale_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_scale_parent_class)->show(widget);
 }
 
-void
-ags_scale_size_request(GtkWidget *widget,
-		       GtkRequisition *requisition)
-{
-  AgsScale *scale;
-
-  scale = AGS_SCALE(widget);
-
-  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-    requisition->width = scale->scale_width;
-    requisition->height = scale->scale_height;
-  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-    requisition->width = scale->scale_height;
-    requisition->height = scale->scale_width;
-  }
-}
-
-void
-ags_scale_size_allocate(GtkWidget *widget,
-			GtkAllocation *allocation)
-{
-  AgsScale *scale;
-
-  GdkWindow *window;
-    
-  scale = AGS_SCALE(widget);
-  
-  widget->allocation = *allocation;
-  
-  window = gtk_widget_get_window(widget);
-  gdk_window_move(window,
-		  allocation->x, allocation->y);
-
-  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-    widget->allocation.width = scale->scale_width;
-    widget->allocation.height = scale->scale_height;
-
-    allocation->height = scale->scale_height;
-  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-    widget->allocation.width = scale->scale_height;
-    widget->allocation.height = scale->scale_width;
-
-    allocation->width = scale->scale_height;
-  }
-}
-
-gboolean
-ags_scale_expose(GtkWidget *widget,
-		 GdkEventExpose *event)
-{
-  ags_scale_draw(AGS_SCALE(widget));
-
-  return(FALSE);
-}
-
 gboolean
 ags_scale_button_press(GtkWidget *widget,
 		       GdkEventButton *event)
 {
   AgsScale *scale;
 
+  GtkAllocation allocation;
+
   guint width, height;
   guint x_start, y_start;
 
   scale = AGS_SCALE(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -1017,7 +1061,7 @@ ags_scale_key_press(GtkWidget *widget,
 		    GdkEventKey *event)
 {
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -1039,7 +1083,7 @@ ags_scale_key_release(GtkWidget *widget,
   //TODO:JK: implement me
   
   if(event->keyval == GDK_KEY_Tab ||
-     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_ISO_Left_Tab ||
      event->keyval == GDK_KEY_Shift_L ||
      event->keyval == GDK_KEY_Shift_R ||
      event->keyval == GDK_KEY_Alt_L ||
@@ -1167,13 +1211,18 @@ ags_scale_motion_notify(GtkWidget *widget,
 {
   AgsScale *scale;
 
+  GtkAllocation allocation;
+
   guint width, height;
   guint x_start, y_start;
   
   scale = AGS_SCALE(widget);
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -1211,48 +1260,41 @@ ags_scale_motion_notify(GtkWidget *widget,
 }
 
 void
-ags_scale_draw(AgsScale *scale)
+ags_scale_draw(AgsScale *scale, cairo_t *cr)
 {
-  cairo_t *cr;
-
   PangoLayout *layout;
   PangoFontDescription *desc;
 
   PangoRectangle ink_rect, logical_rect;
+
+  GtkAllocation allocation;
     
   gchar *font_name;
 
   guint width, height;
   guint x_start, y_start;
-  
-  static const gdouble white_gc = 65535.0;
-
-  if(!AGS_IS_SCALE(scale)){
-    return;
-  }
-
-  cr = gdk_cairo_create(GTK_WIDGET(scale)->window);
-  
-  if(cr == NULL){
-    return;
-  }
 
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);
   
-  width = GTK_WIDGET(scale)->allocation.width;
-  height = GTK_WIDGET(scale)->allocation.height;
+  gtk_widget_get_allocation(scale,
+			    &allocation);
+
+  width = allocation.width;
+  height = allocation.height;
   
   x_start = 0;
   y_start = 0;
 
-  cairo_surface_flush(cairo_get_target(cr));
+  //  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   /* background */
   cairo_set_source_rgb(cr,
-		       0.0, 0.0, 0.0);
+		       0.0,
+		       0.0,
+		       0.0);
   cairo_rectangle(cr,
 		  (gdouble) x_start, (gdouble) y_start,
 		  (gdouble) width, (gdouble) height);
@@ -1288,7 +1330,9 @@ ags_scale_draw(AgsScale *scale)
 			   &logical_rect);
 
   cairo_set_source_rgb(cr,
-		       1.0, 1.0, 1.0);
+		       1.0,
+		       1.0,
+		       1.0);
 
   if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
     cairo_move_to(cr,
@@ -1310,8 +1354,7 @@ ags_scale_draw(AgsScale *scale)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
+//  cairo_surface_mark_dirty(cairo_get_target(cr));
 }
 
 /**
@@ -1321,7 +1364,7 @@ ags_scale_draw(AgsScale *scale)
  * 
  * Emits ::value-changed event.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_scale_value_changed(AgsScale *scale,
@@ -1343,7 +1386,7 @@ ags_scale_value_changed(AgsScale *scale,
  * 
  * Returns: the new #AgsScale instance
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsScale*
 ags_scale_new()

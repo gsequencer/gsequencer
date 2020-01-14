@@ -20,9 +20,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -50,8 +47,6 @@
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
 #include <ags/X/file/ags_simple_file.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
 #include <gtkmacintegration/gtkosxapplication.h>
@@ -92,7 +87,6 @@ gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 enum{
   PROP_0,
   PROP_SOUNDCARD,
-  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_window_parent_class = NULL;
@@ -156,38 +150,6 @@ ags_window_class_init(AgsWindowClass *window)
   gobject->finalize = ags_window_finalize;
 
   /* properties */
-  /**
-   * AgsWindow:soundcard:
-   *
-   * The assigned main AgsSoundcard.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
-
-  /**
-   * AgsWindow:application-context:
-   *
-   * The assigned application context.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("assigned application context"),
-				   i18n_pspec("The AgsApplicationContext it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) window;
@@ -229,12 +191,7 @@ ags_window_init(AgsWindow *window)
   if(error != NULL){
     g_error_free(error);
   }
-  
-  window->application_context = NULL;
-  window->application_mutex = NULL;
-  
-  window->soundcard = NULL;
-
+    
   /* window name and title */
   window->filename = NULL;
 
@@ -337,7 +294,6 @@ ags_window_init(AgsWindow *window)
   window->midi_file_chooser = NULL;
   
   window->preferences = NULL;
-  window->history_browser = NULL;
 
   /* load file */
   if(ags_window_load_file == NULL){
@@ -363,68 +319,6 @@ ags_window_set_property(GObject *gobject,
   window = AGS_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-
-      soundcard = g_value_get_object(value);
-
-      if(window->soundcard == soundcard){
-	return;
-      }
-      
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
-      }
-      
-      window->soundcard = soundcard;
-
-      g_object_set(G_OBJECT(window->notation_editor),
-		   "soundcard", soundcard,
-		   NULL);
-
-      g_object_set(G_OBJECT(window->automation_window),
-		   "soundcard", soundcard,
-		   NULL);
-
-      g_object_set(G_OBJECT(window->wave_window),
-		   "soundcard", soundcard,
-		   NULL);
-
-      g_object_set(G_OBJECT(window->navigation),
-		   "soundcard", soundcard,
-		   NULL);
-    }
-    break;
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if((AgsApplicationContext *) window->application_context == application_context){
-	return;
-      }
-
-      if(window->application_context != NULL){
-	window->application_mutex = NULL;
-	g_object_unref(window->application_context);
-      }
-
-      if(application_context != NULL){
-	window->application_mutex = application_context->obj_mutex;
-	
-	g_object_ref(application_context);
-      }
-
-      window->application_context = (GObject *) application_context;
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "application-context", application_context,
-		   NULL);
-      ags_export_window_reload_soundcard_editor(window->export_window);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -442,12 +336,6 @@ ags_window_get_property(GObject *gobject,
   window = AGS_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    g_value_set_object(value, window->soundcard);
-    break;
-  case PROP_APPLICATION_CONTEXT:
-    g_value_set_object(value, window->application_context);
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -552,7 +440,6 @@ ags_window_finalize(GObject *gobject)
   g_hash_table_remove(ags_window_load_file,
 		      window);
 
-  g_object_unref(G_OBJECT(window->soundcard));
   g_object_unref(G_OBJECT(window->export_window));
 
   if(window->name != NULL){
@@ -618,7 +505,7 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: a new #GList containing #AgsMachineCounter for know machines
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_window_standard_machine_counter_alloc()
@@ -699,7 +586,7 @@ ags_window_standard_machine_counter_alloc()
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
@@ -727,7 +614,7 @@ ags_window_find_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Increment window's counter.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
@@ -750,7 +637,7 @@ ags_window_increment_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Decrement window's counter.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
@@ -777,7 +664,7 @@ ags_window_decrement_machine_counter(AgsWindow *window,
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
@@ -820,26 +707,17 @@ ags_window_show_error(AgsWindow *window,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_window_load_file_timeout(AgsWindow *window)
 {
-  AgsGuiThread *gui_thread;
+  AgsApplicationContext *application_context;
 
-  gui_thread = NULL;
+  application_context = ags_application_context_get_instance();
   
-  if(window->application_context != NULL){
-    gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(window->application_context));
-  }
-  
-  if(gui_thread != NULL &&
-     gui_thread->gtk_thread == NULL){
-      gui_thread->gtk_thread = g_thread_self();
-  }
-
   if((AGS_WINDOW_TERMINATING & (window->flags)) != 0){
-    ags_application_context_quit((AgsApplicationContext *) window->application_context);
+    ags_application_context_quit(application_context);
 
     return(FALSE);
   }
@@ -853,8 +731,11 @@ ags_window_load_file_timeout(AgsWindow *window)
 
       GError *error;
 
+      if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+	return(TRUE);
+      }
+      
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "application-context", window->application_context,
 						   "filename", window->filename,
 						   NULL);
       
@@ -890,21 +771,19 @@ ags_window_load_file_timeout(AgsWindow *window)
 
 /**
  * ags_window_new:
- * @application_context: the application object.
  *
  * Creates an #AgsWindow
  *
  * Returns: a new #AgsWindow
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsWindow*
-ags_window_new(GObject *application_context)
+ags_window_new()
 {
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "application-context", application_context,
 				      NULL);
 
   return(window);

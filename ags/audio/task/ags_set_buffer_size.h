@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SET_BUFFER_SIZE                (ags_set_buffer_size_get_type())
 #define AGS_SET_BUFFER_SIZE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_BUFFER_SIZE, AgsSetBufferSize))
 #define AGS_SET_BUFFER_SIZE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_BUFFER_SIZE, AgsSetBufferSizeClass))
@@ -40,6 +42,7 @@ struct _AgsSetBufferSize
   AgsTask task;
 
   GObject *scope;
+
   guint buffer_size;
 };
 
@@ -52,5 +55,7 @@ GType ags_set_buffer_size_get_type();
 
 AgsSetBufferSize* ags_set_buffer_size_new(GObject *scope,
 					  guint buffer_size);
+
+G_END_DECLS
 
 #endif /*__AGS_SET_BUFFER_SIZE_H__*/

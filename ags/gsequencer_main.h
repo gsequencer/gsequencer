@@ -45,6 +45,4 @@
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
-#define GSEQUENCER_RT_PRIORITY (95)
-
 #endif /*__GSEQUENCER_MAIN_H__*/

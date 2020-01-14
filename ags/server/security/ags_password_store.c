@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,7 +72,7 @@ ags_password_store_base_init(AgsPasswordStoreInterface *ginterface)
  *
  * Set login name.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_password_store_set_login_name(AgsPasswordStore *password_store,
@@ -105,9 +105,9 @@ ags_password_store_set_login_name(AgsPasswordStore *password_store,
  *
  * Get login name.
  * 
- * Returns: the login name
+ * Returns: (transfer full): the login name
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_password_store_get_login_name(AgsPasswordStore *password_store,
@@ -133,19 +133,19 @@ ags_password_store_get_login_name(AgsPasswordStore *password_store,
  * ags_password_store_set_password:
  * @password_store: the #AgsPasswordStore
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user UUID
  * @security_token: the security token
  * @password: the password
  * @error: the #GError-struct
  *
- * Set login name.
+ * Set password.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_password_store_set_password(AgsPasswordStore *password_store,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				gchar *password,
 				GError **error)
@@ -157,7 +157,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
   g_return_if_fail(password_store_interface->set_password);
   password_store_interface->set_password(password_store,
 					 security_context,
-					 login,
+					 user_uuid,
 					 security_token,
 					 password,
 					 error);
@@ -167,20 +167,20 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  * ags_password_store_get_password:
  * @password_store: the #AgsPasswordStore
  * @security_context: the #AgsSecurityContext
- * @login: the login
+ * @user_uuid: the user UUID
  * @security_token: the security token
  * @error: the #GError-struct
  *
- * Get login name.
+ * Get password.
  * 
- * Returns: the password
+ * Returns: (transfer full): the password
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_password_store_get_password(AgsPasswordStore *password_store,
 				GObject *security_context,
-				gchar *login,
+				gchar *user_uuid,
 				gchar *security_token,
 				GError **error)
 {
@@ -192,7 +192,7 @@ ags_password_store_get_password(AgsPasswordStore *password_store,
 
   return(password_store_interface->get_password(password_store,
 						security_context,
-						login,
+						user_uuid,
 						security_token,
 						error));
 }
@@ -206,9 +206,9 @@ ags_password_store_get_password(AgsPasswordStore *password_store,
  *
  * Encrypt password.
  *
- * Returns: the encrypted bytes
+ * Returns: (transfer full): the encrypted bytes
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gchar*
 ags_password_store_encrypt_password(AgsPasswordStore *password_store,

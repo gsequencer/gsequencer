@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
+#define AGS_FUNCTION_GET_OBJ_MUTEX(obj) (&(((AgsFunction *) obj)->obj_mutex))
+
 #define AGS_SYMBOLIC_EULER "ℯ"
 #define AGS_SYMBOLIC_PI "𝜋"
 #define AGS_SYMBOLIC_INFINIT "∞"
@@ -40,8 +42,6 @@
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
-typedef struct _AgsSolverMatrix AgsSolverMatrix;
-typedef struct _AgsSolverVector AgsSolverVector;
 
 /**
  * AgsFunctionFlags:
@@ -72,6 +72,8 @@ struct _AgsFunction
 
   guint flags;
   
+  GRecMutex obj_mutex;
+
   gboolean is_pushing;
 
   gchar **equation;
@@ -104,27 +106,6 @@ struct _AgsFunctionClass
   void (*literal_solve)(AgsFunction *function);
 };
 
-struct _AgsSolverMatrix
-{
-  gchar **function_history;
-
-  gchar *source_function;
-  
-  AgsSolverVector **term_table;
-  guint row_count;
-  guint column_count;
-};
-
-struct _AgsSolverVector
-{
-  gchar *term;
-  gchar *term_exp;
-
-  AgsComplex *numeric_value;
-  gchar *symbol;
-  AgsComplex *exp_value;
-};
-
 GType ags_function_get_type(void);
 
 gchar** ags_function_collapse_parantheses(AgsFunction *function,
@@ -142,7 +123,7 @@ void ags_function_pop_equation(AgsFunction *function,
 gchar* ags_function_get_expanded(AgsFunction *function,
 				 gchar **symbol,
 				 guint symbol_count);
-gchar* ags_funciton_get_normalized(AgsFunction *function);
+gchar* ags_function_get_normalized(AgsFunction *function);
 
 AgsComplex* ags_function_compute_term(gchar *term,
 				      gchar *substitute_symbol, AgsComplex *substitute_value);
@@ -157,5 +138,7 @@ AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
 
 AgsFunction* ags_function_new(gchar *source_function);
+
+G_END_DECLS
 
 #endif /*__AGS_FUNCTION_H__*/

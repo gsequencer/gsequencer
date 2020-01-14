@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,7 @@
  *
  * Returns: the converted format
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
@@ -61,11 +61,11 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
   case AGS_SOUNDCARD_COMPLEX:
     return(AGS_AUDIO_BUFFER_UTIL_COMPLEX);
   default:
-    {
-      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
+  {
+    g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
       
-      return(0);
-    }
+    return(0);
+  }
   }
 }
 
@@ -78,7 +78,7 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
  *
  * Returns: the desired copy mode
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint
 ags_audio_buffer_util_get_copy_mode(guint destination_format,
@@ -122,9 +122,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S16){    
@@ -161,9 +161,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S24){    
@@ -200,9 +200,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S32){    
@@ -239,9 +239,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S64){    
@@ -278,9 +278,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_FLOAT){    
@@ -317,9 +317,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
   }else if(source_format == AGS_AUDIO_BUFFER_UTIL_DOUBLE){    
@@ -356,9 +356,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 
 #ifdef __APPLE__
@@ -394,9 +394,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }
 #endif
 
@@ -434,9 +434,9 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX;
       break;
     default:
-      {
-	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-      }
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
+    }
     }    
   }else{
     g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
@@ -453,7 +453,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
@@ -501,7 +501,7 @@ ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
@@ -549,7 +549,7 @@ ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
@@ -596,7 +596,7 @@ ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
  * 
  * Clears a buffer.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
@@ -615,37 +615,37 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
     for(; i < limit; i += 8){
       current_channel = 0;
 
-      buffer[0][0] = 0.0;
-      buffer[0][1] = 0.0;
+      buffer[0].real = 0.0;
+      buffer[0].imag = 0.0;
 
-      buffer[(current_channel = channels)][0] = 0.0;
-      buffer[(current_channel = channels)][1] = 0.0;
+      buffer[(current_channel = channels)].real = 0.0;
+      buffer[(current_channel = channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
-      buffer[(current_channel += channels)][0] = 0.0;
-      buffer[(current_channel += channels)][1] = 0.0;
+      buffer[(current_channel += channels)].real = 0.0;
+      buffer[(current_channel += channels)].imag = 0.0;
 
       buffer += (current_channel + channels);
     }
   }
 
   for(; i < count; i++){
-    buffer[0][0] = 0.0;
-    buffer[0][1] = 0.0;
+    buffer[0].real = 0.0;
+    buffer[0].imag = 0.0;
 
     buffer += channels;
   }
@@ -660,7 +660,7 @@ ags_audio_buffer_util_clear_complex(AgsComplex *buffer, guint channels,
  *
  * Clears the audio data.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
@@ -668,56 +668,56 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
 {
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      memset((gint8 *) buffer, 0, channels * count * sizeof(gint8));
-    }
-    break;
+  {
+    memset((gint8 *) buffer, 0, channels * count * sizeof(gint8));
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      memset((gint16 *) buffer, 0, channels * count * sizeof(gint16));
-    }
-    break;
+  {
+    memset((gint16 *) buffer, 0, channels * count * sizeof(gint16));
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      memset((gint32 *) buffer, 0, channels * count * sizeof(gint32));
-    }
-    break;
+  {
+    memset((gint32 *) buffer, 0, channels * count * sizeof(gint32));
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      memset((gint32 *) buffer, 0, channels * count * sizeof(gint32));
-    }
-    break;
+  {
+    memset((gint32 *) buffer, 0, channels * count * sizeof(gint32));
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      memset((gint64 *) buffer, 0, channels * count * sizeof(gint64));
-    }
-    break;
+  {
+    memset((gint64 *) buffer, 0, channels * count * sizeof(gint64));
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      ags_audio_buffer_util_clear_float(buffer, channels,
-					count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_clear_float(buffer, channels,
+				      count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      ags_audio_buffer_util_clear_double(buffer, channels,
-					 count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_clear_double(buffer, channels,
+				       count);
+  }
+  break;
 #ifdef __APPLE__
   case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-    {
-      ags_audio_buffer_util_clear_float32(buffer, channels,
-					  count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_clear_float32(buffer, channels,
+					count);
+  }
+  break;
 #endif
   case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      ags_audio_buffer_util_clear_complex(buffer, channels,
-					 count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_clear_complex(buffer, channels,
+					count);
+  }
+  break;
   default:
     g_critical("unsupported audio buffer format");
   }
@@ -735,7 +735,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
@@ -757,18 +757,18 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
       
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
 
@@ -829,7 +829,7 @@ ags_audio_buffer_util_envelope_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
@@ -851,18 +851,18 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
 
@@ -923,7 +923,7 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
@@ -945,18 +945,18 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
 
@@ -1017,7 +1017,7 @@ ags_audio_buffer_util_envelope_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
@@ -1039,18 +1039,18 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
 
@@ -1111,7 +1111,7 @@ ags_audio_buffer_util_envelope_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
@@ -1133,18 +1133,18 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
       
@@ -1205,7 +1205,7 @@ ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
@@ -1227,18 +1227,18 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
 
@@ -1303,7 +1303,7 @@ ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
@@ -1325,18 +1325,18 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8, current_volume = start_volume + i * ratio){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= current_volume;
       
@@ -1397,7 +1397,7 @@ ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
@@ -1442,7 +1442,7 @@ ags_audio_buffer_util_envelope_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_envelope(void *buffer, guint channels,
@@ -1457,69 +1457,69 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
   
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      retval = ags_audio_buffer_util_envelope_s8((gint8 *) buffer, channels,
-						 buffer_length,
-						 current_volume,
-						 ratio);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_envelope_s8((gint8 *) buffer, channels,
+					       buffer_length,
+					       current_volume,
+					       ratio);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      retval = ags_audio_buffer_util_envelope_s16((gint16 *) buffer, channels,
-						  buffer_length,
-						  current_volume,
-						  ratio);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_envelope_s16((gint16 *) buffer, channels,
+						buffer_length,
+						current_volume,
+						ratio);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      retval = ags_audio_buffer_util_envelope_s24((gint32 *) buffer, channels,
-						  buffer_length,
-						  current_volume,
-						  ratio);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_envelope_s24((gint32 *) buffer, channels,
+						buffer_length,
+						current_volume,
+						ratio);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      retval = ags_audio_buffer_util_envelope_s32((gint32 *) buffer, channels,
-						  buffer_length,
-						  current_volume,
-						  ratio);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_envelope_s32((gint32 *) buffer, channels,
+						buffer_length,
+						current_volume,
+						ratio);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      retval = ags_audio_buffer_util_envelope_s64((gint64 *) buffer, channels,
+  {
+    retval = ags_audio_buffer_util_envelope_s64((gint64 *) buffer, channels,
+						buffer_length,
+						current_volume,
+						ratio);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    retval = ags_audio_buffer_util_envelope_float((gfloat *) buffer, channels,
 						  buffer_length,
 						  current_volume,
 						  ratio);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      retval = ags_audio_buffer_util_envelope_float((gfloat *) buffer, channels,
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    retval = ags_audio_buffer_util_envelope_double((gdouble *) buffer, channels,
+						   buffer_length,
+						   current_volume,
+						   ratio);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    retval = ags_audio_buffer_util_envelope_complex((AgsComplex *) buffer, channels,
 						    buffer_length,
 						    current_volume,
 						    ratio);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      retval = ags_audio_buffer_util_envelope_double((gdouble *) buffer, channels,
-						     buffer_length,
-						     current_volume,
-						     ratio);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      retval = ags_audio_buffer_util_envelope_complex((AgsComplex *) buffer, channels,
-						      buffer_length,
-						      current_volume,
-						      ratio);
-    }
-    break;
+  }
+  break;
   default:
     g_warning("ags_audio_buffer_util_envelope() - unknown format");
   }
@@ -1536,7 +1536,7 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
@@ -1555,18 +1555,18 @@ ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
       
       v_buffer *= volume;
 
@@ -1622,7 +1622,7 @@ ags_audio_buffer_util_volume_s8(gint8 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
@@ -1641,18 +1641,18 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
       
@@ -1708,7 +1708,7 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
@@ -1727,18 +1727,18 @@ ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
 
@@ -1794,7 +1794,7 @@ ags_audio_buffer_util_volume_s24(gint32 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
@@ -1813,18 +1813,18 @@ ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
       
@@ -1880,7 +1880,7 @@ ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
@@ -1899,18 +1899,18 @@ ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
 
@@ -1966,7 +1966,7 @@ ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
@@ -1985,18 +1985,18 @@ ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
 
@@ -2052,7 +2052,7 @@ ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
@@ -2071,18 +2071,18 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
+      ags_v8double v_buffer;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
       v_buffer *= volume;
       
@@ -2138,7 +2138,7 @@ ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
@@ -2174,7 +2174,7 @@ ags_audio_buffer_util_volume_complex(AgsComplex *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_volume(void *buffer, guint channels,
@@ -2184,61 +2184,61 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
 {
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      ags_audio_buffer_util_volume_s8((gint8 *) buffer, channels,
-				      buffer_length,
-				      volume);
-    }
-    break;
+  {
+    ags_audio_buffer_util_volume_s8((gint8 *) buffer, channels,
+				    buffer_length,
+				    volume);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      ags_audio_buffer_util_volume_s16((gint16 *) buffer, channels,
-				       buffer_length,
-				       volume);
-    }
-    break;
+  {
+    ags_audio_buffer_util_volume_s16((gint16 *) buffer, channels,
+				     buffer_length,
+				     volume);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      ags_audio_buffer_util_volume_s24((gint32 *) buffer, channels,
-				       buffer_length,
-				       volume);
-    }
-    break;
+  {
+    ags_audio_buffer_util_volume_s24((gint32 *) buffer, channels,
+				     buffer_length,
+				     volume);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      ags_audio_buffer_util_volume_s32((gint32 *) buffer, channels,
-				       buffer_length,
-				       volume);
-    }
-    break;
+  {
+    ags_audio_buffer_util_volume_s32((gint32 *) buffer, channels,
+				     buffer_length,
+				     volume);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      ags_audio_buffer_util_volume_s64((gint64 *) buffer, channels,
+  {
+    ags_audio_buffer_util_volume_s64((gint64 *) buffer, channels,
+				     buffer_length,
+				     volume);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_audio_buffer_util_volume_float((gfloat *) buffer, channels,
 				       buffer_length,
 				       volume);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      ags_audio_buffer_util_volume_float((gfloat *) buffer, channels,
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_audio_buffer_util_volume_double((gdouble *) buffer, channels,
+					buffer_length,
+					volume);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_audio_buffer_util_volume_complex((AgsComplex *) buffer, channels,
 					 buffer_length,
 					 volume);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      ags_audio_buffer_util_volume_double((gdouble *) buffer, channels,
-					  buffer_length,
-					  volume);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      ags_audio_buffer_util_volume_complex((AgsComplex *) buffer, channels,
-					   buffer_length,
-					   volume);
-    }
-    break;
+  }
+  break;
   default:
     g_warning("ags_audio_buffer_util_volume() - unknown format");
   }
@@ -2257,7 +2257,7 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
@@ -2282,21 +2282,21 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
       
       v_buffer = (1.0 / (gdouble) G_MAXUINT8 * pressure_factor) * v_buffer;
 
@@ -2446,7 +2446,7 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
@@ -2471,21 +2471,21 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
       
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
       v_buffer = (1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * v_buffer;
 
@@ -2635,7 +2635,7 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
@@ -2660,21 +2660,21 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
       
       v_buffer = (1.0 / (gdouble) 0xffffffff * pressure_factor) * v_buffer;
 
@@ -2824,7 +2824,7 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
@@ -2849,21 +2849,21 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
       v_buffer = (1.0 / (gdouble) G_MAXUINT32 * pressure_factor) * v_buffer;
 
@@ -3013,7 +3013,7 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
@@ -3038,21 +3038,21 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
 
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
       
       v_buffer = (1.0 / (gdouble) G_MAXUINT64 * pressure_factor) * v_buffer;
 
@@ -3202,7 +3202,7 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
@@ -3227,21 +3227,21 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
       
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
       v_buffer = (0.5 * pressure_factor) * v_buffer;
 
@@ -3391,7 +3391,7 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
@@ -3416,21 +3416,21 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
     limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      v8double v_buffer;
-      v8double v_zero;
+      ags_v8double v_buffer;
+      ags_v8double v_zero;
       
       current_channel = 0;
 
-      v_buffer = (v8double) {(gdouble) buffer[0],
-			     (gdouble) buffer[(current_channel = channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)],
-			     (gdouble) buffer[(current_channel += channels)]};
+      v_buffer = (ags_v8double) {(gdouble) buffer[0],
+				 (gdouble) buffer[(current_channel = channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)],
+				 (gdouble) buffer[(current_channel += channels)]};
 
-      v_zero = (v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      v_zero = (ags_v8double) {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
       v_buffer = (0.5 * pressure_factor) * v_buffer;
 
@@ -3580,7 +3580,7 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
@@ -3635,7 +3635,7 @@ ags_audio_buffer_util_peak_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the peak as gdouble
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gdouble
 ags_audio_buffer_util_peak(void *buffer, guint channels,
@@ -3651,77 +3651,77 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
   
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      current_value = ags_audio_buffer_util_peak_s8((gint8 *) buffer, channels,
-						    buffer_length,
-						    harmonic_rate,
-						    max_rate,
-						    pressure_factor);
-    }
-    break;
+  {
+    current_value = ags_audio_buffer_util_peak_s8((gint8 *) buffer, channels,
+						  buffer_length,
+						  harmonic_rate,
+						  max_rate,
+						  pressure_factor);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      current_value = ags_audio_buffer_util_peak_s16((gint16 *) buffer, channels,
-						     buffer_length,
-						     harmonic_rate,
-						     max_rate,
-						     pressure_factor);
-    }
-    break;
+  {
+    current_value = ags_audio_buffer_util_peak_s16((gint16 *) buffer, channels,
+						   buffer_length,
+						   harmonic_rate,
+						   max_rate,
+						   pressure_factor);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      current_value = ags_audio_buffer_util_peak_s24((gint32 *) buffer, channels,
-						     buffer_length,
-						     harmonic_rate,
-						     max_rate,
-						     pressure_factor);
-    }
-    break;
+  {
+    current_value = ags_audio_buffer_util_peak_s24((gint32 *) buffer, channels,
+						   buffer_length,
+						   harmonic_rate,
+						   max_rate,
+						   pressure_factor);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      current_value = ags_audio_buffer_util_peak_s32((gint32 *) buffer, channels,
-						     buffer_length,
-						     harmonic_rate,
-						     max_rate,
-						     pressure_factor);
-    }
-    break;
+  {
+    current_value = ags_audio_buffer_util_peak_s32((gint32 *) buffer, channels,
+						   buffer_length,
+						   harmonic_rate,
+						   max_rate,
+						   pressure_factor);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      current_value = ags_audio_buffer_util_peak_s64((gint64 *) buffer, channels,
+  {
+    current_value = ags_audio_buffer_util_peak_s64((gint64 *) buffer, channels,
+						   buffer_length,
+						   harmonic_rate,
+						   max_rate,
+						   pressure_factor);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    current_value = ags_audio_buffer_util_peak_float((gfloat *) buffer, channels,
 						     buffer_length,
 						     harmonic_rate,
 						     max_rate,
 						     pressure_factor);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      current_value = ags_audio_buffer_util_peak_float((gfloat *) buffer, channels,
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    current_value = ags_audio_buffer_util_peak_double((gdouble *) buffer, channels,
+						      buffer_length,
+						      harmonic_rate,
+						      max_rate,
+						      pressure_factor);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    current_value = ags_audio_buffer_util_peak_complex((AgsComplex *) buffer, channels,
 						       buffer_length,
 						       harmonic_rate,
 						       max_rate,
 						       pressure_factor);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      current_value = ags_audio_buffer_util_peak_double((gdouble *) buffer, channels,
-							buffer_length,
-							harmonic_rate,
-							max_rate,
-							pressure_factor);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      current_value = ags_audio_buffer_util_peak_complex((AgsComplex *) buffer, channels,
-							 buffer_length,
-							 harmonic_rate,
-							 max_rate,
-							 pressure_factor);
-    }
-    break;
+  }
+  break;
   default:
     g_warning("ags_audio_buffer_util_peak() - unknown format");
   }
@@ -3741,7 +3741,7 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint8*
 ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
@@ -3770,12 +3770,15 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint8 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint8));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint8));
+  ret_buffer = (gint8 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint8));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint8));
   ags_audio_buffer_util_copy_float_to_s8(ret_buffer, channels,
 					 secret_rabbit.data_out, channels,
-					 secret_rabbit.output_frames);
+					 (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
 
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+  
   return(ret_buffer);
 }
 
@@ -3791,7 +3794,7 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint16*
 ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
@@ -3820,11 +3823,14 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint16 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint16));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint16));
+  ret_buffer = (gint16 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint16));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint16));
   ags_audio_buffer_util_copy_float_to_s16(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3841,7 +3847,7 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
@@ -3870,11 +3876,14 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint32 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint32));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint32));
+  ret_buffer = (gint32 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
   ags_audio_buffer_util_copy_float_to_s24(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3891,7 +3900,7 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint32*
 ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
@@ -3920,11 +3929,14 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint32 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint32));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint32));
+  ret_buffer = (gint32 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint32));
   ags_audio_buffer_util_copy_float_to_s32(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3941,7 +3953,7 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint64*
 ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
@@ -3970,11 +3982,14 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gint64 *) malloc(channels * secret_rabbit.output_frames * sizeof(gint64));
-  memset(ret_buffer, 0, channels * secret_rabbit.output_frames * sizeof(gint64));
+  ret_buffer = (gint64 *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint64));
+  memset(ret_buffer, 0, (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gint64));
   ags_audio_buffer_util_copy_float_to_s64(ret_buffer, channels,
 					  secret_rabbit.data_out, channels,
-					  secret_rabbit.output_frames);
+					  (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -3991,7 +4006,7 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 float*
 ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
@@ -4001,10 +4016,19 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 {
   SRC_DATA secret_rabbit;
 
+  gfloat *ret_buffer;
+
+  //FIXME:JK: lost precision
+
   secret_rabbit.src_ratio = target_samplerate / samplerate;
 
   secret_rabbit.input_frames = buffer_length;
-  secret_rabbit.data_in = buffer;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_float_to_float(secret_rabbit.data_in, channels,
+					    buffer, channels,
+					    buffer_length);
 
   secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
   secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
@@ -4013,7 +4037,17 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  return(secret_rabbit.data_out);
+  ret_buffer = (gfloat *) malloc(channels * (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)) * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(ret_buffer, channels,
+				    (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)));
+  ags_audio_buffer_util_copy_float_to_float(ret_buffer, channels,
+					    secret_rabbit.data_out, channels,
+					    (ceil((gfloat) buffer_length / (gfloat) samplerate * (gfloat) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+
+  return(ret_buffer);
 }
 
 /**
@@ -4028,7 +4062,7 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 double*
 ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
@@ -4059,12 +4093,15 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 	     SRC_SINC_BEST_QUALITY,
 	     channels);
 
-  ret_buffer = (gdouble *) malloc(channels * secret_rabbit.output_frames * sizeof(gdouble));
+  ret_buffer = (gdouble *) malloc(channels * (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)) * sizeof(gdouble));
   ags_audio_buffer_util_clear_double(ret_buffer, channels,
-				     channels * secret_rabbit.output_frames);
+				     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
   ags_audio_buffer_util_copy_float_to_double(ret_buffer, channels,
 					     secret_rabbit.data_out, channels,
-					     secret_rabbit.output_frames);
+					     (ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate)));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
 
   return(ret_buffer);
 }
@@ -4081,7 +4118,7 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
@@ -4156,7 +4193,7 @@ ags_audio_buffer_util_resample_complex(AgsComplex *buffer, guint channels,
  * 
  * Returns: the resampled audio buffer
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void*
 ags_audio_buffer_util_resample(void *buffer, guint channels,
@@ -4170,74 +4207,464 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
   
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      retval = ags_audio_buffer_util_resample_s8((gint8 *) buffer, channels,
-						 samplerate,
-						 buffer_length,
-						 target_samplerate);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_resample_s8((gint8 *) buffer, channels,
+					       samplerate,
+					       buffer_length,
+					       target_samplerate);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
-    {
-      retval = ags_audio_buffer_util_resample_s16((gint16 *) buffer, channels,
-						  samplerate,
-						  buffer_length,
-						  target_samplerate);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_resample_s16((gint16 *) buffer, channels,
+						samplerate,
+						buffer_length,
+						target_samplerate);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
-    {
-      retval = ags_audio_buffer_util_resample_s24((gint32 *) buffer, channels,
-						  samplerate,
-						  buffer_length,
-						  target_samplerate);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_resample_s24((gint32 *) buffer, channels,
+						samplerate,
+						buffer_length,
+						target_samplerate);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
-    {
-      retval = ags_audio_buffer_util_resample_s32((gint32 *) buffer, channels,
-						  samplerate,
-						  buffer_length,
-						  target_samplerate);
-    }
-    break;
+  {
+    retval = ags_audio_buffer_util_resample_s32((gint32 *) buffer, channels,
+						samplerate,
+						buffer_length,
+						target_samplerate);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
-    {
-      retval = ags_audio_buffer_util_resample_s64((gint64 *) buffer, channels,
+  {
+    retval = ags_audio_buffer_util_resample_s64((gint64 *) buffer, channels,
+						samplerate,
+						buffer_length,
+						target_samplerate);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    retval = ags_audio_buffer_util_resample_float((gfloat *) buffer, channels,
 						  samplerate,
 						  buffer_length,
 						  target_samplerate);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {
-      retval = ags_audio_buffer_util_resample_float((gfloat *) buffer, channels,
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    retval = ags_audio_buffer_util_resample_double((gdouble *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    retval = ags_audio_buffer_util_resample_complex((AgsComplex *) buffer, channels,
 						    samplerate,
 						    buffer_length,
 						    target_samplerate);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {
-      retval = ags_audio_buffer_util_resample_double((gdouble *) buffer, channels,
-						     samplerate,
-						     buffer_length,
-						     target_samplerate);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
-    {
-      retval = ags_audio_buffer_util_resample_complex((AgsComplex *) buffer, channels,
-						      samplerate,
-						      buffer_length,
-						      target_samplerate);
-    }
-    break;
+  }
+  break;
   default:
     g_warning("ags_audio_buffer_util_resample() - unknown format");
   }
 
   return(retval);
+}
+
+void
+ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
+					      guint samplerate,
+					      guint buffer_length,
+					      guint target_samplerate,
+					      guint target_buffer_length,
+					      gint8 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s8_to_float(secret_rabbit.data_in, channels,
+					 buffer, channels,
+					 buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s8(target_buffer, channels,
+					 secret_rabbit.data_out, channels,
+					 ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint16 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s16_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s16(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint32 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s24_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s24(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint32 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s32_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s32(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
+					       guint samplerate,
+					       guint buffer_length,
+					       guint target_samplerate,
+					       guint target_buffer_length,
+					       gint64 *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_s64_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_s64(target_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
+						 guint samplerate,
+						 guint buffer_length,
+						 guint target_samplerate,
+						 guint target_buffer_length,
+						 gfloat *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = buffer;
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_float(target_buffer, channels,
+					    secret_rabbit.data_out, channels,
+					    ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
+						  guint samplerate,
+						  guint buffer_length,
+						  guint target_samplerate,
+						  guint target_buffer_length,
+						  gdouble *target_buffer)
+{
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (gfloat *) malloc(channels * buffer_length * sizeof(gfloat));
+  ags_audio_buffer_util_clear_float(secret_rabbit.data_in, channels,
+				    buffer_length);
+  ags_audio_buffer_util_copy_double_to_float(secret_rabbit.data_in, channels,
+					     buffer, channels,
+					     buffer_length);
+  
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (gfloat *) malloc(channels * secret_rabbit.output_frames * sizeof(gfloat));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ags_audio_buffer_util_copy_float_to_double(target_buffer, channels,
+					     secret_rabbit.data_out, channels,
+					     ((secret_rabbit.output_frames > target_buffer_length) ? target_buffer_length: secret_rabbit.output_frames));
+
+  free(secret_rabbit.data_out);
+  free(secret_rabbit.data_in);
+}
+
+void
+ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
+						   guint samplerate,
+						   guint buffer_length,
+						   guint target_samplerate,
+						   guint target_buffer_length,
+						   AgsComplex *target_buffer)
+{
+  complex **z_ptr_ptr;
+  complex *z_ptr;
+  gdouble **y_ptr_ptr;
+  gdouble *y_ptr;
+
+  complex z;
+  gdouble y;
+  gdouble delay_factor;
+  gdouble delay;
+  guint output_frames;
+  guint i, n;
+
+  delay_factor = 1.0 / (gdouble) target_samplerate * (gdouble) samplerate;
+  
+  output_frames = ceil((gdouble) buffer_length / (gdouble) samplerate * (gdouble) target_samplerate);
+
+  z_ptr = &z;
+  z_ptr_ptr = &z_ptr;
+  
+  y_ptr = &y;
+  y_ptr_ptr = &y_ptr;
+  
+  for(i = 0, n = 0, delay = 0.0; i < output_frames && i < target_buffer_length; i++){
+    /* get y */
+    //TODO:JK: improve me
+    AGS_FOURIER_TRANSFORM_UTIL_INVERSE_STFT_DOUBLE_FRAME(buffer + n, channels, n, buffer_length, y_ptr_ptr);
+
+    /* put z */
+    AGS_FOURIER_TRANSFORM_UTIL_COMPUTE_STFT_DOUBLE_FRAME(y_ptr, channels, i, output_frames, z_ptr_ptr);
+    
+    ags_complex_set(target_buffer + i,
+		    z);
+    
+    delay += delay_factor;
+    
+    if(delay_factor < 1.0){
+      if(delay >= 1.0){
+	n += floor(delay);
+	
+	delay -= floor(delay);
+      }
+    }else{
+      n += floor(delay);
+      delay -= floor(delay);
+    }
+  }
+}
+
+void
+ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
+					   guint format,  guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate,
+					   guint target_buffer_length,
+					   void *target_buffer)
+{
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+  {
+    ags_audio_buffer_util_resample_s8_with_buffer((gint8 *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate,
+						  target_buffer_length,
+						  (gint8 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+  {
+    ags_audio_buffer_util_resample_s16_with_buffer((gint16 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint16 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+  {
+    ags_audio_buffer_util_resample_s24_with_buffer((gint32 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint32 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+  {
+    ags_audio_buffer_util_resample_s32_with_buffer((gint32 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint32 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+  {
+    ags_audio_buffer_util_resample_s64_with_buffer((gint64 *) buffer, channels,
+						   samplerate,
+						   buffer_length,
+						   target_samplerate,
+						   target_buffer_length,
+						   (gint64 *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+  {
+    ags_audio_buffer_util_resample_float_with_buffer((gfloat *) buffer, channels,
+						     samplerate,
+						     buffer_length,
+						     target_samplerate,
+						     target_buffer_length,
+						     (gfloat *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+  {
+    ags_audio_buffer_util_resample_double_with_buffer((gdouble *) buffer, channels,
+						      samplerate,
+						      buffer_length,
+						      target_samplerate,
+						      target_buffer_length,
+						      (gdouble *) target_buffer);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COMPLEX:
+  {
+    ags_audio_buffer_util_resample_complex_with_buffer((AgsComplex *) buffer, channels,
+						       samplerate,
+						       buffer_length,
+						       target_samplerate,
+						       target_buffer_length,
+						       (AgsComplex *) target_buffer);
+  }
+  break;
+  default:
+    g_warning("ags_audio_buffer_util_resample_with_buffer() - unknown format");
+  }
 }
 
 /**
@@ -4250,7 +4677,7 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
@@ -4269,29 +4696,29 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8s8 v_destination;
-      v8s8 v_source;
+      ags_v8s8 v_destination;
+      ags_v8s8 v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8s8) {destination[0],
-			      destination[(current_dchannel = dchannels)],
-			      destination[(current_dchannel += dchannels)],
-			      destination[(current_dchannel += dchannels)],
-			      destination[(current_dchannel += dchannels)],
-			      destination[(current_dchannel += dchannels)],
-			      destination[(current_dchannel += dchannels)],
-			      destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8s8) {destination[0],
+				  destination[(current_dchannel = dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)],
+				  destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8s8) {source[0],
-			 source[(current_schannel = schannels)],
-			 source[(current_schannel += schannels)],
-			 source[(current_schannel += schannels)],
-			 source[(current_schannel += schannels)],
-			 source[(current_schannel += schannels)],
-			 source[(current_schannel += schannels)],
-			 source[(current_schannel += schannels)]};
+      v_source = (ags_v8s8) {source[0],
+			     source[(current_schannel = schannels)],
+			     source[(current_schannel += schannels)],
+			     source[(current_schannel += schannels)],
+			     source[(current_schannel += schannels)],
+			     source[(current_schannel += schannels)],
+			     source[(current_schannel += schannels)],
+			     source[(current_schannel += schannels)]};
 
       /* no scale, just copy */
       v_destination += v_source;
@@ -4359,7 +4786,7 @@ ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
@@ -4380,29 +4807,29 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -4471,7 +4898,7 @@ ags_audio_buffer_util_copy_s8_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
@@ -4492,29 +4919,29 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -4583,7 +5010,7 @@ ags_audio_buffer_util_copy_s8_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
@@ -4604,29 +5031,29 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -4695,7 +5122,7 @@ ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
@@ -4716,29 +5143,29 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -4807,7 +5234,7 @@ ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
@@ -4829,29 +5256,29 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -4920,7 +5347,7 @@ ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
@@ -4942,29 +5369,29 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= normalize_divisor;
@@ -5033,7 +5460,7 @@ ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
@@ -5054,29 +5481,29 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -5145,7 +5572,7 @@ ags_audio_buffer_util_copy_s16_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
@@ -5164,28 +5591,28 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8s16 v_destination;
-      v8s16 v_source;
+      ags_v8s16 v_destination;
+      ags_v8s16 v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8s16) {destination[0],
-			       destination[(current_dchannel = dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)]};
-      v_source = (v8s16) {source[0],
-			  source[(current_schannel = schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)]};
+      v_destination = (ags_v8s16) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
+      v_source = (ags_v8s16) {source[0],
+			      source[(current_schannel = schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)]};
 
       /* no scale, just copy */
       v_destination += v_source;
@@ -5253,7 +5680,7 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
@@ -5274,29 +5701,29 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -5365,7 +5792,7 @@ ags_audio_buffer_util_copy_s16_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
@@ -5386,29 +5813,29 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -5477,7 +5904,7 @@ ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
@@ -5498,29 +5925,29 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -5589,7 +6016,7 @@ ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
@@ -5611,29 +6038,29 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -5702,7 +6129,7 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
@@ -5724,29 +6151,29 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= normalize_divisor;
@@ -5815,7 +6242,7 @@ ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
@@ -5836,29 +6263,29 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -5927,7 +6354,7 @@ ags_audio_buffer_util_copy_s24_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
@@ -5948,29 +6375,29 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6039,7 +6466,7 @@ ags_audio_buffer_util_copy_s24_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
@@ -6058,29 +6485,29 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8s32 v_destination;
-      v8s32 v_source;
+      ags_v8s32 v_destination;
+      ags_v8s32 v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
       
-      v_destination = (v8s32) {destination[0],
-			       destination[(current_dchannel = dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8s32) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
 
-      v_source = (v8s32) {source[0],
-			  source[(current_schannel = schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)]};
+      v_source = (ags_v8s32) {source[0],
+			      source[(current_schannel = schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)]};
       
       /* no scale, just copy */
       v_destination += v_source;
@@ -6148,7 +6575,7 @@ ags_audio_buffer_util_copy_s24_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
@@ -6169,29 +6596,29 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6260,7 +6687,7 @@ ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
@@ -6281,29 +6708,29 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6345,7 +6772,7 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
       destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + (scale * source[(current_schannel += schannels)])));
       destination[current_dchannel] = 0xffffffffffffffff & ((gint64) (destination[(current_dchannel += dchannels)] + (scale * source[(current_schannel += schannels)])));
  
-     /* iterate destination */
+      /* iterate destination */
       destination += (current_dchannel + dchannels);
 
       /* iterate source */
@@ -6372,7 +6799,7 @@ ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
@@ -6394,29 +6821,29 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -6485,7 +6912,7 @@ ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
@@ -6507,29 +6934,29 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= normalize_divisor;
@@ -6598,7 +7025,7 @@ ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
@@ -6619,29 +7046,29 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6710,7 +7137,7 @@ ags_audio_buffer_util_copy_s32_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
@@ -6731,29 +7158,29 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6822,7 +7249,7 @@ ags_audio_buffer_util_copy_s32_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
@@ -6843,29 +7270,29 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -6934,7 +7361,7 @@ ags_audio_buffer_util_copy_s32_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
@@ -6953,29 +7380,29 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8s32 v_destination;
-      v8s32 v_source;
+      ags_v8s32 v_destination;
+      ags_v8s32 v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
       
-      v_destination = (v8s32) {destination[0],
-			       destination[(current_dchannel = dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8s32) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
 
-      v_source = (v8s32) {source[0],
-			  source[(current_schannel = schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)]};
+      v_source = (ags_v8s32) {source[0],
+			      source[(current_schannel = schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)]};
 
       /* no scale, just copy */
       v_destination += v_source;
@@ -7040,7 +7467,7 @@ ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
@@ -7061,29 +7488,29 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -7152,7 +7579,7 @@ ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
@@ -7174,29 +7601,29 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -7265,7 +7692,7 @@ ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
@@ -7287,29 +7714,29 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= normalize_divisor;
@@ -7378,7 +7805,7 @@ ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
@@ -7399,29 +7826,29 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -7490,7 +7917,7 @@ ags_audio_buffer_util_copy_s64_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
@@ -7511,29 +7938,29 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -7602,7 +8029,7 @@ ags_audio_buffer_util_copy_s64_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
@@ -7623,29 +8050,29 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -7714,7 +8141,7 @@ ags_audio_buffer_util_copy_s64_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
@@ -7735,29 +8162,29 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -7826,7 +8253,7 @@ ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
@@ -7845,29 +8272,29 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8s64 v_destination;
-      v8s64 v_source;
+      ags_v8s64 v_destination;
+      ags_v8s64 v_source;
 
       current_dchannel = 0;
       current_schannel = 0;      
 
-      v_destination = (v8s64) {destination[0],
-			       destination[(current_dchannel = dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)],
-			       destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8s64) {destination[0],
+				   destination[(current_dchannel = dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)],
+				   destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8s64) {source[0],
-			  source[(current_schannel = schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)],
-			  source[(current_schannel += schannels)]};
+      v_source = (ags_v8s64) {source[0],
+			      source[(current_schannel = schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)],
+			      source[(current_schannel += schannels)]};
 
       /* no scale, just copy */
       v_destination += v_source;
@@ -7935,7 +8362,7 @@ ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
@@ -7957,29 +8384,29 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -8048,7 +8475,7 @@ ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
@@ -8070,29 +8497,29 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= normalize_divisor;
@@ -8161,7 +8588,7 @@ ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
@@ -8182,29 +8609,29 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -8273,7 +8700,7 @@ ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
@@ -8294,29 +8721,29 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -8385,7 +8812,7 @@ ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
@@ -8406,29 +8833,29 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -8497,7 +8924,7 @@ ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
@@ -8518,29 +8945,29 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -8609,7 +9036,7 @@ ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
@@ -8630,29 +9057,29 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -8721,7 +9148,7 @@ ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
@@ -8740,29 +9167,29 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {destination[0],
-				 destination[(current_dchannel = dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {destination[0],
+				     destination[(current_dchannel = dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -8827,7 +9254,7 @@ ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels,
@@ -8846,29 +9273,29 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {destination[0],
-				  destination[(current_dchannel = dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {destination[0],
+				      destination[(current_dchannel = dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -8933,7 +9360,7 @@ ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
@@ -8954,29 +9381,29 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -9045,7 +9472,7 @@ ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
@@ -9066,29 +9493,29 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -9157,7 +9584,7 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
@@ -9178,29 +9605,29 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -9269,7 +9696,7 @@ ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
@@ -9290,29 +9717,29 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -9381,7 +9808,7 @@ ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
@@ -9402,29 +9829,29 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {(gdouble) destination[0],
-				  (gdouble) destination[(current_dchannel = dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)],
-				  (gdouble) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {(gdouble) destination[0],
+				      (gdouble) destination[(current_dchannel = dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)],
+				      (gdouble) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= scale;
@@ -9493,7 +9920,7 @@ ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
@@ -9512,29 +9939,29 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {destination[0],
-				 destination[(current_dchannel = dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {destination[0],
+				     destination[(current_dchannel = dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* no scale, just copy */
       v_destination += v_source;
@@ -9602,7 +10029,7 @@ ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannels,
@@ -9621,29 +10048,29 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {destination[0],
-				  destination[(current_dchannel = dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {destination[0],
+				      destination[(current_dchannel = dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {source[0],
-			     source[(current_schannel = schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)],
-			     source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {source[0],
+				 source[(current_schannel = schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)],
+				 source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -9712,7 +10139,7 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
@@ -9734,29 +10161,29 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -9825,7 +10252,7 @@ ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
@@ -9847,29 +10274,29 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -9938,7 +10365,7 @@ ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
@@ -9960,29 +10387,29 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -10051,7 +10478,7 @@ ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
@@ -10073,29 +10500,29 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -10164,7 +10591,7 @@ ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
@@ -10186,29 +10613,29 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* normalize and copy */
       v_source /= (gfloat) normalize_divisor;
@@ -10277,7 +10704,7 @@ ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannels,
@@ -10296,29 +10723,29 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {source[0],
-			    source[(current_schannel = schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)],
-			    source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {source[0],
+				source[(current_schannel = schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)],
+				source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -10383,7 +10810,7 @@ ags_audio_buffer_util_copy_float_to_float32(Float32 *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchannels,
@@ -10402,29 +10829,29 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -10489,7 +10916,7 @@ ags_audio_buffer_util_copy_double_to_float32(Float32 *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchannels,
@@ -10508,29 +10935,29 @@ ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchann
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -10595,7 +11022,7 @@ ags_audio_buffer_util_copy_float32_to_float32(Float32 *destination, guint dchann
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
@@ -10616,29 +11043,29 @@ ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -10707,7 +11134,7 @@ ags_audio_buffer_util_copy_float32_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
@@ -10728,29 +11155,29 @@ ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -10819,7 +11246,7 @@ ags_audio_buffer_util_copy_float32_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
@@ -10840,29 +11267,29 @@ ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -10931,7 +11358,7 @@ ags_audio_buffer_util_copy_float32_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
@@ -10952,29 +11379,29 @@ ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -11043,7 +11470,7 @@ ags_audio_buffer_util_copy_float32_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
@@ -11064,29 +11491,29 @@ ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {(gfloat) destination[0],
-				 (gfloat) destination[(current_dchannel = dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)],
-				 (gfloat) destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {(gfloat) destination[0],
+				     (gfloat) destination[(current_dchannel = dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)],
+				     (gfloat) destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* scale and copy */
       v_source *= (gfloat) scale;
@@ -11155,7 +11582,7 @@ ags_audio_buffer_util_copy_float32_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels,
@@ -11174,29 +11601,29 @@ ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8float v_destination;
-      v8float v_source;
+      ags_v8float v_destination;
+      ags_v8float v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8float) {destination[0],
-				 destination[(current_dchannel = dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)],
-				 destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8float) {destination[0],
+				     destination[(current_dchannel = dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)],
+				     destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8float) {(gfloat) source[0],
-			    (gfloat) source[(current_schannel = schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)],
-			    (gfloat) source[(current_schannel += schannels)]};
+      v_source = (ags_v8float) {(gfloat) source[0],
+				(gfloat) source[(current_schannel = schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)],
+				(gfloat) source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -11261,7 +11688,7 @@ ags_audio_buffer_util_copy_float32_to_float(gfloat *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  * 
- * Since: 2.2.39
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchannels,
@@ -11280,29 +11707,29 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
     limit = count - (count % 8);
   
     for(; i < limit; i += 8){
-      v8double v_destination;
-      v8double v_source;
+      ags_v8double v_destination;
+      ags_v8double v_source;
 
       current_dchannel = 0;
       current_schannel = 0;
 
-      v_destination = (v8double) {destination[0],
-				  destination[(current_dchannel = dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)],
-				  destination[(current_dchannel += dchannels)]};
+      v_destination = (ags_v8double) {destination[0],
+				      destination[(current_dchannel = dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)],
+				      destination[(current_dchannel += dchannels)]};
       
-      v_source = (v8double) {(gdouble) source[0],
-			     (gdouble) source[(current_schannel = schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)],
-			     (gdouble) source[(current_schannel += schannels)]};
+      v_source = (ags_v8double) {(gdouble) source[0],
+				 (gdouble) source[(current_schannel = schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)],
+				 (gdouble) source[(current_schannel += schannels)]};
 
       /* just copy */
       v_destination += v_source;
@@ -11368,7 +11795,7 @@ ags_audio_buffer_util_copy_float32_to_double(gdouble *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannels,
@@ -11416,7 +11843,7 @@ ags_audio_buffer_util_copy_s8_to_complex(AgsComplex *destination, guint dchannel
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchannels,
@@ -11464,7 +11891,7 @@ ags_audio_buffer_util_copy_s16_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchannels,
@@ -11512,7 +11939,7 @@ ags_audio_buffer_util_copy_s24_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchannels,
@@ -11560,7 +11987,7 @@ ags_audio_buffer_util_copy_s32_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchannels,
@@ -11608,7 +12035,7 @@ ags_audio_buffer_util_copy_s64_to_complex(AgsComplex *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchannels,
@@ -11656,7 +12083,7 @@ ags_audio_buffer_util_copy_float_to_complex(AgsComplex *destination, guint dchan
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dchannels,
@@ -11705,7 +12132,7 @@ ags_audio_buffer_util_copy_double_to_complex(AgsComplex *destination, guint dcha
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dchannels,
@@ -11761,7 +12188,7 @@ ags_audio_buffer_util_copy_float32_to_complex(AgsComplex *destination, guint dch
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dchannels,
@@ -11798,7 +12225,7 @@ ags_audio_buffer_util_copy_complex_to_complex(AgsComplex *destination, guint dch
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
@@ -11840,7 +12267,7 @@ ags_audio_buffer_util_copy_complex_to_s8(gint8 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
@@ -11882,7 +12309,7 @@ ags_audio_buffer_util_copy_complex_to_s16(gint16 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
@@ -11924,7 +12351,7 @@ ags_audio_buffer_util_copy_complex_to_s24(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
@@ -11966,7 +12393,7 @@ ags_audio_buffer_util_copy_complex_to_s32(gint32 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
@@ -12008,7 +12435,7 @@ ags_audio_buffer_util_copy_complex_to_s64(gint64 *destination, guint dchannels,
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels,
@@ -12050,7 +12477,7 @@ ags_audio_buffer_util_copy_complex_to_float(gfloat *destination, guint dchannels
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchannels,
@@ -12093,7 +12520,7 @@ ags_audio_buffer_util_copy_complex_to_double(gdouble *destination, guint dchanne
  *
  * Copy audio data using additive strategy.
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchannels,
@@ -12139,7 +12566,7 @@ ags_audio_buffer_util_copy_complex_to_float32(Float32 *destination, guint dchann
  * 
  * Wrapper function to copy functions. Doing type conversion.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
@@ -12148,459 +12575,459 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
 {
   switch(mode){
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8:
-    {
-      ags_audio_buffer_util_copy_s8_to_s8((gint8 *) destination + doffset, dchannels,
-					  (gint8 *) source + soffset, schannels,
-					  count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_s8((gint8 *) destination + doffset, dchannels,
+					(gint8 *) source + soffset, schannels,
+					count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16:
-    {
-      ags_audio_buffer_util_copy_s8_to_s16((gint16 *) destination + doffset, dchannels,
-					   (gint8 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_s16((gint16 *) destination + doffset, dchannels,
+					 (gint8 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24:
-    {
-      ags_audio_buffer_util_copy_s8_to_s24((gint32 *) destination + doffset, dchannels,
-					   (gint8 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_s24((gint32 *) destination + doffset, dchannels,
+					 (gint8 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32:
-    {
-      ags_audio_buffer_util_copy_s8_to_s32((gint32 *) destination + doffset, dchannels,
-					   (gint8 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_s32((gint32 *) destination + doffset, dchannels,
+					 (gint8 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64:
-    {
-      ags_audio_buffer_util_copy_s8_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_s8_to_s64((gint64 *) destination + doffset, dchannels,
+					 (gint8 *) source + soffset, schannels,
+					 count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_s8_to_float((gfloat *) destination + doffset, dchannels,
 					   (gint8 *) source + soffset, schannels,
 					   count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_s8_to_float((gfloat *) destination + doffset, dchannels,
-					     (gint8 *) source + soffset, schannels,
-					     count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_s8_to_double((gdouble *) destination + doffset, dchannels,
-					      (gint8 *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_double((gdouble *) destination + doffset, dchannels,
+					    (gint8 *) source + soffset, schannels,
+					    count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8:
-    {
-      ags_audio_buffer_util_copy_s16_to_s8((gint8 *) destination + doffset, dchannels,
-					   (gint16 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_s8((gint8 *) destination + doffset, dchannels,
+					 (gint16 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16:
-    {
-      ags_audio_buffer_util_copy_s16_to_s16(((gint16 *) destination) + doffset, dchannels,
-					    ((gint16 *) source) + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_s16(((gint16 *) destination) + doffset, dchannels,
+					  ((gint16 *) source) + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24:
-    {
-      ags_audio_buffer_util_copy_s16_to_s24((gint32 *) destination + doffset, dchannels,
-					    (gint16 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_s24((gint32 *) destination + doffset, dchannels,
+					  (gint16 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32:
-    {
-      ags_audio_buffer_util_copy_s16_to_s32((gint32 *) destination + doffset, dchannels,
-					    (gint16 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_s32((gint32 *) destination + doffset, dchannels,
+					  (gint16 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64:
-    {
-      ags_audio_buffer_util_copy_s16_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_s16_to_s64((gint64 *) destination + doffset, dchannels,
+					  (gint16 *) source + soffset, schannels,
+					  count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_s16_to_float((gfloat *) destination + doffset, dchannels,
 					    (gint16 *) source + soffset, schannels,
 					    count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_s16_to_float((gfloat *) destination + doffset, dchannels,
-					      (gint16 *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_s16_to_double((gdouble *) destination + doffset, dchannels,
-					       (gint16 *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_double((gdouble *) destination + doffset, dchannels,
+					     (gint16 *) source + soffset, schannels,
+					     count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8:
-    {
-      ags_audio_buffer_util_copy_s24_to_s8((gint8 *) destination + doffset, dchannels,
-					   (gint32 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_s8((gint8 *) destination + doffset, dchannels,
+					 (gint32 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16:
-    {
-      ags_audio_buffer_util_copy_s24_to_s16((gint16 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_s16((gint16 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24:
-    {
-      ags_audio_buffer_util_copy_s24_to_s24((gint32 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_s24((gint32 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32:
-    {
-      ags_audio_buffer_util_copy_s24_to_s32((gint32 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_s32((gint32 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64:
-    {
-      ags_audio_buffer_util_copy_s24_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_s24_to_s64((gint64 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_s24_to_float((gfloat *) destination + doffset, dchannels,
 					    (gint32 *) source + soffset, schannels,
 					    count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_s24_to_float((gfloat *) destination + doffset, dchannels,
-					      (gint32 *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_s24_to_double((gdouble *) destination + doffset, dchannels,
-					       (gint32 *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_double((gdouble *) destination + doffset, dchannels,
+					     (gint32 *) source + soffset, schannels,
+					     count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8:
-    {
-      ags_audio_buffer_util_copy_s32_to_s8((gint8 *) destination + doffset, dchannels,
-					   (gint32 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s8((gint8 *) destination + doffset, dchannels,
+					 (gint32 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16:
-    {
-      ags_audio_buffer_util_copy_s32_to_s16((gint16 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s16((gint16 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24:
-    {
-      ags_audio_buffer_util_copy_s32_to_s24((gint32 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s24((gint32 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32:
-    {
-      ags_audio_buffer_util_copy_s32_to_s32((gint32 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s32((gint32 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64:
-    {
-      ags_audio_buffer_util_copy_s32_to_s64((gint64 *) destination + doffset, dchannels,
-					    (gint32 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s64((gint64 *) destination + doffset, dchannels,
+					  (gint32 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_s32_to_s8((gint8 *) destination + doffset, dchannels,
-					   (gint32 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_s8((gint8 *) destination + doffset, dchannels,
+					 (gint32 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_s32_to_double((gdouble *) destination + doffset, dchannels,
-					       (gint32 *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_double((gdouble *) destination + doffset, dchannels,
+					     (gint32 *) source + soffset, schannels,
+					     count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8:
-    {
-      ags_audio_buffer_util_copy_s64_to_s8((gint8 *) destination + doffset, dchannels,
-					   (gint64 *) source + soffset, schannels,
-					   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_s8((gint8 *) destination + doffset, dchannels,
+					 (gint64 *) source + soffset, schannels,
+					 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16:
-    {
-      ags_audio_buffer_util_copy_s64_to_s16((gint16 *) destination + doffset, dchannels,
-					    (gint64 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_s16((gint16 *) destination + doffset, dchannels,
+					  (gint64 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24:
-    {
-      ags_audio_buffer_util_copy_s64_to_s24((gint32 *) destination + doffset, dchannels,
-					    (gint64 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_s24((gint32 *) destination + doffset, dchannels,
+					  (gint64 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32:
-    {
-      ags_audio_buffer_util_copy_s64_to_s32((gint32 *) destination + doffset, dchannels,
-					    (gint64 *) source + soffset, schannels,
-					    count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_s32((gint32 *) destination + doffset, dchannels,
+					  (gint64 *) source + soffset, schannels,
+					  count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64:
-    {
-      ags_audio_buffer_util_copy_s64_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_s64_to_s64((gint64 *) destination + doffset, dchannels,
+					  (gint64 *) source + soffset, schannels,
+					  count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_s64_to_float((gfloat *) destination + doffset, dchannels,
 					    (gint64 *) source + soffset, schannels,
 					    count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_s64_to_float((gfloat *) destination + doffset, dchannels,
-					      (gint64 *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_s64_to_double((gdouble *) destination + doffset, dchannels,
-					       (gint64 *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_double((gdouble *) destination + doffset, dchannels,
+					     (gint64 *) source + soffset, schannels,
+					     count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8:
-    {
-      ags_audio_buffer_util_copy_float_to_s8((gint8 *) destination + doffset, dchannels,
-					     (gfloat *) source + soffset, schannels,
-					     count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_s8((gint8 *) destination + doffset, dchannels,
+					   (gfloat *) source + soffset, schannels,
+					   count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16:
-    {
-      ags_audio_buffer_util_copy_float_to_s16((gint16 *) destination + doffset, dchannels,
-					      (gfloat *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_s16((gint16 *) destination + doffset, dchannels,
+					    (gfloat *) source + soffset, schannels,
+					    count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24:
-    {
-      ags_audio_buffer_util_copy_float_to_s24((gint32 *) destination + doffset, dchannels,
-					      (gfloat *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_s24((gint32 *) destination + doffset, dchannels,
+					    (gfloat *) source + soffset, schannels,
+					    count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32:
-    {
-      ags_audio_buffer_util_copy_float_to_s32((gint32 *) destination + doffset, dchannels,
-					      (gfloat *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_s32((gint32 *) destination + doffset, dchannels,
+					    (gfloat *) source + soffset, schannels,
+					    count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64:
-    {
-      ags_audio_buffer_util_copy_float_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_float_to_s64((gint64 *) destination + doffset, dchannels,
+					    (gfloat *) source + soffset, schannels,
+					    count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_float_to_float((gfloat *) destination + doffset, dchannels,
 					      (gfloat *) source + soffset, schannels,
 					      count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_float_to_float((gfloat *) destination + doffset, dchannels,
-						(gfloat *) source + soffset, schannels,
-						count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_float_to_double((gdouble *) destination + doffset, dchannels,
-						 (gfloat *) source + soffset, schannels,
-						 count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_double((gdouble *) destination + doffset, dchannels,
+					       (gfloat *) source + soffset, schannels,
+					       count);
+  }
+  break;
 
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8:
-    {
-      ags_audio_buffer_util_copy_double_to_s8((gint8 *) destination + doffset, dchannels,
-					      (gdouble *) source + soffset, schannels,
-					      count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_s8((gint8 *) destination + doffset, dchannels,
+					    (gdouble *) source + soffset, schannels,
+					    count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16:
-    {
-      ags_audio_buffer_util_copy_double_to_s16((gint16 *) destination + doffset, dchannels,
-					       (gdouble *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_s16((gint16 *) destination + doffset, dchannels,
+					     (gdouble *) source + soffset, schannels,
+					     count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24:
-    {
-      ags_audio_buffer_util_copy_double_to_s24((gint32 *) destination + doffset, dchannels,
-					       (gdouble *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_s24((gint32 *) destination + doffset, dchannels,
+					     (gdouble *) source + soffset, schannels,
+					     count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32:
-    {
-      ags_audio_buffer_util_copy_double_to_s32((gint32 *) destination + doffset, dchannels,
-					       (gdouble *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_s32((gint32 *) destination + doffset, dchannels,
+					     (gdouble *) source + soffset, schannels,
+					     count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64:
-    {
-      ags_audio_buffer_util_copy_double_to_s64((gint64 *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_double_to_s64((gint64 *) destination + doffset, dchannels,
+					     (gdouble *) source + soffset, schannels,
+					     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_double_to_float((gfloat *) destination + doffset, dchannels,
 					       (gdouble *) source + soffset, schannels,
 					       count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_double_to_float((gfloat *) destination + doffset, dchannels,
-						 (gdouble *) source + soffset, schannels,
-						 count);
-    }
-    break;
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE:
-    {
-      ags_audio_buffer_util_copy_double_to_double((gdouble *) destination + doffset, dchannels,
-						  (gdouble *) source + soffset, schannels,
-						  count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_double((gdouble *) destination + doffset, dchannels,
+						(gdouble *) source + soffset, schannels,
+						count);
+  }
+  break;
 
 #ifdef __APPLE__
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_s8_to_float32((Float32 *) destination + doffset, dchannels,
-					       (gint8 *) source + soffset, schannels,
-					       count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s8_to_float32((Float32 *) destination + doffset, dchannels,
+					     (gint8 *) source + soffset, schannels,
+					     count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_s16_to_float32((Float32 *) destination + doffset, dchannels,
-						((gint16 *) source) + soffset, schannels,
-						count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s16_to_float32((Float32 *) destination + doffset, dchannels,
+					      ((gint16 *) source) + soffset, schannels,
+					      count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_s24_to_float32((Float32 *) destination + doffset, dchannels,
-						(gint32 *) source + soffset, schannels,
-						count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s24_to_float32((Float32 *) destination + doffset, dchannels,
+					      (gint32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_s32_to_float32((Float32 *) destination + doffset, dchannels,
-						(gint32 *) source + soffset, schannels,
-						count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s32_to_float32((Float32 *) destination + doffset, dchannels,
+					      (gint32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_s64_to_float32((Float32 *) destination + doffset, dchannels,
-						(gint64 *) source + soffset, schannels,
-						count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_s64_to_float32((Float32 *) destination + doffset, dchannels,
+					      (gint64 *) source + soffset, schannels,
+					      count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_float_to_float32((Float32 *) destination + doffset, dchannels,
-						  (gfloat *) source + soffset, schannels,
-						  count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_float_to_float32((Float32 *) destination + doffset, dchannels,
+						(gfloat *) source + soffset, schannels,
+						count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_double_to_float32((Float32 *) destination + doffset, dchannels,
-						   (gdouble *) source + soffset, schannels,
-						   count);
-    }
-    break;
+  {
+    ags_audio_buffer_util_copy_double_to_float32((Float32 *) destination + doffset, dchannels,
+						 (gdouble *) source + soffset, schannels,
+						 count);
+  }
+  break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32:
-    {
-      ags_audio_buffer_util_copy_float32_to_float32((Float32 *) destination + doffset, dchannels,
-						    (Float32 *) source + soffset, schannels,
-						    count);
-    }
-    break;
-    
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8:
-    {
-      ags_audio_buffer_util_copy_float32_to_s8((gint8 *) destination + doffset, dchannels,
-					       (Float32 *) source + soffset, schannels,
-					       count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S16:
-    {
-      ags_audio_buffer_util_copy_float32_to_s16((gint16 *) destination + doffset, dchannels,
-						(Float32 *) source + soffset, schannels,
-						count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S24:
-    {
-      ags_audio_buffer_util_copy_float32_to_s24((gint32 *) destination + doffset, dchannels,
-						(Float32 *) source + soffset, schannels,
-						count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S32:
-    {
-      ags_audio_buffer_util_copy_float32_to_s32((gint32 *) destination + doffset, dchannels,
-						(Float32 *) source + soffset, schannels,
-						count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S64:
-    {
-      ags_audio_buffer_util_copy_float32_to_s64((gint64 *) destination + doffset, dchannels,
-						(Float32 *) source + soffset, schannels,
-						count);
-    }
-    break;
-  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT:
-    {
-      ags_audio_buffer_util_copy_float32_to_float((gfloat *) destination + doffset, dchannels,
+  {
+    ags_audio_buffer_util_copy_float32_to_float32((Float32 *) destination + doffset, dchannels,
 						  (Float32 *) source + soffset, schannels,
 						  count);
-    }
-    break;
+  }
+  break;
+    
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8:
+  {
+    ags_audio_buffer_util_copy_float32_to_s8((gint8 *) destination + doffset, dchannels,
+					     (Float32 *) source + soffset, schannels,
+					     count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S16:
+  {
+    ags_audio_buffer_util_copy_float32_to_s16((gint16 *) destination + doffset, dchannels,
+					      (Float32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S24:
+  {
+    ags_audio_buffer_util_copy_float32_to_s24((gint32 *) destination + doffset, dchannels,
+					      (Float32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S32:
+  {
+    ags_audio_buffer_util_copy_float32_to_s32((gint32 *) destination + doffset, dchannels,
+					      (Float32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S64:
+  {
+    ags_audio_buffer_util_copy_float32_to_s64((gint64 *) destination + doffset, dchannels,
+					      (Float32 *) source + soffset, schannels,
+					      count);
+  }
+  break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT:
+  {
+    ags_audio_buffer_util_copy_float32_to_float((gfloat *) destination + doffset, dchannels,
+						(Float32 *) source + soffset, schannels,
+						count);
+  }
+  break;
 #endif    
   default:
-    {
-      g_warning("ags_audio_buffer_util.c - unknown copy mode");
-    }
+  {
+    g_warning("ags_audio_buffer_util.c - unknown copy mode");
+  }
   }
 }

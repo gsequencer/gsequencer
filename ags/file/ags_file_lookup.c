@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,8 +58,6 @@ enum{
 static gpointer ags_file_lookup_parent_class = NULL;
 static guint file_lookup_signals[LAST_SIGNAL];
 
-static pthread_mutex_t ags_file_lookup_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_file_lookup_get_type (void)
 {
@@ -113,7 +111,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #AgsFile to resolve.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("assigned file"),
@@ -129,7 +127,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #xmlNode to resolve.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("assigned node"),
@@ -144,7 +142,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #gpointer to resolve.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("assigned reference"),
@@ -164,7 +162,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    * Resolve @file_lookup either for reading or writing XPath and retrieving
    * appropriate UUID.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   file_lookup_signals[RESOLVE] =
     g_signal_new("resolve",
@@ -179,20 +177,8 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
 void
 ags_file_lookup_init(AgsFileLookup *file_lookup)
 {
-  /* add file lookup mutex */
-  file_lookup->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-
-  pthread_mutexattr_init(file_lookup->obj_mutexattr);
-  pthread_mutexattr_settype(file_lookup->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(file_lookup->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-  
-  file_lookup->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(file_lookup->obj_mutex, file_lookup->obj_mutexattr);
+  /* file lookup mutex */
+  g_rec_mutex_init(&(file_lookup->obj_mutex));
 
   file_lookup->file = NULL;
 
@@ -208,7 +194,7 @@ ags_file_lookup_set_property(GObject *gobject,
 {
   AgsFileLookup *file_lookup;
 
-  pthread_mutex_t *file_lookup_mutex;
+  GRecMutex *file_lookup_mutex;
 
   file_lookup = AGS_FILE_LOOKUP(gobject);
 
@@ -222,10 +208,10 @@ ags_file_lookup_set_property(GObject *gobject,
 
       file = (AgsFile *) g_value_get_object(value);
 
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       if(file_lookup->file == file){
-	pthread_mutex_unlock(file_lookup_mutex);
+	g_rec_mutex_unlock(file_lookup_mutex);
 	
 	return;
       }
@@ -240,7 +226,7 @@ ags_file_lookup_set_property(GObject *gobject,
 
       file_lookup->file = file;
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   case PROP_NODE:
@@ -249,11 +235,11 @@ ags_file_lookup_set_property(GObject *gobject,
 
       node = (xmlNode *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       file_lookup->node = node;
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   case PROP_REFERENCE:
@@ -262,11 +248,11 @@ ags_file_lookup_set_property(GObject *gobject,
 
       ref = (gpointer) g_value_get_pointer(value);
 
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       file_lookup->ref = ref;
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   default:
@@ -283,7 +269,7 @@ ags_file_lookup_get_property(GObject *gobject,
 {
   AgsFileLookup *file_lookup;
 
-  pthread_mutex_t *file_lookup_mutex;
+  GRecMutex *file_lookup_mutex;
 
   file_lookup = AGS_FILE_LOOKUP(gobject);
 
@@ -293,29 +279,29 @@ ags_file_lookup_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       g_value_set_object(value, file_lookup->file);
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   case PROP_NODE:
     {
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       g_value_set_pointer(value, file_lookup->node);
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   case PROP_REFERENCE:
     {
-      pthread_mutex_lock(file_lookup_mutex);
+      g_rec_mutex_lock(file_lookup_mutex);
 
       g_value_set_pointer(value, file_lookup->ref);
 
-      pthread_mutex_unlock(file_lookup_mutex);
+      g_rec_mutex_unlock(file_lookup_mutex);
     }
     break;
   default:
@@ -335,29 +321,8 @@ ags_file_lookup_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(file_lookup->file));
   }
 
-  pthread_mutex_destroy(file_lookup->obj_mutex);
-  free(file_lookup->obj_mutex);
-
-  pthread_mutexattr_destroy(file_lookup->obj_mutexattr);
-  free(file_lookup->obj_mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_file_lookup_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_file_lookup_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_file_lookup_get_class_mutex()
-{
-  return(&ags_file_lookup_class_mutex);
 }
 
 /**
@@ -366,7 +331,7 @@ ags_file_lookup_get_class_mutex()
  *
  * The ::resolve signal. 
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_file_lookup_resolve(AgsFileLookup *file_lookup)
@@ -381,14 +346,14 @@ ags_file_lookup_resolve(AgsFileLookup *file_lookup)
 
 /**
  * ags_file_lookup_find_by_node:
- * @file_lookup: the #GList containing #AgsFileLookup
+ * @file_lookup: (element-type Ags.FileLookup) (transfer none): the #GList-struct containing #AgsFileLookup
  * @node: a #xmlNode
  *
  * Find #AgsFileLookup by #xmlNode
  *
- * Returns: The list containing #AgsFileLookup if found otherwise %NULL
+ * Returns: (element-type Ags.FileLookup) (transfer none): The matching list containing #AgsFileLookup if found otherwise %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_file_lookup_find_by_node(GList *file_lookup,
@@ -413,14 +378,14 @@ ags_file_lookup_find_by_node(GList *file_lookup,
 
 /**
  * ags_file_lookup_find_by_reference:
- * @file_lookup: the #GList containing #AgsFileLookup
+ * @file_lookup: (element-type Ags.FileLookup) (transfer none): the #GList-struct containing #AgsFileLookup
  * @ref: a #gpointer
  *
  * Find #AgsFileLookup by @ref
  *
- * Returns: The list containing #AgsFileLookup if found otherwise %NULL
+ * Returns: (element-type Ags.FileLookup) (transfer none): The matching list containing #AgsFileLookup if found otherwise %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_file_lookup_find_by_reference(GList *file_lookup,
@@ -450,7 +415,7 @@ ags_file_lookup_find_by_reference(GList *file_lookup,
  *
  * Returns: a new #AgsFileLookup
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsFileLookup*
 ags_file_lookup_new()

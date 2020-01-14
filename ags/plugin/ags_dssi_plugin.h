@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/plugin/ags_base_plugin.h>
 
 #include <dssi.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_DSSI_PLUGIN                (ags_dssi_plugin_get_type())
 #define AGS_DSSI_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DSSI_PLUGIN, AgsDssiPlugin))
@@ -68,5 +70,7 @@ void ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
 				    guint program_index);
 
 AgsDssiPlugin* ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index);
+
+G_END_DECLS
 
 #endif /*__AGS_DSSI_PLUGIN_H__*/

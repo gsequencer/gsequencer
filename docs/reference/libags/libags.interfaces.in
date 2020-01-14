@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2018 Joël Krähemann
+# Copyright (C) 2005-2020 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -20,23 +20,16 @@ AgsApplicationContext AgsConnectable
 AgsServerApplicationContext AgsConnectable AgsConcurrencyProvider AgsServiceProvider
 AgsThreadApplicationContext AgsConnectable AgsConcurrencyProvider
 AgsThread AgsConnectable
-AgsAutosaveThread AgsConnectable
 AgsWorkerThread AgsConnectable
 AgsDestroyWorker AgsConnectable
 AgsGenericMainLoop AgsConnectable AgsMainLoop
-AgsPollingThread AgsConnectable
-AgsTaskThread AgsConnectable AgsAsyncQueue
-AgsRemoteTaskThread AgsConnectable AgsAsyncQueue
 AgsReturnableThread AgsConnectable
-AgsSingleThread AgsConnectable
 AgsFileLink AgsPlugin
-AgsFrontController AgsConnectable
-AgsHistory AgsConnectable
 AgsRegistry AgsConnectable
-AgsRemoteTask AgsConnectable
-AgsServer AgsConnectable
 AgsServerStatus AgsConnectable
 AgsTaskCompletion AgsConnectable
+AgsTaskLauncher AgsConnectable
 AgsXmlAuthentication AgsAuthentication
+AgsXmlBusinessGroup AgsBusinessGroup
 AgsXmlCertificate AgsCertificate
 AgsXmlPasswordStore AgsPasswordStore

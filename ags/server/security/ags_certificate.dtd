@@ -1,20 +1,28 @@
-<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copyright (C) 2005-2019 Joël Krähemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
 <!-- without any warranty. -->
 
 <!-- root node -->
-<!ELEMENT ags-server-certificate (ags-srv-certs-list?)>
+<!ELEMENT ags-server-certificate (ags-srv-cert-list?)>
 <!ATTLIST ags-server-certificate
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  >
 
-<!-- certs node -->
-<!ELEMENT ags-srv-certs-list (ags-srv-certs*)>
+<!-- cert node -->
+<!ELEMENT ags-srv-cert-list (ags-srv-cert*)>
 
-<!ELEMENT ags-srv-certs (#CDATA)>
-<!ATTLIST ags-srv-certs
-	  cert-type        CDATA      #REQUIRED
-	  >
+<!ELEMENT ags-srv-cert (ags-srv-cert-uuid, ags-srv-cert-domain, ags-srv-cert-key-type, ags-srv-cert-public-key-file, ags-srv-cert-private-key-file)>
+
+<!-- cert fields node -->
+<!ELEMENT ags-srv-cert-uuid (#CDATA)>
+
+<!ELEMENT ags-srv-cert-domain (#CDATA)>
+
+<!ELEMENT ags-srv-cert-key-type (#CDATA)>
+
+<!ELEMENT ags-srv-cert-public-key-file (#CDATA)>
+
+<!ELEMENT ags-srv-cert-private-key-file (#CDATA)>

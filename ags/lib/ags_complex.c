@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ ags_complex_get_type(void)
  *
  * Returns: a new #AgsComplex
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsComplex*
 ags_complex_alloc()
@@ -66,8 +66,8 @@ ags_complex_alloc()
 
   ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  ptr[0][0] = 0.0;
-  ptr[0][1] = 0.0;
+  ptr[0].real = 0.0;
+  ptr[0].imag = 0.0;
 
   return(ptr);
 }
@@ -80,7 +80,7 @@ ags_complex_alloc()
  *
  * Returns: a pointer of the new #AgsComplex
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gpointer
 ags_complex_copy(AgsComplex *ptr)
@@ -89,8 +89,8 @@ ags_complex_copy(AgsComplex *ptr)
   
   new_ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  new_ptr[0][0] = ptr[0][0];
-  new_ptr[0][1] = ptr[0][1];
+  new_ptr->real = ptr->real;
+  new_ptr->imag = ptr->imag;
 
   return(new_ptr);
 }
@@ -101,7 +101,7 @@ ags_complex_copy(AgsComplex *ptr)
  *
  * Free the memory of @ptr.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_complex_free(AgsComplex *ptr)
@@ -117,14 +117,14 @@ ags_complex_free(AgsComplex *ptr)
  *
  * Returns: number as complex data type
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 complex
 ags_complex_get(AgsComplex *ptr)
 {
   complex z;
 
-  z = ptr[0][0] + I * ptr[0][1];
+  z = ptr->real + I * ptr->imag;
 
   return(z);
 }
@@ -136,12 +136,12 @@ ags_complex_get(AgsComplex *ptr)
  * 
  * Set complex number.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_complex_set(AgsComplex *ptr, complex z)
 {
-  ptr[0][0] = creal(z);
-  ptr[0][1] = cimag(z);
+  ptr->real = creal(z);
+  ptr->imag = cimag(z);
 }
 

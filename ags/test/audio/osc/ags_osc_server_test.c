@@ -39,6 +39,11 @@ void ags_osc_server_test_add_connection();
 void ags_osc_server_test_remove_connection();
 void ags_osc_server_test_add_controller();
 void ags_osc_server_test_remove_controller();
+void ags_osc_server_test_add_default_controller();
+void ags_osc_server_test_start();
+void ags_osc_server_test_stop();
+void ags_osc_server_test_listen();
+void ags_osc_server_test_dispatch();
 
 #define AGS_OSC_SERVER_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -155,6 +160,36 @@ ags_osc_server_test_remove_controller()
   //TODO:JK: implement me
 }
 
+void
+ags_osc_server_test_add_default_controller()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_server_test_start()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_server_test_stop()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_server_test_listen()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_server_test_dispatch()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -185,7 +220,12 @@ main(int argc, char **argv)
   if((CU_add_test(pSuite, "test of AgsOscServer add connection", ags_osc_server_test_add_connection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer remove connection", ags_osc_server_test_remove_connection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer add controller", ags_osc_server_test_add_controller) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsOscServer remove controller", ags_osc_server_test_remove_controller) == NULL)){
+     (CU_add_test(pSuite, "test of AgsOscServer remove controller", ags_osc_server_test_remove_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer add default controller", ags_osc_server_test_add_default_controller) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer start", ags_osc_server_test_start) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer stop", ags_osc_server_test_stop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer listen", ags_osc_server_test_listen) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsOscServer dispatch", ags_osc_server_test_dispatch) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

@@ -32,6 +32,8 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ROUTE_DSSI_AUDIO_RUN                (ags_route_dssi_audio_run_get_type())
 #define AGS_ROUTE_DSSI_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ROUTE_DSSI_AUDIO_RUN, AgsRouteDssiAudioRun))
 #define AGS_ROUTE_DSSI_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ROUTE_DSSI_AUDIO_RUN, AgsRouteDssiAudioRun))
@@ -66,5 +68,7 @@ struct _AgsRouteDssiAudioRunClass
 GType ags_route_dssi_audio_run_get_type();
 
 AgsRouteDssiAudioRun* ags_route_dssi_audio_run_new(AgsAudio *audio);
+
+G_END_DECLS
 
 #endif /*__AGS_ROUTE_DSSI_AUDIO_RUN_H__*/

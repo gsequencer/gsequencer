@@ -36,6 +36,8 @@
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
 #define AGS_AUTOMATION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_EDITOR, AgsAutomationEditor))
 #define AGS_AUTOMATION_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUTOMATION_EDITOR, AgsAutomationEditorClass))
@@ -76,8 +78,6 @@ struct _AgsAutomationEditor
   gdouble current_tact;
 
   guint chunk_duration;
-
-  GObject *soundcard;
 
   GtkHPaned *paned;
   
@@ -146,5 +146,7 @@ void ags_automation_editor_cut(AgsAutomationEditor *automation_editor);
 void ags_automation_editor_invert(AgsAutomationEditor *automation_editor);
 
 AgsAutomationEditor* ags_automation_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_AUTOMATION_EDITOR_H__*/

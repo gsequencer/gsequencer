@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,7 +121,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of open file"),
@@ -137,7 +137,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * The assigned #GSList-struct providing filename as string
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("filename",
 				    i18n_pspec("filename of open file"),
@@ -152,7 +152,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files overwrite #AgsChannel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("overwrite-channels",
 				     i18n_pspec("open file overwriting channels"),
@@ -168,7 +168,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files create #AgsChannel.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("create-channels",
 				     i18n_pspec("open file creating channels"),
@@ -355,7 +355,7 @@ ags_open_file_launch(AgsTask *task)
 /**
  * ags_open_file_new:
  * @audio: the #AgsAudio
- * @filename: the filename to be opened
+ * @filename: (element-type utf8): the filename to be opened
  * @overwrite_channels: reset existing #AgsInput
  * @create_channels: instantiate new #AgsInput
  *
@@ -363,7 +363,7 @@ ags_open_file_launch(AgsTask *task)
  *
  * Returns: the new #AgsOpenFile.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOpenFile*
 ags_open_file_new(AgsAudio *audio,

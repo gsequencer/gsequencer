@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_acceleration.h>
 
-#include <ags/libags.h>
-
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -55,8 +53,6 @@ enum{
 };
 
 static gpointer ags_acceleration_parent_class = NULL;
-
-static pthread_mutex_t ags_acceleration_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_acceleration_get_type()
@@ -111,7 +107,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * Acceleration offset x.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("x",
 				 i18n_pspec("offset x"),
@@ -129,7 +125,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * Acceleration value y.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("y",
 				   i18n_pspec("offset y"),
@@ -147,7 +143,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * The acceleration's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("acceleration-name",
 				   i18n_pspec("acceleration name"),
@@ -162,28 +158,11 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
 void
 ags_acceleration_init(AgsAcceleration *acceleration)
 {
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   acceleration->flags = 0;
 
-  /* add acceleration mutex */
-  acceleration->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  acceleration->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
-
+  /* acceleration mutex */
+  g_rec_mutex_init(&(acceleration->obj_mutex));
+  
   /* fields */
   acceleration->x = 0;
   acceleration->y = 0.0;
@@ -200,7 +179,7 @@ ags_acceleration_set_property(GObject *gobject,
 {
   AgsAcceleration *acceleration;
 
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   acceleration = AGS_ACCELERATION(gobject);
 
@@ -210,20 +189,20 @@ ags_acceleration_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_X:
     {
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       acceleration->x = g_value_get_uint(value);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   case PROP_Y:
     {
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       acceleration->y = g_value_get_double(value);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   case PROP_ACCELERATION_NAME:
@@ -232,10 +211,10 @@ ags_acceleration_set_property(GObject *gobject,
       
       acceleration_name = g_value_get_string(value);
       
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       if(acceleration_name == acceleration->acceleration_name){
-	pthread_mutex_unlock(acceleration_mutex);
+	g_rec_mutex_unlock(acceleration_mutex);
 
 	return;
       }
@@ -246,7 +225,7 @@ ags_acceleration_set_property(GObject *gobject,
 
       acceleration->acceleration_name = g_strdup(acceleration_name);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   default:
@@ -263,7 +242,7 @@ ags_acceleration_get_property(GObject *gobject,
 {
   AgsAcceleration *acceleration;
 
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   acceleration = AGS_ACCELERATION(gobject);
 
@@ -273,29 +252,29 @@ ags_acceleration_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X:
     {
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       g_value_set_uint(value, acceleration->x);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   case PROP_Y:
     {
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       g_value_set_double(value, acceleration->y);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   case PROP_ACCELERATION_NAME:
     {
-      pthread_mutex_lock(acceleration_mutex);
+      g_rec_mutex_lock(acceleration_mutex);
 
       g_value_set_string(value, acceleration->acceleration_name);
 
-      pthread_mutex_unlock(acceleration_mutex);
+      g_rec_mutex_unlock(acceleration_mutex);
     }
     break;
   default:
@@ -310,12 +289,6 @@ ags_acceleration_finalize(GObject *gobject)
   AgsAcceleration *acceleration;
 
   acceleration = AGS_ACCELERATION(gobject);
-
-  pthread_mutex_destroy(acceleration->obj_mutex);
-  free(acceleration->obj_mutex);
-
-  pthread_mutexattr_destroy(acceleration->obj_mutexattr);
-  free(acceleration->obj_mutexattr);
   
   if(acceleration->acceleration_name != NULL){
     free(acceleration->acceleration_name);
@@ -323,21 +296,6 @@ ags_acceleration_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_acceleration_parent_class)->finalize(gobject);
-}
-
-/**
- * ags_acceleration_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_acceleration_get_class_mutex()
-{
-  return(&ags_acceleration_class_mutex);
 }
 
 /**
@@ -349,14 +307,14 @@ ags_acceleration_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   if(!AGS_IS_ACCELERATION(acceleration)){
     return(FALSE);
@@ -366,11 +324,11 @@ ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
   acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* test */
-  pthread_mutex_lock(acceleration_mutex);
+  g_rec_mutex_lock(acceleration_mutex);
 
   retval = (flags & (acceleration->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(acceleration_mutex);
+  g_rec_mutex_unlock(acceleration_mutex);
 
   return(retval);
 }
@@ -382,12 +340,12 @@ ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
  * 
  * Set @flags on @acceleration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
 {
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   if(!AGS_IS_ACCELERATION(acceleration)){
     return;
@@ -397,11 +355,11 @@ ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
   acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* set */
-  pthread_mutex_lock(acceleration_mutex);
+  g_rec_mutex_lock(acceleration_mutex);
 
   acceleration->flags |= flags;
   
-  pthread_mutex_unlock(acceleration_mutex);
+  g_rec_mutex_unlock(acceleration_mutex);
 }
 
 /**
@@ -411,12 +369,12 @@ ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
  * 
  * Unset @flags on @acceleration.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
 {
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   if(!AGS_IS_ACCELERATION(acceleration)){
     return;
@@ -426,23 +384,23 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
   acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* unset */
-  pthread_mutex_lock(acceleration_mutex);
+  g_rec_mutex_lock(acceleration_mutex);
 
   acceleration->flags &= (~flags);
   
-  pthread_mutex_unlock(acceleration_mutex);
+  g_rec_mutex_unlock(acceleration_mutex);
 }
 
 /**
  * ags_acceleration_sort_func:
  * @a: an #AgsAcceleration
- * @b: an #AgsAcceleration
+ * @b: an other #AgsAcceleration
  * 
  * Sort accelerations.
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gint
 ags_acceleration_sort_func(gconstpointer a, gconstpointer b)
@@ -478,16 +436,16 @@ ags_acceleration_sort_func(gconstpointer a, gconstpointer b)
  * 
  * Duplicate a acceleration.
  *
- * Returns: the duplicated #AgsAcceleration.
+ * Returns: (transfer full): the duplicated #AgsAcceleration.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAcceleration*
 ags_acceleration_duplicate(AgsAcceleration *acceleration)
 {
   AgsAcceleration *acceleration_copy;
 
-  pthread_mutex_t *acceleration_mutex;
+  GRecMutex *acceleration_mutex;
 
   if(!AGS_IS_ACCELERATION(acceleration)){
     return(NULL);
@@ -501,14 +459,14 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
 
   acceleration_copy->flags = 0;
 
-  pthread_mutex_lock(acceleration_mutex);
+  g_rec_mutex_lock(acceleration_mutex);
   
   acceleration_copy->x = acceleration->x;
   acceleration_copy->y = acceleration->y;
 
   acceleration_copy->acceleration_name = g_strdup(acceleration->acceleration_name);
 
-  pthread_mutex_unlock(acceleration_mutex);
+  g_rec_mutex_unlock(acceleration_mutex);
   
   return(acceleration_copy);
 }
@@ -520,7 +478,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
  *
  * Returns: the new #AgsAcceleration
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAcceleration*
 ags_acceleration_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_ANALYSE_AUDIO_SIGNAL                (ags_analyse_audio_signal_get_type())
 #define AGS_ANALYSE_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ANALYSE_AUDIO_SIGNAL, AgsAnalyseAudioSignal))
 #define AGS_ANALYSE_AUDIO_SIGNAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ANALYSE_AUDIO_SIGNAL, AgsAnalyseAudioSignalClass))
@@ -51,5 +53,7 @@ struct _AgsAnalyseAudioSignalClass
 GType ags_analyse_audio_signal_get_type();
 
 AgsAnalyseAudioSignal* ags_analyse_audio_signal_new(AgsAudioSignal *source);
+
+G_END_DECLS
 
 #endif /*__AGS_ANALYSE_AUDIO_SIGNAL_H__*/

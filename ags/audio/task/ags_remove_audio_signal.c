@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,7 +114,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("recycling of remove audio signal"),
@@ -130,7 +130,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of remove audio signal"),
@@ -302,7 +302,7 @@ ags_remove_audio_signal_launch(AgsTask *task)
  *
  * Returns: the new #AgsRemoveAudioSignal
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRemoveAudioSignal*
 ags_remove_audio_signal_new(AgsRecycling *recycling,

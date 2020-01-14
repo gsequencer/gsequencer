@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_sequencer.h>
+#include <ags/libags.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SEQUENCER_THREAD                (ags_sequencer_thread_get_type())
 #define AGS_SEQUENCER_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SEQUENCER_THREAD, AgsSequencerThread))
@@ -71,5 +67,7 @@ AgsSequencerThread* ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequ
 							GObject *sequencer);
 
 AgsSequencerThread* ags_sequencer_thread_new(GObject *sequencer);
+
+G_END_DECLS
 
 #endif /*__AGS_SEQUENCER_THREAD_H__*/

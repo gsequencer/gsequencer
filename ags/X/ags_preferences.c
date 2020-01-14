@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,6 @@
 
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
-
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
@@ -152,7 +149,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->window = NULL;
+  preferences->main_window = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       i18n("preferences"));
@@ -163,25 +160,41 @@ ags_preferences_init(AgsPreferences *preferences)
   g_object_set(G_OBJECT(preferences->notebook),
 	       "tab-pos", GTK_POS_LEFT,
 	       NULL);
-  gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
+  gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(preferences))),
 		    GTK_WIDGET(preferences->notebook));
 
   preferences->generic_preferences = ags_generic_preferences_new();
+  gtk_widget_set_hexpand(preferences->generic_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->generic_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->generic_preferences),
 			   gtk_label_new(i18n("generic")));
 
   preferences->audio_preferences = ags_audio_preferences_new();
+  gtk_widget_set_hexpand(preferences->audio_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->audio_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
 			   gtk_label_new(i18n("audio")));
 
   preferences->midi_preferences = ags_midi_preferences_new();
+  gtk_widget_set_hexpand(preferences->midi_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->midi_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->midi_preferences),
 			   gtk_label_new(i18n("midi")));
 
   preferences->performance_preferences = ags_performance_preferences_new();
+  gtk_widget_set_hexpand(preferences->performance_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->performance_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->performance_preferences),
 			   gtk_label_new(i18n("performance")));
@@ -191,6 +204,10 @@ ags_preferences_init(AgsPreferences *preferences)
 			     "disable-feature");
   
   preferences->osc_server_preferences = ags_osc_server_preferences_new();
+  gtk_widget_set_hexpand(preferences->osc_server_preferences,
+			 TRUE);
+  gtk_widget_set_vexpand(preferences->osc_server_preferences,
+			 TRUE);
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->osc_server_preferences),
 			   gtk_label_new(i18n("OSC server")));
@@ -309,10 +326,9 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   ags_config_save(config);
 
-  apply_sound_config = ags_apply_sound_config_new(application_context,
-						  NULL);
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) apply_sound_config);
+  apply_sound_config = ags_apply_sound_config_new(NULL);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) apply_sound_config);
 
   /* notify user about safe GSequencer */
   dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,
@@ -351,7 +367,7 @@ ags_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
   
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
 		    3);
   
@@ -372,7 +388,7 @@ ags_preferences_show_all(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area(GTK_DIALOG(widget)));
   list = g_list_nth(list,
 		    3);
   
@@ -393,7 +409,7 @@ ags_preferences_show_all(GtkWidget *widget)
  *
  * Returns: the new #AgsPreferences
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPreferences*
 ags_preferences_new()

@@ -1,4 +1,4 @@
-Copyright (C) 2005-2019 Joël Krähemann
+Copyright (C) 2005-2020 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
@@ -7,25 +7,22 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: implemented support for GtkApplication
+* TODO:JK: refactored AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
+* TODO:JK: migrated AgsBasePlugin to GModule
+* TODO:JK: removed AgsMenuBar
+* TODO:JK: migrated AgsTurtle and AgsFunction to GRegex
+* TODO:JK: migrated to gi18n.h?
+* TODO:JK: migrated unit-tests to GTest?
 * TODO:JK: implemented AgsUiOscRenewController
-* TODO:JK: refactor AgsAudioThreadFlags and AgsChannelThreadFlags
 * TODO:JK: move ags/X to ags/ui
-* TODO:JK: implemented AgsMessageEnvelope as object
-* TODO:JK: implemented AgsMessageQueue by consumer
 * TODO:JK: implemented ags-modify-synth-generator recall
 * TODO:JK: updated developer's handbook
-* TODO:JK: fixed AgsPiano border
-* TODO:JK: implement AgsUiProvider
-* TODO:JK: fix envelope related functions in ags_midi_util.h
 * TODO:JK: check recall id cleanup
 * TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
 * TODO:JK: implemented AgsSoundContainer manager
-* TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: extended user's handbook to cover OSC server preferences
-* TODO:JK: added OSC server handbook
 * TODO:JK: added unit-tests
-* TODO:JK: implemented AgsFileUploadController
-* TODO:JK: improved AgsServer
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
 * TODO:JK: implement ::seek() of AgsMidiBuilder and AgsOscBuilder
 * TODO:JK: implemented resample AgsAudioSignal on presets modified
@@ -34,10 +31,6 @@ Free Documentation License".
 * TODO:JK: improved ags-feed recall thread-safety
 * TODO:JK: improved ags_audio_signal_feed() reduce over-head
 * TODO:JK: improved AgsApplySynth thread-safety
-* TODO:JK: implemented AgsFunction
-* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
-* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
-* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
 * TODO:JK: refactored AgsAutomationEditor to be more light-weight
 * TODO:JK: implemented AgsCartesian properties
 * TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects

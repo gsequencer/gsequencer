@@ -22,14 +22,6 @@
 #include <ags/libags.h>
 
 int
-ags_connection_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsConnectionEditor *connection_editor)
-{
-  /* empty */
-
-  return(0);
-}
-
-int
 ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor)
 {
   ags_applicable_apply(AGS_APPLICABLE(connection_editor));

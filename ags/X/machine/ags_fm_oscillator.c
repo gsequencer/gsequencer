@@ -108,7 +108,7 @@ ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   fm_oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -216,7 +216,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    2, 3,
 			    0, 1);
   fm_oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->attack->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->attack, 0.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->attack,
 			    3, 4,
@@ -227,7 +227,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    4, 5,
 			    0, 1);
   fm_oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->frame_count->adjustment->value = AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT;
+  gtk_spin_button_set_value(fm_oscillator->frame_count, AGS_FM_OSCILLATOR_DEFAULT_FRAME_COUNT);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
@@ -235,7 +235,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
 			    0, 1,
 			    1, 2);
   fm_oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  fm_oscillator->phase->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->phase, 0.0);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
@@ -245,7 +245,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(fm_oscillator->frequency,
 			     3);
-  fm_oscillator->frequency->adjustment->value = 27.5;
+  gtk_spin_button_set_value(fm_oscillator->frequency, 27.5);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->frequency,
 			    3, 4,
@@ -257,7 +257,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
   gtk_spin_button_set_digits(fm_oscillator->volume,
 			     3);
-  fm_oscillator->volume->adjustment->value = 0.2;
+  gtk_spin_button_set_value(fm_oscillator->volume, 0.2);
   gtk_table_attach_defaults(table, (GtkWidget *) fm_oscillator->volume, 5, 6, 1, 2);
 
   /* do sync */
@@ -362,7 +362,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 24.0, 1.0);
   gtk_spin_button_set_digits(fm_oscillator->fm_lfo_frequency,
 			     3);
-  fm_oscillator->fm_lfo_frequency->adjustment->value = 12.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_lfo_frequency, 12.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_lfo_frequency,
 			    3, 4,
@@ -375,7 +375,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_lfo_depth = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.01);
   gtk_spin_button_set_digits(fm_oscillator->fm_lfo_depth,
 			     3);
-  fm_oscillator->fm_lfo_depth->adjustment->value = 1.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_lfo_depth, 1.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_lfo_depth,
 			    5, 6,
@@ -388,7 +388,7 @@ ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator)
   fm_oscillator->fm_tuning = (GtkSpinButton *) gtk_spin_button_new_with_range(-96.0, 96.0, 0.01);
   gtk_spin_button_set_digits(fm_oscillator->fm_tuning,
 			     2);
-  fm_oscillator->fm_tuning->adjustment->value = 0.0;
+  gtk_spin_button_set_value(fm_oscillator->fm_tuning, 0.0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) fm_oscillator->fm_tuning,
 			    3, 4,
@@ -528,208 +528,13 @@ ags_fm_oscillator_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
-void
-ags_file_read_fm_oscillator(AgsFile *file, xmlNode *node, AgsFMOscillator **fm_oscillator)
-{
-  AgsFMOscillator *gobject;
-  xmlChar *wave;
-
-  if(*fm_oscillator == NULL){
-    gobject = (AgsFMOscillator *) g_object_new(AGS_TYPE_FM_OSCILLATOR,
-					     NULL);
-    *fm_oscillator = gobject;
-  }else{
-    gobject = *fm_oscillator;
-  }
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  wave = (xmlChar *) xmlGetProp(node,
-				"wave");
-
-  if(!xmlStrncmp(wave,
-		 "sin",
-		 4)){
-    gtk_combo_box_set_active(gobject->wave,
-			     0);
-  }else if(!xmlStrncmp(wave,
-		       "sawtooth",
-		       9)){
-    gtk_combo_box_set_active(gobject->wave,
-			     1);
-  }else if(!xmlStrncmp(wave,
-		       "square",
-		       7)){
-    gtk_combo_box_set_active(gobject->wave,
-			     2);
-  }else if(!xmlStrncmp(wave,
-		       "triangle",
-		       9)){
-    gtk_combo_box_set_active(gobject->wave,
-			     3);
-  }else if(!xmlStrncmp(wave,
-		       "impulse",
-		       8)){
-    gtk_combo_box_set_active(gobject->wave,
-			     4);
-  }
-
-  gtk_spin_button_set_value(gobject->attack,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "attack"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->frame_count,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "frame-count"),
-					   NULL));
-  
-  gtk_spin_button_set_value(gobject->frequency,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "frequency"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->phase,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "phase"),
-					   NULL));
-  
-  gtk_spin_button_set_value(gobject->volume,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "volume"),
-					   NULL));
-  
-  /* LFO */
-  wave = (xmlChar *) xmlGetProp(node,
-				"fm-lfo-wave");
-
-  if(!xmlStrncmp(wave,
-		 "sin",
-		 4)){
-    gtk_combo_box_set_active(gobject->fm_lfo_wave,
-			     0);
-  }else if(!xmlStrncmp(wave,
-		       "sawtooth",
-		       9)){
-    gtk_combo_box_set_active(gobject->fm_lfo_wave,
-			     1);
-  }else if(!xmlStrncmp(wave,
-		       "square",
-		       7)){
-    gtk_combo_box_set_active(gobject->fm_lfo_wave,
-			     2);
-  }else if(!xmlStrncmp(wave,
-		       "triangle",
-		       9)){
-    gtk_combo_box_set_active(gobject->fm_lfo_wave,
-			     3);
-  }else if(!xmlStrncmp(wave,
-		       "impulse",
-		       8)){
-    gtk_combo_box_set_active(gobject->fm_lfo_wave,
-			     4);
-  }
-
-  gtk_spin_button_set_value(gobject->fm_lfo_frequency,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "fm-lfo-frequency"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->fm_lfo_depth,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "fm-lfo-depth"),
-					   NULL));
-
-  gtk_spin_button_set_value(gobject->fm_tuning,
-			    g_ascii_strtod(xmlGetProp(node,
-						      "fm-tuning"),
-					   NULL));
-}
-
-xmlNode*
-ags_file_write_fm_oscillator(AgsFile *file, xmlNode *parent, AgsFMOscillator *fm_oscillator)
-{
-  xmlNode *node;
-  gchar *id;
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-fm_oscillator");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", fm_oscillator,
-				   NULL));
-
-  xmlNewProp(node,
-	     "wave",
-	     gtk_combo_box_text_get_active_text((GtkComboBoxText *) fm_oscillator->wave));
-
-  xmlNewProp(node,
-	     "attack",
-	     g_strdup_printf("%f", fm_oscillator->attack->adjustment->value));
-
-  xmlNewProp(node,
-	     "frame-count",
-	     g_strdup_printf("%f", fm_oscillator->frame_count->adjustment->value));
-
-  xmlNewProp(node,
-	     "frequency",
-	     g_strdup_printf("%f", fm_oscillator->frequency->adjustment->value));
-
-  xmlNewProp(node,
-	     "phase",
-	     g_strdup_printf("%f", fm_oscillator->phase->adjustment->value));
-
-  xmlNewProp(node,
-	     "volume",
-	     g_strdup_printf("%f", fm_oscillator->volume->adjustment->value));
-
-  /* LFO */
-  xmlNewProp(node,
-	     "fm-lfo-wave",
-	     gtk_combo_box_text_get_active_text((GtkComboBoxText *) fm_oscillator->fm_lfo_wave));
-  
-  xmlNewProp(node,
-	     "fm-lfo-frequency",
-	     g_strdup_printf("%f", fm_oscillator->fm_lfo_frequency->adjustment->value));
-  
-  xmlNewProp(node,
-	     "fm-lfo-depth",
-	     g_strdup_printf("%f", fm_oscillator->fm_lfo_depth->adjustment->value));
-  
-  xmlNewProp(node,
-	     "fm-tuning",
-	     g_strdup_printf("%f", fm_oscillator->fm_tuning->adjustment->value));
-
-  xmlAddChild(parent,
-	      node);  
-
-  return(node);
-}
-
 /**
  * ags_fm_oscillator_control_changed:
  * @fm_oscillator: the #AgsFMOscillator
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 void
 ags_fm_oscillator_control_changed(AgsFMOscillator *fm_oscillator)
@@ -749,7 +554,7 @@ ags_fm_oscillator_control_changed(AgsFMOscillator *fm_oscillator)
  *
  * Returns: the new #AgsFMOscillator
  *
- * Since: 2.3.0
+ * Since: 3.0.0
  */
 AgsFMOscillator*
 ags_fm_oscillator_new()

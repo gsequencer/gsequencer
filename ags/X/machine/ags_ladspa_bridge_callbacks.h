@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,19 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 
-void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLadspaBridge *ladspa_bridge);
+G_BEGIN_DECLS
+
+void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLadspaBridge *ladspa_bridge);
+
+G_END_DECLS
 
 #endif /*__AGS_LADSPA_BRIDGE_CALLBACKS_H__*/

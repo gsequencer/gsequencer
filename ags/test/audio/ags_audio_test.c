@@ -1603,6 +1603,8 @@ void
 ags_audio_test_init_recall_callback(AgsRecall *recall,
 				    gpointer data)
 {
+  g_message("init recall");
+  
   test_init_recall_callback_hits_count++;
 }
 
@@ -1610,6 +1612,8 @@ void
 ags_audio_test_resolve_recall_callback(AgsRecall *recall,
 				       gpointer data)
 {
+  g_message("resolve recall");
+  
   test_resolve_recall_callback_hits_count++;
 }
 

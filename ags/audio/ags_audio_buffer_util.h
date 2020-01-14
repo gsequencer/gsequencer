@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -161,9 +161,10 @@ typedef enum{
  * @AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S24 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
  * @AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S32 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
  * @AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_S64 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
- * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
- * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
- * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_ to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_FLOAT to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_DOUBLE to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_FLOAT32 to AGS_AUDIO_BUFFER_UTIL_COMPLEX
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_COMPLEX
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S8
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S16
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S24
@@ -171,6 +172,7 @@ typedef enum{
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_S64
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_FLOAT
  * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_DOUBLE
+ * @AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT32: copy AGS_AUDIO_BUFFER_UTIL_COMPLEX to AGS_AUDIO_BUFFER_UTIL_FLOAT32
  * 
  * Copy modes.
  */
@@ -276,13 +278,12 @@ typedef enum{
 
 }AgsAudioBufferUtilCopyMode;
 
-typedef gint8 v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
-typedef gint16 v8s16 __attribute__ ((vector_size(8 * sizeof(gint16))));
-typedef gint32 v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
-typedef gint64 v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
-typedef gfloat v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
-typedef gdouble v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
-typedef AgsComplex v8complex __attribute__ ((vector_size(8 * sizeof(AgsComplex))));
+typedef gint8 ags_v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
+typedef gint16 ags_v8s16 __attribute__ ((vector_size(8 * sizeof(gint16))));
+typedef gint32 ags_v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
+typedef gint64 ags_v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
+typedef gfloat ags_v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
+typedef gdouble ags_v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
 
 guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
@@ -462,6 +463,63 @@ void* ags_audio_buffer_util_resample(void *buffer, guint channels,
 				     guint format,  guint samplerate,
 				     guint buffer_length,
 				     guint target_samplerate);
+
+/* resample with buffer */
+void ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
+						   guint samplerate,
+						   guint buffer_length,
+						   guint target_samplerate,
+						   guint target_buffer_length,
+						   gint8 *target_buffer);
+void ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint16 *target_buffer);
+void ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint32 *target_buffer);
+void ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint32 *target_buffer);
+void ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
+						    guint samplerate,
+						    guint buffer_length,
+						    guint target_samplerate,
+						    guint target_buffer_length,
+						    gint64 *target_buffer);
+void ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
+						      guint samplerate,
+						      guint buffer_length,
+						      guint target_samplerate,
+						      guint target_buffer_length,
+						      gfloat *target_buffer);
+void ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
+						       guint samplerate,
+						       guint buffer_length,
+						       guint target_samplerate,
+						       guint target_buffer_length,
+						       gdouble *target_buffer);
+void ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
+							guint samplerate,
+							guint buffer_length,
+							guint target_samplerate,
+							guint target_buffer_length,
+							AgsComplex *target_buffer);
+
+void ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
+						guint format,  guint samplerate,
+						guint buffer_length,
+						guint target_samplerate,
+						guint target_buffer_length,
+						void *target_buffer);
 
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(gint8 *destination, guint dchannels,

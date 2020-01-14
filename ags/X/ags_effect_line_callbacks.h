@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,14 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_effect_line.h>
+
+G_BEGIN_DECLS
+
+void ags_effect_line_check_message_callback(GObject *application_context, AgsEffectLine *effect_line);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_LINE_CALLBACKS_H__*/

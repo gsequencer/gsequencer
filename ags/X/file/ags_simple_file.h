@@ -25,6 +25,14 @@
 
 #include <libxml/tree.h>
 
+#include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SIMPLE_FILE                (ags_simple_file_get_type())
 #define AGS_SIMPLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SIMPLE_FILE, AgsSimpleFile))
 #define AGS_SIMPLE_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SIMPLE_FILE, AgsSimpleFileClass))
@@ -40,14 +48,22 @@
 #define AGS_SIMPLE_FILE_DEFAULT_AUDIO_FORMAT "raw"
 #define AGS_SIMPLE_FILE_DEFAULT_AUDIO_ENCODING "base64"
 
+#define AGS_SIMPLE_FILE_ID_PROP "id"
+#define AGS_SIMPLE_FILE_NAME_PROP "name"
+#define AGS_SIMPLE_FILE_TYPE_PROP "type"
+#define AGS_SIMPLE_FILE_VERSION_PROP "version"
+#define AGS_SIMPLE_FILE_BUILD_ID_PROP "build-id"
+#define AGS_SIMPLE_FILE_TRUE "true"
+#define AGS_SIMPLE_FILE_FALSE "false"
+
 typedef struct _AgsSimpleFile AgsSimpleFile;
 typedef struct _AgsSimpleFileClass AgsSimpleFileClass;
 
 typedef enum{
-  AGS_SIMPLE_FILE_READ                    = 1,
+  AGS_SIMPLE_FILE_READ_BASIC              = 1,
   AGS_SIMPLE_FILE_READ_AUDIO_SIGNAL       = 1 << 1,
   AGS_SIMPLE_FILE_READ_EMBEDDED_AUDIO     = 1 << 2,
-  AGS_SIMPLE_FILE_WRITE                   = 1 << 3,
+  AGS_SIMPLE_FILE_WRITE_BASIC             = 1 << 3,
   AGS_SIMPLE_FILE_WRITE_AUDIO_SIGNAL      = 1 << 4,
   AGS_SIMPLE_FILE_WRITE_EMBEDDED_AUDIO    = 1 << 5,
 }AgsSimpleFileFlags;
@@ -80,8 +96,6 @@ struct _AgsSimpleFile
   GList *id_ref;
   GList *lookup;
   GList *launch;
-
-  GObject *application_context;
 };
 
 struct _AgsSimpleFileClass
@@ -143,5 +157,7 @@ void ags_simple_file_read_start(AgsSimpleFile *simple_file);
 
 /* */
 AgsSimpleFile* ags_simple_file_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SIMPLE_FILE_H__*/

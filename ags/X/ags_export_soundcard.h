@@ -25,6 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_EXPORT_SOUNDCARD                (ags_export_soundcard_get_type())
 #define AGS_EXPORT_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_SOUNDCARD, AgsExportSoundcard))
 #define AGS_EXPORT_SOUNDCARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_SOUNDCARD, AgsExportSoundcardClass))
@@ -86,5 +93,7 @@ void ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
 
 /*  */
 AgsExportSoundcard* ags_export_soundcard_new();
+
+G_END_DECLS
 
 #endif /*__AGS_EXPORT_SOUNDCARD_H__*/

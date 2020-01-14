@@ -23,13 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_AUDIO                (ags_audio_get_type ())
 #define AGS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO, AgsAudio))
@@ -38,9 +38,9 @@
 #define AGS_IS_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO))
 #define AGS_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO, AgsAudioClass))
 
-#define AGS_AUDIO_GET_OBJ_MUTEX(obj) (((AgsAudio *) obj)->obj_mutex)
-#define AGS_AUDIO_GET_PLAY_MUTEX(obj) (((AgsAudio *) obj)->play_mutex)
-#define AGS_AUDIO_GET_RECALL_MUTEX(obj) (((AgsAudio *) obj)->recall_mutex)
+#define AGS_AUDIO_GET_OBJ_MUTEX(obj) (&(((AgsAudio *) obj)->obj_mutex))
+#define AGS_AUDIO_GET_PLAY_MUTEX(obj) (&(((AgsAudio *) obj)->play_mutex))
+#define AGS_AUDIO_GET_RECALL_MUTEX(obj) (&(((AgsAudio *) obj)->recall_mutex))
 
 typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
@@ -93,8 +93,7 @@ struct _AgsAudio
   guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -169,6 +168,8 @@ struct _AgsAudio
   GList *cursor;
   
   GList *notation;
+
+  gchar **automation_port;
   GList *automation;
   
   GList *wave;
@@ -187,13 +188,11 @@ struct _AgsAudio
 
   GList *recall_container;
 
-  pthread_mutexattr_t *play_mutexattr;
-  pthread_mutex_t *play_mutex;
+  GRecMutex play_mutex;
 
   GList *play;
 
-  pthread_mutexattr_t *recall_mutexattr;
-  pthread_mutex_t *recall_mutex;
+  GRecMutex recall_mutex;
 
   GList *recall;
   
@@ -243,8 +242,6 @@ struct _AgsAudioClass
 };
 
 GType ags_audio_get_type();
-
-pthread_mutex_t* ags_audio_get_class_mutex();
 
 gboolean ags_audio_test_flags(AgsAudio *audio, guint flags);
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
@@ -312,6 +309,9 @@ void ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor);
 
 void ags_audio_add_notation(AgsAudio *audio, GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio, GObject *notation);
+
+void ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name);
+void ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name);
 
 void ags_audio_add_automation(AgsAudio *audio, GObject *automation);
 void ags_audio_remove_automation(AgsAudio *audio, GObject *automation);
@@ -405,5 +405,7 @@ void ags_audio_recursive_run_stage(AgsAudio *audio,
 
 /* instantiate */
 AgsAudio* ags_audio_new(GObject *output_soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_AUDIO_H__*/

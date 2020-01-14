@@ -19,15 +19,12 @@
 
 #include <ags/X/ags_output_editor_callbacks.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_line_editor.h>
 
-int
-ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsOutputEditor *output_editor)
+void
+ags_output_editor_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsOutputEditor *output_editor)
 {
   AgsMachine *machine;
   AgsLineEditor *line_editor;
@@ -36,7 +33,7 @@ ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, 
   AgsChannel *channel;
 
   if(old_parent != NULL){
-    return(0);
+    return;
   }
 
   //TODO:JK: missing mutex
@@ -60,8 +57,6 @@ ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, 
       }
     }
   }
-  
-  return(0);
 }
 
 void

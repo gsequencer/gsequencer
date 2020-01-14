@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,10 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_MIDI_EXPORT_WIZARD                (ags_midi_export_wizard_get_type())
 #define AGS_MIDI_EXPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizard))
 #define AGS_MIDI_EXPORT_WIZARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizardClass))
@@ -39,9 +43,11 @@
 
 #define AGS_MIDI_EXPORT_WIZARD_DEFAULT_TIMES (30)
 #define AGS_MIDI_EXPORT_WIZARD_DEFAULT_CLICKS (4)
-#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION (480)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION (96)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_TEMPO (500000)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_BPM (120)
 
-#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT (480.0 / 16.0)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT (500.0 / 16.0)
 
 typedef struct _AgsMidiExportWizard AgsMidiExportWizard;
 typedef struct _AgsMidiExportWizardClass AgsMidiExportWizardClass;
@@ -57,8 +63,6 @@ struct _AgsMidiExportWizard
   GtkDialog dialog;
 
   guint flags;
-
-  GObject *application_context;
 
   GtkWidget *main_window;
 
@@ -77,5 +81,7 @@ struct _AgsMidiExportWizardClass
 GType ags_midi_export_wizard_get_type(void);
 
 AgsMidiExportWizard* ags_midi_export_wizard_new(GtkWidget *main_window);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_EXPORT_WIZARD_H__*/

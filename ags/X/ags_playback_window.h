@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
+
 #define AGS_TYPE_PLAYBACK_WINDOW                (ags_playback_window_get_type())
 #define AGS_PLAYBACK_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYBACK_WINDOW, AgsPlaybackWindow))
 #define AGS_PLAYBACK_WINDOW_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAYBACK_WINDOW, AgsPlaybackWindowClass))
@@ -45,8 +52,6 @@ struct _AgsPlaybackWindow
 
   guint flags;
 
-  GObject *application_context;
-
   GtkWidget *main_window;
 };
 
@@ -58,5 +63,7 @@ struct _AgsPlaybackWindowClass
 GType ags_playback_window_get_type(void);
 
 AgsPlaybackWindow* ags_playback_window_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PLAYBACK_WINDOW_H__*/

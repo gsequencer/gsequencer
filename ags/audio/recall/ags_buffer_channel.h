@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_BUFFER_CHANNEL                (ags_buffer_channel_get_type())
 #define AGS_BUFFER_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BUFFER_CHANNEL, AgsBufferChannel))
 #define AGS_BUFFER_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_BUFFER_CHANNEL, AgsBufferChannelClass))
@@ -55,5 +57,7 @@ GType ags_buffer_channel_get_type();
 
 AgsBufferChannel* ags_buffer_channel_new(AgsChannel *destination,
 					 AgsChannel *source);
+
+G_END_DECLS
 
 #endif /*__AGS_BUFFER_CHANNEL_H__*/

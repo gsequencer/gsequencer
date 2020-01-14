@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_synth_generator.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synth_enums.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -33,7 +31,6 @@
 #include <ags/i18n.h>
 
 void ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator);
-void ags_synth_generator_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_generator_init(AgsSynthGenerator *synth_generator);
 void ags_synth_generator_set_property(GObject *gobject,
 				      guint prop_id,
@@ -43,12 +40,6 @@ void ags_synth_generator_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_synth_generator_read(AgsFile *file,
-			      xmlNode *node,
-			      AgsPlugin *plugin);
-xmlNode* ags_synth_generator_write(AgsFile *file,
-				   xmlNode *parent,
-				   AgsPlugin *plugin);
 void ags_synth_generator_finalize(GObject *gobject);
 
 /**
@@ -87,7 +78,6 @@ enum{
 };
 
 static gpointer ags_synth_generator_parent_class = NULL;
-static AgsPluginInterface *ags_synth_generator_parent_plugin_interface;
 
 static const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
 
@@ -111,20 +101,10 @@ ags_synth_generator_get_type()
       (GInstanceInitFunc) ags_synth_generator_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_synth_generator_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_synth_generator = g_type_register_static(AGS_TYPE_FUNCTION,
 						      "AgsSynthGenerator",
 						      &ags_synth_generator_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_synth_generator,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_synth_generator);
   }
@@ -154,7 +134,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The samplerate to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -172,7 +152,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -190,7 +170,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The format to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -208,7 +188,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frame count to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("frame-count",
 				 i18n_pspec("apply frame count"),
@@ -226,7 +206,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The loop start to be used.
    * 
-   * Since: 2.1.23
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("loop-start",
 				 i18n_pspec("loop start"),
@@ -244,7 +224,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The loop end to be used.
    * 
-   * Since: 2.1.23
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("loop-end",
 				 i18n_pspec("loop end"),
@@ -258,11 +238,11 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
   
   /**
-   * AgsAudioSignal:delay:
+   * AgsSynthGenerator:delay:
    *
    * The delay to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay",
 				   i18n_pspec("using delay"),
@@ -280,7 +260,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The attack to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("apply attack"),
@@ -298,7 +278,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * If %TRUE compute LFO amplification, otherwise not.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boolean("do-lfo",
 				    i18n_pspec("do LFO amplification"),
@@ -314,7 +294,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The oscillator to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("oscillator",
 				 i18n_pspec("using oscillator"),
@@ -332,7 +312,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frequency to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("using frequency"),
@@ -350,7 +330,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The phase to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("phase",
 				   i18n_pspec("using phase"),
@@ -368,7 +348,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The volume to be used.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("volume",
 				   i18n_pspec("using volume"),
@@ -386,7 +366,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The LFO depth to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("lfo-depth",
 				   i18n_pspec("using LFO depth"),
@@ -404,7 +384,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The tuning to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("tuning",
 				   i18n_pspec("using tuning"),
@@ -422,7 +402,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * If %TRUE compute FM synth, otherwise not.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_boolean("do-fm-synth",
 				    i18n_pspec("do fm synth"),
@@ -438,7 +418,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frame count to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("fm-lfo-oscillator",
 				 i18n_pspec("fm LFO oscillator mode"),
@@ -456,7 +436,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The fm LFO frequency to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("fm-lfo-frequency",
 				   i18n_pspec("using fm LFO frequency"),
@@ -474,7 +454,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The fm LFO depth to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("fm-lfo-depth",
 				   i18n_pspec("using fm LFO depth"),
@@ -492,7 +472,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The fm tuning to be used.
    * 
-   * Since: 2.3.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("fm-tuning",
 				   i18n_pspec("using FM tuning"),
@@ -510,7 +490,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The assigned timestamp.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp"),
@@ -520,15 +500,6 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
-}
-
-void
-ags_synth_generator_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_synth_generator_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_synth_generator_read;
-  plugin->write = ags_synth_generator_write;
 }
 
 void
@@ -827,62 +798,6 @@ ags_synth_generator_get_property(GObject *gobject,
 }
 
 void
-ags_synth_generator_read(AgsFile *file,
-			 xmlNode *node,
-			 AgsPlugin *plugin)
-{
-  //  AgsSynthGenerator *gobject;
-
-  //  xmlChar *str;
-
-  //  gobject = AGS_SYNTH_GENERATOR(plugin);
-  
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_synth_generator_write(AgsFile *file,
-			  xmlNode *parent,
-			  AgsPlugin *plugin)
-{
-  AgsSynthGenerator *synth_generator;
-  xmlNode *node;
-  gchar *id;
-
-  synth_generator = AGS_SYNTH_GENERATOR(plugin);
-  
-  /* allocate new node with uuid */
-  id = ags_id_generator_create_uuid();
-
-  node = xmlNewNode(NULL,
-		    "ags-synth-generator");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  /* add reference and node to file object */
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", synth_generator,
-				   NULL));
-
-  //TODO:JK: implement me
-
-  /* write timestamp */
-  if(synth_generator->timestamp != NULL){
-    ags_file_write_timestamp(file,
-			     node,
-			     (AgsTimestamp *) synth_generator->timestamp);
-  }
-
-  return(node);
-}
-
-void
 ags_synth_generator_finalize(GObject *gobject)
 {
   AgsSynthGenerator *synth_generator;
@@ -904,7 +819,7 @@ ags_synth_generator_finalize(GObject *gobject)
  * 
  * Set samplerate.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint samplerate)
@@ -934,8 +849,8 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
   synth_generator->phase = samplerate * (synth_generator->phase / old_samplerate);
 
   for(i = 0; i < synth_generator->sync_point_count; i++){
-    synth_generator->sync_point[i][0][0] = samplerate * (synth_generator->sync_point[i][0][0] / old_samplerate);
-    synth_generator->sync_point[i][0][1] = samplerate * (synth_generator->sync_point[i][0][1] / old_samplerate);
+    synth_generator->sync_point[i][0].real = samplerate * (synth_generator->sync_point[i][0].real / old_samplerate);
+    synth_generator->sync_point[i][0].imag = samplerate * (synth_generator->sync_point[i][0].imag / old_samplerate);
   }
 }
 
@@ -946,7 +861,7 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
  * 
  * Set buffer size.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size)
@@ -965,7 +880,7 @@ ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint bu
  * 
  * Set format.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
@@ -984,10 +899,8 @@ ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
  * @note: the note to compute
  * 
  * Compute synth for @note.
- *
- * Returns: an #AgsAudioSignal applied specified synth to stream
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
@@ -1088,14 +1001,14 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 
   if(sync_point != NULL){
     if(sync_point_count > 1 &&
-       floor(sync_point[1][0][0]) > 0.0){
-      if(sync_point[1][0][0] < current_count){
-	current_count = sync_point[1][0][0];
+       floor(sync_point[1][0].real) > 0.0){
+      if(sync_point[1][0].real < current_count){
+	current_count = sync_point[1][0].real;
       }
     }else{
-      if(sync_point[0][0][0] < current_count &&
-	 floor(sync_point[0][0][0]) > 0.0){
-	current_count = sync_point[0][0][0];
+      if(sync_point[0][0].real < current_count &&
+	 floor(sync_point[0][0].real) > 0.0){
+	current_count = sync_point[0][0].real;
       }
     }
   }
@@ -1318,9 +1231,9 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     }
     
     if(sync_point != NULL){
-      if(floor(sync_point[j][0][0]) > 0.0 &&
-	 last_sync + sync_point[j][0][0] < offset + current_count){
-	current_phase = sync_point[j][0][1];
+      if(floor(sync_point[j][0].real) > 0.0 &&
+	 last_sync + sync_point[j][0].real < offset + current_count){
+	current_phase = sync_point[j][0].imag;
 
 	synced = TRUE;
       }
@@ -1339,25 +1252,25 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     
     if(sync_point != NULL){
       if(j + 1 < sync_point_count &&
-	 floor(sync_point[j + 1][0][0]) > 0.0){
-	if(sync_point[j + 1][0][0] < current_count){
-	  current_count = sync_point[j + 1][0][0];
+	 floor(sync_point[j + 1][0].real) > 0.0){
+	if(sync_point[j + 1][0].real < current_count){
+	  current_count = sync_point[j + 1][0].real;
 	}
       }else{
-	if(floor(sync_point[0][0][0]) > 0.0 &&
-	   sync_point[0][0][0] < current_count){
-	  current_count = sync_point[0][0][0];
+	if(floor(sync_point[0][0].real) > 0.0 &&
+	   sync_point[0][0].real < current_count){
+	  current_count = sync_point[0][0].real;
 	}
       }
     }
     
     if(sync_point != NULL){
       if(synced){
-	last_sync = last_sync + sync_point[j][0][0];
+	last_sync = last_sync + sync_point[j][0].real;
 	j++;
 
 	if(j >= sync_point_count ||
-	   floor(sync_point[j][0][0]) == 0.0){
+	   floor(sync_point[j][0].real) == 0.0){
 	  j = 0;
 	}
 
@@ -1379,7 +1292,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
  *
  * Returns: a new #AgsSynthGenerator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsSynthGenerator*
 ags_synth_generator_new()

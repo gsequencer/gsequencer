@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_EQUALIZER10                (ags_equalizer10_get_type())
 #define AGS_EQUALIZER10(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EQUALIZER10, AgsEqualizer10))
@@ -101,5 +107,7 @@ GType ags_equalizer10_get_type(void);
 AgsPort* ags_equalizer10_find_specifier(GList *recall, gchar *specifier);
 
 AgsEqualizer10* ags_equalizer10_new(GObject *soundcard);
+
+G_END_DECLS
 
 #endif /*__AGS_EQUALIZER10_H__*/

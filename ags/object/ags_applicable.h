@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_APPLICABLE                    (ags_applicable_get_type())
 #define AGS_APPLICABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLICABLE, AgsApplicable))
@@ -47,5 +49,7 @@ GType ags_applicable_get_type();
 void ags_applicable_set_update(AgsApplicable *applicable, gboolean update);
 void ags_applicable_apply(AgsApplicable *applicable);
 void ags_applicable_reset(AgsApplicable *applicable);
+
+G_END_DECLS
 
 #endif /*__AGS_APPLICABLE_H__*/

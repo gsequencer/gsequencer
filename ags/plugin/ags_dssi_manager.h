@@ -27,6 +27,8 @@
 
 #include <ags/plugin/ags_dssi_plugin.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_DSSI_MANAGER                (ags_dssi_manager_get_type())
 #define AGS_DSSI_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DSSI_MANAGER, AgsDssiManager))
 #define AGS_DSSI_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DSSI_MANAGER, AgsDssiManagerClass))
@@ -34,7 +36,7 @@
 #define AGS_IS_DSSI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DSSI_MANAGER))
 #define AGS_DSSI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_DSSI_MANAGER, AgsDssiManagerClass))
 
-#define AGS_DSSI_MANAGER_GET_OBJ_MUTEX(obj) (((AgsDssiManager *) obj)->obj_mutex)
+#define AGS_DSSI_MANAGER_GET_OBJ_MUTEX(obj) (&(((AgsDssiManager *) obj)->obj_mutex))
 
 typedef struct _AgsDssiManager AgsDssiManager;
 typedef struct _AgsDssiManagerClass AgsDssiManagerClass;
@@ -43,8 +45,7 @@ struct _AgsDssiManager
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
   
   GList *dssi_plugin_blacklist;
   GList *dssi_plugin;
@@ -56,8 +57,6 @@ struct _AgsDssiManagerClass
 };
 
 GType ags_dssi_manager_get_type(void);
-
-pthread_mutex_t* ags_dssi_manager_get_class_mutex();
 
 gchar** ags_dssi_manager_get_default_path();
 void ags_dssi_manager_set_default_path(gchar** default_path);
@@ -78,5 +77,7 @@ void ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager);
 AgsDssiManager* ags_dssi_manager_get_instance();
 
 AgsDssiManager* ags_dssi_manager_new();
+
+G_END_DECLS
 
 #endif /*__AGS_DSSI_MANAGER_H__*/

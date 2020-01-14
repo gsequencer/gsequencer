@@ -82,11 +82,9 @@ ags_add_audio_test_launch()
   g_object_ref(audio);
 
   /* create add audio */
-  add_audio = ags_add_audio_new(application_context,
-				audio);
+  add_audio = ags_add_audio_new(audio);
 
   CU_ASSERT(AGS_IS_ADD_AUDIO(add_audio));
-  CU_ASSERT(add_audio->application_context == application_context);
   CU_ASSERT(add_audio->audio == audio);
 
   /* launch */

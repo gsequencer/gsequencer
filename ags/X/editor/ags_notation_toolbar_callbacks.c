@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -241,18 +241,27 @@ ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *n
   AgsNotationEditor *notation_editor;
   AgsNotationEdit *notation_edit;
 
-  double zoom_factor, zoom;
+  gdouble old_zoom_factor;
+  gdouble zoom_factor, zoom;
 
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_toolbar,
 								  AGS_TYPE_NOTATION_EDITOR);
 
   notation_edit = notation_editor->notation_edit;
-
-  gtk_widget_queue_draw((GtkWidget *) notation_edit);  
   
   /* zoom */
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
+  old_zoom_factor = exp2(6.0 - (double) notation_toolbar->zoom_history);
+  
+  notation_toolbar->zoom_history = gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom);
+
+  zoom_factor = exp2(6.0 - (double) notation_toolbar->zoom_history);
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+
+  /* reset notation edit */
+  gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
+		      gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) * old_zoom_factor / zoom_factor);
+  
+  gtk_widget_queue_draw((GtkWidget *) notation_edit);  
 
   /* reset ruler */
   notation_edit->ruler->factor = zoom_factor;

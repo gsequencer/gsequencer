@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/task/ags_add_audio_signal.h>
-
-#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -114,7 +112,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("recycling of add audio signal"),
@@ -130,7 +128,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of add audio signal"),
@@ -146,7 +144,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add audio signal"),
@@ -162,7 +160,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecallID
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("audio signal of add audio signal"),
@@ -178,7 +176,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The audio signal's flags.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_uint("audio-signal-flags",
 				  i18n_pspec("audio signal flags of effect"),
@@ -431,12 +429,14 @@ ags_add_audio_signal_launch(AgsTask *task)
   gdouble delay;
   guint attack;
 
-  pthread_mutex_t *recycling_mutex;
+  GRecMutex *recycling_mutex;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
+  g_return_if_fail(AGS_IS_RECYCLING(add_audio_signal->recycling));
+  
   soundcard = add_audio_signal->soundcard;
-
+  
   recycling = add_audio_signal->recycling;
 
   audio_signal = add_audio_signal->audio_signal;
@@ -452,11 +452,11 @@ ags_add_audio_signal_launch(AgsTask *task)
   old_template = NULL;
   
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){
-    pthread_mutex_lock(recycling_mutex);
+    g_rec_mutex_lock(recycling_mutex);
     
     old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
 
-    pthread_mutex_unlock(recycling_mutex);
+    g_rec_mutex_unlock(recycling_mutex);
   }
 
   /* create audio signal */
@@ -514,7 +514,7 @@ ags_add_audio_signal_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddAudioSignal.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,

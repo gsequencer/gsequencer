@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/controller/ags_osc_action_controller.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 
@@ -142,7 +140,7 @@ ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_action_controller_signals[RUN_ACTION] =
     g_signal_new("run-action",
@@ -173,7 +171,7 @@ ags_osc_action_controller_set_property(GObject *gobject,
 {
   AgsOscActionController *osc_action_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
@@ -195,7 +193,7 @@ ags_osc_action_controller_get_property(GObject *gobject,
 {
   AgsOscActionController *osc_action_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
@@ -238,7 +236,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 {
   AgsOscResponse *osc_response;
 
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   AgsTask *task;
   
   AgsApplicationContext *application_context;
@@ -332,7 +330,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   /* get sound provider */
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   path_offset = 0;
 
@@ -346,14 +344,14 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = (AgsTask *) ags_start_soundcard_new(application_context);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = (AgsTask *) ags_stop_soundcard_new(application_context);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -370,7 +368,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 	
 	return(start_response);
       }
@@ -381,14 +379,14 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = (AgsTask *) ags_start_sequencer_new(application_context);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = (AgsTask *) ags_stop_sequencer_new(application_context);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -405,7 +403,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -441,7 +439,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  free(path);
 	  free(action);
 	  
-	  g_object_unref(task_thread);
+	  g_object_unref(task_launcher);
 	  g_list_free_full(start_list,
 			   g_object_unref);
 	  
@@ -477,7 +475,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  free(path);
 	  free(action);
 	  
-	  g_object_unref(task_thread);
+	  g_object_unref(task_launcher);
 	  
 	  return(start_response);
 	}
@@ -516,7 +514,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -526,15 +524,15 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	task = (AgsTask *) ags_start_audio_new(audio,
 					       -1);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = (AgsTask *) ags_cancel_audio_new(audio,
 						-1);
 
-	ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				    task);
+	ags_task_launcher_add_task(task_launcher,
+				   task);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -551,7 +549,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
-	g_object_unref(task_thread);
+	g_object_unref(task_launcher);
 
 	return(start_response);
       }
@@ -570,7 +568,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   free(path);
   free(action);
   
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 
   return(start_response);
 }
@@ -586,7 +584,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controller,
@@ -615,7 +613,7 @@ ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controll
  * 
  * Returns: the #AgsOscActionController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscActionController*
 ags_osc_action_controller_new()

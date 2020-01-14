@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,16 +19,10 @@
 
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -117,7 +111,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < 4 && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
+  for(i = 0; i < 4 && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data)); i++){
     list = list->next;
   }
 

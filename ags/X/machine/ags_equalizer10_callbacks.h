@@ -25,9 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_equalizer10.h>
 
-void ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsEqualizer10 *equalizer10);
+G_BEGIN_DECLS
+
+void ags_equalizer10_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsEqualizer10 *equalizer10);
 
 void ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 						    guint audio_channels, guint audio_channels_old,
@@ -60,5 +66,7 @@ void ags_equalizer10_peak_14336hz_callback(GtkRange *range,
 
 void ags_equalizer10_pressure_callback(GtkRange *range,
 				       AgsEqualizer10 *equalizer10);
+
+G_END_DECLS
 
 #endif /*__AGS_EQUALIZER10_CALLBACKS_H__*/

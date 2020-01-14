@@ -19,8 +19,6 @@
 
 #include <ags/audio/osc/ags_osc_builder.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
@@ -70,6 +68,15 @@ void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 					  AgsOscBuilderMessage *message,
 					  gsize append_size);
 
+void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+				  AgsOscBuilderBundle *bundle,
+				  unsigned char *data,
+				  gsize *offset);
+void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+				   AgsOscBuilderMessage *message,
+				   unsigned char *data,
+				   gsize *offset);
+
 /**
  * SECTION:ags_osc_builder
  * @short_description: OSC builder
@@ -97,8 +104,6 @@ enum{
 static gpointer ags_osc_builder_parent_class = NULL;
 
 static guint osc_builder_signals[LAST_SIGNAL];
-
-static pthread_mutex_t ags_osc_builder_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_builder_get_type(void)
@@ -165,7 +170,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::osc-putc signal is emited during putting char to file.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[OSC_PUTC] =
     g_signal_new("osc-putc",
@@ -184,7 +189,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::on-error signal is emited during building of event.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -202,7 +207,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-packet signal is emited during building packet.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_PACKET] =
     g_signal_new("append-packet",
@@ -223,7 +228,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-bundle signal is emited during building bundle.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_BUNDLE] =
     g_signal_new("append-bundle",
@@ -247,7 +252,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
    *
    * The ::append-message signal is emited during building message.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_MESSAGE] =
     g_signal_new("append-message",
@@ -264,12 +269,13 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
   /**
    * AgsOscBuilder::append-value:
    * @osc_builder: the builder
+   * @message: the message
    * @v_type: the type as ASCII char
    * @value: the #GValue-struct
    *
    * The ::append-value signal is emited during building value.
    *
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_builder_signals[APPEND_VALUE] =
     g_signal_new("append-value",
@@ -277,7 +283,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_value),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__INT_POINTER,
+		 ags_cclosure_marshal_VOID__POINTER_INT_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_INT,
 		 G_TYPE_POINTER);
@@ -289,19 +295,7 @@ ags_osc_builder_init(AgsOscBuilder *osc_builder)
   osc_builder->flags = 0;
 
   /* osc builder mutex */
-  osc_builder->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(osc_builder->obj_mutexattr);
-  pthread_mutexattr_settype(osc_builder->obj_mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(osc_builder->obj_mutexattr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  osc_builder->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(osc_builder->obj_mutex,
-		     osc_builder->obj_mutexattr);
+  g_rec_mutex_init(&(osc_builder->obj_mutex));
 
   osc_builder->data = NULL;
   osc_builder->length = 0;
@@ -322,7 +316,7 @@ ags_osc_builder_set_property(GObject *gobject,
 {
   AgsOscBuilder *osc_builder;
 
-  pthread_mutex_t *osc_builder_mutex;
+  GRecMutex *osc_builder_mutex;
 
   osc_builder = AGS_OSC_BUILDER(gobject);
 
@@ -344,7 +338,7 @@ ags_osc_builder_get_property(GObject *gobject,
 {
   AgsOscBuilder *osc_builder;
 
-  pthread_mutex_t *osc_builder_mutex;
+  GRecMutex *osc_builder_mutex;
 
   osc_builder = AGS_OSC_BUILDER(gobject);
 
@@ -364,12 +358,6 @@ ags_osc_builder_finalize(GObject *gobject)
   AgsOscBuilder *osc_builder;
     
   osc_builder = (AgsOscBuilder *) gobject;
-
-  pthread_mutex_destroy(osc_builder->obj_mutex);
-  free(osc_builder->obj_mutex);
-
-  pthread_mutexattr_destroy(osc_builder->obj_mutexattr);
-  free(osc_builder->obj_mutexattr);
 
   if(osc_builder->data != NULL){
     free(osc_builder->data);
@@ -451,29 +439,14 @@ ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 }
 
 /**
- * ags_osc_builder_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.1.0
- */
-pthread_mutex_t*
-ags_osc_builder_get_class_mutex()
-{
-  return(&ags_osc_builder_class_mutex);
-}
-
-/**
  * ags_osc_builder_packet_alloc:
  * @offset: the current offset
  * 
  * Allocate #AgsOscBuilderPacket-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderPacket-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderPacket-struct
  *
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderPacket*
 ags_osc_builder_packet_alloc(guint64 offset)
@@ -496,11 +469,11 @@ ags_osc_builder_packet_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_packet_free:
- * @packet: the #AgsOscBuilderPacket-struct
+ * @packet: (type gpointer) (transfer none): the #AgsOscBuilderPacket-struct
  *
  * Free @packet.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_packet_free(AgsOscBuilderPacket *packet)
@@ -524,9 +497,9 @@ ags_osc_builder_packet_free(AgsOscBuilderPacket *packet)
  * 
  * Allocate #AgsOscBuilderBundle-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderBundle-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderBundle-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderBundle*
 ags_osc_builder_bundle_alloc(guint64 offset)
@@ -552,11 +525,11 @@ ags_osc_builder_bundle_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_bundle_free:
- * @bundle: the #AgsOscBuilderBundle-struct
+ * @bundle: (type gpointer) (transfer none): the #AgsOscBuilderBundle-struct
  *
  * Free @bundle.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_bundle_free(AgsOscBuilderBundle *bundle)
@@ -580,9 +553,9 @@ ags_osc_builder_bundle_free(AgsOscBuilderBundle *bundle)
  * 
  * Allocate #AgsOscBuilderMessage-struct.
  * 
- * Returns: the newly allocated #AgsOscBuilderMessage-struct
+ * Returns: (type gpointer) (transfer none): the newly allocated #AgsOscBuilderMessage-struct
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilderMessage*
 ags_osc_builder_message_alloc(guint64 offset)
@@ -609,11 +582,11 @@ ags_osc_builder_message_alloc(guint64 offset)
 
 /**
  * ags_osc_builder_message_free:
- * @message: the #AgsOscBuilderMessage-struct
+ * @message: (type gpointer) (transfer none): the #AgsOscBuilderMessage-struct
  *
  * Free @message.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_message_free(AgsOscBuilderMessage *message)
@@ -651,7 +624,7 @@ ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
  * 
  * Put character
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_osc_putc(AgsOscBuilder *osc_builder,
@@ -683,7 +656,7 @@ ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
  * 
  * Report error.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_on_error(AgsOscBuilder *osc_builder,
@@ -720,7 +693,7 @@ ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder)
  * ags_osc_builder_append_packet:
  * @osc_builder: the #AgsOscBuilder
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_packet(AgsOscBuilder *osc_builder)
@@ -785,7 +758,7 @@ ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
  * 
  * Append bundle.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_bundle(AgsOscBuilder *osc_builder,
@@ -860,7 +833,7 @@ ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
  * 
  * Append message.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
@@ -1146,12 +1119,13 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 /**
  * ags_osc_builder_append_value:
  * @osc_builder: the #AgsOscBuilder
+ * @message: the message
  * @v_type: the type as char
  * @value: the #GValue-struct containinig value
  * 
  * Append value.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
@@ -1164,8 +1138,104 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
   g_object_ref((GObject *) osc_builder);
   g_signal_emit(G_OBJECT(osc_builder),
 		osc_builder_signals[APPEND_VALUE], 0,
+		message,
 		v_type, value);
   g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+			     AgsOscBuilderBundle *current_bundle,
+			     unsigned char *data,
+			     gsize *offset)
+{
+  GList *message_start, *message;
+  GList *bundle_start, *bundle;
+
+  /* #bundle */
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 "#bundle",
+				 -1);
+    
+  offset[0] += 8;
+
+  /* time tag */
+  ags_osc_buffer_util_put_timetag(data + offset[0],
+				  current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
+    
+  offset[0] += 8;
+
+  /* content */
+  message_start = g_list_copy(current_bundle->message);
+  message_start = g_list_reverse(message_start);
+
+  bundle_start = g_list_copy(current_bundle->bundle);
+  bundle_start = g_list_reverse(bundle_start);
+
+  message = message_start;
+  bundle = bundle_start;
+
+  while(message != NULL || bundle != NULL){
+    if(bundle == NULL ||
+       (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
+      ags_osc_builder_build_message(osc_builder,
+				    message->data,
+				    data,
+				    offset);	
+    }else{
+      ags_osc_builder_build_bundle(osc_builder,
+				   bundle->data,
+				   data,
+				   offset);	
+    }
+      
+    /* iterate */
+    if(message != NULL){
+      message = message->next;
+    }
+
+    if(bundle != NULL){
+      bundle = bundle->next;
+    }
+  }
+    
+  g_list_free(message_start);
+  g_list_free(bundle_start);
+}
+
+void
+ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+			      AgsOscBuilderMessage *message,
+			      unsigned char *data,
+			      gsize *offset)
+{
+  guint64 address_pattern_length;
+  guint64 type_tag_length;
+
+  /* address pattern */
+  address_pattern_length = strlen(message->address_pattern);
+
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 message->address_pattern,
+				 -1);
+
+  offset[0] += (address_pattern_length + 1);
+
+  /* type tag */
+  type_tag_length = strlen(message->type_tag);
+
+  ags_osc_buffer_util_put_string(data + offset[0],
+				 message->type_tag,
+				 -1);
+
+  offset[0] += (type_tag_length + 1);
+
+  /* data */
+  memcpy(data + offset[0],
+	 message->data,
+	 message->data_length * sizeof(unsigned char));
+
+  offset[0] += message->data_length;
 }
 
 /**
@@ -1174,7 +1244,7 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
  *
  * Build the OSC data.
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 void
 ags_osc_builder_build(AgsOscBuilder *osc_builder)
@@ -1185,96 +1255,6 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
 
   gsize data_length;
   gsize offset;
-
-  auto void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-					 AgsOscBuilderBundle *bundle);
-  auto void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
-					  AgsOscBuilderMessage *message);
-
-  void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-				    AgsOscBuilderBundle *current_bundle)
-  {
-    GList *message_start, *message;
-    GList *bundle_start, *bundle;
-
-    /* #bundle */
-    ags_osc_buffer_util_put_string(data + offset,
-				   "#bundle",
-				   -1);
-    
-    offset += 8;
-
-    /* time tag */
-    ags_osc_buffer_util_put_timetag(data + offset,
-				    current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
-    
-    offset += 8;
-
-    /* content */
-    message_start = g_list_copy(current_bundle->message);
-    message_start = g_list_reverse(message_start);
-
-    bundle_start = g_list_copy(current_bundle->bundle);
-    bundle_start = g_list_reverse(bundle_start);
-
-    message = message_start;
-    bundle = bundle_start;
-
-    while(message != NULL || bundle != NULL){
-      if(bundle == NULL ||
-	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
-	ags_osc_builder_build_message(osc_builder,
-				      message->data);	
-      }else{
-	ags_osc_builder_build_bundle(osc_builder,
-				     bundle->data);	
-      }
-      
-      /* iterate */
-      if(message != NULL){
-	message = message->next;
-      }
-
-      if(bundle != NULL){
-	bundle = bundle->next;
-      }
-    }
-    
-    g_list_free(message_start);
-    g_list_free(bundle_start);
-  }
-
-  void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
-				     AgsOscBuilderMessage *message)
-  {
-    guint64 address_pattern_length;
-    guint64 type_tag_length;
-
-    /* address pattern */
-    address_pattern_length = strlen(message->address_pattern);
-
-    ags_osc_buffer_util_put_string(data + offset,
-				   message->address_pattern,
-				   -1);
-
-    offset += (address_pattern_length + 1);
-
-    /* type tag */
-    type_tag_length = strlen(message->type_tag);
-
-    ags_osc_buffer_util_put_string(data + offset,
-				   message->type_tag,
-				   -1);
-
-    offset += (type_tag_length + 1);
-
-    /* data */
-    memcpy(data + offset,
-	   message->data,
-	   message->data_length * sizeof(unsigned char));
-
-    offset += message->data_length;
-  }
   
   if(!AGS_IS_OSC_BUILDER(osc_builder)){
     return;
@@ -1324,10 +1304,14 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
       if(bundle == NULL ||
 	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
 	ags_osc_builder_build_message(osc_builder,
-				      message->data);	
+				      message->data,
+				      data,
+				      &offset);	
       }else{
 	ags_osc_builder_build_bundle(osc_builder,
-				     bundle->data);	
+				     bundle->data,
+				     data,
+				     &offset);	
       }
       
       /* iterate */
@@ -1360,7 +1344,7 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
  *
  * Returns: the new #AgsOscBuilder
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscBuilder*
 ags_osc_builder_new()

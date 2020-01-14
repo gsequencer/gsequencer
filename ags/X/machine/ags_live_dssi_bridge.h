@@ -33,6 +33,8 @@
 
 #include <ags/X/ags_machine.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LIVE_DSSI_BRIDGE                (ags_live_dssi_bridge_get_type())
 #define AGS_LIVE_DSSI_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LIVE_DSSI_BRIDGE, AgsLiveDssiBridge))
 #define AGS_LIVE_DSSI_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LIVE_DSSI_BRIDGE, AgsLiveDssiBridgeClass))
@@ -100,5 +102,7 @@ void ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge);
 AgsLiveDssiBridge* ags_live_dssi_bridge_new(GObject *soundcard,
 					    gchar *filename,
 					    gchar *effect);
+
+G_END_DECLS
 
 #endif /*__AGS_LIVE_DSSI_BRIDGE_H__*/

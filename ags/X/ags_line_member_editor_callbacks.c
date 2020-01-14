@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -37,8 +33,6 @@
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,11 +41,51 @@
 
 #include <ladspa.h>
 
+void ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
+								 gchar *filename, gchar *effect);
+  
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
   gtk_widget_show_all((GtkWidget *) line_member_editor->plugin_browser);
+}
+
+void
+ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
+							    gchar *filename, gchar *effect)
+{
+  GtkHBox *hbox;
+  GtkCheckButton *check_button;
+  GtkLabel *label;
+
+  gchar *str;
+  
+  /* create entry */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+      
+  check_button = (GtkCheckButton *) gtk_check_button_new();
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(check_button),
+		     FALSE, FALSE,
+		     0);
+
+  str = g_strdup_printf("%s - %s",
+			filename,
+			effect);
+    
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_show_all((GtkWidget *) hbox);
+
+  g_free(str);
 }
 
 void
@@ -72,38 +106,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   gchar *filename, *effect;
 
   gboolean has_bridge;
-  gboolean is_output;
-  
-  auto void ags_line_member_editor_plugin_browser_response_create_entry();
-  
-  void ags_line_member_editor_plugin_browser_response_create_entry(){
-    GtkHBox *hbox;
-    GtkCheckButton *check_button;
-    GtkLabel *label;
-
-    /* create entry */
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		       GTK_WIDGET(hbox),
-		       FALSE, FALSE,
-		       0);
-      
-    check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(check_button),
-		       FALSE, FALSE,
-		       0);
-
-    //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
-						       filename,
-						       effect));
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(label),
-		       FALSE, FALSE,
-		       0);
-    gtk_widget_show_all((GtkWidget *) hbox);
-  }
+  gboolean is_output;  
   
   switch(response){
   case GTK_RESPONSE_ACCEPT:
@@ -117,7 +120,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-      application_context = (AgsApplicationContext *) window->application_context;
+      application_context = ags_application_context_get_instance();
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
@@ -190,14 +193,15 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 						   NULL,
 						   filename,
 						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry();
+	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
+									filename, effect);
 	    
 	    /* add effect */
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_xorg_application_context_schedule_task(application_context,
-						       (GObject *) add_effect);
+	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					  (AgsTask *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -205,6 +209,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	  g_list_free_full(start_recall,
 			   g_object_unref);
 	}
+	
+	g_free(filename);
+	g_free(effect);
       }else{
 	AgsEffectBridge *effect_bridge;
 	AgsEffectLine *effect_line;
@@ -266,14 +273,15 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 						   NULL,
 						   filename,
 						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry();
+	    ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
+									filename, effect);
 
 	    /* add effect */
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_xorg_application_context_schedule_task(application_context,
-						       (GObject *) add_effect);
+	    ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+					  (AgsTask *) add_effect);
 	  }
 
 	  g_list_free_full(start_play,
@@ -281,6 +289,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	  g_list_free_full(start_recall,
 			   g_object_unref);
 	}
+	
+	g_free(filename);
+	g_free(effect);
       }
     }
     break;      
@@ -295,20 +306,13 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
-  GList *line_member, *line_member_next;
+  GList *start_line_member, *line_member;
   GList *list, *list_start, *pad, *pad_start;
   GList *children;
 
   guint nth;
   gboolean has_bridge;
   gboolean is_output;
-  
-  auto void ags_line_member_editor_plugin_browser_response_destroy_entry();
-  
-  void ags_line_member_editor_plugin_browser_response_destroy_entry(){
-    /* destroy line member editor entry */
-    gtk_widget_destroy(GTK_WIDGET(line_member->data));
-  }
   
   if(button == NULL ||
      line_member_editor == NULL){
@@ -320,7 +324,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
+  line_member =
+    start_line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
 
   machine = machine_editor->machine;
 
@@ -376,19 +381,19 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(line != NULL){
       for(nth = 0; line_member != NULL; nth++){
-	line_member_next = line_member->next;
-	
 	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_plugin_browser_response_destroy_entry();
+	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
 
 	  /* remove effect */
 	  ags_line_remove_effect(line,
 				 nth);
 	}
+
+	g_list_free(children);
       
-	line_member = line_member_next;
+	line_member = line_member->next;
       }
     }
   }else{
@@ -437,7 +442,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_plugin_browser_response_destroy_entry();
+	  gtk_widget_destroy(GTK_WIDGET(line_member->data));
 	
 	  /* remove effect */
 	  ags_effect_line_remove_effect(effect_line,
@@ -450,4 +455,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       }
     }
   }
+
+  g_list_free(start_line_member);
 }

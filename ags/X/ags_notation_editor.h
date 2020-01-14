@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
@@ -34,6 +35,8 @@
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notation_edit.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_NOTATION_EDITOR                (ags_notation_editor_get_type ())
 #define AGS_NOTATION_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_EDITOR, AgsNotationEditor))
@@ -127,5 +130,7 @@ void ags_notation_editor_cut(AgsNotationEditor *notation_editor);
 void ags_notation_editor_invert(AgsNotationEditor *notation_editor);
 
 AgsNotationEditor* ags_notation_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_NOTATION_EDITOR_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,7 +73,7 @@ ags_hled_array_class_init(AgsHLedArrayClass *hled_array)
 
 void
 ags_hled_array_init(AgsHLedArray *hled_array)
-{
+{  
   AGS_LED_ARRAY(hled_array)->box = (GtkBox *) gtk_hbox_new(FALSE,
 							   0);
   gtk_container_add((GtkContainer *) hled_array,
@@ -88,7 +88,7 @@ ags_hled_array_init(AgsHLedArray *hled_array)
  *
  * Returns: a new #AgsHLedArray
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsHLedArray*
 ags_hled_array_new()

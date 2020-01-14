@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -118,7 +118,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsExportThread
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("export-thread",
 				   i18n_pspec("export thread of export output"),
@@ -134,7 +134,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of export output"),
@@ -150,7 +150,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -166,7 +166,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Format to use.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("audio format"),
@@ -184,7 +184,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Tic offset of output as end tic of it.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("tic",
 				 i18n_pspec("tic offset"),
@@ -202,7 +202,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Do output the audio export live.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_boolean("live-performance",
 				     i18n_pspec("export output live"),
@@ -441,10 +441,14 @@ ags_export_output_launch(AgsTask *task)
   guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
-  
-  soundcard = export_output->soundcard;
+
+  g_return_if_fail(AGS_IS_EXPORT_THREAD(export_output->export_thread));
+  g_return_if_fail(AGS_IS_SOUNDCARD(export_output->soundcard));
+  g_return_if_fail(export_output->filename != NULL);
   
   export_thread = export_output->export_thread;
+  
+  soundcard = export_output->soundcard;
   
   filename = export_output->filename;
   
@@ -496,7 +500,7 @@ ags_export_output_launch(AgsTask *task)
  *
  * Returns: an new #AgsExportOutput.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,

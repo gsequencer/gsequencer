@@ -33,10 +33,14 @@ void ags_indicator_show(GtkWidget *widget);
 
 void ags_indicator_map(GtkWidget *widget);
 void ags_indicator_realize(GtkWidget *widget);
-void ags_indicator_size_request(GtkWidget *widget,
-				GtkRequisition *requisition);
 void ags_indicator_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation);
+void ags_indicator_get_preferred_width(GtkWidget *widget,
+				       gint *minimal_width,
+				       gint *natural_width);
+void ags_indicator_get_preferred_height(GtkWidget *widget,
+					gint *minimal_height,
+					gint *natural_height);
 
 /**
  * SECTION:ags_indicator
@@ -108,8 +112,9 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   widget = (GtkWidgetClass *) indicator;
 
   widget->realize = ags_indicator_realize;
-  widget->size_request = ags_indicator_size_request;
   widget->size_allocate = ags_indicator_size_allocate;
+  widget->get_preferred_width = ags_indicator_get_preferred_width;
+  widget->get_preferred_height = ags_indicator_get_preferred_height;
   widget->show = ags_indicator_show;
 
   /* properties */
@@ -118,7 +123,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment width.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-width",
 				 "segment width",
@@ -136,7 +141,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment height.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-height",
 				 "segment height",
@@ -154,7 +159,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment padding.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-padding",
 				 "segment padding",
@@ -172,7 +177,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The indicator's segment count.
    * 
-   * Since: 2.2.20
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("segment-count",
 				 "segment count",
@@ -190,7 +195,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The adjustment giving indicator value.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("adjustment",
 				   "assigned adjustment",
@@ -218,7 +223,7 @@ ags_indicator_init(AgsIndicator *indicator)
   indicator->segment_count = AGS_INDICATOR_DEFAULT_SEGMENT_COUNT;
 
   /* adjustment */
-  indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 0.01, 0.01, 0.01);
   g_object_ref(indicator->adjustment);
 }
 
@@ -328,7 +333,7 @@ ags_indicator_map(GtkWidget *widget)
   if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
     GTK_WIDGET_CLASS (ags_indicator_parent_class)->map(widget);
     
-    gdk_window_show(widget->window);
+    gdk_window_show(gtk_widget_get_window(widget));
     //    ags_indicator_draw(widget);
   }
 }
@@ -337,33 +342,40 @@ void
 ags_indicator_realize(GtkWidget *widget)
 {
   AgsIndicator *indicator;
+
+  GdkWindow *window;
+
+  GtkAllocation allocation;
   GdkWindowAttr attributes;
+  
   gint attributes_mask;
   gint buttons_width;
   gint border_left, border_top;
 
   g_return_if_fail(widget != NULL);
-  g_return_if_fail(AGS_IS_INDICATOR (widget));
+  g_return_if_fail(AGS_IS_INDICATOR(widget));
 
   indicator = AGS_INDICATOR(widget);
 
-  gtk_widget_set_realized (widget, TRUE);
+  gtk_widget_set_realized(widget, TRUE);
 
+  gtk_widget_get_allocation(widget,
+			    &allocation);
+  
   /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
+  attributes.x = allocation.x;
+  attributes.y = allocation.y;
+  attributes.width = allocation.width;
+  attributes.height = allocation.height;
 
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 
   attributes.window_type = GDK_WINDOW_CHILD;
 
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
                             GDK_BUTTON_PRESS_MASK |
@@ -375,30 +387,13 @@ ags_indicator_realize(GtkWidget *widget)
                             GDK_ENTER_NOTIFY_MASK |
                             GDK_LEAVE_NOTIFY_MASK);
 
-  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
-				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, indicator);
+  window = gdk_window_new(gtk_widget_get_parent_window (widget),
+			  &attributes, attributes_mask);
 
-  widget->style = gtk_style_attach(widget->style, widget->window);
-  gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
+  gtk_widget_register_window(widget, window);
+  gtk_widget_set_window(widget, window);
 
   gtk_widget_queue_resize(widget);
-}
-
-void
-ags_indicator_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
-}
-
-void
-ags_indicator_size_request(GtkWidget *widget,
-			   GtkRequisition *requisition)
-{
-  GTK_WIDGET_CLASS(ags_indicator_parent_class)->size_request(widget, requisition);
-
-  /* implement me */
-  //TODO:JK:
 }
 
 void
@@ -411,6 +406,32 @@ ags_indicator_size_allocate(GtkWidget *widget,
   //TODO:JK:
 }
 
+void
+ags_indicator_get_preferred_width(GtkWidget *widget,
+				  gint *minimal_width,
+				  gint *natural_width)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->get_preferred_width(widget,
+								    minimal_width,
+								    natural_width);
+}
+
+void
+ags_indicator_get_preferred_height(GtkWidget *widget,
+				   gint *minimal_height,
+				   gint *natural_height)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->get_preferred_height(widget,
+								     minimal_height,
+								     natural_height);
+}
+
+void
+ags_indicator_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
+}
+
 /**
  * ags_indicator_new:
  *
@@ -419,7 +440,7 @@ ags_indicator_size_allocate(GtkWidget *widget,
  *
  * Returns: a new #AgsIndicator
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIndicator*
 ags_indicator_new()

@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/config.h>
 
 #ifdef AGS_WITH_JACK
@@ -33,6 +31,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_JACK_PORT                (ags_jack_port_get_type())
 #define AGS_JACK_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_PORT, AgsJackPort))
 #define AGS_JACK_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_PORT, AgsJackPort))
@@ -40,7 +40,7 @@
 #define AGS_IS_JACK_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_PORT))
 #define AGS_JACK_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_PORT, AgsJackPortClass))
 
-#define AGS_JACK_PORT_GET_OBJ_MUTEX(obj) (((AgsJackPort *) obj)->obj_mutex)
+#define AGS_JACK_PORT_GET_OBJ_MUTEX(obj) (&(((AgsJackPort *) obj)->obj_mutex))
 
 typedef struct _AgsJackPort AgsJackPort;
 typedef struct _AgsJackPortClass AgsJackPortClass;
@@ -74,8 +74,7 @@ struct _AgsJackPort
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   GObject *jack_client;
 
@@ -98,8 +97,6 @@ struct _AgsJackPortClass
 
 GType ags_jack_port_get_type();
 
-pthread_mutex_t* ags_jack_port_get_class_mutex();
-
 gboolean ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags);
 void ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags);
 void ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags);
@@ -114,5 +111,7 @@ void ags_jack_port_register(AgsJackPort *jack_port,
 void ags_jack_port_unregister(AgsJackPort *jack_port);
 
 AgsJackPort* ags_jack_port_new(GObject *jack_client);
+
+G_END_DECLS
 
 #endif /*__AGS_JACK_PORT_H__*/

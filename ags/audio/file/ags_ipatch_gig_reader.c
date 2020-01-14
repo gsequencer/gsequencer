@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
-
-#include <ags/libags.h>
 
 #include <stdlib.h>
 
@@ -63,8 +61,6 @@ void ags_ipatch_gig_reader_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_ipatch_gig_reader_parent_class = NULL;
-
-static pthread_mutex_t ags_ipatch_gig_reader_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 enum{
   PROP_0,
@@ -134,7 +130,7 @@ ags_ipatch_gig_reader_class_init(AgsIpatchGigReaderClass *ipatch_gig_reader)
    *
    * The assigned #AgsIpatch
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("ipatch",
 				   i18n_pspec("the ipatch"),
@@ -174,27 +170,10 @@ ags_ipatch_gig_reader_init(AgsIpatchGigReader *ipatch_gig_reader)
 {
   guint i;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
   ipatch_gig_reader->flags = 0;
 
   /* add audio file mutex */
-  ipatch_gig_reader->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-#ifdef __linux__
-  pthread_mutexattr_setprotocol(attr,
-				PTHREAD_PRIO_INHERIT);
-#endif
-
-  ipatch_gig_reader->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);  
+  g_rec_mutex_init(&(ipatch_gig_reader->obj_mutex));
 
   /* uuid */
   ipatch_gig_reader->uuid = ags_uuid_alloc();
@@ -231,16 +210,12 @@ ags_ipatch_gig_reader_set_property(GObject *gobject,
 {
   AgsIpatchGigReader *ipatch_gig_reader;
 
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   switch(prop_id){
   case PROP_IPATCH:
@@ -249,10 +224,10 @@ ags_ipatch_gig_reader_set_property(GObject *gobject,
 
       ipatch = (AgsIpatch *) g_value_get_object(value);
 
-      pthread_mutex_lock(ipatch_gig_reader_mutex);
+      g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
       if(ipatch_gig_reader->ipatch == ipatch){
-	pthread_mutex_unlock(ipatch_gig_reader_mutex);
+	g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 
 	return;
       }
@@ -267,7 +242,7 @@ ags_ipatch_gig_reader_set_property(GObject *gobject,
 
       ipatch_gig_reader->ipatch = ipatch;
 
-      pthread_mutex_unlock(ipatch_gig_reader_mutex);
+      g_rec_mutex_unlock(ipatch_gig_reader_mutex);
     }
     break;
   default:
@@ -284,25 +259,21 @@ ags_ipatch_gig_reader_get_property(GObject *gobject,
 {
   AgsIpatchGigReader *ipatch_gig_reader;
 
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   switch(prop_id){
   case PROP_IPATCH:
     {
-      pthread_mutex_lock(ipatch_gig_reader_mutex);
+      g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
       g_value_set_object(value, ipatch_gig_reader->ipatch);
 
-      pthread_mutex_unlock(ipatch_gig_reader_mutex);
+      g_rec_mutex_unlock(ipatch_gig_reader_mutex);
     }
     break;
   default:
@@ -335,12 +306,6 @@ ags_ipatch_gig_reader_finalize(GObject *gobject)
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
-  pthread_mutex_destroy(ipatch_gig_reader->obj_mutex);
-  free(ipatch_gig_reader->obj_mutex);
-
-  pthread_mutexattr_destroy(ipatch_gig_reader->obj_mutexattr);
-  free(ipatch_gig_reader->obj_mutexattr);
-
   if(ipatch_gig_reader->ipatch != NULL){
     g_object_unref(ipatch_gig_reader->ipatch);
   }
@@ -357,23 +322,19 @@ ags_ipatch_gig_reader_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   /* get UUID */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
   ptr = ipatch_gig_reader->uuid;
 
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
   
   return(ptr);
 }
@@ -391,23 +352,10 @@ ags_ipatch_gig_reader_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *ipatch_gig_reader_mutex;
-
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(connectable);
 
-  /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
-
-  /* check is ready */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
-  
-  is_ready = (((AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY & (ipatch_gig_reader->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  /* check is ready */  
+  is_ready = ags_ipatch_gig_reader_test_flags(ipatch_gig_reader, AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY);
 
   return(is_ready);
 }
@@ -491,23 +439,10 @@ ags_ipatch_gig_reader_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *ipatch_gig_reader_mutex;
-
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(connectable);
 
-  /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
-
   /* check is connected */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
-
-  is_connected = (((AGS_IPATCH_GIG_READER_CONNECTED & (ipatch_gig_reader->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  is_connected = ags_ipatch_gig_reader_test_flags(ipatch_gig_reader, AGS_IPATCH_GIG_READER_CONNECTED);
 
   return(is_connected);
 }
@@ -541,21 +476,6 @@ ags_ipatch_gig_reader_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_ipatch_gig_reader_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.36
- */
-pthread_mutex_t*
-ags_ipatch_gig_reader_get_class_mutex()
-{
-  return(&ags_ipatch_gig_reader_class_mutex);
-}
-
-/**
  * ags_ipatch_gig_reader_test_flags:
  * @ipatch_gig_reader: the #AgsIpatchGigReader
  * @flags: the flags
@@ -564,32 +484,28 @@ ags_ipatch_gig_reader_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 gboolean
 ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return(FALSE);
   }
 
-  /* get ipatch_gig_reader mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   /* test */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
   retval = (flags & (ipatch_gig_reader->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 
   return(retval);
 }
@@ -601,32 +517,28 @@ ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint fl
  *
  * Enable a feature of @ipatch_gig_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
 {
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return;
   }
 
-  /* get ipatch_gig_reader mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
   ipatch_gig_reader->flags |= flags;
   
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 }
     
 /**
@@ -636,32 +548,28 @@ ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint fla
  *
  * Disable a feature of @ipatch_gig_reader.
  *
- * Since: 2.0.36
+ * Since: 3.0.0
  */
 void
 ags_ipatch_gig_reader_unset_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags)
 {  
-  pthread_mutex_t *ipatch_gig_reader_mutex;
+  GRecMutex *ipatch_gig_reader_mutex;
 
   if(!AGS_IS_IPATCH_GIG_READER(ipatch_gig_reader)){
     return;
   }
 
-  /* get ipatch_gig_reader mutex */
-  pthread_mutex_lock(ags_ipatch_gig_reader_get_class_mutex());
-  
-  ipatch_gig_reader_mutex = ipatch_gig_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_gig_reader_get_class_mutex());
+  /* get ipatch gig reader mutex */
+  ipatch_gig_reader_mutex = AGS_IPATCH_GIG_READER_GET_OBJ_MUTEX(ipatch_gig_reader);
 
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(ipatch_gig_reader_mutex);
+  g_rec_mutex_lock(ipatch_gig_reader_mutex);
 
   ipatch_gig_reader->flags &= (~flags);
   
-  pthread_mutex_unlock(ipatch_gig_reader_mutex);
+  g_rec_mutex_unlock(ipatch_gig_reader_mutex);
 }
 
 gboolean
@@ -816,6 +724,16 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
   return(success);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_instrument_all:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * 
+ * Get instrument all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing instrument
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
@@ -876,6 +794,16 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
   return(instrument);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_sample_all:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * 
+ * Get sample all.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
@@ -938,6 +866,17 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
   return(sample);
 }
 
+/**
+ * ags_ipatch_gig_reader_get_sample_by_instrument_index:
+ * @ipatch_gig_reader: the #AgsIpatchGigReader
+ * @instrument_index: the instrument index
+ * 
+ * Get sample by instrument index.
+ * 
+ * Returns: (element-type utf8) (array zero-terminated=1) (transfer full): the string vector containing sample
+ * 
+ * Since: 3.0.0
+ */
 gchar**
 ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_gig_reader,
 						     guint instrument_index)
@@ -1028,7 +967,7 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
  *
  * Returns: the new #AgsIpatchGigReader.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsIpatchGigReader*
 ags_ipatch_gig_reader_new(AgsIpatch *ipatch)

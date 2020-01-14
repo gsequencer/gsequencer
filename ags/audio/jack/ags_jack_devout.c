@@ -19,8 +19,6 @@
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -28,7 +26,6 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
@@ -69,10 +66,6 @@ void ags_jack_devout_xml_parse(AgsConnectable *connectable,
 gboolean ags_jack_devout_is_connected(AgsConnectable *connectable);
 void ags_jack_devout_connect(AgsConnectable *connectable);
 void ags_jack_devout_disconnect(AgsConnectable *connectable);
-
-void ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
-					     AgsApplicationContext *application_context);
-AgsApplicationContext* ags_jack_devout_get_application_context(AgsSoundcard *soundcard);
 
 void ags_jack_devout_set_device(AgsSoundcard *soundcard,
 				gchar *device);
@@ -177,7 +170,6 @@ void ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -193,8 +185,6 @@ enum{
 };
 
 static gpointer ags_jack_devout_parent_class = NULL;
-
-static pthread_mutex_t ags_jack_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_devout_get_type (void)
@@ -267,27 +257,11 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 
   /* properties */
   /**
-   * AgsJackDevout:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("the application context object"),
-				   i18n_pspec("The application context object"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsJackDevout:device:
    *
    * The jack soundcard indentifier
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -303,7 +277,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The dsp channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -321,7 +295,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The pcm channel count
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -339,7 +313,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -357,7 +331,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer size
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -375,7 +349,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The samplerate
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -393,7 +367,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -408,7 +382,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Beats per minute
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -426,7 +400,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * tact
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -444,7 +418,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -460,7 +434,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -476,7 +450,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("jack-port",
 				    i18n_pspec("jack port object"),
@@ -518,9 +492,6 @@ ags_jack_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  soundcard->set_application_context = ags_jack_devout_set_application_context;
-  soundcard->get_application_context = ags_jack_devout_get_application_context;
-
   soundcard->set_device = ags_jack_devout_set_device;
   soundcard->get_device = ags_jack_devout_get_device;
   
@@ -531,7 +502,6 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_jack_devout_pcm_info;
   soundcard->get_capability = ags_jack_devout_get_capability;
 
-  soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
@@ -599,31 +569,16 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   gchar *str;
   gchar *segmentation;
 
-  guint denumerator, numerator;
+  guint denominator, numerator;
   guint i;
- 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *attr;
-
+  
   /* flags */
   jack_devout->flags = 0;
   g_atomic_int_set(&(jack_devout->sync_flags),
 		   AGS_JACK_DEVOUT_PASS_THROUGH);
 
   /* devout mutex */
-  jack_devout->obj_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  jack_devout->obj_mutex = 
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
-
-  /* parent */
-  jack_devout->application_context = NULL;
+  g_rec_mutex_init(&(jack_devout->obj_mutex));
 
   /* uuid */
   jack_devout->uuid = ags_uuid_alloc();
@@ -647,23 +602,21 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->jack_port = NULL;
 
   /* buffer */
-  jack_devout->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+  jack_devout->buffer_mutex = (GRecMutex **) malloc(4 * sizeof(GRecMutex *));
 
   for(i = 0; i < 4; i++){
-    jack_devout->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    jack_devout->buffer_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    pthread_mutex_init(jack_devout->buffer_mutex[i],
-		       NULL);
+    g_rec_mutex_init(jack_devout->buffer_mutex[i]);
   }
   
   jack_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  jack_devout->sub_block_mutex = (pthread_mutex_t **) malloc(4 * jack_devout->sub_block_count * jack_devout->pcm_channels * sizeof(pthread_mutex_t *));
+  jack_devout->sub_block_mutex = (GRecMutex **) malloc(4 * jack_devout->sub_block_count * jack_devout->pcm_channels * sizeof(GRecMutex *));
 
   for(i = 0; i < 4 * jack_devout->sub_block_count * jack_devout->pcm_channels; i++){
-    jack_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+    jack_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-    pthread_mutex_init(jack_devout->sub_block_mutex[i],
-		       NULL);
+    g_rec_mutex_init(jack_devout->sub_block_mutex[i]);
   }
 
   jack_devout->buffer = (void **) malloc(4 * sizeof(void*));
@@ -688,10 +641,10 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
 
   if(segmentation != NULL){
     sscanf(segmentation, "%d/%d",
-	   &denumerator,
+	   &denominator,
 	   &numerator);
     
-    jack_devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    jack_devout->delay_factor = 1.0 / numerator * (numerator / denominator);
 
     g_free(segmentation);
   }
@@ -722,23 +675,14 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->loop_offset = 0;
 
   /* callback mutex */
-  jack_devout->callback_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(jack_devout->callback_mutex,
-		     NULL);
+  g_mutex_init(&(jack_devout->callback_mutex));
 
-  jack_devout->callback_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(jack_devout->callback_cond, NULL);
+  g_cond_init(&(jack_devout->callback_cond));
 
   /* callback finish mutex */
-  jack_devout->callback_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(jack_devout->callback_finish_mutex,
-		     NULL);
+  g_mutex_init(&(jack_devout->callback_finish_mutex));
 
-  jack_devout->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
-  pthread_cond_init(jack_devout->callback_finish_cond, NULL);
-
-  /*  */
-  jack_devout->notify_soundcard = NULL;
+  g_cond_init(&(jack_devout->callback_finish_cond));
 }
 
 void
@@ -749,7 +693,7 @@ ags_jack_devout_set_property(GObject *gobject,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(gobject);
 
@@ -757,44 +701,17 @@ ags_jack_devout_set_property(GObject *gobject,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      pthread_mutex_lock(jack_devout_mutex);
-
-      if(jack_devout->application_context == application_context){
-	pthread_mutex_unlock(jack_devout_mutex);
-
-	return;
-      }
-
-      if(jack_devout->application_context != NULL){
-	g_object_unref(G_OBJECT(jack_devout->application_context));
-      }
-
-      if(application_context != NULL){	
-	g_object_ref(G_OBJECT(application_context));
-      }
-
-      jack_devout->application_context = application_context;
-
-      pthread_mutex_unlock(jack_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
       char *device;
 
       device = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       jack_devout->card_uri = g_strdup(device);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -803,17 +720,17 @@ ags_jack_devout_set_property(GObject *gobject,
 
       dsp_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(dsp_channels == jack_devout->dsp_channels){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
 
       jack_devout->dsp_channels = dsp_channels;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
@@ -823,10 +740,10 @@ ags_jack_devout_set_property(GObject *gobject,
 
       pcm_channels = g_value_get_uint(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(pcm_channels == jack_devout->pcm_channels){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
@@ -835,25 +752,24 @@ ags_jack_devout_set_property(GObject *gobject,
 
       /* destroy if less pcm-channels */
       for(i = 4 * jack_devout->sub_block_count * pcm_channels; i < 4 * jack_devout->sub_block_count * old_pcm_channels; i++){
-	pthread_mutex_destroy(jack_devout->sub_block_mutex[i]);
+	g_rec_mutex_clear(jack_devout->sub_block_mutex[i]);
 
 	free(jack_devout->sub_block_mutex[i]);
       }
 
-      jack_devout->sub_block_mutex = (pthread_mutex_t **) realloc(jack_devout->sub_block_mutex,
-								  4 * jack_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+      jack_devout->sub_block_mutex = (GRecMutex **) realloc(jack_devout->sub_block_mutex,
+								  4 * jack_devout->sub_block_count * pcm_channels * sizeof(GRecMutex *));
       
       /* create if more pcm-channels */
       for(i = 4 * jack_devout->sub_block_count * old_pcm_channels; i < 4 * jack_devout->sub_block_count * pcm_channels; i++){
-	jack_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+	jack_devout->sub_block_mutex[i] = (GRecMutex *) malloc(sizeof(GRecMutex));
 
-	pthread_mutex_init(jack_devout->sub_block_mutex[i],
-			   NULL);
+	g_rec_mutex_init(jack_devout->sub_block_mutex[i]);
       }
 
       jack_devout->pcm_channels = pcm_channels;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_realloc_buffer(jack_devout);
     }
@@ -864,17 +780,17 @@ ags_jack_devout_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(format == jack_devout->format){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
 
       jack_devout->format = format;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_realloc_buffer(jack_devout);
     }
@@ -885,17 +801,17 @@ ags_jack_devout_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(buffer_size == jack_devout->buffer_size){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
 
       jack_devout->buffer_size = buffer_size;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_realloc_buffer(jack_devout);
       ags_jack_devout_adjust_delay_and_attack(jack_devout);
@@ -907,17 +823,17 @@ ags_jack_devout_set_property(GObject *gobject,
 
       samplerate = g_value_get_uint(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
       
       if(samplerate == jack_devout->samplerate){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
 
       jack_devout->samplerate = samplerate;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_realloc_buffer(jack_devout);
       ags_jack_devout_adjust_delay_and_attack(jack_devout);
@@ -934,11 +850,11 @@ ags_jack_devout_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       jack_devout->bpm = bpm;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_adjust_delay_and_attack(jack_devout);
     }
@@ -949,11 +865,11 @@ ags_jack_devout_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       jack_devout->delay_factor = delay_factor;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       ags_jack_devout_adjust_delay_and_attack(jack_devout);
     }
@@ -964,10 +880,10 @@ ags_jack_devout_set_property(GObject *gobject,
 
       jack_client = (AgsJackClient *) g_value_get_object(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(jack_devout->jack_client == (GObject *) jack_client){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
@@ -982,7 +898,7 @@ ags_jack_devout_set_property(GObject *gobject,
       
       jack_devout->jack_client = (GObject *) jack_client;
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_JACK_PORT:
@@ -991,11 +907,11 @@ ags_jack_devout_set_property(GObject *gobject,
 
       jack_port = (AgsJackPort *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       if(!AGS_IS_JACK_PORT(jack_port) ||
 	 g_list_find(jack_devout->jack_port, jack_port) != NULL){
-	pthread_mutex_unlock(jack_devout_mutex);
+	g_rec_mutex_unlock(jack_devout_mutex);
 
 	return;
       }
@@ -1004,7 +920,7 @@ ags_jack_devout_set_property(GObject *gobject,
       jack_devout->jack_port = g_list_append(jack_devout->jack_port,
 					     jack_port);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   default:
@@ -1021,7 +937,7 @@ ags_jack_devout_get_property(GObject *gobject,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(gobject);
 
@@ -1029,123 +945,115 @@ ags_jack_devout_get_property(GObject *gobject,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
   
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      pthread_mutex_lock(jack_devout_mutex);
-
-      g_value_set_object(value, jack_devout->application_context);
-
-      pthread_mutex_unlock(jack_devout_mutex);
-    }
-    break;
   case PROP_DEVICE:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_string(value, jack_devout->card_uri);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_uint(value, jack_devout->dsp_channels);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_uint(value, jack_devout->pcm_channels);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_FORMAT:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_uint(value, jack_devout->format);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_uint(value, jack_devout->buffer_size);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_uint(value, jack_devout->samplerate);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_BUFFER:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_pointer(value, jack_devout->buffer);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_BPM:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_double(value, jack_devout->bpm);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_double(value, jack_devout->delay_factor);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_ATTACK:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_pointer(value, jack_devout->attack);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_JACK_CLIENT:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
       g_value_set_object(value, jack_devout->jack_client);
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   case PROP_JACK_PORT:
     {
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
 
-      g_value_set_pointer(value, g_list_copy_deep(jack_devout->jack_port,
-						  (GCopyFunc) g_object_ref,
-						  NULL));
+      g_value_set_pointer(value,
+			  g_list_copy_deep(jack_devout->jack_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
     }
     break;
   default:
@@ -1173,30 +1081,6 @@ ags_jack_devout_dispose(GObject *gobject)
 		   g_object_unref);
 
   jack_devout->jack_port = NULL;
-
-  /* notify soundcard */
-  if(jack_devout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-    
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-      
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) jack_devout->notify_soundcard);
-    
-    g_object_unref(jack_devout->notify_soundcard);
-
-    jack_devout->notify_soundcard = NULL;
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(jack_devout->application_context != NULL){
-    g_object_unref(jack_devout->application_context);
-
-    jack_devout->application_context = NULL;
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->dispose(gobject);
@@ -1208,12 +1092,6 @@ ags_jack_devout_finalize(GObject *gobject)
   AgsJackDevout *jack_devout;
 
   jack_devout = AGS_JACK_DEVOUT(gobject);
-
-  pthread_mutex_destroy(jack_devout->obj_mutex);
-  free(jack_devout->obj_mutex);
-
-  pthread_mutexattr_destroy(jack_devout->obj_mutexattr);
-  free(jack_devout->obj_mutexattr);
 
   /* free output buffer */
   free(jack_devout->buffer[0]);
@@ -1235,26 +1113,6 @@ ags_jack_devout_finalize(GObject *gobject)
   /* jack port */
   g_list_free_full(jack_devout->jack_port,
 		   g_object_unref);
-
-  /* notify soundcard */
-  if(jack_devout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-
-    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
-
-    ags_task_thread_remove_cyclic_task(task_thread,
-				       (AgsTask *) jack_devout->notify_soundcard);
-    
-    g_object_unref(jack_devout->notify_soundcard);
-
-    /* unref */
-    g_object_unref(task_thread);
-  }
-
-  /* application context */
-  if(jack_devout->application_context != NULL){
-    g_object_unref(jack_devout->application_context);
-  }  
   
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
@@ -1267,7 +1125,7 @@ ags_jack_devout_get_uuid(AgsConnectable *connectable)
   
   AgsUUID *ptr;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(connectable);
 
@@ -1275,11 +1133,11 @@ ags_jack_devout_get_uuid(AgsConnectable *connectable)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get UUID */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   ptr = jack_devout->uuid;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   return(ptr);
 }
@@ -1297,19 +1155,10 @@ ags_jack_devout_is_ready(AgsConnectable *connectable)
   
   gboolean is_ready;
 
-  pthread_mutex_t *jack_devout_mutex;
-
   jack_devout = AGS_JACK_DEVOUT(connectable);
 
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
   /* check is added */
-  pthread_mutex_lock(jack_devout_mutex);
-
-  is_ready = (((AGS_JACK_DEVOUT_ADDED_TO_REGISTRY & (jack_devout->flags)) != 0) ? TRUE: FALSE);
-
-  pthread_mutex_unlock(jack_devout_mutex);
+  is_ready = ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_ADDED_TO_REGISTRY);
   
   return(is_ready);
 }
@@ -1380,19 +1229,10 @@ ags_jack_devout_is_connected(AgsConnectable *connectable)
   
   gboolean is_connected;
 
-  pthread_mutex_t *jack_devout_mutex;
-
   jack_devout = AGS_JACK_DEVOUT(connectable);
 
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
   /* check is connected */
-  pthread_mutex_lock(jack_devout_mutex);
-
-  is_connected = (((AGS_JACK_DEVOUT_CONNECTED & (jack_devout->flags)) != 0) ? TRUE: FALSE);
-  
-  pthread_mutex_unlock(jack_devout_mutex);
+  is_connected = ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_CONNECTED);
   
   return(is_connected);
 }
@@ -1427,21 +1267,6 @@ ags_jack_devout_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_jack_devout_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_jack_devout_get_class_mutex()
-{
-  return(&ags_jack_devout_class_mutex);
-}
-
-/**
  * ags_jack_devout_test_flags:
  * @jack_devout: the #AgsJackDevout
  * @flags: the flags
@@ -1450,14 +1275,14 @@ ags_jack_devout_get_class_mutex()
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return(FALSE);
@@ -1467,11 +1292,11 @@ ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* test */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   retval = (flags & (jack_devout->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(retval);
 }
@@ -1483,12 +1308,12 @@ ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags)
  *
  * Enable a feature of @jack_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
 {
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return;
@@ -1500,11 +1325,11 @@ ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
   //TODO:JK: add more?
 
   /* set flags */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->flags |= flags;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
     
 /**
@@ -1514,12 +1339,12 @@ ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags)
  *
  * Disable a feature of @jack_devout.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags)
 {  
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return;
@@ -1531,56 +1356,11 @@ ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags)
   //TODO:JK: add more?
 
   /* unset flags */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->flags &= (~flags);
   
-  pthread_mutex_unlock(jack_devout_mutex);
-}
-
-void
-ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
-					AgsApplicationContext *application_context)
-{
-  AgsJackDevout *jack_devout;
-
-  pthread_mutex_t *jack_devout_mutex;
-
-  jack_devout = AGS_JACK_DEVOUT(soundcard);
-
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
-  /* set application context */
-  pthread_mutex_lock(jack_devout_mutex);
-  
-  jack_devout->application_context = application_context;
-  
-  pthread_mutex_unlock(jack_devout_mutex);
-}
-
-AgsApplicationContext*
-ags_jack_devout_get_application_context(AgsSoundcard *soundcard)
-{
-  AgsJackDevout *jack_devout;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *jack_devout_mutex;
-
-  jack_devout = AGS_JACK_DEVOUT(soundcard);
-
-  /* get jack devout mutex */
-  jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
-
-  /* get application context */
-  pthread_mutex_lock(jack_devout_mutex);
-
-  application_context = jack_devout->application_context;
-
-  pthread_mutex_unlock(jack_devout_mutex);
-  
-  return(application_context);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -1598,7 +1378,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   guint nth_card;
   guint i;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -1606,19 +1386,19 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* check device */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   if(jack_devout->card_uri == device ||
      !g_ascii_strcasecmp(jack_devout->card_uri,
 			 device)){
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
   
     return;
   }
 
   if(!g_str_has_prefix(device,
 		       "ags-jack-devout-")){
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
 
     g_warning("invalid JACK device prefix");
 
@@ -1630,7 +1410,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
 	       &nth_card);
 
   if(ret != 1){
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
 
     g_warning("invalid JACK device specifier");
 
@@ -1641,7 +1421,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   jack_devout->card_uri = g_strdup(device);
 
   /* apply name to port */
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
 #if 0
   pcm_channels = jack_devout->pcm_channels;
@@ -1673,7 +1453,7 @@ ags_jack_devout_get_device(AgsSoundcard *soundcard)
   
   gchar *device;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -1683,11 +1463,11 @@ ags_jack_devout_get_device(AgsSoundcard *soundcard)
   device = NULL;
 
   /* get device */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   device = g_strdup(jack_devout->card_uri);
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   return(device);
 }
@@ -1720,7 +1500,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -1728,7 +1508,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get presets */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   if(channels != NULL){
     *channels = jack_devout->pcm_channels;
@@ -1746,7 +1526,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
     *format = jack_devout->format;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -1879,7 +1659,7 @@ ags_jack_devout_is_starting(AgsSoundcard *soundcard)
 
   gboolean is_starting;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -1887,11 +1667,11 @@ ags_jack_devout_is_starting(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* check is starting */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   is_starting = ((AGS_JACK_DEVOUT_START_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   return(is_starting);
 }
@@ -1903,7 +1683,7 @@ ags_jack_devout_is_playing(AgsSoundcard *soundcard)
 
   gboolean is_playing;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -1911,11 +1691,11 @@ ags_jack_devout_is_playing(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* check is starting */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   is_playing = ((AGS_JACK_DEVOUT_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(is_playing);
 }
@@ -1968,7 +1748,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 
   guint format, word_size;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   if(ags_soundcard_is_playing(soundcard)){
     return;
@@ -1980,7 +1760,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* retrieve word size */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2010,7 +1790,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
     }
     break;
   default:
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
     
     g_warning("ags_jack_devout_port_init(): unsupported word size");
     
@@ -2042,7 +1822,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   g_atomic_int_or(&(jack_devout->sync_flags),
 		  AGS_JACK_DEVOUT_INITIAL_CALLBACK);
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -2052,12 +1832,11 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   AgsJackClient *jack_client;
   AgsJackDevout *jack_devout;
 
-  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsTaskThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -2066,10 +1845,10 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   guint word_size;
   gboolean jack_client_activated;
   
-  pthread_mutex_t *jack_devout_mutex;
-  pthread_mutex_t *jack_client_mutex;
-  pthread_mutex_t *callback_mutex;
-  pthread_mutex_t *callback_finish_mutex;
+  GRecMutex *jack_devout_mutex;
+  GRecMutex *jack_client_mutex;
+  GMutex *callback_mutex;
+  GMutex *callback_finish_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -2079,23 +1858,22 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* client */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_client = (AgsJackClient *) jack_devout->jack_client;
   
-  callback_mutex = jack_devout->callback_mutex;
-  callback_finish_mutex = jack_devout->callback_finish_mutex;
+  callback_mutex = &(jack_devout->callback_mutex);
+  callback_finish_mutex = &(jack_devout->callback_finish_mutex);
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   /* do playback */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
   
   jack_devout->flags &= (~AGS_JACK_DEVOUT_START_PLAY);
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard);
   
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
     
     return;
   }
@@ -2128,43 +1906,43 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     }
     break;
   default:
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
     
     g_warning("ags_jack_devout_port_play(): unsupported word size");
     
     return;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   /* get client mutex */
   jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
 
   /* get activated */
-  pthread_mutex_lock(jack_client_mutex);
+  g_rec_mutex_lock(jack_client_mutex);
 
   jack_client_activated = ((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(jack_client_mutex);
+  g_rec_mutex_unlock(jack_client_mutex);
 
   if(jack_client_activated){
     /* signal */
     if((AGS_JACK_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-      pthread_mutex_lock(callback_mutex);
+      g_mutex_lock(callback_mutex);
 
       g_atomic_int_or(&(jack_devout->sync_flags),
 		      AGS_JACK_DEVOUT_CALLBACK_DONE);
     
       if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	pthread_cond_signal(jack_devout->callback_cond);
+	g_cond_signal(&(jack_devout->callback_cond));
       }
 
-      pthread_mutex_unlock(callback_mutex);
+      g_mutex_unlock(callback_mutex);
     }
     
     /* wait callback */	
     if((AGS_JACK_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-      pthread_mutex_lock(callback_finish_mutex);
+      g_mutex_lock(callback_finish_mutex);
     
       if((AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	g_atomic_int_or(&(jack_devout->sync_flags),
@@ -2172,8 +1950,8 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     
 	while((AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
 	      (AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	  pthread_cond_wait(jack_devout->callback_finish_cond,
-			    callback_finish_mutex);
+	  g_cond_wait(&(jack_devout->callback_finish_cond),
+		      callback_finish_mutex);
 	}
       }
     
@@ -2181,27 +1959,15 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 		       (~(AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT |
 			  AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE)));
     
-      pthread_mutex_unlock(callback_finish_mutex);
+      g_mutex_unlock(callback_finish_mutex);
     }else{
       g_atomic_int_and(&(jack_devout->sync_flags),
 		       (~AGS_JACK_DEVOUT_INITIAL_CALLBACK));
     }
   }
 
-  /* notify cyclic task */
-  pthread_mutex_lock(notify_soundcard->return_mutex);
-
-  g_atomic_int_or(&(notify_soundcard->flags),
-		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
-  
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
-    pthread_cond_signal(notify_soundcard->return_cond);
-  }
-  
-  pthread_mutex_unlock(notify_soundcard->return_mutex);
-
   /* update soundcard */
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   task = NULL;
   
@@ -2221,11 +1987,11 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 		       switch_buffer_flag);
 
   /* append tasks */
-  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-			       task);
+  ags_task_launcher_add_task_all(task_launcher,
+				 task);
 
   /* unref */
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
 }
 
 void
@@ -2233,13 +1999,11 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 {
   AgsJackDevout *jack_devout;
 
-  AgsNotifySoundcard *notify_soundcard;
-
   guint word_size;
 
-  pthread_mutex_t *jack_devout_mutex;
-  pthread_mutex_t *callback_mutex;
-  pthread_mutex_t *callback_finish_mutex;
+  GRecMutex *jack_devout_mutex;
+  GMutex *callback_mutex;
+  GMutex *callback_finish_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2247,23 +2011,19 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /*  */
-  pthread_mutex_lock(jack_devout_mutex);
-
-  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
 
     return;
   }
 
-  g_object_ref(notify_soundcard);
-  
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
 
-  callback_mutex = jack_devout->callback_mutex;
-  callback_finish_mutex = jack_devout->callback_finish_mutex;
+  callback_mutex = &(jack_devout->callback_mutex);
+  callback_finish_mutex = &(jack_devout->callback_finish_mutex);
   
   jack_devout->flags &= (~(AGS_JACK_DEVOUT_BUFFER0 |
 			   AGS_JACK_DEVOUT_BUFFER1 |
@@ -2277,42 +2037,28 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 		   (~AGS_JACK_DEVOUT_INITIAL_CALLBACK));
 
   /* signal callback */
-  pthread_mutex_lock(callback_mutex);
+  g_mutex_lock(callback_mutex);
 
   g_atomic_int_or(&(jack_devout->sync_flags),
 		  AGS_JACK_DEVOUT_CALLBACK_DONE);
     
   if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-    pthread_cond_signal(jack_devout->callback_cond);
+    g_cond_signal(&(jack_devout->callback_cond));
   }
 
-  pthread_mutex_unlock(callback_mutex);
+  g_mutex_unlock(callback_mutex);
 
   /* signal thread */
-  pthread_mutex_lock(callback_finish_mutex);
+  g_mutex_lock(callback_finish_mutex);
 
   g_atomic_int_or(&(jack_devout->sync_flags),
 		  AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
     
   if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-    pthread_cond_signal(jack_devout->callback_finish_cond);
+    g_cond_signal(&(jack_devout->callback_finish_cond));
   }
 
-  pthread_mutex_unlock(callback_finish_mutex);
-
-  /* notify cyclic task */
-  pthread_mutex_lock(notify_soundcard->return_mutex);
-
-  g_atomic_int_or(&(notify_soundcard->flags),
-		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
-  
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
-    pthread_cond_signal(notify_soundcard->return_cond);
-  }
-  
-  pthread_mutex_unlock(notify_soundcard->return_mutex);
-
-  g_object_unref(notify_soundcard);
+  g_mutex_unlock(callback_finish_mutex);
   
   /*  */
   jack_devout->note_offset = jack_devout->start_note_offset;
@@ -2355,7 +2101,7 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   memset(jack_devout->buffer[3], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[0], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -2370,7 +2116,7 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   guint loop_left, loop_right;
   gboolean do_loop;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2378,7 +2124,7 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
   
   /* determine if attack should be switched */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   delay = jack_devout->delay[jack_devout->tic_counter];
   delay_counter = jack_devout->delay_counter;
@@ -2391,7 +2137,7 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   
   do_loop = jack_devout->do_loop;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   if(delay_counter + 1.0 >= delay){
     if(do_loop &&
@@ -2411,18 +2157,18 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
 				 note_offset);
     
     /* reset - delay counter */
-    pthread_mutex_lock(jack_devout_mutex);
+    g_rec_mutex_lock(jack_devout_mutex);
     
     jack_devout->delay_counter = delay_counter + 1.0 - delay;
     jack_devout->tact_counter += 1.0;
 
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
   }else{
-    pthread_mutex_lock(jack_devout_mutex);
+    g_rec_mutex_lock(jack_devout_mutex);
     
     jack_devout->delay_counter += 1.0;
 
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
   }
 }
 
@@ -2432,7 +2178,7 @@ ags_jack_devout_offset_changed(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2440,7 +2186,7 @@ ags_jack_devout_offset_changed(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* offset changed */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->tic_counter += 1;
 
@@ -2449,7 +2195,7 @@ ags_jack_devout_offset_changed(AgsSoundcard *soundcard,
     jack_devout->tic_counter = 0;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -2458,7 +2204,7 @@ ags_jack_devout_set_bpm(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2466,11 +2212,11 @@ ags_jack_devout_set_bpm(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set bpm */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->bpm = bpm;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   ags_jack_devout_adjust_delay_and_attack(jack_devout);
 }
@@ -2482,7 +2228,7 @@ ags_jack_devout_get_bpm(AgsSoundcard *soundcard)
 
   gdouble bpm;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2490,11 +2236,11 @@ ags_jack_devout_get_bpm(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get bpm */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   bpm = jack_devout->bpm;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(bpm);
 }
@@ -2505,7 +2251,7 @@ ags_jack_devout_set_delay_factor(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2513,11 +2259,11 @@ ags_jack_devout_set_delay_factor(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set delay factor */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->delay_factor = delay_factor;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   ags_jack_devout_adjust_delay_and_attack(jack_devout);
 }
@@ -2529,7 +2275,7 @@ ags_jack_devout_get_delay_factor(AgsSoundcard *soundcard)
 
   gdouble delay_factor;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2537,11 +2283,11 @@ ags_jack_devout_get_delay_factor(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get delay factor */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   delay_factor = jack_devout->delay_factor;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(delay_factor);
 }
@@ -2554,7 +2300,7 @@ ags_jack_devout_get_delay(AgsSoundcard *soundcard)
   guint delay_index;
   gdouble delay;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2562,13 +2308,13 @@ ags_jack_devout_get_delay(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get delay */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   delay_index = jack_devout->tic_counter;
 
   delay = jack_devout->delay[delay_index];
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   return(delay);
 }
@@ -2580,7 +2326,7 @@ ags_jack_devout_get_absolute_delay(AgsSoundcard *soundcard)
 
   gdouble absolute_delay;
   
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -2588,11 +2334,11 @@ ags_jack_devout_get_absolute_delay(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get absolute delay */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   absolute_delay = (60.0 * (((gdouble) jack_devout->samplerate / (gdouble) jack_devout->buffer_size) / (gdouble) jack_devout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) jack_devout->delay_factor)));
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(absolute_delay);
 }
@@ -2605,7 +2351,7 @@ ags_jack_devout_get_attack(AgsSoundcard *soundcard)
   guint attack_index;
   guint attack;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -2613,13 +2359,13 @@ ags_jack_devout_get_attack(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get attack */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   attack_index = jack_devout->tic_counter;
 
   attack = jack_devout->attack[attack_index];
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   return(attack);
 }
@@ -2707,7 +2453,7 @@ ags_jack_devout_lock_buffer(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2726,7 +2472,7 @@ ags_jack_devout_lock_buffer(AgsSoundcard *soundcard,
   }
   
   if(buffer_mutex != NULL){
-    pthread_mutex_lock(buffer_mutex);
+    g_rec_mutex_lock(buffer_mutex);
   }
 }
 
@@ -2737,7 +2483,7 @@ ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *buffer_mutex;
+  GRecMutex *buffer_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2756,7 +2502,7 @@ ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,
   }
 
   if(buffer_mutex != NULL){
-    pthread_mutex_unlock(buffer_mutex);
+    g_rec_mutex_unlock(buffer_mutex);
   }
 }
 
@@ -2767,7 +2513,7 @@ ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard)
 
   guint delay_counter;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
@@ -2775,11 +2521,11 @@ ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* delay counter */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   delay_counter = jack_devout->delay_counter;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(delay_counter);
 }
@@ -2790,7 +2536,7 @@ ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2798,11 +2544,11 @@ ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->start_note_offset = start_note_offset;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 guint
@@ -2812,7 +2558,7 @@ ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard)
 
   guint start_note_offset;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2820,11 +2566,11 @@ ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   start_note_offset = jack_devout->start_note_offset;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(start_note_offset);
 }
@@ -2835,7 +2581,7 @@ ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2843,11 +2589,11 @@ ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->note_offset = note_offset;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 guint
@@ -2857,7 +2603,7 @@ ags_jack_devout_get_note_offset(AgsSoundcard *soundcard)
 
   guint note_offset;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2865,11 +2611,11 @@ ags_jack_devout_get_note_offset(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   note_offset = jack_devout->note_offset;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(note_offset);
 }
@@ -2880,7 +2626,7 @@ ags_jack_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2888,11 +2634,11 @@ ags_jack_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->note_offset_absolute = note_offset_absolute;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 guint
@@ -2902,7 +2648,7 @@ ags_jack_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
 
   guint note_offset_absolute;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2910,11 +2656,11 @@ ags_jack_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set note offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   note_offset_absolute = jack_devout->note_offset_absolute;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(note_offset_absolute);
 }
@@ -2926,7 +2672,7 @@ ags_jack_devout_set_loop(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2934,7 +2680,7 @@ ags_jack_devout_set_loop(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* set loop */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_devout->loop_left = loop_left;
   jack_devout->loop_right = loop_right;
@@ -2944,7 +2690,7 @@ ags_jack_devout_set_loop(AgsSoundcard *soundcard,
     jack_devout->loop_offset = jack_devout->note_offset;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 void
@@ -2954,7 +2700,7 @@ ags_jack_devout_get_loop(AgsSoundcard *soundcard,
 {
   AgsJackDevout *jack_devout;
 
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2962,7 +2708,7 @@ ags_jack_devout_get_loop(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get loop */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   if(loop_left != NULL){
     *loop_left = jack_devout->loop_left;
@@ -2976,7 +2722,7 @@ ags_jack_devout_get_loop(AgsSoundcard *soundcard,
     *do_loop = jack_devout->do_loop;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 guint
@@ -2986,7 +2732,7 @@ ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard)
 
   guint loop_offset;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -2994,11 +2740,11 @@ ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get loop offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   loop_offset = jack_devout->loop_offset;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(loop_offset);
 }
@@ -3010,7 +2756,7 @@ ags_jack_devout_get_sub_block_count(AgsSoundcard *soundcard)
 
   guint sub_block_count;
   
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -3018,11 +2764,11 @@ ags_jack_devout_get_sub_block_count(AgsSoundcard *soundcard)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get loop offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   sub_block_count = jack_devout->sub_block_count;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   return(sub_block_count);
 }
@@ -3037,8 +2783,8 @@ ags_jack_devout_trylock_sub_block(AgsSoundcard *soundcard,
   guint sub_block_count;
   gboolean success;
   
-  pthread_mutex_t *jack_devout_mutex;  
-  pthread_mutex_t *sub_block_mutex;
+  GRecMutex *jack_devout_mutex;  
+  GRecMutex *sub_block_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -3046,12 +2792,12 @@ ags_jack_devout_trylock_sub_block(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get loop offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   pcm_channels = jack_devout->pcm_channels;
   sub_block_count = jack_devout->sub_block_count;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   sub_block_mutex = NULL;
 
@@ -3070,7 +2816,7 @@ ags_jack_devout_trylock_sub_block(AgsSoundcard *soundcard,
   }
 
   if(sub_block_mutex != NULL){
-    if(pthread_mutex_trylock(sub_block_mutex) == 0){
+    if(g_rec_mutex_trylock(sub_block_mutex) == 0){
       success = TRUE;
     }
   }
@@ -3087,8 +2833,8 @@ ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
   guint pcm_channels;
   guint sub_block_count;
   
-  pthread_mutex_t *jack_devout_mutex;  
-  pthread_mutex_t *sub_block_mutex;
+  GRecMutex *jack_devout_mutex;  
+  GRecMutex *sub_block_mutex;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
@@ -3096,12 +2842,12 @@ ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get loop offset */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   pcm_channels = jack_devout->pcm_channels;
   sub_block_count = jack_devout->sub_block_count;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
   
   sub_block_mutex = NULL;
   
@@ -3118,7 +2864,7 @@ ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
   }
 
   if(sub_block_mutex != NULL){
-    pthread_mutex_unlock(sub_block_mutex);
+    g_rec_mutex_unlock(sub_block_mutex);
   }
 }
 
@@ -3128,12 +2874,12 @@ ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
 {
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
   
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return;
@@ -3143,7 +2889,7 @@ ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* switch buffer flag */
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
     jack_devout->flags &= (~AGS_JACK_DEVOUT_BUFFER0);
@@ -3159,7 +2905,7 @@ ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
     jack_devout->flags |= AGS_JACK_DEVOUT_BUFFER0;
   }
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 /**
@@ -3168,7 +2914,7 @@ ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
@@ -3180,7 +2926,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
   gint next_attack;
   guint i;
 
-  pthread_mutex_t *jack_devout_mutex;
+  GRecMutex *jack_devout_mutex;
 
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return;
@@ -3196,7 +2942,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
   g_message("delay : %f", delay);
 #endif
   
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   default_tact_frames = (guint) (delay * jack_devout->buffer_size);
   delay_tact_frames = (guint) (floor(delay) * jack_devout->buffer_size);
@@ -3282,7 +3028,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
 
   jack_devout->delay[i] = ((gdouble) (default_tact_frames + jack_devout->attack[i] - jack_devout->attack[0])) / (gdouble) jack_devout->buffer_size;
 
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 }
 
 /**
@@ -3291,7 +3037,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
@@ -3304,7 +3050,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   guint format;
   guint word_size;
 
-  pthread_mutex_t *jack_devout_mutex;  
+  GRecMutex *jack_devout_mutex;  
 
   if(!AGS_IS_JACK_DEVOUT(jack_devout)){
     return;
@@ -3314,7 +3060,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   jack_devout_mutex = AGS_JACK_DEVOUT_GET_OBJ_MUTEX(jack_devout);
 
   /* get word size */  
-  pthread_mutex_lock(jack_devout_mutex);
+  g_rec_mutex_lock(jack_devout_mutex);
 
   jack_client = (AgsJackClient *) jack_devout->jack_client;
   
@@ -3325,7 +3071,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 
   format = jack_devout->format;
   
-  pthread_mutex_unlock(jack_devout_mutex);
+  g_rec_mutex_unlock(jack_devout_mutex);
 
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -3366,21 +3112,21 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
     guint nth_soundcard;
     guint i;
 
-    pthread_mutex_lock(jack_devout_mutex);
+    g_rec_mutex_lock(jack_devout_mutex);
 
     if(jack_devout->card_uri != NULL){
       sscanf(jack_devout->card_uri,
 	     "ags-jack-devout-%u",
 	     &nth_soundcard);
     }else{
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
 
       g_warning("ags_jack_devout_realloc_buffer() - card uri not set");
       
       return;
     }
 
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
     
     for(i = port_count; i < pcm_channels; i++){
       str = g_strdup_printf("ags%d-%04d",
@@ -3391,7 +3137,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
       ags_jack_client_add_port((AgsJackClient *) jack_client,
 			       (GObject *) jack_port);
 
-      pthread_mutex_lock(jack_devout_mutex);
+      g_rec_mutex_lock(jack_devout_mutex);
     
       jack_devout->jack_port = g_list_prepend(jack_devout->jack_port,
 					      jack_port);
@@ -3405,7 +3151,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 	jack_devout->port_name[i] = g_strdup(str);
       }
       
-      pthread_mutex_unlock(jack_devout_mutex);
+      g_rec_mutex_unlock(jack_devout_mutex);
       
       ags_jack_port_register(jack_port,
 			     str,
@@ -3419,12 +3165,12 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 
     guint i;
 
-    pthread_mutex_lock(jack_devout_mutex);
+    g_rec_mutex_lock(jack_devout_mutex);
 
     jack_port =
       jack_port_start = g_list_copy(jack_devout->jack_port);
 
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
 
     for(i = 0; i < port_count - pcm_channels; i++){
       jack_devout->jack_port = g_list_remove(jack_devout->jack_port,
@@ -3438,13 +3184,13 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 
     g_list_free(jack_port_start);
 
-    pthread_mutex_lock(jack_devout_mutex);
+    g_rec_mutex_lock(jack_devout_mutex);
     
     jack_devout->port_name = (gchar **) realloc(jack_devout->port_name,
 					        (jack_devout->pcm_channels + 1) * sizeof(gchar *));
     jack_devout->port_name[jack_devout->pcm_channels] = NULL;
 
-    pthread_mutex_unlock(jack_devout_mutex);
+    g_rec_mutex_unlock(jack_devout_mutex);
   }
   
   /* AGS_JACK_DEVOUT_BUFFER_0 */
@@ -3478,21 +3224,19 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 
 /**
  * ags_jack_devout_new:
- * @application_context: the #AgsApplicationContext
  *
  * Creates a new instance of #AgsJackDevout.
  *
  * Returns: the new #AgsJackDevout
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsJackDevout*
-ags_jack_devout_new(AgsApplicationContext *application_context)
+ags_jack_devout_new()
 {
   AgsJackDevout *jack_devout;
 
   jack_devout = (AgsJackDevout *) g_object_new(AGS_TYPE_JACK_DEVOUT,
-					       "application-context", application_context,
 					       NULL);
   
   return(jack_devout);

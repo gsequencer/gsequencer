@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_live_lv2_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
 #include <ags/X/ags_ui_provider.h>
@@ -44,7 +40,7 @@ extern GHashTable *ags_live_lv2_bridge_lv2ui_idle;
 gboolean ags_live_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLiveLv2Bridge *live_lv2_bridge);
 
 void
-ags_live_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLiveLv2Bridge *live_lv2_bridge)
+ags_live_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsWindow *window;
 
@@ -193,7 +189,7 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       port_index = AGS_BULK_MEMBER(list_bulk_member->data)->port_index;
       
       if(AGS_IS_DIAL(child_widget)){
-	val = AGS_DIAL(child_widget)->adjustment->value;
+	val = gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment);
 
 	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
 	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
@@ -207,7 +203,7 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
 						   0,
 						   &val);
       }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-	val = GTK_SPIN_BUTTON(child_widget)->adjustment->value;
+	val = gtk_spin_button_get_value(GTK_SPIN_BUTTON(child_widget));
 	    
 	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
 	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
@@ -221,7 +217,7 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
 						   0,
 						   &val);
       }else if(GTK_IS_SCALE(child_widget)){
-	val = GTK_RANGE(child_widget)->adjustment->value;
+	val = gtk_range_get_value(GTK_RANGE(child_widget));
 	    
 	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
 	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
@@ -272,7 +268,9 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
     g_list_free(list_bulk_member_start);
   }
 
-  if(live_lv2_bridge->ui_feature != NULL &&
+  if(live_lv2_bridge->ui_handle != NULL &&
+     live_lv2_bridge->ui_feature != NULL &&
+     live_lv2_bridge->ui_feature[1] != NULL &&
      live_lv2_bridge->ui_feature[1]->data != NULL){
     ((struct _LV2UI_Show_Interface *) live_lv2_bridge->ui_feature[1]->data)->show(live_lv2_bridge->ui_handle[0]);
   }else if(live_lv2_bridge->ui_widget != NULL){
@@ -568,8 +566,8 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 					       TRUE);
 		}
 		
-		AGS_DIAL(child_widget)->adjustment->value = val;
-		ags_dial_draw((AgsDial *) child_widget);
+		gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
+		gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 		g_message(" --- %f", live_lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
@@ -706,7 +704,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				     value);
-	    ags_dial_draw((AgsDial *) child_widget);
+	    gtk_widget_queue_draw((AgsDial *) child_widget);
 	  }
 	
 	  //	AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
@@ -751,7 +749,7 @@ ags_live_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveLv2Bridge *liv
 	       NULL);
 
   port_index = bulk_member->port_index;
-  val = adjustment->value;
+  val = gtk_adjustment_get_value(adjustment);
   
   if(bulk_member->conversion != NULL){
     val = (gfloat) ags_conversion_convert(bulk_member->conversion,
@@ -791,7 +789,9 @@ ags_live_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLiveLv2Bridge 
 	       "adjustment", &adjustment,
 	       NULL);
 
-  port_index = bulk_member->port_index;  val = adjustment->value;
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
   
   if(bulk_member->conversion != NULL){
     val = (gfloat) ags_conversion_convert(bulk_member->conversion,
@@ -831,7 +831,9 @@ ags_live_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLiveLv2Bridge 
 	       "adjustment", &adjustment,
 	       NULL);
 
-  port_index = bulk_member->port_index;  val = adjustment->value;
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
   
   if(bulk_member->conversion != NULL){
     val = (gfloat) ags_conversion_convert(bulk_member->conversion,
@@ -871,7 +873,9 @@ ags_live_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLive
 	       "adjustment", &adjustment,
 	       NULL);
 
-  port_index = bulk_member->port_index;  val = adjustment->value;
+  port_index = bulk_member->port_index;
+
+  val = gtk_adjustment_get_value(adjustment);
   
   if(bulk_member->conversion != NULL){
     val = (gfloat) ags_conversion_convert(bulk_member->conversion,

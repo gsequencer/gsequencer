@@ -25,7 +25,7 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
+G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_ID_REF                (ags_file_id_ref_get_type())
 #define AGS_FILE_ID_REF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
@@ -34,7 +34,7 @@
 #define AGS_IS_FILE_ID_REF_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_ID_REF))
 #define AGS_FILE_ID_REF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_ID_REF, AgsFileIdRefClass))
 
-#define AGS_FILE_ID_REF_GET_OBJ_MUTEX(obj) (((AgsFileIdRef *) obj)->obj_mutex)
+#define AGS_FILE_ID_REF_GET_OBJ_MUTEX(obj) (&(((AgsFileIdRef *) obj)->obj_mutex))
 
 #define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
 
@@ -50,10 +50,8 @@ struct _AgsFileIdRef
 {
   GObject gobject;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
-  GObject *application_context;
   GObject *file;
 
   xmlNode *node;
@@ -70,10 +68,10 @@ struct _AgsFileIdRefClass
 
 GType ags_file_id_ref_get_type();
 
-pthread_mutex_t* ags_file_id_ref_get_class_mutex();
-
 void ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref);
 
 AgsFileIdRef* ags_file_id_ref_new();
+
+G_END_DECLS
 
 #endif /*__AGS_FILE_ID_REF_H__*/

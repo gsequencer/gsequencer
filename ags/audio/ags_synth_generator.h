@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,12 +25,16 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SYNTH_GENERATOR                (ags_synth_generator_get_type())
 #define AGS_SYNTH_GENERATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_GENERATOR, AgsSynthGenerator))
 #define AGS_SYNTH_GENERATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_GENERATOR, AgsSynthGeneratorClass))
 #define AGS_IS_SYNTH_GENERATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNTH_GENERATOR))
 #define AGS_IS_SYNTH_GENERATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNTH_GENERATOR))
 #define AGS_SYNTH_GENERATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNTH_GENERATOR, AgsSynthGeneratorClass))
+
+#define AGS_SYNTH_GENERATOR_GET_OBJ_MUTEX(obj) (&(((AgsSynthGenerator *) obj)->obj_mutex))
 
 #define AGS_SYNTH_GENERATOR_DEFAULT_SAMPLERATE ((guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 #define AGS_SYNTH_GENERATOR_DEFAULT_BUFFER_SIZE (AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
@@ -76,6 +80,8 @@ struct _AgsSynthGenerator
 
   guint flags;
   
+  GRecMutex obj_mutex;
+
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -134,5 +140,7 @@ void ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				 gdouble note);
 
 AgsSynthGenerator* ags_synth_generator_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SYNTH_GENERATOR_H__*/

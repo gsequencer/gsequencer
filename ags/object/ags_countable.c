@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/object/ags_countable.h>
-
-#include <stdio.h>
 
 void ags_countable_base_init(AgsCountableInterface *ginterface);
 
@@ -73,7 +71,7 @@ ags_countable_base_init(AgsCountableInterface *ginterface)
  *
  * Returns: the current position
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_countable_get_sequencer_counter(AgsCountable *countable)
@@ -95,7 +93,7 @@ ags_countable_get_sequencer_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_countable_get_notation_counter(AgsCountable *countable)
@@ -117,7 +115,7 @@ ags_countable_get_notation_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_countable_get_wave_counter(AgsCountable *countable)
@@ -139,7 +137,7 @@ ags_countable_get_wave_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 guint64
 ags_countable_get_midi_counter(AgsCountable *countable)

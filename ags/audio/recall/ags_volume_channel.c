@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,14 +19,11 @@
 
 #include <ags/audio/recall/ags_volume_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);
-void ags_volume_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_volume_channel_init(AgsVolumeChannel *volume_channel);
 void ags_volume_channel_set_property(GObject *gobject,
 				     guint prop_id,
@@ -38,8 +35,6 @@ void ags_volume_channel_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_volume_channel_dispose(GObject *gobject);
 void ags_volume_channel_finalize(GObject *gobject);
-
-void ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_volume_channel_get_volume_plugin_port();
 
@@ -88,31 +83,15 @@ ags_volume_channel_get_type()
       (GInstanceInitFunc) ags_volume_channel_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_volume_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_volume_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						     "AgsVolumeChannel",
 						     &ags_volume_channel_info,
 						     0);
     
-    g_type_add_interface_static(ags_type_volume_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_volume_channel);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_volume_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_volume_channel_set_ports;
 }
 
 void
@@ -139,7 +118,7 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
    * 
    * The volume port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("volume",
 				   i18n_pspec("volume to apply"),
@@ -199,7 +178,7 @@ ags_volume_channel_set_property(GObject *gobject,
 {
   AgsVolumeChannel *volume_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   volume_channel = AGS_VOLUME_CHANNEL(gobject);
 
@@ -213,10 +192,10 @@ ags_volume_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == volume_channel->volume){      
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -231,7 +210,7 @@ ags_volume_channel_set_property(GObject *gobject,
 
       volume_channel->volume = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -248,7 +227,7 @@ ags_volume_channel_get_property(GObject *gobject,
 {
   AgsVolumeChannel *volume_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   volume_channel = AGS_VOLUME_CHANNEL(gobject);
 
@@ -258,11 +237,11 @@ ags_volume_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_VOLUME:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, volume_channel->volume);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -303,30 +282,14 @@ ags_volume_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_volume_channel_parent_class)->finalize(gobject);
 }
 
-void
-ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./volume[0]",
-		12)){
-      g_object_set(G_OBJECT(plugin),
-		   "volume", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
-}
-
 static AgsPluginPort*
 ags_volume_channel_get_volume_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
 
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -353,7 +316,7 @@ ags_volume_channel_get_volume_plugin_port()
 		      2.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -366,7 +329,7 @@ ags_volume_channel_get_volume_plugin_port()
  *
  * Returns: the new #AgsVolumeChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsVolumeChannel*
 ags_volume_channel_new(AgsChannel *source)

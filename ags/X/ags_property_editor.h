@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_PROPERTY_EDITOR_H__
 #define __AGS_PROPERTY_EDITOR_H__
 
@@ -23,6 +24,13 @@
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PROPERTY_EDITOR                (ags_property_editor_get_type())
 #define AGS_PROPERTY_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PROPERTY_EDITOR, AgsPropertyEditor))
@@ -58,6 +66,8 @@ struct _AgsPropertyEditorClass
 GType ags_property_editor_get_type();
 
 AgsPropertyEditor* ags_property_editor_new();
+
+G_END_DECLS
 
 #endif /*__AGS_PROPERTY_EDITOR_H__*/
 

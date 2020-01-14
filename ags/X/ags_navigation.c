@@ -20,9 +20,6 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/libags.h> 
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -135,7 +132,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    *
    * The assigned #AgsSoundcard to use as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -157,7 +154,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    *
    * The ::change-position seeks the stream.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   navigation_signals[CHANGE_POSITION] =
     g_signal_new("change-position",
@@ -189,9 +186,6 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->soundcard = NULL;
 
-  g_signal_connect_after(G_OBJECT(navigation), "parent-set",
-			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
-
   navigation->start_tact = 0.0;
   navigation->note_offset = 0.0;
   
@@ -205,12 +199,12 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander, FALSE, FALSE, 2);
   gtk_container_add((GtkContainer *) navigation->expander,
 		    (GtkWidget *) gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE));
-
+  
   label = (GtkLabel *) gtk_label_new(i18n("bpm"));
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
-  navigation->bpm->adjustment->value = 120.0;
+  gtk_spin_button_set_value(navigation->bpm, 120.0);
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->bpm, FALSE, FALSE, 2);
 
   navigation->current_bpm = 120.0;
@@ -267,7 +261,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       "label", "0000:00.000",
 	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
@@ -539,12 +533,12 @@ void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact_counter)
 {
-  AgsWindow *window;
-
   AgsSeekSoundcard *seek_soundcard;
 
   AgsApplicationContext *application_context;
 
+  GObject *default_soundcard;
+  
   GList *start_list, *list;
   
   gchar *timestr;
@@ -554,24 +548,24 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gint64 new_offset;
   guint note_offset;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  application_context = ags_application_context_get_instance();
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* seek soundcard */
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
   
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(default_soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
   
   new_offset = (16 * tact_counter);
   
-  seek_soundcard = ags_seek_soundcard_new(window->soundcard,
+  seek_soundcard = ags_seek_soundcard_new(default_soundcard,
 					  new_offset,
 					  AGS_SEEK_SET);
   
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) seek_soundcard);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) seek_soundcard);
 
   /* soundcard - start offset */
   list = 
@@ -605,7 +599,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   /* update */
   timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
-					    navigation->bpm->adjustment->value,
+					    gtk_spin_button_get_value(navigation->bpm),
 					    delay,
 					    delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);
@@ -621,7 +615,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  * Change tact position of editor. The scrollbar is adjustet
  * and its playback position seeked.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
@@ -646,7 +640,7 @@ ags_navigation_change_position(AgsNavigation *navigation,
  *
  * Returns: tact as time string
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
@@ -692,7 +686,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
  *
  * Updates time as string.
  *
- * Since: 2.0.0 
+ * Since: 3.0.0 
  */
 void
 ags_navigation_update_time_string(double tact,
@@ -808,7 +802,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
  *
  * Enables/Disables the #AgsNavigation to control the tree.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
@@ -833,23 +827,29 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
   AgsNavigation *navigation;
 
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
   gchar *str;
 
   navigation = AGS_NAVIGATION(widget);
 
-  if(!AGS_IS_SOUNDCARD(navigation->soundcard)){
-    return(TRUE);
+  application_context = ags_application_context_get_instance();
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  if(default_soundcard != NULL){
+    str = ags_soundcard_get_uptime(AGS_SOUNDCARD(default_soundcard));
+    
+    g_object_set(navigation->duration_time,
+		 "label", str,
+		 NULL);
+    g_free(str);
+  
+    gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   }
   
-  str = ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard));
-
-  g_object_set(navigation->duration_time,
-	       "label", str,
-	       NULL);
-  g_free(str);
-  
-  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
-
   return(TRUE);
 }
 
@@ -860,7 +860,7 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
  *
  * Returns: the new #AgsNavigation
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsNavigation*
 ags_navigation_new()

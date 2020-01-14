@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_loop_channel.h>
 
-#include <ags/libags.h>
-
 #include <math.h>
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
@@ -109,7 +107,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
    *
    * The assigned #AgsDelayAudio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("delay-audio",
 				   "assigned delay audio",
@@ -140,7 +138,7 @@ ags_loop_channel_set_property(GObject *gobject,
 {
   AgsLoopChannel *loop_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
 
@@ -154,10 +152,10 @@ ags_loop_channel_set_property(GObject *gobject,
 
       delay_audio = (AgsDelayAudio *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(loop_channel->delay_audio == delay_audio){      
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -172,7 +170,7 @@ ags_loop_channel_set_property(GObject *gobject,
 
       loop_channel->delay_audio = delay_audio;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -189,7 +187,7 @@ ags_loop_channel_get_property(GObject *gobject,
 {
   AgsLoopChannel *loop_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
 
@@ -199,11 +197,11 @@ ags_loop_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, loop_channel->delay_audio);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -254,7 +252,7 @@ ags_loop_channel_finalize(GObject *gobject)
  *
  * Returns: the new #AgsLoopChannel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsLoopChannel*
 ags_loop_channel_new(AgsChannel *source)

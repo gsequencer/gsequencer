@@ -23,11 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <gio/gio.h>
 
-#ifndef AGS_W32API
-#include <netinet/in.h>
-#endif
+#include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_SERVER                (ags_osc_server_get_type ())
 #define AGS_OSC_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_SERVER, AgsOscServer))
@@ -36,7 +36,7 @@
 #define AGS_IS_OSC_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_SERVER))
 #define AGS_OSC_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_SERVER, AgsOscServerClass))
 
-#define AGS_OSC_SERVER_GET_OBJ_MUTEX(obj) (((AgsOscServer *) obj)->obj_mutex)
+#define AGS_OSC_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsOscServer *) obj)->obj_mutex))
 
 #define AGS_OSC_SERVER_DEFAULT_MAX_ADDRESS_LENGTH (2048)
 
@@ -60,7 +60,9 @@ typedef struct _AgsOscServerClass AgsOscServerClass;
  * @AGS_OSC_SERVER_INET6: use IPv6
  * @AGS_OSC_SERVER_UDP: run using UDP transport
  * @AGS_OSC_SERVER_TCP: run using TCP transport
+ * @AGS_OSC_SERVER_UNIX: run on UNIX socket
  * @AGS_OSC_SERVER_ANY_ADDRESS: listen on any address
+ * @AGS_OSC_SERVER_AUTO_START: start the server
  * 
  * Enum values to control the behavior or indicate internal state of #AgsOscServer by
  * enable/disable as flags.
@@ -73,7 +75,9 @@ typedef enum{
   AGS_OSC_SERVER_INET6          = 1 <<  4,
   AGS_OSC_SERVER_UDP            = 1 <<  5,
   AGS_OSC_SERVER_TCP            = 1 <<  6,
-  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  7,
+  AGS_OSC_SERVER_UNIX           = 1 <<  7,
+  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  8,
+  AGS_OSC_SERVER_AUTO_START     = 1 <<  9,
 }AgsOscServerFlags;
 
 struct _AgsOscServer
@@ -82,8 +86,7 @@ struct _AgsOscServer
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   gchar *ip4;
   gchar *ip6;
@@ -94,19 +97,17 @@ struct _AgsOscServer
   int ip4_fd;
   int ip6_fd;
 
-#ifdef AGS_W32API
-  gpointer ip4_address;
-  gpointer ip6_address;
-#else
-  struct sockaddr_in *ip4_address;
-  struct sockaddr_in6 *ip6_address;
-#endif
+  GSocket *ip4_socket;
+  GSocket *ip6_socket;
+
+  GSocketAddress *ip4_address;
+  GSocketAddress *ip6_address;
   
   struct timespec *accept_delay;
   struct timespec *dispatch_delay;
 
-  pthread_t *listen_thread;
-  pthread_t *dispatch_thread;
+  GThread *listen_thread;
+  GThread *dispatch_thread;
   
   GList *connection;
 
@@ -128,8 +129,6 @@ struct _AgsOscServerClass
 };
 
 GType ags_osc_server_get_type(void);
-
-pthread_mutex_t* ags_osc_server_get_class_mutex();
 
 gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
@@ -159,5 +158,7 @@ void ags_osc_server_dispatch(AgsOscServer *osc_server);
 
 /* instance */
 AgsOscServer* ags_osc_server_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_SERVER_H__*/

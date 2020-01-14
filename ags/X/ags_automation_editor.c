@@ -20,10 +20,6 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_automation_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
@@ -55,6 +51,23 @@ void ags_automation_editor_finalize(GObject *gobject);
 
 void ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine);
 
+gint ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_editor,
+						AgsNotebook *notebook,
+						AgsMachine *machine,
+						xmlNode *automation_node,
+						AgsTimestamp *timestamp,
+						gboolean match_line, gboolean no_duplicates,
+						guint position_x, guint position_y,
+						gboolean paste_from_position,
+						gint *last_x);
+gint ags_automation_editor_paste_automation(AgsAutomationEditor *automation_editor,
+					    AgsNotebook *notebook,
+					    AgsMachine *machine,
+					    xmlNode *audio_node,
+					    guint position_x, guint position_y,
+					    gboolean paste_from_position,
+					    gint *last_x);
+
 enum{
   MACHINE_CHANGED,
   LAST_SIGNAL,
@@ -62,7 +75,6 @@ enum{
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
 };
 
 static gpointer ags_automation_editor_parent_class = NULL;
@@ -145,22 +157,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
   gobject->finalize = ags_automation_editor_finalize;
   
   /* properties */
-  /**
-   * AgsAutomationEditor:soundcard:
-   *
-   * The assigned #AgsSoundcard acting as default sink.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
-
+  
   /* AgsEditorClass */
   automation_editor->machine_changed = ags_automation_editor_real_machine_changed;
 
@@ -172,7 +169,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -191,6 +188,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkViewport *viewport;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
+
+  GtkStyleContext *style_context;  
 
   GtkAdjustment *adjustment;
 
@@ -225,9 +224,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   /* offset */
   automation_editor->tact_counter = 0;
   automation_editor->current_tact = 0.0;
-
-  /* soundcard */
-  automation_editor->soundcard = NULL;
 
   /* automation toolbar */
   automation_editor->automation_toolbar = ags_automation_toolbar_new();
@@ -334,6 +330,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* audio - scale */
   automation_editor->audio_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->audio_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->audio_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -354,7 +351,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* audio - automation edit */
@@ -440,6 +437,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* output - scale */
   automation_editor->output_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->output_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->output_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -460,7 +458,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->output_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* output - automation edit */
@@ -546,6 +544,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
+  gtk_widget_set_vexpand(automation_editor->input_scrolled_scale_box, TRUE);
   g_object_set(automation_editor->input_scrolled_scale_box,
 	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
 	       NULL);
@@ -566,7 +565,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box));
   gtk_widget_show_all(GTK_WIDGET(automation_editor->input_scrolled_scale_box->viewport));
@@ -598,6 +597,11 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* focused automation edit */
   automation_editor->focused_automation_edit = NULL;
+
+  /* style context */
+  style_context = gtk_widget_get_style_context(automation_editor);
+  gtk_style_context_add_class(style_context,
+			      "editor");
 }
 
 void
@@ -611,27 +615,6 @@ ags_automation_editor_set_property(GObject *gobject,
   automation_editor = AGS_AUTOMATION_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-
-      soundcard = g_value_get_object(value);
-
-      if(automation_editor->soundcard == soundcard){
-	return;
-      }
-
-      if(automation_editor->soundcard != NULL){
-	g_object_unref(automation_editor->soundcard);
-      }
-      
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
-      }
-      
-      automation_editor->soundcard = soundcard;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -649,11 +632,6 @@ ags_automation_editor_get_property(GObject *gobject,
   automation_editor = AGS_AUTOMATION_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
-    {
-      g_value_set_object(value, automation_editor->soundcard);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -674,9 +652,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
 
   /* audio */
-  g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_audio_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_audio_edit_configure_event), (gpointer) automation_editor);
 
@@ -687,9 +662,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_automation_editor_audio_hscrollbar_value_changed), (gpointer) automation_editor);
 
   /* output */
-  g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_output_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_output_edit_configure_event), (gpointer) automation_editor);
 
@@ -700,9 +672,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_automation_editor_output_hscrollbar_value_changed), (gpointer) automation_editor);
 
   /* input */
-  g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "expose_event",
-			 G_CALLBACK(ags_automation_editor_input_edit_expose_event), (gpointer) automation_editor);
-
   g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "configure_event",
 			 G_CALLBACK(ags_automation_editor_input_edit_configure_event), (gpointer) automation_editor);
 
@@ -736,9 +705,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* audio */
   g_object_disconnect((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_audio_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_audio_edit_configure_event),
 		      automation_editor,
@@ -746,9 +712,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* output */
   g_object_disconnect((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_output_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_output_edit_configure_event),
 		      automation_editor,
@@ -756,9 +719,6 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   /* input */
   g_object_disconnect((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport,
-		      "any_signal::expose_event",
-		      G_CALLBACK(ags_automation_editor_input_edit_expose_event),
-		      automation_editor,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_editor_input_edit_configure_event),
 		      automation_editor,
@@ -785,6 +745,12 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkAdjustment *audio_vscrollbar_adjustment;
+  GtkAdjustment *audio_hscrollbar_adjustment;
+
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
+  
   GList *list_start, *list;
 
   gdouble old_h_upper;
@@ -795,14 +761,23 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* audio */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+  
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
+
+  audio_vscrollbar_adjustment = gtk_range_get_adjustment(automation_editor->audio_vscrollbar);
   
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_vscrollbar)->adjustment,
+  gtk_adjustment_set_upper(audio_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport),
@@ -814,12 +789,14 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->upper;
+  audio_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->audio_hscrollbar));
+
+  old_h_upper = gtk_adjustment_get_upper(audio_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -828,7 +805,7 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   gtk_adjustment_set_upper(automation_editor->audio_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(audio_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -836,9 +813,12 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
-			     h_upper);
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
     
+    gtk_adjustment_set_upper(adjustment,
+			     h_upper);    
 
     list = list->next;
   }
@@ -847,8 +827,10 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+#if 0
+    gtk_adjustment_set_value(audio_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(audio_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 
@@ -857,6 +839,12 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkAdjustment *output_vscrollbar_adjustment;
+  GtkAdjustment *output_hscrollbar_adjustment;
+  
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
+  
   GList *list_start, *list;
   
   gdouble old_h_upper;
@@ -867,14 +855,23 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* output */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+  
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
+
+  output_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->output_vscrollbar));
   
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_vscrollbar)->adjustment,
+  gtk_adjustment_set_upper(output_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport),
@@ -886,12 +883,14 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->upper;
+  output_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->output_hscrollbar));
+  
+  old_h_upper = gtk_adjustment_get_upper(output_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -900,7 +899,7 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   gtk_adjustment_set_upper(automation_editor->output_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(output_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -908,7 +907,11 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->output_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
+
+    gtk_adjustment_set_upper(adjustment,
 			     h_upper);
     
 
@@ -919,8 +922,10 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+#if 0
+    gtk_adjustment_set_value(output_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(output_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 
@@ -928,6 +933,12 @@ void
 ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_editor)
 {
   AgsAutomationToolbar *automation_toolbar;
+
+  GtkAdjustment *input_vscrollbar_adjustment;
+  GtkAdjustment *input_hscrollbar_adjustment;
+  
+  GtkAllocation automation_edit_box_allocation;
+  GtkAllocation viewport_allocation;
 
   GList *list_start, *list;
   
@@ -939,14 +950,23 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   
   automation_toolbar = automation_editor->automation_toolbar;
 
+  /* input */
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
+			    &automation_edit_box_allocation);
+
+  gtk_widget_get_allocation(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport),
+			    &viewport_allocation);
+
   /* reset vertical scrollbar */
-  v_upper = GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport)->allocation.height;
+  v_upper = automation_edit_box_allocation.height - viewport_allocation.height;
 
   if(v_upper < 0.0){
     v_upper = 0.0;
   }
-  
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_vscrollbar)->adjustment,
+
+  input_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->input_vscrollbar));
+
+  gtk_adjustment_set_upper(input_vscrollbar_adjustment,
 			   v_upper);
 
   gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport),
@@ -958,12 +978,14 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* upper */
-  old_h_upper = GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->upper;
+  input_hscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->input_hscrollbar));
+
+  old_h_upper = gtk_adjustment_get_upper(input_hscrollbar_adjustment);
 
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
-  h_upper = map_width - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+  h_upper = map_width - automation_edit_box_allocation.width;
 
   if(h_upper < 0.0){
     h_upper = 0.0;
@@ -972,7 +994,7 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   gtk_adjustment_set_upper(automation_editor->input_ruler->adjustment,
 			   h_upper);
 
-  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
+  gtk_adjustment_set_upper(input_hscrollbar_adjustment,
 			   h_upper);
 
   /* automation edit */
@@ -980,7 +1002,11 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
     list = gtk_container_get_children(GTK_CONTAINER(automation_editor->input_scrolled_automation_edit_box->automation_edit_box));
 
   while(list != NULL){
-    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+    GtkAdjustment *adjustment;
+
+    adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar));
+
+    gtk_adjustment_set_upper(adjustment,
 			     h_upper);
     
 
@@ -991,8 +1017,10 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset value */
   if(old_h_upper != 0.0){
-    gtk_adjustment_set_value(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
-			     GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+#if 0
+    gtk_adjustment_set_value(input_hscrollbar_adjustment,
+			     gtk_adjustment_get_value(input_hscrollbar_adjustment) / old_h_upper * h_upper);
+#endif
   }
 }
 
@@ -1014,8 +1042,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   guint audio_channels;
   guint i;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *automation_mutex;
+  GRecMutex *audio_mutex;
+  GRecMutex *automation_mutex;
 
   /* disconnect set pads - old */
   old_machine = automation_editor->selected_machine;
@@ -1048,12 +1076,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   }
 
   /* get audio mutex */
+  audio_mutex = NULL;
+  
   if(machine != NULL){
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
+    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
   }
   
   /* notebook - remove tabs */
@@ -1073,14 +1099,14 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
   /* notebook - add tabs */
   if(machine != NULL){
-    pthread_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
     output_pads = machine->audio->output_pads;
     input_pads = machine->audio->input_pads;
     
     audio_channels = machine->audio->audio_channels;
     
-    pthread_mutex_unlock(audio_mutex);
+    g_rec_mutex_unlock(audio_mutex);
 
     for(i = 0; i < output_pads * audio_channels; i++){
       ags_notebook_insert_tab(automation_editor->output_notebook,
@@ -1222,11 +1248,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	gdouble upper, lower;
 	gdouble default_value;
 	
-	pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-	automation_mutex = AGS_AUTOMATION(automation->data)->obj_mutex;
-  
-	pthread_mutex_unlock(ags_automation_get_class_mutex());
+	automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation->data);
 	
 	/* scale */
 	scale = ags_scale_new();
@@ -1235,7 +1257,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		     "scale-height", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT),
 		     NULL);
 
-	pthread_mutex_lock(automation_mutex);
+	g_rec_mutex_lock(automation_mutex);
 
 	control_name = g_strdup(AGS_AUTOMATION(automation->data)->control_name);
 	
@@ -1244,7 +1266,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
 	default_value = AGS_AUTOMATION(automation->data)->default_value;
 	
-	pthread_mutex_unlock(automation_mutex);
+	g_rec_mutex_unlock(automation_mutex);
 
 	g_object_set(scale,
 		     "control-name", control_name,
@@ -1256,26 +1278,32 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->audio_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->output_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->input_scrolled_scale_box->scale_box),
 			     GTK_WIDGET(scale),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+	}
+
+	{
+	  GtkAllocation allocation;
+	  
+	  gtk_widget_get_allocation(scale, &allocation);
+
+	  g_message("%d|%d %d,%d", allocation.x, allocation.y, allocation.width, allocation.height);
 	}
 	
 	gtk_widget_show(GTK_WIDGET(scale));
 	  
 	/* automation edit */
 	automation_edit = ags_automation_edit_new();
-
-	pthread_mutex_lock(audio_mutex);
 
 	g_object_set(automation_edit,
 		     "channel-type", G_TYPE_NONE,
@@ -1286,22 +1314,20 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		     "default-value", default_value,
 		     NULL);
 
-	pthread_mutex_unlock(audio_mutex);
-
 	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->output_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(GTK_BOX(automation_editor->input_scrolled_automation_edit_box->automation_edit_box),
 			     GTK_WIDGET(automation_edit),
-			     FALSE, FALSE,
+			     FALSE, TRUE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}
 
@@ -1350,7 +1376,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -1389,7 +1415,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     AgsChannel *start_output, *start_input;
     AgsChannel *channel, *nth_channel;
 
-    pthread_mutex_t *audio_mutex;
+    GRecMutex *audio_mutex;
 
     machine = automation_editor->selected_machine;
 
@@ -1402,14 +1428,10 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     }
 
     /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
+    audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
 
     /* get some fields */
-    pthread_mutex_lock(audio_mutex);
+    g_rec_mutex_lock(audio_mutex);
 
     start_output = machine->audio->output;
 
@@ -1423,7 +1445,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       g_object_ref(start_input);
     }
     
-    pthread_mutex_unlock(audio_mutex);
+    g_rec_mutex_unlock(audio_mutex);
     
     /* check all active tabs */
     timestamp = ags_timestamp_new();
@@ -1619,9 +1641,13 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
   AgsMachine *machine;
   AgsNotebook *notebook;
 
+  GtkAdjustment *automation_edit_vscrollbar_adjustment;
+
   AgsAutomation *automation;
 
   AgsTimestamp *timestamp;
+
+  GtkAllocation automation_edit_allocation;
 
   GList *start_list_automation, *list_automation;
 
@@ -1654,7 +1680,12 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       c_range = automation_editor->focused_automation_edit->upper - automation_editor->focused_automation_edit->lower;
     }
 
-    g_range = GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area)->allocation.height;
+    gtk_widget_get_allocation(GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area),
+			      &automation_edit_allocation);
+    
+    automation_edit_vscrollbar_adjustment = gtk_range_get_adjustment(GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar));
+    
+    g_range = gtk_adjustment_get_upper(automation_edit_vscrollbar_adjustment) + automation_edit_allocation.height;
 
     /* check all active tabs */
     g_object_get(machine->audio,
@@ -1921,6 +1952,425 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   }
 }
 
+gint
+ags_automation_editor_paste_automation_all(AgsAutomationEditor *automation_editor,
+					   AgsNotebook *notebook,
+					   AgsMachine *machine,
+					   xmlNode *automation_node,
+					   AgsTimestamp *timestamp,
+					   gboolean match_line, gboolean no_duplicates,
+					   guint position_x, guint position_y,
+					   gboolean paste_from_position,
+					   gint *last_x)
+{    
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *nth_channel;
+  AgsAutomation *automation;
+  
+  GList *start_list_automation, *list_automation;
+    
+  guint first_x;
+  guint current_x;
+  gint i;
+
+  GRecMutex *audio_mutex;
+    
+  first_x = -1;
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(machine->audio);
+
+  /* get some fields */
+  g_rec_mutex_lock(audio_mutex);
+
+  start_output = machine->audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+    
+  start_input = machine->audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
+    
+  g_rec_mutex_unlock(audio_mutex);
+    
+  /*  */
+  i = 0;
+		
+  while(notebook == NULL ||
+	(i = ags_notebook_next_active_tab(notebook,
+					  i)) != -1){		  
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+      
+    list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
+								  automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
+								  timestamp);
+
+    if(list_automation == NULL){
+      GList *start_play_port, *play_port;
+      GList *start_recall_port, *recall_port;
+	
+      AgsPort *current_port;
+
+      play_port = NULL;
+      recall_port = NULL;
+
+      if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
+	nth_channel = ags_channel_nth(start_output,
+				      i);
+	  
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   automation_editor->focused_automation_edit->control_name,
+											   TRUE);
+
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     FALSE);
+
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
+      }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
+	nth_channel = ags_channel_nth(start_input,
+				      i);
+
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   automation_editor->focused_automation_edit->control_name,
+											   TRUE);
+
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     FALSE);
+
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
+      }else{
+	play_port =
+	  start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										       automation_editor->focused_automation_edit->control_name,
+										       TRUE);
+	
+	recall_port =
+	  start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+											 automation_editor->focused_automation_edit->control_name,
+											 FALSE);
+      }
+
+      /* play port */
+      while(play_port != NULL){
+	AgsPort *current_port;
+	
+	current_port = play_port->data;
+
+	automation = ags_automation_new(G_OBJECT(machine->audio),
+					i,
+					automation_editor->focused_automation_edit->channel_type,
+					automation_editor->focused_automation_edit->control_name);
+	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	g_object_set(automation,
+		     "port", current_port,
+		     NULL);
+	
+	/* add to audio */
+	ags_audio_add_automation(machine->audio,
+				 (GObject *) automation);
+
+	/* add to port */
+	ags_port_add_automation(current_port,
+				(GObject *) automation);
+	  
+	/* iterate */
+	play_port = play_port->next;
+      }
+
+      g_list_free_full(start_play_port,
+		       g_object_unref);
+      
+      /* recall port */
+      if(recall_port != NULL){
+	AgsPort *current_port;
+	
+	current_port = recall_port->data;
+
+	automation = ags_automation_new(G_OBJECT(machine->audio),
+					i,
+					automation_editor->focused_automation_edit->channel_type,
+					automation_editor->focused_automation_edit->control_name);
+	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	g_object_set(automation,
+		     "port", current_port,
+		     NULL);
+	
+	/* add to audio */
+	ags_audio_add_automation(machine->audio,
+				 (GObject *) automation);
+
+	/* add to port */
+	ags_port_add_automation(current_port,
+				(GObject *) automation);
+	  
+	/* iterate */
+	recall_port = recall_port->next;
+      }
+
+      g_list_free_full(start_recall_port,
+		       g_object_unref);
+    }else{
+      automation = AGS_AUTOMATION(list_automation->data);
+    }
+
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
+      
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+
+    list_automation = start_list_automation;
+      
+    while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+									 automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
+									 timestamp)) != NULL){
+      automation = list_automation->data;
+	
+      if(paste_from_position){
+	xmlNode *child;
+
+	guint x_boundary;
+	  
+	ags_automation_insert_from_clipboard_extended(automation,
+						      automation_node,
+						      TRUE, position_x,
+						      TRUE, position_y,
+						      match_line, no_duplicates);
+
+	/* get boundaries */
+	child = automation_node->children;
+	current_x = 0;
+	  
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "note",
+			   5)){
+	      guint tmp;
+
+	      tmp = g_ascii_strtoull(xmlGetProp(child,
+						"x"),
+				     NULL,
+				     10);
+
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+	    }
+	  }
+
+	  child = child->next;
+	}
+
+	x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
+						 "x_boundary"),
+				      NULL,
+				      10);
+
+
+	if(first_x == -1 || x_boundary < first_x){
+	  first_x = x_boundary;
+	}
+	  
+	if(position_x > x_boundary){
+	  current_x += (position_x - x_boundary);
+	}else{
+	  current_x -= (x_boundary - position_x);
+	}
+	  
+	if(current_x > last_x[0]){
+	  last_x[0] = current_x;
+	}	
+      }else{
+	xmlNode *child;
+
+	ags_automation_insert_from_clipboard(automation,
+					     automation_node,
+					     FALSE, 0,
+					     FALSE, 0);
+
+	/* get boundaries */
+	child = automation_node->children;
+	current_x = 0;
+	  
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "note",
+			   5)){
+	      guint tmp;
+
+	      tmp = g_ascii_strtoull(xmlGetProp(child,
+						"x"),
+				     NULL,
+				     10);
+
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+	    }
+	  }
+
+	  child = child->next;
+	}
+
+	if(current_x > last_x[0]){
+	  last_x[0] = current_x;
+	}
+      }
+
+      list_automation = list_automation->next;
+    }
+
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
+      
+    if(notebook == NULL){
+      break;
+    }
+		  
+    i++;
+  }
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  return(first_x);
+}
+  
+gint
+ags_automation_editor_paste_automation(AgsAutomationEditor *automation_editor,
+				       AgsNotebook *notebook,
+				       AgsMachine *machine,
+				       xmlNode *audio_node,
+				       guint position_x, guint position_y,
+				       gboolean paste_from_position,
+				       gint *last_x)
+{
+  AgsTimestamp *timestamp;
+
+  xmlNode *automation_list_node, *automation_node;
+  xmlNode *timestamp_node;
+
+  guint first_x;
+  gboolean match_line, no_duplicates;
+
+  first_x = -1;
+
+  match_line = ((AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE & (automation_editor->flags)) != 0) ? TRUE: FALSE;
+  no_duplicates = ((AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES & (automation_editor->flags)) != 0) ? TRUE: FALSE;
+    
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+  timestamp->timer.ags_offset.offset = 0;
+    
+  /* paste automation */
+  automation_list_node = audio_node->children;
+
+  while(automation_list_node != NULL){
+    if(automation_list_node->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(automation_list_node->name,
+		     "automation-list",
+		     14)){
+	automation_node = automation_list_node->children;
+	  
+	while(automation_node != NULL){
+	  if(automation_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(automation_node->name,
+			   "automation",
+			   9)){
+	      guint64 offset;
+		
+	      timestamp_node = automation_node->children;
+	      offset = 0;
+	  
+	      while(timestamp_node != NULL){
+		if(timestamp_node->type == XML_ELEMENT_NODE){
+		  if(!xmlStrncmp(timestamp_node->name,
+				 "timestamp",
+				 10)){
+		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
+							 "offset"),
+					      NULL,
+					      10);
+		      
+		    break;
+		  }
+		}
+
+		timestamp_node = timestamp_node->next;
+	      }     
+		
+	      /* 1st attempt */
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+		
+	      first_x = ags_automation_editor_paste_automation_all(automation_editor,
+								   notebook,
+								   machine,
+								   automation_node,
+								   timestamp,
+								   match_line, no_duplicates,
+								   position_x, position_y,
+								   paste_from_position,
+								   last_x);
+
+	      /* 2nd attempt */
+	      timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
+
+	      ags_automation_editor_paste_automation_all(automation_editor,
+							 notebook,
+							 machine,
+							 automation_node,
+							 timestamp,
+							 match_line, no_duplicates,
+							 position_x, position_y,
+							 paste_from_position,
+							 last_x);
+		
+	    }
+	  }
+
+	  automation_node = automation_node->next;
+	}	  
+      }
+    }
+
+    automation_list_node = automation_list_node->next;
+  }    
+
+  g_object_unref(timestamp);
+
+  return(first_x);
+}
+
 void
 ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 {
@@ -1941,404 +2391,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   gint first_x, last_x;
   gboolean paste_from_position;
 
-  auto gint ags_automation_editor_paste_automation_all(xmlNode *automation_node,
-						       AgsTimestamp *timestamp,
-						       gboolean match_line, gboolean no_duplicates);
-  auto gint ags_automation_editor_paste_automation(xmlNode *audio_node);
-
-  gint ags_automation_editor_paste_automation_all(xmlNode *automation_node,
-						  AgsTimestamp *timestamp,
-						  gboolean match_line, gboolean no_duplicates)
-  {    
-    AgsChannel *start_output, *start_input;
-    AgsChannel *channel, *nth_channel;
-    AgsAutomation *automation;
-		
-    GList *start_list_automation, *list_automation;
-    
-    guint first_x;
-    guint current_x;
-    gint i;
-
-    pthread_mutex_t *audio_mutex;
-    
-    first_x = -1;
-
-    /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-    audio_mutex = machine->audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-
-    start_output = machine->audio->output;
-
-    if(start_output != NULL){
-      g_object_ref(start_output);
-    }
-    
-    start_input = machine->audio->input;
-
-    if(start_input != NULL){
-      g_object_ref(start_input);
-    }
-    
-    pthread_mutex_unlock(audio_mutex);
-    
-    /*  */
-    i = 0;
-		
-    while(notebook == NULL ||
-	  (i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){		  
-      g_object_get(machine->audio,
-		   "automation", &start_list_automation,
-		   NULL);
-      
-      list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
-								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-								    timestamp);
-
-      if(list_automation == NULL){
-	GList *start_play_port, *play_port;
-	GList *start_recall_port, *recall_port;
-	
-	AgsPort *current_port;
-
-	play_port = NULL;
-	recall_port = NULL;
-
-	if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-	  nth_channel = ags_channel_nth(start_output,
-					i);
-	  
-	  play_port =
-	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											     automation_editor->focused_automation_edit->control_name,
-											     TRUE);
-
-	  recall_port =
-	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											       automation_editor->focused_automation_edit->control_name,
-											       FALSE);
-
-	  if(nth_channel != NULL){
-	    g_object_unref(nth_channel);
-	  }
-	}else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-	  nth_channel = ags_channel_nth(start_input,
-					i);
-
-	  play_port =
-	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											     automation_editor->focused_automation_edit->control_name,
-											     TRUE);
-
-	  recall_port =
-	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											       automation_editor->focused_automation_edit->control_name,
-											       FALSE);
-
-	  if(nth_channel != NULL){
-	    g_object_unref(nth_channel);
-	  }
-	}else{
-	  play_port =
-	    start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-											 automation_editor->focused_automation_edit->control_name,
-											 TRUE);
-	
-	  recall_port =
-	    start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-											   automation_editor->focused_automation_edit->control_name,
-											   FALSE);
-	}
-
-	/* play port */
-	while(play_port != NULL){
-	  AgsPort *current_port;
-	
-	  current_port = play_port->data;
-
-	  automation = ags_automation_new(G_OBJECT(machine->audio),
-					  i,
-					  automation_editor->focused_automation_edit->channel_type,
-					  automation_editor->focused_automation_edit->control_name);
-	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	  g_object_set(automation,
-		       "port", current_port,
-		       NULL);
-	
-	  /* add to audio */
-	  ags_audio_add_automation(machine->audio,
-				   (GObject *) automation);
-
-	  /* add to port */
-	  ags_port_add_automation(current_port,
-				  (GObject *) automation);
-	  
-	  /* iterate */
-	  play_port = play_port->next;
-	}
-
-	g_list_free_full(start_play_port,
-			 g_object_unref);
-      
-	/* recall port */
-	if(recall_port != NULL){
-	  AgsPort *current_port;
-	
-	  current_port = recall_port->data;
-
-	  automation = ags_automation_new(G_OBJECT(machine->audio),
-					  i,
-					  automation_editor->focused_automation_edit->channel_type,
-					  automation_editor->focused_automation_edit->control_name);
-	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-
-	  g_object_set(automation,
-		       "port", current_port,
-		       NULL);
-	
-	  /* add to audio */
-	  ags_audio_add_automation(machine->audio,
-				   (GObject *) automation);
-
-	  /* add to port */
-	  ags_port_add_automation(current_port,
-				  (GObject *) automation);
-	  
-	  /* iterate */
-	  recall_port = recall_port->next;
-	}
-
-	g_list_free_full(start_recall_port,
-			 g_object_unref);
-      }else{
-	automation = AGS_AUTOMATION(list_automation->data);
-      }
-
-      g_list_free_full(start_list_automation,
-		       g_object_unref);
-      
-      g_object_get(machine->audio,
-		   "automation", &start_list_automation,
-		   NULL);
-
-      list_automation = start_list_automation;
-      
-      while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-									   timestamp)) != NULL){
-	automation = list_automation->data;
-	
-	if(paste_from_position){
-	  xmlNode *child;
-
-	  guint x_boundary;
-	  
-	  ags_automation_insert_from_clipboard_extended(automation,
-							automation_node,
-							TRUE, position_x,
-							TRUE, position_y,
-							match_line, no_duplicates);
-
-	  /* get boundaries */
-	  child = automation_node->children;
-	  current_x = 0;
-	  
-	  while(child != NULL){
-	    if(child->type == XML_ELEMENT_NODE){
-	      if(!xmlStrncmp(child->name,
-			     "note",
-			     5)){
-		guint tmp;
-
-		tmp = g_ascii_strtoull(xmlGetProp(child,
-						  "x"),
-				       NULL,
-				       10);
-
-		if(tmp > current_x){
-		  current_x = tmp;
-		}
-	      }
-	    }
-
-	    child = child->next;
-	  }
-
-	  x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
-						   "x_boundary"),
-					NULL,
-					10);
-
-
-	  if(first_x == -1 || x_boundary < first_x){
-	    first_x = x_boundary;
-	  }
-	  
-	  if(position_x > x_boundary){
-	    current_x += (position_x - x_boundary);
-	  }else{
-	    current_x -= (x_boundary - position_x);
-	  }
-	  
-	  if(current_x > last_x){
-	    last_x = current_x;
-	  }	
-	}else{
-	  xmlNode *child;
-
-	  ags_automation_insert_from_clipboard(automation,
-					       automation_node,
-					       FALSE, 0,
-					       FALSE, 0);
-
-	  /* get boundaries */
-	  child = automation_node->children;
-	  current_x = 0;
-	  
-	  while(child != NULL){
-	    if(child->type == XML_ELEMENT_NODE){
-	      if(!xmlStrncmp(child->name,
-			     "note",
-			     5)){
-		guint tmp;
-
-		tmp = g_ascii_strtoull(xmlGetProp(child,
-						  "x"),
-				       NULL,
-				       10);
-
-		if(tmp > current_x){
-		  current_x = tmp;
-		}
-	      }
-	    }
-
-	    child = child->next;
-	  }
-
-	  if(current_x > last_x){
-	    last_x = current_x;
-	  }
-	}
-
-	list_automation = list_automation->next;
-      }
-
-      g_list_free_full(start_list_automation,
-		       g_object_unref);
-      
-      if(notebook == NULL){
-	break;
-      }
-		  
-      i++;
-    }
-
-    /* unref */
-    if(start_output != NULL){
-      g_object_unref(start_output);
-    }
-
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
-
-    return(first_x);
-  }
-  
-  gint ags_automation_editor_paste_automation(xmlNode *audio_node){
-    AgsTimestamp *timestamp;
-
-    guint first_x;
-    gboolean match_line, no_duplicates;
-
-    first_x = -1;
-
-    match_line = ((AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE & (automation_editor->flags)) != 0) ? TRUE: FALSE;
-    no_duplicates = ((AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES & (automation_editor->flags)) != 0) ? TRUE: FALSE;
-    
-    timestamp = ags_timestamp_new();
-
-    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
-    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-    
-    timestamp->timer.ags_offset.offset = 0;
-    
-    /* paste automation */
-    automation_list_node = audio_node->children;
-
-    while(automation_list_node != NULL){
-      if(automation_list_node->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(automation_list_node->name,
-		       "automation-list",
-		       14)){
-	  automation_node = automation_list_node->children;
-	  
-	  while(automation_node != NULL){
-	    if(automation_node->type == XML_ELEMENT_NODE){
-	      if(!xmlStrncmp(automation_node->name,
-			     "automation",
-			     9)){
-		guint64 offset;
-		
-		timestamp_node = automation_node->children;
-		offset = 0;
-	  
-		while(timestamp_node != NULL){
-		  if(timestamp_node->type == XML_ELEMENT_NODE){
-		    if(!xmlStrncmp(timestamp_node->name,
-				   "timestamp",
-				   10)){
-		      offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							   "offset"),
-						NULL,
-						10);
-		      
-		      break;
-		    }
-		  }
-
-		  timestamp_node = timestamp_node->next;
-		}     
-		
-		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
-		
-		first_x = ags_automation_editor_paste_automation_all(automation_node,
-								     timestamp,
-								     match_line, no_duplicates);
-
-		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
-
-		ags_automation_editor_paste_automation_all(automation_node,
-							   timestamp,
-							   match_line, no_duplicates);
-		
-	      }
-	    }
-
-	    automation_node = automation_node->next;
-	  }	  
-	}
-      }
-
-      automation_list_node = automation_list_node->next;
-    }    
-
-    g_object_unref(timestamp);
-
-    return(first_x);
-  }
-
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
      automation_editor->focused_automation_edit == NULL){
     return;
@@ -2350,6 +2402,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     automation_edit = NULL;
     notebook = NULL;
 
+    position_x = 0;
+    position_y = 0;
+    
     if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       GList *list_start, *list;
       
@@ -2446,7 +2501,13 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
 	  automation_node = audio_node->children;
 	
-	  first_x = ags_automation_editor_paste_automation(audio_node);
+	  first_x = ags_automation_editor_paste_automation(automation_editor,
+							   notebook,
+							   machine,
+							   audio_node,
+							   position_x, position_y,
+							   paste_from_position,
+							   &last_x);
 	
 	  break;
 	}
@@ -2465,7 +2526,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       gint big_step, small_step;
 
       //TODO:JK: implement me
-      big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (automation_edit->cursor_position_x % (guint) 16);
+      big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (automation_editor->focused_automation_edit->cursor_position_x % (guint) 16);
       small_step = (guint) big_step - 16;
 	
       if(small_step < last_x){
@@ -2674,7 +2735,7 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
  *
  * Returns: the new #AgsAutomationEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAutomationEditor*
 ags_automation_editor_new()

@@ -25,7 +25,13 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_sheet_editor.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SHEET_WINDOW                (ags_sheet_window_get_type())
 #define AGS_SHEET_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SHEET_WINDOW, AgsSheetWindow))
@@ -62,5 +68,7 @@ struct _AgsSheetWindowClass
 GType ags_sheet_window_get_type(void);
 
 AgsSheetWindow* ags_sheet_window_new(GtkWidget *parent_window);
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_WINDOW_H__*/

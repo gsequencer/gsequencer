@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_lv2_audio.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_conversion.h>
@@ -45,7 +43,6 @@
 #include <ags/i18n.h>
 
 void ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio);
-void ags_play_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio);
 void ags_play_lv2_audio_set_property(GObject *gobject,
 				     guint prop_id,
@@ -57,10 +54,6 @@ void ags_play_lv2_audio_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_play_lv2_audio_dispose(GObject *gobject);
 void ags_play_lv2_audio_finalize(GObject *gobject);
-
-void ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port);
-void ags_play_lv2_audio_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_play_lv2_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_play_lv2_audio
@@ -82,7 +75,6 @@ enum{
 };
 
 static gpointer ags_play_lv2_audio_parent_class = NULL;
-static AgsPluginInterface *ags_play_lv2_parent_plugin_interface;
 
 static const gchar *ags_play_lv2_audio_plugin_name = "ags-play-lv2";
 static const gchar *ags_play_lv2_audio_specifier[] = {
@@ -110,20 +102,10 @@ ags_play_lv2_audio_get_type()
       (GInstanceInitFunc) ags_play_lv2_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_lv2_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_lv2_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						     "AgsPlayLv2Audio",
 						     &ags_play_lv2_audio_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_play_lv2_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave (&g_define_type_id__volatile, ags_type_play_lv2_audio);
   }
@@ -154,7 +136,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The assigned turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -170,7 +152,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -186,7 +168,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The plugin's plugin object.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_object("plugin",
 				    i18n_pspec("the plugin"),
@@ -202,7 +184,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The effect's input lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("input-lines",
 				   i18n_pspec("input lines of effect"),
@@ -220,7 +202,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The effect's output lines count.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_ulong("output-lines",
 				   i18n_pspec("output lines of effect"),
@@ -232,16 +214,6 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_LINES,
 				  param_spec);
-}
-
-void
-ags_play_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_lv2_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_play_lv2_audio_read;
-  plugin->write = ags_play_lv2_audio_write;
-  plugin->set_ports = ags_play_lv2_audio_set_ports;
 }
 
 void
@@ -282,7 +254,7 @@ ags_play_lv2_audio_set_property(GObject *gobject,
 {
   AgsPlayLv2Audio *play_lv2_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_lv2_audio = AGS_PLAY_LV2_AUDIO(gobject);
 
@@ -296,10 +268,10 @@ ags_play_lv2_audio_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_lv2_audio->turtle == turtle){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -314,7 +286,7 @@ ags_play_lv2_audio_set_property(GObject *gobject,
 
       play_lv2_audio->turtle = turtle;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_URI:
@@ -323,10 +295,10 @@ ags_play_lv2_audio_set_property(GObject *gobject,
       
       uri = g_value_get_string(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(uri == play_lv2_audio->uri){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
@@ -337,7 +309,7 @@ ags_play_lv2_audio_set_property(GObject *gobject,
 
       play_lv2_audio->uri = g_strdup(uri);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PLUGIN:
@@ -346,10 +318,10 @@ ags_play_lv2_audio_set_property(GObject *gobject,
       
       lv2_plugin = g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(play_lv2_audio->plugin == lv2_plugin){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -364,7 +336,7 @@ ags_play_lv2_audio_set_property(GObject *gobject,
 
       play_lv2_audio->plugin = lv2_plugin;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_INPUT_LINES:
@@ -373,17 +345,17 @@ ags_play_lv2_audio_set_property(GObject *gobject,
       
       effect_input_lines = g_value_get_ulong(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(effect_input_lines == play_lv2_audio->input_lines){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
 
       play_lv2_audio->input_lines = effect_input_lines;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_OUTPUT_LINES:
@@ -392,17 +364,17 @@ ags_play_lv2_audio_set_property(GObject *gobject,
       
       effect_output_lines = g_value_get_ulong(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(effect_output_lines == play_lv2_audio->output_lines){
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
 	return;
       }
 
       play_lv2_audio->output_lines = effect_output_lines;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -419,7 +391,7 @@ ags_play_lv2_audio_get_property(GObject *gobject,
 {
   AgsPlayLv2Audio *play_lv2_audio;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   play_lv2_audio = AGS_PLAY_LV2_AUDIO(gobject);
 
@@ -429,47 +401,47 @@ ags_play_lv2_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_TURTLE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_lv2_audio->turtle);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_URI:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_string(value, play_lv2_audio->uri);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, play_lv2_audio->plugin);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_INPUT_LINES:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_ulong(value, play_lv2_audio->input_lines);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_OUTPUT_LINES:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_ulong(value, play_lv2_audio->output_lines);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -527,265 +499,6 @@ ags_play_lv2_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_play_lv2_audio_parent_class)->finalize(gobject);
 }
 
-void
-ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsPlayLv2Audio *play_lv2_audio;
-  AgsPort *current;
-  
-  AgsLv2Plugin *lv2_plugin;
-  
-  GList *start_list, *list;  
-  GList *start_plugin_port, *plugin_port;
-  
-  unsigned long port_count;
-  unsigned long i;
-
-  pthread_mutex_t *recall_mutex;
-
-  play_lv2_audio = AGS_PLAY_LV2_AUDIO(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
-
-  /* get some fields */
-  g_object_get(play_lv2_audio,
-	       "port", &start_list,
-	       "plugin", &lv2_plugin,
-	       NULL);
-
-  g_object_get(lv2_plugin,
-	       "plugin-port", &start_plugin_port,
-	       NULL);
-  
-  if(start_plugin_port != NULL){
-    plugin_port = start_plugin_port;
-    
-    port_count = g_list_length(start_plugin_port);
-
-    for(i = 0; i < port_count; i++){
-      if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
-	gchar *specifier;
-
-	pthread_mutex_t *plugin_port_mutex;
-	
-	/* get plugin port mutex */
-	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
-
-	/* get specifier */
-	pthread_mutex_lock(plugin_port_mutex);
-	
-	specifier = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
-
-	pthread_mutex_unlock(plugin_port_mutex);
-
-	if(specifier == NULL){
-	  plugin_port = plugin_port->next;
-	  
-	  continue;
-	}
-	
-	list = start_list;
-	current = NULL;
-	
-	while(list != NULL){
-	  gboolean success;
-
-	  pthread_mutex_t *port_mutex;
-
-	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(list->data);
-
-	  /* check success */
-	  pthread_mutex_lock(port_mutex);
-	  
-	  success = (!g_strcmp0(specifier,
-				AGS_PORT(list->data)->specifier)) ? TRUE: FALSE;
-
-	  pthread_mutex_unlock(port_mutex);
-
-	  if(success){
-	    current = list->data;
-	    
-	    break;
-	  }
-
-	  /* iterate */
-	  list = list->next;
-	}
-
-	if(current != NULL){
-	  GValue value = {0,};
-	  
-	  g_object_set(current,
-		       "plugin-port", plugin_port->data,
-		       NULL);
-	  
-	  ags_play_lv2_audio_load_conversion(play_lv2_audio,
-					     (GObject *) current,
-					     (GObject *) plugin_port->data);
-
-	  g_object_get_property(plugin_port->data,
-				"default-value",
-				&value);
-
-	  ags_port_safe_write_raw(current,
-				  &value);
-	
-#ifdef AGS_DEBUG
-	  g_message("connecting port: %d/%d", i, port_count);      
-#endif
-	}
-      }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
-	guint port_index;
-
-	g_object_get(plugin_port->data,
-		     "port-index", &port_index,
-		     NULL);
-
-	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	  pthread_mutex_lock(recall_mutex);
-
-	  if(play_lv2_audio->input_port == NULL){
-	    play_lv2_audio->input_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->input_port[0] = port_index;
-	  }else{
-	    play_lv2_audio->input_port = (uint32_t *) realloc(play_lv2_audio->input_port,
-							      (play_lv2_audio->input_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->input_port[play_lv2_audio->input_lines] = port_index;
-	  }
-
-	  play_lv2_audio->input_lines += 1;
-
-	  pthread_mutex_unlock(recall_mutex);
-	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  pthread_mutex_lock(recall_mutex);
-
-	  if(play_lv2_audio->output_port == NULL){
-	    play_lv2_audio->output_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->output_port[0] = port_index;
-	  }else{
-	    play_lv2_audio->output_port = (uint32_t *) realloc(play_lv2_audio->output_port,
-							       (play_lv2_audio->output_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->output_port[play_lv2_audio->output_lines] = port_index;
-	  }
-
-	  play_lv2_audio->output_lines += 1;
-
-	  pthread_mutex_unlock(recall_mutex);
-	}
-      }
-
-      plugin_port = plugin_port->next;
-    }
-
-    AGS_RECALL(play_lv2_audio)->port = g_list_reverse(port);
-  }
-
-  /* unref */
-  g_list_free_full(start_list,
-		   g_object_unref);
-  
-  g_object_unref(lv2_plugin);
-
-  g_list_free_full(start_plugin_port,
-		   g_object_unref);
-}
-
-void
-ags_play_lv2_audio_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsPlayLv2Audio *gobject;
-
-  AgsLv2Plugin *lv2_plugin;
-
-  gchar *filename, *effect, *uri;
-
-  uint32_t effect_index;
-
-  gobject = AGS_PLAY_LV2_AUDIO(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  filename = xmlGetProp(node,
-			"filename");
-  effect = xmlGetProp(node,
-		      "effect");
-  uri = xmlGetProp(node,
-		   "uri");
-  effect_index = g_ascii_strtoull(xmlGetProp(node,
-					     "index"),
-				  NULL,
-				  10);
-
-  g_object_set(gobject,
-	       "filename", filename,
-	       "effect", effect,
-	       "uri", uri,
-	       "effect-index", effect_index,
-	       NULL);
-
-  ags_play_lv2_audio_load(gobject);
-}
-
-xmlNode*
-ags_play_lv2_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsPlayLv2Audio *play_lv2_audio;
-
-  xmlNode *node;
-
-  GList *list;
-
-  gchar *id;
-
-  play_lv2_audio = AGS_PLAY_LV2_AUDIO(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-recall-lv2");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", play_lv2_audio,
-				   NULL));
-
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(AGS_RECALL(play_lv2_audio)->filename));
-  
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(AGS_RECALL(play_lv2_audio)->effect));
-
-  xmlNewProp(node,
-	     "uri",
-	     g_strdup(play_lv2_audio->uri));
-  
-  xmlNewProp(node,
-	     "index",
-	     g_strdup_printf("%d", AGS_RECALL(play_lv2_audio)->effect_index));
-  
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_play_lv2_audio_test_flags:
  * @play_lv2_audio: the #AgsPlayLv2Audio
@@ -795,14 +508,14 @@ ags_play_lv2_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
 {
   gboolean retval;  
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_LV2_AUDIO(play_lv2_audio)){
     return(FALSE);
@@ -812,11 +525,11 @@ ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* test */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   retval = (flags & (play_lv2_audio->flags)) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   return(retval);
 }
@@ -828,12 +541,12 @@ ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_LV2_AUDIO(play_lv2_audio)){
     return;
@@ -843,11 +556,11 @@ ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* set flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   play_lv2_audio->flags |= flags;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -857,12 +570,12 @@ ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_LV2_AUDIO(play_lv2_audio)){
     return;
@@ -872,11 +585,11 @@ ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* set flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   play_lv2_audio->flags &= (~flags);
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -885,7 +598,7 @@ ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
  *
  * Set up LV2 handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
@@ -901,7 +614,7 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_PLAY_LV2_AUDIO(play_lv2_audio)){
     return;
@@ -911,12 +624,12 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* get filename and effect */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(play_lv2_audio)->filename);
   effect = g_strdup(AGS_RECALL(play_lv2_audio)->effect);
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find AgsLv2Plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -977,11 +690,11 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
 	 }
       }
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       play_lv2_audio->plugin_descriptor = plugin_descriptor;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
 	ags_play_lv2_audio_set_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_WORKER);
@@ -1000,9 +713,9 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
  *
  * Set up LV2 ports.
  *
- * Returns: a #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
@@ -1020,8 +733,8 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   uint32_t port_count;
   uint32_t i;
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_PLAY_LV2_AUDIO(play_lv2_audio)){
     return(NULL);
@@ -1031,12 +744,12 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* get filename and effect */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(play_lv2_audio)->filename);
   effect = g_strdup(AGS_RECALL(play_lv2_audio)->effect);
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find AgsLv2Plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -1053,11 +766,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
   
   /* get plugin name */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_name = g_strdup_printf("lv2-<%s>", lv2_plugin->uri);
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   plugin_port = start_plugin_port;
   start_port = NULL;
@@ -1070,7 +783,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 
       GValue *value;
 	
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
 
       /* get plugin port mutex */
       plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
@@ -1093,11 +806,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	gchar *specifier;
 
 	/* get specifier */
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 	
 	specifier = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
 
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	if(specifier == NULL){
 	  plugin_port = plugin_port->next;
@@ -1165,7 +878,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 		     NULL);
 
 	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	  pthread_mutex_lock(recall_mutex);
+	  g_rec_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->input_port == NULL){
 	    play_lv2_audio->input_port = (uint32_t *) malloc(sizeof(uint32_t));
@@ -1178,9 +891,9 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	  
 	  play_lv2_audio->input_lines += 1;
 
-	  pthread_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  pthread_mutex_lock(recall_mutex);
+	  g_rec_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->output_port == NULL){
 	    play_lv2_audio->output_port = (uint32_t *) malloc(sizeof(uint32_t));
@@ -1193,7 +906,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	  
 	  play_lv2_audio->output_lines += 1;
 
-	  pthread_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	}
       }
 
@@ -1229,7 +942,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
@@ -1258,15 +971,15 @@ ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 
 /**
  * ags_play_lv2_audio_find:
- * @recall: a #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin's filename
  * @uri: plugin's uri
  *
  * Retrieve LV2 recall.
  *
- * Returns: Next match.
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next match.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_play_lv2_audio_find(GList *recall,
@@ -1276,20 +989,20 @@ ags_play_lv2_audio_find(GList *recall,
     if(AGS_IS_PLAY_LV2_AUDIO(recall->data)){
       gboolean success;
       
-      pthread_mutex_t *recall_mutex;
+      GRecMutex *recall_mutex;
 
       /* get recall mutex */
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check current filename and effect */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
 			    filename) &&
 		 !g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->uri,
 			    uri)) ? TRUE: FALSE;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
 
       if(success){
 	break;
@@ -1311,7 +1024,7 @@ ags_play_lv2_audio_find(GList *recall,
  *
  * Returns: the new #AgsPlayLv2Audio
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPlayLv2Audio*
 ags_play_lv2_audio_new(AgsAudio *audio)

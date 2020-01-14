@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,10 @@
 
 #include <math.h>
 #include <gdk/gdkkeysyms.h>
+
+void ags_wave_toolbar_zoom_callback_apply(GList *list,
+					  gdouble old_zoom_factor,
+					  gdouble zoom_factor, gdouble zoom);
 
 void
 ags_wave_toolbar_position_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar)
@@ -177,6 +181,29 @@ ags_wave_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsWaveT
 }
 
 void
+ags_wave_toolbar_zoom_callback_apply(GList *list,
+				     gdouble old_zoom_factor,
+				     gdouble zoom_factor, gdouble zoom)
+{
+  AgsWaveEdit *wave_edit;
+    
+  while(list != NULL){
+    wave_edit = list->data;
+    
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
+      
+    /* reset ruler */
+    wave_edit->ruler->factor = zoom_factor;
+    wave_edit->ruler->precision = zoom;
+    wave_edit->ruler->scale_precision = 1.0 / zoom;
+  
+    gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);
+
+    list = list->next;
+  }
+}
+
+void
 ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_toolbar)
 {
   AgsWaveEditor *wave_editor;
@@ -185,37 +212,24 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
   GtkAdjustment *adjustment;
 
   GList *list_start;
-  
-  double zoom_factor, zoom;
 
-  auto void ags_wave_toolbar_zoom_callback_apply(GList *list);
-  
-  void ags_wave_toolbar_zoom_callback_apply(GList *list){
-    AgsWaveEdit *wave_edit;
+  gdouble old_value;
+  gdouble old_zoom_factor;
+  gdouble zoom_factor, zoom;
     
-    while(list != NULL){
-      wave_edit = list->data;
-      
-      gtk_widget_queue_draw((GtkWidget *) wave_edit);
-      
-      /* reset ruler */
-      wave_edit->ruler->factor = zoom_factor;
-      wave_edit->ruler->precision = zoom;
-      wave_edit->ruler->scale_precision = 1.0 / zoom;
-  
-      gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);
-
-      list = list->next;
-    }
-  }
-  
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
 							  AGS_TYPE_WAVE_EDITOR);
   
   /* zoom */
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+  old_zoom_factor = exp2(6.0 - (double) wave_toolbar->zoom_history);
+  
+  wave_toolbar->zoom_history = gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom);
+
+  zoom_factor = exp2(6.0 - (double) wave_toolbar->zoom_history);
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
 
+  old_value = gtk_range_get_value(wave_editor->hscrollbar);
+    
   /* edit */
   wave_editor->ruler->factor = zoom_factor;
   wave_editor->ruler->precision = zoom;
@@ -224,11 +238,16 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
   gtk_widget_queue_draw((GtkWidget *) wave_editor->ruler);
 
   list_start = gtk_container_get_children((GtkContainer *) wave_editor->scrolled_wave_edit_box->wave_edit_box);
-  ags_wave_toolbar_zoom_callback_apply(list_start);
+  ags_wave_toolbar_zoom_callback_apply(list_start,
+				       old_zoom_factor,
+				       zoom_factor, zoom);
 
   g_list_free(list_start);
 
   ags_wave_editor_reset_scrollbar(wave_editor);
+
+  gtk_range_set_value(wave_editor->hscrollbar,
+		      old_value * old_zoom_factor / zoom_factor);
 }
 
 void

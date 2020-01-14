@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,6 @@ void ags_add_soundcard_launch(AgsTask *task);
 
 enum{
   PROP_0,
-  PROP_APPLICATION_CONTEXT,
   PROP_SOUNDCARD,
 };
 
@@ -107,27 +106,11 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
   gobject->finalize = ags_add_soundcard_finalize;
 
   /**
-   * AgsAddSoundcard:application-context:
-   *
-   * The assigned #AgsApplicationContext
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   i18n_pspec("application context of add soundcard"),
-				   i18n_pspec("The application context of add soundcard task"),
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
-				  param_spec);
-
-  /**
    * AgsAddSoundcard:soundcard:
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add soundcard"),
@@ -147,8 +130,6 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
 void
 ags_add_soundcard_init(AgsAddSoundcard *add_soundcard)
 {
-  add_soundcard->application_context = NULL;
-  
   add_soundcard->soundcard = NULL;
 }
 
@@ -163,27 +144,6 @@ ags_add_soundcard_set_property(GObject *gobject,
   add_soundcard = AGS_ADD_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = (AgsApplicationContext *) g_value_get_object(value);
-
-      if(add_soundcard->application_context == application_context){
-	return;
-      }
-
-      if(add_soundcard->application_context != NULL){
-	g_object_unref(add_soundcard->application_context);
-      }
-
-      if(application_context != NULL){
-	g_object_ref(application_context);
-      }
-
-      add_soundcard->application_context = application_context;
-    }
-    break;
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
@@ -222,11 +182,6 @@ ags_add_soundcard_get_property(GObject *gobject,
   add_soundcard = AGS_ADD_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, add_soundcard->application_context);
-    }
-    break;
   case PROP_SOUNDCARD:
     {
       g_value_set_object(value, add_soundcard->soundcard);
@@ -245,12 +200,6 @@ ags_add_soundcard_dispose(GObject *gobject)
 
   add_soundcard = AGS_ADD_SOUNDCARD(gobject);
 
-  if(add_soundcard->application_context != NULL){
-    g_object_unref(add_soundcard->application_context);
-
-    add_soundcard->application_context = NULL;
-  }
-
   if(add_soundcard->soundcard != NULL){
     g_object_unref(add_soundcard->soundcard);
 
@@ -268,10 +217,6 @@ ags_add_soundcard_finalize(GObject *gobject)
 
   add_soundcard = AGS_ADD_SOUNDCARD(gobject);
 
-  if(add_soundcard->application_context != NULL){
-    g_object_unref(add_soundcard->application_context);
-  }
-
   if(add_soundcard->soundcard != NULL){
     g_object_unref(add_soundcard->soundcard);
   }
@@ -284,23 +229,25 @@ void
 ags_add_soundcard_launch(AgsTask *task)
 {
   AgsAddSoundcard *add_soundcard;
+
+  AgsApplicationContext *application_context;
   
   GList *list_start;
   
   add_soundcard = AGS_ADD_SOUNDCARD(task);
 
-  if(!AGS_IS_SOUND_PROVIDER(add_soundcard->application_context) ||
-     !AGS_IS_SOUNDCARD(add_soundcard->soundcard)){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(application_context));
+  g_return_if_fail(AGS_IS_SOUNDCARD(add_soundcard->soundcard));
 
   /* add soundcard */
-  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context));
+  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   if(g_list_find(list_start, add_soundcard->soundcard) == NULL){
     g_object_ref(add_soundcard->soundcard);
     
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				     g_list_append(list_start,
 						   add_soundcard->soundcard));
   }
@@ -311,23 +258,20 @@ ags_add_soundcard_launch(AgsTask *task)
 
 /**
  * ags_add_soundcard_new:
- * @application_context: the #AgsApplicationContext
  * @soundcard: the #AgsSoundcard to add
  *
  * Create a new instance of #AgsAddSoundcard.
  *
  * Returns: the new #AgsAddSoundcard.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAddSoundcard*
-ags_add_soundcard_new(AgsApplicationContext *application_context,
-		      GObject *soundcard)
+ags_add_soundcard_new(GObject *soundcard)
 {
   AgsAddSoundcard *add_soundcard;
 
   add_soundcard = (AgsAddSoundcard *) g_object_new(AGS_TYPE_ADD_SOUNDCARD,
-						   "application-context", application_context,
 						   "soundcard", soundcard,
 						   NULL);
 

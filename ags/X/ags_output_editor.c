@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,15 +20,10 @@
 #include <ags/X/ags_output_editor.h>
 #include <ags/X/ags_output_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_line_editor.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_output_editor_class_init(AgsOutputEditorClass *output_editor);
 void ags_output_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -339,7 +334,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to output. And modifies its ranges.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_output_editor_check(AgsOutputEditor *output_editor)
@@ -388,7 +383,7 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
  *
  * Returns: the new #AgsOutputEditor
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsOutputEditor*
 ags_output_editor_new()

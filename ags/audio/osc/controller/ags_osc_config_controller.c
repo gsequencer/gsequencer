@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/osc/controller/ags_osc_config_controller.h>
-
-#include <ags/libags.h>
 
 #include <ags/audio/task/ags_apply_sound_config.h>
 
@@ -134,7 +132,7 @@ ags_osc_config_controller_class_init(AgsOscConfigControllerClass *osc_config_con
    *
    * Returns: the #AgsOscResponse
    * 
-   * Since: 2.1.0
+   * Since: 3.0.0
    */
   osc_config_controller_signals[APPLY_CONFIG] =
     g_signal_new("apply-config",
@@ -165,7 +163,7 @@ ags_osc_config_controller_set_property(GObject *gobject,
 {
   AgsOscConfigController *osc_config_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_config_controller = AGS_OSC_CONFIG_CONTROLLER(gobject);
 
@@ -187,7 +185,7 @@ ags_osc_config_controller_get_property(GObject *gobject,
 {
   AgsOscConfigController *osc_config_controller;
 
-  pthread_mutex_t *osc_controller_mutex;
+  GRecMutex *osc_controller_mutex;
 
   osc_config_controller = AGS_OSC_CONFIG_CONTROLLER(gobject);
 
@@ -232,7 +230,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 
   AgsApplySoundConfig *apply_sound_config;
   
-  AgsThread *task_thread;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -295,13 +293,12 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   /* get sound provider */
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  apply_sound_config = ags_apply_sound_config_new(ags_application_context_get_instance(),
-						  config_data);
+  apply_sound_config = ags_apply_sound_config_new(config_data);
 
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) apply_sound_config);
+  ags_task_launcher_add_task(task_launcher,
+			     (AgsTask *) apply_sound_config);
 
   /* create response */
   osc_response = ags_osc_response_new();  
@@ -314,7 +311,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   free(type_tag);
   free(config_data);
 
-  g_object_unref(task_thread);
+  g_object_unref(task_launcher);
   
   return(start_response);
 }
@@ -330,7 +327,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
  * 
  * Returns: the #GList-struct containing #AgsOscResponse
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 gpointer
 ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_controller,
@@ -359,7 +356,7 @@ ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_contro
  * 
  * Returns: the #AgsOscConfigController
  * 
- * Since: 2.1.0
+ * Since: 3.0.0
  */
 AgsOscConfigController*
 ags_osc_config_controller_new()

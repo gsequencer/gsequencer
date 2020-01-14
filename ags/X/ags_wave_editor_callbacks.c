@@ -20,14 +20,6 @@
 #include <ags/X/ags_wave_editor_callbacks.h>
 
 gboolean
-ags_wave_editor_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEditor *wave_editor)
-{
-  ags_wave_editor_reset_scrollbar(wave_editor);
-
-  return(FALSE);
-}
-
-gboolean
 ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor)
 {
   ags_wave_editor_reset_scrollbar(wave_editor);
@@ -42,11 +34,11 @@ ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 
   vadjustment = gtk_viewport_get_vadjustment(wave_editor->scrolled_wave_edit_box->viewport);
   gtk_adjustment_set_value(vadjustment,
-			   range->adjustment->value);
+			   gtk_range_get_value(range));
 
   vadjustment = gtk_viewport_get_vadjustment(wave_editor->scrolled_level_box->viewport);
   gtk_adjustment_set_value(vadjustment,
-			   range->adjustment->value);
+			   gtk_range_get_value(range));
 }
 
 void
@@ -77,7 +69,7 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
   }
   
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
-			   range->adjustment->value / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
     
   /* wave edit */
@@ -86,8 +78,12 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
       list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
     while(list != NULL){
-      gtk_adjustment_set_value(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
-			       range->adjustment->value);
+      GtkAdjustment *adjustment;
+
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar));
+      
+      gtk_adjustment_set_value(adjustment,
+			       gtk_range_get_value(range));
 
       list = list->next;
     }
@@ -124,7 +120,7 @@ ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdito
   }
 
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
-			   range->adjustment->value / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
+			   gtk_range_get_value(range) / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
   
   /* wave edit */
@@ -133,8 +129,12 @@ ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdito
       list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
     while(list != NULL){
-      gtk_adjustment_set_value(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
-			       range->adjustment->value);
+      GtkAdjustment *adjustment;
+
+      adjustment = gtk_range_get_adjustment(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar));
+      
+      gtk_adjustment_set_value(adjustment,
+			       gtk_range_get_value(range));
 
       list = list->next;
     }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,22 +20,15 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_effect_bridge.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_machine_init(AgsMachine *machine);
 void ags_machine_set_property(GObject *gobject,
 			      guint prop_id,
@@ -50,13 +43,6 @@ static void ags_machine_finalize(GObject *gobject);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
 
-gchar* ags_machine_get_version(AgsPlugin *plugin);
-void ags_machine_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_machine_get_build_id(AgsPlugin *plugin);
-void ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id);
-
-void ags_machine_show(GtkWidget *widget);
-
 void ags_machine_real_resize_audio_channels(AgsMachine *machine,
 					    guint new_size, guint old_size);
 void ags_machine_real_resize_pads(AgsMachine *machine,
@@ -66,6 +52,12 @@ void ags_machine_real_map_recall(AgsMachine *machine);
 GList* ags_machine_real_find_port(AgsMachine *machine);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
+
+xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
+					      AgsChannel *start_current,
+					      guint input_pads);
+
+
 
 /**
  * SECTION:ags_machine
@@ -103,10 +95,6 @@ enum{
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
 
-GHashTable *ags_machine_message_monitor = NULL;
-GHashTable *ags_machine_generic_output_message_monitor = NULL;
-GHashTable *ags_machine_generic_input_message_monitor = NULL;
-
 GType
 ags_machine_get_type(void)
 {
@@ -133,23 +121,13 @@ ags_machine_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_machine_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
+    ags_type_machine = g_type_register_static(GTK_TYPE_BIN,
 					      "AgsMachine", &ags_machine_info,
 					      0);
     
     g_type_add_interface_static(ags_type_machine,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_machine,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_machine);
   }
@@ -162,6 +140,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_machine_parent_class = g_type_class_peek_parent(machine);
@@ -180,7 +159,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -198,7 +177,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -216,7 +195,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -234,7 +213,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The assigned #AgsAudio to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -250,7 +229,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The machine's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("machine-name",
 				   i18n_pspec("machine name"),
@@ -263,8 +242,6 @@ ags_machine_class_init(AgsMachineClass *machine)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) machine;
-
-  widget->show = ags_machine_show;
 
   /* AgsMachineClass */
   machine->samplerate_changed = NULL;
@@ -286,7 +263,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -307,7 +284,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -328,7 +305,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   machine_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -350,7 +327,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -373,7 +350,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -393,7 +370,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::map-recall should be used to add the machine's default recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -411,7 +388,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::find-port signal emits as recall should be mapped.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -430,7 +407,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::stop signal gets emited as audio stops playback.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   machine_signals[STOP] =
     g_signal_new("stop",
@@ -453,59 +430,18 @@ ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_machine_get_version;
-  plugin->set_version = ags_machine_set_version;
-  plugin->get_build_id = ags_machine_get_build_id;
-  plugin->set_build_id = ags_machine_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->get_ports = NULL;
-}
-
-void
 ags_machine_init(AgsMachine *machine)
 {
   GtkVBox *vbox;
   GtkFrame *frame;
 
-  if(ags_machine_message_monitor == NULL){
-    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							NULL,
-							NULL);
-  }
+  AgsApplicationContext *application_context;
 
-  if(ags_machine_generic_output_message_monitor == NULL){
-    ags_machine_generic_output_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								       NULL,
-								       NULL);
-  }
+  application_context = ags_application_context_get_instance();
 
-  if(ags_machine_generic_input_message_monitor == NULL){
-    ags_machine_generic_input_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								      NULL,
-								      NULL);
-  }
-
-  if(ags_machine_message_monitor == NULL){
-    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							NULL,
-							NULL);
-  }
+  g_signal_connect(application_context, "check-message",
+		   G_CALLBACK(ags_machine_check_message_callback), machine);
   
-  g_hash_table_insert(ags_machine_message_monitor,
-		      machine,
-		      ags_machine_message_monitor_timeout);
-
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
-		(GSourceFunc) ags_machine_message_monitor_timeout,
-		(gpointer) machine);
-
   machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
@@ -581,7 +517,10 @@ ags_machine_init(AgsMachine *machine)
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
 
-  machine->application_context = NULL;
+  machine->midi_export_dialog = NULL;
+  machine->wave_export_dialog = NULL;
+  machine->midi_import_dialog = NULL;
+  machine->wave_import_dialog = NULL;
 }
 
 void
@@ -1183,6 +1122,12 @@ ags_machine_finalize(GObject *gobject)
   machine = (AgsMachine *) gobject;
 
   application_context = ags_application_context_get_instance();
+
+  g_object_disconnect(application_context,
+		      "any_signal::check-message",
+		      G_CALLBACK(ags_machine_check_message_callback),
+		      machine,
+		      NULL);
   
   /* remove from sound provider */
   list =
@@ -1198,10 +1143,6 @@ ags_machine_finalize(GObject *gobject)
 		 (GFunc) g_object_unref,
 		 NULL);
   
-  /* remove message monitor */
-  g_hash_table_remove(ags_machine_message_monitor,
-		      machine);
-
   g_list_free_full(machine->enabled_automation_port,
 		   (GDestroyNotify) ags_machine_automation_port_free);
   
@@ -1361,54 +1302,6 @@ ags_machine_disconnect(AgsConnectable *connectable)
 				       machine);
 }
 
-
-gchar*
-ags_machine_get_version(AgsPlugin *plugin)
-{
-  return(AGS_MACHINE(plugin)->version);
-}
-
-void
-ags_machine_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AGS_MACHINE(plugin)->version = version;
-
-  //TODO:JK: implement me
-}
-
-gchar*
-ags_machine_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_MACHINE(plugin)->build_id);
-}
-
-void
-ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AGS_MACHINE(plugin)->build_id = build_id;
-
-  //TODO:JK: implement me
-}
-
-void
-ags_machine_show(GtkWidget *widget)
-{
-  AgsMachine *machine;
-  AgsWindow *window;
-  GtkFrame *frame;
-
-  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
-
-  machine = (AgsMachine *) widget;
-
-  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) widget);
-
-  frame = (GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data;
-  gtk_widget_show_all((GtkWidget *) frame);
-}
-
 /**
  * ags_machine_automation_port_alloc:
  * @channel_type: the #GType of channel
@@ -1418,7 +1311,7 @@ ags_machine_show(GtkWidget *widget)
  * 
  * Returns: the new allocated #AgsMachineAutomationPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachineAutomationPort*
 ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
@@ -1439,7 +1332,7 @@ ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
  * 
  * Free @automation_port
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
@@ -1463,7 +1356,7 @@ ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
  * 
  * Returns: the matching #AgsAutomationPort or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
@@ -1490,7 +1383,7 @@ ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_samplerate_changed(AgsMachine *machine,
@@ -1514,7 +1407,7 @@ ags_machine_samplerate_changed(AgsMachine *machine,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_buffer_size_changed(AgsMachine *machine,
@@ -1538,7 +1431,7 @@ ags_machine_buffer_size_changed(AgsMachine *machine,
  * 
  * Notify about format changed.
  * 
- * Since: 2.1.35
+ * Since: 3.0.0
  */
 void
 ags_machine_format_changed(AgsMachine *machine,
@@ -1858,7 +1751,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
  *
  * Resize audio channel allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_resize_audio_channels(AgsMachine *machine,
@@ -2057,7 +1950,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
  *
  * Resize pad allocation.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_resize_pads(AgsMachine *machine,
@@ -2094,7 +1987,7 @@ ags_machine_real_map_recall(AgsMachine *machine)
  *
  * You may want the @machine to add its default recall.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_map_recall(AgsMachine *machine)
@@ -2180,7 +2073,7 @@ ags_machine_real_find_port(AgsMachine *machine)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_machine_find_port(AgsMachine *machine)
@@ -2208,7 +2101,7 @@ ags_machine_find_port(AgsMachine *machine)
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
@@ -2231,7 +2124,7 @@ ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
  *
  * Returns: the matching #AgsMachine, or %NULL
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
@@ -2254,7 +2147,7 @@ ags_machine_find_by_name(GList *list, char *name)
  *
  * Start/stop @playback of @machine.
  *
- * Since: 2.4.0
+ * Since: 3.0.0
  */
 void
 ags_machine_playback_set_active(AgsMachine *machine,
@@ -2311,8 +2204,8 @@ ags_machine_playback_set_active(AgsMachine *machine,
     /* launch task */
     start_task = g_list_reverse(start_task);
 
-    ags_xorg_application_context_schedule_task_list(application_context,
-						    start_task);
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      start_task);
 
     /* feed note */
     g_object_get(playback,
@@ -2351,8 +2244,8 @@ ags_machine_playback_set_active(AgsMachine *machine,
     /* launch task */
     start_task = g_list_reverse(start_task);
 
-    ags_xorg_application_context_schedule_task_list(application_context,
-						    start_task);
+    ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+				      start_task);
     
     /* feed note */
     g_object_get(playback,
@@ -2379,7 +2272,7 @@ ags_machine_playback_set_active(AgsMachine *machine,
  *
  * Start/stop playback of @machine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_set_run(AgsMachine *machine,
@@ -2401,7 +2294,7 @@ ags_machine_set_run(AgsMachine *machine,
  *
  * Start/stop playback of @machine.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_set_run_extended(AgsMachine *machine,
@@ -2422,7 +2315,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   no_soundcard = FALSE;
 
@@ -2483,20 +2376,20 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       /* start soundcard */
-      start_soundcard = ags_start_soundcard_new((AgsApplicationContext *) window->application_context);
+      start_soundcard = ags_start_soundcard_new(application_context);
       list = g_list_prepend(list,
 			    start_soundcard);
 
       /* start sequencer */
-      start_sequencer = ags_start_sequencer_new((AgsApplicationContext *) window->application_context);
+      start_sequencer = ags_start_sequencer_new(application_context);
       list = g_list_prepend(list,
 			    start_sequencer);
       
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
       
-      ags_xorg_application_context_schedule_task_list(application_context,
-						      list);
+      ags_ui_provider_schedule_task_all(AGS_UI_PROVIDER(application_context),
+					list);
     }
   }else{
     AgsCancelAudio *cancel_audio;
@@ -2507,8 +2400,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_SEQUENCER);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(notation){
@@ -2517,8 +2410,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_NOTATION);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(wave){
@@ -2527,8 +2420,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_WAVE);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
 
     if(midi){
@@ -2537,8 +2430,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  AGS_SOUND_SCOPE_MIDI);
     
       /* append AgsCancelAudio */
-      ags_xorg_application_context_schedule_task(application_context,
-						 (GObject *) cancel_audio);
+      ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				    (AgsTask *) cancel_audio);
     }
   }
 }
@@ -2552,7 +2445,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
@@ -2569,11 +2462,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
-  if(window != NULL){
-    application_context = (AgsApplicationContext *) window->application_context;
-  }else{
-    application_context = NULL;
-  }
+  application_context = ags_application_context_get_instance();
   
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -2622,7 +2511,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
@@ -2640,7 +2529,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 						 AGS_TYPE_WINDOW);
 
   if(window != NULL){
-    application_context = (AgsApplicationContext *) window->application_context;
+    application_context = ags_application_context_get_instance();
   }else{
     application_context = NULL;
   }
@@ -2692,7 +2581,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
@@ -2710,8 +2599,8 @@ ags_machine_get_possible_links(AgsMachine *machine)
 		     1, NULL,
 		     -1);
 
-  if(GTK_WIDGET(machine)->parent != NULL){
-    list = gtk_container_get_children(GTK_CONTAINER(GTK_WIDGET(machine)->parent));
+  if(gtk_widget_get_parent(GTK_WIDGET(machine)) != NULL){
+    list = gtk_container_get_children(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(machine))));
 
     while(list != NULL){
       if(list->data != machine){
@@ -2740,7 +2629,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
  *
  * Returns: a new #GtkFileChooserDialog
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
@@ -2758,12 +2647,12 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  gtk_box_pack_start(gtk_dialog_get_content_area(GTK_DIALOG(file_chooser)), (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
 
   return(file_chooser);
@@ -2778,7 +2667,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
  *
  * Opens audio files and modifies or creates new channels if wished.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_open_files(AgsMachine *machine,
@@ -2794,7 +2683,7 @@ ags_machine_open_files(AgsMachine *machine,
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
@@ -2802,8 +2691,141 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) open_file);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) open_file);
+}
+
+xmlNode*
+ags_machine_copy_pattern_to_notation(AgsMachine *machine,
+				     AgsChannel *start_current,
+				     guint input_pads)
+{
+  AgsChannel *current, *next_current;    
+  AgsPattern *pattern;
+
+  xmlNode *notation_node, *current_note;
+
+  GList *start_list;
+
+  gchar *str;
+  
+  guint audio_channel;
+  guint x_boundary, y_boundary;
+  guint bank_0, bank_1, k;
+
+  current = start_current;
+
+  audio_channel = 0;
+  
+  if(current != NULL){
+    g_object_ref(current);
+
+    g_object_get(current,
+		 "audio-channel", &audio_channel,
+		 NULL);
+  }
+
+  next_current = NULL;
+    
+  /* create root node */
+  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
+
+  xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST "0");
+
+  str = g_strdup_printf("%u",
+			audio_channel);
+  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST str);
+
+  g_free(str);
+
+  bank_0 = machine->bank_0;
+  bank_1 = machine->bank_1;
+    
+  x_boundary = G_MAXUINT;
+  y_boundary = G_MAXUINT;
+
+  while(current != NULL){
+    guint length;
+      
+    GRecMutex *pattern_mutex;
+      
+    g_object_get(current,
+		 "pattern", &start_list,
+		 NULL);
+
+    pattern = start_list->data;
+    g_object_ref(pattern);
+    
+    g_list_free_full(start_list,
+		     g_object_unref);
+
+    /* get pattern mutex */
+    pattern_mutex = AGS_PATTERN_GET_OBJ_MUTEX(pattern);
+
+    /* get length */
+    g_rec_mutex_lock(pattern_mutex);
+
+    length = pattern->dim[2];
+      
+    g_rec_mutex_unlock(pattern_mutex);
+      
+    for(k = 0; k < length; k++){
+      guint current_pad;
+
+      g_object_get(current,
+		   "pad", &current_pad,
+		   NULL);
+	
+      if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
+	current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
+	  
+	xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
+	xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
+
+	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
+	}else{
+	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
+	}
+	  
+	if(x_boundary > k){
+	  x_boundary = k;
+	}
+      
+	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	  guint tmp;
+
+	  tmp = input_pads - current_pad - 1;
+	    
+	  if(y_boundary > tmp){
+	    y_boundary = tmp;
+	  }
+	}else{
+	  if(y_boundary > current->pad){
+	    y_boundary = current->pad;
+	  }
+	}
+      }
+    }
+
+    g_object_unref(pattern);
+    
+    /* iterate */
+    next_current = ags_channel_next(current);
+
+    g_object_unref(current);
+
+    current = next_current;
+  }
+
+  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
+
+  return(notation_node);
 }
 
 void
@@ -2822,123 +2844,6 @@ ags_machine_copy_pattern(AgsMachine *machine)
   guint input_pads;
   int size;
   gint i;
-
-  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *start_current);
-
-  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *start_current){
-    AgsChannel *current, *next_current;    
-    AgsPattern *pattern;
-
-    xmlNode *notation_node, *current_note;
-
-    GList *start_list;
-    
-    guint x_boundary, y_boundary;
-    guint bank_0, bank_1, k;
-
-    current = start_current;
-
-    if(current != NULL){
-      g_object_ref(current);
-    }
-
-    next_current = NULL;
-    
-    /* create root node */
-    notation_node = xmlNewNode(NULL, BAD_CAST "notation");
-
-    xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
-    xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-    xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-    xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-    xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup("0"));
-    xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", current->audio_channel));
-
-    bank_0 = machine->bank_0;
-    bank_1 = machine->bank_1;
-    
-    x_boundary = G_MAXUINT;
-    y_boundary = G_MAXUINT;
-
-    while(current != NULL){
-      guint length;
-      
-      pthread_mutex_t *pattern_mutex;
-      
-      g_object_get(current,
-		   "pattern", &start_list,
-		   NULL);
-
-      pattern = start_list->data;
-      g_list_free_full(start_list,
-		       g_object_unref);
-
-      /* get pattern mutex */
-      pthread_mutex_lock(ags_pattern_get_class_mutex());
-
-      pattern_mutex = pattern->obj_mutex;
-      
-      pthread_mutex_unlock(ags_pattern_get_class_mutex());
-
-      /* get length */
-      pthread_mutex_lock(pattern_mutex);
-
-      length = pattern->dim[2];
-      
-      pthread_mutex_unlock(pattern_mutex);
-      
-      for(k = 0; k < length; k++){
-	guint current_pad;
-
-	g_object_get(current,
-		     "pad", &current_pad,
-		     NULL);
-	
-	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
-	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
-	  
-	  xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
-	  xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
-
-	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
-	  }else{
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
-	  }
-	  
-	  if(x_boundary > k){
-	    x_boundary = k;
-	  }
-      
-	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    guint tmp;
-
-	    tmp = input_pads - current_pad - 1;
-	    
-	    if(y_boundary > tmp){
-	      y_boundary = tmp;
-	    }
-	  }else{
-	    if(y_boundary > current->pad){
-	      y_boundary = current->pad;
-	    }
-	  }
-	}
-      }
-
-      /* iterate */
-      next_current = ags_channel_next(current);
-
-      g_object_unref(current);
-
-      current = next_current;
-    }
-
-    xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
-    xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
-
-    return(notation_node);
-  }
   
   /* create document */
   clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -2972,7 +2877,9 @@ ags_machine_copy_pattern(AgsMachine *machine)
   
   for(i = 0; i < audio_channels; i++){
     /* do it so */
-    notation_node = ags_machine_copy_pattern_to_notation(channel);
+    notation_node = ags_machine_copy_pattern_to_notation(machine,
+							 channel,
+							 input_pads);
     xmlAddChild(notation_list_node,
 		notation_node);
 
@@ -3002,360 +2909,200 @@ ags_machine_copy_pattern(AgsMachine *machine)
 }
 
 /**
- * ags_machine_message_monitor_timeout:
+ * ags_machine_check_message:
  * @machine: the #AgsMachine
  *
- * Monitor messages.
+ * Check message queue for message envelopes.
  *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
-gboolean
-ags_machine_message_monitor_timeout(AgsMachine *machine)
+void
+ags_machine_check_message(AgsMachine *machine)
 {
-  if(g_hash_table_lookup(ags_machine_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
+  AgsMessageDelivery *message_delivery;
 
-    GList *message_start, *message;
-    GList *active_playback;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
+  GList *start_message_envelope, *message_envelope;
+  GList *active_playback;
 
-    message_start = 
-      message = ags_message_delivery_find_sender(message_delivery,
-						 "libags-audio",
-						 (GObject *) machine->audio);
+  if(!AGS_IS_MACHINE(machine)){
+    return;
+  }
+
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_envelope =
+    start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+							      "libgsequencer",
+							      (GObject *) machine->audio);
+  
+  while(message_envelope != NULL){
+    xmlNode *root_node;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     "AgsAudio::set-samplerate",
+		     25)){
+	guint samplerate;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "samplerate");
+	samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set samplerate */
+	g_object_set(machine,
+		     "samplerate", samplerate,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-buffer-size",
+			   26)){
+	guint buffer_size;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "buffer-size");
+	buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set buffer size */
+	g_object_set(machine,
+		     "buffer-size", buffer_size,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-format",
+			   21)){
+	guint format;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "format");
+	format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* set format */
+	g_object_set(machine,
+		     "format", format,
+		     NULL);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-audio-channels",
+			   29)){
+	guint audio_channels, audio_channels_old;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "audio-channels");
+	audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "audio-channels-old");
+	audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* resize audio channels */
+	ags_machine_resize_audio_channels(machine,
+					  audio_channels, audio_channels_old);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::set-pads",
+			   19)){
+	GType channel_type;
+	  
+	guint pads, pads_old;
+	gint position;
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "channel-type");
+	channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "pads");
+	pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "pads-old");
+	pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	/* resize pads */
+	ags_machine_resize_pads(machine,
+				channel_type,
+				pads, pads_old);
+      }else if(!xmlStrncmp(xmlGetProp(root_node,
+				      "method"),
+			   "AgsAudio::stop",
+			   15)){
+	GList *recall_id;
+
+	gint sound_scope;
+	gint position;
+	  
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "recall-id");
+	recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "sound-scope");
+	sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	  
+	/* stop */
+	ags_machine_stop(machine,
+			 recall_id, sound_scope);
+      }
+    }
     
-    while(message != NULL){
+    message_envelope = message_envelope->next;
+  }
+      
+  g_list_free_full(start_message_envelope,
+		   (GDestroyNotify) g_object_unref);
+
+  /*  */
+  active_playback = machine->active_playback;
+
+  while(active_playback != NULL){
+    AgsChannel *channel;
+
+    g_object_get(active_playback->data,
+		 "channel", &channel,
+		 NULL);
+    
+    message_envelope =
+      start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+								"libgsequencer",
+								(GObject *) channel);
+
+    while(message_envelope != NULL){
       xmlNode *root_node;
 
-      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
       if(!xmlStrncmp(root_node->name,
 		     "ags-command",
 		     12)){
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
-		       "AgsAudio::set-samplerate",
-		       25)){
-	  guint samplerate;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "samplerate");
-	  samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set samplerate */
-	  g_object_set(machine,
-		       "samplerate", samplerate,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-buffer-size",
-		       26)){
-	  guint buffer_size;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "buffer-size");
-	  buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set buffer size */
-	  g_object_set(machine,
-		       "buffer-size", buffer_size,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-format",
-		       21)){
-	  guint format;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "format");
-	  format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* set format */
-	  g_object_set(machine,
-		       "format", format,
-		       NULL);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-audio-channels",
-		       29)){
-	  guint audio_channels, audio_channels_old;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "audio-channels");
-	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "audio-channels-old");
-	  audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* resize audio channels */
-	  ags_machine_resize_audio_channels(machine,
-					    audio_channels, audio_channels_old);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::set-pads",
-		       19)){
-	  GType channel_type;
-	  
-	  guint pads, pads_old;
-	  gint position;
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "channel-type");
-	  channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "pads");
-	  pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "pads-old");
-	  pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  /* resize pads */
-	  ags_machine_resize_pads(machine,
-				  channel_type,
-				  pads, pads_old);
-	}else if(!xmlStrncmp(xmlGetProp(root_node,
-				  "method"),
-		       "AgsAudio::stop",
-		       15)){
-	  GList *recall_id;
-
-	  gint sound_scope;
-	  gint position;
-	  
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				     "recall-id");
-	  recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-
-	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				    "sound-scope");
-	  sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-	  
-	  /* stop */
-	  ags_machine_stop(machine,
-			   recall_id, sound_scope);
+		       "AgsChannel::stop",
+		       18)){
+	  ags_machine_playback_set_active(machine,
+					  active_playback->data,
+					  FALSE);
 	}
       }
-      
-      ags_message_delivery_remove_message(message_delivery,
-					  "libags-audio",
-					  message->data);
-
-      message = message->next;
-    }
-      
-    g_list_free_full(message_start,
-		     (GDestroyNotify) ags_message_envelope_free);
-
-    /*  */
-    active_playback = machine->active_playback;
-
-    while(active_playback != NULL){
-      AgsChannel *channel;
-
-      g_object_get(active_playback->data,
-		   "channel", &channel,
-		   NULL);
-      
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) channel);
-
-      while(message != NULL){
-	xmlNode *root_node;
-
-	root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
-      
-	if(!xmlStrncmp(root_node->name,
-		       "ags-command",
-		       12)){
-	  if(!xmlStrncmp(xmlGetProp(root_node,
-				    "method"),
-			 "AgsChannel::stop",
-			 18)){
-	    ags_machine_playback_set_active(machine,
-					    active_playback->data,
-					    FALSE);
-	  }
-	}
 	
-	message = message->next;
-      }
+      message_envelope = message_envelope->next;
+    }
       
-      g_list_free(message_start);
+    g_list_free_full(start_message_envelope,
+		     (GDestroyNotify) g_object_unref);
 
-      g_object_unref(channel);
+    g_object_unref(channel);
       
-      active_playback = active_playback->next;
-    }
-
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-/**
- * ags_machine_generic_output_message_monitor_timeout:
- * @machine: the #AgsMachine
- *
- * Monitor messages and discard them.
- *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.1.35
- */
-gboolean
-ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
-{
-  if(g_hash_table_lookup(ags_machine_generic_output_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
-
-    AgsChannel *start_output;
-    AgsChannel *output, *next_output;
-    
-    GList *message_start, *message;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
-
-    g_object_get(machine->audio,
-		 "output", &start_output,
-		 NULL);
-
-    output = start_output;
-    
-    if(output != NULL){
-      g_object_ref(output);
-    }
-
-    next_output = NULL;
-    
-    while(output != NULL){
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) output);
-
-      while(message != NULL){
-	ags_message_delivery_remove_message(message_delivery,
-					    "libags-audio",
-					    message->data);
-
-	message = message->next;
-      }
-      
-      g_list_free_full(message_start,
-		       (GDestroyNotify) ags_message_envelope_free);
-
-      /* iterate */
-      next_output = ags_channel_next(output);
-
-      g_object_unref(output);
-
-      output = next_output;
-    }
-
-    if(start_output != NULL){
-      g_object_unref(start_output);
-    }
-    
-    if(next_output != NULL){
-      g_object_unref(next_output);
-    }
-    
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-/**
- * ags_machine_generic_input_message_monitor_timeout:
- * @machine: the #AgsMachine
- *
- * Monitor messages and discard them.
- *
- * Returns: %TRUE if proceed with monitor, otherwise %FALSE
- *
- * Since: 2.1.35
- */
-gboolean
-ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
-{
-  if(g_hash_table_lookup(ags_machine_generic_input_message_monitor,
-			 machine) != NULL){
-    AgsMessageDelivery *message_delivery;
-
-    AgsChannel *start_input;
-    AgsChannel *input, *next_input;
-        
-    GList *message_start, *message;
-    
-    /* retrieve message */
-    message_delivery = ags_message_delivery_get_instance();
-    
-    g_object_get(machine->audio,
-		 "input", &start_input,
-		 NULL);
-
-    input = start_input;
-    
-    if(input != NULL){
-      g_object_ref(input);
-    }
-
-    next_input = NULL;
-
-    while(input != NULL){
-      message_start = 
-	message = ags_message_delivery_find_sender(message_delivery,
-						   "libags-audio",
-						   (GObject *) input);
-
-      while(message != NULL){
-	ags_message_delivery_remove_message(message_delivery,
-					    "libags-audio",
-					    message->data);
-
-	message = message->next;
-      }
-      
-      g_list_free_full(message_start,
-		       (GDestroyNotify) ags_message_envelope_free);
-      
-      /* iterate */
-      next_input = ags_channel_next(input);
-
-      g_object_unref(input);
-
-      input = next_input;
-    }
-    
-    if(start_input != NULL){
-      g_object_unref(start_input);
-    }
-    
-    if(next_input != NULL){
-      g_object_unref(next_input);
-    }
-
-    return(TRUE);
-  }else{
-    return(FALSE);
+    active_playback = active_playback->next;
   }
 }
 
@@ -3367,7 +3114,7 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
  *
  * Returns: a new #AgsMachine
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsMachine*
 ags_machine_new(GObject *soundcard)
@@ -3395,7 +3142,7 @@ ags_machine_new(GObject *soundcard)
  *
  * Returns: a new #GtkMenu containing basic actions.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
@@ -3491,7 +3238,7 @@ ags_machine_popup_new(AgsMachine *machine)
  *
  * Add options to edit submenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
@@ -3549,7 +3296,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
  *
  * Add options to connection submenu
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)
@@ -3585,6 +3332,88 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
     
     g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_midi_dialog_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  gtk_widget_show_all((GtkWidget *) machine->popup);
+}
+
+void
+ags_machine_popup_add_export_options(AgsMachine *machine, guint export_options)
+{
+  GtkMenu *export;
+  GtkMenuItem *item;
+
+  gchar *str;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("export"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show((GtkWidget *) item);
+
+  export = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    (GtkWidget *) export);
+
+  gtk_widget_show((GtkWidget *) export);
+
+  if((AGS_MACHINE_POPUP_MIDI_EXPORT & export_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI export"));
+    gtk_menu_shell_append((GtkMenuShell *) export, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_midi_export_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  if((AGS_MACHINE_POPUP_WAVE_EXPORT & export_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audio export"));
+    gtk_menu_shell_append((GtkMenuShell *) export, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_wave_export_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  gtk_widget_show_all((GtkWidget *) machine->popup);
+}
+
+void
+ags_machine_popup_add_import_options(AgsMachine *machine, guint import_options)
+{
+  GtkMenu *import;
+  GtkMenuItem *item;
+
+  gchar *str;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("import"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show((GtkWidget *) item);
+
+  import = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    (GtkWidget *) import);
+
+  gtk_widget_show((GtkWidget *) import);
+
+  if((AGS_MACHINE_POPUP_MIDI_IMPORT & import_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI import"));
+    gtk_menu_shell_append((GtkMenuShell *) import, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_midi_import_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  if((AGS_MACHINE_POPUP_WAVE_IMPORT & import_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Audio import"));
+    gtk_menu_shell_append((GtkMenuShell *) import, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_wave_import_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }

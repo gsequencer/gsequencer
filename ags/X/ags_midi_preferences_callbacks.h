@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,13 +27,18 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_midi_preferences.h>
 
-int ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMidiPreferences *midi_preferences);
+G_BEGIN_DECLS
+
+void ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsMidiPreferences *midi_preferences);
 
 void ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences);
 void ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *sequencer_editor,
 							   AgsMidiPreferences *midi_preferences);
+
+G_END_DECLS
 
 #endif /*__AGS_MIDI_PREFERENCES_CALLBACKS_H__*/

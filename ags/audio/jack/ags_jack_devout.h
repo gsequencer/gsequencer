@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_JACK_DEVOUT                (ags_jack_devout_get_type())
 #define AGS_JACK_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_DEVOUT, AgsJackDevout))
@@ -34,7 +34,7 @@
 #define AGS_IS_JACK_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_DEVOUT))
 #define AGS_JACK_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_DEVOUT, AgsJackDevoutClass))
 
-#define AGS_JACK_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsJackDevout *) obj)->obj_mutex)
+#define AGS_JACK_DEVOUT_GET_OBJ_MUTEX(obj) (&(((AgsJackDevout *) obj)->obj_mutex))
 
 typedef struct _AgsJackDevout AgsJackDevout;
 typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
@@ -110,10 +110,7 @@ struct _AgsJackDevout
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
-
-  AgsApplicationContext *application_context;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -123,10 +120,10 @@ struct _AgsJackDevout
   guint buffer_size;
   guint samplerate;
 
-  pthread_mutex_t **buffer_mutex;
+  GRecMutex **buffer_mutex;
 
   guint sub_block_count;
-  pthread_mutex_t **sub_block_mutex;
+  GRecMutex **sub_block_mutex;
 
   void** buffer;
 
@@ -156,13 +153,11 @@ struct _AgsJackDevout
   gchar **port_name;
   GList *jack_port;
 
-  pthread_mutex_t *callback_mutex;
-  pthread_cond_t *callback_cond;
+  GMutex callback_mutex;
+  GCond callback_cond;
 
-  pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
-
-  GObject *notify_soundcard;
+  GMutex callback_finish_mutex;
+  GCond callback_finish_cond;
 };
 
 struct _AgsJackDevoutClass
@@ -174,8 +169,6 @@ GType ags_jack_devout_get_type();
 
 GQuark ags_jack_devout_error_quark();
 
-pthread_mutex_t* ags_jack_devout_get_class_mutex();
-
 gboolean ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags);
 void ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags);
 void ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags);
@@ -185,6 +178,8 @@ void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
 void ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout);
 
-AgsJackDevout* ags_jack_devout_new(AgsApplicationContext *application_context);
+AgsJackDevout* ags_jack_devout_new();
+
+G_END_DECLS
 
 #endif /*__AGS_JACK_DEVOUT_H__*/

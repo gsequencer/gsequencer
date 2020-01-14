@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,15 +20,9 @@
 #include <ags/X/import/ags_track_collection_mapper.h>
 #include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
@@ -151,7 +145,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("track",
 				    i18n_pspec("assigned track"),
@@ -166,7 +160,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The instruments as string to parse.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("assigned instrument"),
@@ -182,7 +176,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The sequences as string to parse.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("sequence",
 				   i18n_pspec("assigned sequence"),
@@ -452,6 +446,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   AgsAddAudio *add_audio;
 
   AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
   
   GList *imported_notation;
   
@@ -467,8 +463,10 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
   window = (AgsWindow *) midi_import_wizard->main_window;
 
-  application_context = (AgsApplicationContext *) window->application_context;
+  application_context = ags_application_context_get_instance();
 
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
   /* create machine */
   machine = NULL;
   
@@ -476,24 +474,36 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   
   if(!g_ascii_strcasecmp(machine_type,
 			 g_type_name(AGS_TYPE_DRUM))){
-    machine = (AgsMachine *) ags_drum_new(window->soundcard);
+    machine = (AgsMachine *) ags_drum_new(default_soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_MATRIX))){
-    machine = (AgsMachine *) ags_matrix_new(window->soundcard);
+    machine = (AgsMachine *) ags_matrix_new(default_soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNCSYNTH))){
-    machine = (AgsMachine *) ags_syncsynth_new(window->soundcard);
+    machine = (AgsMachine *) ags_syncsynth_new(default_soundcard);
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FFPLAYER))){
-    machine = (AgsMachine *) ags_ffplayer_new(window->soundcard);
+    machine = (AgsMachine *) ags_ffplayer_new(default_soundcard);
 #endif
   }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_SYNTH))){
-    machine = (AgsMachine *) ags_synth_new(window->soundcard);
+    machine = (AgsMachine *) ags_synth_new(default_soundcard);
   }else{
     g_warning("unknown machine type");
+
+    return;
   }
+
+  /* add audio */  
+  add_audio = ags_add_audio_new(machine->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+  
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(machine),
+		     FALSE, FALSE,
+		     0);
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(machine));
@@ -521,16 +531,6 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
     imported_notation = imported_notation->next;
   }
 
-  /* add audio */  
-  add_audio = ags_add_audio_new(application_context,
-				machine->audio);
-  ags_xorg_application_context_schedule_task(application_context,
-					     (GObject *) add_audio);
-  
-  gtk_box_pack_start((GtkBox *) window->machines,
-		     GTK_WIDGET(machine),
-		     FALSE, FALSE, 0);
-
   /* */
   gtk_widget_show_all(GTK_WIDGET(machine));
 }
@@ -551,7 +551,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -582,7 +582,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -597,7 +597,10 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
   GList *list;
-  
+
+  gchar *segmentation;
+
+  gdouble delay_factor;
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
@@ -643,6 +646,25 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   timestamp->timer.ags_offset.offset = 0;
   
   prev_x = 0;
+
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
+
+  /* segmentation */
+  segmentation = ags_config_get_value(ags_config_get_instance(),
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    guint denominator, numerator;
+    
+    sscanf(segmentation, "%d/%d",
+	   &denominator,
+	   &numerator);
+    
+    delay_factor = 1.0 / numerator * (numerator / denominator);
+
+    g_free(segmentation);
+  }
   
   while(track != NULL){
     current = track->data;
@@ -651,23 +673,41 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
+	xmlChar *str;
+
+	glong delta_time;
+
 	if(!xmlStrncmp(xmlGetProp(child,
 				  "event"),
 		       "note-on",
 		       8)){
-	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
-	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time"),
-					 NULL) / track_collection->bpm) -
-	    track_collection->first_offset;
-	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note"),
+	  str = xmlGetProp(child,
+			   "delta-time");
+	  delta_time = g_ascii_strtod(str,
+				      NULL);
+
+	  xmlFree(str);
+	  
+	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+						 track_collection->division,
+						 track_collection->tempo,
+						 (glong) track_collection->bpm,
+						 delta_time);
+	  x -= track_collection->first_offset;
+
+	  str = xmlGetProp(child,
+			   "note");
+	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
-	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity"),
+	  xmlFree(str);
+
+	  str = xmlGetProp(child,
+			   "velocity");
+	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);
+	  xmlFree(str);
 
 	  notation = notation_start;
 	  
@@ -676,9 +716,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
 	    note->y = y;
-	    ags_complex_set(&(note->attack),
-			    velocity);
 
+	    /* velocity */
+#if 0	    
+	    note->attack.imag = (gdouble) velocity / 127.0;
+#endif
+	    
 	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
 	      current_notation = ags_notation_new(NULL,
 						  i);
@@ -710,19 +753,33 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					"event"),
 			     "note-off",
 			     9)){	  
-	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
-	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time"),
-					 NULL) / track_collection->bpm) -
-	    track_collection->first_offset;
-	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note"),
+	  str = xmlGetProp(child,
+			   "delta-time");
+	  delta_time = g_ascii_strtod(str,
+				      NULL);
+
+	  xmlFree(str);
+	  
+	  x = ags_midi_util_delta_time_to_offset(delay_factor,
+						 track_collection->division,
+						 track_collection->tempo,
+						 (glong) track_collection->bpm,
+						 delta_time);
+	  x -= track_collection->first_offset;
+
+	  str = xmlGetProp(child,
+			   "note");
+	  y = (guint) g_ascii_strtoull(str,
 				       NULL,
 				       10);
-	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity"),
+	  xmlFree(str);
+
+	  str = xmlGetProp(child,
+			   "velocity");
+	  velocity = (guint) g_ascii_strtoull(str,
 					      NULL,
 					      10);
+	  xmlFree(str);
 	  
 	  for(i = 0; i < audio_channels; i++){
 	    notation = g_list_last(notation_start);
@@ -741,9 +798,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 		}
 	      
 		note->y = y;
-		ags_complex_set(&(note->release),
-				velocity);
 
+		/* velocity */
+#if 0	    
+		note->release.imag = (gdouble) velocity / 127.0;
+#endif
+		
 		break;
 	      }
 	    
@@ -789,7 +849,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()

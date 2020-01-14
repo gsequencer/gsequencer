@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,38 +21,21 @@
 
 GHashTable *ags_globals = NULL;
 
-static pthread_mutex_t ags_globals_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-/**
- * ags_globals_get_class_mutex:
- * 
- * Use this function's returned mutex to access mutex fields.
- *
- * Returns: the class mutex
- * 
- * Since: 2.0.0
- */
-pthread_mutex_t*
-ags_globals_get_class_mutex()
-{
-  return(&ags_globals_class_mutex);
-}
+static GMutex ags_globals_mutex;
 
 /**
  * ags_globals_get_hash_table:
  * 
  * Get globals hash table.
  * 
- * Returns: the #GHashTable containig globals
+ * Returns: (element-type utf8 GObject.Value) (transfer none): the #GHashTable containig globals
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GHashTable*
 ags_globals_get_hash_table()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&ags_globals_mutex);
 
   if(ags_globals == NULL){
     ags_globals = g_hash_table_new_full(g_direct_hash, g_string_equal,
@@ -60,7 +43,7 @@ ags_globals_get_hash_table()
 					NULL);    
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&ags_globals_mutex);
 
   return(ags_globals);
 }
@@ -72,7 +55,7 @@ ags_globals_get_hash_table()
  * 
  * Set global key/value.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_globals_set(gchar *key,
@@ -82,12 +65,12 @@ ags_globals_set(gchar *key,
 
   globals = ags_globals_get_hash_table();  
 
-  pthread_mutex_lock(ags_globals_get_class_mutex());
+  g_mutex_lock(&ags_globals_mutex);
   
   g_hash_table_insert(globals,
 		      key, value);
 
-  pthread_mutex_unlock(ags_globals_get_class_mutex());
+  g_mutex_unlock(&ags_globals_mutex);
 }
 
 /**
@@ -98,7 +81,7 @@ ags_globals_set(gchar *key,
  * 
  * Returns: the #GValue-struct if @key found, otherwise %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GValue*
 ags_globals_get(gchar *key)
@@ -108,12 +91,12 @@ ags_globals_get(gchar *key)
   
   globals = ags_globals_get_hash_table();  
 
-  pthread_mutex_lock(ags_globals_get_class_mutex());
+  g_mutex_lock(&ags_globals_mutex);
 
   value = g_hash_table_lookup(globals,
 			      key);
 
-  pthread_mutex_unlock(ags_globals_get_class_mutex());
+  g_mutex_unlock(&ags_globals_mutex);
 
   return(value);
 }

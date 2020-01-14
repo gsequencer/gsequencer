@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,6 @@
 
 #include <ags/X/machine/ags_live_dssi_bridge_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -30,7 +26,7 @@
 #include <ags/X/ags_bulk_member.h>
 
 void
-ags_live_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLiveDssiBridge *live_dssi_bridge)
+ags_live_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsLiveDssiBridge *live_dssi_bridge)
 {
   AgsWindow *window;
 
@@ -186,8 +182,8 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 	      //				  TRUE);
 	    }
 	    
-	    AGS_DIAL(child_widget)->adjustment->value = val;
-	    ags_dial_draw((AgsDial *) child_widget);
+	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment, val);
+	    gtk_widget_queue_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f", live_dssi_bridge->port_values[i]);

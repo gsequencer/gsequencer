@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SFZ_FILE                (ags_sfz_file_get_type())
 #define AGS_SFZ_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SFZ_FILE, AgsSFZFile))
 #define AGS_SFZ_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SFZ_FILE, AgsSFZFileClass))
@@ -34,7 +36,7 @@
 #define AGS_IS_SFZ_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SFZ_FILE))
 #define AGS_SFZ_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SFZ_FILE, AgsSFZFileClass))
 
-#define AGS_SFZ_FILE_GET_OBJ_MUTEX(obj) (((AgsSFZFile *) obj)->obj_mutex)
+#define AGS_SFZ_FILE_GET_OBJ_MUTEX(obj) (&(((AgsSFZFile *) obj)->obj_mutex))
 
 #define AGS_SFZ_FILE_DEFAULT_CHANNELS (2)
 #define AGS_SFZ_FILE_LOOP_MAX (4294967296)
@@ -60,14 +62,14 @@ typedef enum{
 
 /**
  * AgsSFZLevel:
- * @AGS_SFZ_FILENAME: filename
- * @AGS_SFZ_SAMPLE: sample
+ * @AGS_SFZ_LEVEL_FILENAME: filename
+ * @AGS_SFZ_LEVEL_SAMPLE: sample
  * 
  * Enum values to describe the different levels of a SFZ file.
  */
 typedef enum{
-  AGS_SFZ_FILENAME = 0,
-  AGS_SFZ_SAMPLE   = 1,
+  AGS_SFZ_LEVEL_FILENAME = 0,
+  AGS_SFZ_LEVEL_SAMPLE   = 1,
 }AgsSFZLevel;
 
 struct _AgsSFZFile
@@ -76,8 +78,7 @@ struct _AgsSFZFile
 
   guint flags;
 
-  pthread_mutex_t *obj_mutex;
-  pthread_mutexattr_t *obj_mutexattr;
+  GRecMutex obj_mutex;
 
   AgsUUID *uuid;
 
@@ -115,8 +116,6 @@ struct _AgsSFZFileClass
 
 GType ags_sfz_file_get_type();
 
-pthread_mutex_t* ags_sfz_file_get_class_mutex();
-
 gboolean ags_sfz_file_test_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_set_flags(AgsSFZFile *sfz_file, guint flags);
 void ags_sfz_file_unset_flags(AgsSFZFile *sfz_file, guint flags);
@@ -132,5 +131,7 @@ gboolean ags_sfz_file_check_suffix(gchar *filename);
 void ags_sfz_file_parse(AgsSFZFile *sfz_file);
 
 AgsSFZFile* ags_sfz_file_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SFZ_FILE_H__*/

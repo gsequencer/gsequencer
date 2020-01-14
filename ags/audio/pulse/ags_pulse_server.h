@@ -31,9 +31,9 @@
 #include <pulse/error.h>
 #endif
 
-#include <pthread.h>
-
 #include <ags/libags.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_PULSE_SERVER                (ags_pulse_server_get_type())
 #define AGS_PULSE_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_SERVER, AgsPulseServer))
@@ -42,7 +42,7 @@
 #define AGS_IS_PULSE_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_SERVER))
 #define AGS_PULSE_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_SERVER, AgsPulseServerClass))
 
-#define AGS_PULSE_SERVER_GET_OBJ_MUTEX(obj) (((AgsPulseServer *) obj)->obj_mutex)
+#define AGS_PULSE_SERVER_GET_OBJ_MUTEX(obj) (&(((AgsPulseServer *) obj)->obj_mutex))
 
 typedef struct _AgsPulseServer AgsPulseServer;
 typedef struct _AgsPulseServerClass AgsPulseServerClass;
@@ -105,8 +105,6 @@ struct _AgsPulseServerClass
 
 GType ags_pulse_server_get_type();
 
-pthread_mutex_t* ags_pulse_server_get_class_mutex();
-
 gboolean ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags);
 void ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags);
 void ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags);
@@ -130,7 +128,8 @@ void ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server);
 
 void ags_pulse_server_start_poll(AgsPulseServer *pulse_server);
 
-AgsPulseServer* ags_pulse_server_new(AgsApplicationContext *application_context,
-				     gchar *url);
+AgsPulseServer* ags_pulse_server_new(gchar *url);
+
+G_END_DECLS
 
 #endif /*__AGS_PULSE_SERVER_H__*/

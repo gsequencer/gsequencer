@@ -19,12 +19,7 @@
 
 #include <ags/X/file/ags_simple_file.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_window.h>
@@ -113,6 +108,9 @@ void ags_simple_file_real_read(AgsSimpleFile *simple_file);
 void ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
 
+void ags_simple_file_read_change_max_precision(AgsThread *thread,
+					       gdouble max_precision);
+
 void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
 void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
 void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
@@ -127,6 +125,24 @@ void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
 					      GType channel_type,
 					      guint new_size, guint old_size,
 					      gpointer data);
+
+void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10);
+void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum);
+void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
+void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
+void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler);
+#ifdef AGS_WITH_LIBINSTPATCH
+void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
+#endif
+void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec);
+void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
+void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
+void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
+void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
+void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
+void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
+
 void ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 					 AgsMachine *machine);
 void ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad);
@@ -134,6 +150,9 @@ void ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad 
 void ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
 				     AgsPad *pad);
 void ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **line);
+
+void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);  
+
 void ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line);
 void ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 				      AgsLine *line);
@@ -164,10 +183,16 @@ void ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 
 void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
+
+void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+
 void ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 
 void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
+
+void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
+
 void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
 void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
@@ -180,16 +205,28 @@ xmlNode* ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent,
 xmlNode* ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
+
+gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
+xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
+xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
+xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port);
+
 xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
 xmlNode* ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad);
 xmlNode* ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *pad);
 xmlNode* ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line);
+
+void ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
+
 xmlNode* ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line);
 void ags_simple_file_write_line_resolve_link(AgsFileLookup *file_lookup,
 					     AgsChannel *channel);
 xmlNode* ags_simple_file_write_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_pad);
 xmlNode* ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectPad *effect_pad);
 xmlNode* ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_line);
+
+void ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
+
 xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line);
 xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
 xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
@@ -230,7 +267,6 @@ enum{
   PROP_AUDIO_FORMAT,
   PROP_AUDIO_ENCODING,
   PROP_XML_DOC,
-  PROP_APPLICATION_CONTEXT,
 };
 
 enum{
@@ -301,7 +337,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned filename to open and read from.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   "filename to read or write",
@@ -317,7 +353,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The charset encoding to use.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("encoding",
 				   "encoding to use",
@@ -333,7 +369,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The format of embedded audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-format",
 				   "audio format to use",
@@ -349,7 +385,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The encoding to use for embedding audio data.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_string("audio-encoding",
 				   "audio encoding to use",
@@ -365,7 +401,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned xml-doc.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    "xml document of file",
@@ -373,22 +409,6 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_XML_DOC,
-				  param_spec);
-
-  /**
-   * AgsSimpleFile:application-context:
-   *
-   * The application context assigned with.
-   *
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("application-context",
-				   "application context of file",
-				   "The application context to write to file.",
-				   AGS_TYPE_APPLICATION_CONTEXT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* AgsSimpleFileClass */
@@ -410,7 +430,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file with appropriate filename.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[OPEN] =
     g_signal_new("open",
@@ -431,7 +451,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file from a buffer containing the file.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data",
@@ -453,7 +473,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file in read-write mode.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[RW_OPEN] =
     g_signal_new("rw-open",
@@ -472,7 +492,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Write XML Document to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[WRITE] =
     g_signal_new("write",
@@ -490,10 +510,10 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve references and generate thus XPath expressions just
    * before writing to disk.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[WRITE_RESOLVE] =
-    g_signal_new("write_resolve",
+    g_signal_new("write-resolve",
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, write_resolve),
@@ -507,7 +527,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * Read a XML document from disk with specified simple_filename.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ] =
     g_signal_new("read",
@@ -525,10 +545,10 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve XPath expressions to their counterpart the newly created
    * instances refering to.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ_RESOLVE] =
-    g_signal_new("read_resolve",
+    g_signal_new("read-resolve",
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_resolve),
@@ -540,12 +560,12 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * AgsSimpleFile::read-start:
    * @simple_file: the #AgsSimpleFile
    *
-   * Hook after reading XML document to update or start the application.
+   * Start assigning resources.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   simple_file_signals[READ_START] =
-    g_signal_new("read_start",
+    g_signal_new("read-start",
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, read_start),
@@ -580,8 +600,6 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
   simple_file->id_ref = NULL;
   simple_file->lookup = NULL;
   simple_file->launch = NULL;
-
-  simple_file->application_context = NULL;
 }
 
 void
@@ -648,27 +666,6 @@ ags_simple_file_set_property(GObject *gobject,
     simple_file->doc = doc;
   }
   break;
-  case PROP_APPLICATION_CONTEXT:
-  {
-    GObject *application_context;
-
-    application_context = g_value_get_object(value);
-
-    if(simple_file->application_context == application_context){
-      return;
-    }
-
-    if(simple_file->application_context != NULL){
-      g_object_unref(simple_file->application_context);
-    }
-
-    if(application_context != NULL){
-      g_object_ref(application_context);
-    }
-
-    simple_file->application_context = application_context;
-  }
-  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -709,11 +706,6 @@ ags_simple_file_get_property(GObject *gobject,
   case PROP_XML_DOC:
   {
     g_value_set_pointer(value, simple_file->doc);
-  }
-  break;
-  case PROP_APPLICATION_CONTEXT:
-  {
-    g_value_set_object(value, simple_file->application_context);
   }
   break;
   default:
@@ -1091,22 +1083,22 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
     return;
   }
 
-  application_context = (AgsApplicationContext *) simple_file->application_context;
+  application_context = ags_application_context_get_instance();
   config = ags_config_get_instance();
   
   id = ags_id_generator_create_uuid();
 
   node = simple_file->root_node;
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
+	     AGS_SIMPLE_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     AGS_FILE_VERSION_PROP,
+	     AGS_SIMPLE_FILE_VERSION_PROP,
 	     AGS_APPLICATION_CONTEXT(application_context)->version);
 
   xmlNewProp(node,
-	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_SIMPLE_FILE_BUILD_ID_PROP,
 	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
 
   /* add to parent */
@@ -1116,7 +1108,7 @@ ags_simple_file_real_write(AgsSimpleFile *simple_file)
   
   ags_simple_file_write_window(simple_file,
 			       node,
-			       AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+			       ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   /* resolve */
   ags_simple_file_write_resolve(simple_file);
@@ -1175,7 +1167,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
   xmlNode *root_node, *child;
   
-  application_context = (AgsApplicationContext *) simple_file->application_context;
+  application_context = ags_application_context_get_instance();
 
   root_node = simple_file->root_node;
 
@@ -1208,9 +1200,18 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
       if(!xmlStrncmp("ags-sf-window",
 		     child->name,
 		     14)){
+	AgsWindow *orig_window, *window;
+
+	window =
+	  orig_window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 	ags_simple_file_read_window(simple_file,
 				    child,
-				    (AgsWindow **) &(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
+				    (AgsWindow **) &window);
+
+	if(orig_window != window){
+	  ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
+				     window);
+	}
       }
     }
 
@@ -1225,7 +1226,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* connect */  
   ags_connectable_connect(AGS_CONNECTABLE(application_context));
 
-  gtk_widget_show_all((GtkWidget *) AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+  gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
   g_message("XML simple file connected");
 
@@ -1233,9 +1234,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   ags_simple_file_read_start(simple_file);
 
   /* set file ready */
-  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->file_ready),
-		   TRUE);
-    
+  ags_ui_provider_set_file_ready(AGS_UI_PROVIDER(application_context),
+				 TRUE);
 }
 
 void
@@ -1300,12 +1300,37 @@ ags_simple_file_read_start(AgsSimpleFile *simple_file)
 }
 
 void
+ags_simple_file_read_change_max_precision(AgsThread *thread,
+					  gdouble max_precision)
+{
+  AgsThread *child, *next_child;
+  
+  g_object_set(thread,
+	       "max-precision", max_precision,
+	       NULL);
+
+  child = ags_thread_children(thread);
+
+  while(child != NULL){
+    ags_simple_file_read_change_max_precision(child,
+					      max_precision);
+
+    /* iterate */
+    next_child = ags_thread_next(child);
+
+    g_object_unref(child);
+
+    child = next_child;
+  }
+}
+
+void
 ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **ags_config)
 {
   AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
-  AgsConfig *gobject;
+  AgsConfig *config;
 
   char *buffer;
   gchar *id;
@@ -1315,35 +1340,14 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   gdouble samplerate;
   guint buffer_size;
   gdouble frequency;
-
-  auto void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
-							     gdouble max_precision);
+  gdouble gui_scale_factor;
   
-  void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
-							gdouble max_precision)
-  {
-    AgsThread *current;
-  
-    g_object_set(thread,
-		 "max-precision", max_precision,
-		 NULL);
+  config = *ags_config;
+  config->version = xmlGetProp(node,
+				AGS_SIMPLE_FILE_VERSION_PROP);
 
-    current = g_atomic_pointer_get(&(thread->children));
-
-    while(current != NULL){
-      ags_simple_file_read_config_change_max_precision(current,
-						       max_precision);
-    
-      current = g_atomic_pointer_get(&(thread->next));
-    }
-  }
-
-  gobject = *ags_config;
-  gobject->version = xmlGetProp(node,
-				AGS_FILE_VERSION_PROP);
-
-  gobject->build_id = xmlGetProp(node,
-				 AGS_FILE_BUILD_ID_PROP);
+  config->build_id = xmlGetProp(node,
+				 AGS_SIMPLE_FILE_BUILD_ID_PROP);
 
   application_context = ags_application_context_get_instance();
   
@@ -1352,13 +1356,13 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 
   g_message("%s", buffer);
   
-  ags_config_load_from_data(gobject,
+  ags_config_load_from_data(config,
 			    buffer, buffer_length);
 
   /* max-precision */
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  str = ags_config_get_value(gobject,
+  str = ags_config_get_value(config,
 			     AGS_CONFIG_THREAD,
 			     "max-precision");
   
@@ -1369,12 +1373,12 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
     max_precision = g_ascii_strtod(str,
 				   NULL);
     
-    ags_simple_file_read_config_change_max_precision(main_loop,
-						     max_precision);  
+    ags_simple_file_read_change_max_precision(main_loop,
+					      max_precision);  
   }
 
-  samplerate = ags_soundcard_helper_config_get_samplerate(gobject);
-  buffer_size = ags_soundcard_helper_config_get_buffer_size(gobject);
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   
   frequency = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   ags_main_loop_change_frequency(AGS_MAIN_LOOP(main_loop),
@@ -1383,7 +1387,21 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   g_object_unref(main_loop);
 
   /* some GUI scaling */
-  ags_xorg_application_context_load_gui_scale(application_context);
+  gui_scale_factor = 1.0;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  ags_ui_provider_set_gui_scale_factor(AGS_UI_PROVIDER(application_context),
+				       gui_scale_factor);
 }
 
 void
@@ -1523,7 +1541,7 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
       g_value_init(&(pointer->value),
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z.real), &(z.imag));
       g_value_set_boxed(&(pointer->value),
 			&z);
     }else{
@@ -1658,7 +1676,7 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
       g_value_init(current,
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z.real), &(z.imag));
       g_value_set_boxed(current,
 			&z);
     }else{
@@ -1699,12 +1717,15 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  application_context = ags_application_context_get_instance();
   
   if(*window != NULL){
     gobject = *window;
   }else{
-    gobject = ags_window_new(simple_file->application_context);
-    AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window = gobject;
+    gobject = ags_window_new();
+    ags_ui_provider_set_window(AGS_UI_PROVIDER(application_context),
+			       gobject);
     
     *window = gobject;
   }
@@ -1840,8 +1861,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   if(str != NULL){
     bpm = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(window->navigation->bpm->adjustment,
-			     bpm);
+    gtk_spin_button_set_value(window->navigation->bpm,
+			      bpm);
 
     xmlFree(str);
   }
@@ -1870,8 +1891,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   if(str != NULL){
     loop_start = g_ascii_strtod(str,
 				NULL);
-    gtk_adjustment_set_value(window->navigation->loop_left_tact->adjustment,
-			     loop_start);
+    gtk_spin_button_set_value(window->navigation->loop_left_tact,
+			      loop_start);
 
     xmlFree(str);
   }
@@ -1883,8 +1904,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   if(str != NULL){
     loop_end = g_ascii_strtod(str,
 			      NULL);
-    gtk_adjustment_set_value(window->navigation->loop_right_tact->adjustment,
-			     loop_end);
+    gtk_spin_button_set_value(window->navigation->loop_right_tact,
+			      loop_end);
 
     xmlFree(str);
   }
@@ -1962,13 +1983,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   AgsMachine *gobject;
 
   AgsConfig *config;
-  GObject *soundcard;
 
   AgsFileLaunch *file_launch;
 
+  AgsApplicationContext *application_context;
+  
+  GObject *soundcard;
+
   xmlNode *child;
   
-  GList *list;
+  GList *start_list, *list;
   GList *output_pad;
   GList *input_pad;
 
@@ -1991,7 +2015,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     gobject = *machine;
   }else{
     type_name = xmlGetProp(node,
-			   AGS_FILE_TYPE_PROP);
+			   AGS_SIMPLE_FILE_TYPE_PROP);
 
     if(type_name != NULL){
       gobject = g_object_new(g_type_from_name(type_name),
@@ -2007,17 +2031,18 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
      !AGS_IS_MACHINE(gobject)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
 					  NULL));
   
   /* retrieve window */  
-  window = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window;
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   config = ags_config_get_instance();
   
@@ -2026,9 +2051,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   device = xmlGetProp(node,
 		      "soundcard-device");
 
-  if(device != NULL){
-    list = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard;
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  if(device != NULL){
+    list = start_list;
+    
     for(i = 0; list != NULL; i++){
       str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
@@ -2049,9 +2076,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
   
   if(soundcard == NULL &&
-     AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard != NULL){
-    soundcard = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard->data;
+     start_list != NULL){
+    soundcard = start_list->data;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   g_object_set(gobject->audio,
 	       "output-soundcard", soundcard,
@@ -2389,7 +2419,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* dispatch */
   while((wait_output && !wait_data[0]) ||
 	(wait_input && !wait_data[1])){
-    usleep(USEC_PER_SEC / 30);
+    usleep(AGS_USEC_PER_SEC / 30);
     g_main_context_iteration(NULL,
 			     FALSE);
   }
@@ -2774,16 +2804,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   gtk_widget_show_all((GtkWidget *) gobject);
 
   /* add audio to soundcard */
-  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
-  g_list_foreach(list,
-		 (GFunc) g_object_unref,
-		 NULL);
+  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   g_object_ref(G_OBJECT(gobject->audio));
-  list = g_list_append(list,
+  list = g_list_append(start_list,
 		       gobject->audio);
   
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 			       list);
   
   /* children */
@@ -2841,893 +2868,903 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 }
 
 void
+ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10)
+{
+  xmlNode *child;
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-equalizer10",
+		     19)){
+	xmlNode *control_node;
+
+	control_node = child->children;
+
+	while(control_node != NULL){
+	  if(control_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(control_node->name,
+			   "ags-sf-control",
+			   15)){
+	      xmlChar *specifier;
+	      xmlChar *value;
+		
+	      gdouble val;
+		
+	      specifier = xmlGetProp(control_node,
+				     "specifier");
+
+	      value = xmlGetProp(control_node,
+				 "value");
+
+	      val = 0.0;
+		
+	      if(value != NULL){
+		val = g_strtod(value,
+			       NULL);
+    
+		xmlFree(value);
+
+		if(!xmlStrncmp(specifier,
+			       "28 [Hz]",
+			       8)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_28hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "56 [Hz]",
+				     8)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_56hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "112 [Hz]",
+				     9)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_112hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "224 [Hz]",
+				     9)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_224hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "448 [Hz]",
+				     9)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_448hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "896 [Hz]",
+				     9)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_896hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "1792 [Hz]",
+				     10)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_1792hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "3584 [Hz]",
+				     10)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_3584hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "7168 [Hz]",
+				     10)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_7168hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "14336 [Hz]",
+				     11)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->peak_14336hz),
+				      val);
+		}else if(!xmlStrncmp(specifier,
+				     "pressure",
+				     9)){
+		  gtk_range_set_value(GTK_RANGE(equalizer10->pressure),
+				      val);
+		}
+	      }
+
+	      if(specifier != NULL){
+		xmlFree(specifier);
+	      }
+	    }
+	  }
+	    
+	  control_node = control_node->next;
+	}
+	  
+	break;
+      }
+    }
+
+    child = child->next;
+  }
+}
+  
+void
+ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum)
+{
+  xmlChar *str;
+    
+  guint bank_0, bank_1;
+
+  /* bank 0 */
+  bank_0 = 0;
+  str = xmlGetProp(node,
+		   "bank-0");
+
+  if(str != NULL){      
+    bank_0 = g_ascii_strtod(str,
+			    NULL);
+
+    if(bank_0 < 4){
+      gtk_toggle_button_set_active(drum->index0[bank_0],
+				   TRUE);
+    }
+
+    xmlFree(str);
+  }
+
+  /* bank 1 */
+  bank_1 = 0;
+  str = xmlGetProp(node,
+		   "bank-1");
+
+  if(str != NULL){      
+    bank_1 = g_ascii_strtod(str,
+			    NULL);
+
+    if(bank_1 < 12){
+      gtk_toggle_button_set_active(drum->index1[bank_1],
+				   TRUE);
+    }
+
+    xmlFree(str);
+  }
+
+  /* loop */
+  str = xmlGetProp(node,
+		   "loop");
+    
+  if(str != NULL){
+    if(!g_ascii_strcasecmp(str,
+			   "true")){
+      gtk_toggle_button_set_active((GtkToggleButton *) drum->loop_button,
+				   TRUE);
+    }
+      
+    xmlFree(str);
+  }
+
+  /* length */
+  str = xmlGetProp(node,
+		   "length");
+
+  if(str != NULL){
+    guint length;
+
+    length = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+      
+    gtk_spin_button_set_value(drum->length_spin,
+			      (gdouble) length);
+      
+    xmlFree(str);
+  }
+}
+  
+void
+ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix)
+{
+  xmlChar *str;
+    
+  guint bank_0, bank_1;
+    
+  /* bank 1 */
+  bank_1 = 0;
+  str = xmlGetProp(node,
+		   "bank-1");
+
+  if(str != NULL){      
+    bank_1 = g_ascii_strtod(str,
+			    NULL);
+
+    if(bank_1 < 9){
+      gtk_toggle_button_set_active(matrix->index[bank_1],
+				   TRUE);
+    }
+      
+    xmlFree(str);
+  }
+
+  /* loop */
+  str = xmlGetProp(node,
+		   "loop");
+    
+  if(str != NULL){
+    if(!g_ascii_strcasecmp(str,
+			   "true")){
+      gtk_toggle_button_set_active((GtkToggleButton *) matrix->loop_button,
+				   TRUE);
+    }
+      
+    xmlFree(str);
+  }
+
+  /* length */
+  str = xmlGetProp(node,
+		   "length");
+
+  if(str != NULL){
+    guint length;
+
+    length = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+      
+    gtk_spin_button_set_value(matrix->length_spin,
+			      (gdouble) length);
+      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_synth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSynth *synth)
+{
+  xmlChar *str;
+    
+  /* base note */
+  str = xmlGetProp(node,
+		   "base-note");
+
+  if(str != NULL){
+    gdouble base_note;
+
+    base_note = g_ascii_strtod(str,
+			       NULL);
+
+    if(base_note > AGS_SYNTH_BASE_NOTE_MIN &&
+       base_note < AGS_SYNTH_BASE_NOTE_MAX){
+      gtk_spin_button_set_value(synth->lower,
+				(gdouble) base_note);
+    }
+      
+    xmlFree(str);
+  }
+}
+  
+void
+ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth)
+{
+  GList *list, *list_start;
+  GList *child_start;
+
+  xmlChar *str;
+
+  gdouble tmp0, tmp1;
+  gdouble loop_upper;
+    
+  /* base note */
+  str = xmlGetProp(node,
+		   "base-note");
+
+  if(str != NULL){
+    gdouble base_note;
+
+    base_note = g_ascii_strtod(str,
+			       NULL);
+
+    if(base_note > AGS_SYNCSYNTH_BASE_NOTE_MIN &&
+       base_note < AGS_SYNCSYNTH_BASE_NOTE_MAX){
+      gtk_spin_button_set_value(syncsynth->lower,
+				(gdouble) base_note);
+    }
+      
+    xmlFree(str);
+  }
+
+  /* set range of loop start and loop end */
+  ags_syncsynth_reset_loop(syncsynth);
+    
+  /* audio loop start */
+  str = xmlGetProp(node,
+		   "audio-loop-start");
+
+  if(str != NULL){
+    guint audio_loop_start;
+
+    audio_loop_start = g_ascii_strtoull(str,
+					NULL,
+					10);
+      
+    gtk_spin_button_set_value(syncsynth->loop_start,
+			      (gdouble) audio_loop_start);
+      
+    xmlFree(str);
+  }
+
+  /* audio loop end */
+  str = xmlGetProp(node,
+		   "audio-loop-end");
+
+  if(str != NULL){
+    guint audio_loop_end;
+
+    audio_loop_end = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+      
+    gtk_spin_button_set_value(syncsynth->loop_end,
+			      (gdouble) audio_loop_end);
+      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  str = xmlGetProp(node,
+		   "filename");
+    
+  gtk_entry_set_text(pitch_sampler->filename,
+		     str);
+  ags_pitch_sampler_open_filename(pitch_sampler,
+				  str);
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "lfo-freq");
+    
+  if(str != NULL){
+    gtk_spin_button_set_value(pitch_sampler->lfo_freq,
+			      g_ascii_strtod(str,
+					     NULL));
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "lfo-phase");
+    
+  if(str != NULL){
+    gtk_spin_button_set_value(pitch_sampler->lfo_phase,
+			      g_ascii_strtod(str,
+					     NULL));
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "lfo-depth");
+    
+  if(str != NULL){
+    gtk_spin_button_set_value(pitch_sampler->lfo_depth,
+			      g_ascii_strtod(str,
+					     NULL));
+    xmlFree(str);
+  }
+    
+  str = xmlGetProp(node,
+		   "lfo-tuning");
+    
+  if(str != NULL){
+    gtk_spin_button_set_value(pitch_sampler->lfo_tuning,
+			      g_ascii_strtod(str,
+					     NULL));
+    xmlFree(str);
+  }
+
+  if(pitch_sampler->audio_container == NULL){
+    return;
+  }
+}
+
+#ifdef AGS_WITH_LIBINSTPATCH
+void
+ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  str = xmlGetProp(node,
+		   "filename");
+    
+  ags_ffplayer_open_filename(ffplayer,
+			     str);
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+    
+  if(ffplayer->audio_container == NULL){
+    return;
+  }
+
+  /* preset */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
+
+  str = xmlGetProp(node,
+		   "preset");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+    
+  /* instrument */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
+
+  str = xmlGetProp(node,
+		   "instrument");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+#endif
+  
+void
+ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec)
+{
+  xmlChar *str;
+  gchar *value;
+
+  str = xmlGetProp(node,
+		   "filename");
+    
+  ags_audiorec_open_filename(audiorec,
+			     str);
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+  
+void
+ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  /* program */
+  //NOTE:JK: work-around
+  gtk_combo_box_set_active((GtkComboBox *) dssi_bridge->program,
+			   0);
+
+  model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
+
+  str = xmlGetProp(node,
+		   "program");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) dssi_bridge->program,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  /* program */
+  //NOTE:JK: work-around
+  gtk_combo_box_set_active((GtkComboBox *) live_dssi_bridge->program,
+			   0);
+
+  model = gtk_combo_box_get_model((GtkComboBox *) live_dssi_bridge->program);
+
+  str = xmlGetProp(node,
+		   "program");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) live_dssi_bridge->program,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  if(lv2_bridge->preset == NULL){
+    return;
+  }
+    
+  /* program */
+  //NOTE:JK: work-around
+  gtk_combo_box_set_active((GtkComboBox *) lv2_bridge->preset,
+			   0);
+
+  model = gtk_combo_box_get_model((GtkComboBox *) lv2_bridge->preset);
+
+  str = xmlGetProp(node,
+		   "preset");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  xmlChar *str;
+  gchar *value;
+
+  if(live_lv2_bridge->preset == NULL){
+    return;
+  }
+    
+  /* program */
+  //NOTE:JK: work-around
+  gtk_combo_box_set_active((GtkComboBox *) live_lv2_bridge->preset,
+			   0);
+
+  model = gtk_combo_box_get_model((GtkComboBox *) live_lv2_bridge->preset);
+
+  str = xmlGetProp(node,
+		   "preset");
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) live_lv2_bridge->preset,
+				      &iter);
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(str != NULL){      
+    xmlFree(str);
+  }
+}
+
+void
+ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge)
+{
+  AgsMachine *machine;
+  AgsEffectBulk *effect_bulk;
+    
+  xmlNode *child;
+
+  xmlChar *str;
+    
+  gboolean is_output;
+
+  machine = gtk_widget_get_ancestor(effect_bridge,
+				    AGS_TYPE_MACHINE);
+  
+  is_output = TRUE;
+  str = xmlGetProp(node,
+		   "is-output");
+    
+  if(str != NULL){
+    if(!g_ascii_strcasecmp(str,
+			   "false")){
+      is_output = FALSE;
+    }
+
+    xmlFree(str);
+  }
+
+  if(is_output){
+    effect_bulk = (AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_output;
+  }else{
+    effect_bulk = (AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input;
+  }
+	
+  /* effect list children */
+  child = node->children;
+	
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-effect",
+		     14)){
+	ags_simple_file_read_effect_bulk_launch(simple_file, child, effect_bulk);
+      }
+    }
+
+    child = child->next;
+  }
+}
+  
+void
+ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk)
+{
+  xmlNode *child;
+    
+  xmlChar *filename, *effect;
+
+  filename = xmlGetProp(node,
+			"filename");
+	      
+  effect = xmlGetProp(node,
+		      "effect");
+
+  /* effect list children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-control",
+		     15)){
+	GList *list_start, *list;
+		    
+	xmlChar *specifier;
+
+	specifier = xmlGetProp(child,
+			       "specifier");
+	  
+	list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
+	list = list_start;
+
+	while(list != NULL){
+	  if(AGS_IS_BULK_MEMBER(list->data)){
+	    AgsBulkMember *bulk_member;
+	      
+	    bulk_member = AGS_BULK_MEMBER(list->data);
+
+	    if(!g_strcmp0(bulk_member->filename,
+			  filename) &&
+	       !g_strcmp0(bulk_member->effect,
+			  effect) &&
+	       !g_strcmp0(bulk_member->specifier,
+			  specifier)){
+	      ags_simple_file_read_bulk_member_launch(simple_file, child, bulk_member);
+	      break;
+	    }
+	  }
+
+	  list = list->next;
+	}
+
+	if(specifier != NULL){
+	  xmlFree(specifier);
+	}
+	  
+	g_list_free(list_start);
+      }
+    }
+
+    child = child->next;
+  }
+
+  if(filename != NULL){
+    xmlFree(filename);
+  }
+
+  if(effect != NULL){
+    xmlFree(effect);
+  }
+}
+	
+void
+ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member)
+{
+  GtkWidget *child_widget;
+
+  xmlChar *str;
+  gchar *version;
+
+  gdouble val;
+  guint major, minor, micro;
+
+  /* logarithmic port fixup */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+  major = 0;
+  minor = 0;
+  micro = 0;
+
+  if(version != NULL){
+    sscanf(version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+
+    xmlFree(version);
+  }
+
+  str = xmlGetProp(node,
+		   "value");
+
+  child_widget = gtk_bin_get_child((GtkBin *) bulk_member);
+
+  if(GTK_IS_RANGE(child_widget)){    
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+		      
+      if(bulk_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(bulk_member->conversion,
+				     val,
+				     TRUE);
+      }
+
+      gtk_range_set_value(GTK_RANGE(child_widget),
+			  val);
+    }      
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+		      
+      if(bulk_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(bulk_member->conversion,
+				     val,
+				     TRUE);
+      }
+
+      gtk_spin_button_set_value(GTK_SPIN_BUTTON(child_widget),
+				val);
+    }
+  }else if(AGS_IS_DIAL(child_widget)){
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+		      
+      if(bulk_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(bulk_member->conversion,
+				     val,
+				     TRUE);
+      }
+
+      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+			       val);
+      gtk_widget_queue_draw((AgsDial *) child_widget);
+    }
+  }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    if(str != NULL){
+      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+    }
+  }else{
+    g_warning("ags_simple_file_read_bulk_member_launch() - unknown bulk member type");
+  }			  
+
+  if(str != NULL){
+    xmlFree(str);
+  }
+}  
+
+void
 ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				    AgsMachine *machine)
 {
   xmlNode *child;
 
   xmlChar *str;
-
-  auto void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10);
-  auto void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum);
-  auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
-  auto void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
-
-  auto void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler);
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
-#endif
-  
-  auto void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec);
-
-  auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
-  auto void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
-  auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
-  auto void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
-
-  auto void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
-  auto void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
-  auto void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
-
-  void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10)
-  {
-    xmlNode *child;
-
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       "ags-sf-equalizer10",
-		       19)){
-	  xmlNode *control_node;
-
-	  control_node = child->children;
-
-	  while(control_node != NULL){
-	    if(control_node->type == XML_ELEMENT_NODE){
-	      if(!xmlStrncmp(control_node->name,
-			     "ags-sf-control",
-			     15)){
-		xmlChar *specifier;
-		xmlChar *value;
-		
-		gdouble val;
-		
-		specifier = xmlGetProp(control_node,
-				       "specifier");
-
-		value = xmlGetProp(control_node,
-				   "value");
-
-		val = 0.0;
-		
-		if(value != NULL){
-		  val = g_strtod(value,
-				 NULL);
-    
-		  xmlFree(value);
-
-		  if(!xmlStrncmp(specifier,
-				 "28 [Hz]",
-				 8)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_28hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "56 [Hz]",
-				       8)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_56hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "112 [Hz]",
-				       9)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_112hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "224 [Hz]",
-				       9)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_224hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "448 [Hz]",
-				       9)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_448hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "896 [Hz]",
-				       9)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_896hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "1792 [Hz]",
-				       10)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_1792hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "3584 [Hz]",
-				       10)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_3584hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "7168 [Hz]",
-				       10)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_7168hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "14336 [Hz]",
-				       11)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_14336hz),
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "pressure",
-				       9)){
-		    gtk_range_set_value(GTK_RANGE(equalizer10->pressure),
-					val);
-		  }
-		}
-
-		if(specifier != NULL){
-		  xmlFree(specifier);
-		}
-	      }
-	    }
-	    
-	    control_node = control_node->next;
-	  }
-	  
-	  break;
-	}
-      }
-
-      child = child->next;
-    }
-  }
-  
-  void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum){
-    xmlChar *str;
-    
-    guint bank_0, bank_1;
-
-    /* bank 0 */
-    bank_0 = 0;
-    str = xmlGetProp(node,
-		     "bank-0");
-
-    if(str != NULL){      
-      bank_0 = g_ascii_strtod(str,
-			      NULL);
-
-      if(bank_0 < 4){
-	gtk_toggle_button_set_active(drum->index0[bank_0],
-				     TRUE);
-      }
-
-      xmlFree(str);
-    }
-
-    /* bank 1 */
-    bank_1 = 0;
-    str = xmlGetProp(node,
-		     "bank-1");
-
-    if(str != NULL){      
-      bank_1 = g_ascii_strtod(str,
-			      NULL);
-
-      if(bank_1 < 12){
-	gtk_toggle_button_set_active(drum->index1[bank_1],
-				     TRUE);
-      }
-
-      xmlFree(str);
-    }
-
-    /* loop */
-    str = xmlGetProp(node,
-		     "loop");
-    
-    if(str != NULL){
-      if(!g_ascii_strcasecmp(str,
-			     "true")){
-	gtk_toggle_button_set_active((GtkToggleButton *) drum->loop_button,
-				     TRUE);
-      }
-      
-      xmlFree(str);
-    }
-
-    /* length */
-    str = xmlGetProp(node,
-		     "length");
-
-    if(str != NULL){
-      guint length;
-
-      length = g_ascii_strtoull(str,
-				NULL,
-				10);
-      
-      gtk_adjustment_set_value(drum->length_spin->adjustment,
-			       (gdouble) length);
-      
-      xmlFree(str);
-    }
-  }
-  
-  void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix){
-    xmlChar *str;
-    
-    guint bank_0, bank_1;
-    
-    /* bank 1 */
-    bank_1 = 0;
-    str = xmlGetProp(node,
-		     "bank-1");
-
-    if(str != NULL){      
-      bank_1 = g_ascii_strtod(str,
-			      NULL);
-
-      if(bank_1 < 9){
-	gtk_toggle_button_set_active(matrix->index[bank_1],
-				     TRUE);
-      }
-      
-      xmlFree(str);
-    }
-
-    /* loop */
-    str = xmlGetProp(node,
-		     "loop");
-    
-    if(str != NULL){
-      if(!g_ascii_strcasecmp(str,
-			     "true")){
-	gtk_toggle_button_set_active((GtkToggleButton *) matrix->loop_button,
-				     TRUE);
-      }
-      
-      xmlFree(str);
-    }
-
-    /* length */
-    str = xmlGetProp(node,
-		     "length");
-
-    if(str != NULL){
-      guint length;
-
-      length = g_ascii_strtoull(str,
-				NULL,
-				10);
-      
-      gtk_adjustment_set_value(matrix->length_spin->adjustment,
-			       (gdouble) length);
-      
-      xmlFree(str);
-    }
-  }
-  void ags_simple_file_read_synth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSynth *synth){
-    xmlChar *str;
-    
-    /* base note */
-    str = xmlGetProp(node,
-		     "base-note");
-
-    if(str != NULL){
-      gdouble base_note;
-
-      base_note = g_ascii_strtod(str,
-				 NULL);
-
-      if(base_note > AGS_SYNTH_BASE_NOTE_MIN &&
-	 base_note < AGS_SYNTH_BASE_NOTE_MAX){
-	gtk_adjustment_set_value(synth->lower->adjustment,
-				 (gdouble) base_note);
-      }
-      
-      xmlFree(str);
-    }
-  }
-  
-  void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth){
-    GList *list, *list_start;
-    GList *child_start;
-
-    xmlChar *str;
-
-    gdouble tmp0, tmp1;
-    gdouble loop_upper;
-    
-    /* base note */
-    str = xmlGetProp(node,
-		     "base-note");
-
-    if(str != NULL){
-      gdouble base_note;
-
-      base_note = g_ascii_strtod(str,
-				 NULL);
-
-      if(base_note > AGS_SYNCSYNTH_BASE_NOTE_MIN &&
-	 base_note < AGS_SYNCSYNTH_BASE_NOTE_MAX){
-	gtk_adjustment_set_value(syncsynth->lower->adjustment,
-				 (gdouble) base_note);
-      }
-      
-      xmlFree(str);
-    }
-
-    /* set range of loop start and loop end */
-    ags_syncsynth_reset_loop(syncsynth);
-    
-    /* audio loop start */
-    str = xmlGetProp(node,
-		     "audio-loop-start");
-
-    if(str != NULL){
-      guint audio_loop_start;
-
-      audio_loop_start = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-      
-      gtk_adjustment_set_value(syncsynth->loop_start->adjustment,
-			       (gdouble) audio_loop_start);
-      
-      xmlFree(str);
-    }
-
-    /* audio loop end */
-    str = xmlGetProp(node,
-		     "audio-loop-end");
-
-    if(str != NULL){
-      guint audio_loop_end;
-
-      audio_loop_end = g_ascii_strtoull(str,
-					NULL,
-					10);
-      
-      gtk_adjustment_set_value(syncsynth->loop_end->adjustment,
-			       (gdouble) audio_loop_end);
-      
-      xmlFree(str);
-    }
-  }
-
-  void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsPitchSampler *pitch_sampler){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    str = xmlGetProp(node,
-		     "filename");
-    
-    gtk_entry_set_text(pitch_sampler->filename,
-		       str);
-    ags_pitch_sampler_open_filename(pitch_sampler,
-				    str);
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-
-    str = xmlGetProp(node,
-		     "lfo-freq");
-    
-    if(str != NULL){
-      gtk_spin_button_set_value(pitch_sampler->lfo_freq,
-				g_ascii_strtod(str,
-					       NULL));
-      xmlFree(str);
-    }
-
-    str = xmlGetProp(node,
-		     "lfo-phase");
-    
-    if(str != NULL){
-      gtk_spin_button_set_value(pitch_sampler->lfo_phase,
-				g_ascii_strtod(str,
-					       NULL));
-      xmlFree(str);
-    }
-
-    str = xmlGetProp(node,
-		     "lfo-depth");
-    
-    if(str != NULL){
-      gtk_spin_button_set_value(pitch_sampler->lfo_depth,
-				g_ascii_strtod(str,
-					       NULL));
-      xmlFree(str);
-    }
-    
-    str = xmlGetProp(node,
-		     "lfo-tuning");
-    
-    if(str != NULL){
-      gtk_spin_button_set_value(pitch_sampler->lfo_tuning,
-				g_ascii_strtod(str,
-					       NULL));
-      xmlFree(str);
-    }
-
-    if(pitch_sampler->audio_container == NULL){
-      return;
-    }
-  }
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    str = xmlGetProp(node,
-		     "filename");
-    
-    ags_ffplayer_open_filename(ffplayer,
-			       str);
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-    
-    if(ffplayer->audio_container == NULL){
-      return;
-    }
-
-    /* preset */
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
-
-    str = xmlGetProp(node,
-		     "preset");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-    
-    /* instrument */
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
-
-    str = xmlGetProp(node,
-		     "instrument");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-#endif
-  
-  void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec)
-  {
-    xmlChar *str;
-    gchar *value;
-
-    str = xmlGetProp(node,
-		     "filename");
-    
-    ags_audiorec_open_filename(audiorec,
-			       str);
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-  
-  void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    /* program */
-    //NOTE:JK: work-around
-    gtk_combo_box_set_active((GtkComboBox *) dssi_bridge->program,
-			     0);
-
-    model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
-
-    str = xmlGetProp(node,
-		     "program");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) dssi_bridge->program,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-
-  void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    /* program */
-    //NOTE:JK: work-around
-    gtk_combo_box_set_active((GtkComboBox *) live_dssi_bridge->program,
-			     0);
-
-    model = gtk_combo_box_get_model((GtkComboBox *) live_dssi_bridge->program);
-
-    str = xmlGetProp(node,
-		     "program");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) live_dssi_bridge->program,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-
-  void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    if(lv2_bridge->preset == NULL){
-      return;
-    }
-    
-    /* program */
-    //NOTE:JK: work-around
-    gtk_combo_box_set_active((GtkComboBox *) lv2_bridge->preset,
-			     0);
-
-    model = gtk_combo_box_get_model((GtkComboBox *) lv2_bridge->preset);
-
-    str = xmlGetProp(node,
-		     "preset");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-
-  void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    xmlChar *str;
-    gchar *value;
-
-    if(live_lv2_bridge->preset == NULL){
-      return;
-    }
-    
-    /* program */
-    //NOTE:JK: work-around
-    gtk_combo_box_set_active((GtkComboBox *) live_lv2_bridge->preset,
-			     0);
-
-    model = gtk_combo_box_get_model((GtkComboBox *) live_lv2_bridge->preset);
-
-    str = xmlGetProp(node,
-		     "preset");
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
-
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) live_lv2_bridge->preset,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
-    }
-
-    if(str != NULL){      
-      xmlFree(str);
-    }
-  }
-
-  void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge){
-    AgsEffectBulk *effect_bulk;
-    
-    xmlNode *child;
-
-    xmlChar *str;
-    
-    gboolean is_output;
-	
-    is_output = TRUE;
-    str = xmlGetProp(node,
-		     "is-output");
-    
-    if(str != NULL){
-      if(!g_ascii_strcasecmp(str,
-			     "false")){
-	is_output = FALSE;
-      }
-
-      xmlFree(str);
-    }
-
-    if(is_output){
-      effect_bulk = (AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_output;
-    }else{
-      effect_bulk = (AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input;
-    }
-	
-    /* effect list children */
-    child = node->children;
-	
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       (xmlChar *) "ags-sf-effect",
-		       14)){
-	  ags_simple_file_read_effect_bulk_launch(simple_file, child, effect_bulk);
-	}
-      }
-
-      child = child->next;
-    }
-  }
-  
-  void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk){
-    xmlNode *child;
-    
-    xmlChar *filename, *effect;
-
-    filename = xmlGetProp(node,
-			  "filename");
-	      
-    effect = xmlGetProp(node,
-			"effect");
-
-    /* effect list children */
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       (xmlChar *) "ags-sf-control",
-		       15)){
-	  GList *list_start, *list;
-		    
-	  xmlChar *specifier;
-
-	  specifier = xmlGetProp(child,
-				 "specifier");
-	  
-	  list_start = gtk_container_get_children(GTK_CONTAINER(effect_bulk->table));
-	  list = list_start;
-
-	  while(list != NULL){
-	    if(AGS_IS_BULK_MEMBER(list->data)){
-	      AgsBulkMember *bulk_member;
-	      
-	      bulk_member = AGS_BULK_MEMBER(list->data);
-
-	      if(!g_strcmp0(bulk_member->filename,
-			    filename) &&
-		 !g_strcmp0(bulk_member->effect,
-			    effect) &&
-		 !g_strcmp0(bulk_member->specifier,
-			    specifier)){
-		ags_simple_file_read_bulk_member_launch(simple_file, child, bulk_member);
-		break;
-	      }
-	    }
-
-	    list = list->next;
-	  }
-
-	  if(specifier != NULL){
-	    xmlFree(specifier);
-	  }
-	  
-	  g_list_free(list_start);
-	}
-      }
-
-      child = child->next;
-    }
-
-    if(filename != NULL){
-      xmlFree(filename);
-    }
-
-    if(effect != NULL){
-      xmlFree(effect);
-    }
-  }
-	
-  void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member)
-  {
-    GtkWidget *child_widget;
-
-    xmlChar *str;
-    gchar *version;
-
-    gdouble val;
-    guint major, minor, micro;
-
-    /* logarithmic port fixup */
-    version = xmlGetProp(simple_file->root_node,
-			 "version");
-    major = 0;
-    minor = 0;
-    micro = 0;
-
-    if(version != NULL){
-      sscanf(version, "%d.%d.%d",
-	     &major,
-	     &minor,
-	     &micro);
-
-      xmlFree(version);
-    }
-
-    str = xmlGetProp(node,
-		     "value");
-
-    child_widget = gtk_bin_get_child((GtkBin *) bulk_member);
-
-    if(GTK_IS_RANGE(child_widget)){    
-      if(str != NULL){
-	val = g_ascii_strtod(str,
-			     NULL);
-		      
-	if(bulk_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(bulk_member->conversion,
-				       val,
-				       TRUE);
-	}
-
-	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
-				 val);
-      }      
-    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-      if(str != NULL){
-	val = g_ascii_strtod(str,
-			     NULL);
-		      
-	if(bulk_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(bulk_member->conversion,
-				       val,
-				       TRUE);
-	}
-
-	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
-				 val);
-      }
-    }else if(AGS_IS_DIAL(child_widget)){
-      if(str != NULL){
-	val = g_ascii_strtod(str,
-			     NULL);
-		      
-	if(bulk_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(bulk_member->conversion,
-				       val,
-				       TRUE);
-	}
-
-	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				 val);
-	ags_dial_draw((AgsDial *) child_widget);
-      }
-    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      if(str != NULL){
-	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				     ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
-      }
-    }else{
-      g_warning("ags_simple_file_read_bulk_member_launch() - unknown bulk member type");
-    }			  
-
-    if(str != NULL){
-      xmlFree(str);
-    }
-  }  
   
   if(AGS_IS_EQUALIZER10(machine)){
     ags_simple_file_read_equalizer10_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsEqualizer10 *) machine);
@@ -3928,7 +3965,6 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
@@ -3956,8 +3992,10 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
     child = child->next;
   }
 
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
-
+  if(AGS_IS_CONNECTABLE(gobject)){
+    ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  }
+  
   /* launch AgsPad */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node", node,
@@ -4099,20 +4137,133 @@ ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList 
 }
 
 void
+ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member)
+{
+  GtkWidget *child_widget;
+
+  xmlChar *str;
+    
+  gdouble val;
+
+  line_member->flags |= AGS_LINE_MEMBER_APPLY_INITIAL;
+    
+  str = xmlGetProp(node,
+		   "control-type");
+
+  if(str != NULL){
+    g_object_set(line_member,
+		 "widget-type", g_type_from_name(str),
+		 NULL);
+
+    xmlFree(str);
+  }
+
+  child_widget = gtk_bin_get_child((GtkBin *) line_member);
+    
+  /* apply value */
+  str = xmlGetProp(node,
+		   "value");
+
+  if(str != NULL){
+    gchar *version;
+
+    guint major, minor, micro;
+
+    /* logarithmic port fixup */
+    version = xmlGetProp(simple_file->root_node,
+			 "version");
+    major = 0;
+    minor = 0;
+    micro = 0;
+
+    if(version != NULL){
+      sscanf(version, "%d.%d.%d",
+	     &major,
+	     &minor,
+	     &micro);
+
+      xmlFree(version);
+    }
+
+    if(AGS_IS_DIAL(child_widget)){
+      val = g_ascii_strtod(str,
+			   NULL);
+
+      if(line_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(line_member->conversion,
+				     val,
+				     TRUE);
+      }
+	
+      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+			       val);
+    }else if(GTK_IS_RANGE(child_widget)){
+      val = g_ascii_strtod(str,
+			   NULL);    
+      
+      if(line_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(line_member->conversion,
+				     val,
+				     TRUE);
+      }
+
+      gtk_range_set_value(GTK_RANGE(child_widget),
+			  val);
+    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+      val = g_ascii_strtod(str,
+			   NULL);    
+      
+      if(line_member->conversion != NULL &&
+	 major == 1 || 
+	 (major == 2 &&
+	  minor < 2 ||
+	  (minor == 2 &&
+	   micro <= 8))){
+	val = ags_conversion_convert(line_member->conversion,
+				     val,
+				     TRUE);
+      }
+
+      gtk_spin_button_set_value(GTK_SPIN_BUTTON(child_widget),
+				val);
+    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				   ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
+    }else{
+      g_warning("ags_simple_file_read_line() - unknown line member type");
+    }
+
+    xmlFree(str);
+  }
+}
+
+void
 ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line)
 {
   AgsPad *pad;
   GObject *gobject;
-
-  AgsConfig *config;
-  GObject *soundcard;
   
   AgsFileLaunch *file_launch;
   AgsFileIdRef *file_id_ref;
 
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  GObject *soundcard;
+
   xmlNode *child;
 
-  GList *list;
+  GList *start_list, *list;
 
   xmlChar *device;
   xmlChar *str;
@@ -4120,117 +4271,6 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   guint nth_line;
   guint i;
   
-  auto void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);
-  
-  void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member){
-    GtkWidget *child_widget;
-
-    xmlChar *str;
-    
-    gdouble val;
-
-    line_member->flags |= AGS_LINE_MEMBER_APPLY_INITIAL;
-    
-    str = xmlGetProp(node,
-		     "control-type");
-
-    if(str != NULL){
-      g_object_set(line_member,
-		   "widget-type", g_type_from_name(str),
-		   NULL);
-
-      xmlFree(str);
-    }
-
-    child_widget = gtk_bin_get_child((GtkBin *) line_member);
-    
-    /* apply value */
-    str = xmlGetProp(node,
-		     "value");
-
-    if(str != NULL){
-      gchar *version;
-
-      guint major, minor, micro;
-
-      /* logarithmic port fixup */
-      version = xmlGetProp(simple_file->root_node,
-			   "version");
-      major = 0;
-      minor = 0;
-      micro = 0;
-
-      if(version != NULL){
-	sscanf(version, "%d.%d.%d",
-	       &major,
-	       &minor,
-	       &micro);
-
-	xmlFree(version);
-      }
-
-      if(AGS_IS_DIAL(child_widget)){
-	val = g_ascii_strtod(str,
-			     NULL);
-
-	if(line_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
-				       val,
-				       TRUE);
-	}
-	
-	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				 val);
-      }else if(GTK_IS_RANGE(child_widget)){
-	val = g_ascii_strtod(str,
-			     NULL);    
-      
-	if(line_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
-				       val,
-				       TRUE);
-	}
-
-	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
-				 val);
-      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-	val = g_ascii_strtod(str,
-			     NULL);    
-      
-	if(line_member->conversion != NULL &&
-	   major == 1 || 
-	   (major == 2 &&
-	    minor < 2 ||
-	    (minor == 2 &&
-	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
-				       val,
-				       TRUE);
-	}
-
-	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
-				 val);
-      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				     ((!g_ascii_strncasecmp(str, "true", 5)) ? TRUE: FALSE));
-      }else{
-	g_warning("ags_simple_file_read_line() - unknown line member type");
-      }
-
-      xmlFree(str);
-    }
-  }
-
   pad = NULL;
   
   if(line != NULL &&
@@ -4333,22 +4373,25 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", gobject,
 					  NULL));
 
   /* device */
+  application_context = ags_application_context_get_instance();
+  
   config = ags_config_get_instance();
   
   /* find soundcard */
+  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
   soundcard = NULL;
   device = xmlGetProp(node,
 		      "soundcard-device");  
   if(device != NULL){
-    list = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard;
-  
+    list = start_list;
+    
     for(i = 0; list != NULL; i++){
       str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
       
@@ -4356,6 +4399,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	 !g_ascii_strcasecmp(str,
 			     device)){
 	soundcard = list->data;
+	
 	break;
       }
 
@@ -4367,9 +4411,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   }
   
   if(soundcard == NULL &&
-     AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard != NULL){
-    soundcard = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard->data;
+     start_list != NULL){
+    soundcard = start_list->data;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(AGS_IS_LINE(gobject)){
     g_object_set(AGS_LINE(gobject)->channel,
@@ -5158,15 +5205,15 @@ ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsE
 			    child_widget = gtk_bin_get_child((GtkBin *) line_member);
 
 			    if(GTK_IS_RANGE(child_widget)){
-			      gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
-						       val);
+			      gtk_range_set_value(GTK_RANGE(child_widget),
+						  val);
 			    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-			      gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
-						       val);
+			      gtk_spin_button_set_value(GTK_SPIN_BUTTON(child_widget),
+							val);
 			    }else if(AGS_IS_DIAL(child_widget)){
 			      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 						       val);
-			      ags_dial_draw((AgsDial *) child_widget);
+			      gtk_widget_queue_draw((AgsDial *) child_widget);
 			    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 			      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 							   ((val != 0.0) ? TRUE: FALSE));
@@ -5309,8 +5356,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->attack->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->attack,
+			      val);
 
     xmlFree(str);
   }
@@ -5321,8 +5368,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->frequency->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->frequency,
+			      val);
 
     xmlFree(str);
   }
@@ -5333,8 +5380,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->frame_count->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->frame_count,
+			      val);
 
     xmlFree(str);
   }
@@ -5345,8 +5392,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->phase->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->phase,
+			      val);
 
     xmlFree(str);
   }
@@ -5357,8 +5404,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->volume->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->volume,
+			      val);
 
     xmlFree(str);
   }
@@ -5488,8 +5535,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->attack->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->attack,
+			      val);
 
     xmlFree(str);
   }
@@ -5500,8 +5547,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->frequency->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->frequency,
+			      val);
 
     xmlFree(str);
   }
@@ -5512,8 +5559,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->frame_count->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->frame_count,
+			      val);
 
     xmlFree(str);
   }
@@ -5524,8 +5571,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->phase->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->phase,
+			      val);
 
     xmlFree(str);
   }
@@ -5536,8 +5583,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->volume->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->volume,
+			      val);
 
     xmlFree(str);
   }
@@ -5601,8 +5648,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->fm_lfo_frequency->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->fm_lfo_frequency,
+			      val);
 
     xmlFree(str);
   }
@@ -5613,8 +5660,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->fm_lfo_depth->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->fm_lfo_depth,
+			      val);
 
     xmlFree(str);
   }
@@ -5625,8 +5672,8 @@ ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, Ag
   if(str != NULL){
     val = g_ascii_strtod(str,
 			 NULL);
-    gtk_adjustment_set_value(gobject->fm_tuning->adjustment,
-			     val);
+    gtk_spin_button_set_value(gobject->fm_tuning,
+			      val);
 
     xmlFree(str);
   }
@@ -6172,6 +6219,184 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
 }
 
 void
+ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation)
+{
+  AgsMachine *machine;
+    
+  AgsNotation *gobject;
+  AgsNote *note;
+
+  AgsTimestamp *timestamp;
+  AgsFileIdRef *file_id_ref;
+
+  xmlNode *child;
+
+  GList *notation_list;
+    
+  xmlChar *str;
+  
+  guint audio_channel;
+  gboolean found_timestamp;
+    
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								     node->parent->parent);
+  machine = file_id_ref->ref;
+    
+  audio_channel = 0;
+  str = xmlGetProp(node,
+		   "channel");
+
+  if(str != NULL){
+    audio_channel = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+
+    xmlFree(str);
+  }
+    
+  /* children */    
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  timestamp->timer.ags_offset.offset = 0;
+    
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-note",
+		     12)){
+	note = ags_note_new();
+
+	/* position and offset */
+	str = xmlGetProp(child,
+			 "x0");
+
+	if(str != NULL){
+	  note->x[0] = g_ascii_strtoull(str,
+					NULL,
+					10);
+
+	  xmlFree(str);
+	}
+	
+	str = xmlGetProp(child,
+			 "x1");
+
+	if(str != NULL){
+	  note->x[1] = g_ascii_strtoull(str,
+					NULL,
+					10);
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "y");
+
+	if(str != NULL){
+	  note->y = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+
+	  xmlFree(str);
+	}
+
+	/* envelope */
+	str = xmlGetProp(child,
+			 "envelope");
+
+	if(str != NULL){
+	  if(!g_ascii_strncasecmp(str,
+				  "true",
+				  5)){
+	    note->flags |= AGS_NOTE_ENVELOPE;
+	  }
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "attack");
+
+	if(str != NULL){
+	  sscanf(str, "%Lf %Lf", &(note->attack.real), &(note->attack.imag));
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "decay");
+
+	if(str != NULL){
+	  sscanf(str, "%Lf %Lf", &(note->decay.real), &(note->decay.imag));
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "sustain");
+
+	if(str != NULL){
+	  sscanf(str, "%Lf %Lf", &(note->sustain.real), &(note->sustain.imag));
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "release");
+
+	if(str != NULL){
+	  sscanf(str, "%Lf %Lf", &(note->release.real), &(note->release.imag));
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "ratio");
+
+	if(str != NULL){
+	  sscanf(str, "%Lf %Lf", &(note->ratio.real), &(note->ratio.imag));
+
+	  xmlFree(str);
+	}
+
+	timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET);
+
+	notation_list = ags_notation_find_near_timestamp(notation[0], audio_channel,
+							 timestamp);
+	  
+	if(notation_list != NULL){
+	  gobject = notation_list->data;
+	}else{
+	  gobject = g_object_new(AGS_TYPE_NOTATION,
+				 "audio", machine->audio,
+				 "audio-channel", audio_channel,
+				 NULL);
+
+	  gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	    
+	  notation[0] = ags_notation_add(notation[0],
+					 gobject);
+	}
+	  
+	/* add */
+	ags_notation_add_note(gobject,
+			      note,
+			      FALSE);
+      }
+    }
+
+    child = child->next;
+  }
+
+  g_object_unref(timestamp);
+}
+
+void
 ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation)
 {
   AgsNotation *current;
@@ -6181,184 +6406,6 @@ ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, 
   GList *list;
 
   guint i;
-
-  auto void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
-
-  void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation){
-    AgsMachine *machine;
-    
-    AgsNotation *gobject;
-    AgsNote *note;
-
-    AgsTimestamp *timestamp;
-    AgsFileIdRef *file_id_ref;
-
-    xmlNode *child;
-
-    GList *notation_list;
-    
-    xmlChar *str;
-  
-    guint audio_channel;
-    gboolean found_timestamp;
-    
-    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
-								       node->parent->parent);
-    machine = file_id_ref->ref;
-    
-    audio_channel = 0;
-    str = xmlGetProp(node,
-		     "channel");
-
-    if(str != NULL){
-      audio_channel = g_ascii_strtoull(str,
-				       NULL,
-				       10);
-
-      xmlFree(str);
-    }
-    
-    /* children */    
-    timestamp = ags_timestamp_new();
-
-    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
-    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-
-    timestamp->timer.ags_offset.offset = 0;
-    
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       "ags-sf-note",
-		       12)){
-	  note = ags_note_new();
-
-	  /* position and offset */
-	  str = xmlGetProp(child,
-			   "x0");
-
-	  if(str != NULL){
-	    note->x[0] = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-
-	    xmlFree(str);
-	  }
-	
-	  str = xmlGetProp(child,
-			   "x1");
-
-	  if(str != NULL){
-	    note->x[1] = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "y");
-
-	  if(str != NULL){
-	    note->y = g_ascii_strtoull(str,
-				       NULL,
-				       10);
-
-	    xmlFree(str);
-	  }
-
-	  /* envelope */
-	  str = xmlGetProp(child,
-			   "envelope");
-
-	  if(str != NULL){
-	    if(!g_ascii_strncasecmp(str,
-				    "true",
-				    5)){
-	      note->flags |= AGS_NOTE_ENVELOPE;
-	    }
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "attack");
-
-	  if(str != NULL){
-	    sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "decay");
-
-	  if(str != NULL){
-	    sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "sustain");
-
-	  if(str != NULL){
-	    sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "release");
-
-	  if(str != NULL){
-	    sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "ratio");
-
-	  if(str != NULL){
-	    sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
-
-	    xmlFree(str);
-	  }
-
-	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET);
-
-	  notation_list = ags_notation_find_near_timestamp(notation[0], audio_channel,
-							   timestamp);
-	  
-	  if(notation_list != NULL){
-	    gobject = notation_list->data;
-	  }else{
-	    gobject = g_object_new(AGS_TYPE_NOTATION,
-				   "audio", machine->audio,
-				   "audio-channel", audio_channel,
-				   NULL);
-
-	    gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	    
-	    notation[0] = ags_notation_add(notation[0],
-					   gobject);
-	  }
-	  
-	  /* add */
-	  ags_notation_add_note(gobject,
-				note,
-				FALSE);
-	}
-      }
-
-      child = child->next;
-    }
-
-    g_object_unref(timestamp);
-  }
 
   if(notation == NULL){
     return;
@@ -6523,7 +6570,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "attack");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
+	  sscanf(str, "%Lf %Lf", &(note->attack.real), &(note->attack.imag));
 
 	  xmlFree(str);
 	}
@@ -6532,7 +6579,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "decay");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
+	  sscanf(str, "%Lf %Lf", &(note->decay.real), &(note->decay.imag));
 
 	  xmlFree(str);
 	}
@@ -6541,7 +6588,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "sustain");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
+	  sscanf(str, "%Lf %Lf", &(note->sustain.real), &(note->sustain.imag));
 
 	  xmlFree(str);
 	}
@@ -6550,7 +6597,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "release");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
+	  sscanf(str, "%Lf %Lf", &(note->release.real), &(note->release.imag));
 
 	  xmlFree(str);
 	}
@@ -6559,7 +6606,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "ratio");
 
 	if(str != NULL){
-	  sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
+	  sscanf(str, "%Lf %Lf", &(note->ratio.real), &(note->ratio.imag));
 
 	  xmlFree(str);
 	}
@@ -6623,6 +6670,137 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 }
 
 void
+ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation)
+{
+  AgsMachine *machine;
+    
+  AgsAutomation *gobject;
+  AgsAcceleration *acceleration;
+
+  AgsTimestamp *timestamp;
+  AgsFileIdRef *file_id_ref;
+
+  xmlNode *child;
+
+  GList *automation_list;
+    
+  xmlChar *str;
+  gchar *control_name;
+  
+  GType channel_type;
+  
+  guint line;
+  gboolean found_timestamp;
+
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								     node->parent->parent);
+  machine = file_id_ref->ref;
+    
+  line = 0;
+  str = xmlGetProp(node,
+		   "line");
+
+  if(str != NULL){
+    line = g_ascii_strtoull(str,
+			    NULL,
+			    10);
+
+    xmlFree(str);
+  }
+
+  channel_type = G_TYPE_NONE;
+    
+  str = xmlGetProp(node,
+		   "channel-type");
+    
+  if(str != NULL){
+    channel_type = g_type_from_name(str);
+
+    xmlFree(str);
+  }
+    
+  control_name = xmlGetProp(node,
+			    "control-name");    
+
+  /* children */    
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  timestamp->timer.ags_offset.offset = 0;
+    
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-acceleration",
+		     12)){
+	acceleration = ags_acceleration_new();
+
+	/* position and offset */
+	str = xmlGetProp(child,
+			 "x");
+
+	if(str != NULL){
+	  acceleration->x = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+	  xmlFree(str);
+	}
+
+	str = xmlGetProp(child,
+			 "y");
+
+	if(str != NULL){
+	  acceleration->y = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+	  xmlFree(str);
+	}
+
+	timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
+
+	automation_list = ags_automation_find_near_timestamp_extended(automation[0], line,
+								      channel_type, control_name,
+								      timestamp);
+	  
+	if(automation_list != NULL){
+	  gobject = automation_list->data;
+
+	  channel_type = gobject->channel_type;
+	  control_name = gobject->control_name;
+	}else{	    
+	  gobject = g_object_new(AGS_TYPE_AUTOMATION,
+				 "audio", machine->audio,
+				 "line", line,
+				 "channel-type", channel_type,
+				 "control-name", control_name,
+				 NULL);
+
+	  gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	    
+	  automation[0] = ags_automation_add(automation[0],
+					     gobject);
+	}
+	  
+	/* add */
+	ags_automation_add_acceleration(gobject,
+					acceleration,
+					FALSE);
+      }
+    }
+
+    child = child->next;
+  }
+
+  g_object_unref(timestamp);
+}
+
+void
 ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation)
 {
   AgsAutomation *current;
@@ -6632,137 +6810,6 @@ ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file
   GList *list;
 
   guint i;
-
-  auto void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
-
-  void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation){
-    AgsMachine *machine;
-    
-    AgsAutomation *gobject;
-    AgsAcceleration *acceleration;
-
-    AgsTimestamp *timestamp;
-    AgsFileIdRef *file_id_ref;
-
-    xmlNode *child;
-
-    GList *automation_list;
-    
-    xmlChar *str;
-    gchar *control_name;
-  
-    GType channel_type;
-  
-    guint line;
-    gboolean found_timestamp;
-
-    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
-								       node->parent->parent);
-    machine = file_id_ref->ref;
-    
-    line = 0;
-    str = xmlGetProp(node,
-		     "line");
-
-    if(str != NULL){
-      line = g_ascii_strtoull(str,
-			      NULL,
-			      10);
-
-      xmlFree(str);
-    }
-
-    channel_type = G_TYPE_NONE;
-    
-    str = xmlGetProp(node,
-		     "channel-type");
-    
-    if(str != NULL){
-      channel_type = g_type_from_name(str);
-
-      xmlFree(str);
-    }
-    
-    control_name = xmlGetProp(node,
-			      "control-name");    
-
-    /* children */    
-    timestamp = ags_timestamp_new();
-
-    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
-    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-
-    timestamp->timer.ags_offset.offset = 0;
-    
-    child = node->children;
-
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       "ags-sf-acceleration",
-		       12)){
-	  acceleration = ags_acceleration_new();
-
-	  /* position and offset */
-	  str = xmlGetProp(child,
-			   "x");
-
-	  if(str != NULL){
-	    acceleration->x = g_ascii_strtoull(str,
-					       NULL,
-					       10);
-
-	    xmlFree(str);
-	  }
-
-	  str = xmlGetProp(child,
-			   "y");
-
-	  if(str != NULL){
-	    acceleration->y = g_ascii_strtoull(str,
-					       NULL,
-					       10);
-
-	    xmlFree(str);
-	  }
-
-	  timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
-
-	  automation_list = ags_automation_find_near_timestamp_extended(automation[0], line,
-									channel_type, control_name,
-									timestamp);
-	  
-	  if(automation_list != NULL){
-	    gobject = automation_list->data;
-
-	    channel_type = gobject->channel_type;
-	    control_name = gobject->control_name;
-	  }else{	    
-	    gobject = g_object_new(AGS_TYPE_AUTOMATION,
-				   "audio", machine->audio,
-				   "line", line,
-				   "channel-type", channel_type,
-				   "control-name", control_name,
-				   NULL);
-
-	    gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	    
-	    automation[0] = ags_automation_add(automation[0],
-					       gobject);
-	  }
-	  
-	  /* add */
-	  ags_automation_add_acceleration(gobject,
-					  acceleration,
-					  FALSE);
-	}
-      }
-
-      child = child->next;
-    }
-
-    g_object_unref(timestamp);
-  }
 
   if(automation == NULL){
     return;
@@ -7173,7 +7220,6 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsCon
   
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "xpath", str,
@@ -7184,15 +7230,15 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsCon
 
   /* properties */
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
+	     AGS_SIMPLE_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     AGS_FILE_VERSION_PROP,
+	     AGS_SIMPLE_FILE_VERSION_PROP,
 	     AGS_CONFIG(ags_config)->version);
 
   xmlNewProp(node,
-	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_SIMPLE_FILE_BUILD_ID_PROP,
 	     AGS_CONFIG(ags_config)->build_id);
 
   xmlAddChild(parent,
@@ -7279,7 +7325,7 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
 
     z = g_value_get_boxed(&(property->value));
     val = g_strdup_printf("%Lf %Lf",
-			  z[0][0], z[0][1]);
+			  z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -7387,7 +7433,7 @@ ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue 
 
     z = g_value_get_boxed(value);
     val = g_strdup_printf("%Lf %Lf",
-			  z[0][0], z[0][1]);
+			  z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -7432,7 +7478,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 	     simple_file->filename);
 
   str = g_strdup_printf("%f",
-			window->navigation->bpm->adjustment->value);
+			gtk_spin_button_get_value(window->navigation->bpm));
 
   xmlNewProp(node,
 	     "bpm",
@@ -7442,10 +7488,10 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 
   xmlNewProp(node,
 	     "loop",
-	     ((gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+	     ((gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)) ? AGS_SIMPLE_FILE_TRUE: AGS_SIMPLE_FILE_FALSE));
 
   str = g_strdup_printf("%f",
-			window->navigation->loop_left_tact->adjustment->value);
+			gtk_spin_button_get_value(window->navigation->loop_left_tact));
   
   xmlNewProp(node,
 	     "loop-start",
@@ -7454,7 +7500,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
   g_free(str);
 
   str = g_strdup_printf("%f",
-			window->navigation->loop_right_tact->adjustment->value);
+			gtk_spin_button_get_value(window->navigation->loop_right_tact));
   
   xmlNewProp(node,
 	     "loop-end",
@@ -7511,6 +7557,328 @@ ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, 
   return(node);
 }
 
+gboolean
+ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel)
+{
+  AgsChannel *next_pad;
+
+  xmlNode *pad;
+  xmlNode *line_list;
+  xmlNode *line;
+
+  gchar *str;
+    
+  gboolean found_pad_content, found_line_content;
+    
+  if(channel == NULL){
+    return(FALSE);
+  }
+
+  found_pad_content = FALSE;
+    
+  while(channel != NULL){
+      
+    next_pad = channel->next_pad;
+
+    pad = xmlNewNode(NULL,
+		     "ags-sf-pad");
+
+    /* properties */
+    str = g_strdup_printf("%d",
+			  channel->pad);
+      
+    xmlNewProp(pad,
+	       "nth-pad",
+	       str);
+
+    g_free(str);
+      
+    line_list = xmlNewNode(NULL,
+			   "ags-sf-line-list");
+    found_line_content = FALSE;
+
+    while(channel != next_pad){
+      gchar *id;
+	
+      line = xmlNewNode(NULL,
+			"ags-sf-line");
+
+      /* properties */
+      id = ags_id_generator_create_uuid();
+	  
+      xmlNewProp(line,
+		 "id",
+		 id);
+
+      if(id != NULL){
+	free(id);
+      }
+	
+      if(channel->link != NULL){
+	ags_simple_file_add_id_ref(simple_file,
+				   g_object_new(AGS_TYPE_FILE_ID_REF,
+						"file", simple_file,
+						"node", line,
+						"reference", channel,
+						NULL));
+
+	found_line_content = TRUE;
+      }
+
+      str = g_strdup_printf("%d",
+			    channel->line);
+	
+      xmlNewProp(line,
+		 "nth-line",
+		 str);
+
+      g_free(str);
+	
+      /* device */
+      if(channel != NULL &&
+	 channel->output_soundcard != NULL){
+	gchar *device;
+
+	device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->output_soundcard));
+    
+	if(device != NULL){
+	  xmlNewProp(line,
+		     (xmlChar *) "soundcard-device",
+		     (xmlChar *) device);
+
+	  g_free(device);
+	}
+      }
+
+      /* link */
+      if(channel->link != NULL){
+	AgsFileLookup *file_lookup;
+
+	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						     "file", simple_file,
+						     "node", line,
+						     "reference", channel,
+						     NULL);
+	ags_simple_file_add_lookup(simple_file, (GObject *) file_lookup);
+	g_signal_connect(G_OBJECT(file_lookup), "resolve",
+			 G_CALLBACK(ags_simple_file_write_line_resolve_link), channel);
+      }
+
+      /* add to parent */
+      xmlAddChild(line_list,
+		  line);
+
+      /* iterate */
+      channel = channel->next;
+    }
+
+    if(found_line_content){
+      found_pad_content = TRUE;
+	
+      /* add to parent */
+      xmlAddChild(pad,
+		  line_list);
+      
+      /* add to parent */
+      xmlAddChild(parent,
+		  pad);
+    }else{
+      xmlFreeNode(line_list);
+      xmlFreeNode(pad);
+    }
+  }
+
+  if(found_pad_content){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+xmlNode*
+ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member)
+{
+  GtkWidget *child_widget;
+    
+  xmlNode *control_node;
+
+  gchar *str;
+    
+  /* control node */
+  child_widget = gtk_bin_get_child((GtkBin *) bulk_member);
+    
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+      
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
+  }else if(AGS_IS_DIAL(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+
+    str = g_strdup_printf("%f",
+			  gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else{
+    g_warning("ags_file_write_effect_list() - unknown child of AgsBulkMember type");
+
+    return(NULL);
+  }
+
+  xmlNewProp(control_node,
+	     "specifier",
+	     bulk_member->specifier);
+
+  xmlAddChild(parent,
+	      control_node);
+
+  return(control_node);
+}
+  
+xmlNode*
+ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk)
+{
+  xmlNode *effect_list_node;
+  xmlNode *effect_node;
+    
+  GList *filename;
+  GList *effect;
+  GList *list_start, *list;
+    
+  effect_list_node = NULL;
+  effect_node = NULL;
+    
+  filename = NULL;
+  effect = NULL;
+    
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+    
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      if(g_list_find_custom(filename,
+			    AGS_BULK_MEMBER(list->data)->filename,
+			    (GCompareFunc) g_strcmp0) == NULL ||
+	 g_list_find_custom(effect,
+			    AGS_BULK_MEMBER(list->data)->effect,
+			    (GCompareFunc) g_strcmp0) == NULL){
+	GtkWidget *child_widget;
+
+	if(effect_list_node == NULL){
+	  effect_list_node = xmlNewNode(NULL,
+					"ags-sf-effect-list");
+	}
+	  
+	effect_node = xmlNewNode(NULL,
+				 "ags-sf-effect");
+
+	xmlNewProp(effect_node,
+		   "filename",
+		   AGS_BULK_MEMBER(list->data)->filename);
+
+	filename = g_list_prepend(filename,
+				  AGS_BULK_MEMBER(list->data)->filename);
+
+	xmlNewProp(effect_node,
+		   "effect",
+		   AGS_BULK_MEMBER(list->data)->effect);
+
+	effect = g_list_prepend(effect,
+				AGS_BULK_MEMBER(list->data)->effect);
+	  
+	ags_simple_file_write_control(simple_file, effect_node, list->data);
+	  
+	/* add to parent */
+	xmlAddChild(effect_list_node,
+		    effect_node);
+      }else{
+	ags_simple_file_write_control(simple_file, effect_node, list->data);
+      }
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  g_list_free(filename);
+  g_list_free(effect);
+
+  /* add to parent */
+  if(effect_list_node != NULL){
+    xmlAddChild(parent,
+		effect_list_node);
+  }
+
+  return(effect_list_node);
+}
+
+xmlNode*
+ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port)
+{
+  xmlNode *node, *child;    
+
+  node = NULL;
+    
+  if(automation_port != NULL){
+    node = xmlNewNode(NULL,
+		      "ags-sf-automation-port-list");
+      
+    while(automation_port != NULL){
+      gchar *scope;
+	
+      child = xmlNewNode(NULL,
+			 "ags-sf-automation-port");
+
+      scope = NULL;
+
+      if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+	scope = "audio";
+      }else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
+	scope = "output";
+      }else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
+	scope = "input";
+      }
+	
+      xmlNewProp(child,
+		 "scope",
+		 scope);
+
+      xmlNewProp(child,
+		 "specifier",
+		 AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
+	
+      xmlAddChild(node,
+		  child);
+
+      automation_port = automation_port->next;
+    }
+  }
+    
+  /* add to parent */
+  if(node != NULL){
+    xmlAddChild(parent,
+		node);
+  }
+    
+  return(node);
+}
+
 xmlNode*
 ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine)
 {  
@@ -7520,327 +7888,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   GList *list;
 
   gchar *id;
-  xmlChar *str;
-  
-  auto gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
-  auto xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
-  auto xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
-  auto xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port);
-  
-  gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel){
-    AgsChannel *next_pad;
-
-    xmlNode *pad;
-    xmlNode *line_list;
-    xmlNode *line;
-
-    gchar *str;
-    
-    gboolean found_pad_content, found_line_content;
-    
-    if(channel == NULL){
-      return(FALSE);
-    }
-
-    found_pad_content = FALSE;
-    
-    while(channel != NULL){
-      
-      next_pad = channel->next_pad;
-
-      pad = xmlNewNode(NULL,
-		       "ags-sf-pad");
-
-      /* properties */
-      str = g_strdup_printf("%d",
-			    channel->pad);
-      
-      xmlNewProp(pad,
-		 "nth-pad",
-		 str);
-
-      g_free(str);
-      
-      line_list = xmlNewNode(NULL,
-			     "ags-sf-line-list");
-      found_line_content = FALSE;
-
-      while(channel != next_pad){
-	gchar *id;
-	
-	line = xmlNewNode(NULL,
-			  "ags-sf-line");
-
-	/* properties */
-	id = ags_id_generator_create_uuid();
-	  
-	xmlNewProp(line,
-		   "id",
-		   id);
-
-	if(id != NULL){
-	  free(id);
-	}
-	
-	if(channel->link != NULL){
-	  ags_simple_file_add_id_ref(simple_file,
-				     g_object_new(AGS_TYPE_FILE_ID_REF,
-						  "application-context", simple_file->application_context,
-						  "file", simple_file,
-						  "node", line,
-						  "reference", channel,
-						  NULL));
-
-	  found_line_content = TRUE;
-	}
-
-	str = g_strdup_printf("%d",
-			      channel->line);
-	
-	xmlNewProp(line,
-		   "nth-line",
-		   str);
-
-	g_free(str);
-	
-	/* device */
-	if(channel != NULL &&
-	   channel->output_soundcard != NULL){
-	  gchar *device;
-
-	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->output_soundcard));
-    
-	  if(device != NULL){
-	    xmlNewProp(line,
-		       (xmlChar *) "soundcard-device",
-		       (xmlChar *) device);
-
-	    g_free(device);
-	  }
-	}
-
-	/* link */
-	if(channel->link != NULL){
-	  AgsFileLookup *file_lookup;
-
-	  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						       "file", simple_file,
-						       "node", line,
-						       "reference", channel,
-						       NULL);
-	  ags_simple_file_add_lookup(simple_file, (GObject *) file_lookup);
-	  g_signal_connect(G_OBJECT(file_lookup), "resolve",
-			   G_CALLBACK(ags_simple_file_write_line_resolve_link), channel);
-	}
-
-	/* add to parent */
-	xmlAddChild(line_list,
-		    line);
-
-	/* iterate */
-	channel = channel->next;
-      }
-
-      if(found_line_content){
-	found_pad_content = TRUE;
-	
-	/* add to parent */
-	xmlAddChild(pad,
-		    line_list);
-      
-	/* add to parent */
-	xmlAddChild(parent,
-		    pad);
-      }else{
-	xmlFreeNode(line_list);
-	xmlFreeNode(pad);
-      }
-    }
-
-    if(found_pad_content){
-      return(TRUE);
-    }else{
-      return(FALSE);
-    }
-  }
-
-  xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member){
-    GtkWidget *child_widget;
-    
-    xmlNode *control_node;
-
-    gchar *str;
-    
-    /* control node */
-    child_widget = gtk_bin_get_child((GtkBin *) bulk_member);
-    
-    if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-      
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-      
-      xmlNewProp(control_node,
-		 "value",
-		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_FILE_TRUE:  AGS_FILE_FALSE));
-    }else if(AGS_IS_DIAL(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-
-      str = g_strdup_printf("%f",
-			    AGS_DIAL(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else{
-      g_warning("ags_file_write_effect_list() - unknown child of AgsBulkMember type");
-
-      return(NULL);
-    }
-
-    xmlNewProp(control_node,
-	       "specifier",
-	       bulk_member->specifier);
-
-    xmlAddChild(parent,
-		control_node);
-
-    return(control_node);
-  }
-  
-  xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk){
-    xmlNode *effect_list_node;
-    xmlNode *effect_node;
-    
-    GList *filename;
-    GList *effect;
-    GList *list_start, *list;
-    
-    effect_list_node = NULL;
-    effect_node = NULL;
-    
-    filename = NULL;
-    effect = NULL;
-    
-    list =
-      list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
-    
-    while(list != NULL){
-      if(AGS_IS_BULK_MEMBER(list->data)){
-	if(g_list_find_custom(filename,
-			      AGS_BULK_MEMBER(list->data)->filename,
-			      (GCompareFunc) g_strcmp0) == NULL ||
-	   g_list_find_custom(effect,
-			      AGS_BULK_MEMBER(list->data)->effect,
-			      (GCompareFunc) g_strcmp0) == NULL){
-	  GtkWidget *child_widget;
-
-	  if(effect_list_node == NULL){
-	    effect_list_node = xmlNewNode(NULL,
-					  "ags-sf-effect-list");
-	  }
-	  
-	  effect_node = xmlNewNode(NULL,
-				   "ags-sf-effect");
-
-	  xmlNewProp(effect_node,
-		     "filename",
-		     AGS_BULK_MEMBER(list->data)->filename);
-
-	  filename = g_list_prepend(filename,
-				    AGS_BULK_MEMBER(list->data)->filename);
-
-	  xmlNewProp(effect_node,
-		     "effect",
-		     AGS_BULK_MEMBER(list->data)->effect);
-
-	  effect = g_list_prepend(effect,
-				  AGS_BULK_MEMBER(list->data)->effect);
-	  
-	  ags_simple_file_write_control(simple_file, effect_node, list->data);
-	  
-	  /* add to parent */
-	  xmlAddChild(effect_list_node,
-		      effect_node);
-	}else{
-	  ags_simple_file_write_control(simple_file, effect_node, list->data);
-	}
-      }
-
-      list = list->next;
-    }
-
-    g_list_free(list_start);
-
-    g_list_free(filename);
-    g_list_free(effect);
-
-    /* add to parent */
-    if(effect_list_node != NULL){
-      xmlAddChild(parent,
-		  effect_list_node);
-    }
-
-    return(effect_list_node);
-  }
-
-  xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port){
-    xmlNode *node, *child;    
-
-    node = NULL;
-    
-    if(automation_port != NULL){
-      node = xmlNewNode(NULL,
-			"ags-sf-automation-port-list");
-      
-      while(automation_port != NULL){
-	gchar *scope;
-	
-	child = xmlNewNode(NULL,
-			   "ags-sf-automation-port");
-
-	scope = NULL;
-
-	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
-	  scope = "audio";
-	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
-	  scope = "output";
-	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
-	  scope = "input";
-	}
-	
-	xmlNewProp(child,
-		   "scope",
-		   scope);
-
-	xmlNewProp(child,
-		   "specifier",
-		   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
-	
-	xmlAddChild(node,
-		    child);
-
-	automation_port = automation_port->next;
-      }
-    }
-    
-    /* add to parent */
-    if(node != NULL){
-      xmlAddChild(parent,
-		  node);
-    }
-    
-    return(node);
-  }
+  xmlChar *str;    
 
   /* node and uuid */
   id = ags_id_generator_create_uuid();
@@ -7849,20 +7897,19 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		    "ags-sf-machine");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_TYPE_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_TYPE_PROP,
 	     (xmlChar *) G_OBJECT_TYPE_NAME(machine));
 
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_NAME_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_NAME_PROP,
 	     (xmlChar *) machine->machine_name);
 
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context", simple_file->application_context,
 					  "file", simple_file,
 					  "node", node,
 					  "reference", machine,
@@ -8276,7 +8323,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     }
 
     str = g_strdup_printf("%u",
-			  (guint) drum->length_spin->adjustment->value);
+			  (guint) gtk_spin_button_get_value(drum->length_spin));
     
     xmlNewProp(node,
 	       "length",
@@ -8294,7 +8341,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }    
 
-    str = g_strdup_printf("%u", (guint) matrix->length_spin->adjustment->value);
+    str = g_strdup_printf("%u", (guint) gtk_spin_button_get_value(matrix->length_spin));
 
     xmlNewProp(node,
 	       "length",
@@ -8307,7 +8354,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     synth = (AgsSynth *) machine;
 
     str = g_strdup_printf("%f",
-			  synth->lower->adjustment->value);
+			  gtk_spin_button_get_value(synth->lower));
     
     xmlNewProp(node,
 	       "base-note",
@@ -8320,7 +8367,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     fm_synth = (AgsFMSynth *) machine;
 
     str = g_strdup_printf("%f",
-			  fm_synth->lower->adjustment->value);
+			  gtk_spin_button_get_value(fm_synth->lower));
     
     xmlNewProp(node,
 	       "base-note",
@@ -8334,10 +8381,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "base-note",
-	       g_strdup_printf("%f", syncsynth->lower->adjustment->value));
+	       g_strdup_printf("%f", gtk_spin_button_get_value(syncsynth->lower)));
 
     str = g_strdup_printf("%u",
-			  (guint) round(syncsynth->loop_start->adjustment->value));
+			  (guint) round(gtk_spin_button_get_value(syncsynth->loop_start)));
     
     xmlNewProp(node,
 	       "audio-loop-start",
@@ -8346,7 +8393,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);
     
     str = g_strdup_printf("%u",
-			  (guint) round(syncsynth->loop_end->adjustment->value));
+			  (guint) round(gtk_spin_button_get_value(syncsynth->loop_end)));
     
     xmlNewProp(node,
 	       "audio-loop-end",
@@ -8359,7 +8406,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     fm_syncsynth = (AgsFMSyncsynth *) machine;
 
     str = g_strdup_printf("%f",
-			  fm_syncsynth->lower->adjustment->value);
+			  gtk_spin_button_get_value(fm_syncsynth->lower));
     
     xmlNewProp(node,
 	       "base-note",
@@ -8368,7 +8415,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);
 
     str = g_strdup_printf("%u",
-			  (guint) round(fm_syncsynth->loop_start->adjustment->value));
+			  (guint) round(gtk_spin_button_get_value(fm_syncsynth->loop_start)));
     
     xmlNewProp(node,
 	       "audio-loop-start",
@@ -8377,7 +8424,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);
 
     str = g_strdup_printf("%u",
-			  (guint) round(fm_syncsynth->loop_end->adjustment->value));
+			  (guint) round(gtk_spin_button_get_value(fm_syncsynth->loop_end)));
     
     xmlNewProp(node,
 	       "audio-loop-end",
@@ -8940,7 +8987,7 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
 		    "ags-sf-pad");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   str = g_strdup_printf("%d",
@@ -9048,6 +9095,91 @@ ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GLi
   }
 }
 
+void
+ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member)
+{
+  GtkWidget *child_widget;
+    
+  xmlNode *control_node;
+
+  gchar *str;
+    
+  /* control node */
+  child_widget = gtk_bin_get_child((GtkBin *) line_member);
+
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+    
+    xmlNewProp(control_node,
+	       "value",
+	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
+  }else if(AGS_IS_DIAL(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+
+    str = g_strdup_printf("%f",
+			  gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else if(GTK_IS_RANGE(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+
+    str = g_strdup_printf("%f",
+			  gtk_range_get_value(GTK_RANGE(child_widget)));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "control-type",
+	       G_OBJECT_TYPE_NAME(child_widget));
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(GTK_SPIN_BUTTON(child_widget)));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else{
+    g_warning("ags_file_write_effect_list() - unknown child of AgsLineMember type");
+
+    return;
+  }
+
+  xmlNewProp(control_node,
+	     "specifier",
+	     line_member->specifier);
+
+  xmlAddChild(parent,
+	      control_node);
+}
+
 xmlNode*
 ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line)
 {
@@ -9064,98 +9196,13 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   
   gboolean found_content;
   
-  auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
-  
-  void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member){
-    GtkWidget *child_widget;
-    
-    xmlNode *control_node;
-
-    gchar *str;
-    
-    /* control node */
-    child_widget = gtk_bin_get_child((GtkBin *) line_member);
-
-    if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-    
-      xmlNewProp(control_node,
-		 "value",
-		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
-    }else if(AGS_IS_DIAL(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-
-      str = g_strdup_printf("%f",
-			    AGS_DIAL(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else if(GTK_IS_RANGE(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-
-      str = g_strdup_printf("%f",
-			    GTK_RANGE(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "control-type",
-		 G_OBJECT_TYPE_NAME(child_widget));
-
-      str = g_strdup_printf("%f",
-			    GTK_SPIN_BUTTON(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else{
-      g_warning("ags_file_write_effect_list() - unknown child of AgsLineMember type");
-
-      return;
-    }
-
-    xmlNewProp(control_node,
-	       "specifier",
-	       line_member->specifier);
-
-    xmlAddChild(parent,
-		control_node);
-  }
-  
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
 		    "ags-sf-line");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   found_content = FALSE;
@@ -9163,7 +9210,6 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   if(line->channel->link != NULL){
     ags_simple_file_add_id_ref(simple_file,
 			       g_object_new(AGS_TYPE_FILE_ID_REF,
-					    "application-context", simple_file->application_context,
 					    "file", simple_file,
 					    "node", node,
 					    "reference", line->channel,
@@ -9322,13 +9368,13 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 		   "effect",
 		   AGS_LINE_MEMBER(list->data)->effect);
 	
-	ags_simple_file_write_control(simple_file, effect_node, list->data);
+	ags_simple_file_write_line_member_control(simple_file, effect_node, list->data);
 	  
 	/* add to parent */
 	xmlAddChild(effect_list_node,
 		    effect_node);
       }else{
-	ags_simple_file_write_control(simple_file, effect_node, list->data);
+	ags_simple_file_write_line_member_control(simple_file, effect_node, list->data);
       }
 
       found_content = TRUE;
@@ -9445,7 +9491,7 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 		    "ags-sf-effect-pad");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
 
@@ -9510,6 +9556,75 @@ ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *pare
   }
 }
 
+void
+ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member)
+{
+  GtkWidget *child_widget;
+    
+  xmlNode *control_node;
+
+  gchar *str;
+    
+  /* control node */
+  child_widget = gtk_bin_get_child((GtkBin *) line_member);
+    
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    xmlNewProp(control_node,
+	       "value",
+	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
+  }else if(AGS_IS_DIAL(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    str = g_strdup_printf("%f",
+			  gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else if(GTK_IS_RANGE(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    str = g_strdup_printf("%f",
+			  gtk_range_get_value(GTK_RANGE(child_widget)));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+
+    str = g_strdup_printf("%f",
+			  gtk_spin_button_get_value(GTK_SPIN_BUTTON(child_widget)));
+      
+    xmlNewProp(control_node,
+	       "value",
+	       str);
+
+    g_free(str);
+  }else{
+    g_warning("ags_file_write_effect_list() - unknown child of AgsLineMember type");
+
+    return;
+  }
+
+  xmlNewProp(control_node,
+	     "specifier",
+	     line_member->specifier);
+
+  xmlAddChild(parent,
+	      control_node);
+}
+
 xmlNode*
 ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line)
 {
@@ -9523,77 +9638,8 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 
   gchar *id;
 
-  gboolean found_content;
+  gboolean found_content;  
   
-  auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
-  
-  void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member){
-    GtkWidget *child_widget;
-    
-    xmlNode *control_node;
-
-    gchar *str;
-    
-    /* control node */
-    child_widget = gtk_bin_get_child((GtkBin *) line_member);
-    
-    if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      xmlNewProp(control_node,
-		 "value",
-		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
-    }else if(AGS_IS_DIAL(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      str = g_strdup_printf("%f",
-			    AGS_DIAL(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else if(GTK_IS_RANGE(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      str = g_strdup_printf("%f",
-			    GTK_RANGE(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-      control_node = xmlNewNode(NULL,
-				"ags-sf-control");
-
-      str = g_strdup_printf("%f",
-			    GTK_SPIN_BUTTON(child_widget)->adjustment->value);
-      
-      xmlNewProp(control_node,
-		 "value",
-		 str);
-
-      g_free(str);
-    }else{
-      g_warning("ags_file_write_effect_list() - unknown child of AgsLineMember type");
-
-      return;
-    }
-
-    xmlNewProp(control_node,
-	       "specifier",
-	       line_member->specifier);
-
-    xmlAddChild(parent,
-		control_node);
-  }
-
   found_content = FALSE;
 
   id = ags_id_generator_create_uuid();
@@ -9602,7 +9648,7 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 		    "ags-sf-effect-line");
   
   xmlNewProp(node,
-	     (xmlChar *) AGS_FILE_ID_PROP,
+	     (xmlChar *) AGS_SIMPLE_FILE_ID_PROP,
 	     (xmlChar *) id);
 
   /* effect list */
@@ -9641,13 +9687,13 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 	effect = g_list_prepend(effect,
 				AGS_LINE_MEMBER(list->data)->effect);
 	  
-	ags_simple_file_write_control(simple_file, effect_node, list->data);
+	ags_simple_file_write_effect_line_control(simple_file, effect_node, list->data);
 	  
 	/* add to parent */
 	xmlAddChild(effect_list_node,
 		    effect_node);
       }else{
-	ags_simple_file_write_control(simple_file, effect_node, list->data);
+	ags_simple_file_write_effect_line_control(simple_file, effect_node, list->data);
       }
       
       found_content = TRUE;
@@ -9726,7 +9772,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   g_free(str);
 
   str = g_strdup_printf("%f",
-			oscillator->attack->adjustment->value);
+			gtk_spin_button_get_value(oscillator->attack));
   
   xmlNewProp(node,
 	     "attack",
@@ -9735,7 +9781,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   g_free(str);
 
   str = g_strdup_printf("%f",
-			oscillator->frame_count->adjustment->value);
+			gtk_spin_button_get_value(oscillator->frame_count));
   
   xmlNewProp(node,
 	     "length",
@@ -9744,7 +9790,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   g_free(str);
 
   str = g_strdup_printf("%f",
-			oscillator->frequency->adjustment->value);
+			gtk_spin_button_get_value(oscillator->frequency));
   
   xmlNewProp(node,
 	     "frequency",
@@ -9753,7 +9799,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   g_free(str);
 
   str = g_strdup_printf("%f",
-			oscillator->phase->adjustment->value);
+			gtk_spin_button_get_value(oscillator->phase));
   
   xmlNewProp(node,
 	     "phase",
@@ -9762,7 +9808,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   g_free(str);
 
   str = g_strdup_printf("%f",
-			oscillator->volume->adjustment->value);
+			gtk_spin_button_get_value(oscillator->volume));
   
   xmlNewProp(node,
 	     "volume",
@@ -9847,7 +9893,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   g_free(str);
 
   str = g_strdup_printf("%f",
-			fm_oscillator->attack->adjustment->value);
+			gtk_spin_button_get_value(fm_oscillator->attack));
   
   xmlNewProp(node,
 	     "attack",
@@ -9856,7 +9902,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   g_free(str);
 
   str = g_strdup_printf("%f",
-			fm_oscillator->frame_count->adjustment->value);
+			gtk_spin_button_get_value(fm_oscillator->frame_count));
 
   xmlNewProp(node,
 	     "length",
@@ -9865,7 +9911,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   g_free(str);
 
   str = g_strdup_printf("%f",
-			fm_oscillator->frequency->adjustment->value);
+			gtk_spin_button_get_value(fm_oscillator->frequency));
 
   xmlNewProp(node,
 	     "frequency",
@@ -9874,7 +9920,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   g_free(str);
 
   str = g_strdup_printf("%f",
-			fm_oscillator->phase->adjustment->value);
+			gtk_spin_button_get_value(fm_oscillator->phase));
 
   xmlNewProp(node,
 	     "phase",
@@ -9883,7 +9929,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   g_free(str);
 
   str = g_strdup_printf("%f",
-			fm_oscillator->volume->adjustment->value);
+			gtk_spin_button_get_value(fm_oscillator->volume));
 
   xmlNewProp(node,
 	     "volume",
@@ -9926,7 +9972,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   g_free(str);
 
-  str = g_strdup_printf("%f", fm_oscillator->fm_lfo_frequency->adjustment->value);
+  str = g_strdup_printf("%f", gtk_spin_button_get_value(fm_oscillator->fm_lfo_frequency));
 
   xmlNewProp(node,
 	     "fm-lfo-frequency",
@@ -9934,7 +9980,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   g_free(str);
 
-  str = g_strdup_printf("%f", fm_oscillator->fm_lfo_depth->adjustment->value);
+  str = g_strdup_printf("%f", gtk_spin_button_get_value(fm_oscillator->fm_lfo_depth));
 
   xmlNewProp(node,
 	     "fm-lfo-depth",
@@ -9942,7 +9988,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   g_free(str);
 
-  str = g_strdup_printf("%f", fm_oscillator->fm_tuning->adjustment->value);
+  str = g_strdup_printf("%f", gtk_spin_button_get_value(fm_oscillator->fm_tuning));
 
   xmlNewProp(node,
 	     "fm-tuning",
@@ -10396,8 +10442,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     }
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->attack[0],
-			  AGS_NOTE(list->data)->attack[1]);
+			  AGS_NOTE(list->data)->attack.real,
+			  AGS_NOTE(list->data)->attack.imag);
     
     xmlNewProp(child,
 	       "attack",
@@ -10406,8 +10452,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
     
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->decay[0],
-			  AGS_NOTE(list->data)->decay[1]);
+			  AGS_NOTE(list->data)->decay.real,
+			  AGS_NOTE(list->data)->decay.imag);
     
     xmlNewProp(child,
 	       "decay",
@@ -10416,8 +10462,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->sustain[0],
-			  AGS_NOTE(list->data)->sustain[1]);
+			  AGS_NOTE(list->data)->sustain.real,
+			  AGS_NOTE(list->data)->sustain.imag);
     
     xmlNewProp(child,
 	       "sustain",
@@ -10426,8 +10472,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->release[0],
-			  AGS_NOTE(list->data)->release[1]);
+			  AGS_NOTE(list->data)->release.real,
+			  AGS_NOTE(list->data)->release.imag);
     
     xmlNewProp(child,
 	       "release",
@@ -10436,8 +10482,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     g_free(str);
 
     str = g_strdup_printf("%Lf %Lf",
-			  AGS_NOTE(list->data)->ratio[0],
-			  AGS_NOTE(list->data)->ratio[1]);
+			  AGS_NOTE(list->data)->ratio.real,
+			  AGS_NOTE(list->data)->ratio.imag);
     
     xmlNewProp(child,
 	       "ratio",

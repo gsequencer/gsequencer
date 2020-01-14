@@ -20,10 +20,6 @@
 #include <ags/X/machine/ags_pattern_box.h>
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -215,19 +211,22 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
 
-  AgsConfig *config;
+  AgsApplicationContext *application_context;
 
   gchar *str;
   
   gdouble gui_scale_factor;
   guint i;
 
+  application_context = ags_application_context_get_instance();
+  
   g_object_set(pattern_box,
 	       "can-focus", TRUE,
 	       "n-columns", 2,
 	       "n-rows", 2,
 	       "homogeneous", FALSE,
 	       NULL);
+
   gtk_widget_set_events((GtkWidget *) pattern_box,
 			GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
@@ -237,30 +236,18 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   pattern_box->key_mask = 0;
 
-  config = ags_config_get_instance();
-
   pattern_box->n_controls = AGS_PATTERN_BOX_N_CONTROLS;
   pattern_box->n_indices = AGS_PATTERN_BOX_N_INDICES;
   
   /* led */
-  gui_scale_factor = 1.0;
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "gui-scale");
-
-  if(str != NULL){
-    gui_scale_factor = g_ascii_strtod(str,
-				      NULL);
-
-  }
-  
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+    
   pattern_box->active_led = 0;
   pattern_box->hled_array = (AgsHLedArray *) ags_hled_array_new();
   g_object_set(pattern_box->hled_array,
+	       "led-count", pattern_box->n_controls,
 	       "led-width", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_WIDTH),
 	       "led-height", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT),
-	       "led-count", pattern_box->n_controls,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
 			      (guint) (gui_scale_factor * pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH), (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT));
@@ -268,7 +255,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		   (GtkWidget *) pattern_box->hled_array,
 		   0, 1,
 		   0, 1,
-		   0, 0,
+		   GTK_FILL|GTK_EXPAND, 0,
 		   0, 0);
   gtk_widget_show_all((GtkWidget *) pattern_box->hled_array);
   
@@ -280,8 +267,8 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   g_hash_table_insert(ags_pattern_box_led_queue_draw,
 		      pattern_box, ags_pattern_box_led_queue_draw_timeout);
-  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
-
+  g_timeout_add((guint) floor(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0), (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
+  
   /* pattern */
   pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach((GtkTable *) pattern_box,
@@ -325,7 +312,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
       str = g_strdup_printf("%d-%d",
 			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group,
+			 (GtkWidget *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(radio_button),
 								       str),
 			 FALSE, FALSE,
 			 0);
@@ -745,7 +732,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   /* read boundaries */
   list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < pattern_box->n_indices && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
+  for(i = 0; i < pattern_box->n_indices && !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data)); i++){
     list = list->next;
   }
 
@@ -811,7 +798,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
@@ -939,7 +926,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
  *
  * Returns: the new #AgsPatternBox
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPatternBox*
 ags_pattern_box_new()

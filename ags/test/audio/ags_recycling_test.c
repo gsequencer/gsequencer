@@ -49,6 +49,10 @@ void ags_recycling_test_create_audio_signal_with_frame_count();
 void ags_recycling_test_position();
 void ags_recycling_test_find_next_channel();
 
+gboolean ags_recycling_test_create_audio_signal_with_frame_count_compare_frames(signed short *destination,
+										signed short *source,
+										guint buffer_size);
+
 #define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE (44100)
 #define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE (944)
 #define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
@@ -259,6 +263,22 @@ ags_recycling_test_create_audio_signal_with_defaults()
   }
 }
 
+gboolean
+ags_recycling_test_create_audio_signal_with_frame_count_compare_frames(signed short *destination,
+								       signed short *source,
+								       guint buffer_size)
+{
+  guint i;
+    
+  for(i = 0; i < buffer_size; i++){
+    if(destination[i] != source[i]){	
+      return(FALSE);
+    }
+  }
+
+  return(TRUE);
+}
+
 void
 ags_recycling_test_create_audio_signal_with_frame_count()
 {
@@ -286,24 +306,6 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
-  auto gboolean ags_recycling_test_create_audio_signal_with_frame_count_compare_frames(signed short *destination,
-										       signed short *source,
-										       guint buffer_size);
-
-  gboolean ags_recycling_test_create_audio_signal_with_frame_count_compare_frames(signed short *destination,
-										  signed short *source,
-										  guint buffer_size){
-    guint i;
-    
-    for(i = 0; i < buffer_size; i++){
-      if(destination[i] != source[i]){	
-	return(FALSE);
-      }
-    }
-
-    return(TRUE);
-  }
 
   /* instantiate recycling */
   recycling = ags_recycling_new(G_OBJECT(devout));

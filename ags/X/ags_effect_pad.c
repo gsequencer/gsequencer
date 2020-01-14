@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,9 +20,6 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_pad_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>
 
@@ -30,7 +27,6 @@
 
 void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
 void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_effect_pad_init(AgsEffectPad *effect_pad);
 void ags_effect_pad_set_property(GObject *gobject,
 				 guint prop_id,
@@ -43,13 +39,6 @@ void ags_effect_pad_get_property(GObject *gobject,
 
 void ags_effect_pad_connect(AgsConnectable *connectable);
 void ags_effect_pad_disconnect(AgsConnectable *connectable);
-
-gchar* ags_effect_pad_get_name(AgsPlugin *plugin);
-void ags_effect_pad_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_effect_pad_get_version(AgsPlugin *plugin);
-void ags_effect_pad_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_effect_pad_get_build_id(AgsPlugin *plugin);
-void ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
@@ -115,12 +104,6 @@ ags_effect_pad_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_effect_pad_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_effect_pad = g_type_register_static(GTK_TYPE_VBOX,
 						 "AgsEffectPad", &ags_effect_pad_info,
 						 0);
@@ -128,10 +111,6 @@ ags_effect_pad_get_type(void)
     g_type_add_interface_static(ags_type_effect_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_effect_pad,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_pad);
   }
@@ -160,7 +139,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -178,7 +157,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The buffer length.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -196,7 +175,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -214,7 +193,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -245,7 +224,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::samplerate-changed signal notifies about changed samplerate.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_pad_signals[SAMPLERATE_CHANGED] =
     g_signal_new("samplerate-changed",
@@ -266,7 +245,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::buffer-size-changed signal notifies about changed buffer size.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_pad_signals[BUFFER_SIZE_CHANGED] =
     g_signal_new("buffer-size-changed",
@@ -287,7 +266,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::format-changed signal notifies about changed format.
    * 
-   * Since: 2.1.35
+   * Since: 3.0.0
    */
   effect_pad_signals[FORMAT_CHANGED] =
     g_signal_new("format-changed",
@@ -307,7 +286,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::set-channel signal notifies about changed channel.
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_pad_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -328,7 +307,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::resize-lines is emitted as count of lines pack is modified.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_pad_signals[RESIZE_LINES] =
     g_signal_new("resize-lines",
@@ -348,7 +327,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The ::map-recall should be used to add the effect_pad's default recall.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_pad_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -367,7 +346,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    * 
    * Returns: a #GList-struct with associated ports
    *
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   effect_pad_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -386,23 +365,6 @@ ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_effect_pad_connect;
   connectable->disconnect = ags_effect_pad_disconnect;
-}
-
-void
-ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = NULL;
-  plugin->set_name = NULL;
-  plugin->get_version = ags_effect_pad_get_version;
-  plugin->set_version = ags_effect_pad_set_version;
-  plugin->get_build_id = ags_effect_pad_get_build_id;
-  plugin->set_build_id = ags_effect_pad_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
-  plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
-  plugin->set_ports = NULL;
 }
 
 void
@@ -669,54 +631,6 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   g_list_free(effect_line_list_start);
 }
 
-gchar*
-ags_effect_pad_get_name(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->name);
-}
-
-void
-ags_effect_pad_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->name = name;
-}
-
-gchar*
-ags_effect_pad_get_version(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->version);
-}
-
-void
-ags_effect_pad_set_version(AgsPlugin *plugin, gchar *version)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->version = version;
-}
-
-gchar*
-ags_effect_pad_get_build_id(AgsPlugin *plugin)
-{
-  return(AGS_EFFECT_PAD(plugin)->build_id);
-}
-
-void
-ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
-{
-  AgsEffectPad *effect_pad;
-
-  effect_pad = AGS_EFFECT_PAD(plugin);
-
-  effect_pad->build_id = build_id;
-}
-
 /**
  * ags_effect_pad_samplerate_changed:
  * @effect_pad: the #AgsEffectPad
@@ -725,7 +639,7 @@ ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * 
  * Notify about samplerate changed.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_samplerate_changed(AgsEffectPad *effect_pad,
@@ -749,7 +663,7 @@ ags_effect_pad_samplerate_changed(AgsEffectPad *effect_pad,
  * 
  * Notify about buffer_size changed.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_buffer_size_changed(AgsEffectPad *effect_pad,
@@ -773,7 +687,7 @@ ags_effect_pad_buffer_size_changed(AgsEffectPad *effect_pad,
  * 
  * Notify about format changed.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_format_changed(AgsEffectPad *effect_pad,
@@ -841,7 +755,7 @@ ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
  *
  * Is emitted as channel gets modified.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
@@ -928,7 +842,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
  *
  * Resize the count of #AgsEffectLine packe by #AgsEffectPad.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
@@ -962,7 +876,7 @@ ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad)
  *
  * You may want the @effect_pad to add its default recall.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_effect_pad_map_recall(AgsEffectPad *effect_pad)
@@ -1016,7 +930,7 @@ ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
  *
  * Returns: an #GList-struct containing all related #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_effect_pad_find_port(AgsEffectPad *effect_pad)
@@ -1044,7 +958,7 @@ ags_effect_pad_find_port(AgsEffectPad *effect_pad)
  *
  * Returns: the new #AgsEffectPad
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEffectPad*
 ags_effect_pad_new(AgsChannel *channel)

@@ -25,13 +25,21 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/machine/ags_synth.h>
 
-void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
+G_BEGIN_DECLS
+
+void ags_synth_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSynth *synth);
 
 void ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth);
 void ags_synth_update_callback(GtkButton *button, AgsSynth *synth);
 
 void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
+
+G_END_DECLS
 
 #endif /*__AGS_SYNTH_CALLBACKS_H__ */

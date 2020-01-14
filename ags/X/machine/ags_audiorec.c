@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,32 +20,18 @@
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_audiorec_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audiorec_init(AgsAudiorec *audiorec);
 void ags_audiorec_finalize(GObject *gobject);
 
 void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
-
-gchar* ags_audiorec_get_name(AgsPlugin *plugin);
-void ags_audiorec_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_audiorec_get_xml_type(AgsPlugin *plugin);
-void ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_audiorec_show(GtkWidget *widget);
 void ags_audiorec_show_all(GtkWidget *widget);
@@ -104,12 +90,6 @@ ags_audiorec_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_audiorec_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_audiorec = g_type_register_static(AGS_TYPE_MACHINE,
 					       "AgsAudiorec", &ags_audiorec_info,
 					       0);
@@ -117,10 +97,6 @@ ags_audiorec_get_type(void)
     g_type_add_interface_static(ags_type_audiorec,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_audiorec,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_audiorec);
   }
@@ -162,17 +138,6 @@ ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_audiorec_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_audiorec_connect;
-}
-
-void
-ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->get_name = ags_audiorec_get_name;
-  plugin->set_name = ags_audiorec_set_name;
-  plugin->get_xml_type = ags_audiorec_get_xml_type;
-  plugin->set_xml_type = ags_audiorec_set_xml_type;
-  plugin->read = ags_audiorec_read;
-  plugin->write = ags_audiorec_write;
 }
 
 void
@@ -219,6 +184,9 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   AGS_MACHINE(audiorec)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION;
   
+  ags_machine_popup_add_export_options((AgsMachine *) audiorec,
+				       (AGS_MACHINE_POPUP_WAVE_EXPORT));
+
   /* hbox */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
@@ -433,31 +401,6 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
-
-gchar*
-ags_audiorec_get_name(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->name);
-}
-
-void
-ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_AUDIOREC(plugin)->name = name;
-}
-
-gchar*
-ags_audiorec_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->xml_type);
-}
-
-void
-ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_AUDIOREC(plugin)->xml_type = xml_type;
-}
-
 void
 ags_audiorec_show(GtkWidget *widget)
 {
@@ -530,13 +473,13 @@ ags_audiorec_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_end,
 			&value);
   }
@@ -577,13 +520,13 @@ ags_audiorec_map_recall(AgsMachine *machine)
     g_value_unset(&value);
     g_value_init(&value, G_TYPE_UINT64);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_left_tact));
     ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_start,
 			&value);
 
     g_value_reset(&value);
 
-    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    g_value_set_uint64(&value, 16 * gtk_spin_button_get_value(window->navigation->loop_right_tact));
     ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_end,
 			&value);
   }
@@ -671,7 +614,7 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
       GValue value = {0,};
       
       ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * window->navigation->position_tact->adjustment->value,
+			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 			AGS_SEEK_SET);
     }
 
@@ -722,7 +665,7 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
       GValue value = {0,};
       
       ags_seekable_seek(AGS_SEEKABLE(play->data),
-			(gint64) 16 * window->navigation->position_tact->adjustment->value,
+			(gint64) 16 * gtk_spin_button_get_value(window->navigation->position_tact),
 			AGS_SEEK_SET);
     }
 
@@ -1116,61 +1059,6 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 }
 
 void
-ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsAudiorec *gobject;
-  
-  gobject = AGS_AUDIOREC(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsAudiorec *audiorec;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  audiorec = AGS_AUDIOREC(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-audiorec");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", audiorec,
-				   NULL));
-
-  //TODO:JK: implement me
-  
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
-void
 ags_audiorec_open_filename(AgsAudiorec *audiorec,
 			   gchar *filename)
 {
@@ -1191,13 +1079,13 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
 
 /**
  * ags_audiorec_wave_loader_completed_timeout:
- * @widget: the widget
+ * @audiorec: the #AgsAudiorec
  *
  * Queue draw widget
  *
  * Returns: %TRUE if proceed poll completed, otherwise %FALSE
  *
- * Since: 2.0.13
+ * Since: 3.0.0
  */
 gboolean
 ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
@@ -1257,13 +1145,13 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 
 /**
  * ags_audiorec_indicator_queue_draw_timeout:
- * @widget: the widget
+ * @audiorec: the #AgsAudiorec
  *
  * Queue draw widget
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
@@ -1381,7 +1269,7 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
  *
  * Returns: the new #AgsAudiorec
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsAudiorec*
 ags_audiorec_new(GObject *soundcard)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/ags_recall_lv2.h>
-
-#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -46,7 +44,6 @@
 
 void ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2_class);
 void ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_lv2_init(AgsRecallLv2 *recall_lv2);
 void ags_recall_lv2_set_property(GObject *gobject,
 				 guint prop_id,
@@ -58,10 +55,6 @@ void ags_recall_lv2_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_recall_lv2_dispose(GObject *gobject);
 void ags_recall_lv2_finalize(GObject *gobject);
-
-void ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port);
-void ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_recall_lv2
@@ -86,7 +79,6 @@ enum{
 
 static gpointer ags_recall_lv2_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_lv2_parent_connectable_interface;
-static AgsPluginInterface* ags_recall_lv2_parent_plugin_interface;
 
 GType
 ags_recall_lv2_get_type (void)
@@ -114,12 +106,6 @@ ags_recall_lv2_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_recall_lv2_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_lv2 = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						 "AgsRecallLv2",
 						 &ags_recall_lv2_info,
@@ -128,10 +114,6 @@ ags_recall_lv2_get_type (void)
     g_type_add_interface_static(ags_type_recall_lv2,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_lv2,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_lv2);
   }
@@ -163,7 +145,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned turtle.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -179,7 +161,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned plugin.
    * 
-   * Since: 2.1.53
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("plugin",
 				   i18n_pspec("plugin of recall lv2"),
@@ -195,7 +177,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's name.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -211,7 +193,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The event port index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("event-port",
 				 i18n_pspec("event port"),
@@ -229,7 +211,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The atom port index.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("atom-port",
 				 i18n_pspec("atom port"),
@@ -247,7 +229,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The selected bank.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("bank",
 				 i18n_pspec("bank"),
@@ -265,7 +247,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The selected program.
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_uint("program",
 				 i18n_pspec("program"),
@@ -283,16 +265,6 @@ void
 ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_lv2_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_recall_lv2_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_recall_lv2_set_ports;
-  plugin->read = ags_recall_lv2_read;
-  plugin->write = ags_recall_lv2_write;
 }
 
 void
@@ -334,7 +306,7 @@ ags_recall_lv2_set_property(GObject *gobject,
 {
   AgsRecallLv2 *recall_lv2;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_lv2 = AGS_RECALL_LV2(gobject);
 
@@ -348,10 +320,10 @@ ags_recall_lv2_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_lv2->turtle == turtle){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -366,7 +338,7 @@ ags_recall_lv2_set_property(GObject *gobject,
 
       recall_lv2->turtle = turtle;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PLUGIN:
@@ -375,10 +347,10 @@ ags_recall_lv2_set_property(GObject *gobject,
 
       plugin = (AgsLv2Plugin *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(recall_lv2->plugin == plugin){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -393,7 +365,7 @@ ags_recall_lv2_set_property(GObject *gobject,
 
       recall_lv2->plugin = plugin;
       
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_URI:
@@ -402,10 +374,10 @@ ags_recall_lv2_set_property(GObject *gobject,
       
       uri = g_value_get_string(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(uri == recall_lv2->uri){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -416,43 +388,43 @@ ags_recall_lv2_set_property(GObject *gobject,
 
       recall_lv2->uri = g_strdup(uri);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_EVENT_PORT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_lv2->event_port = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_ATOM_PORT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_lv2->atom_port = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_lv2->bank = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       recall_lv2->program = g_value_get_uint(value);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -469,7 +441,7 @@ ags_recall_lv2_get_property(GObject *gobject,
 {
   AgsRecallLv2 *recall_lv2;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   recall_lv2 = AGS_RECALL_LV2(gobject);
 
@@ -479,65 +451,65 @@ ags_recall_lv2_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_TURTLE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_lv2->turtle);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PLUGIN:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_lv2->plugin);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_URI:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_string(value, recall_lv2->uri);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_EVENT_PORT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_lv2->event_port);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_ATOM_PORT:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_lv2->atom_port);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_lv2->bank);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PROGRAM:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       g_value_set_uint(value, recall_lv2->program);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -588,249 +560,6 @@ ags_recall_lv2_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_lv2_parent_class)->finalize(gobject);
 }
 
-void
-ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsRecallLv2 *recall_lv2;
-  AgsPort *current_port;
-  
-  AgsLv2Plugin *lv2_plugin;
-  
-  GList *list;  
-  GList *plugin_port_start, *plugin_port;
-  
-  gchar *filename, *effect;
-  
-  guint port_count;
-  guint i;
-
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
-  pthread_mutex_t *port_mutex;
-
-  recall_lv2 = AGS_RECALL_LV2(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-
-  filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
-  effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
-  
-  pthread_mutex_unlock(recall_mutex);
-  
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       filename, effect);
-
-  g_free(filename);
-  g_free(effect);
-
-  /* set port */
-  pthread_mutex_lock(recall_mutex);
-
-  recall_lv2->plugin = lv2_plugin;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  /* get base plugin mutex */
-  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
-
-  /* get plugin port */
-  pthread_mutex_lock(base_plugin_mutex);
-
-  plugin_port =
-    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
-
-  pthread_mutex_unlock(base_plugin_mutex);
-
-  /* match port */
-  if(plugin_port != NULL){
-    port_count = g_list_length(plugin_port_start);
-
-    for(i = 0; i < port_count; i++){
-      AgsPluginPort *current_plugin_port;
-      
-      pthread_mutex_t *plugin_port_mutex;
-      
-      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
-
-      /* get plugin port mutex */
-      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
-
-      if(ags_plugin_port_test_flags(current_plugin_port,
-				    AGS_PLUGIN_PORT_CONTROL)){
-	gchar *specifier;
-	
-	GValue *default_value;
-
-	default_value = g_new0(GValue,
-			       1);
-	g_value_init(default_value,
-		     G_TYPE_FLOAT);
-		
-	pthread_mutex_lock(plugin_port_mutex);
-
-	specifier = g_strdup(current_plugin_port->port_name);
-	g_value_copy(current_plugin_port->default_value,
-		     default_value);
-	
-	pthread_mutex_unlock(plugin_port_mutex);
-
-	list = ags_port_find_specifier(port, specifier);
-
-	if(list != NULL){
-	  current_port = list->data;
-	  g_object_set(current_port,
-		       "plugin-port", current_plugin_port,
-		       NULL);
-	  ags_recall_lv2_load_conversion(recall_lv2,
-					 (GObject *) current_port,
-					 current_plugin_port);
-
-	  //TODO:JK: check raw write	  
-	  ags_port_safe_write(current_port,
-			      default_value);
-
-#ifdef AGS_DEBUG
-	  g_message("connecting port: %lu/%lu", i, port_count);
-#endif
-	}
-
-	g_value_unset(default_value);
-	g_free(default_value);
-	g_free(specifier);
-      }else if(ags_plugin_port_test_flags(current_plugin_port,
-					  AGS_PLUGIN_PORT_AUDIO)){
-	guint port_index;
-
-	g_object_get(current_plugin_port,
-		     "port-index", &port_index,
-		     NULL);
-	
-	pthread_mutex_lock(recall_mutex);
-
-	if(ags_plugin_port_test_flags(current_plugin_port,
-				      AGS_PLUGIN_PORT_INPUT)){
-	  if(recall_lv2->input_port == NULL){
-	    recall_lv2->input_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->input_port[0] = port_index;
-	  }else{
-	    recall_lv2->input_port = (guint *) realloc(recall_lv2->input_port,
-						       (recall_lv2->input_lines + 1) * sizeof(guint));
-	    recall_lv2->input_port[recall_lv2->input_lines] = port_index;
-	  }
-
-	  recall_lv2->input_lines += 1;
-	}else if(ags_plugin_port_test_flags(current_plugin_port,
-					    AGS_PLUGIN_PORT_OUTPUT)){
-	  if(recall_lv2->output_port == NULL){
-	    recall_lv2->output_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->output_port[0] = port_index;
-	  }else{
-	    recall_lv2->output_port = (guint *) realloc(recall_lv2->output_port,
-							(recall_lv2->output_lines + 1) * sizeof(guint));
-	    recall_lv2->output_port[recall_lv2->output_lines] = port_index;
-	  }
-
-	  recall_lv2->output_lines += 1;
-	}
-
-	pthread_mutex_unlock(recall_mutex);
-      }
-
-      /* iterate plugin port */
-      plugin_port = plugin_port->next;
-    }
-
-    /* reverse port */
-    pthread_mutex_lock(recall_mutex);
-    
-    AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
-
-    pthread_mutex_unlock(recall_mutex);
-  }
-
-  g_list_free(plugin_port_start);
-}
-
-void
-ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsRecallLv2 *gobject;
-  AgsLv2Plugin *lv2_plugin;
-
-  gchar *uri;
-
-  gobject = AGS_RECALL_LV2(plugin);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference", gobject,
-				   NULL));
-  uri = xmlGetProp(node,
-		   "uri");
-
-  g_object_set(gobject,
-	       "uri", uri,
-	       NULL);
-
-  ags_recall_lv2_load(gobject);
-}
-
-xmlNode*
-ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsRecallLv2 *recall_lv2;
-
-  xmlNode *node;
-
-  gchar *id;
-
-  pthread_mutex_t *recall_mutex;
-
-  recall_lv2 = AGS_RECALL_LV2(plugin);
-
-  /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
-
-  /*  */
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-recall-lv2");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context", file->application_context,
-				   "file", file,
-				   "node", node,
-				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
-				   "reference", recall_lv2,
-				   NULL));
-
-  pthread_mutex_lock(recall_mutex);
-
-  xmlNewProp(node,
-	     "uri",
-	     g_strdup(recall_lv2->uri));
-
-  pthread_mutex_unlock(recall_mutex);
-
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
-}
-
 /**
  * ags_recall_lv2_test_flags:
  * @recall_lv2: the #AgsRecallLv2
@@ -840,14 +569,14 @@ ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * 
  * Returns: %TRUE if flags are set, else %FALSE
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 gboolean
 ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags)
 {
   gboolean retval;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return(FALSE);
@@ -857,11 +586,11 @@ ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* test flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   retval = ((flags & (recall_lv2->flags)) != 0) ? TRUE: FALSE;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   return(retval);
 }
@@ -873,12 +602,12 @@ ags_recall_lv2_test_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Set flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return;
@@ -888,11 +617,11 @@ ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* set flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   recall_lv2->flags |= flags;
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -902,12 +631,12 @@ ags_recall_lv2_set_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Unset flags.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags)
 {
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return;
@@ -917,11 +646,11 @@ ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* unset flags */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   recall_lv2->flags &= (~flags);
   
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -930,7 +659,7 @@ ags_recall_lv2_unset_flags(AgsRecallLv2 *recall_lv2, guint flags)
  *
  * Set up LV2 handle.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
@@ -947,7 +676,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return;
@@ -957,12 +686,12 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
   
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
   effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
   
   /* find lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -1023,11 +752,11 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
 	 }
       }
       
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       recall_lv2->plugin_descriptor = plugin_descriptor;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
       
       if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
 	ags_recall_lv2_set_flags(recall_lv2,
@@ -1043,9 +772,9 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
  *
  * Set up LV2 ports.
  *
- * Returns: a #GList-struct containing #AgsPort
+ * Returns: (element-type AgsAudio.Port) (transfer full): the #GList-struct containing #AgsPort
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
@@ -1065,8 +794,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   guint port_count;
   guint i;
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
+  GRecMutex *recall_mutex;
+  GRecMutex *base_plugin_mutex;
 
   if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return(NULL);
@@ -1076,14 +805,14 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* get some fields */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
   effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
   
   effect_index = AGS_RECALL(recall_lv2)->effect_index;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* find lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -1092,22 +821,22 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   g_free(effect);
   
   /* set lv2 plugin */
-  pthread_mutex_lock(recall_mutex);
+  g_rec_mutex_lock(recall_mutex);
 
   recall_lv2->plugin = lv2_plugin;
 
-  pthread_mutex_unlock(recall_mutex);
+  g_rec_mutex_unlock(recall_mutex);
 
   /* get base plugin mutex */
   base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
   /* get port descriptor */
-  pthread_mutex_lock(base_plugin_mutex);
+  g_rec_mutex_lock(base_plugin_mutex);
 
   plugin_port =
     plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_rec_mutex_unlock(base_plugin_mutex);
 
   port = NULL;
   retval = NULL;
@@ -1118,7 +847,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     for(i = 0; i < port_count; i++){
       AgsPluginPort *current_plugin_port;
       
-      pthread_mutex_t *plugin_port_mutex;
+      GRecMutex *plugin_port_mutex;
       
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
@@ -1168,13 +897,13 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	g_value_init(default_value,
 		     G_TYPE_FLOAT);
 		
-	pthread_mutex_lock(plugin_port_mutex);
+	g_rec_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
 	g_value_copy(current_plugin_port->default_value,
 		     default_value);
 	
-	pthread_mutex_unlock(plugin_port_mutex);
+	g_rec_mutex_unlock(plugin_port_mutex);
 
 	if(specifier == NULL){
 	  g_value_unset(default_value);
@@ -1250,7 +979,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 		     "port-index", &port_index,
 		     NULL);
 
-	pthread_mutex_lock(recall_mutex);
+	g_rec_mutex_lock(recall_mutex);
 
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
@@ -1278,7 +1007,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	  recall_lv2->output_lines += 1;
 	}
 
-	pthread_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       }
       
       /* iterate plugin port */
@@ -1286,13 +1015,13 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     }
     
     /* reverse port */
-    pthread_mutex_lock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
     
     AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
     
     retval = g_list_copy(AGS_RECALL(recall_lv2)->port);
     
-    pthread_mutex_unlock(recall_mutex);
+    g_rec_mutex_unlock(recall_mutex);
   }
   
   g_list_free(plugin_port_start);
@@ -1308,7 +1037,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 void
 ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
@@ -1343,15 +1072,15 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 
 /**
  * ags_recall_lv2_find:
- * @recall: the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer none): the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve LV2 recall.
  *
- * Returns: Next matching #GList-struct or %NULL
+ * Returns: (element-type AgsAudio.Recall) (transfer none): Next matching #GList-struct or %NULL
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 GList*
 ags_recall_lv2_find(GList *recall,
@@ -1359,7 +1088,7 @@ ags_recall_lv2_find(GList *recall,
 {
   gboolean success;
   
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   while(recall != NULL){
     if(AGS_IS_RECALL_LV2(recall->data)){
@@ -1367,14 +1096,14 @@ ags_recall_lv2_find(GList *recall,
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check filename and effect */
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
       
       success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
 			    filename) &&
 		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 			    effect)) ? TRUE: FALSE;
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
       
       if(success){
 	return(recall);
@@ -1400,7 +1129,7 @@ ags_recall_lv2_find(GList *recall,
  *
  * Returns: the new #AgsRecallLv2
  * 
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsRecallLv2*
 ags_recall_lv2_new(AgsChannel *source,

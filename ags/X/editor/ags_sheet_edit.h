@@ -29,6 +29,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_SHEET_EDIT                (ags_sheet_edit_get_type ())
 #define AGS_SHEET_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SHEET_EDIT, AgsSheetEdit))
 #define AGS_SHEET_EDIT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SHEET_EDIT, AgsSheetEditClass))
@@ -102,5 +104,7 @@ GType ags_sheet_edit_get_type(void);
 void ags_sheet_edit_draw(AgsSheetEdit *sheet_edit);
 
 AgsSheetEdit* ags_sheet_edit_new();
+
+G_END_DECLS
 
 #endif /*__AGS_SHEET_EDIT_H__*/

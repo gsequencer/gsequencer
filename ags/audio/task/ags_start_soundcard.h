@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_START_SOUNDCARD                (ags_start_soundcard_get_type())
 #define AGS_START_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_SOUNDCARD, AgsStartSoundcard))
 #define AGS_START_SOUNDCARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_START_SOUNDCARD, AgsStartSoundcardClass))
@@ -38,8 +40,6 @@ typedef struct _AgsStartSoundcardClass AgsStartSoundcardClass;
 struct _AgsStartSoundcard
 {
   AgsTask task;
-
-  AgsApplicationContext *application_context;
 };
 
 struct _AgsStartSoundcardClass
@@ -49,7 +49,8 @@ struct _AgsStartSoundcardClass
 
 GType ags_start_soundcard_get_type();
 
-AgsStartSoundcard* ags_start_soundcard_new(AgsApplicationContext *application_context);
+AgsStartSoundcard* ags_start_soundcard_new();
+
+G_END_DECLS
 
 #endif /*__AGS_START_SOUNDCARD_H__*/
-

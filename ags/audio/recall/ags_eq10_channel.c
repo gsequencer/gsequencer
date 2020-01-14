@@ -19,14 +19,11 @@
 
 #include <ags/audio/recall/ags_eq10_channel.h>
 
-#include <ags/libags.h>
-
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel);
-void ags_eq10_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_eq10_channel_init(AgsEq10Channel *eq10_channel);
 void ags_eq10_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -38,8 +35,6 @@ void ags_eq10_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_eq10_channel_dispose(GObject *gobject);
 void ags_eq10_channel_finalize(GObject *gobject);
-
-void ags_eq10_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 static AgsPluginPort* ags_eq10_channel_get_peak_generic_plugin_port();
 
@@ -119,33 +114,15 @@ ags_eq10_channel_get_type()
       (GInstanceInitFunc) ags_eq10_channel_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_eq10_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_eq10_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsEq10Channel",
 						   &ags_eq10_channel_info,
 						   0);
     
-    g_type_add_interface_static(ags_type_eq10_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
     g_once_init_leave(&g_define_type_id__volatile, ags_type_eq10_channel);
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_eq10_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_eq10_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_eq10_channel_set_ports;
 }
 
 void
@@ -173,7 +150,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 28Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-28hz",
 				   i18n_pspec("28Hz peak to apply"),
@@ -189,7 +166,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 56Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-56hz",
 				   i18n_pspec("56Hz peak to apply"),
@@ -205,7 +182,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 112Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-112hz",
 				   i18n_pspec("112Hz peak to apply"),
@@ -221,7 +198,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 224Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-224hz",
 				   i18n_pspec("224Hz peak to apply"),
@@ -237,7 +214,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 448Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-448hz",
 				   i18n_pspec("448Hz peak to apply"),
@@ -253,7 +230,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 896Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-896hz",
 				   i18n_pspec("896Hz peak to apply"),
@@ -269,7 +246,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 1792Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-1792hz",
 				   i18n_pspec("1792Hz peak to apply"),
@@ -285,7 +262,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 3584Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-3584hz",
 				   i18n_pspec("3584Hz peak to apply"),
@@ -301,7 +278,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 7168Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-7168hz",
 				   i18n_pspec("7168Hz peak to apply"),
@@ -317,7 +294,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The peak 14336Hz port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("peak-14336hz",
 				   i18n_pspec("14336Hz peak to apply"),
@@ -333,7 +310,7 @@ ags_eq10_channel_class_init(AgsEq10ChannelClass *eq10_channel)
    * 
    * The pressure port.
    * 
-   * Since: 2.0.0 
+   * Since: 3.0.0 
    */
   param_spec = g_param_spec_object("pressure",
 				   i18n_pspec("pressure to apply"),
@@ -623,7 +600,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 {
   AgsEq10Channel *eq10_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   eq10_channel = AGS_EQ10_CHANNEL(gobject);
 
@@ -637,10 +614,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_28hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -655,7 +632,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_28hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_56HZ:
@@ -664,10 +641,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_56hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -682,7 +659,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_56hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_112HZ:
@@ -691,10 +668,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_112hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -709,7 +686,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_112hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_224HZ:
@@ -718,10 +695,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_224hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -736,7 +713,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_224hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_448HZ:
@@ -745,10 +722,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_448hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -763,7 +740,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_448hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_896HZ:
@@ -772,10 +749,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_896hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -790,7 +767,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_896hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_1792HZ:
@@ -799,10 +776,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_1792hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -817,7 +794,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_1792hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_3584HZ:
@@ -826,10 +803,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_3584hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -844,7 +821,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_3584hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_7168HZ:
@@ -853,10 +830,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_7168hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -871,7 +848,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_7168hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_14336HZ:
@@ -880,10 +857,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->peak_14336hz){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -898,7 +875,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->peak_14336hz = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PRESSURE:
@@ -907,10 +884,10 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       if(port == eq10_channel->pressure){
-	pthread_mutex_unlock(recall_mutex);	
+	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
@@ -925,7 +902,7 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       eq10_channel->pressure = port;
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -942,7 +919,7 @@ ags_eq10_channel_get_property(GObject *gobject,
 {
   AgsEq10Channel *eq10_channel;
 
-  pthread_mutex_t *recall_mutex;
+  GRecMutex *recall_mutex;
 
   eq10_channel = AGS_EQ10_CHANNEL(gobject);
 
@@ -952,101 +929,101 @@ ags_eq10_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PEAK_28HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_28hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_56HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_56hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_112HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_112hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_224HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_224hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_448HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_448hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_896HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_896hz);
 
-      pthread_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PEAK_1792HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_1792hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_3584HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_3584hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_7168HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_7168hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_14336HZ:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_14336hz);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PRESSURE:
     {
-      pthread_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->pressure);
       
-      pthread_mutex_unlock(recall_mutex);	
+      g_rec_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -1210,84 +1187,14 @@ ags_eq10_channel_finalize(GObject *gobject)
 }
 
 
-void
-ags_eq10_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-28hz[0]",
-		15)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-28hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-56hz[0]",
-		      15)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-56hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-112hz[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-112hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-224hz[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-224hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-448hz[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-448hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-896hz[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-896hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-1792hz[0]",
-		      17)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-1792hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-3584hz[0]",
-		      17)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-3584hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-7168hz[0]",
-		      17)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-7168hz", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./peak-14336hz[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "peak-14336hz", AGS_PORT(port->data),
-		   NULL);
-    }
-    
-    port = port->next;
-  }
-}
-
 static AgsPluginPort*
 ags_eq10_channel_get_peak_generic_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GMutex mutex;
 
-  pthread_mutex_lock(&mutex);
+  g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
     plugin_port = ags_plugin_port_new();
@@ -1314,7 +1221,7 @@ ags_eq10_channel_get_peak_generic_plugin_port()
 		      2.0);
   }
   
-  pthread_mutex_unlock(&mutex);
+  g_mutex_unlock(&mutex);
 
   return(plugin_port);
 }
@@ -1327,7 +1234,7 @@ ags_eq10_channel_get_peak_generic_plugin_port()
  *
  * Returns: the new #AgsEq10Channel
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsEq10Channel*
 ags_eq10_channel_new(AgsChannel *source)

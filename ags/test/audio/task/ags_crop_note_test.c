@@ -93,8 +93,11 @@ ags_crop_note_test_launch()
   }
 
   ags_notation_add_all_to_selection(notation);
-  selection = ags_list_util_copy_and_ref(ags_notation_get_selection(notation));
-  crop_note = ags_crop_note_new(notation,
+  selection = g_list_copy_deep(ags_notation_get_selection(notation),
+			       (GCopyFunc) g_object_ref,
+			       NULL);
+  crop_note = ags_crop_note_new(audio,
+				notation,
 				selection,
 				0, 4,
 				TRUE, TRUE, TRUE);

@@ -54,7 +54,9 @@ struct _AgsFunctionalTestUtilContainerTest
   guint count;
 };
 
-pthread_t* ags_functional_test_util_self();
+GThread* ags_functional_test_util_test_runner_thread();
+
+struct timespec* ags_functional_test_util_get_default_timeout();
 
 /* legacy setup */
 void ags_functional_test_util_setup_and_launch();
@@ -84,6 +86,14 @@ gboolean ags_functional_test_util_idle_test_null(GtkWidget **widget);
 
 /* leave */
 void ags_functional_test_util_leave(GtkWidget *window);
+
+/* mouse */
+void ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x, guint y);
+
+void ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button);
+void ags_functional_test_util_fake_mouse_button_release(gpointer display, guint button);
+
+void ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button);
 
 /* common */
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,

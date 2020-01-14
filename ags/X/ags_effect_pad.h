@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,15 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_EFFECT_PAD                (ags_effect_pad_get_type())
 #define AGS_EFFECT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_PAD, AgsEffectPad))
@@ -110,5 +115,7 @@ void ags_effect_pad_map_recall(AgsEffectPad *effect_pad);
 GList* ags_effect_pad_find_port(AgsEffectPad *effect_pad);
 
 AgsEffectPad* ags_effect_pad_new(AgsChannel *channel);
+
+G_END_DECLS
 
 #endif /*__AGS_EFFECT_PAD_H__*/

@@ -28,6 +28,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
+G_BEGIN_DECLS
+
 #define AGS_TYPE_LFO_RECYCLING                (ags_lfo_recycling_get_type())
 #define AGS_LFO_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LFO_RECYCLING, AgsLfoRecycling))
 #define AGS_LFO_RECYCLING_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LFO_RECYCLING, AgsLfoRecyclingClass))
@@ -51,5 +53,7 @@ struct _AgsLfoRecyclingClass
 GType ags_lfo_recycling_get_type();
 
 AgsLfoRecycling* ags_lfo_recycling_new(AgsRecycling *source);
+
+G_END_DECLS
 
 #endif /*__AGS_LFO_RECYCLING_H__*/

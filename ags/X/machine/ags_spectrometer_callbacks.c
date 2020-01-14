@@ -22,7 +22,7 @@
 #include <ags/X/ags_window.h>
 
 void
-ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSpectrometer *spectrometer)
+ags_spectrometer_parent_set_callback(GtkWidget *widget, GtkWidget *old_parent, AgsSpectrometer *spectrometer)
 {
   AgsWindow *window;
 

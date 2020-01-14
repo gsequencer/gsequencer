@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_MACHINE_CALLBACKS_H__
 #define __AGS_MACHINE_CALLBACKS_H__
 
@@ -27,7 +28,13 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_machine.h>
+
+G_BEGIN_DECLS
+
+void ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine);
 
 /* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
@@ -50,6 +57,12 @@ void ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
 void ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
 
+void ags_machine_popup_midi_export_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_wave_export_callback(GtkWidget *widget, AgsMachine *machine);
+
+void ags_machine_popup_midi_import_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_wave_import_callback(GtkWidget *widget, AgsMachine *machine);
+
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 
 void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
@@ -69,5 +82,7 @@ void ags_machine_stop_callback(AgsMachine *machine,
 /* library callbacks */
 void ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 							       AgsPlayback *playback);
+
+G_END_DECLS
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,10 @@
 #include <ags/X/ags_automation_editor.h>
 
 #include <math.h>
+
+void ags_automation_toolbar_zoom_callback_apply(GList *list,
+						gdouble old_zoom_factor,
+						gdouble zoom_factor, gdouble zoom);
 
 void
 ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
@@ -262,6 +266,29 @@ ags_automation_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, Ag
 }
 
 void
+ags_automation_toolbar_zoom_callback_apply(GList *list,
+					   gdouble old_zoom_factor,
+					   gdouble zoom_factor, gdouble zoom)
+{
+  AgsAutomationEdit *automation_edit;
+    
+  while(list != NULL){
+    automation_edit = list->data;
+      
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
+      
+    /* reset ruler */
+    automation_edit->ruler->factor = zoom_factor;
+    automation_edit->ruler->precision = zoom;
+    automation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+    gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
+
+    list = list->next;
+  }
+}
+
+void
 ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
 {
   AgsAutomationEditor *automation_editor;
@@ -270,38 +297,25 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   GtkAdjustment *adjustment;
 
   GList *list_start;
-  
-  double zoom_factor, zoom;
 
-  auto void ags_automation_toolbar_zoom_callback_apply(GList *list);
-  
-  void ags_automation_toolbar_zoom_callback_apply(GList *list){
-    AgsAutomationEdit *automation_edit;
+  gdouble old_value;
+  gdouble old_zoom_factor;
+  gdouble zoom_factor, zoom;
     
-    while(list != NULL){
-      automation_edit = list->data;
-      
-      gtk_widget_queue_draw((GtkWidget *) automation_edit);
-      
-      /* reset ruler */
-      automation_edit->ruler->factor = zoom_factor;
-      automation_edit->ruler->precision = zoom;
-      automation_edit->ruler->scale_precision = 1.0 / zoom;
-  
-      gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
-
-      list = list->next;
-    }
-  }
-  
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
   
   /* zoom */
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
+  old_zoom_factor = exp2(6.0 - (double) automation_toolbar->zoom_history);
+  
+  automation_toolbar->zoom_history = gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom);
+
+  zoom_factor = exp2(6.0 - (double) automation_toolbar->zoom_history);
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* audio */
+  old_value = gtk_range_get_value(automation_editor->audio_hscrollbar);
+
   automation_editor->audio_ruler->factor = zoom_factor;
   automation_editor->audio_ruler->precision = zoom;
   automation_editor->audio_ruler->scale_precision = 1.0 / zoom;
@@ -309,13 +323,20 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   gtk_widget_queue_draw((GtkWidget *) automation_editor->audio_ruler);
 
   list_start = gtk_container_get_children((GtkContainer *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list_start);
+  ags_automation_toolbar_zoom_callback_apply(list_start,
+					     old_zoom_factor,
+					     zoom_factor, zoom);
 
   g_list_free(list_start);
 
   ags_automation_editor_reset_audio_scrollbar(automation_editor);
 
-  /* output */
+  gtk_range_set_value(automation_editor->audio_hscrollbar,
+		      old_value * old_zoom_factor / zoom_factor);
+
+  /* output */  
+  old_value = gtk_range_get_value(automation_editor->output_hscrollbar);
+
   automation_editor->output_ruler->factor = zoom_factor;
   automation_editor->output_ruler->precision = zoom;
   automation_editor->output_ruler->scale_precision = 1.0 / zoom;
@@ -323,13 +344,20 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   gtk_widget_queue_draw((GtkWidget *) automation_editor->output_ruler);
 
   list_start = gtk_container_get_children((GtkContainer *) automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list_start);
+  ags_automation_toolbar_zoom_callback_apply(list_start,
+					     old_zoom_factor,
+					     zoom_factor, zoom);
 
   g_list_free(list_start);
 
   ags_automation_editor_reset_output_scrollbar(automation_editor);
 
+  gtk_range_set_value(automation_editor->output_hscrollbar,
+		      old_value * old_zoom_factor / zoom_factor);
+
   /* input */
+  old_value = gtk_range_get_value(automation_editor->input_hscrollbar);
+
   automation_editor->input_ruler->factor = zoom_factor;
   automation_editor->input_ruler->precision = zoom;
   automation_editor->input_ruler->scale_precision = 1.0 / zoom;
@@ -337,11 +365,16 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   gtk_widget_queue_draw((GtkWidget *) automation_editor->input_ruler);
 
   list_start = gtk_container_get_children((GtkContainer *) automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list_start);
+  ags_automation_toolbar_zoom_callback_apply(list_start,
+					     old_zoom_factor,
+					     zoom_factor, zoom);
 
   g_list_free(list_start);
 
   ags_automation_editor_reset_input_scrollbar(automation_editor);
+
+  gtk_range_set_value(automation_editor->input_hscrollbar,
+		      old_value * old_zoom_factor / zoom_factor);
 }
 
 void

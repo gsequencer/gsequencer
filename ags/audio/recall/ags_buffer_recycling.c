@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_buffer_recycling.h>
 
-#include <ags/libags.h>
-
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);
@@ -116,7 +114,7 @@ ags_buffer_recycling_finalize(GObject *gobject)
  *
  * Returns: the new #AgsBufferRecycling
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsBufferRecycling*
 ags_buffer_recycling_new(AgsRecycling *destination,

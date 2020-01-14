@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,13 +22,22 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_dssi_browser.h>
+
+G_BEGIN_DECLS
 
 void ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					       AgsDssiBrowser *dssi_browser);
 void ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					     AgsDssiBrowser *dssi_browser);
+
+G_END_DECLS
 
 #endif /*__AGS_DSSI_BROWSER_CALLBACKS_H__*/

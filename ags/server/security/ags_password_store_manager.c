@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/server/security/ags_password_store_manager.h>
 
-#include <pthread.h>
+#include <ags/server/security/ags_auth_security_context.h>
 
 void ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_store_manager);
 void ags_password_store_manager_init (AgsPasswordStoreManager *password_store_manager);
@@ -87,6 +87,10 @@ ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_sto
 void
 ags_password_store_manager_init(AgsPasswordStoreManager *password_store_manager)
 {
+  g_rec_mutex_init(&(password_store_manager->obj_mutex));
+
+  password_store_manager->salt = NULL;
+  
   password_store_manager->password_store = NULL;
 }
 
@@ -105,48 +109,211 @@ ags_password_store_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_password_store_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_password_store_manager_get_password_store:
+ * @password_store_manager: the #AgsPasswordStoreManager
+ * 
+ * Get password_store.
+ * 
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containing #GObject implementing #AgsPasswordStore
+ * 
+ * Since: 3.0.0
+ */
 GList*
 ags_password_store_manager_get_password_store(AgsPasswordStoreManager *password_store_manager)
 {
-  if(password_store_manager == NULL){
-    password_store_manager = ags_password_store_manager_get_instance();
-  }
+  GList *password_store;
+
+  GRecMutex *password_store_manager_mutex;
   
-  return(password_store_manager->password_store);
+  if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager)){
+    return(NULL);
+  }
+
+  /* get password_store manager mutex */
+  password_store_manager_mutex = AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(password_store_manager);
+
+  /* get password_store */
+  g_rec_mutex_lock(password_store_manager_mutex);
+
+  password_store = g_list_copy_deep(password_store_manager->password_store,
+				    g_object_ref,
+				    NULL);
+
+  g_rec_mutex_unlock(password_store_manager_mutex);
+  
+  return(password_store);
 }
 
+/**
+ * ags_password_store_manager_add_password_store:
+ * @password_store_manager: the #AgsPasswordStoreManager
+ * @password_store: the #GObject implementing #AgsPasswordStore
+ * 
+ * Add @password_store to @password_store_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_password_store_manager_add_password_store(AgsPasswordStoreManager *password_store_manager,
 					      GObject *password_store)
 {
-  if(password_store_manager == NULL){
-    password_store_manager = ags_password_store_manager_get_instance();
+  GRecMutex *password_store_manager_mutex;
+  
+  if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager) ||
+     !AGS_IS_PASSWORD_STORE(password_store)){
+    return;
   }
 
-  password_store_manager->password_store = g_list_prepend(password_store_manager->password_store,
-							  password_store);
+  /* get password_store manager mutex */
+  password_store_manager_mutex = AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(password_store_manager);
+
+  /* add password_store */
+  g_rec_mutex_lock(password_store_manager_mutex);
+
+  if(g_list_find(password_store_manager->password_store, password_store) == NULL){
+    password_store_manager->password_store = g_list_prepend(password_store_manager->password_store,
+							    password_store);
+    g_object_ref(password_store);
+  }
+
+  g_rec_mutex_unlock(password_store_manager_mutex);
 }
 
+/**
+ * ags_password_store_manager_remove_password_store:
+ * @password_store_manager: the #AgsPasswordStoreManager
+ * @password_store: the #GObject implementing #AgsPasswordStore
+ * 
+ * Remove @password_store from @password_store_manager.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *password_store_manager,
 						 GObject *password_store)
 {
-  if(password_store_manager == NULL){
-    password_store_manager = ags_password_store_manager_get_instance();
+  GRecMutex *password_store_manager_mutex;
+  
+  if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager) ||
+     !AGS_IS_PASSWORD_STORE(password_store)){
+    return;
   }
 
-  password_store_manager->password_store = g_list_remove(password_store_manager->password_store,
-							 password_store);
+  /* get password_store manager mutex */
+  password_store_manager_mutex = AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(password_store_manager);
+
+  /* remove password_store */
+  g_rec_mutex_lock(password_store_manager_mutex);
+
+  if(g_list_find(password_store_manager->password_store, password_store) != NULL){
+    password_store_manager->password_store = g_list_remove(password_store_manager->password_store,
+							   password_store);
+    g_object_unref(password_store);
+  }
+
+  g_rec_mutex_unlock(password_store_manager_mutex);
 }
 
+/**
+ * ags_password_store_manager_check_password:
+ * @password_store_manager: the #AgsPasswordStoreManager
+ * @user_uuid: the user uuid
+ * @password: the password
+ * 
+ * Check @password to be valid for @user_uuid.
+ * 
+ * Returns: %TRUE if password matches, otherwise %FALSE
+ * 
+ * Since: 3.0.0
+ */
 gboolean
 ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
-					  gchar *login,
+					  gchar *user_uuid,
 					  gchar *password)
 {
-  //TODO:JK: implement me
+  GList *start_password_store, *password_store;
+
+  gchar *salt;
+  gchar *encrypted_password;
   
-  return(FALSE);
+  gboolean success;
+
+  GError *error;
+
+  GRecMutex *password_store_manager_mutex;
+  
+  if(!AGS_IS_PASSWORD_STORE_MANAGER(password_store_manager) ||
+     user_uuid == NULL ||
+     password == NULL){
+    return(FALSE);
+  }
+
+  /* get password_store manager mutex */
+  password_store_manager_mutex = AGS_PASSWORD_STORE_MANAGER_GET_OBJ_MUTEX(password_store_manager);
+
+  /* get salt */
+  g_rec_mutex_lock(password_store_manager_mutex);
+
+  salt = g_strdup(password_store_manager->salt);
+  
+  g_rec_mutex_unlock(password_store_manager_mutex);  
+
+  /* check password */
+  password_store =
+    start_password_store = ags_password_store_manager_get_password_store(password_store_manager);
+
+  success = FALSE;
+  
+  while(password_store != NULL){
+    gchar *current_password;
+
+    error = NULL;
+    current_password = ags_password_store_get_password(AGS_PASSWORD_STORE(password_store->data),
+						       ags_auth_security_context_get_instance(),
+						       user_uuid,
+						       NULL,
+						       &error);
+
+    if(error != NULL){
+      g_critical("%s", error->message);
+
+      g_error_free(error);
+    }
+    
+    if(salt != NULL){
+      error = NULL;
+      encrypted_password = ags_password_store_encrypt_password(AGS_PASSWORD_STORE(password_store->data),
+							       password,
+							       salt,
+							       &error);
+
+      if(error != NULL){
+	g_critical("%s", error->message);
+
+	g_error_free(error);
+      }
+    }else{
+      encrypted_password = g_strdup(password);
+    }
+    
+    success = (current_password != NULL && !g_strcmp0(encrypted_password, current_password)) ? TRUE: FALSE;
+    
+    g_free(encrypted_password);
+    g_free(current_password);
+
+    if(success){
+      break;
+    }
+    
+    password_store = password_store->next;
+  }
+  
+  g_list_free_full(start_password_store,
+		   g_object_unref);
+  g_free(salt);
+  
+  return(success);
 }
 
 /**
@@ -154,24 +321,22 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
  *
  * Get instance.
  *
- * Returns: the #AgsPasswordStoreManager
+ * Returns: (transfer none): the #AgsPasswordStoreManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPasswordStoreManager*
 ags_password_store_manager_get_instance()
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GRecMutex mutex;
 
-  pthread_mutex_lock(&(mutex));
+  g_mutex_lock(&mutex);
 
   if(ags_password_store_manager == NULL){
     ags_password_store_manager = ags_password_store_manager_new();
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
+  
+  g_mutex_unlock(&mutex);
 
   return(ags_password_store_manager);
 }
@@ -183,7 +348,7 @@ ags_password_store_manager_get_instance()
  *
  * Returns: a new #AgsPasswordStoreManager
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsPasswordStoreManager*
 ags_password_store_manager_new()

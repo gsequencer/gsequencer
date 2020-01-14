@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/libags-gui.h>
 
 #include <ags/X/file/ags_simple_file.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_SIMPLE_FILE_READ                (ags_simple_file_read_get_type())
 #define AGS_SIMPLE_FILE_READ(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SIMPLE_FILE_READ, AgsSimpleFileRead))
@@ -52,5 +57,7 @@ struct _AgsSimpleFileReadClass
 GType ags_simple_file_read_get_type();
 
 AgsSimpleFileRead* ags_simple_file_read_new(AgsSimpleFile *simple_file);
+
+G_END_DECLS
 
 #endif /*__AGS_SIMPLE_FILE_READ_H__*/

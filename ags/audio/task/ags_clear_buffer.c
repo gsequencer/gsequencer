@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -127,7 +127,7 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 2.0.0
+   * Since: 3.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device of change device"),
@@ -255,6 +255,8 @@ ags_clear_buffer_launch(AgsTask *task)
 
   clear_buffer = AGS_CLEAR_BUFFER(task);
 
+  g_return_if_fail(AGS_IS_SOUNDCARD(clear_buffer->device));
+  
   ags_soundcard_get_presets(AGS_SOUNDCARD(clear_buffer->device),
 			    &pcm_channels,
 			    NULL,
@@ -570,7 +572,7 @@ ags_clear_buffer_launch(AgsTask *task)
  *
  * Returns: the new #AgsClearBuffer.
  *
- * Since: 2.0.0
+ * Since: 3.0.0
  */
 AgsClearBuffer*
 ags_clear_buffer_new(GObject *device)

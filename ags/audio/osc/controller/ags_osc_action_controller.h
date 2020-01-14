@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
+
+G_BEGIN_DECLS
 
 #define AGS_TYPE_OSC_ACTION_CONTROLLER                (ags_osc_action_controller_get_type())
 #define AGS_OSC_ACTION_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_ACTION_CONTROLLER, AgsOscActionController))
@@ -56,5 +60,7 @@ gpointer ags_osc_action_controller_run_action(AgsOscActionController *osc_action
 					      unsigned char *message, guint message_size);
 
 AgsOscActionController* ags_osc_action_controller_new();
+
+G_END_DECLS
 
 #endif /*__AGS_OSC_ACTION_CONTROLLER_H__*/
