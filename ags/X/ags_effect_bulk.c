@@ -1062,7 +1062,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	       NULL);
 
   plugin_port = start_plugin_port;
-
+  
   port_count = g_list_length(plugin_port);
 
   control_count = 0;
@@ -2560,7 +2560,6 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   guint control_count;
   
   guint pads, audio_channels;
-  guint control_count;
   guint i, j;
 
   /* get audio properties */
@@ -2690,12 +2689,6 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   ags_effect_bulk_plugin_free(effect_bulk_plugin);
 
   g_list_free(start_list);
-
-  /* remove plugin specification */
-  effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
-				      effect_bulk_plugin);
-
-  ags_effect_bulk_plugin_free(effect_bulk_plugin);
   
   /* remove recalls */
   if(start_channel != NULL){

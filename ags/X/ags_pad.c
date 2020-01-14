@@ -1073,8 +1073,6 @@ ags_pad_play(AgsPad *pad)
 					TRUE);
 	
 	g_object_unref(playback);
-
-	g_object_unref(play_note);
 	
 	/* iterate */
 	next_channel = ags_channel_next(channel);
@@ -1096,8 +1094,6 @@ ags_pad_play(AgsPad *pad)
       while((list = ags_line_find_next_grouped(list)) != NULL){
 	AgsLine *line;
 	
-	AgsNote *play_note;
-
 	line = AGS_LINE(list->data);
 
 	channel = line->channel;
@@ -1106,22 +1102,11 @@ ags_pad_play(AgsPad *pad)
 		     "playback", &playback,
 		     NULL);
 
-	g_object_get(playback,
-		     "play-note", &play_note,
-		     NULL);
-
-	g_object_set(play_note,
-		     "x0", 0,
-		     "x1", 1,
-		     NULL);
-
 	ags_machine_playback_set_active(machine,
 					playback,
 					TRUE);
 	
 	g_object_unref(playback);
-
-	g_object_unref(play_note);
 
 	/* iterate */
 	list = list->next;

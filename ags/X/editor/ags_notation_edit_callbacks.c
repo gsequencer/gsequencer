@@ -760,7 +760,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	    do_feedback = TRUE;
 	  }
 
-	  x0_offset = notation_edit->cursor_position_x * AGS_NOTATION_EDIT_DEFAULT_CONTROL_WIDTH / zoom_factor;
+	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
       
 	  if(x0_offset / zoom_factor < gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar))){
 	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
@@ -828,7 +828,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	    do_feedback = TRUE;
 	  }
 
-	  x0_offset = notation_edit->cursor_position_x * AGS_NOTATION_EDIT_DEFAULT_CONTROL_WIDTH / zoom_factor;
+	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
       
 	  if((x0_offset + notation_edit->control_width) / zoom_factor > gtk_range_get_value(GTK_RANGE(notation_edit->hscrollbar)) + allocation.width){
 	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
