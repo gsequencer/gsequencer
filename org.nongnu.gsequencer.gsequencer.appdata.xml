@@ -35,8 +35,23 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
-    <release version="3.0.0" date="2020-01-08">
+    <release version="3.0.1" date="2020-01-14">
       <description>
+	<p>Fixed potential recursive callback.</p>
+	<p>Fixed potential data-race.</p>
+      </description>
+    </release>
+
+    <release version="3.0.0" date="2020-01-14">
+      <description>
+	<p>Migrated to Gtk-3.</p>
+	<p>Migrated to GIO socket API.</p>
+	<p>Migrated to GThread API.</p>
+	<p>Migrated to Libsoup2.4 API.</p>
+	<p>Implemented AgsAudiorec's fast export.</p>
+	<p>Implemented GObject-Introspection support.</p>
+	<p>Improved AgsSpectrometer resolution.</p>
+	<p>Improved MIDI import/export.</p>
 	<p>Improved performance.</p>
       </description>
     </release>

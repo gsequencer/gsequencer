@@ -708,12 +708,13 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 	       "sample-format", &sample_format,
 	       NULL);
 
-  sample_format &= (~IPATCH_SAMPLE_CHANNEL_MASK);
-  sample_format |= (IPATCH_SAMPLE_CHANNEL_MASK & ((channels - 1) << IPATCH_SAMPLE_CHANNEL_SHIFT));
+  //NOTE:JK: this won't work
+//  sample_format &= (~IPATCH_SAMPLE_CHANNEL_MASK);
+//  sample_format |= (IPATCH_SAMPLE_CHANNEL_MASK & ((channels - 1) << IPATCH_SAMPLE_CHANNEL_SHIFT));
   
   g_object_set(ipatch_sample->sample,
 	       "sample-rate", samplerate,
-	       "sample-format", sample_format,
+//	       "sample-format", sample_format,
 	       NULL);
 #endif
 
