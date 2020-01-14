@@ -13,6 +13,7 @@ Free Documentation License".
 Overview of Changes in AGS 3.0.0
 ================================
 
+* Implemented AgsAudiorec's fast export.
 * Implemented support for GObject-Introspection. Many gtk-doc annotations
   fixed and extended symbol descriptions.
 * Refactored AgsComplex and AgsUUID in order to work with introspection. The
@@ -33,6 +34,8 @@ Overview of Changes in AGS 3.0.0
 * Added online help browser along the WebKitGtk dependency.
 * Added basic key accelerators like: Ctrl-o, Ctrl-s, Ctrl-q and Ctrl-h. To open or
   save files, quit the application or open online help browser.
+* Added better resolution to AgsSpectrometer.
+* Improved MIDI import/export.
 
 Overview of Changes in AGS 2.3.0
 ================================
