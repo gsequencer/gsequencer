@@ -26365,6 +26365,14 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
+HTMLHELP_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
+
+GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
+GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
+LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
+LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
+LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
+
 # gir - gobject introspection
 -include $(INTROSPECTION_MAKEFILE)
 
@@ -26397,9 +26405,13 @@ html:
 	mkdir -p $(top_builddir)/html/developer-docs
 	mkdir -p $(top_builddir)/html/user-docs
 	mkdir -p $(top_builddir)/html/osc-docs
-	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
-	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/oscBook.xml
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude $(HTMLHELP_XSL) $(top_srcdir)/docs/oscBook.xml
+	mkdir -p $(top_srcdir)/docs/reference/libags/libags-html
+	mkdir -p $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
+	mkdir -p $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
+	mkdir -p $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
@@ -26446,16 +26458,16 @@ install-data-local:
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
 fix-local-html: html
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\/usr\/share\/doc\/libags-doc\/api/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/\/usr\/share\/doc\/libgtk-3-doc\/gtk3/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/\/usr\/share\/doc\/libgtk-3-doc\/gtk3/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\/usr\/share\/doc\/libags-doc\/api/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/\/usr\/share\/doc\/libags-audio-doc\/api/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\/usr\/share\/doc\/libags-gui-doc\/api/g' {} \;
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
 fix-online-books-html: html
 	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
@@ -26473,26 +26485,32 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
-install-html: fix-local-html 
+install-html-mkdir-links:
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+
+install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(docdir)/images
 	mkdir -p $(DESTDIR)/$(docdir)/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
+
+install-html-links: install-html-mkdir-links
+	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+
+install-html: install-html-mkdir
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
