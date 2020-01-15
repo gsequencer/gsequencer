@@ -73,7 +73,12 @@ LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
 LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
 LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
 
+if AGS_WITH_PUBLIC_LIBGSEQUENCER
+libgsequencerdir = $(libdir)
+else
 libgsequencerdir = $(libdir)/gsequencer
+endif
+
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
 EXTRA_DIST = config.rpath \
@@ -270,10 +275,12 @@ endif
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc
-# pkgconfig_DATA += libgsequencer.pc
+
+if AGS_WITH_PUBLIC_LIBGSEQUENCER
+pkgconfig_DATA += libgsequencer.pc
+endif
 
 EXTRA_DIST += libags.pc.in libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in
-# EXTRA_DIST += libgsequencer.pc.in
 
 # desktop file
 appdatadir = $(datadir)/applications

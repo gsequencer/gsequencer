@@ -20,6 +20,18 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
+AC_ARG_VAR(GOBJECT_API_DOC, escaped path for use with sed to GObject API Reference Manual)
+AC_ARG_VAR(GTK_API_DOC, escaped path for use with sed to Gtk-3 API Reference Manual)
+AC_ARG_VAR(LIBAGS_API_DOC, escaped path for use with sed to Libags API Reference Manual)
+AC_ARG_VAR(LIBAGS_AUDIO_API_DOC, escaped path for use with sed to Libags-audio API Reference Manual)
+AC_ARG_VAR(LIBAGS_GUI_API_DOC, escaped path for use with sed to Libags-gui API Reference Manual)
+
+AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--public-libgsequencer],
+						    [provide public libgsequencer (default is yes)])],
+	      [],
+	      [public_libgsequencer=yes])
+
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -336,6 +348,12 @@ AC_SUBST(LIBSOUP_LIBS)
 
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
+
+AS_IF([test "x$enable_public_libgsequencer" != xno],
+      [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
+      
+      AC_MSG_NOTICE([public libgsequencer enabled])],
+      AC_MSG_NOTICE([public libgsequencer disabled]))
 
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
