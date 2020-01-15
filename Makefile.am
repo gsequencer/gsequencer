@@ -2432,6 +2432,10 @@ html:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
+install-compress-changelog:
+	rm -f $(DESTDIR)/$(docdir)/changelog
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
+
 install-data-local:
 	mkdir -p $(DESTDIR)/$(includedir)/ags
 	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
@@ -2466,7 +2470,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
 	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequencer.gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
 	mkdir -p $(DESTDIR)/$(docdir)/
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
+	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)/$(docdir)/changelog
 
 fix-local-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
