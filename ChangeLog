@@ -2,6 +2,7 @@ ags (3.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved Makefile.am to be more portable
+	* updated libags.pc, libags_audio.pc, libags_gui.pc and libgsequencer.pc
 
 ags (3.0.1)
 

@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.1],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.2],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -349,11 +349,12 @@ AC_SUBST(LIBSOUP_LIBS)
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
-AS_IF([test "x$enable_public_libgsequencer" != xno],
+AS_IF([test "x$public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
       
       AC_MSG_NOTICE([public libgsequencer enabled])],
       AC_MSG_NOTICE([public libgsequencer disabled]))
+AM_CONDITIONAL([AGS_WITH_PUBLIC_LIBGSEQUENCER], [test "x$public_libgsequencer" == xyes])
 
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])

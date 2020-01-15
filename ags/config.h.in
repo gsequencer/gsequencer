@@ -27,6 +27,9 @@
 /* OSS enabled */
 #undef AGS_WITH_OSS
 
+/* public libgsequencer enabled */
+#undef AGS_WITH_PUBLIC_LIBGSEQUENCER
+
 /* PULSE enabled */
 #undef AGS_WITH_PULSE
 
