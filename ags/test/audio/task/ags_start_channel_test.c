@@ -71,6 +71,8 @@ int
 ags_start_channel_test_init_suite()
 {
   AgsThread *main_loop;
+
+  gint64 start_thread_timeout;
   
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
@@ -85,8 +87,16 @@ ags_start_channel_test_init_suite()
   ags_application_context_setup(application_context);
 
   main_loop = application_context->main_loop;
+
+  start_thread_timeout = g_get_monotonic_time() + 3 * G_USEC_PER_SEC;
   
-  while(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_RUNNING));
+  while(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_RUNNING)){
+    if(g_get_monotonic_time() > start_thread_timeout){
+      g_critical("start timeout");
+
+      break;
+    }
+  }
   
   return(0);
 }
