@@ -70,6 +70,8 @@ AgsApplicationContext *application_context;
 int
 ags_start_audio_test_init_suite()
 {
+  AgsThread *main_loop;
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_START_AUDIO_TEST_CONFIG,
@@ -81,6 +83,10 @@ ags_start_audio_test_init_suite()
   ags_application_context_prepare(application_context);
 
   ags_application_context_setup(application_context);
+
+  main_loop = application_context->main_loop;
+  
+  while(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_RUNNING));
   
   return(0);
 }

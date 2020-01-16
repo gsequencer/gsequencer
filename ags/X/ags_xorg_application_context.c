@@ -22,22 +22,33 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_animation_window.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_effect_bridge.h>
+#include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_effect_separator.h>
+#include <ags/X/ags_bulk_member.h>
+#include <ags/X/ags_line_member.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_input_pad.h>
 #include <ags/X/machine/ags_panel_input_line.h>
+#include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>
+#include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <ags/X/machine/ags_ffplayer.h>
+#endif
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>

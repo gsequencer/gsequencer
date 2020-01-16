@@ -23,6 +23,11 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_notation_editor.h>
 
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <stdlib.h>
 
 #include <math.h>
