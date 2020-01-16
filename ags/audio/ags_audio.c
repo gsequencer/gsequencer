@@ -9970,6 +9970,10 @@ ags_audio_real_play_recall(AgsAudio *audio,
     return;
   }
   
+  if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+    return;
+  }
+  
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
@@ -11079,6 +11083,7 @@ ags_audio_real_stop(AgsAudio *audio,
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *start_message_queue;
   GList *start_output_playback, *output_playback;
   GList *sequencer, *notation, *wave, *midi;
@@ -11091,6 +11096,14 @@ ags_audio_real_stop(AgsAudio *audio,
   if(recall_id == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
+  }
+
+  list = recall_id;
+
+  while(list != NULL){
+    ags_recall_id_set_state_flags(list->data, AGS_SOUND_STATE_IS_TERMINATING);
+    
+    list = list->next;
   }
 
   application_context = ags_application_context_get_instance();

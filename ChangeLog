@@ -3,6 +3,7 @@ ags (3.0.4)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved ags_audio_start() and ags_channel_start() to have sync timeout
 	* fixed some issues from build log
+	* fixed potential SIGSEGV by flaging AgsRecallID terminating state
 
 ags (3.0.3)
 

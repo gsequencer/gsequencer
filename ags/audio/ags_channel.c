@@ -7532,7 +7532,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     
     if(g_list_find(channel->play, recall) != NULL){
       success = TRUE;
-      
+
       channel->play = g_list_remove(channel->play,
 				    recall);
     }
@@ -9559,6 +9559,10 @@ ags_channel_real_play_recall(AgsChannel *channel,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
+  
+  if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+    return;
+  }
 
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
@@ -10634,6 +10638,7 @@ ags_channel_real_stop(AgsChannel *channel,
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *start_message_queue;
 
   gint i;
@@ -10646,6 +10651,14 @@ ags_channel_real_stop(AgsChannel *channel,
     return;
   }
 
+  list = recall_id;
+
+  while(list != NULL){
+    ags_recall_id_set_state_flags(list->data, AGS_SOUND_STATE_IS_TERMINATING);
+    
+    list = list->next;
+  }
+  
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
