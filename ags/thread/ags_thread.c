@@ -2130,6 +2130,7 @@ guint
 ags_thread_real_clock(AgsThread *thread)
 {
   AgsThread *main_loop;
+  AgsTaskLauncher *task_launcher;
   
   AgsApplicationContext *application_context;
 
@@ -2458,8 +2459,6 @@ ags_thread_real_clock(AgsThread *thread)
       
     g_mutex_unlock(wait_mutex);
   }else{
-    AgsTaskLauncher *task_launcher;
-
     ags_main_loop_set_syncing(AGS_MAIN_LOOP(main_loop), TRUE);
 
     ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_WAITING);
@@ -2500,6 +2499,23 @@ ags_thread_real_clock(AgsThread *thread)
 
     g_rec_mutex_unlock(tree_mutex);
   }
+
+  /* get task launcher */
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  g_mutex_lock(&(task_launcher->wait_mutex));
+  
+  if(g_atomic_int_get(&(task_launcher->is_running))){
+    g_atomic_int_inc(&(task_launcher->wait_count));
+
+    while(g_atomic_int_get(&(task_launcher->is_running)) &&
+	  g_atomic_int_get(&(task_launcher->wait_count)) != 0){
+      g_cond_wait(&(task_launcher->wait_cond),
+		  &(task_launcher->wait_mutex));
+    }
+  }
+
+  g_mutex_unlock(&(task_launcher->wait_mutex));
   
   /* compute clocked steps */
   clocked_steps = 0;

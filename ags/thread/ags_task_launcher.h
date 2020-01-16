@@ -68,6 +68,12 @@ struct _AgsTaskLauncher
   
   GList *task;
   GList *cyclic_task;
+
+  volatile gboolean is_running;
+  volatile gint wait_count;
+  
+  GMutex wait_mutex;
+  GCond wait_cond;
 };
 
 struct _AgsTaskLauncherClass

@@ -228,6 +228,15 @@ ags_task_launcher_init(AgsTaskLauncher *task_launcher)
 
   task_launcher->task = NULL;
   task_launcher->cyclic_task = NULL;
+
+  /* wait */
+  g_atomic_int_set(&(task_launcher->is_running),
+		   FALSE);
+  g_atomic_int_set(&(task_launcher->wait_count),
+		   0);
+  
+  g_mutex_init(&(task_launcher->wait_mutex));
+  g_cond_init(&(task_launcher->wait_cond));
 }
 
 void
@@ -875,6 +884,13 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
   if(!AGS_IS_TASK_LAUNCHER(task_launcher)){
     return;
   }
+
+  g_mutex_lock(&(task_launcher->wait_mutex));
+
+  g_atomic_int_set(&(task_launcher->is_running),
+		   TRUE);
+
+  g_mutex_unlock(&(task_launcher->wait_mutex));
   
   /* get task launcher mutex */
   task_launcher_mutex = AGS_TASK_LAUNCHER_GET_OBJ_MUTEX(task_launcher);
@@ -897,6 +913,19 @@ ags_task_launcher_sync_run(AgsTaskLauncher *task_launcher)
 
   /* unref */
   g_main_context_unref(main_context);
+
+  g_mutex_lock(&(task_launcher->wait_mutex));
+
+  g_atomic_int_set(&(task_launcher->is_running),
+		   FALSE);
+  g_atomic_int_set(&(task_launcher->wait_count),
+		   0);
+
+  if(g_atomic_int_get(&(task_launcher->wait_count)) > 0){
+    g_cond_broadcast(&(task_launcher->wait_cond));
+  }
+  
+  g_mutex_unlock(&(task_launcher->wait_mutex));
 }
 
 /**
