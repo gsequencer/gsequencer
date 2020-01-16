@@ -10259,6 +10259,7 @@ ags_channel_real_start(AgsChannel *channel,
   GList *start_recall_id;
   GList *start_wait_thread, *wait_thread;
 
+  gint64 start_wait_timeout;
   gint i;
 
   static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
@@ -10388,13 +10389,22 @@ ags_channel_real_start(AgsChannel *channel,
     /* unref */
     wait_thread = start_wait_thread;
 
+    start_wait_timeout = g_get_monotonic_time() + 3 * G_USEC_PER_SEC;
+    
     while(wait_thread != NULL){
       while(wait_thread->data != NULL &&
-	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ)){
+	if(g_get_monotonic_time() > start_wait_timeout){
+	  g_critical("sync timeout");
+
+	  goto ags_channel_real_start_ONE_SCOPE_TIMEOUT;
+	}
+      }
 
       wait_thread = wait_thread->next;
     }
     
+  ags_channel_real_start_ONE_SCOPE_TIMEOUT:
     g_list_free_full(start_wait_thread,
 		     g_object_unref);
 
@@ -10481,13 +10491,22 @@ ags_channel_real_start(AgsChannel *channel,
       /* unref */
       wait_thread = start_wait_thread;
 
+      start_wait_timeout = g_get_monotonic_time() + 3 * G_USEC_PER_SEC;
+
       while(wait_thread != NULL){
 	while(wait_thread->data != NULL &&
-	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ)){
+	  if(g_get_monotonic_time() > start_wait_timeout){
+	    g_critical("sync timeout");
+
+	    goto ags_channel_real_start_ALL_SCOPE_TIMEOUT;
+	  }
+	}
 
 	wait_thread = wait_thread->next;
       }
     
+  ags_channel_real_start_ALL_SCOPE_TIMEOUT:
       g_list_free_full(start_wait_thread,
 		       g_object_unref);
 
