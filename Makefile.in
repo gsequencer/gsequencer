@@ -26382,11 +26382,16 @@ uninstall-man: uninstall-man1
 
 HTMLHELP_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
 
-GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
-GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
-LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
-LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
-LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@GOBJECT_API_DOC ?= '\.\.\/gobject'
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@GTK_API_DOC ?= '\.\.\/gtk3'
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_API_DOC ?= '\.\.\/libags'
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_AUDIO_API_DOC ?= '\.\.\/libags_audio'
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_GUI_API_DOC ?= '\.\.\/libags_gui'
 
 # gir - gobject introspection
 -include $(INTROSPECTION_MAKEFILE)

@@ -67,12 +67,6 @@ bin_PROGRAMS = gsequencer midi2xml
 
 HTMLHELP_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
 
-GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
-GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
-LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
-LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
-LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
-
 if AGS_WITH_PUBLIC_LIBGSEQUENCER
 libgsequencerdir = $(DESTDIR)/$(libdir)
 else
@@ -80,11 +74,23 @@ libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
 endif
 
 if AGS_WITH_UPSTREAM_GTK_DOC
+GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
+GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
+LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
+LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
+LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
+
 libags_api_dir = $(DESTDIR)/$(datadir)/doc/libags-doc/api
 libags_audio_api_dir = $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 libags_gui_api_dir = $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 libgsequencer_api_dir = $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 else
+GOBJECT_API_DOC ?= '\.\.\/gobject'
+GTK_API_DOC ?= '\.\.\/gtk3'
+LIBAGS_API_DOC ?= '\.\.\/libags'
+LIBAGS_AUDIO_API_DOC ?= '\.\.\/libags_audio'
+LIBAGS_GUI_API_DOC ?= '\.\.\/libags_gui'
+
 libags_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 libags_audio_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 libags_gui_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
