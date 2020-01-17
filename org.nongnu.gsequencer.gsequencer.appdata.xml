@@ -35,6 +35,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.0.4" date="2020-01-16">
+      <description>
+	<p>Fixed potential SIGSEGV.</p>
+	<p>Fixed potential data-race.</p>
+      </description>
+    </release>
+    
     <release version="3.0.1" date="2020-01-14">
       <description>
 	<p>Fixed potential recursive callback.</p>
