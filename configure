@@ -679,6 +679,8 @@ WITH_LIBINSTPATCH_FALSE
 WITH_LIBINSTPATCH_TRUE
 LIBINSTPATCH_LIBS
 LIBINSTPATCH_CFLAGS
+AGS_WITH_UPSTREAM_GTK_DOC_FALSE
+AGS_WITH_UPSTREAM_GTK_DOC_TRUE
 AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE
 AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE
 LIBSOUP_LIBS
@@ -894,6 +896,7 @@ enable_rpath
 with_libiconv_prefix
 with_libintl_prefix
 enable_public_libgsequencer
+enable_upstream_gtk_doc
 enable_strip_rt_events
 enable_rt
 enable_w32api
@@ -1630,6 +1633,9 @@ Optional Features:
   --disable-rpath         do not hardcode runtime library paths
   --enable-public-libgsequencer
                           provide public libgsequencer (default is yes)
+  --enable-upstream-gtk-doc
+                          put API reference manual in upstream dedicated
+                          directory (default is yes)
   --enable-strip-rt-events
                           strip rt events (default is yes)
   --enable-rt             enable rt (default is yes)
@@ -7217,6 +7223,14 @@ if test "${enable_public_libgsequencer+set}" = set; then :
   enableval=$enable_public_libgsequencer;
 else
   enable_public_libgsequencer=yes
+fi
+
+
+# Check whether --enable-upstream-gtk-doc was given.
+if test "${enable_upstream_gtk_doc+set}" = set; then :
+  enableval=$enable_upstream_gtk_doc;
+else
+  enable_upstream_gtk_doc=yes
 fi
 
 
@@ -22319,6 +22333,26 @@ else
 fi
 
 
+if test "x$enable_upstream_gtk_doc" != xno; then :
+
+$as_echo "#define AGS_WITH_UPSTREAM_GTK_DOC 1" >>confdefs.h
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: upstream API reference directory enabled" >&5
+$as_echo "$as_me: upstream API reference directory enabled" >&6;}
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: upstream API reference directory disabled" >&5
+$as_echo "$as_me: upstream API reference directory disabled" >&6;}
+fi
+ if test "x$enable_upstream_gtk_doc" == xyes; then
+  AGS_WITH_UPSTREAM_GTK_DOC_TRUE=
+  AGS_WITH_UPSTREAM_GTK_DOC_FALSE='#'
+else
+  AGS_WITH_UPSTREAM_GTK_DOC_TRUE='#'
+  AGS_WITH_UPSTREAM_GTK_DOC_FALSE=
+fi
+
+
 if test "x$enable_libinstpatch" != xno; then :
 
 pkg_failed=no
@@ -23758,6 +23792,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE}" && test -z "${AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE}"; then
   as_fn_error $? "conditional \"AGS_WITH_PUBLIC_LIBGSEQUENCER\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${AGS_WITH_UPSTREAM_GTK_DOC_TRUE}" && test -z "${AGS_WITH_UPSTREAM_GTK_DOC_FALSE}"; then
+  as_fn_error $? "conditional \"AGS_WITH_UPSTREAM_GTK_DOC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_LIBINSTPATCH_TRUE}" && test -z "${WITH_LIBINSTPATCH_FALSE}"; then

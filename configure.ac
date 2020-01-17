@@ -32,6 +32,11 @@ AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--enable-public-libgsequenc
 	      [],
 	      [enable_public_libgsequencer=yes])
 
+AC_ARG_ENABLE(upstream-gtk-doc, [AS_HELP_STRING([--enable-upstream-gtk-doc],
+					        [put API reference manual in upstream dedicated directory (default is yes)])],
+	      [],
+	      [enable_upstream_gtk_doc=yes])
+
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -355,6 +360,13 @@ AS_IF([test "x$enable_public_libgsequencer" != xno],
       AC_MSG_NOTICE([public libgsequencer enabled])],
       AC_MSG_NOTICE([public libgsequencer disabled]))
 AM_CONDITIONAL([AGS_WITH_PUBLIC_LIBGSEQUENCER], [test "x$enable_public_libgsequencer" == xyes])
+
+AS_IF([test "x$enable_upstream_gtk_doc" != xno],
+      [AC_DEFINE([AGS_WITH_UPSTREAM_GTK_DOC], [1], [upstream API reference directory enabled])
+      
+      AC_MSG_NOTICE([upstream API reference directory enabled])],
+      AC_MSG_NOTICE([upstream API reference directory disabled]))
+AM_CONDITIONAL([AGS_WITH_UPSTREAM_GTK_DOC], [test "x$enable_upstream_gtk_doc" == xyes])
 
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])

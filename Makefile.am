@@ -74,9 +74,21 @@ LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
 LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
 
 if AGS_WITH_PUBLIC_LIBGSEQUENCER
-libgsequencerdir = $(libdir)
+libgsequencerdir = $(DESTDIR)/$(libdir)
 else
-libgsequencerdir = $(libdir)/gsequencer
+libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
+endif
+
+if AGS_WITH_UPSTREAM_GTK_DOC
+libags_api_dir = $(DESTDIR)/$(datadir)/doc/libags-doc/api
+libags_audio_api_dir = $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+libags_gui_api_dir = $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+libgsequencer_api_dir = $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+else
+libags_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+libags_audio_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+libags_gui_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+libgsequencer_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 endif
 
 libgsequencer_LTLIBRARIES = libgsequencer.la
@@ -2508,10 +2520,13 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html-mkdir-links:
+	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
+if AGS_WITH_UPSTREAM_GTK_DOC
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+endif
 
 install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(docdir)/images
@@ -2520,23 +2535,33 @@ install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
+if AGS_WITH_UPSTREAM_GTK_DOC
+else
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+endif
 
 install-html-links: install-html-mkdir-links
+	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
+if AGS_WITH_UPSTREAM_GTK_DOC
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
 	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+endif
 
-install-html: install-html-mkdir
+install-html: install-html-mkdir install-html-links
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(libags_api_dir)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(libags_audio_api_dir)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(libags_gui_api_dir)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(libgsequencer_api_dir)
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
