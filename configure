@@ -637,6 +637,7 @@ ac_header_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+LIBGSEQUENCER_API_DOC
 WITH_EXPERIMENTAL_FALSE
 WITH_EXPERIMENTAL_TRUE
 WITH_VST3_FALSE
@@ -767,10 +768,10 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
-libgsequencer_api_dir
-libags_gui_api_dir
-libags_audio_api_dir
-libags_api_dir
+LIBGSEQUENCER_API_DIR
+LIBAGS_GUI_API_DIR
+LIBAGS_AUDIO_API_DIR
+LIBAGS_API_DIR
 LIBAGS_GUI_API_DOC
 LIBAGS_AUDIO_API_DOC
 LIBAGS_API_DOC
@@ -949,10 +950,10 @@ GTK_API_DOC
 LIBAGS_API_DOC
 LIBAGS_AUDIO_API_DOC
 LIBAGS_GUI_API_DOC
-libags_api_dir
-libags_audio_api_dir
-libags_gui_api_dir
-libgsequencer_api_dir
+LIBAGS_API_DIR
+LIBAGS_AUDIO_API_DIR
+LIBAGS_GUI_API_DIR
+LIBGSEQUENCER_API_DIR
 CXX
 CXXFLAGS
 CCC
@@ -1717,13 +1718,13 @@ Some influential environment variables:
               Manual
   LIBAGS_GUI_API_DOC
               escaped path for use with sed to Libags-gui API Reference Manual
-  libags_api_dir
+  LIBAGS_API_DIR
               install path of Libags API Reference Manual
-  libags_audio_api_dir
+  LIBAGS_AUDIO_API_DIR
               install path of Libags-audio API Reference Manual
-  libags_gui_api_dir
+  LIBAGS_GUI_API_DIR
               install path of Libags-gui API Reference Manual
-  libgsequencer_api_dir
+  LIBGSEQUENCER_API_DIR
               install path of Libgsequencer API Reference Manual
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
@@ -23654,6 +23655,263 @@ $as_echo "$as_me: generating resources for API Reference Manual" >&6;}
   `tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.types.in > docs/reference/libgsequencer/libgsequencer.types`
   `tail -n +19 $srcdir/docs/reference/libgsequencer/libgsequencer.interfaces.in > docs/reference/libgsequencer/libgsequencer.interfaces`
 
+
+if test "x$HTMLHELP_XSL" != x; then :
+  HTMLHELP_XSL=$HTMLHELP_XSL
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: HTMLHELP_XSL = $HTMLHELP_XSL" >&5
+$as_echo "$as_me: HTMLHELP_XSL = $HTMLHELP_XSL" >&6;}
+else
+  HTMLHELP_XSL=/usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: HTMLHELP_XSL = $HTMLHELP_XSL" >&5
+$as_echo "$as_me: HTMLHELP_XSL = $HTMLHELP_XSL" >&6;}
+fi
+
+if test "x$enable_upstream_gtk_doc" != xno; then :
+  if test "x$GOBJECT_API_DOC" != x; then :
+  GOBJECT_API_DOC=$GOBJECT_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&5
+$as_echo "$as_me: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&6;}
+else
+  GOBJECT_API_DOC='\/usr\/share\/doc\/libglib2.0-doc\/gobject'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&5
+$as_echo "$as_me: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&6;}
+fi
+
+if test "x$GTK_API_DOC" != x; then :
+  GTK_API_DOC=$GTK_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GTK_API_DOC = $GTK_API_DOC" >&5
+$as_echo "$as_me: GTK_API_DOC = $GTK_API_DOC" >&6;}
+else
+  GTK_API_DOC='\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GTK_API_DOC = $GTK_API_DOC" >&5
+$as_echo "$as_me: GTK_API_DOC = $GTK_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_API_DOC" != x; then :
+  LIBAGS_API_DOC=$LIBAGS_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&6;}
+else
+  LIBAGS_API_DOC='\/usr\/share\/doc\/libags-doc\/api'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_AUDIO_API_DOC" != x; then :
+  LIBAGS_AUDIO_API_DOC=$LIBAGS_AUDIO_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&6;}
+else
+  LIBAGS_AUDIO_API_DOC='\/usr\/share\/doc\/libags-audio-doc\/api'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_GUI_API_DOC" != x; then :
+  LIBAGS_GUI_API_DOC=$LIBAGS_GUI_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&6;}
+else
+  LIBAGS_GUI_API_DOC='\/usr\/share\/doc\/libags-gui-doc\/api'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&6;}
+fi
+
+if test "x$LIBGSEQUENCER_API_DOC" != x; then :
+  LIBGSEQUENCER_API_DOC=$LIBGSEQUENCER_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&6;}
+else
+  LIBGSEQUENCER_API_DOC='\/usr\/share\/doc\/libgsequencer-doc\/api'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_API_DIR" != x; then :
+  LIBAGS_API_DIR=$LIBAGS_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&6;}
+else
+  LIBAGS_API_DIR=$datadir/doc/libags-doc/api
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&6;}
+fi
+
+if test "x$LIBAGS_AUDIO_API_DIR" != x; then :
+  LIBAGS_AUDIO_API_DIR=$LIBAGS_AUDIO_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&6;}
+else
+  LIBAGS_AUDIO_API_DIR=$datadir/doc/libags-audio-doc/api
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&6;}
+fi
+
+if test "x$LIBAGS_GUI_API_DIR" != x; then :
+  LIBAGS_GUI_API_DIR=$LIBAGS_GUI_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&6;}
+else
+  LIBAGS_GUI_API_DIR=$datadir/doc/libags-gui-doc/api
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&6;}
+fi
+
+if test "x$LIBGSEQUENCER_API_DIR" != x; then :
+  LIBGSEQUENCER_API_DIR=$LIBGSEQUENCER_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&6;}
+else
+  LIBGSEQUENCER_API_DIR=$datadir/doc/libgsequencer-doc/api
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&6;}
+fi
+
+else
+
+if test "x$GOBJECT_API_DOC" != x; then :
+  GOBJECT_API_DOC=$GOBJECT_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&5
+$as_echo "$as_me: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&6;}
+else
+  GOBJECT_API_DOC='\.\.\/gobject'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&5
+$as_echo "$as_me: GOBJECT_API_DOC = $GOBJECT_API_DOC" >&6;}
+fi
+
+if test "x$GTK_API_DOC" != x; then :
+  GTK_API_DOC=$GTK_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GTK_API_DOC = $GTK_API_DOC" >&5
+$as_echo "$as_me: GTK_API_DOC = $GTK_API_DOC" >&6;}
+else
+  GTK_API_DOC='\.\.\/gtk3'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: GTK_API_DOC = $GTK_API_DOC" >&5
+$as_echo "$as_me: GTK_API_DOC = $GTK_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_API_DOC" != x; then :
+  LIBAGS_API_DOC=$LIBAGS_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&6;}
+else
+  LIBAGS_API_DOC='\.\.\/libags'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_API_DOC = $LIBAGS_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_AUDIO_API_DOC" != x; then :
+  LIBAGS_AUDIO_API_DOC=$LIBAGS_AUDIO_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&6;}
+else
+  LIBAGS_AUDIO_API_DOC='\.\.\/libags_audio'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_GUI_API_DOC" != x; then :
+  LIBAGS_GUI_API_DOC=$LIBAGS_GUI_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&6;}
+else
+  LIBAGS_GUI_API_DOC='\.\.\/libags_gui'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC" >&6;}
+fi
+
+if test "x$LIBGSEQUENCER_API_DOC" != x; then :
+  LIBGSEQUENCER_API_DOC=$LIBGSEQUENCER_API_DOC
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&6;}
+else
+  LIBGSEQUENCER_API_DOC='\.\.\/libgsequencer'
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC" >&6;}
+fi
+
+if test "x$LIBAGS_API_DIR" != x; then :
+  LIBAGS_API_DIR=$LIBAGS_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&6;}
+else
+  LIBAGS_API_DIR=$datadir/gtk-doc/html/libags
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_API_DIR = $LIBAGS_API_DIR" >&6;}
+fi
+
+if test "x$LIBAGS_AUDIO_API_DIR" != x; then :
+  LIBAGS_AUDIO_API_DIR=$LIBAGS_AUDIO_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&6;}
+else
+  LIBAGS_AUDIO_API_DIR=$datadir/gtk-doc/html/libags_audio
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR" >&6;}
+fi
+
+if test "x$LIBAGS_GUI_API_DIR" != x; then :
+  LIBAGS_GUI_API_DIR=$LIBAGS_GUI_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&6;}
+else
+  LIBAGS_GUI_API_DIR=$datadir/gtk-doc/html/libags_gui
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&5
+$as_echo "$as_me: LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR" >&6;}
+fi
+
+if test "x$LIBGSEQUENCER_API_DIR" != x; then :
+  LIBGSEQUENCER_API_DIR=$LIBGSEQUENCER_API_DIR
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&6;}
+else
+  LIBGSEQUENCER_API_DIR=$datadir/gtk-doc/html/libgsequencer
+
+       { $as_echo "$as_me:${as_lineno-$LINENO}: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&5
+$as_echo "$as_me: LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR" >&6;}
+fi
+
+fi
 
 
 ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"

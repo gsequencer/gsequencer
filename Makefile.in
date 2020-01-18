@@ -6401,11 +6401,16 @@ JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@ $(LTLIBINTL) $(am__append_5)
+LIBAGS_API_DIR = @LIBAGS_API_DIR@
 LIBAGS_API_DOC = @LIBAGS_API_DOC@
+LIBAGS_AUDIO_API_DIR = @LIBAGS_AUDIO_API_DIR@
 LIBAGS_AUDIO_API_DOC = @LIBAGS_AUDIO_API_DOC@
+LIBAGS_GUI_API_DIR = @LIBAGS_GUI_API_DIR@
 LIBAGS_GUI_API_DOC = @LIBAGS_GUI_API_DOC@
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
+LIBGSEQUENCER_API_DIR = @LIBGSEQUENCER_API_DIR@
+LIBGSEQUENCER_API_DOC = @LIBGSEQUENCER_API_DOC@
 LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 LIBICONV = @LIBICONV@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
@@ -6510,12 +6515,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libags_api_dir = @libags_api_dir@
-libags_audio_api_dir = @libags_audio_api_dir@
-libags_gui_api_dir = @libags_gui_api_dir@
 libdir = @libdir@
 libexecdir = @libexecdir@
-libgsequencer_api_dir = @libgsequencer_api_dir@
 
 # 
 # TARGETS = gsequencer
@@ -26376,29 +26377,6 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-$(shell ${HTMLHELP_XSL:=/usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl})
-
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${GOBJECT_API_DOC:='\/usr\/share\/doc\/libglib2.0-doc\/gobject'})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${GTK_API_DOC:='\/usr\/share\/doc\/libgtk-3-doc\/gtk3'}) 
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_API_DOC:= '\/usr\/share\/doc\/libags-doc\/api'})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_AUDIO_API_DOC:='\/usr\/share\/doc\/libags-audio-doc\/api'})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_GUI_API_DOC:= '\/usr\/share\/doc\/libags-gui-doc\/api'})
-
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-doc/api})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-gui-doc/api})
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${GOBJECT_API_DOC:='\.\.\/gobject'})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${GTK_API_DOC:='\.\.\/gtk3'})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_API_DOC:='\.\.\/libags'})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_AUDIO_API_DOC:='\.\.\/libags_audio'})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_GUI_API_DOC:='\.\.\/libags_gui'})
-
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui})
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer})
-
 # gir - gobject introspection
 -include $(INTROSPECTION_MAKEFILE)
 
@@ -26517,10 +26495,10 @@ fix-online-html: html
 
 install-html-mkdir-links:
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 
 install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(docdir)/images
@@ -26529,10 +26507,10 @@ install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 
 install-html-links: install-html-mkdir-links
 	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
