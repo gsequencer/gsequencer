@@ -767,6 +767,10 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+libgsequencer_api_dir
+libags_gui_api_dir
+libags_audio_api_dir
+libags_api_dir
 LIBAGS_GUI_API_DOC
 LIBAGS_AUDIO_API_DOC
 LIBAGS_API_DOC
@@ -945,6 +949,10 @@ GTK_API_DOC
 LIBAGS_API_DOC
 LIBAGS_AUDIO_API_DOC
 LIBAGS_GUI_API_DOC
+libags_api_dir
+libags_audio_api_dir
+libags_gui_api_dir
+libgsequencer_api_dir
 CXX
 CXXFLAGS
 CCC
@@ -1709,6 +1717,14 @@ Some influential environment variables:
               Manual
   LIBAGS_GUI_API_DOC
               escaped path for use with sed to Libags-gui API Reference Manual
+  libags_api_dir
+              install path of Libags API Reference Manual
+  libags_audio_api_dir
+              install path of Libags-audio API Reference Manual
+  libags_gui_api_dir
+              install path of Libags-gui API Reference Manual
+  libgsequencer_api_dir
+              install path of Libgsequencer API Reference Manual
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
   LT_SYS_LIBRARY_PATH
@@ -7211,6 +7227,12 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
 
 
 # options
+
+
+
+
+
+
 
 
 

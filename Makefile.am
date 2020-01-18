@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann
+#Copyright (C) 2005-2020 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -65,7 +65,7 @@ endif
 
 bin_PROGRAMS = gsequencer midi2xml
 
-HTMLHELP_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
+$(shell ${HTMLHELP_XSL:=/usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl})
 
 if AGS_WITH_PUBLIC_LIBGSEQUENCER
 libgsequencerdir = $(DESTDIR)/$(libdir)
@@ -74,27 +74,27 @@ libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
 endif
 
 if AGS_WITH_UPSTREAM_GTK_DOC
-GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
-GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
-LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
-LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
-LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
+$(shell ${GOBJECT_API_DOC:='\/usr\/share\/doc\/libglib2.0-doc\/gobject'})
+$(shell ${GTK_API_DOC:='\/usr\/share\/doc\/libgtk-3-doc\/gtk3'}) 
+$(shell ${LIBAGS_API_DOC:= '\/usr\/share\/doc\/libags-doc\/api'})
+$(shell ${LIBAGS_AUDIO_API_DOC:='\/usr\/share\/doc\/libags-audio-doc\/api'})
+$(shell ${LIBAGS_GUI_API_DOC:= '\/usr\/share\/doc\/libags-gui-doc\/api'})
 
-libags_api_dir = $(DESTDIR)/$(datadir)/doc/libags-doc/api
-libags_audio_api_dir = $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-libags_gui_api_dir = $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-libgsequencer_api_dir = $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-doc/api})
+$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api})
+$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-gui-doc/api})
+$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api})
 else
-GOBJECT_API_DOC ?= '\.\.\/gobject'
-GTK_API_DOC ?= '\.\.\/gtk3'
-LIBAGS_API_DOC ?= '\.\.\/libags'
-LIBAGS_AUDIO_API_DOC ?= '\.\.\/libags_audio'
-LIBAGS_GUI_API_DOC ?= '\.\.\/libags_gui'
+$(shell ${GOBJECT_API_DOC:='\.\.\/gobject'})
+$(shell ${GTK_API_DOC:='\.\.\/gtk3'})
+$(shell ${LIBAGS_API_DOC:='\.\.\/libags'})
+$(shell ${LIBAGS_AUDIO_API_DOC:='\.\.\/libags_audio'})
+$(shell ${LIBAGS_GUI_API_DOC:='\.\.\/libags_gui'})
 
-libags_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-libags_audio_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-libags_gui_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-libgsequencer_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags})
+$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio})
+$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui})
+$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer})
 endif
 
 libgsequencer_LTLIBRARIES = libgsequencer.la

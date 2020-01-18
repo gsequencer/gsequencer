@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-#Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann
+#Copyright (C) 2005-2020 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -6510,8 +6510,12 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+libags_api_dir = @libags_api_dir@
+libags_audio_api_dir = @libags_audio_api_dir@
+libags_gui_api_dir = @libags_gui_api_dir@
 libdir = @libdir@
 libexecdir = @libexecdir@
+libgsequencer_api_dir = @libgsequencer_api_dir@
 
 # 
 # TARGETS = gsequencer
@@ -6564,14 +6568,6 @@ lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la \
 	libags_audio.la libags_gui.la $(am__append_6)
 @AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE@libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
 @AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@libgsequencerdir = $(DESTDIR)/$(libdir)
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@libags_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@libags_api_dir = $(DESTDIR)/$(datadir)/doc/libags-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@libags_audio_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@libags_audio_api_dir = $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@libags_gui_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@libags_gui_api_dir = $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@libgsequencer_api_dir = $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@libgsequencer_api_dir = $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
 #EXTRA_DIST += \
@@ -26380,18 +26376,28 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-HTMLHELP_XSL ?= /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl
+$(shell ${HTMLHELP_XSL:=/usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl})
 
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@GOBJECT_API_DOC ?= '\/usr\/share\/doc\/libglib2.0-doc\/gobject'
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@GTK_API_DOC ?= '\/usr\/share\/doc\/libgtk-3-doc\/gtk3'
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_API_DOC ?= '\/usr\/share\/doc\/libags-doc\/api'
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_AUDIO_API_DOC ?= '\/usr\/share\/doc\/libags-audio-doc\/api'
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@LIBAGS_GUI_API_DOC ?= '\/usr\/share\/doc\/libags-gui-doc\/api'
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@GOBJECT_API_DOC ?= '\.\.\/gobject'
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@GTK_API_DOC ?= '\.\.\/gtk3'
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_API_DOC ?= '\.\.\/libags'
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_AUDIO_API_DOC ?= '\.\.\/libags_audio'
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@LIBAGS_GUI_API_DOC ?= '\.\.\/libags_gui'
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${GOBJECT_API_DOC:='\/usr\/share\/doc\/libglib2.0-doc\/gobject'})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${GTK_API_DOC:='\/usr\/share\/doc\/libgtk-3-doc\/gtk3'}) 
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_API_DOC:= '\/usr\/share\/doc\/libags-doc\/api'})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_AUDIO_API_DOC:='\/usr\/share\/doc\/libags-audio-doc\/api'})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${LIBAGS_GUI_API_DOC:= '\/usr\/share\/doc\/libags-gui-doc\/api'})
+
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-doc/api})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/doc/libags-gui-doc/api})
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${GOBJECT_API_DOC:='\.\.\/gobject'})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${GTK_API_DOC:='\.\.\/gtk3'})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_API_DOC:='\.\.\/libags'})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_AUDIO_API_DOC:='\.\.\/libags_audio'})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${LIBAGS_GUI_API_DOC:='\.\.\/libags_gui'})
+
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_audio_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libags_gui_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui})
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@$(shell ${libgsequencer_api_dir:=$(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer})
 
 # gir - gobject introspection
 -include $(INTROSPECTION_MAKEFILE)

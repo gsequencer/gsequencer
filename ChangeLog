@@ -1,3 +1,8 @@
+ags (3.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved Makefile.am to deal with different gtk-doc locations
+
 ags (3.0.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
