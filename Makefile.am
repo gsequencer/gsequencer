@@ -2560,10 +2560,10 @@ install-html: install-html-mkdir install-html-links
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
 if ENABLE_GTK_DOC
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(LIBAGS_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(LIBAGS_AUDIO_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(LIBAGS_GUI_API_DIR)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(LIBGSEQUENCER_API_DIR)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(LIBAGS_API_DIR)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 endif
 
 uninstall-hook:
