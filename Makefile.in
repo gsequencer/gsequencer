@@ -26495,10 +26495,10 @@ fix-online-html: html
 
 install-html-mkdir-links:
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 
 install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(docdir)/images
@@ -26507,17 +26507,17 @@ install-html-mkdir:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
-@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBAGS_GUI_API_DIR)
+@AGS_WITH_UPSTREAM_GTK_DOC_FALSE@@ENABLE_GTK_DOC_TRUE@	mkdir -p $(DESTDIR)/$(LIBGSEQUENCER_API_DIR)
 
 install-html-links: install-html-mkdir-links
 	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+@AGS_WITH_UPSTREAM_GTK_DOC_TRUE@@ENABLE_GTK_DOC_TRUE@	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 install-html: install-html-mkdir install-html-links
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
@@ -26525,10 +26525,10 @@ install-html: install-html-mkdir install-html-links
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(libags_api_dir)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(libags_audio_api_dir)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(libags_gui_api_dir)
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(libgsequencer_api_dir)
+@ENABLE_GTK_DOC_TRUE@	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(LIBAGS_API_DIR)
+@ENABLE_GTK_DOC_TRUE@	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(LIBAGS_AUDIO_API_DIR)
+@ENABLE_GTK_DOC_TRUE@	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(LIBAGS_GUI_API_DIR)
+@ENABLE_GTK_DOC_TRUE@	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(LIBGSEQUENCER_API_DIR)
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
