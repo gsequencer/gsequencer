@@ -10373,36 +10373,56 @@ ags_channel_real_start(AgsChannel *channel,
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  sound_scope);
-      start_wait_thread = g_list_prepend(start_wait_thread,
-					 audio_thread);
-    
-      ags_thread_add_start_queue(audio_loop,
-				 audio_thread);
+
+      if(audio_thread != NULL){
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   audio_thread);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   audio_thread);
+      }
     }
     
     if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       channel_thread = ags_playback_get_channel_thread(playback,
 						       sound_scope);
-      start_wait_thread = g_list_prepend(start_wait_thread,
-					 channel_thread);
 
-      ags_thread_add_start_queue(audio_loop,
-				 channel_thread);
+      if(channel_thread != NULL){
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   channel_thread);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   channel_thread);
+      }
     }
 
     /* unref */
     wait_thread = start_wait_thread;
 
-    start_wait_timeout = g_get_monotonic_time() + 3 * G_USEC_PER_SEC;
+    start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
     
     while(wait_thread != NULL){
-      while(wait_thread->data != NULL &&
-	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ)){
-	if(g_get_monotonic_time() > start_wait_timeout){
-	  g_critical("sync timeout");
+      /* wait thread */
+      g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
 
-	  goto ags_channel_real_start_ONE_SCOPE_TIMEOUT;
+      if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+      
+	while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+	      g_get_monotonic_time() < start_wait_timeout){
+	  g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			    AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			    start_wait_timeout);
 	}
+      }
+	
+      g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+      if(g_get_monotonic_time() > start_wait_timeout){
+	g_critical("sync timeout");
+
+	goto ags_channel_real_start_ONE_SCOPE_TIMEOUT;
       }
 
       wait_thread = wait_thread->next;
@@ -10475,42 +10495,62 @@ ags_channel_real_start(AgsChannel *channel,
       if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
 	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							    i);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   audio_thread);
-	
-	ags_thread_add_start_queue(audio_loop,
-				   audio_thread);
+
+	if(audio_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     audio_thread);
+	  
+	  ags_thread_add_start_queue(audio_loop,
+				     audio_thread);
+	}
       }
       
       if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
 	channel_thread = ags_playback_get_channel_thread(playback,
 							 i);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   channel_thread);
+
+	if(channel_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     channel_thread);
       
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
+	}
       }
       
       /* unref */
       wait_thread = start_wait_thread;
 
-      start_wait_timeout = g_get_monotonic_time() + 3 * G_USEC_PER_SEC;
+      start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
 
       while(wait_thread != NULL){
-	while(wait_thread->data != NULL &&
-	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ)){
-	  if(g_get_monotonic_time() > start_wait_timeout){
-	    g_critical("sync timeout");
+	/* wait thread */
+	g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
 
-	    goto ags_channel_real_start_ALL_SCOPE_TIMEOUT;
+	if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	  ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+	
+	  while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+		!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+		g_get_monotonic_time() < start_wait_timeout){
+	    g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			      AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			      start_wait_timeout);
 	  }
+	}
+	  
+	g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+	if(g_get_monotonic_time() > start_wait_timeout){
+	  g_critical("sync timeout");
+
+	  goto ags_channel_real_start_ALL_SCOPE_TIMEOUT;
 	}
 
 	wait_thread = wait_thread->next;
       }
     
-  ags_channel_real_start_ALL_SCOPE_TIMEOUT:
+    ags_channel_real_start_ALL_SCOPE_TIMEOUT:
       g_list_free_full(start_wait_thread,
 		       g_object_unref);
 

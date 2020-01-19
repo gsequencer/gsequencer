@@ -1724,8 +1724,8 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   /* wait for audio loop */
   g_mutex_lock(AGS_THREAD_GET_START_MUTEX(audio_loop));
 
-  if(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT)){
-    ags_thread_unset_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE);
+  if(!ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){
+    ags_thread_set_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT);
       
     while(ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_WAIT) &&
 	  !ags_thread_test_status_flags(audio_loop, AGS_THREAD_STATUS_START_DONE)){

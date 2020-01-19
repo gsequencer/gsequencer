@@ -6567,8 +6567,8 @@ midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ $(LIBXML2_LIBS) \
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la \
 	libags_audio.la libags_gui.la $(am__append_6)
-@AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE@libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
-@AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@libgsequencerdir = $(DESTDIR)/$(libdir)
+@AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE@libgsequencerdir = $(libdir)/gsequencer
+@AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@libgsequencerdir = $(libdir)
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
 #EXTRA_DIST += \

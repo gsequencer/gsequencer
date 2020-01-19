@@ -791,7 +791,9 @@ ags_audio_loop_run(AgsThread *thread)
 		 "frequency", &frequency,
 		 NULL);
 
-    g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
+    if(!ags_thread_test_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING)){
+      g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
+    }
   }
 }
 

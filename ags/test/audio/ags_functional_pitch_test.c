@@ -393,7 +393,7 @@ ags_functional_pitch_test_pitch_up()
 		   "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
 		   "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
 		   "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
-		   "x", j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   "x", (guint64) (j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE),
 		   NULL);
       ags_wave_add_buffer(current_wave,
 			  buffer,
@@ -539,7 +539,7 @@ ags_functional_pitch_test_pitch_down()
 		   "samplerate", AGS_FUNCTIONAL_PITCH_TEST_SAMPLERATE,
 		   "buffer-size", AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
 		   "format", AGS_FUNCTIONAL_PITCH_TEST_FORMAT,
-		   "x", j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE,
+		   "x", (guint64) (j * AGS_FUNCTIONAL_PITCH_TEST_BUFFER_SIZE),
 		   NULL);
       ags_wave_add_buffer(current_wave,
 			  buffer,

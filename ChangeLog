@@ -1,6 +1,11 @@
 ags (3.0.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed 64 bit portability issue with ags_functional_pitch_test.c
+	* fixed 64 bit portability issue with ags_functional_fourier_transform_test.c
+	* fixed ags_start_audio_test.c to run task within thread tree
+	* fixed ags_start_channel_test.c to run task within thread tree
+	* improved pulseaudio connect timeout
 	* improved Makefile.am to deal with different gtk-doc locations
 
 ags (3.0.4)

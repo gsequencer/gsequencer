@@ -68,9 +68,9 @@ bin_PROGRAMS = gsequencer midi2xml
 HTMLHELP_XSL = @HTMLHELP_XSL@
 
 if AGS_WITH_PUBLIC_LIBGSEQUENCER
-libgsequencerdir = $(DESTDIR)/$(libdir)
+libgsequencerdir = $(libdir)
 else
-libgsequencerdir = $(DESTDIR)/$(libdir)/gsequencer
+libgsequencerdir = $(libdir)/gsequencer
 endif
 
 GOBJECT_API_DOC = @GOBJECT_API_DOC@

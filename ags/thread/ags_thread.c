@@ -2171,8 +2171,12 @@ ags_thread_real_clock(AgsThread *thread)
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_SYNC)){
     initial_sync = TRUE;
 
-    while(ags_main_loop_is_critical_region(AGS_MAIN_LOOP(main_loop)));
-
+    while(ags_main_loop_is_critical_region(AGS_MAIN_LOOP(main_loop))){
+#if !defined(AGS_WITH_RT)
+      g_usleep(4);
+#endif
+    }
+    
     /* increment queued critical region */
     ags_main_loop_inc_queued_critical_region(AGS_MAIN_LOOP(main_loop));
   }
@@ -2184,8 +2188,10 @@ ags_thread_real_clock(AgsThread *thread)
   g_mutex_lock(thread_start_mutex);
       
   ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_START_DONE);
-      
+  
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_START_WAIT)){
+    ags_thread_unset_status_flags(thread, AGS_THREAD_STATUS_START_WAIT);
+    
     g_cond_broadcast(thread_start_cond);
   }
       
@@ -2206,7 +2212,11 @@ ags_thread_real_clock(AgsThread *thread)
   if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_IS_CHAOS_TREE)){
     while(ags_main_loop_is_syncing(AGS_MAIN_LOOP(main_loop))){
       g_rec_mutex_unlock(tree_mutex);
-    
+
+#if !defined(AGS_WITH_RT)
+      g_usleep(4);
+#endif
+      
       g_rec_mutex_lock(tree_mutex);
     }
 
