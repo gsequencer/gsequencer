@@ -21,6 +21,11 @@
 
 #include <math.h>
 
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 /**
  * SECTION:ags_time
  * @short_description: utility functions of time

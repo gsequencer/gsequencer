@@ -175,7 +175,7 @@ AS_IF([test "x$enable_x11" != xno],
 
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
-       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk2 >= 2.0.7])
+       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
        AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
        AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],

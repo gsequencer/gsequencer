@@ -208,7 +208,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 
   controller = start_controller;
 
-  delimiter = rindex(path, '/');
+  delimiter = strrchr(path, '/');
 
   found_controller = FALSE;
   

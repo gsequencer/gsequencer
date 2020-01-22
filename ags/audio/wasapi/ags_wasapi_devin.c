@@ -1731,7 +1731,7 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
   
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-      min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
+      min_duration = (AGS_NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
 
       if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_EXCLUSIVE, 0, min_duration, min_duration, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
@@ -1807,9 +1807,9 @@ ags_wasapi_devin_client_record(AgsSoundcard *soundcard,
     
       audio_client->lpVtbl->GetDevicePeriod(audio_client, NULL, &min_duration);
 
-      min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->buffer_size;
+      min_duration = (AGS_NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->buffer_size;
 
-      min_duration = (NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
+      min_duration = (AGS_NSEC_PER_SEC / 100) / wasapi_devin->samplerate * wasapi_devin->wasapi_buffer_size;
     
       if((hr = audio_client->lpVtbl->Initialize(audio_client, AUDCLNT_SHAREMODE_SHARED, 0, min_duration, 0, desired_format, NULL))){
 	audio_client->lpVtbl->Release(audio_client);
