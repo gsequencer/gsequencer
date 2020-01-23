@@ -172,7 +172,7 @@ ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run)
 				  param_spec);
 
   /**
-   * AgsRecallLv2Run:note:
+   * AgsRecallLv2Run:note: (type GList(AgsNote)) (transfer full)
    *
    * The assigned #AgsNote.
    * 

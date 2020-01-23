@@ -226,7 +226,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
 				  param_spec);
 
   /**
-   * AgsCoreAudioServer:core-audio-client:
+   * AgsCoreAudioServer:core-audio-client: (type GList(AgsCoreAudioClient)) (transfer full)
    *
    * The core audio client list.
    * 

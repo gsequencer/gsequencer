@@ -131,7 +131,7 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
 				  param_spec);
 
   /**
-   * AgsPlaybackDomain:output-playback:
+   * AgsPlaybackDomain:output-playback: (type GList(AgsPlayback)) (transfer full)
    *
    * The assigned output playback.
    * 
@@ -146,7 +146,7 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
 				  param_spec);
 
   /**
-   * AgsPlaybackDomain:input-playback:
+   * AgsPlaybackDomain:input-playback: (type GList(AgsPlayback)) (transfer full)
    *
    * The assigned input playback.
    * 

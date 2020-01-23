@@ -21,9 +21,6 @@
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_context_menu.h>
-#include <ags/X/ags_menu_action_callbacks.h>
 
 #include <stdlib.h>
 #include <string.h>

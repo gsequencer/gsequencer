@@ -228,7 +228,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
 				  param_spec);
 
   /**
-   * AgsSFZFile:group:
+   * AgsSFZFile:group: (type GList(AgsSFZGroup)) (transfer full)
    *
    * The containing groups.
    * 
@@ -243,7 +243,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
 				  param_spec);
 
   /**
-   * AgsSFZFile:region:
+   * AgsSFZFile:region: (type GList(AgsSFZRegion)) (transfer full)
    *
    * The containing regions.
    * 
@@ -258,7 +258,7 @@ ags_sfz_file_class_init(AgsSFZFileClass *sfz_file)
 				  param_spec);
 
   /**
-   * AgsSFZFile:sample:
+   * AgsSFZFile:sample: (type GList(AgsSFZSample)) (transfer full)
    *
    * The containing samples.
    * 

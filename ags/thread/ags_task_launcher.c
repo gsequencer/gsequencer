@@ -139,7 +139,7 @@ ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher)
 
   /* properties */
   /**
-   * AgsTaskLauncher:task:
+   * AgsTaskLauncher:task: (type GList(AgsRecall)) (transfer full)
    *
    * The assigned #AgsTask to launch.
    * 
@@ -154,7 +154,7 @@ ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher)
 				  param_spec);
 
   /**
-   * AgsTaskLauncher:cyclic-task:
+   * AgsTaskLauncher:cyclic-task: (type GList(AgsRecall)) (transfer full)
    *
    * The assigned cyclic #AgsTask to launch.
    * 

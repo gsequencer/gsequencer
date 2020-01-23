@@ -240,7 +240,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
 				  param_spec);
 
   /**
-   * AgsJackServer:jack-client:
+   * AgsJackServer:jack-client: (type GList(AgsJackClient)) (transfer full)
    *
    * The jack client list.
    * 

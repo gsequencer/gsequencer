@@ -185,7 +185,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsRecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-audio-run: (type GList(AgsRecall)) (transfer full)
    *
    * The associated recall within dynamic audio context.
    * 
@@ -216,7 +216,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsRecallContainer:recall-channel:
+   * AgsRecallContainer:recall-channel: (type GList(AgsRecall)) (transfer full)
    *
    * The associated recall within channel context.
    * 
@@ -247,7 +247,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsRecallContainer:recall-channel-run:
+   * AgsRecallContainer:recall-channel-run: (type GList(AgsRecall)) (transfer full)
    *
    * The associated recall within dynamic channel context.
    * 

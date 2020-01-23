@@ -1015,7 +1015,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:preset:
+   * AgsAudio:preset: (type GList(AgsPreset)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsPreset information.
    * 
@@ -1030,7 +1030,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:synth_generator:
+   * AgsAudio:synth_generator: (type GList(AgsSynthGenerator)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsSynthGenerator information.
    * 
@@ -1061,7 +1061,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:cursor:
+   * AgsAudio:cursor: (type GList(GObject)) (transfer full)
    *
    * The #GObject implementing #AgsCursor interface.
    * 
@@ -1076,7 +1076,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:notation:
+   * AgsAudio:notation: (type GList(AgsNotation)) (transfer full)
    *
    * The #AgsNotation it contains.
    * 
@@ -1091,7 +1091,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:automation:
+   * AgsAudio:automation: (type GList(AgsAutomation)) (transfer full)
    *
    * The #AgsAutomation it contains.
    * 
@@ -1106,7 +1106,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
   
   /**
-   * AgsAudio:wave:
+   * AgsAudio:wave: (type GList(AgsWave)) (transfer full)
    *
    * The #AgsWave it contains.
    * 
@@ -1153,7 +1153,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:midi:
+   * AgsAudio:midi: (type GList(AgsMidi)) (transfer full)
    *
    * The #AgsMidi it contains.
    * 
@@ -1200,7 +1200,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
   
   /**
-   * AgsAudio:recall-id:
+   * AgsAudio:recall-id: (type GList(AgsRecallID)) (transfer full)
    *
    * The assigned #AgsRecallID.
    * 
@@ -1215,7 +1215,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recycling-context:
+   * AgsAudio:recycling-context: (type GList(AgsRecyclingContext)) (transfer full)
    *
    * The assigned #AgsRecyclingContext.
    * 
@@ -1230,7 +1230,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recall-container:
+   * AgsAudio:recall-container: (type GList(AgsRecallContainer)) (transfer full)
    *
    * The #AgsRecallContainer it contains in container-context.
    * 
@@ -1245,7 +1245,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:play:
+   * AgsAudio:play: (type GList(AgsRecall)) (transfer full)
    *
    * The #AgsRecall it contains in play-context.
    * 
@@ -1260,7 +1260,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recall:
+   * AgsAudio:recall: (type GList(AgsRecall)) (transfer full)
    *
    * The #AgsRecall it contains in recall-context.
    * 

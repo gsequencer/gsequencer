@@ -225,7 +225,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
 				  param_spec);
 
   /**
-   * AgsPulseServer:pulse-client:
+   * AgsPulseServer:pulse-client: (type GList(AgsPulseClient)) (transfer full)
    *
    * The pulse client list.
    * 
