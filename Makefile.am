@@ -2263,6 +2263,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_edit_callbacks.h \
 	ags/X/editor/ags_automation_edit_box.h \
 	ags/X/editor/ags_automation_edit.h \
+	ags/X/editor/ags_automation_meta_callbacks.h \
+	ags/X/editor/ags_automation_meta.h \
 	ags/X/editor/ags_automation_toolbar_callbacks.h \
 	ags/X/editor/ags_automation_toolbar.h \
 	ags/X/editor/ags_crop_note_dialog_callbacks.h \
@@ -2282,6 +2284,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_move_note_dialog.h \
 	ags/X/editor/ags_notation_edit_callbacks.h \
 	ags/X/editor/ags_notation_edit.h \
+	ags/X/editor/ags_notation_meta_callbacks.h \
+	ags/X/editor/ags_notation_meta.h \
 	ags/X/editor/ags_notation_toolbar_callbacks.h \
 	ags/X/editor/ags_notation_toolbar.h \
 	ags/X/editor/ags_pattern_envelope_callbacks.h \
@@ -2311,6 +2315,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_wave_edit_callbacks.h \
 	ags/X/editor/ags_wave_edit.h \
 	ags/X/editor/ags_wave_edit_box.h \
+	ags/X/editor/ags_wave_meta_callbacks.h \
+	ags/X/editor/ags_wave_meta.h \
 	ags/X/editor/ags_wave_toolbar_callbacks.h \
 	ags/X/editor/ags_wave_toolbar.h
 
@@ -2321,6 +2327,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_edit.c \
 	ags/X/editor/ags_automation_edit_box.c \
 	ags/X/editor/ags_automation_edit_callbacks.c \
+	ags/X/editor/ags_automation_meta.c \
+	ags/X/editor/ags_automation_meta_callbacks.c \
 	ags/X/editor/ags_automation_toolbar.c \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog_callbacks.c \
@@ -2340,6 +2348,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_move_note_dialog.c \
 	ags/X/editor/ags_notation_edit.c \
 	ags/X/editor/ags_notation_edit_callbacks.c \
+	ags/X/editor/ags_notation_meta.c \
+	ags/X/editor/ags_notation_meta_callbacks.c \
 	ags/X/editor/ags_notation_toolbar.c \
 	ags/X/editor/ags_notation_toolbar_callbacks.c \
 	ags/X/editor/ags_pattern_envelope_callbacks.c \
@@ -2369,6 +2379,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_wave_edit.c \
 	ags/X/editor/ags_wave_edit_box.c \
 	ags/X/editor/ags_wave_edit_callbacks.c \
+	ags/X/editor/ags_wave_meta.c \
+	ags/X/editor/ags_wave_meta_callbacks.c
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c
 
