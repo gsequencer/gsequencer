@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.0.7\n"
+"Project-Id-Version: gsequencer 3.0.8\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-01-19 16:48+0100\n"
+"POT-Creation-Date: 2020-01-23 14:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,20 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ags/X/ags_animation_window.c:436 ags/X/ags_animation_window.c:464
-msgid "LADSPA"
-msgstr ""
-
-#: ags/X/ags_animation_window.c:440 ags/X/ags_animation_window.c:455
-#: ags/X/ags_animation_window.c:468 ags/X/ags_animation_window.c:483
-msgid "DSSI"
-msgstr ""
-
-#: ags/X/ags_animation_window.c:444 ags/X/ags_animation_window.c:459
-#: ags/X/ags_animation_window.c:472 ags/X/ags_animation_window.c:487
-msgid "Lv2"
-msgstr ""
 
 #: ags/X/ags_audio_preferences.c:188
 msgid "JACK driver"
@@ -711,27 +697,41 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3282
+#: ags/X/ags_window_callbacks.c:121 ags/X/ags_window_callbacks.c:149
+msgid "LADSPA"
+msgstr ""
+
+#: ags/X/ags_window_callbacks.c:125 ags/X/ags_window_callbacks.c:140
+#: ags/X/ags_window_callbacks.c:153 ags/X/ags_window_callbacks.c:168
+msgid "DSSI"
+msgstr ""
+
+#: ags/X/ags_window_callbacks.c:129 ags/X/ags_window_callbacks.c:144
+#: ags/X/ags_window_callbacks.c:157 ags/X/ags_window_callbacks.c:172
+msgid "Lv2"
+msgstr ""
+
+#: ags/X/ags_xorg_application_context.c:3295
 #: ags/audio/ags_audio_application_context.c:2129
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3292
+#: ags/X/ags_xorg_application_context.c:3305
 #: ags/audio/ags_audio_application_context.c:2139
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3534
+#: ags/X/ags_xorg_application_context.c:3547
 #: ags/audio/ags_audio_application_context.c:2381
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3544
+#: ags/X/ags_xorg_application_context.c:3557
 #: ags/audio/ags_audio_application_context.c:2391
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
@@ -1313,11 +1313,11 @@ msgstr ""
 msgid "The assigned osc server"
 msgstr ""
 
-#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:177
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:182
 msgid "assigned OSC XMLRPC server"
 msgstr ""
 
-#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:178
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:183
 msgid "The assigned OSC XMLRPC server"
 msgstr ""
 
