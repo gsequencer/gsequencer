@@ -350,7 +350,7 @@ ags_ui_provider_schedule_task_all(AgsUiProvider *ui_provider,
  *
  * Application context setup completed.
  *
- * Since: 3.0.0
+ * Since: 3.0.8
  */
 void
 ags_ui_provider_setup_completed(AgsUiProvider *ui_provider)
