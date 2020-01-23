@@ -2493,7 +2493,6 @@ install-compress-changelog:
 install-data-local:
 	mkdir -p $(DESTDIR)/$(includedir)/ags
 	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
-	mkdir -p $(DESTDIR)/$(datadir)/doc-base
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps
 	mkdir -p $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps
@@ -2526,7 +2525,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(docdir)/
 	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)/$(docdir)/changelog
 
-fix-local-html: html
+fix-local-html:
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
@@ -2538,7 +2537,7 @@ fix-local-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
-fix-local-html-bsd: html
+fix-local-html-bsd:
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
@@ -2550,11 +2549,11 @@ fix-local-html-bsd: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
-fix-online-books-html: html
+fix-online-books-html:
 	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
 	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
-fix-online-html: html
+fix-online-html:
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
 	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
@@ -2578,12 +2577,21 @@ endif
 endif
 
 install-html-mkdir:
+if AGS_WITH_SINGLE_DOCDIR
+	mkdir -p $(DESTDIR)/$(docdir)/images
+	mkdir -p $(DESTDIR)/$(docdir)/user-manual
+	mkdir -p $(DESTDIR)/$(docdir)/developer-manual
+	mkdir -p $(DESTDIR)/$(docdir)/osc-manual
+else
 	mkdir -p $(DESTDIR)/$(docdir)/images
 	mkdir -p $(DESTDIR)/$(docdir)/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server
+if ENABLE_GTK_DOC
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
+endif
+endif
 if AGS_WITH_UPSTREAM_GTK_DOC
 else
 if ENABLE_GTK_DOC
@@ -2596,6 +2604,8 @@ endif
 
 install-html-links: install-html-mkdir-links
 	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
+if AGS_WITH_SINGLE_DOCDIR
+else
 if AGS_WITH_UPSTREAM_GTK_DOC
 if ENABLE_GTK_DOC
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
@@ -2604,13 +2614,22 @@ if ENABLE_GTK_DOC
 	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 endif
 endif
+endif
 
 install-html: install-html-mkdir install-html-links
+if AGS_WITH_SINGLE_DOCDIR
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(docdir)/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/user-manual/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(docdir)/developer-manual/
+	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(docdir)/osc-manual/
+else
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/osc-server/
+endif
 if ENABLE_GTK_DOC
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(LIBAGS_API_DIR)
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(LIBAGS_AUDIO_API_DIR)
@@ -2623,6 +2642,8 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+if AGS_WITH_SINGLE_DOCDIR
+else
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
@@ -2631,6 +2652,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+endif
 	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/32x32/apps/gsequencer.png
 	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/48x48/apps/gsequencer.png
 	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/64x64/apps/gsequencer.png

@@ -39,6 +39,9 @@
 /* rt enabled */
 #undef AGS_WITH_RT
 
+/* single documentation directory enabled */
+#undef AGS_WITH_SINGLE_DOCDIR
+
 /* upstream API reference directory enabled */
 #undef AGS_WITH_UPSTREAM_GTK_DOC
 

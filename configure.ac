@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.8],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.9],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -42,6 +42,11 @@ AC_ARG_ENABLE(upstream-gtk-doc, [AS_HELP_STRING([--enable-upstream-gtk-doc],
 					        [put API reference manual in upstream dedicated directory (default is yes)])],
 	      [],
 	      [enable_upstream_gtk_doc=yes])
+
+AC_ARG_ENABLE(single-docdir, [AS_HELP_STRING([--enable-single-docdir],
+			     	             [put API reference manual in upstream dedicated directory (default is no)])],
+	      [],
+	      [enable_single_docdir=no])
 
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
@@ -373,6 +378,13 @@ AS_IF([test "x$enable_upstream_gtk_doc" != xno],
       AC_MSG_NOTICE([upstream API reference directory enabled])],
       AC_MSG_NOTICE([upstream API reference directory disabled]))
 AM_CONDITIONAL([AGS_WITH_UPSTREAM_GTK_DOC], [test "x$enable_upstream_gtk_doc" == xyes])
+
+AS_IF([test "x$enable_single_docdir" != xno],
+      [AC_DEFINE([AGS_WITH_SINGLE_DOCDIR], [1], [single documentation directory enabled])
+      
+      AC_MSG_NOTICE([single documentation directory enabled])],
+      AC_MSG_NOTICE([single documentation directory disabled]))
+AM_CONDITIONAL([AGS_WITH_SINGLE_DOCDIR], [test "x$enable_single_docdir" == xyes])
 
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
