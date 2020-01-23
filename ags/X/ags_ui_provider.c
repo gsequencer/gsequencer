@@ -32,6 +32,7 @@ void ags_ui_provider_class_init(AgsUiProviderInterface *ginterface);
  */
 
 enum {
+  SETUP_COMPLETED,
   CHECK_MESSAGE,
   CLEAN_MESSAGE,
   LAST_SIGNAL,
@@ -62,6 +63,24 @@ ags_ui_provider_get_type()
 void
 ags_ui_provider_class_init(AgsUiProviderInterface *ginterface)
 {
+  /**
+   * AgsUiProvider::setup-completed:
+   * @ui_provider: the #AgsUiProvider object
+   *
+   * The ::setup-completed signal is emitted every check message of the UI provider. This notifies
+   * about to check for messages from message delivery.
+   *
+   * Since: 3.0.8
+   */
+  ui_provider_signals[SETUP_COMPLETED] =
+    g_signal_new("setup-completed",
+		 G_TYPE_FROM_INTERFACE(ginterface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsUiProviderInterface, setup_completed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   /**
    * AgsUiProvider::check-message:
    * @ui_provider: the #AgsUiProvider object
@@ -323,6 +342,20 @@ ags_ui_provider_schedule_task_all(AgsUiProvider *ui_provider,
 
   ui_provider_interface->schedule_task_all(ui_provider,
 					   task);
+}
+
+/**
+ * ags_ui_provider_setup_completed:
+ * @ui_provider: the #AgsUiProvider
+ *
+ * Application context setup completed.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_ui_provider_setup_completed(AgsUiProvider *ui_provider)
+{
+  g_signal_emit(ui_provider, ui_provider_signals[SETUP_COMPLETED], 0);
 }
 
 /**

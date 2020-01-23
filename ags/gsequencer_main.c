@@ -17,6 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -24,6 +26,10 @@
 #include <pango/pangocairo.h>
 
 #include <gtk/gtk.h>
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
 
 #include <ags/libags.h>
 
@@ -51,7 +57,6 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
-#include "config.h"
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
@@ -331,22 +336,10 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
-  if(!builtin_theme_disabled){
-#if 0
-    g_object_set(gtk_settings_get_default(),
-		 "gtk-theme-name", "Raleigh",
-		 NULL);
-
-    g_signal_handlers_block_matched(gtk_settings_get_default(),
-				    G_SIGNAL_MATCH_DETAIL,
-				    g_signal_lookup("set-property",
-						    GTK_TYPE_SETTINGS),
-				    g_quark_from_string("gtk-theme-name"),
-				    NULL,
-				    NULL,
-				    NULL);
+#ifdef AGS_WITH_QUARTZ
+  g_object_new(GTKOSX_TYPE_APPLICATION,
+	       NULL);
 #endif
-  }
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();

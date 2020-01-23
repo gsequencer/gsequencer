@@ -19,6 +19,13 @@
 
 #include <ags/X/ags_menu_action_callbacks.h>
 
+#include "config.h"
+
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#else
+#include <webkit2/webkit2.h>
+#endif
+
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
@@ -53,8 +60,6 @@
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
-
-#include <webkit2/webkit2.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -1497,8 +1502,11 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 {
   GtkWidget *online_help_window;
 
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#else
   WebKitWebView *web_view;
-
+#endif
+  
   AgsApplicationContext *application_context;
 
   gchar *start_filename;
@@ -1512,7 +1520,9 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
   app_dir = NULL;
 #endif
   
-#ifdef AGS_ONLINE_HELP_START_FILENAME
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#else
+#if defined(AGS_ONLINE_HELP_START_FILENAME)
   start_filename = g_strdup(AGS_ONLINE_HELP_START_FILENAME);
 #else
   if((start_filename = getenv("AGS_ONLINE_HELP_START_FILENAME")) != NULL){
@@ -1545,10 +1555,12 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
       }
     }
 #else
-    start_filename = g_strdup("file:///usr/share/doc/gsequencer-doc/html/index.html");
+    start_filename = g_strdup_printf("file://%s/html/index.html",
+				     DOCDIR);
 #endif
   }
-#endif
+#endif /* defined(AGS_ONLINE_HELP_START_FILENAME) */
+#endif /* defined(AGS_W32API) || defined(AGS_OSXAPI) */
   
   online_help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -1557,11 +1569,15 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
 	       "default-height", 600,
 	       NULL);
   
+#if defined(AGS_W32API) || defined(AGS_OSXAPI)
+#else
   web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
   gtk_container_add(GTK_CONTAINER(online_help_window), GTK_WIDGET(web_view));
 
   //FIXME:JK: hard-coded
   webkit_web_view_load_uri(web_view, start_filename);
+#endif
+
   gtk_widget_show_all(online_help_window);
 
   g_free(start_filename);

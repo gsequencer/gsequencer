@@ -24,7 +24,7 @@ AM_CPPFLAGS += -include errno.h -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -I/usr/incl
 endif
 endif
 
-AM_CPPFLAGS += -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
+AM_CPPFLAGS += -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(datadir)\" -DDOCDIR=\"$(docdir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
 
 if WITH_LIBINSTPATCH
 AM_CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
@@ -511,57 +511,82 @@ endif
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols libags.sym -version-info 3:0:0 -shared -fPIC -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread
 libags_la_LIBADD = -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
 
 if WITH_W32API
+libags_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags.dll.a
 else
-libags_la_LDFLAGS += -Wl,-soname,libags.so
+if WITH_OSXAPI
+libags_la_LDFLAGS += -export-symbols libags.sym -Wl,-install_name,libags.dylib
+else
+libags_la_LDFLAGS += -export-symbols libags.sym -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
+endif
 endif
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_thread.sym -version-info 3:0:0 -shared -fPIC -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread
 libags_thread_la_LIBADD = libags.la -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libags_thread_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_thread.dll.a
 else
-libags_thread_la_LDFLAGS += -Wl,-soname,libags_thread.so
+if WITH_OSXAPI
+libags_thread_la_LDFLAGS += -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
+else
+libags_thread_la_LDFLAGS += -export-symbols libags_thread.sym -Wl,-soname,libags_thread.so
 libags_thread_la_LIBADD += -ldl -lcrypt
+endif
 endif
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_server.sym -version-info 3:0:0 -shared -fPIC -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread
 libags_server_la_LIBADD = libags_thread.la libags.la -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libags_server_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_server.dll.a
 else
-libags_server_la_LDFLAGS += -Wl,-soname,libags_server.so
+if WITH_OSXAPI
+libags_server_la_LDFLAGS += -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
+else
+libags_server_la_LDFLAGS += -export-symbols libags_server.sym -Wl,-soname,libags_server.so
 libags_server_la_LIBADD += -ldl -lcrypt
+endif
 endif
 
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_audio.sym -version-info 3:0:0 -shared -fPIC -pthread 
+libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread 
 libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libags_audio_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
 else
-libags_audio_la_LDFLAGS += -Wl,-soname,libags_audio.so
+if WITH_OSXAPI
+libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
+else
+libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
 libags_audio_la_LIBADD += -ldl
+endif
 endif
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_gui.sym -version-info 3:0:0 -shared -fPIC -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread
 libags_gui_la_LIBADD = -lm $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libags_gui_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
 else
-libags_gui_la_LDFLAGS += -Wl,-soname,libags_gui.so
+if WITH_OSXAPI
+libags_gui_la_LDFLAGS += -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
+else
+libags_gui_la_LDFLAGS += -export-symbols libags_gui.sym -Wl,-soname,libags_gui.so
 libags_gui_la_LIBADD += -ldl
+endif
 endif
 
 # library libgsequencer
@@ -570,20 +595,29 @@ libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -pthread
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libgsequencer_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
+else
+if WITH_OSXAPI
 else
 libgsequencer_la_LIBADD += -ldl
+endif
 endif
 
 # library libags-vst
 if WITH_VST3
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 3:0:0 -shared -fPIC -pthread 
+libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC -pthread 
 libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
+libags_vst_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
 else
-libags_vst_la_LDFLAGS += -Wl,-soname,libags_vst.so
+if WITH_OSXAPI
+libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-install_name,libags_vst.dylib
+else
+libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-soname,libags_vst.so
 libags_vst_la_LIBADD += -ldl
+endif
 endif
 endif
 
@@ -596,7 +630,10 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.
 
 if WITH_W32API
 else
+if WITH_OSXAPI
+else
 gsequencer_LDADD += -ldl
+endif
 endif
 
 # unit and functional tests
@@ -2402,7 +2439,10 @@ midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la
 
 if WITH_W32API
 else
+if WITH_OSXAPI
+else
 midi2xml_LDADD += -ldl
+endif
 endif
 
 midi2xml_SOURCES = ags/midi2xml_main.c

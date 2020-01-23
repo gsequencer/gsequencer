@@ -68,6 +68,8 @@ struct _AgsUiProviderInterface
   void (*schedule_task_all)(AgsUiProvider *ui_provider,
 			    GList *task);
 
+  void (*setup_completed)(AgsUiProvider *ui_provider);
+
   void (*check_message)(AgsUiProvider *ui_provider);
   void (*clean_message)(AgsUiProvider *ui_provider);
   
@@ -154,6 +156,8 @@ void ags_ui_provider_schedule_task(AgsUiProvider *ui_provider,
 				   AgsTask *task);
 void ags_ui_provider_schedule_task_all(AgsUiProvider *ui_provider,
 				       GList *task);
+
+void ags_ui_provider_setup_completed(AgsUiProvider *ui_provider);
 
 void ags_ui_provider_check_message(AgsUiProvider *ui_provider);
 void ags_ui_provider_clean_message(AgsUiProvider *ui_provider);

@@ -19,6 +19,12 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
+#include "config.h"
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
+
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_animation_window.h>
 #include <ags/X/ags_window.h>
@@ -65,10 +71,6 @@
 
 #ifndef __APPLE__
 #include <pango/pangofc-fontmap.h>
-#endif
-
-#ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include <sys/types.h>
@@ -2624,6 +2626,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   AgsXorgApplicationContext *xorg_application_context;
   GtkWidget *widget;
   AgsWindow *window;
+
+#ifdef AGS_WITH_QUARTZ
+  GtkosxApplication *app;
+#endif
   
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
@@ -2774,20 +2780,27 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   gtk_widget_show(widget);
 
   /* AgsWindow */
-#ifdef AGS_WITH_QUARTZ
-  g_object_new(GTKOSX_TYPE_APPLICATION,
-	       NULL);
-#endif
   window =
     xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
 						    NULL);
+
+#ifdef AGS_WITH_QUARTZ  
+  app = gtkosx_application_get();
+  
+  gtk_widget_hide((GtkWidget *) window->menu_bar);
+  gtkosx_application_set_menu_bar(app,
+				  window->menu_bar);
+  
+  gtkosx_application_ready(app);
+#endif
+
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   
   if(filename != NULL){
     window->filename = filename;
   }
-
+  
   /* gtk main */
   gtk_main();
 }
