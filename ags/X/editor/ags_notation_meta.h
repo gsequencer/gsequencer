@@ -52,8 +52,8 @@ struct _AgsNotationMeta
 
   guint flags;
 
-  GtkLable *machine_type;
-  GtkLable *machine_name;
+  GtkLabel *machine_type;
+  GtkLabel *machine_name;
 
   GtkLabel *audio_channels;
   GtkLabel *output_pads;

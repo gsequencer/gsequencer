@@ -1,3 +1,11 @@
+ags (3.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented getter and setter functions of properties
+	* TODO:JK: implemented meta widget for editors
+	* TODO:JK: implemented AgsOnlineHelpWindow
+	* TODO:JK: refactored GSequencer to allow single window mode
+
 ags (3.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

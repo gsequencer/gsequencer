@@ -2385,7 +2385,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_wave_edit_box.c \
 	ags/X/editor/ags_wave_edit_callbacks.c \
 	ags/X/editor/ags_wave_meta.c \
-	ags/X/editor/ags_wave_meta_callbacks.c
+	ags/X/editor/ags_wave_meta_callbacks.c \
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c
 
