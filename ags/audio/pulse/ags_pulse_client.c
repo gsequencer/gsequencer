@@ -173,7 +173,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
-   * AgsPulseClient:device:
+   * AgsPulseClient:device: (type GList(GObject)) (transfer full)
    *
    * The assigned devices.
    * 
@@ -188,7 +188,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
-   * AgsPulseClient:port:
+   * AgsPulseClient:port: (type GList(AgsPulsePort)) (transfer full)
    *
    * The assigned ports.
    * 
@@ -1014,6 +1014,10 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 
   if(context != NULL){
 #ifdef AGS_WITH_PULSE
+    AgsLog *log;
+    
+    gint64 ready_timeout;
+    
     pa_context_connect(context,
 		       NULL,
 		       0,
@@ -1021,12 +1025,27 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
     pa_context_set_state_callback(context,
 				  ags_pulse_client_state_callback,
 				  pulse_client);
+
+    log = (GObject *) ags_log_get_instance();
+
+    ags_log_add_message(log,
+			g_strdup("* start pulseaudio"));
     
+    ready_timeout = g_get_monotonic_time() + 20 * G_USEC_PER_SEC;
+
     while(!ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_READY)){
+      if(g_get_monotonic_time() > ready_timeout){
+	g_critical("Advanced Gtk+ Sequencer open pulseaudio client - timeout");
+	  
+	break;
+      }
+      
       if(!ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_READY)){
 	pa_mainloop_iterate(main_loop,
-			    TRUE,
+			    FALSE,
 			    NULL);
+
+	g_usleep(125);
       }
     }
 #endif

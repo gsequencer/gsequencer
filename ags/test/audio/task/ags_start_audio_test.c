@@ -59,9 +59,53 @@ void ags_start_audio_test_launch();
   "auto-sense=true\n"					\
   "\n"
 
+GThread *add_thread = NULL;
+
 AgsConfig *config;
 
 AgsApplicationContext *application_context;
+
+gpointer
+ags_start_audio_test_add_thread(gpointer data)
+{
+  CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
+    
+  /* initialize the CUnit test registry */
+  if(CUE_SUCCESS != CU_initialize_registry()){
+    exit(CU_get_error());
+  }
+
+  /* add a suite to the registry */
+  pSuite = CU_add_suite("AgsStartAudioTest", ags_start_audio_test_init_suite, ags_start_audio_test_clean_suite);
+  
+  if(pSuite == NULL){
+    CU_cleanup_registry();
+    
+    exit(CU_get_error());
+  }
+
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "test of AgsStartAudio launch", ags_start_audio_test_launch) == NULL)){
+    CU_cleanup_registry();
+    
+    exit(CU_get_error());
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+    
+  exit(CU_get_error());
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -70,6 +114,10 @@ AgsApplicationContext *application_context;
 int
 ags_start_audio_test_init_suite()
 {
+  AgsThread *main_loop;
+
+  gint64 start_thread_timeout;
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_START_AUDIO_TEST_CONFIG,
@@ -81,6 +129,22 @@ ags_start_audio_test_init_suite()
   ags_application_context_prepare(application_context);
 
   ags_application_context_setup(application_context);
+
+  main_loop = application_context->main_loop;
+  ags_thread_set_flags(main_loop,
+		       AGS_THREAD_TIME_ACCOUNTING);
+
+  start_thread_timeout = g_get_monotonic_time() + 20 * G_USEC_PER_SEC;
+  
+  while(!ags_thread_test_status_flags(main_loop, AGS_THREAD_STATUS_RUNNING)){
+    g_usleep(4);
+    
+    if(g_get_monotonic_time() > start_thread_timeout){
+      g_critical("start timeout");
+
+      break;
+    }
+  }
   
   return(0);
 }
@@ -99,9 +163,10 @@ void
 ags_start_audio_test_launch()
 {
   AgsAudio *audio;
-
   AgsStartAudio *start_audio;
 
+  AgsTaskLauncher *task_launcher;
+  
   audio = ags_audio_new(NULL);
   ags_audio_set_flags(audio,
 		      (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
@@ -129,49 +194,27 @@ ags_start_audio_test_launch()
   CU_ASSERT(start_audio->sound_scope == -1);
 
   /* launch */
-  ags_task_launch(start_audio);
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
+  ags_task_launcher_add_task(task_launcher,
+			     start_audio);
+
+  g_usleep(5 * G_USEC_PER_SEC);
+  
   CU_ASSERT(audio->recall_id != NULL);
 }
 
 int
 main(int argc, char **argv)
 {
-  CU_pSuite pSuite = NULL;
+  add_thread = g_thread_new("libags_audio.so - functional pitch test",
+			    ags_start_audio_test_add_thread,
+			    NULL);
 
-  putenv("LC_ALL=C");
-  putenv("LANG=C");
+  g_main_loop_run(g_main_loop_new(g_main_context_default(),
+				  FALSE));
+  
+  g_thread_join(add_thread);
 
-  putenv("LADSPA_PATH=\"\"");
-  putenv("DSSI_PATH=\"\"");
-  putenv("LV2_PATH=\"\"");
-    
-  /* initialize the CUnit test registry */
-  if(CUE_SUCCESS != CU_initialize_registry()){
-    return CU_get_error();
-  }
-
-  /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsStartAudioTest", ags_start_audio_test_init_suite, ags_start_audio_test_clean_suite);
-  
-  if(pSuite == NULL){
-    CU_cleanup_registry();
-    
-    return CU_get_error();
-  }
-
-  /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsStartAudio launch", ags_start_audio_test_launch) == NULL)){
-    CU_cleanup_registry();
-    
-    return CU_get_error();
-  }
-  
-  /* Run all tests using the CUnit Basic interface */
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  
-  CU_cleanup_registry();
-  
-  return(CU_get_error());
+  return(-1);
 }

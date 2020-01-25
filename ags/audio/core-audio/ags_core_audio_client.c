@@ -171,7 +171,7 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
 				  param_spec);
 
   /**
-   * AgsCoreAudioClient:device:
+   * AgsCoreAudioClient:device: (type GList(GObject)) (transfer full)
    *
    * The assigned devices.
    * 
@@ -186,7 +186,7 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
 				  param_spec);
 
   /**
-   * AgsCoreAudioClient:port:
+   * AgsCoreAudioClient:port: (type GList(AgsCoreAudioPort)) (transfer full)
    *
    * The assigned ports.
    * 

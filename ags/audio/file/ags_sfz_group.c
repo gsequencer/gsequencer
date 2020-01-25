@@ -150,7 +150,7 @@ ags_sfz_group_class_init(AgsSFZGroupClass *sfz_group)
 				  param_spec);
 
   /**
-   * AgsSFZGroup:region:
+   * AgsSFZGroup:region: (type GList(AgsSFZRegion)) (transfer full)
    *
    * The region assigned with.
    * 

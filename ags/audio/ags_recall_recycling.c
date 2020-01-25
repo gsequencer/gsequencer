@@ -215,7 +215,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
 				  param_spec);
 
   /**
-   * AgsRecallRecycling:child-source:
+   * AgsRecallRecycling:child-source: (type GList(AgsAudioSignal)) (transfer full)
    *
    * The assigned source audio signal.
    * 

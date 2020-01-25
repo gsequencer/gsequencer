@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.0.1\n"
+"Project-Id-Version: gsequencer 3.0.9\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-01-14 11:57+0100\n"
+"POT-Creation-Date: 2020-01-23 22:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,20 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ags/X/ags_animation_window.c:436 ags/X/ags_animation_window.c:464
-msgid "LADSPA"
-msgstr ""
-
-#: ags/X/ags_animation_window.c:440 ags/X/ags_animation_window.c:455
-#: ags/X/ags_animation_window.c:468 ags/X/ags_animation_window.c:483
-msgid "DSSI"
-msgstr ""
-
-#: ags/X/ags_animation_window.c:444 ags/X/ags_animation_window.c:459
-#: ags/X/ags_animation_window.c:472 ags/X/ags_animation_window.c:487
-msgid "Lv2"
-msgstr ""
 
 #: ags/X/ags_audio_preferences.c:188
 msgid "JACK driver"
@@ -104,7 +90,7 @@ msgid "Save as"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:144 ags/X/ags_export_window.c:328
-#: ags/X/ags_machine.c:3350 ags/X/ags_menu_bar.c:141
+#: ags/X/ags_machine.c:3358 ags/X/ags_menu_bar.c:141
 msgid "export"
 msgstr ""
 
@@ -184,7 +170,7 @@ msgstr ""
 msgid "Preferences"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:239 ags/X/ags_machine.c:3391
+#: ags/X/ags_context_menu.c:239 ags/X/ags_machine.c:3399
 #: ags/X/ags_menu_bar.c:236
 msgid "import"
 msgstr ""
@@ -399,88 +385,88 @@ msgstr ""
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:3156 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3164 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:3159 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3167 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:3162
+#: ags/X/ags_machine.c:3170
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:3165
+#: ags/X/ags_machine.c:3173
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:3168
+#: ags/X/ags_machine.c:3176
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3171 ags/X/ags_machine_callbacks.c:213
+#: ags/X/ags_machine.c:3179 ags/X/ags_machine_callbacks.c:213
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3174 ags/X/ags_machine_callbacks.c:277
+#: ags/X/ags_machine.c:3182 ags/X/ags_machine_callbacks.c:277
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3177 ags/X/ags_machine_callbacks.c:360
+#: ags/X/ags_machine.c:3185 ags/X/ags_machine_callbacks.c:360
 msgid "reposition audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3180 ags/X/ags_machine_editor.c:203
+#: ags/X/ags_machine.c:3188 ags/X/ags_machine_editor.c:203
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:3183
+#: ags/X/ags_machine.c:3191
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:3249 ags/X/editor/ags_pattern_envelope.c:225
+#: ags/X/ags_machine.c:3257 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:159
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:3260
+#: ags/X/ags_machine.c:3268
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3270
+#: ags/X/ags_machine.c:3278
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3280
+#: ags/X/ags_machine.c:3288
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:3309
+#: ags/X/ags_machine.c:3317
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3320
+#: ags/X/ags_machine.c:3328
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3330
+#: ags/X/ags_machine.c:3338
 msgid "MIDI dialog"
 msgstr ""
 
-#: ags/X/ags_machine.c:3361
+#: ags/X/ags_machine.c:3369
 msgid "MIDI export"
 msgstr ""
 
-#: ags/X/ags_machine.c:3371
+#: ags/X/ags_machine.c:3379
 msgid "Audio export"
 msgstr ""
 
-#: ags/X/ags_machine.c:3402
+#: ags/X/ags_machine.c:3410
 msgid "MIDI import"
 msgstr ""
 
-#: ags/X/ags_machine.c:3412
+#: ags/X/ags_machine.c:3420
 msgid "Audio import"
 msgstr ""
 
@@ -711,27 +697,41 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3271
+#: ags/X/ags_window_callbacks.c:121 ags/X/ags_window_callbacks.c:149
+msgid "LADSPA"
+msgstr ""
+
+#: ags/X/ags_window_callbacks.c:125 ags/X/ags_window_callbacks.c:140
+#: ags/X/ags_window_callbacks.c:153 ags/X/ags_window_callbacks.c:168
+msgid "DSSI"
+msgstr ""
+
+#: ags/X/ags_window_callbacks.c:129 ags/X/ags_window_callbacks.c:144
+#: ags/X/ags_window_callbacks.c:157 ags/X/ags_window_callbacks.c:172
+msgid "Lv2"
+msgstr ""
+
+#: ags/X/ags_xorg_application_context.c:3295
 #: ags/audio/ags_audio_application_context.c:2129
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3281
+#: ags/X/ags_xorg_application_context.c:3305
 #: ags/audio/ags_audio_application_context.c:2139
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3523
+#: ags/X/ags_xorg_application_context.c:3547
 #: ags/audio/ags_audio_application_context.c:2381
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3533
+#: ags/X/ags_xorg_application_context.c:3557
 #: ags/audio/ags_audio_application_context.c:2391
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
@@ -1313,11 +1313,11 @@ msgstr ""
 msgid "The assigned osc server"
 msgstr ""
 
-#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:177
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:182
 msgid "assigned OSC XMLRPC server"
 msgstr ""
 
-#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:178
+#: ags/audio/osc/xmlrpc/ags_osc_xmlrpc_controller.c:183
 msgid "The assigned OSC XMLRPC server"
 msgstr ""
 
@@ -1329,10 +1329,10 @@ msgstr ""
 msgid "The assigned server"
 msgstr ""
 
-#: ags/server/security/ags_security_context.c:119
+#: ags/server/security/ags_security_context.c:121
 msgid "certificates as string"
 msgstr ""
 
-#: ags/server/security/ags_security_context.c:120
+#: ags/server/security/ags_security_context.c:122
 msgid "The certificates as string"
 msgstr ""

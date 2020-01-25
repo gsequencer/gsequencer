@@ -2922,7 +2922,7 @@ ags_machine_check_message(AgsMachine *machine)
   AgsMessageDelivery *message_delivery;
 
   GList *start_message_envelope, *message_envelope;
-  GList *active_playback;
+  GList *start_active_playback, *active_playback;
 
   if(!AGS_IS_MACHINE(machine)){
     return;
@@ -3062,12 +3062,17 @@ ags_machine_check_message(AgsMachine *machine)
 		   (GDestroyNotify) g_object_unref);
 
   /*  */
-  active_playback = machine->active_playback;
+  active_playback =
+    start_active_playback = g_list_copy(machine->active_playback);
 
   while(active_playback != NULL){
     AgsChannel *channel;
+    AgsPlayback *playback;
 
-    g_object_get(active_playback->data,
+    playback = active_playback->data;
+    g_object_ref(playback);
+    
+    g_object_get(playback,
 		 "channel", &channel,
 		 NULL);
     
@@ -3089,7 +3094,7 @@ ags_machine_check_message(AgsMachine *machine)
 		       "AgsChannel::stop",
 		       18)){
 	  ags_machine_playback_set_active(machine,
-					  active_playback->data,
+					  playback,
 					  FALSE);
 	}
       }
@@ -3101,9 +3106,12 @@ ags_machine_check_message(AgsMachine *machine)
 		     (GDestroyNotify) g_object_unref);
 
     g_object_unref(channel);
+    g_object_unref(playback);
       
     active_playback = active_playback->next;
   }
+
+  g_list_free(start_active_playback);
 }
 
 /**

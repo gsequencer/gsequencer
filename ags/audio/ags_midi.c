@@ -157,7 +157,7 @@ ags_midi_class_init(AgsMidiClass *midi)
 				  param_spec);
 
   /**
-   * AgsMidi:track:
+   * AgsMidi:track: (type GList(AgsTrack)) (transfer full)
    *
    * The assigned #AgsTrack
    * 

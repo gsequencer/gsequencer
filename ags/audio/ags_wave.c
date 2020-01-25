@@ -235,7 +235,7 @@ ags_wave_class_init(AgsWaveClass *wave)
 				  param_spec);
 
   /**
-   * AgsWave:buffer:
+   * AgsWave:buffer: (type GList(AgsBuffer)) (transfer full)
    *
    * The assigned #AgsBuffer
    * 

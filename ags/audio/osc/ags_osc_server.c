@@ -205,7 +205,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 				  param_spec);
 
   /**
-   * AgsOscServer:connection:
+   * AgsOscServer:connection: (type GList(AgsOscConnection)) (transfer full)
    *
    * The assigned #AgsOscConnection providing default settings.
    * 
@@ -236,7 +236,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 				  param_spec);
   
   /**
-   * AgsOscServer:controller:
+   * AgsOscServer:controller: (type GList(AgsOscController)) (transfer full)
    *
    * The assigned #AgsOscController providing default settings.
    * 

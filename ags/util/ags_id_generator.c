@@ -51,9 +51,13 @@ ags_id_generator_create_uuid()
   gchar *uuid_str;
 
   /* make sure uuid is really unique */
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
+  uuid_generate_time(out);
+#else
   //FIXME:JK: uncomment me
   //  while(uuid_generate_time_safe(out) != 0);
   uuid_generate_time_safe(out);
+#endif
   
   /* create a string representation */
   uuid_str = (gchar *) malloc((AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH + 1) * sizeof(gchar));

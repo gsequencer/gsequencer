@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,170 @@
 
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
+#include "config.h"
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
+
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_context_menu.h>
+#include <ags/X/ags_menu_action_callbacks.h>
 
 #include <ags/X/file/ags_simple_file.h>
+
+#include <ags/i18n.h>
+
+void
+ags_window_setup_completed_callback(AgsApplicationContext *application_context, AgsWindow *window)
+{
+  AgsMenuBar *menu_bar;
+  AgsContextMenu *context_menu;
+    
+  GtkMenuItem *item;
+
+#ifdef AGS_WITH_QUARTZ
+  GtkosxApplication *app;
+#endif
+
+  GtkAccelGroup *accel_group;
+  GClosure *closure;
+
+  /* open */
+  accel_group = gtk_accel_group_new();
+
+  closure = g_cclosure_new(ags_menu_action_open_callback,
+			   NULL,
+			   NULL);
+  gtk_accel_group_connect(accel_group,
+			  GDK_KEY_O,
+			  GDK_CONTROL_MASK,
+			  0,
+			  closure);
+  gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+  /* save */
+  accel_group = gtk_accel_group_new();
+
+  closure = g_cclosure_new(ags_menu_action_save_callback,
+			   NULL,
+			   NULL);
+  gtk_accel_group_connect(accel_group,
+			  GDK_KEY_S,
+			  GDK_CONTROL_MASK,
+			  0,
+			  closure);
+  gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+  /* save as */
+  accel_group = gtk_accel_group_new();
+
+  closure = g_cclosure_new(ags_menu_action_save_as_callback,
+			   NULL,
+			   NULL);
+  gtk_accel_group_connect(accel_group,
+			  GDK_KEY_S,
+			  GDK_CONTROL_MASK | GDK_SHIFT_MASK,
+			  0,
+			  closure);
+  gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+  /* quit */
+  accel_group = gtk_accel_group_new();
+
+  closure = g_cclosure_new(ags_menu_action_quit_callback,
+			   NULL,
+			   NULL);
+  gtk_accel_group_connect(accel_group,
+			  GDK_KEY_Q,
+			  GDK_CONTROL_MASK,
+			  0,
+			  closure);
+  gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+
+  /* online help */
+  accel_group = gtk_accel_group_new();
+
+  closure = g_cclosure_new(ags_menu_action_online_help_callback,
+			   NULL,
+			   NULL);
+  gtk_accel_group_connect(accel_group,
+			  GDK_KEY_H,
+			  GDK_CONTROL_MASK,
+			  0,
+			  closure);
+  gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
+    
+  /* menu */
+  menu_bar = window->menu_bar;
+  context_menu = window->context_menu;
+    
+  /* menu - bridge */
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  /* menu - live */
+  menu_bar->live = (GtkMenu *) gtk_menu_new();
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget *) menu_bar->live);
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
+
+  /* context menu - bridge */
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("LADSPA"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  /* context menu - live */
+  context_menu->live = (GtkMenu *) gtk_menu_new();
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label("live!");
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) context_menu->live);
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("DSSI"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget *) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("Lv2"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->live, (GtkWidget*) item);  
+
+  /* connect and show window */
+  ags_connectable_connect(AGS_CONNECTABLE(window));
+  gtk_widget_show_all(window);    
+
+#ifdef AGS_WITH_QUARTZ
+  app = gtkosx_application_get();
+  
+  gtkosx_application_sync_menubar(app);
+#endif
+}
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)

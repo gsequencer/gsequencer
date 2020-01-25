@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <libsoup/soup.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_XML_AUTHENTICATION                (ags_xml_authentication_get_type())

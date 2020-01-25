@@ -803,7 +803,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:pattern:
+   * AgsChannel:pattern: (type GList(AgsPatter)) (transfer full)
    *
    * The containing #AgsPattern.
    * 
@@ -818,7 +818,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall-id:
+   * AgsChannel:recall-id: (type GList(AgsRecallID)) (transfer full)
    *
    * The assigned #AgsRecallID.
    * 
@@ -833,7 +833,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recycling-context:
+   * AgsChannel:recycling-context: (type GList(AgsRecyclingContext)) (transfer full)
    *
    * The containing #AgsRecyclingContext.
    * 
@@ -848,7 +848,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall-container:
+   * AgsChannel:recall-container: (type GList(AgsRecallContainer)) (transfer full)
    *
    * The containing #AgsRecallContainer.
    * 
@@ -863,7 +863,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall:
+   * AgsChannel:recall: (type GList(AgsRecall)) (transfer full)
    *
    * The containing #AgsRecall in recall-context.
    * 
@@ -878,7 +878,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:play:
+   * AgsChannel:play: (type GList(AgsRecall)) (transfer full)
    *
    * The containing #AgsRecall in play-context.
    * 
@@ -7532,7 +7532,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     
     if(g_list_find(channel->play, recall) != NULL){
       success = TRUE;
-      
+
       channel->play = g_list_remove(channel->play,
 				    recall);
     }
@@ -9559,6 +9559,10 @@ ags_channel_real_play_recall(AgsChannel *channel,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
+  
+  if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+    return;
+  }
 
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
@@ -10259,6 +10263,7 @@ ags_channel_real_start(AgsChannel *channel,
   GList *start_recall_id;
   GList *start_wait_thread, *wait_thread;
 
+  gint64 start_wait_timeout;
   gint i;
 
   static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
@@ -10368,33 +10373,62 @@ ags_channel_real_start(AgsChannel *channel,
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  sound_scope);
-      start_wait_thread = g_list_prepend(start_wait_thread,
-					 audio_thread);
-    
-      ags_thread_add_start_queue(audio_loop,
-				 audio_thread);
+
+      if(audio_thread != NULL){
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   audio_thread);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   audio_thread);
+      }
     }
     
     if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       channel_thread = ags_playback_get_channel_thread(playback,
 						       sound_scope);
-      start_wait_thread = g_list_prepend(start_wait_thread,
-					 channel_thread);
 
-      ags_thread_add_start_queue(audio_loop,
-				 channel_thread);
+      if(channel_thread != NULL){
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   channel_thread);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   channel_thread);
+      }
     }
 
     /* unref */
     wait_thread = start_wait_thread;
 
+    start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
+    
     while(wait_thread != NULL){
-      while(wait_thread->data != NULL &&
-	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+      /* wait thread */
+      g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+      if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+      
+	while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+	      g_get_monotonic_time() < start_wait_timeout){
+	  g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			    AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			    start_wait_timeout);
+	}
+      }
+	
+      g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+      if(g_get_monotonic_time() > start_wait_timeout){
+	g_critical("sync timeout");
+
+	goto ags_channel_real_start_ONE_SCOPE_TIMEOUT;
+      }
 
       wait_thread = wait_thread->next;
     }
     
+  ags_channel_real_start_ONE_SCOPE_TIMEOUT:
     g_list_free_full(start_wait_thread,
 		     g_object_unref);
 
@@ -10461,33 +10495,62 @@ ags_channel_real_start(AgsChannel *channel,
       if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
 	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							    i);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   audio_thread);
-	
-	ags_thread_add_start_queue(audio_loop,
-				   audio_thread);
+
+	if(audio_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     audio_thread);
+	  
+	  ags_thread_add_start_queue(audio_loop,
+				     audio_thread);
+	}
       }
       
       if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
 	channel_thread = ags_playback_get_channel_thread(playback,
 							 i);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   channel_thread);
+
+	if(channel_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     channel_thread);
       
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
+	}
       }
       
       /* unref */
       wait_thread = start_wait_thread;
 
+      start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
+
       while(wait_thread != NULL){
-	while(wait_thread->data != NULL &&
-	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+	/* wait thread */
+	g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+	if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	  ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+	
+	  while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+		!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+		g_get_monotonic_time() < start_wait_timeout){
+	    g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			      AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			      start_wait_timeout);
+	  }
+	}
+	  
+	g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+	if(g_get_monotonic_time() > start_wait_timeout){
+	  g_critical("sync timeout");
+
+	  goto ags_channel_real_start_ALL_SCOPE_TIMEOUT;
+	}
 
 	wait_thread = wait_thread->next;
       }
     
+    ags_channel_real_start_ALL_SCOPE_TIMEOUT:
       g_list_free_full(start_wait_thread,
 		       g_object_unref);
 
@@ -10615,6 +10678,7 @@ ags_channel_real_stop(AgsChannel *channel,
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *start_message_queue;
 
   gint i;
@@ -10627,6 +10691,14 @@ ags_channel_real_stop(AgsChannel *channel,
     return;
   }
 
+  list = recall_id;
+
+  while(list != NULL){
+    ags_recall_id_set_state_flags(list->data, AGS_SOUND_STATE_IS_TERMINATING);
+    
+    list = list->next;
+  }
+  
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));

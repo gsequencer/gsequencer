@@ -322,7 +322,7 @@ ags_functional_fourier_transform_test_s16()
 		   "samplerate", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_SAMPLERATE,
 		   "buffer-size", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE,
 		   "format", AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_FORMAT,
-		   "x", j * AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE,
+		   "x", (guint64) j * AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_S16_BUFFER_SIZE,
 		   NULL);
       ags_wave_add_buffer(current_wave,
 			  buffer,

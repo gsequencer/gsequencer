@@ -242,7 +242,7 @@ ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server)
 				  param_spec);
 
   /**
-   * AgsAudioUnitServer:audio-unit-client:
+   * AgsAudioUnitServer:audio-unit-client: (type GList(AgsAudioUnitClient)) (transfer full)
    *
    * The audio unit client list.
    * 

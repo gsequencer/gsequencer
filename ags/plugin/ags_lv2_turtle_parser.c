@@ -167,7 +167,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 
   /* properties */
   /**
-   * AgsLv2TurtleParser:turtle:
+   * AgsLv2TurtleParser:turtle: (type GList(AgsTurtle)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsTurtle.
    * 
@@ -182,7 +182,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 				  param_spec);
 
   /**
-   * AgsLv2TurtleParser:plugin:
+   * AgsLv2TurtleParser:plugin: (type GList(AgsLv2Plugin)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsLv2Plugin.
    * 
@@ -197,7 +197,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 				  param_spec);
 
   /**
-   * AgsLv2TurtleParser:ui-pluin:
+   * AgsLv2TurtleParser:ui-pluin: (type GList(AgsLv2uiPlugin)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsLv2uiPlugin.
    * 
@@ -212,7 +212,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 				  param_spec);
 
   /**
-   * AgsLv2TurtleParser:preset:
+   * AgsLv2TurtleParser:preset: (type GList(AgsLv2Preset)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsLv2Preset.
    * 

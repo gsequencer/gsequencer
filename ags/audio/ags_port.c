@@ -304,7 +304,7 @@ ags_port_class_init(AgsPortClass *port)
 				  param_spec);
 
   /**
-   * AgsPort:automation:
+   * AgsPort:automation: (type GList(AgsAutomation)) (transfer full)
    *
    * The port's automation.
    * 

@@ -155,6 +155,9 @@ void ags_simple_file_read(AgsSimpleFile *simple_file);
 void ags_simple_file_read_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_read_start(AgsSimpleFile *simple_file);
 
+void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **ags_config);
+
+
 /* */
 AgsSimpleFile* ags_simple_file_new();
 
