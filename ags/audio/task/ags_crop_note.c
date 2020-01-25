@@ -145,7 +145,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
 				  param_spec);
   
   /**
-   * AgsCropNote:selection:
+   * AgsCropNote:selection: (type GList(AgsNote)) (transfer full)
    *
    * The assigned #AgsNote
    * 

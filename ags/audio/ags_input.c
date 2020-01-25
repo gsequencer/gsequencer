@@ -140,7 +140,7 @@ ags_input_class_init(AgsInputClass *input)
 				  param_spec);
 
   /**
-   * AgsInput:synth-generator:
+   * AgsInput:synth-generator: (type GList(AgsSynthGenerator)) (transfer full)
    *
    * The synth generators assigned with this input.
    * 

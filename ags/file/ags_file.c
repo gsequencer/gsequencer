@@ -1457,8 +1457,6 @@ ags_file_real_read(AgsFile *file)
 
   xmlNode *root_node, *child;
 
-  pid_t pid_num;
-
   GRecMutex *file_mutex;
 
   /* get file mutex */

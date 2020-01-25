@@ -1555,8 +1555,13 @@ ags_menu_action_online_help_callback(GtkWidget *menu_item, gpointer data)
       }
     }
 #else
+#if defined(AGS_WITH_SINGLE_DOCDIR)
+    start_filename = g_strdup_printf("file://%s/user-manual/index.html",
+				     DOCDIR);
+#else
     start_filename = g_strdup_printf("file://%s/html/index.html",
 				     DOCDIR);
+#endif
 #endif
   }
 #endif /* defined(AGS_ONLINE_HELP_START_FILENAME) */

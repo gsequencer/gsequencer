@@ -35,6 +35,13 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="3.0.8" date="2020-01-23">
+      <description>
+	<p>Fixes to WASAPI backend.</p>
+	<p>Fixes to CoreAudio backend.</p>
+      </description>
+    </release>
+
     <release version="3.0.5" date="2020-01-19">
       <description>
 	<p>Improved pulseaudio connect timeout.</p>

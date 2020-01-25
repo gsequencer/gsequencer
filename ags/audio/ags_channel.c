@@ -803,7 +803,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:pattern:
+   * AgsChannel:pattern: (type GList(AgsPatter)) (transfer full)
    *
    * The containing #AgsPattern.
    * 
@@ -818,7 +818,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall-id:
+   * AgsChannel:recall-id: (type GList(AgsRecallID)) (transfer full)
    *
    * The assigned #AgsRecallID.
    * 
@@ -833,7 +833,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recycling-context:
+   * AgsChannel:recycling-context: (type GList(AgsRecyclingContext)) (transfer full)
    *
    * The containing #AgsRecyclingContext.
    * 
@@ -848,7 +848,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall-container:
+   * AgsChannel:recall-container: (type GList(AgsRecallContainer)) (transfer full)
    *
    * The containing #AgsRecallContainer.
    * 
@@ -863,7 +863,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:recall:
+   * AgsChannel:recall: (type GList(AgsRecall)) (transfer full)
    *
    * The containing #AgsRecall in recall-context.
    * 
@@ -878,7 +878,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:play:
+   * AgsChannel:play: (type GList(AgsRecall)) (transfer full)
    *
    * The containing #AgsRecall in play-context.
    * 

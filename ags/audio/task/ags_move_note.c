@@ -147,7 +147,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
 				  param_spec);
   
   /**
-   * AgsMoveNote:selection:
+   * AgsMoveNote:selection: (type GList(AgsNote))
    *
    * The assigned #AgsNote
    * 

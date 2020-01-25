@@ -173,7 +173,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
-   * AgsPulseClient:device:
+   * AgsPulseClient:device: (type GList(GObject)) (transfer full)
    *
    * The assigned devices.
    * 
@@ -188,7 +188,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
-   * AgsPulseClient:port:
+   * AgsPulseClient:port: (type GList(AgsPulsePort)) (transfer full)
    *
    * The assigned ports.
    * 

@@ -25,7 +25,13 @@
 #include <gtkosxapplication.h>
 #endif
 
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_context_menu.h>
+#include <ags/X/ags_menu_action_callbacks.h>
+
 #include <ags/X/file/ags_simple_file.h>
+
+#include <ags/i18n.h>
 
 void
 ags_window_setup_completed_callback(AgsApplicationContext *application_context, AgsWindow *window)

@@ -1,6 +1,13 @@
+ags (3.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added --enable-single-docdir configure option to meet FreeBSD demands
+
 ags (3.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added GObject-Introspection annotations for GList type properties
+	* improved online help browser to respect --docdir configure parameter
 	* fixes to WASAPI backend
 	* fixes to CoreAudio backend
 

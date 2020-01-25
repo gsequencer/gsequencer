@@ -178,7 +178,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				  param_spec);
 
   /**
-   * AgsBasePlugin:plugin-port:
+   * AgsBasePlugin:plugin-port: (type GList(AgsPluginPort)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsPluginPort
    * 
