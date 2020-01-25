@@ -166,6 +166,22 @@ main(int argc, char **argv)
 //  mtrace();
   
 #if defined (AGS_W32API)
+  app_dir = NULL;
+
+  if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
+    app_dir = g_strndup(argv[0],
+			strlen(argv[0]) - strlen("\\gsequencer.exe"));
+  }
+
+  putenv(g_strdup_printf("XDG_DATA_DIRS=%s\\share", app_dir));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s\\etc", app_dir));
+
+  putenv(g_strdup_printf("GDK_PIXBUF_MODULE_FILE=%s\\lib\\gdk-pixbuf-2.0\\2.10.0\\loaders.cache", app_dir));
+
+  putenv(g_strdup_printf("GTK_EXE_PREFIX=%s", app_dir));
+  putenv(g_strdup_printf("GTK_DATA_PREFIX=%s\\share", app_dir));
+  putenv(g_strdup_printf("GTK_PATH=%s", app_dir));
+  putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s\\lib\\gtk-3.0\\3.0.0\\immodules.cache", app_dir));
 #else
   uid = getuid();
   pw = getpwuid(uid);

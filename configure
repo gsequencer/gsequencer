@@ -1792,10 +1792,6 @@ Some influential environment variables:
   CAIRO_LIBS  linker flags for CAIRO, overriding pkg-config
   GTK_CFLAGS  C compiler flags for GTK, overriding pkg-config
   GTK_LIBS    linker flags for GTK, overriding pkg-config
-  WEBKITGTK_CFLAGS
-              C compiler flags for WEBKITGTK, overriding pkg-config
-  WEBKITGTK_LIBS
-              linker flags for WEBKITGTK, overriding pkg-config
   GTKDOC_DEPS_CFLAGS
               C compiler flags for GTKDOC_DEPS, overriding pkg-config
   GTKDOC_DEPS_LIBS
@@ -22722,6 +22718,11 @@ fi
 
 
 
+if test "x$enable_w32api" != xyes; then :
+    WEBKITGTK_CFLAGS
+              C compiler flags for WEBKITGTK, overriding pkg-config
+  WEBKITGTK_LIBS
+              linker flags for WEBKITGTK, overriding pkg-config
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for WEBKITGTK" >&5
@@ -22788,7 +22789,8 @@ $WEBKITGTK_PKG_ERRORS
 Consider adjusting the PKG_CONFIG_PATH environment variable if you
 installed software in a non-standard prefix.
 
-Alternatively, you may set the environment variables WEBKITGTK_CFLAGS
+Alternatively
+elif you may set the environment variables WEBKITGTK_CFLAGS
 and WEBKITGTK_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
@@ -22800,11 +22802,14 @@ as_fn_error $? "The pkg-config script could not be found or is too old.  Make su
 is in your PATH or set the PKG_CONFIG environment variable to the full
 path to pkg-config.
 
-Alternatively, you may set the environment variables WEBKITGTK_CFLAGS
+Alternatively; then :
+  you may set the environment variables WEBKITGTK_CFLAGS
 and WEBKITGTK_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+To get pkg-config
+else
+  see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details" "$LINENO" 5; }
 else
 	WEBKITGTK_CFLAGS=$pkg_cv_WEBKITGTK_CFLAGS
@@ -22815,6 +22820,7 @@ $as_echo "yes" >&6; }
 fi
 
 
+fi
 
 if test "x$enable_run_functional_tests" == xyes; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: run functional tests enabled" >&5

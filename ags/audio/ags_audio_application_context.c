@@ -212,7 +212,9 @@ static AgsConnectableInterface* ags_audio_application_context_parent_connectable
 extern AgsApplicationContext *ags_application_context;
 
 //TODO:JK: implement get functions
+#ifndef AGS_W32API
 struct sigaction ags_sigact;
+#endif
 
 GType
 ags_audio_application_context_get_type()
@@ -288,6 +290,7 @@ ags_audio_application_context_get_type()
 void
 ags_audio_application_context_signal_handler(int signr)
 {
+#ifndef AGS_W32API
   if(signr == SIGINT){
     //TODO:JK: do backup
     
@@ -295,12 +298,15 @@ ags_audio_application_context_signal_handler(int signr)
   }else{
     sigemptyset(&(ags_sigact.sa_mask));    
   }
+#endif
 }
 
 static void
 ags_audio_application_context_signal_cleanup()
 {
+#ifndef AGS_W32API
   sigemptyset(&(ags_sigact.sa_mask));
+#endif
 }
 
 void
@@ -1826,11 +1832,13 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
 
+#ifndef AGS_W32API
   ags_sigact.sa_handler = ags_audio_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #endif
 
   /* get user information */
