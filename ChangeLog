@@ -1,3 +1,8 @@
+ags (3.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented disable realtime priorities by AgsPriority
+
 ags (3.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -4371,7 +4371,7 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
 #ifdef AGS_WITH_RT
   priority = ags_priority_get_instance();  
 
-  param.sched_priority = 1;
+  param.sched_priority = 95;
 
   str = ags_priority_get_value(priority,
 			       AGS_PRIORITY_RT_THREAD,
@@ -4381,13 +4381,18 @@ ags_xorg_application_context_audio_main_loop_thread(GMainLoop *main_loop)
     param.sched_priority = (int) g_ascii_strtoull(str,
 						  NULL,
 						  10);
+  }
+
+  if(str == NULL ||
+     ((!g_ascii_strncasecmp(str,
+			    "0",
+			    2)) != TRUE)){
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed");
+    }
+  }
     
-    g_free(str);
-  }
-  
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed");
-  }
+  g_free(str);
 #endif
   
   list = 
