@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.10],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.11],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -621,7 +621,7 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
 ])
 
 #AS_IF([test "x$enable_w32api" != xno],
-#      [gl_INIT])
+#       [gl_INIT])
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
