@@ -1,3 +1,55 @@
+ags (3.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added --enable-single-docdir configure option to meet FreeBSD demands
+
+ags (3.0.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added GObject-Introspection annotations for GList type properties
+	* improved online help browser to respect --docdir configure parameter
+	* fixes to WASAPI backend
+	* fixes to CoreAudio backend
+
+ags (3.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am missing DESTDIR
+
+ags (3.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am wrong destination directory variables of gtk-doc
+
+ags (3.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed 64 bit portability issue with ags_functional_pitch_test.c
+	* fixed 64 bit portability issue with ags_functional_fourier_transform_test.c
+	* fixed ags_start_audio_test.c to run task within thread tree
+	* fixed ags_start_channel_test.c to run task within thread tree
+	* improved pulseaudio connect timeout
+	* improved Makefile.am to deal with different gtk-doc locations
+
+ags (3.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_audio_start() and ags_channel_start() to have sync timeout
+	* fixed some issues from build log
+	* fixed potential SIGSEGV by flaging AgsRecallID terminating state
+	* fixed potential data-race related to AgsTaskLauncher
+
+ags (3.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing prefix in autoconf option
+
+ags (3.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved Makefile.am to be more portable
+	* updated libags.pc, libags_audio.pc, libags_gui.pc and libgsequencer.pc
+
 ags (3.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

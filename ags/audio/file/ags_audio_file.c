@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -305,7 +305,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  param_spec);
 
   /**
-   * AgsAudioFile:audio-signal:
+   * AgsAudioFile:audio-signal: (type GList(AgsAudioSignal)) (transfer full)
    *
    * The containing #AgsAudioSignal.
    * 
@@ -320,7 +320,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  param_spec);
 
   /**
-   * AgsAudioFile:wave:
+   * AgsAudioFile:wave: (type GList(AgsWave)) (transfer full)
    *
    * The containing #AgsWave.
    * 

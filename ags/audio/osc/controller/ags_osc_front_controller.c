@@ -310,8 +310,6 @@ ags_osc_front_controller_finalize(GObject *gobject)
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
-  free(osc_front_controller->delegate_timeout);
-    
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
 		     (GDestroyNotify) g_object_unref);

@@ -343,7 +343,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				  param_spec);
 
   /**
-   * AgsRecycling:audio-signal:
+   * AgsRecycling:audio-signal: (type GList(AgsAudioSignal)) (transfer full)
    *
    * The containing  #AgsAudioSignal.
    * 

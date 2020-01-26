@@ -133,7 +133,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 				  param_spec);
   
   /**
-   * AgsOpenFile:filename:
+   * AgsOpenFile:filename: (type GSList(utf8))
    *
    * The assigned #GSList-struct providing filename as string
    * 

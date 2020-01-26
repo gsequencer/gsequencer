@@ -153,7 +153,7 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
 
   /* properties */
   /**
-   * AgsPlayChannelRunMaster:stream-channel-run:
+   * AgsPlayChannelRunMaster:stream-channel-run: (type GList(AgsStreamChannelRun)) (transfer full)
    * 
    * The assigned stream channel run.
    * 

@@ -172,7 +172,7 @@ ags_audio_unit_client_class_init(AgsAudioUnitClientClass *audio_unit_client)
 				  param_spec);
 
   /**
-   * AgsAudioUnitClient:device:
+   * AgsAudioUnitClient:device: (type GList(GObject)) (transfer full)
    *
    * The assigned devices.
    * 
@@ -187,7 +187,7 @@ ags_audio_unit_client_class_init(AgsAudioUnitClientClass *audio_unit_client)
 				  param_spec);
 
   /**
-   * AgsAudioUnitClient:port:
+   * AgsAudioUnitClient:port: (type GList(AgsAudioUnitPort)) (transfer full)
    *
    * The assigned ports.
    * 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,25 +19,42 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
+#include "config.h"
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
+
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_animation_window.h>
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_effect_bridge.h>
+#include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_effect_separator.h>
+#include <ags/X/ags_bulk_member.h>
+#include <ags/X/ags_line_member.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_input_pad.h>
 #include <ags/X/machine/ags_panel_input_line.h>
+#include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>
+#include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <ags/X/machine/ags_ffplayer.h>
+#endif
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -54,10 +71,6 @@
 
 #ifndef __APPLE__
 #include <pango/pangofc-fontmap.h>
-#endif
-
-#ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration-gtk2/gtkosxapplication.h>
 #endif
 
 #include <sys/types.h>
@@ -244,7 +257,9 @@ static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_
 extern AgsApplicationContext *ags_application_context;
 
 //TODO:JK: implement get functions
+#ifndef AGS_W32API
 struct sigaction ags_sigact;
+#endif
 
 GType
 ags_xorg_application_context_get_type()
@@ -330,6 +345,7 @@ ags_xorg_application_context_get_type()
 void
 ags_xorg_application_context_signal_handler(int signr)
 {
+#ifndef AGS_W32API
   if(signr == SIGINT){
     //TODO:JK: do backup
     
@@ -340,12 +356,15 @@ ags_xorg_application_context_signal_handler(int signr)
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
     //    }
   }
+#endif
 }
 
 static void
 ags_xorg_application_context_signal_cleanup()
 {
+#ifndef AGS_W32API
   sigemptyset(&(ags_sigact.sa_mask));
+#endif
 }
 
 void
@@ -2613,6 +2632,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   AgsXorgApplicationContext *xorg_application_context;
   GtkWidget *widget;
   AgsWindow *window;
+
+#ifdef AGS_WITH_QUARTZ
+  GtkosxApplication *app;
+#endif
   
   AgsThread *audio_loop;
   AgsTaskLauncher *task_launcher;
@@ -2763,20 +2786,27 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   gtk_widget_show(widget);
 
   /* AgsWindow */
-#ifdef AGS_WITH_QUARTZ
-  g_object_new(GTKOSX_TYPE_APPLICATION,
-	       NULL);
-#endif
   window =
     xorg_application_context->window = g_object_new(AGS_TYPE_WINDOW,
 						    NULL);
+
+#ifdef AGS_WITH_QUARTZ  
+  app = gtkosx_application_get();
+  
+  gtk_widget_hide((GtkWidget *) window->menu_bar);
+  gtkosx_application_set_menu_bar(app,
+				  window->menu_bar);
+  
+  gtkosx_application_ready(app);
+#endif
+
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   
   if(filename != NULL){
     window->filename = filename;
   }
-
+  
   /* gtk main */
   gtk_main();
 }
@@ -2870,11 +2900,13 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
   
+#ifndef AGS_W32API
   ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#endif
 #endif
   
   /* check filename */

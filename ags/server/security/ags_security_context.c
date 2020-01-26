@@ -19,6 +19,8 @@
 
 #include <ags/server/security/ags_security_context.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>

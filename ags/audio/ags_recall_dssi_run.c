@@ -154,7 +154,7 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
 				  param_spec);
 
   /**
-   * AgsRecallDssiRun:note:
+   * AgsRecallDssiRun:note: (type GList(AgsNote)) (transfer full)
    *
    * The assigned #AgsNote.
    * 

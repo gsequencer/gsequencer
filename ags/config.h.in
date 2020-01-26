@@ -27,6 +27,9 @@
 /* OSS enabled */
 #undef AGS_WITH_OSS
 
+/* public libgsequencer enabled */
+#undef AGS_WITH_PUBLIC_LIBGSEQUENCER
+
 /* PULSE enabled */
 #undef AGS_WITH_PULSE
 
@@ -35,6 +38,12 @@
 
 /* rt enabled */
 #undef AGS_WITH_RT
+
+/* single documentation directory enabled */
+#undef AGS_WITH_SINGLE_DOCDIR
+
+/* upstream API reference directory enabled */
+#undef AGS_WITH_UPSTREAM_GTK_DOC
 
 /* VST3 enabled */
 #undef AGS_WITH_VST3

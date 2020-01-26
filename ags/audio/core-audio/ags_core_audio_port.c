@@ -1364,18 +1364,6 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  if(audio_loop != NULL){
-    g_rec_mutex_lock(audio_loop->timing_mutex);
-  
-    g_atomic_int_set(&(audio_loop->time_spent),
-		     audio_loop->time_cycle);
-  
-    g_rec_mutex_unlock(audio_loop->timing_mutex);
-  }
-
-   g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
-		   (~(AGS_THREAD_TIMING)));
-  
   /* get core_audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
@@ -1730,7 +1718,7 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   
   /* signal finish */ 
   if(!no_event){
-    callback_finish_mutex = core_audio_devout->callback_finish_mutex;
+    callback_finish_mutex = &(core_audio_devout->callback_finish_mutex);
 	
     g_mutex_lock(callback_finish_mutex);
 
@@ -1994,7 +1982,7 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   
   /* signal finish */ 
   if(!no_event){
-    callback_finish_mutex = core_audio_devin->callback_finish_mutex;
+    callback_finish_mutex = &(core_audio_devin->callback_finish_mutex);
 	
     g_mutex_lock(callback_finish_mutex);
 

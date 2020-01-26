@@ -586,6 +586,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
   }
   
   gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano);
   
   /* selected machine */
   notation_editor->selected_machine = machine;

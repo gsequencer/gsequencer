@@ -163,7 +163,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 
   /* properties */
   /**
-   * AgsAudioLoop:play-channel:
+   * AgsAudioLoop:play-channel: (type GList(AgsPlayback)) (transfer full)
    *
    * An #AgsChannel to add for playback.
    * 
@@ -178,7 +178,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  param_spec);
 
   /**
-   * AgsAudioLoop:play-audio:
+   * AgsAudioLoop:play-audio: (type GList(AgsPlaybackDomain)) (transfer full)
    *
    * An #AgsAudio to add for playback.
    * 
@@ -791,7 +791,9 @@ ags_audio_loop_run(AgsThread *thread)
 		 "frequency", &frequency,
 		 NULL);
 
-    g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
+    if(!ags_thread_test_flags(audio_loop, AGS_THREAD_TIME_ACCOUNTING)){
+      g_usleep((guint) (G_USEC_PER_SEC / frequency) - 4);
+    }
   }
 }
 

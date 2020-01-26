@@ -582,7 +582,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  param_spec);
 
   /**
-   * AgsAudioSignal:note:
+   * AgsAudioSignal:note: (type GList(AgsNote)) (transfer full)
    *
    * The assigned #AgsNote providing default settings.
    * 

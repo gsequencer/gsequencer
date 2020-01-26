@@ -38,6 +38,11 @@
 
 #include <string.h>
 
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 #include <ags/i18n.h>
 
 void ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller);

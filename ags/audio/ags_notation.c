@@ -179,7 +179,7 @@ ags_notation_class_init(AgsNotationClass *notation)
 				  param_spec);
   
   /**
-   * AgsNotation:note:
+   * AgsNotation:note: (type GList(AgsNote)) (transfer full)
    *
    * The assigned #AgsNote
    * 

@@ -310,7 +310,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:acceleration:
+   * AgsAutomation:acceleration: (type GList(AgsAcceleration)) (transfer full)
    *
    * The acceleration list.
    * 

@@ -314,7 +314,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				  param_spec);
 
   /**
-   * AgsLv2Plugin:preset:
+   * AgsLv2Plugin:preset: (type GList(AgsLv2Preset)) (transfer full)
    *
    * The assigned preset.
    * 

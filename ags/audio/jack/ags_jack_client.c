@@ -183,7 +183,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
 				  param_spec);
 
   /**
-   * AgsJackClient:device:
+   * AgsJackClient:device: (type GList(GObject)) (transfer full)
    *
    * The assigned devices.
    * 
@@ -198,7 +198,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
 				  param_spec);
 
   /**
-   * AgsJackClient:port:
+   * AgsJackClient:port: (type GList(AgsJackPort)) (transfer full)
    *
    * The assigned ports.
    * 

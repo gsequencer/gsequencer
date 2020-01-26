@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,12 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_window_callbacks.h>
+
+#include "config.h"
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
 
 #include <ags/X/ags_ui_provider.h>
 
@@ -47,10 +53,6 @@
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
 #include <ags/X/file/ags_simple_file.h>
-
-#ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration/gtkosxapplication.h>
-#endif
 
 #include <stdlib.h>
 
@@ -174,11 +176,18 @@ ags_window_init(AgsWindow *window)
   GtkViewport *viewport;
   GtkWidget *scrolled_window;
 
+  AgsApplicationContext *application_context;
+  
   gchar *str;
   
   GError *error;
 
+  application_context = ags_application_context_get_instance();
+  
   window->flags = 0;
+
+  g_signal_connect(application_context, "setup-completed",
+		   G_CALLBACK(ags_window_setup_completed_callback), window);
 
   error = NULL;
 
@@ -223,6 +232,7 @@ ags_window_init(AgsWindow *window)
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
   		     FALSE, FALSE, 0);
+  gtk_widget_show_all(window->menu_bar);
 
   /* vpaned and scrolled window */
   window->paned = (GtkVPaned *) gtk_vpaned_new();
@@ -455,36 +465,9 @@ ags_window_show(GtkWidget *widget)
 {
   AgsWindow *window;
 
-#ifdef AGS_WITH_QUARTZ
-  GtkosxApplication *app;
-
-  GList *list;
-#endif
-
   window = (AgsWindow *) widget;
 
   GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
-
-#ifndef AGS_WITH_QUARTZ
-  gtk_widget_show((GtkWidget *) window->menu_bar);
-#else
-  app = gtkosx_application_get();
-
-  gtk_widget_hide((GtkWidget *) window->menu_bar);
-  gtkosx_application_set_menu_bar(app,
-				  window->menu_bar);
-
-  list = gtk_container_get_children(window->menu_bar);
-
-  while(list != NULL){
-    gtk_widget_show(list->data);
-
-    list = list->next;
-  }
-
-  gtkosx_application_sync_menubar(app);
-  gtkosx_application_ready(app);
-#endif
 }
 
 gboolean

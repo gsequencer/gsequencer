@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.1],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.9],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -20,6 +20,34 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_VAR(HTMLHELP_XSL, path to Docbook XML htmlhelp XSL file)
+
+AC_ARG_VAR(GOBJECT_API_DOC, escaped path for use with sed to GObject API Reference Manual)
+AC_ARG_VAR(GTK_API_DOC, escaped path for use with sed to Gtk-3 API Reference Manual)
+AC_ARG_VAR(LIBAGS_API_DOC, escaped path for use with sed to Libags API Reference Manual)
+AC_ARG_VAR(LIBAGS_AUDIO_API_DOC, escaped path for use with sed to Libags-audio API Reference Manual)
+AC_ARG_VAR(LIBAGS_GUI_API_DOC, escaped path for use with sed to Libags-gui API Reference Manual)
+
+AC_ARG_VAR(LIBAGS_API_DIR, install path of Libags API Reference Manual)
+AC_ARG_VAR(LIBAGS_AUDIO_API_DIR, install path of Libags-audio API Reference Manual)
+AC_ARG_VAR(LIBAGS_GUI_API_DIR, install path of Libags-gui API Reference Manual)
+AC_ARG_VAR(LIBGSEQUENCER_API_DIR, install path of Libgsequencer API Reference Manual)
+
+AC_ARG_ENABLE(public-libgsequencer, [AS_HELP_STRING([--enable-public-libgsequencer],
+					            [provide public libgsequencer (default is yes)])],
+	      [],
+	      [enable_public_libgsequencer=yes])
+
+AC_ARG_ENABLE(upstream-gtk-doc, [AS_HELP_STRING([--enable-upstream-gtk-doc],
+					        [put API reference manual in upstream dedicated directory (default is yes)])],
+	      [],
+	      [enable_upstream_gtk_doc=yes])
+
+AC_ARG_ENABLE(single-docdir, [AS_HELP_STRING([--enable-single-docdir],
+			     	             [put API reference manual in upstream dedicated directory (default is no)])],
+	      [],
+	      [enable_single_docdir=no])
+
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 					       [strip rt events (default is yes)])],
 	      [],
@@ -152,7 +180,7 @@ AS_IF([test "x$enable_x11" != xno],
 
 AS_IF([test "x$enable_quartz" != xno],
       [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
-       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk2 >= 2.0.7])
+       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3 >= 2.0.7])
        AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
        AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
        AC_MSG_NOTICE([quartz enabled])],
@@ -337,6 +365,27 @@ AC_SUBST(LIBSOUP_LIBS)
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
+AS_IF([test "x$enable_public_libgsequencer" != xno],
+      [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
+      
+      AC_MSG_NOTICE([public libgsequencer enabled])],
+      AC_MSG_NOTICE([public libgsequencer disabled]))
+AM_CONDITIONAL([AGS_WITH_PUBLIC_LIBGSEQUENCER], [test "x$enable_public_libgsequencer" == xyes])
+
+AS_IF([test "x$enable_upstream_gtk_doc" != xno],
+      [AC_DEFINE([AGS_WITH_UPSTREAM_GTK_DOC], [1], [upstream API reference directory enabled])
+      
+      AC_MSG_NOTICE([upstream API reference directory enabled])],
+      AC_MSG_NOTICE([upstream API reference directory disabled]))
+AM_CONDITIONAL([AGS_WITH_UPSTREAM_GTK_DOC], [test "x$enable_upstream_gtk_doc" == xyes])
+
+AS_IF([test "x$enable_single_docdir" != xno],
+      [AC_DEFINE([AGS_WITH_SINGLE_DOCDIR], [1], [single documentation directory enabled])
+      
+      AC_MSG_NOTICE([single documentation directory enabled])],
+      AC_MSG_NOTICE([single documentation directory disabled]))
+AM_CONDITIONAL([AGS_WITH_SINGLE_DOCDIR], [test "x$enable_single_docdir" == xyes])
+
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
       AC_SUBST(LIBINSTPATCH_CFLAGS)
@@ -362,9 +411,10 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.18.0])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
-AC_SUBST(WEBKITGTK_CFLAGS)
-AC_SUBST(WEBKITGTK_LIBS)
+AS_IF([test "x$enable_w32api" != xyes],
+      PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
+      AC_SUBST(WEBKITGTK_CFLAGS)
+      AC_SUBST(WEBKITGTK_LIBS))
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
@@ -405,6 +455,135 @@ LIBAGS_GUI_MARSHALLERS([])
 AGS_DEVELOPER_BOOK_LISTINGS([])
 
 AGS_DOCS_API([])
+
+AS_IF([test "x$HTMLHELP_XSL" != x],
+      [AC_SUBST(HTMLHELP_XSL, $HTMLHELP_XSL)
+       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])],
+      [AC_SUBST(HTMLHELP_XSL, /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl)
+       AC_MSG_NOTICE([HTMLHELP_XSL = $HTMLHELP_XSL])])
+
+AS_IF([test "x$enable_upstream_gtk_doc" != xno],
+[AS_IF([test "x$GOBJECT_API_DOC" != x],
+      [AC_SUBST(GOBJECT_API_DOC, $GOBJECT_API_DOC)
+       AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])],
+      [AC_SUBST(GOBJECT_API_DOC, '\/usr\/share\/doc\/libglib2.0-doc\/gobject')
+       AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])])
+
+AS_IF([test "x$GTK_API_DOC" != x],
+      [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
+       AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
+      [AC_SUBST(GTK_API_DOC, '\/usr\/share\/doc\/libgtk-3-doc\/gtk3')
+       AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
+
+AS_IF([test "x$LIBAGS_API_DOC" != x],
+      [AC_SUBST(LIBAGS_API_DOC, $LIBAGS_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])],
+      [AC_SUBST(LIBAGS_API_DOC, '\/usr\/share\/doc\/libags-doc\/api')
+       AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])])
+
+AS_IF([test "x$LIBAGS_AUDIO_API_DOC" != x],
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, $LIBAGS_AUDIO_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])],
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '\/usr\/share\/doc\/libags-audio-doc\/api')
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])])
+
+AS_IF([test "x$LIBAGS_GUI_API_DOC" != x],
+      [AC_SUBST(LIBAGS_GUI_API_DOC, $LIBAGS_GUI_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])],
+      [AC_SUBST(LIBAGS_GUI_API_DOC, '\/usr\/share\/doc\/libags-gui-doc\/api')
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])])
+
+AS_IF([test "x$LIBGSEQUENCER_API_DOC" != x],
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, $LIBGSEQUENCER_API_DOC)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])],
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, '\/usr\/share\/doc\/libgsequencer-doc\/api')
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])])
+
+AS_IF([test "x$LIBAGS_API_DIR" != x],
+      [AC_SUBST(LIBAGS_API_DIR, $LIBAGS_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_API_DIR = $LIBAGS_API_DIR])],
+      [AC_SUBST(LIBAGS_API_DIR, $datadir/doc/libags-doc/api)
+       AC_MSG_NOTICE([LIBAGS_API_DIR = $LIBAGS_API_DIR])])
+
+AS_IF([test "x$LIBAGS_AUDIO_API_DIR" != x],
+      [AC_SUBST(LIBAGS_AUDIO_API_DIR, $LIBAGS_AUDIO_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR])],
+      [AC_SUBST(LIBAGS_AUDIO_API_DIR, $datadir/doc/libags-audio-doc/api)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR])])
+
+AS_IF([test "x$LIBAGS_GUI_API_DIR" != x],
+      [AC_SUBST(LIBAGS_GUI_API_DIR, $LIBAGS_GUI_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR])],
+      [AC_SUBST(LIBAGS_GUI_API_DIR, $datadir/doc/libags-gui-doc/api)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR])])
+
+AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
+      [AC_SUBST(LIBGSEQUENCER_API_DIR, $LIBGSEQUENCER_API_DIR)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])],
+      [AC_SUBST(LIBGSEQUENCER_API_DIR, $datadir/doc/libgsequencer-doc/api)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])])
+],
+[
+AS_IF([test "x$GOBJECT_API_DOC" != x],
+      [AC_SUBST(GOBJECT_API_DOC, $GOBJECT_API_DOC)
+       AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])],
+      [AC_SUBST(GOBJECT_API_DOC, '\.\.\/gobject')
+       AC_MSG_NOTICE([GOBJECT_API_DOC = $GOBJECT_API_DOC])])
+
+AS_IF([test "x$GTK_API_DOC" != x],
+      [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
+       AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
+      [AC_SUBST(GTK_API_DOC, '\.\.\/gtk3')
+       AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
+
+AS_IF([test "x$LIBAGS_API_DOC" != x],
+      [AC_SUBST(LIBAGS_API_DOC, $LIBAGS_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])],
+      [AC_SUBST(LIBAGS_API_DOC, '\.\.\/libags')
+       AC_MSG_NOTICE([LIBAGS_API_DOC = $LIBAGS_API_DOC])])
+
+AS_IF([test "x$LIBAGS_AUDIO_API_DOC" != x],
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, $LIBAGS_AUDIO_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])],
+      [AC_SUBST(LIBAGS_AUDIO_API_DOC, '\.\.\/libags_audio')
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DOC = $LIBAGS_AUDIO_API_DOC])])
+
+AS_IF([test "x$LIBAGS_GUI_API_DOC" != x],
+      [AC_SUBST(LIBAGS_GUI_API_DOC, $LIBAGS_GUI_API_DOC)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])],
+      [AC_SUBST(LIBAGS_GUI_API_DOC, '\.\.\/libags_gui')
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DOC = $LIBAGS_GUI_API_DOC])])
+
+AS_IF([test "x$LIBGSEQUENCER_API_DOC" != x],
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, $LIBGSEQUENCER_API_DOC)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])],
+      [AC_SUBST(LIBGSEQUENCER_API_DOC, '\.\.\/libgsequencer')
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DOC = $LIBGSEQUENCER_API_DOC])])
+
+AS_IF([test "x$LIBAGS_API_DIR" != x],
+      [AC_SUBST(LIBAGS_API_DIR, $LIBAGS_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_API_DIR = $LIBAGS_API_DIR])],
+      [AC_SUBST(LIBAGS_API_DIR, $datadir/gtk-doc/html/libags)
+       AC_MSG_NOTICE([LIBAGS_API_DIR = $LIBAGS_API_DIR])])
+
+AS_IF([test "x$LIBAGS_AUDIO_API_DIR" != x],
+      [AC_SUBST(LIBAGS_AUDIO_API_DIR, $LIBAGS_AUDIO_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR])],
+      [AC_SUBST(LIBAGS_AUDIO_API_DIR, $datadir/gtk-doc/html/libags_audio)
+       AC_MSG_NOTICE([LIBAGS_AUDIO_API_DIR = $LIBAGS_AUDIO_API_DIR])])
+
+AS_IF([test "x$LIBAGS_GUI_API_DIR" != x],
+      [AC_SUBST(LIBAGS_GUI_API_DIR, $LIBAGS_GUI_API_DIR)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR])],
+      [AC_SUBST(LIBAGS_GUI_API_DIR, $datadir/gtk-doc/html/libags_gui)
+       AC_MSG_NOTICE([LIBAGS_GUI_API_DIR = $LIBAGS_GUI_API_DIR])])
+
+AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
+      [AC_SUBST(LIBGSEQUENCER_API_DIR, $LIBGSEQUENCER_API_DIR)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])],
+      [AC_SUBST(LIBGSEQUENCER_API_DIR, $datadir/gtk-doc/html/libgsequencer)
+       AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])])
+])
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([

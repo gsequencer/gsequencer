@@ -472,7 +472,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:port:
+   * AgsRecall:port: (type GList(AgsPort)) (transfer full)
    *
    * The assigned #AgsPort
    * 
@@ -487,7 +487,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsRecall:automation-port:
+   * AgsRecall:automation-port: (type GList(AgsPort)) (transfer full)
    *
    * The #AgsPort doing automation.
    * 
@@ -518,9 +518,9 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:recall-dependency:
+   * AgsRecall:recall-dependency: (type GList(AgsRecallDependency)) (transfer full)
    *
-   * The  #AgsRecall dependency.
+   * The #AgsRecallDependency.
    * 
    * Since: 3.0.0
    */
@@ -565,7 +565,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:child:
+   * AgsRecall:child: (type GList(AgsRecall)) (transfer full)
    *
    * The child #AgsRecall.
    * 

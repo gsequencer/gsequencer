@@ -1015,7 +1015,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:preset:
+   * AgsAudio:preset: (type GList(AgsPreset)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsPreset information.
    * 
@@ -1030,7 +1030,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:synth_generator:
+   * AgsAudio:synth_generator: (type GList(AgsSynthGenerator)) (transfer full)
    *
    * The assigned #GList-struct containing #AgsSynthGenerator information.
    * 
@@ -1061,7 +1061,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:cursor:
+   * AgsAudio:cursor: (type GList(GObject)) (transfer full)
    *
    * The #GObject implementing #AgsCursor interface.
    * 
@@ -1076,7 +1076,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:notation:
+   * AgsAudio:notation: (type GList(AgsNotation)) (transfer full)
    *
    * The #AgsNotation it contains.
    * 
@@ -1091,7 +1091,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:automation:
+   * AgsAudio:automation: (type GList(AgsAutomation)) (transfer full)
    *
    * The #AgsAutomation it contains.
    * 
@@ -1106,7 +1106,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
   
   /**
-   * AgsAudio:wave:
+   * AgsAudio:wave: (type GList(AgsWave)) (transfer full)
    *
    * The #AgsWave it contains.
    * 
@@ -1153,7 +1153,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:midi:
+   * AgsAudio:midi: (type GList(AgsMidi)) (transfer full)
    *
    * The #AgsMidi it contains.
    * 
@@ -1200,7 +1200,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
   
   /**
-   * AgsAudio:recall-id:
+   * AgsAudio:recall-id: (type GList(AgsRecallID)) (transfer full)
    *
    * The assigned #AgsRecallID.
    * 
@@ -1215,7 +1215,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recycling-context:
+   * AgsAudio:recycling-context: (type GList(AgsRecyclingContext)) (transfer full)
    *
    * The assigned #AgsRecyclingContext.
    * 
@@ -1230,7 +1230,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recall-container:
+   * AgsAudio:recall-container: (type GList(AgsRecallContainer)) (transfer full)
    *
    * The #AgsRecallContainer it contains in container-context.
    * 
@@ -1245,7 +1245,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:play:
+   * AgsAudio:play: (type GList(AgsRecall)) (transfer full)
    *
    * The #AgsRecall it contains in play-context.
    * 
@@ -1260,7 +1260,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:recall:
+   * AgsAudio:recall: (type GList(AgsRecall)) (transfer full)
    *
    * The #AgsRecall it contains in recall-context.
    * 
@@ -9970,6 +9970,10 @@ ags_audio_real_play_recall(AgsAudio *audio,
     return;
   }
   
+  if(ags_recall_id_check_state_flags(recall_id, AGS_SOUND_STATE_IS_TERMINATING)){
+    return;
+  }
+  
   /* get recall id mutex */
   recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
@@ -10673,6 +10677,7 @@ ags_audio_real_start(AgsAudio *audio,
   GList *start_recall_id;
   GList *start_wait_thread, *wait_thread;
   
+  gint64 start_wait_timeout;
   guint audio_channels;
   guint output_pads;
   gint i;
@@ -10791,11 +10796,14 @@ ags_audio_real_start(AgsAudio *audio,
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  sound_scope);
-      start_wait_thread = g_list_prepend(start_wait_thread,
-					 audio_thread);
-    
-      ags_thread_add_start_queue(audio_loop,
-				 audio_thread);
+
+      if(audio_thread != NULL){
+	start_wait_thread = g_list_prepend(start_wait_thread,
+					   audio_thread);
+	
+	ags_thread_add_start_queue(audio_loop,
+				   audio_thread);
+      }
     }
     
     while(output_playback != NULL){
@@ -10806,10 +10814,13 @@ ags_audio_real_start(AgsAudio *audio,
 							 sound_scope);
       
 	/* add to start queue */
-	ags_thread_add_start_queue(audio_loop,
-				   channel_thread);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   channel_thread);
+	if(channel_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     channel_thread);
+
+	  ags_thread_add_start_queue(audio_loop,
+				     channel_thread);
+	}
       }
       
       
@@ -10820,13 +10831,36 @@ ags_audio_real_start(AgsAudio *audio,
     /* unref */
     wait_thread = start_wait_thread;
 
+    start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
+
     while(wait_thread != NULL){
-      while(wait_thread->data != NULL &&
-	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+      /* wait thread */
+      g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+
+      if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+	
+	while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+	      g_get_monotonic_time() < start_wait_timeout){
+	  g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			    AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			    start_wait_timeout);
+	}
+      }
+	
+      g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+	
+      if(g_get_monotonic_time() > start_wait_timeout){
+	g_critical("sync timeout");
+
+	goto ags_audio_real_start_ONE_SCOPE_TIMEOUT;
+      }
 
       wait_thread = wait_thread->next;
     }
     
+  ags_audio_real_start_ONE_SCOPE_TIMEOUT:
     g_list_free_full(start_wait_thread,
 		     g_object_unref);
 
@@ -10916,11 +10950,14 @@ ags_audio_real_start(AgsAudio *audio,
       if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
 	audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							    i);
-	start_wait_thread = g_list_prepend(start_wait_thread,
-					   audio_thread);
+
+	if(audio_thread != NULL){
+	  start_wait_thread = g_list_prepend(start_wait_thread,
+					     audio_thread);
         
-	ags_thread_add_start_queue(audio_loop,
-				   audio_thread);
+	  ags_thread_add_start_queue(audio_loop,
+				     audio_thread);
+	}
       }
       
       while(output_playback != NULL){
@@ -10929,12 +10966,15 @@ ags_audio_real_start(AgsAudio *audio,
 	if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
 	  channel_thread = ags_playback_get_channel_thread(playback,
 							   i);
-	  start_wait_thread = g_list_prepend(start_wait_thread,
-					   channel_thread);
-	  
-	  /* add to start queue */
-	  ags_thread_add_start_queue(audio_loop,
-				     channel_thread);
+
+	  if(channel_thread != NULL){
+	    start_wait_thread = g_list_prepend(start_wait_thread,
+					       channel_thread);
+	    
+	    /* add to start queue */
+	    ags_thread_add_start_queue(audio_loop,
+				       channel_thread);
+	  }
 	}
 	
 	/* iterate */
@@ -10945,13 +10985,36 @@ ags_audio_real_start(AgsAudio *audio,
     /* unref */
     wait_thread = start_wait_thread;
 
+    start_wait_timeout = g_get_monotonic_time() + 5 * G_USEC_PER_SEC;
+
     while(wait_thread != NULL){
-      while(wait_thread->data != NULL &&
-	    !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_SYNCED_FREQ));
+      /* wait thread */
+      g_mutex_lock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+	
+      if(!ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE)){
+	ags_thread_set_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT);
+
+	while(ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_WAIT) &&
+	      !ags_thread_test_status_flags(wait_thread->data, AGS_THREAD_STATUS_START_DONE) &&
+	      g_get_monotonic_time() < start_wait_timeout){
+	  g_cond_wait_until(AGS_THREAD_GET_START_COND(wait_thread->data),
+			    AGS_THREAD_GET_START_MUTEX(wait_thread->data),
+			    start_wait_timeout);
+	}
+      }
+	
+      g_mutex_unlock(AGS_THREAD_GET_START_MUTEX(wait_thread->data));
+	
+      if(g_get_monotonic_time() > start_wait_timeout){
+	g_critical("sync timeout");
+
+	goto ags_audio_real_start_ALL_SCOPE_TIMEOUT;
+      }
 
       wait_thread = wait_thread->next;
     }
     
+  ags_audio_real_start_ALL_SCOPE_TIMEOUT:
     g_list_free_full(start_wait_thread,
 		     g_object_unref);
 
@@ -11079,6 +11142,7 @@ ags_audio_real_stop(AgsAudio *audio,
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *start_message_queue;
   GList *start_output_playback, *output_playback;
   GList *sequencer, *notation, *wave, *midi;
@@ -11091,6 +11155,14 @@ ags_audio_real_stop(AgsAudio *audio,
   if(recall_id == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
+  }
+
+  list = recall_id;
+
+  while(list != NULL){
+    ags_recall_id_set_state_flags(list->data, AGS_SOUND_STATE_IS_TERMINATING);
+    
+    list = list->next;
   }
 
   application_context = ags_application_context_get_instance();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,11 +27,14 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
 G_BEGIN_DECLS
+
+void ags_window_setup_completed_callback(AgsApplicationContext *application_context, AgsWindow *window);
 
 gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
 

@@ -17,6 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -24,6 +26,10 @@
 #include <pango/pangocairo.h>
 
 #include <gtk/gtk.h>
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkosxapplication.h>
+#endif
 
 #include <ags/libags.h>
 
@@ -51,7 +57,6 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
-#include "config.h"
 #include "gsequencer_main.h"
 
 #include <ags/i18n.h>
@@ -161,6 +166,22 @@ main(int argc, char **argv)
 //  mtrace();
   
 #if defined (AGS_W32API)
+  app_dir = NULL;
+
+  if(strlen(argv[0]) > strlen("\\gsequencer.exe")){
+    app_dir = g_strndup(argv[0],
+			strlen(argv[0]) - strlen("\\gsequencer.exe"));
+  }
+
+  putenv(g_strdup_printf("XDG_DATA_DIRS=%s\\share", app_dir));
+  putenv(g_strdup_printf("XDG_CONFIG_HOME=%s\\etc", app_dir));
+
+  putenv(g_strdup_printf("GDK_PIXBUF_MODULE_FILE=%s\\lib\\gdk-pixbuf-2.0\\2.10.0\\loaders.cache", app_dir));
+
+  putenv(g_strdup_printf("GTK_EXE_PREFIX=%s", app_dir));
+  putenv(g_strdup_printf("GTK_DATA_PREFIX=%s\\share", app_dir));
+  putenv(g_strdup_printf("GTK_PATH=%s", app_dir));
+  putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s\\lib\\gtk-3.0\\3.0.0\\immodules.cache", app_dir));
 #else
   uid = getuid();
   pw = getpwuid(uid);
@@ -331,22 +352,10 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
-  if(!builtin_theme_disabled){
-#if 0
-    g_object_set(gtk_settings_get_default(),
-		 "gtk-theme-name", "Raleigh",
-		 NULL);
-
-    g_signal_handlers_block_matched(gtk_settings_get_default(),
-				    G_SIGNAL_MATCH_DETAIL,
-				    g_signal_lookup("set-property",
-						    GTK_TYPE_SETTINGS),
-				    g_quark_from_string("gtk-theme-name"),
-				    NULL,
-				    NULL,
-				    NULL);
+#ifdef AGS_WITH_QUARTZ
+  g_object_new(GTKOSX_TYPE_APPLICATION,
+	       NULL);
 #endif
-  }
   
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();

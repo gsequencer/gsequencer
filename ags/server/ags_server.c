@@ -254,7 +254,7 @@ ags_server_class_init(AgsServerClass *server)
 				  param_spec);
   
   /**
-   * AgsServer:controller:
+   * AgsServer:controller: (type GList(AgsController)) (transfer full)
    *
    * The assigned #AgsController providing default settings.
    * 

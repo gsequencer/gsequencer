@@ -141,7 +141,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
 				  param_spec);
 
   /**
-   * AgsRecyclingContext:child:
+   * AgsRecyclingContext:child: (type GList(AgsRecyclingContext)) (transfer full)
    *
    * The child recycling contexts.
    * 
