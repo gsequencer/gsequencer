@@ -8689,6 +8689,9 @@ fi
 
 
 
+#AS_IF([test "x$enable_w32api" != xno],
+#      [gl_EARLY])
+
 # libtool
 
 case `pwd` in
@@ -20704,6 +20707,8 @@ _ACEOF
 fi
 
 
+WITH_W32API=0
+
 if test "x$enable_w32api" != xno; then :
 
 $as_echo "#define AGS_W32API 1" >>confdefs.h
@@ -23861,9 +23866,15 @@ fi
 
 fi
 
+#AS_IF([test "x$enable_w32api" != xno],
+#      [gl_INIT])
+
 
 ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
+
+#AM_COND_IF([WITH_W32API],
+#           [AC_CONFIG_FILES([lib/Makefile])])
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

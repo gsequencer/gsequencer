@@ -154,6 +154,9 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 
+#AS_IF([test "x$enable_w32api" != xno],
+#      [gl_EARLY])
+
 # libtool
 LT_PREREQ([2.4.2])
 LT_INIT
@@ -222,6 +225,8 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
+
+WITH_W32API=0
 
 AS_IF([test "x$enable_w32api" != xno],
       [AC_DEFINE([AGS_W32API], [1], [w32api enabled])
@@ -615,6 +620,9 @@ AS_IF([test "x$LIBGSEQUENCER_API_DIR" != x],
        AC_MSG_NOTICE([LIBGSEQUENCER_API_DIR = $LIBGSEQUENCER_API_DIR])])
 ])
 
+#AS_IF([test "x$enable_w32api" != xno],
+#      [gl_INIT])
+
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
@@ -630,5 +638,8 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
+
+#AM_COND_IF([WITH_W32API],
+#           [AC_CONFIG_FILES([lib/Makefile])])
 
 AC_OUTPUT

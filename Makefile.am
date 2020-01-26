@@ -2469,7 +2469,7 @@ midi2xml.1: midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 if FREEBSD
-	$(AM_V_GEN)sed -i '' -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
 else
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 endif

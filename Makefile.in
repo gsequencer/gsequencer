@@ -26416,7 +26416,7 @@ midi2xml.1: midi2xml.1.xml
 	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
-@FREEBSD_TRUE@	$(AM_V_GEN)sed -i '' -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+@FREEBSD_TRUE@	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
 @FREEBSD_FALSE@	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
 html:
