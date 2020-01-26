@@ -213,7 +213,7 @@ AS_IF([test "x$enable_rt" != xno],
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-# AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
+AC_CHECK_HEADERS([ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
