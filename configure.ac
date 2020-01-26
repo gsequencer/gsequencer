@@ -345,12 +345,9 @@ PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.56.0 glib-2.0 >= 2.56.0 gmodule-2
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-AC_CHECK_LIB(glib-2.0, g_strv_length,
-            AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
-AC_CHECK_LIB(glib-2.0, g_strv_contains,
-            AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
-AC_CHECK_LIB(glib-2.0, g_object_setv,
-            AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
+AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])
+AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])
+AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
@@ -362,8 +359,7 @@ PKG_CHECK_MODULES([LIBSOUP], [libsoup-2.4 >= 2.52.0])
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 
-AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
-             [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
+AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])
 
 AS_IF([test "x$enable_public_libgsequencer" != xno],
       [AC_DEFINE([AGS_WITH_PUBLIC_LIBGSEQUENCER], [1], [public libgsequencer enabled])
@@ -412,9 +408,10 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
 AS_IF([test "x$enable_w32api" != xyes],
-      PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
-      AC_SUBST(WEBKITGTK_CFLAGS)
-      AC_SUBST(WEBKITGTK_LIBS))
+      [PKG_CHECK_MODULES([WEBKITGTK], [webkit2gtk-4.0 >= 2.10.0])
+       AC_SUBST(WEBKITGTK_CFLAGS)
+       AC_SUBST(WEBKITGTK_LIBS)],
+       [])
 
 AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
@@ -431,6 +428,39 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
+
+AC_CANONICAL_HOST
+
+build_linux=no
+build_windows=no
+build_mac=no
+build_freebsd=no
+
+# Detect the target system
+case "${host_os}" in
+    linux*)
+        build_linux=yes
+        ;;
+    freebsd*)
+        build_freebsd=yes
+        ;;
+    cygwin*|mingw*)
+        build_windows=yes
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        AC_MSG_ERROR(["OS $host_os is not supported"])
+        ;;
+esac
+
+# Pass the conditionals to automake
+AM_CONDITIONAL([LINUX], [test "$build_linux" = "yes"])
+AM_CONDITIONAL([FREEBSD], [test "$build_freebsd" = "yes"])
+AM_CONDITIONAL([WINDOWS], [test "$build_windows" = "yes"])
+AM_CONDITIONAL([OSX], [test "$build_mac" = "yes"])
+
 
 # check for gtk-doc
 m4_ifdef([GTK_DOC_CHECK], [
