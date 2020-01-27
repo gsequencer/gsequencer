@@ -1,3 +1,13 @@
+ags (3.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved unit-tests to call ags_priority_load_defaults()
+
+ags (3.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken WebKit2Gtk-4.0 configure
+
 ags (3.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

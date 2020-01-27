@@ -45,6 +45,8 @@ AgsApplicationContext *application_context;
 int
 ags_set_muted_test_init_suite()
 {
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   config = ags_config_get_instance();
   
   application_context = ags_audio_application_context_new();

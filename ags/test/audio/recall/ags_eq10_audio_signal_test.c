@@ -52,6 +52,8 @@ AgsApplicationContext *application_context;
 int
 ags_eq10_audio_signal_test_init_suite()
 {
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
   

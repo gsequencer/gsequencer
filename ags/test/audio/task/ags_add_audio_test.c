@@ -66,6 +66,8 @@ ags_add_audio_test_launch()
 
   GList *list;
   
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 

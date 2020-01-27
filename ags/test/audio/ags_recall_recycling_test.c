@@ -53,6 +53,8 @@ gboolean remove_audio_signal_done_callback_invoked = FALSE;
 int
 ags_recall_recycling_test_init_suite()
 {
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   audio_application_context = ags_audio_application_context_new();
   g_object_ref(audio_application_context);
   

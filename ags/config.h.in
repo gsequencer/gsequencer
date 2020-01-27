@@ -106,9 +106,6 @@
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR
 
-/* Define to 1 if you have the `getcwd' function. */
-#undef HAVE_GETCWD
-
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
@@ -145,9 +142,6 @@
 /* Define to 1 if you have the `X11' library (-lX11). */
 #undef HAVE_LIBX11
 
-/* Define to 1 if you have the `localeconv' function. */
-#undef HAVE_LOCALECONV
-
 /* Define to 1 if you have the <lv2.h> header file. */
 #undef HAVE_LV2_H
 
@@ -155,20 +149,11 @@
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the `mblen' function. */
-#undef HAVE_MBLEN
-
-/* Define to 1 if you have the `mbrlen' function. */
-#undef HAVE_MBRLEN
-
-/* Define to 1 if you have the `memchr' function. */
-#undef HAVE_MEMCHR
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `mempcpy' function. */
-#undef HAVE_MEMPCPY
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
@@ -176,24 +161,27 @@
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
 
-/* Define to 1 if you have the `munmap' function. */
-#undef HAVE_MUNMAP
-
-/* Define to 1 if you have the `nl_langinfo' function. */
-#undef HAVE_NL_LANGINFO
+/* Define to 1 if you have the `pow' function. */
+#undef HAVE_POW
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
+
+/* Define to 1 if you have the `putenv' function. */
+#undef HAVE_PUTENV
 
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
 
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define to 1 if you have the `regcomp' function. */
+#undef HAVE_REGCOMP
+
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
-
-/* Define to 1 if you have the `socket' function. */
-#undef HAVE_SOCKET
 
 /* Define to 1 if you have the `sqrt' function. */
 #undef HAVE_SQRT
@@ -204,20 +192,14 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `stpcpy' function. */
-#undef HAVE_STPCPY
-
-/* Define to 1 if you have the `strcasecmp' function. */
-#undef HAVE_STRCASECMP
-
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
-/* Define to 1 if you have the `strcspn' function. */
-#undef HAVE_STRCSPN
-
 /* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -225,11 +207,11 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strrchr' function. */
+#undef HAVE_STRRCHR
+
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
-
-/* Define to 1 if you have the `strtol' function. */
-#undef HAVE_STRTOL
 
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
