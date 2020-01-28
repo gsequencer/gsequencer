@@ -147,6 +147,8 @@ ags_functional_fourier_transform_test_init_suite()
   
   GError *error;
   
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_FUNCTIONAL_FOURIER_TRANSFORM_TEST_CONFIG,

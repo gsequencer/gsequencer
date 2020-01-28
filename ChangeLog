@@ -6,6 +6,28 @@ ags (3.1.0)
 	* TODO:JK: implemented AgsOnlineHelpWindow
 	* TODO:JK: refactored GSequencer to allow single window mode
 
+ags (3.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* replaced UTF-8 character sequence from build files
+	* added missing parantheses in configure.ac
+	* wiped m4 directory and recreated it
+
+ags (3.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved unit-tests to call ags_priority_load_defaults()
+
+ags (3.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed broken WebKit2Gtk-4.0 configure
+
+ags (3.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented disable realtime priorities by AgsPriority
+
 ags (3.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

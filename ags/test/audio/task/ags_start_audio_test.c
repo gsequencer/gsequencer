@@ -118,6 +118,8 @@ ags_start_audio_test_init_suite()
 
   gint64 start_thread_timeout;
 
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_START_AUDIO_TEST_CONFIG,

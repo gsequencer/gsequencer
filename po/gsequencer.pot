@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 3.0.9\n"
+"Project-Id-Version: gsequencer 3.0.13\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-01-23 22:10+0100\n"
+"POT-Creation-Date: 2020-01-28 14:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,16 +261,16 @@ msgstr ""
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:240 ags/X/machine/ags_audiorec.c:197
-#: ags/X/machine/ags_pitch_sampler.c:226
+#: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:208
+#: ags/X/machine/ags_audiorec.c:197 ags/X/machine/ags_pitch_sampler.c:226
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:268
+#: ags/X/ags_export_soundcard.c:268 ags/X/export/ags_wave_export_dialog.c:225
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:275
+#: ags/X/ags_export_soundcard.c:275 ags/X/export/ags_wave_export_dialog.c:310
 msgid "output format"
 msgstr ""
 
@@ -711,28 +711,28 @@ msgstr ""
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3295
-#: ags/audio/ags_audio_application_context.c:2129
+#: ags/X/ags_xorg_application_context.c:3303
+#: ags/audio/ags_audio_application_context.c:2137
 #: ags/audio/task/ags_apply_sound_config.c:894
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3305
-#: ags/audio/ags_audio_application_context.c:2139
+#: ags/X/ags_xorg_application_context.c:3313
+#: ags/audio/ags_audio_application_context.c:2147
 #: ags/audio/task/ags_apply_sound_config.c:904
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3547
-#: ags/audio/ags_audio_application_context.c:2381
+#: ags/X/ags_xorg_application_context.c:3555
+#: ags/audio/ags_audio_application_context.c:2389
 #: ags/audio/task/ags_apply_sound_config.c:1144
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:3557
-#: ags/audio/ags_audio_application_context.c:2391
+#: ags/X/ags_xorg_application_context.c:3565
+#: ags/audio/ags_audio_application_context.c:2399
 #: ags/audio/task/ags_apply_sound_config.c:1154
 msgid "unknown sequencer backend - NULL"
 msgstr ""
@@ -1093,6 +1093,18 @@ msgstr ""
 #: ags/X/export/ags_machine_collection_entry.c:220
 #: ags/X/import/ags_track_collection_mapper.c:253
 msgid "sequence: "
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:195
+msgid "Audio fast export"
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:239
+msgid "start tact"
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:266
+msgid "end tact"
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:243

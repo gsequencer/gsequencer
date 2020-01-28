@@ -119,7 +119,11 @@ ags_uuid_generate(AgsUUID *ptr)
     return;
   }
 
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
+  uuid_generate_time(ptr->data);
+#else
   uuid_generate_time_safe(ptr->data);
+#endif
 }
 
 /**
