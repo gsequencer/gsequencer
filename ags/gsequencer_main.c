@@ -182,6 +182,10 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_DATA_PREFIX=%s\\share", app_dir));
   putenv(g_strdup_printf("GTK_PATH=%s", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s\\lib\\gtk-3.0\\3.0.0\\immodules.cache", app_dir));
+
+  if(getenv("GTK_THEME") == NULL){
+    putenv(g_strdup("GTK_THEME=BlueMenta"));
+  }
 #else
   uid = getuid();
   pw = getpwuid(uid);
