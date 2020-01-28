@@ -2,6 +2,7 @@ ags (3.0.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added missing parantheses in configure.ac
+	* wiped m4 directory and recreated it
 
 ags (3.0.12)
 

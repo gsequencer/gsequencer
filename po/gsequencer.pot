@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.0.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2020-01-26 22:02+0100\n"
+"POT-Creation-Date: 2020-01-28 13:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,16 +261,16 @@ msgstr ""
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:240 ags/X/machine/ags_audiorec.c:197
-#: ags/X/machine/ags_pitch_sampler.c:226
+#: ags/X/ags_export_soundcard.c:240 ags/X/export/ags_wave_export_dialog.c:208
+#: ags/X/machine/ags_audiorec.c:197 ags/X/machine/ags_pitch_sampler.c:226
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:268
+#: ags/X/ags_export_soundcard.c:268 ags/X/export/ags_wave_export_dialog.c:225
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:275
+#: ags/X/ags_export_soundcard.c:275 ags/X/export/ags_wave_export_dialog.c:310
 msgid "output format"
 msgstr ""
 
@@ -1093,6 +1093,18 @@ msgstr ""
 #: ags/X/export/ags_machine_collection_entry.c:220
 #: ags/X/import/ags_track_collection_mapper.c:253
 msgid "sequence: "
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:195
+msgid "Audio fast export"
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:239
+msgid "start tact"
+msgstr ""
+
+#: ags/X/export/ags_wave_export_dialog.c:266
+msgid "end tact"
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:243
