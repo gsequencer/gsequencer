@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2020 Joël Krähemann
+#Copyright (C) 2005-2020 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright

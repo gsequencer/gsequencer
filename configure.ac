@@ -1,5 +1,5 @@
 #                                               -*- Autoconf -*-
-# Copyright (C) 2005-2020 Joël Krähemann
+# Copyright (C) 2005-2020 Joel Kraehemann
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[3.0.12],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[3.0.13],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])

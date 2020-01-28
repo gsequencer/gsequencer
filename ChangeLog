@@ -1,6 +1,7 @@
 ags (3.0.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* replaced UTF-8 character sequence from build files
 	* added missing parantheses in configure.ac
 	* wiped m4 directory and recreated it
 
