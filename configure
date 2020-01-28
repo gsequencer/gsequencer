@@ -20015,7 +20015,6 @@ $as_echo "$as_me: striping rt-events enabled" >&6;}
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: striping rt-events disabled" >&5
 $as_echo "$as_me: striping rt-events disabled" >&6;}
-
 fi
 
 # FIXME: Replace `main' with a function in `-lrt':
@@ -20070,7 +20069,6 @@ $as_echo "$as_me: rt enabled" >&6;}
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: rt disabled" >&5
 $as_echo "$as_me: rt disabled" >&6;}
-
 fi
 
 # Checks for header files.
@@ -21117,11 +21115,11 @@ $as_echo "#define AGS_WITH_AUDIO_UNIT 1" >>confdefs.h
 
 
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: core audio enabled" >&5
-$as_echo "$as_me: core audio enabled" >&6;}
+      { $as_echo "$as_me:${as_lineno-$LINENO}: audio-unit enabled" >&5
+$as_echo "$as_me: audio-unit enabled" >&6;}
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: core audio disabled" >&5
-$as_echo "$as_me: core audio disabled" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: audio-unit disabled" >&5
+$as_echo "$as_me: audio-unit disabled" >&6;}
 fi
 
 if test "x$enable_wasapi" != xno; then :

@@ -1,3 +1,8 @@
+ags (3.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing parantheses in configure.ac
+
 ags (3.0.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
