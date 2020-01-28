@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -362,7 +362,7 @@ ags_thread_pool_creation_thread(void *ptr)
     priority = ags_priority_get_instance();  
     
     /* Declare ourself as a real time task */
-    param.sched_priority = 1;
+    param.sched_priority = 45;
 
     str = ags_priority_get_value(priority,
 				 AGS_PRIORITY_RT_THREAD,
@@ -372,14 +372,19 @@ ags_thread_pool_creation_thread(void *ptr)
       param.sched_priority = (int) g_ascii_strtoull(str,
 						    NULL,
 						    10);
-
-      g_free(str);
     }
       
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed");
+    if(str == NULL ||
+       ((!g_ascii_strncasecmp(str,
+			      "0",
+			      2)) != TRUE)){
+      if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+	perror("sched_setscheduler failed");
+      }
     }
 
+    g_free(str);
+    
     g_atomic_int_or(&(thread_pool->flags),
 		    AGS_THREAD_POOL_RT_SETUP);
   }

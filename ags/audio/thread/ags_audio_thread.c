@@ -436,11 +436,7 @@ ags_audio_thread_run(AgsThread *thread)
     priority = ags_priority_get_instance();
     
     /* Declare ourself as a real time task */
-    param.sched_priority = 1;
-      
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed");
-    }
+    param.sched_priority = 45;
 
     str = ags_priority_get_value(priority,
 				 AGS_PRIORITY_RT_THREAD,
@@ -450,10 +446,19 @@ ags_audio_thread_run(AgsThread *thread)
       param.sched_priority = (int) g_ascii_strtoull(str,
 						    NULL,
 						    10);
-
-      g_free(str);
     }
-
+      
+    if(str == NULL ||
+       ((!g_ascii_strncasecmp(str,
+			      "0",
+			      2)) != TRUE)){
+      if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+	perror("sched_setscheduler failed");
+      }
+    }
+    
+    g_free(str);
+    
     ags_thread_set_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP);
   }
 #endif

@@ -88,6 +88,8 @@ AgsDevout *devout;
 int
 ags_recycling_test_init_suite()
 {
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   application_context = ags_application_context_new(NULL,
 						    NULL);
   g_object_ref(application_context);

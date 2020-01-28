@@ -89,6 +89,8 @@ ags_osc_meter_controller_test_init_suite()
 
   GList *start_audio;
   
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_OSC_METER_CONTROLLER_TEST_CONFIG,

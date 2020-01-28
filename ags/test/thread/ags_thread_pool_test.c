@@ -52,6 +52,8 @@ gboolean stub_start = FALSE;
 int
 ags_thread_pool_test_init_suite()
 {  
+  ags_priority_load_defaults(ags_priority_get_instance());  
+
   application_context = ags_thread_application_context_new();
   g_object_ref(application_context);
   

@@ -14,21 +14,21 @@
 
 @SET_MAKE@
 
-#Copyright (C) 2005-2020 Joël Krähemann
+#Copyright (C) 2005-2020 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-# Copyright (C) 2005-2019 Joël Krähemann
+# Copyright (C) 2005-2019 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-# Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -112,44 +112,45 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@WITH_W32API_TRUE@am__append_1 = -DAGS_W32API=1 -DHAVE_GLIB_2_6=1 -DHAVE_GLIB_2_44=1 -DHAVE_GLIB_2_54=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include-fixed -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include  -I/usr/x86_64-w64-mingw32/include -I/home/joelkraehemann/mingw64/target/include -I/home/joelkraehemann/mingw64/target/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
+@WITH_W32API_TRUE@am__append_1 = -DAGS_W32API=1 -DHAVE_GLIB_2_6=1 -DHAVE_GLIB_2_44=1 -DHAVE_GLIB_2_54=1 -DAGS_LIBRARY_SUFFIX=\".dll\" -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -include $(top_srcdir)/ags/config.h -I$(top_srcdir) -I$(top_srcdir)/lib -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include-fixed -I/usr/lib/gcc/x86_64-w64-mingw32/8.3-win32/include  -I/usr/x86_64-w64-mingw32/include -I/home/joelkraehemann/mingw64/target/include -I/home/joelkraehemann/mingw64/target/include/dssi -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 @WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_2 = -fnested-functions -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
 @WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_3 = -include errno.h -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -I/usr/include -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
-@WITH_LIBINSTPATCH_TRUE@am__append_4 = -DAGS_WITH_LIBINSTPATCH=1
-@WITH_W32API_TRUE@am__append_5 = -no-undefined
-@WITH_VST3_TRUE@am__append_6 = libags_vst.la 
+@WITH_W32API_FALSE@am__append_4 = -D_FORTIFY_SOURCE=2 -Wall -Wformat -Werror=format-security
+@WITH_LIBINSTPATCH_TRUE@am__append_5 = -DAGS_WITH_LIBINSTPATCH=1
+@WITH_W32API_TRUE@am__append_6 = -no-undefined -L$(top_builddir)/lib -lgnu
+@WITH_VST3_TRUE@am__append_7 = libags_vst.la 
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
-@HAVE_INTROSPECTION_TRUE@am__append_7 = Ags-3.0.gir AgsAudio-3.0.gir \
+@HAVE_INTROSPECTION_TRUE@am__append_8 = Ags-3.0.gir AgsAudio-3.0.gir \
 @HAVE_INTROSPECTION_TRUE@	AgsGui-3.0.gir
-@HAVE_INTROSPECTION_TRUE@am__append_8 = $(gir_DATA) $(typelib_DATA)
-@AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@am__append_9 = libgsequencer.pc
-@WITH_W32API_TRUE@am__append_10 = -Wl,--export-all-symbols,--out-implib=libags.dll.a
-@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_11 = -export-symbols libags.sym -Wl,-install_name,libags.dylib
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_12 = -export-symbols libags.sym -Wl,-soname,libags.so
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_13 = -ldl -lcrypt
-@WITH_W32API_TRUE@am__append_14 = -Wl,--export-all-symbols,--out-implib=libags_thread.dll.a
-@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_15 = -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_16 = -export-symbols libags_thread.sym -Wl,-soname,libags_thread.so
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_17 = -ldl -lcrypt
-@WITH_W32API_TRUE@am__append_18 = -Wl,--export-all-symbols,--out-implib=libags_server.dll.a
-@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_19 = -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_20 = -export-symbols libags_server.sym -Wl,-soname,libags_server.so
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_21 = -ldl -lcrypt
-@WITH_W32API_TRUE@am__append_22 = -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
-@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_23 = -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_24 = -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_25 = -ldl
-@WITH_W32API_TRUE@am__append_26 = -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
-@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_27 = -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_28 = -export-symbols libags_gui.sym -Wl,-soname,libags_gui.so
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_29 = -ldl
-@WITH_W32API_TRUE@am__append_30 = -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_31 = -ldl
-@WITH_VST3_TRUE@@WITH_W32API_TRUE@am__append_32 = -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
-@WITH_OSXAPI_TRUE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_33 = -export-symbols libags_vst.sym -Wl,-install_name,libags_vst.dylib
-@WITH_OSXAPI_FALSE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_34 = -export-symbols libags_vst.sym -Wl,-soname,libags_vst.so
-@WITH_OSXAPI_FALSE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_35 = -ldl
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_36 = -ldl
+@HAVE_INTROSPECTION_TRUE@am__append_9 = $(gir_DATA) $(typelib_DATA)
+@AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@am__append_10 = libgsequencer.pc
+@WITH_W32API_TRUE@am__append_11 = -Wl,--export-all-symbols,--out-implib=libags.dll.a
+@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_12 = -export-symbols libags.sym -Wl,-install_name,libags.dylib
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_13 = -export-symbols libags.sym -Wl,-soname,libags.so
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_14 = -ldl -lcrypt
+@WITH_W32API_TRUE@am__append_15 = -Wl,--export-all-symbols,--out-implib=libags_thread.dll.a
+@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_16 = -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_17 = -export-symbols libags_thread.sym -Wl,-soname,libags_thread.so
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_18 = -ldl -lcrypt
+@WITH_W32API_TRUE@am__append_19 = -Wl,--export-all-symbols,--out-implib=libags_server.dll.a
+@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_20 = -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_21 = -export-symbols libags_server.sym -Wl,-soname,libags_server.so
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_22 = -ldl -lcrypt
+@WITH_W32API_TRUE@am__append_23 = -Wl,--export-all-symbols,--out-implib=libags_audio.dll.a
+@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_24 = -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_25 = -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_26 = -ldl
+@WITH_W32API_TRUE@am__append_27 = -Wl,--export-all-symbols,--out-implib=libags_gui.dll.a
+@WITH_OSXAPI_TRUE@@WITH_W32API_FALSE@am__append_28 = -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_29 = -export-symbols libags_gui.sym -Wl,-soname,libags_gui.so
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_30 = -ldl
+@WITH_W32API_TRUE@am__append_31 = -Wl,--export-all-symbols,--out-implib=libgsequencer.dll.a
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_32 = -ldl
+@WITH_VST3_TRUE@@WITH_W32API_TRUE@am__append_33 = -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
+@WITH_OSXAPI_TRUE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_34 = -export-symbols libags_vst.sym -Wl,-install_name,libags_vst.dylib
+@WITH_OSXAPI_FALSE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_35 = -export-symbols libags_vst.sym -Wl,-soname,libags_vst.so
+@WITH_OSXAPI_FALSE@@WITH_VST3_TRUE@@WITH_W32API_FALSE@am__append_36 = -ldl
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_37 = -ldl
 check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_complex_test$(EXEEXT) ags_conversion_test$(EXEEXT) \
 	ags_log_test$(EXEEXT) ags_time_test$(EXEEXT) \
@@ -288,7 +289,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 
 #TODO:JK: fix tests after refactoring
 # functional tests
-@RUN_FUNCTIONAL_TESTS_TRUE@am__append_37 = \
+@RUN_FUNCTIONAL_TESTS_TRUE@am__append_38 = \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_server_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_pitch_test \
@@ -309,30 +310,30 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_notation_edit_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_config_test
 
-@FAST_TEST_MODE_TRUE@@RUN_FUNCTIONAL_TESTS_TRUE@am__append_38 = -DAGS_FAST_FUNCTIONAL_TESTS=1
-@WITH_LIBINSTPATCH_TRUE@am__append_39 = \
+@FAST_TEST_MODE_TRUE@@RUN_FUNCTIONAL_TESTS_TRUE@am__append_39 = -DAGS_FAST_FUNCTIONAL_TESTS=1
+@WITH_LIBINSTPATCH_TRUE@am__append_40 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sample.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_dls2_reader.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_gig_reader.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sf2_reader.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_40 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_41 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sample.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_dls2_reader.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_gig_reader.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sf2_reader.c
 
-@WITH_LIBINSTPATCH_TRUE@am__append_41 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_42 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_instrument.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_sample.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_42 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_43 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_instrument.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_sample.c
 
-@WITH_LIBINSTPATCH_TRUE@am__append_43 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_44 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_callbacks.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -344,7 +345,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_44 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_45 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_callbacks.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_bridge.c \
@@ -356,22 +357,22 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad_callbacks.c
 
-@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_45 = -ldl
+@WITH_OSXAPI_FALSE@@WITH_W32API_FALSE@am__append_46 = -ldl
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
 	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
-	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/extensions.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/gtk-doc.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
+	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 \
 	$(top_srcdir)/m4/introspection.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
 	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/stdbool.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -6413,7 +6414,7 @@ INTROSPECTION_TYPELIBDIR = @INTROSPECTION_TYPELIBDIR@
 JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
 LD = @LD@
-LDFLAGS = @LDFLAGS@ $(LTLIBINTL) $(am__append_5)
+LDFLAGS = @LDFLAGS@ $(LTLIBINTL) $(am__append_6)
 LIBAGS_API_DIR = @LIBAGS_API_DIR@
 LIBAGS_API_DOC = @LIBAGS_API_DOC@
 LIBAGS_AUDIO_API_DIR = @LIBAGS_AUDIO_API_DIR@
@@ -6559,9 +6560,8 @@ AM_CPPFLAGS = -std=gnu99 $(am__append_1) $(am__append_2) \
 	$(am__append_3) -DSRCDIR=\"$(srcdir)\" \
 	-DDESTDIR=\"$(datadir)\" -DDOCDIR=\"$(docdir)\" \
 	-DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" \
-	-DAGS_REDUCE_RT_EVENTS=1 -D_FORTIFY_SOURCE=2 -Wall -Wformat \
-	-Werror=format-security $(am__append_4)
-@WITH_W32API_TRUE@AM_LDFLAGS = -no-undefined
+	-DAGS_REDUCE_RT_EVENTS=1 $(am__append_4) $(am__append_5)
+@WITH_W32API_TRUE@AM_LDFLAGS = -no-undefined -L$(top_builddir)/lib -lgnu
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) \
 	$(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) \
@@ -6579,7 +6579,7 @@ midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ $(LIBXML2_LIBS) \
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la \
-	libags_audio.la libags_gui.la $(am__append_6)
+	libags_audio.la libags_gui.la $(am__append_7)
 @AGS_WITH_PUBLIC_LIBGSEQUENCER_FALSE@libgsequencerdir = $(libdir)/gsequencer
 @AGS_WITH_PUBLIC_LIBGSEQUENCER_TRUE@libgsequencerdir = $(libdir)
 libgsequencer_LTLIBRARIES = libgsequencer.la
@@ -6718,8 +6718,8 @@ CLEANFILES = functional-system-tests.mk m4/Makefile libags.sym \
 	docs/reference/libgsequencer/libgsequencer-sections.txt \
 	docs/reference/libgsequencer/libgsequencer.types \
 	docs/reference/libgsequencer/libgsequencer.interfaces \
-	$(am__append_8) $(appdata_DATA) $(pkgconfig_DATA)
-INTROSPECTION_GIRS = $(am__append_7)
+	$(am__append_9) $(appdata_DATA) $(pkgconfig_DATA)
+INTROSPECTION_GIRS = $(am__append_8)
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all
 INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_builddir)
 @HAVE_INTROSPECTION_TRUE@introspection_sources = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
@@ -6755,7 +6755,7 @@ INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir) --includedir=$(top_buil
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc \
-	$(am__append_9)
+	$(am__append_10)
 
 # desktop file
 appdatadir = $(datadir)/applications
@@ -6927,64 +6927,64 @@ libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sourc
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC \
-	-pthread $(am__append_10) $(am__append_11) $(am__append_12)
+	-pthread $(am__append_11) $(am__append_12) $(am__append_13)
 libags_la_LIBADD = -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) \
-	$(GIO_LIBS) $(W32API_LIBS) $(am__append_13)
+	$(GIO_LIBS) $(W32API_LIBS) $(am__append_14)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared \
-	-fPIC -pthread $(am__append_14) $(am__append_15) \
-	$(am__append_16)
+	-fPIC -pthread $(am__append_15) $(am__append_16) \
+	$(am__append_17)
 libags_thread_la_LIBADD = libags.la -lm $(LIBXML2_LIBS) \
-	$(GOBJECT_LIBS) $(W32API_LIBS) $(am__append_17)
+	$(GOBJECT_LIBS) $(W32API_LIBS) $(am__append_18)
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared \
-	-fPIC -pthread $(am__append_18) $(am__append_19) \
-	$(am__append_20)
+	-fPIC -pthread $(am__append_19) $(am__append_20) \
+	$(am__append_21)
 libags_server_la_LIBADD = libags_thread.la libags.la -lm \
 	$(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS) \
-	$(am__append_21)
+	$(am__append_22)
 
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC \
-	-pthread $(am__append_22) $(am__append_23) $(am__append_24)
+	-pthread $(am__append_23) $(am__append_24) $(am__append_25)
 libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la \
 	-lm $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) \
 	$(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) \
 	$(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) \
 	$(LIBSOUP_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(W32API_LIBS) \
-	$(am__append_25)
+	$(am__append_26)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 -shared -fPIC \
-	-pthread $(am__append_26) $(am__append_27) $(am__append_28)
+	-pthread $(am__append_27) $(am__append_28) $(am__append_29)
 libags_gui_la_LIBADD = -lm $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) \
-	$(W32API_LIBS) $(am__append_29)
+	$(W32API_LIBS) $(am__append_30)
 
 # library libgsequencer
 libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(WEBKITGTK_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared \
-	-fPIC -pthread $(am__append_30)
+	-fPIC -pthread $(am__append_31)
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la \
 	libags_gui.la libags_thread.la libags.la -lm \
 	$(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) \
 	$(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) \
 	$(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) \
 	$(LIBSOUP_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(WEBKITGTK_LIBS) \
-	$(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS) $(am__append_31)
+	$(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS) $(am__append_32)
 
 # library libags-vst
 @WITH_VST3_TRUE@libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(VST3_CXXFLAGS) $(W32API_CFLAGS)
 @WITH_VST3_TRUE@libags_vst_la_LDFLAGS = $(LDFLAGS) -version-info 3:0:0 \
-@WITH_VST3_TRUE@	-shared -fPIC -pthread $(am__append_32) \
-@WITH_VST3_TRUE@	$(am__append_33) $(am__append_34)
+@WITH_VST3_TRUE@	-shared -fPIC -pthread $(am__append_33) \
+@WITH_VST3_TRUE@	$(am__append_34) $(am__append_35)
 @WITH_VST3_TRUE@libags_vst_la_LIBADD = -lm $(GLIB_LIBS) $(VST3_LIBS) \
-@WITH_VST3_TRUE@	$(W32API_LIBS) $(am__append_35)
+@WITH_VST3_TRUE@	$(W32API_LIBS) $(am__append_36)
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -6995,7 +6995,7 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la \
 	$(LIBSOUP_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) \
 	$(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) \
 	$(WEBKITGTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS) $(W32API_LIBS) \
-	$(am__append_36)
+	$(am__append_37)
 
 # buffer util unit test
 ags_buffer_util_test_SOURCES = ags/test/lib/ags_buffer_util_test.c
@@ -8096,7 +8096,7 @@ ags_xorg_application_context_test_LDADD = libgsequencer.la libags_gui.la libags_
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_CPPFLAGS =  \
 @RUN_FUNCTIONAL_TESTS_TRUE@	-DSRCDIR=\"$(srcdir)\" \
 @RUN_FUNCTIONAL_TESTS_TRUE@	-DDESTDIR=\"gsequencer.share\" \
-@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__append_38)
+@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__append_39)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
 
@@ -8700,7 +8700,7 @@ libags_audio_file_h_sources =  \
 	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h ags/audio/file/ags_sfz_file.h \
 	ags/audio/file/ags_sfz_group.h ags/audio/file/ags_sfz_region.h \
-	ags/audio/file/ags_sfz_sample.h $(am__append_39)
+	ags/audio/file/ags_sfz_sample.h $(am__append_40)
 deprecated_libags_audio_file_c_sources = 
 libags_audio_file_c_sources =  \
 	$(deprecated_libags_audio_file_c_sources) \
@@ -8711,7 +8711,7 @@ libags_audio_file_c_sources =  \
 	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c ags/audio/file/ags_sfz_file.c \
 	ags/audio/file/ags_sfz_group.c ags/audio/file/ags_sfz_region.c \
-	ags/audio/file/ags_sfz_sample.c $(am__append_40)
+	ags/audio/file/ags_sfz_sample.c $(am__append_41)
 
 # libags-audio - midi
 deprecated_libags_audio_midi_h_sources = 
@@ -9143,7 +9143,7 @@ libags_audio_task_h_sources =  \
 	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_note.h \
 	ags/audio/task/ags_reset_peak.h ags/audio/task/ags_set_muted.h \
-	$(am__append_41)
+	$(am__append_42)
 deprecated_libags_audio_task_c_sources = 
 libags_audio_task_c_sources =  \
 	$(deprecated_libags_audio_task_c_sources) \
@@ -9191,7 +9191,7 @@ libags_audio_task_c_sources =  \
 	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_note.c \
 	ags/audio/task/ags_reset_peak.c ags/audio/task/ags_set_muted.c \
-	$(am__append_42)
+	$(am__append_43)
 
 # libags-gui all files
 deprecated_libags_gui_h_sources = 
@@ -9649,7 +9649,7 @@ libgsequencer_machine_h_sources =  \
 	ags/X/machine/ags_synth_input_line_callbacks.h \
 	ags/X/machine/ags_synth_input_pad.h \
 	ags/X/machine/ags_spectrometer.h \
-	ags/X/machine/ags_spectrometer_callbacks.h $(am__append_43)
+	ags/X/machine/ags_spectrometer_callbacks.h $(am__append_44)
 deprecated_libgsequencer_machine_c_sources = 
 libgsequencer_machine_c_sources =  \
 	$(deprecated_libgsequencer_machine_c_sources) \
@@ -9718,7 +9718,7 @@ libgsequencer_machine_c_sources =  \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c \
 	ags/X/machine/ags_spectrometer.c \
-	ags/X/machine/ags_spectrometer_callbacks.c $(am__append_44)
+	ags/X/machine/ags_spectrometer_callbacks.c $(am__append_45)
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources = 
@@ -9897,7 +9897,7 @@ gsequencer_c_sources = \
 	ags/gsequencer_main.c
 
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la $(am__append_45)
+	libags_thread.la libags.la $(am__append_46)
 midi2xml_SOURCES = ags/midi2xml_main.c
 all: all-recursive
 
@@ -26416,7 +26416,8 @@ midi2xml.1: midi2xml.1.xml
 	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
-	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
+@FREEBSD_TRUE@	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
+@FREEBSD_FALSE@	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
 html:
 	mkdir -p $(top_builddir)/html/
@@ -26479,44 +26480,44 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ChangeLog $(DESTDIR)/$(docdir)/changelog
 
 fix-local-html:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
 fix-local-html-bsd:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gobject/$(GOBJECT_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/gtk3/$(GTK_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-html/$(LIBAGS_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-audio-html/$(LIBAGS_AUDIO_API_DOC)/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i '' -e 's/\.\.\/libags-gui-html/$(LIBAGS_GUI_API_DOC)/g' {} \;
 
 fix-online-books-html:
-	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
-	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
+	find $(top_srcdir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
+	find $(top_srcdir)/html/ -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
 fix-online-html:
-	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
-	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/gtk3/https\:\/\/developer\.gnome\.org\/gtk3\/stable/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-html/\.\.\/libags/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-audio-html/\.\.\/libags-audio/g' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html-mkdir-links:
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
