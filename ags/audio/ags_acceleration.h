@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,12 +81,20 @@ struct _AgsAccelerationClass
 
 GType ags_acceleration_get_type();
 
+GRecMutex* ags_acceleration_get_obj_mutex(AgsAcceleration *acceleration);
+
 gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags);
 void ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags);
 void ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags);
 
 gint ags_acceleration_sort_func(gconstpointer a,
 				gconstpointer b);
+
+guint ags_acceleration_get_x(AgsAcceleration *acceleration);
+void ags_acceleration_set_x(AgsAcceleration *acceleration, guint x);
+
+gdouble ags_acceleration_get_y(AgsAcceleration *acceleration);
+void ags_acceleration_set_y(AgsAcceleration *acceleration, gdouble y);
 
 AgsAcceleration* ags_acceleration_duplicate(AgsAcceleration *acceleration);
 

@@ -100,22 +100,45 @@ struct _AgsWaveClass
 
 GType ags_wave_get_type(void);
 
+GRecMutex* ags_wave_get_obj_mutex(AgsWave *wave);
+
 gboolean ags_wave_test_flags(AgsWave *wave, guint flags);
 void ags_wave_set_flags(AgsWave *wave, guint flags);
 void ags_wave_unset_flags(AgsWave *wave, guint flags);
-
-void ags_wave_set_samplerate(AgsWave *wave,
-			     guint samplerate);
-void ags_wave_set_buffer_size(AgsWave *wave,
-			      guint buffer_size);
-void ags_wave_set_format(AgsWave *wave,
-			 guint format);
 
 GList* ags_wave_find_near_timestamp(GList *wave, guint line,
 				    AgsTimestamp *timestamp);
 
 gint ags_wave_sort_func(gconstpointer a,
 			gconstpointer b);
+
+GObject* ags_wave_get_audio(AgsWave *wave);
+void ags_wave_set_audio(AgsWave *wave,
+			GObject *audio);
+
+guint ags_wave_get_line(AgsWave *wave);
+void ags_wave_set_line(AgsWave *wave,
+		       guint line);
+
+guint ags_wave_get_samplerate(AgsWave *wave);
+void ags_wave_set_samplerate(AgsWave *wave,
+			     guint samplerate);
+
+guint ags_wave_get_buffer_size(AgsWave *wave);
+void ags_wave_set_buffer_size(AgsWave *wave,
+			      guint buffer_size);
+
+guint ags_wave_get_format(AgsWave *wave);
+void ags_wave_set_format(AgsWave *wave,
+			 guint format);
+
+AgsTimestamp* ags_wave_get_timestamp(AgsWave *wave);
+void ags_wave_set_timestamp(AgsWave *wave,
+			    AgsTimestamp *timestamp);
+
+GList* ags_wave_get_buffer(AgsWave *wave);
+void ags_wave_set_buffer(AgsWave *wave,
+			 GList *buffer);
 
 GList* ags_wave_add(GList *wave,
 		    AgsWave *new_wave);

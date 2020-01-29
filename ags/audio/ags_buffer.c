@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -457,6 +457,26 @@ ags_buffer_finalize(GObject *gobject)
 }
 
 /**
+ * ags_buffer_get_obj_mutex:
+ * @buffer: the #AgsBuffer
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @buffer
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_buffer_get_obj_mutex(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return(NULL);
+  }
+
+  return(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
  * ags_buffer_test_flags:
  * @buffer: the #AgsBuffer
  * @flags: the flags
@@ -550,6 +570,32 @@ ags_buffer_unset_flags(AgsBuffer *buffer, guint flags)
 }
 
 /**
+ * ags_buffer_get_samplerate:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_samplerate(AgsBuffer *buffer)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
+}
+
+/**
  * ags_buffer_set_samplerate:
  * @buffer: the #AgsBuffer
  * @samplerate: the samplerate
@@ -578,6 +624,32 @@ ags_buffer_set_samplerate(AgsBuffer *buffer,
   buffer->samplerate = samplerate;
   
   g_rec_mutex_unlock(buffer_mutex);
+}
+
+/**
+ * ags_buffer_get_buffer_size:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_buffer_size(AgsBuffer *buffer)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
 }
 
 /**
@@ -668,6 +740,32 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   }
 
   g_rec_mutex_unlock(buffer_mutex);
+}
+
+/**
+ * ags_buffer_get_format:
+ * @buffer: the #AgsBuffer
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_buffer_get_format(AgsBuffer *buffer)
+{
+  guint format;
+  
+  if(!AGS_IS_BUFFER(buffer)){
+    return(0);
+  }
+
+  g_object_get(buffer,
+	       "format", &format,
+	       NULL);
+
+  return(format);
 }
 
 /**

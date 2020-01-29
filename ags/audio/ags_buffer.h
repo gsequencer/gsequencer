@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -81,14 +81,21 @@ struct _AgsBufferClass
 
 GType ags_buffer_get_type();
 
+GRecMutex* ags_buffer_get_obj_mutex(AgsBuffer *buffer);
+
 gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);
 
+guint ags_buffer_get_samplerate(AgsBuffer *buffer);
 void ags_buffer_set_samplerate(AgsBuffer *buffer,
 			       guint samplerate);
+
+guint ags_buffer_get_buffer_size(AgsBuffer *buffer);
 void ags_buffer_set_buffer_size(AgsBuffer *buffer,
 				guint buffer_size);
+
+guint ags_buffer_get_format(AgsBuffer *buffer);
 void ags_buffer_set_format(AgsBuffer *buffer,
 			   guint format);
 
