@@ -2186,6 +2186,26 @@ ags_recall_global_get_rt_safe()
 }
 
 /**
+ * ags_recall_get_obj_mutex:
+ * @recall: the #AgsRecall
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @recall
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_recall_get_obj_mutex(AgsRecall *recall)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  return(AGS_RECALL_GET_OBJ_MUTEX(recall));
+}
+
+/**
  * ags_recall_test_flags:
  * @recall: the #AgsRecall
  * @flags: the flags
@@ -3384,6 +3404,224 @@ ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
 }
 
 /**
+ * ags_recall_get_filename:
+ * @recall: the #AgsRecall
+ * 
+ * Get filename.
+ * 
+ * Returns: the filename
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_recall_get_filename(AgsRecall *recall)
+{
+  gchar *filename;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "filename", &filename,
+	       NULL);
+
+  return(filename);
+}
+
+/**
+ * ags_recall_get_filename:
+ * @recall: the #AgsRecall
+ * @filename: the filename
+ * 
+ * Set filename.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_filename(AgsRecall *recall,
+			gchar *filename)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "filename", filename,
+	       NULL);
+}
+
+/**
+ * ags_recall_get_effect:
+ * @recall: the #AgsRecall
+ * 
+ * Get effect.
+ * 
+ * Returns: the effect
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_recall_get_effect(AgsRecall *recall)
+{
+  gchar *effect;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "effect", &effect,
+	       NULL);
+
+  return(effect);
+}
+
+/**
+ * ags_recall_get_effect:
+ * @recall: the #AgsRecall
+ * @effect: the effect
+ * 
+ * Set effect.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_effect(AgsRecall *recall,
+		      gchar *effect)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "effect", effect,
+	       NULL);
+}
+
+/**
+ * ags_recall_get_effect_index:
+ * @recall: the #AgsRecall
+ * 
+ * Get effect index.
+ * 
+ * Returns: the effect index
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recall_get_effect_index(AgsRecall *recall)
+{
+  guint effect_index;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  g_object_get(recall,
+	       "effect-index", &effect_index,
+	       NULL);
+
+  return(effect_index);
+}
+
+/**
+ * ags_recall_set_effect_index:
+ * @recall: the #AgsRecall
+ * @effect_index: the effect index
+ * 
+ * Set effect index.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_effect_index(AgsRecall *recall,
+			    guint effect_index)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "effect-index", effect_index,
+	       NULL);
+}
+
+/**
+ * ags_recall_get_recall_container:
+ * @recall: the #AgsRecall
+ * 
+ * Get recall container of @recall.
+ * 
+ * Returns: the #AgsRecallContainer
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recall_get_recall_container(AgsRecall *recall)
+{
+  GObject *recall_container;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "recall-container", &recall_container,
+	       NULL);
+
+  return(recall_container);
+}
+
+/**
+ * ags_recall_set_recall_container:
+ * @recall: the #AgsRecall
+ * @recall_container: the #AgsRecallContainer
+ * 
+ * Set @recall_container of @recall.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_recall_container(AgsRecall *recall,
+				GObject *recall_container)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  g_object_set(recall,
+	       "recall-container", recall_container,
+	       NULL);
+}
+
+/**
+ * ags_recall_get_recall_id:
+ * @recall: the #AgsRecall
+ * 
+ * Get recall id of @recall.
+ * 
+ * Returns: the #AgsRecallID
+ * 
+ * Since: 3.1.0
+ */
+AgsRecallID*
+ags_recall_get_recall_id(AgsRecall *recall)
+{
+  AgsRecallID *recall_id;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  return(recall_id);
+}
+
+/**
  * ags_recall_set_recall_id:
  * @recall: the #AgsRecall
  * @recall_id: the #AgsRecallID to set
@@ -3393,7 +3631,8 @@ ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
  * Since: 3.0.0
  */
 void
-ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
+ags_recall_set_recall_id(AgsRecall *recall,
+			 AgsRecallID *recall_id)
 {
   GList *list_start, *list, *next;
 
@@ -3446,6 +3685,67 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
   g_object_ref(recall_id);
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_get_recall_dependency:
+ * @recall: the #AgsRecall
+ * 
+ * Get recall dependency.
+ * 
+ * Returns: (element-type AgsAudio.RecallDependency) (transfer full): the #GList-struct containig #AgsRecallDependency
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_recall_get_recall_dependency(AgsRecall *recall)
+{
+  GList *recall_dependency;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "recall-dependency", &recall_dependency,
+	       NULL);
+
+  return(recall_dependency);
+}
+
+/**
+ * ags_recall_set_recall_dependency:
+ * @recall: the #AgsRecall
+ * @recall_dependency: (element-type AgsAudio.RecallDependency) (transfer full): the #GList-struct containing #AgsRecallDependency
+ * 
+ * Set recall dependency by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_recall_dependency(AgsRecall *recall,
+				 GList *recall_dependency)
+{
+  GList *start_recall_dependency;
+  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+    
+  g_rec_mutex_lock(recall_mutex);
+
+  start_recall_dependency = recall->recall_dependency;
+  recall->recall_dependency = recall_dependency;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_list_free_full(start_recall_dependency,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -3513,6 +3813,67 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
   }
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_get_children:
+ * @recall: the #AgsRecall
+ * 
+ * Get recall children.
+ * 
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_recall_get_children(AgsRecall *recall)
+{
+  GList *children;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "child", &children,
+	       NULL);
+
+  return(children);
+}
+
+/**
+ * ags_recall_set_children:
+ * @recall: the #AgsRecall
+ * @children: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set recall children by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_set_children(AgsRecall *recall,
+			GList *children)
+{
+  GList *start_children;
+  
+  GRecMutex *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+    
+  g_rec_mutex_lock(recall_mutex);
+
+  start_children = recall->children;
+  recall->children = children;
+  
+  g_rec_mutex_unlock(recall_mutex);
+
+  g_list_free_full(start_children,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -3816,6 +4177,32 @@ ags_recall_remove_recall_handler(AgsRecall *recall,
 }
 
 /**
+ * ags_recall_get_output_soundcard:
+ * @recall: the #AgsRecall
+ *
+ * Get the output soundcard object of @recall.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recall_get_output_soundcard(AgsRecall *recall)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_recall_set_output_soundcard:
  * @recall: the #AgsRecall
  * @output_soundcard: the #GObject implementing #AgsSoundcard
@@ -3854,6 +4241,32 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
   recall->output_soundcard = output_soundcard;
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_get_input_soundcard:
+ * @recall: the #AgsRecall
+ *
+ * Get the input soundcard object of @recall.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recall_get_input_soundcard(AgsRecall *recall)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  g_object_get(recall,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
 }
 
 /**
@@ -3898,6 +4311,32 @@ ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
 }
 
 /**
+ * ags_recall_get_samplerate:
+ * @recall: the #AgsRecall
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recall_get_samplerate(AgsRecall *recall)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  g_object_get(recall,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
+}
+
+/**
  * ags_recall_set_samplerate:
  * @recall: the #AgsRecall
  * @samplerate: the samplerate
@@ -3927,6 +4366,32 @@ ags_recall_set_samplerate(AgsRecall *recall, guint samplerate)
 }
 
 /**
+ * ags_recall_get_buffer_size:
+ * @recall: the #AgsRecall
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recall_get_buffer_size(AgsRecall *recall)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  g_object_get(recall,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
+}
+
+/**
  * ags_recall_set_buffer_size:
  * @recall: the #AgsRecall
  * @buffer_size: the buffer size
@@ -3953,6 +4418,32 @@ ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size)
   recall->buffer_size = buffer_size;
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_get_format:
+ * @recall: the #AgsRecall
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_recall_get_format(AgsRecall *recall)
+{
+  guint format;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(0);
+  }
+
+  g_object_get(recall,
+	       "format", &format,
+	       NULL);
+
+  return(format);
 }
 
 /**
