@@ -916,9 +916,9 @@ ags_notation_set_audio(AgsNotation *notation, GObject *audio)
  * ags_notation_get_audio_channel:
  * @notation: the #AgsNotation
  *
- * Gets sharp flats.
+ * Gets audio channel.
  * 
- * Returns: the sharp flats
+ * Returns: the audio channel
  * 
  * Since: 3.1.0
  */
@@ -932,7 +932,7 @@ ags_notation_get_audio_channel(AgsNotation *notation)
   }
 
   g_object_get(notation,
-	       "sharp-flats", &audio_channel,
+	       "audio-channel", &audio_channel,
 	       NULL);
 
   return(audio_channel);
@@ -941,9 +941,9 @@ ags_notation_get_audio_channel(AgsNotation *notation)
 /**
  * ags_notation_set_audio_channel:
  * @notation: the #AgsNotation
- * @audio_channel: the sharp flats
+ * @audio_channel: the audio channel
  *
- * Sets sharp flats.
+ * Sets audio channel.
  * 
  * Since: 3.1.0
  */
@@ -955,7 +955,7 @@ ags_notation_set_audio_channel(AgsNotation *notation, guint audio_channel)
   }
 
   g_object_set(notation,
-	       "sharp-flats", audio_channel,
+	       "audio-channel", audio_channel,
 	       NULL);
 }
 

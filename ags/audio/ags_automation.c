@@ -953,6 +953,26 @@ ags_automation_unset_flags(AgsAutomation *automation, guint flags)
 }
 
 /**
+ * ags_automation_get_obj_mutex:
+ * @automation: the #AgsAutomation
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @automation
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_automation_get_obj_mutex(AgsAutomation *automation)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  return(AGS_AUTOMATION_GET_OBJ_MUTEX(automation));
+}
+
+/**
  * ags_automation_find_port:
  * @automation: (element-type AgsAudio.Automation) (transfer none): the #GList-struct containing #AgsAutomation
  * @port: the #AgsPort to match
@@ -1600,6 +1620,537 @@ ags_automation_add(GList *automation,
 				    ags_automation_sort_func);
   
   return(automation);
+}
+
+/**
+ * ags_automation_get_audio:
+ * @automation: the #AgsAutomation
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_automation_get_audio(AgsAutomation *automation)
+{
+  GObject *audio;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_automation_set_audio:
+ * @automation: the #AgsAutomation
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_audio(AgsAutomation *automation, GObject *audio)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_channel_type:
+ * @automation: the #AgsAutomation
+ *
+ * Gets channel type.
+ * 
+ * Returns: the channel type
+ * 
+ * Since: 3.1.0
+ */
+GType
+ags_automation_get_channel_type(AgsAutomation *automation)
+{
+  GType channel_type;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0);
+  }
+
+  g_object_get(automation,
+	       "channel_type", &channel_type,
+	       NULL);
+
+  return(channel_type);
+}
+
+/**
+ * ags_automation_set_channel_type:
+ * @automation: the #AgsAutomation
+ * @channel_type: the channel type
+ *
+ * Sets channel type.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_channel_type(AgsAutomation *automation, GType channel_type)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "channel-type", channel_type,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_line:
+ * @automation: the #AgsAutomation
+ *
+ * Gets line.
+ * 
+ * Returns: the line
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_automation_get_line(AgsAutomation *automation)
+{
+  guint line;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0);
+  }
+
+  g_object_get(automation,
+	       "line", &line,
+	       NULL);
+
+  return(line);
+}
+
+/**
+ * ags_automation_set_line:
+ * @automation: the #AgsAutomation
+ * @line: the line
+ *
+ * Sets line.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_line(AgsAutomation *automation, guint line)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "line", line,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_timestamp:
+ * @automation: the #AgsAutomation
+ * 
+ * Get timestamp.
+ * 
+ * Returns: (transfer full): the #AgsTimestamp
+ * 
+ * Since: 3.1.0
+ */
+AgsTimestamp*
+ags_automation_get_timestamp(AgsAutomation *automation)
+{
+  AgsTimestamp *timestamp;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  return(timestamp);
+}
+
+/**
+ * ags_automation_set_timestamp:
+ * @automation: the #AgsAutomation
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Set timestamp.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_timestamp(AgsAutomation *automation, AgsTimestamp *timestamp)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "timestamp", timestamp,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_control_name:
+ * @automation: the #AgsAutomation
+ * 
+ * Get control name.
+ * 
+ * Returns: (transfer full): the control name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_automation_get_control_name(AgsAutomation *automation)
+{
+  gchar *control_name;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "control-name", &control_name,
+	       NULL);
+
+  return(control_name);
+}
+
+/**
+ * ags_automation_set_control_name:
+ * @automation: the #AgsAutomation
+ * @control_name: the control name
+ * 
+ * Set control name.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_control_name(AgsAutomation *automation, gchar *control_name)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "control-name", control_name,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_steps:
+ * @automation: the #AgsAutomation
+ *
+ * Gets steps.
+ * 
+ * Returns: the steps
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_automation_get_steps(AgsAutomation *automation)
+{
+  guint steps;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0);
+  }
+
+  g_object_get(automation,
+	       "steps", &steps,
+	       NULL);
+
+  return(steps);
+}
+
+/**
+ * ags_automation_set_steps:
+ * @automation: the #AgsAutomation
+ * @steps: the steps
+ *
+ * Sets steps.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_steps(AgsAutomation *automation, guint steps)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "steps", steps,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_upper:
+ * @automation: the #AgsAutomation
+ *
+ * Gets upper.
+ * 
+ * Returns: the upper
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_automation_get_upper(AgsAutomation *automation)
+{
+  gdouble upper;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0.0);
+  }
+
+  g_object_get(automation,
+	       "upper", &upper,
+	       NULL);
+
+  return(upper);
+}
+
+/**
+ * ags_automation_set_upper:
+ * @automation: the #AgsAutomation
+ * @upper: the upper
+ *
+ * Sets upper.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_upper(AgsAutomation *automation, gdouble upper)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "upper", upper,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_lower:
+ * @automation: the #AgsAutomation
+ *
+ * Gets lower.
+ * 
+ * Returns: the lower
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_automation_get_lower(AgsAutomation *automation)
+{
+  gdouble lower;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0.0);
+  }
+
+  g_object_get(automation,
+	       "lower", &lower,
+	       NULL);
+
+  return(lower);
+}
+
+/**
+ * ags_automation_set_lower:
+ * @automation: the #AgsAutomation
+ * @lower: the lower
+ *
+ * Sets lower.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_lower(AgsAutomation *automation, gdouble lower)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "lower", lower,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_default_value:
+ * @automation: the #AgsAutomation
+ *
+ * Gets default value.
+ * 
+ * Returns: the default value
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_automation_get_default_value(AgsAutomation *automation)
+{
+  gdouble default_value;
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(0.0);
+  }
+
+  g_object_get(automation,
+	       "default-value", &default_value,
+	       NULL);
+
+  return(default_value);
+}
+
+/**
+ * ags_automation_set_default_value:
+ * @automation: the #AgsAutomation
+ * @default_value: the default value
+ *
+ * Sets default value.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_default_value(AgsAutomation *automation, gdouble default_value)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "default-value", default_value,
+	       NULL);
+}
+
+/**
+ * ags_automation_get_port:
+ * @automation: the #AgsAutomation
+ * 
+ * Get port.
+ * 
+ * Returns: (transfer full): the #AgsPort
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_automation_get_port(AgsAutomation *automation)
+{
+  GObject *port;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "port", &port,
+	       NULL);
+
+  return(port);
+}
+
+/**
+ * ags_automation_set_port:
+ * @automation: the #AgsAutomation
+ * @port: the #AgsPort
+ * 
+ * Set port.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_port(AgsAutomation *automation, GObject *port)
+{
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  g_object_set(automation,
+	       "port", port,
+	       NULL);
+}
+
+
+/**
+ * ags_automation_get_acceleration:
+ * @automation: the #AgsAutomation
+ * 
+ * Get acceleration.
+ * 
+ * Returns: (element-type AgsAudio.Acceleration) (transfer full): the #GList-struct containig #AgsAcceleration
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_automation_get_acceleration(AgsAutomation *automation)
+{
+  GList *acceleration;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  g_object_get(automation,
+	       "acceleration", &acceleration,
+	       NULL);
+
+  return(acceleration);
+}
+
+/**
+ * ags_automation_set_acceleration:
+ * @automation: the #AgsAutomation
+ * @acceleration: (element-type AgsAudio.Acceleration) (transfer full): the #GList-struct containing #AgsAcceleration
+ * 
+ * Set acceleration by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_automation_set_acceleration(AgsAutomation *automation, GList *acceleration)
+{
+  GList *start_acceleration;
+  
+  GRecMutex *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
+    
+  g_rec_mutex_lock(automation_mutex);
+
+  start_acceleration = automation->acceleration;
+  automation->acceleration = acceleration;
+  
+  g_rec_mutex_unlock(automation_mutex);
+
+  g_list_free_full(start_acceleration,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

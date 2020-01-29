@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,6 +109,8 @@ struct _AgsAutomationClass
 
 GType ags_automation_get_type(void);
 
+GRecMutex* ags_automation_get_obj_mutex(AgsAutomation *automation);
+
 gboolean ags_automation_test_flags(AgsAutomation *automation, guint flags);
 void ags_automation_set_flags(AgsAutomation *automation, guint flags);
 void ags_automation_unset_flags(AgsAutomation *automation, guint flags);
@@ -127,6 +129,50 @@ gint ags_automation_sort_func(gconstpointer a,
 
 GList* ags_automation_add(GList *automation,
 			  AgsAutomation *new_automation);
+
+GObject* ags_automation_get_audio(AgsAutomation *automation);
+void ags_automation_set_audio(AgsAutomation *automation,
+			      GObject *audio);
+
+GType ags_automation_get_channel_type(AgsAutomation *automation);
+void ags_automation_set_channel_type(AgsAutomation *automation,
+				     GType channel_type);
+
+guint ags_automation_get_line(AgsAutomation *automation);
+void ags_automation_set_line(AgsAutomation *automation,
+			     guint line);
+
+AgsTimestamp* ags_automation_get_timestamp(AgsAutomation *automation);
+void ags_automation_set_timestamp(AgsAutomation *automation,
+				  AgsTimestamp *timestamp);
+
+gchar* ags_automation_get_control_name(AgsAutomation *automation);
+void ags_automation_set_control_name(AgsAutomation *automation,
+				     gchar *control_name);
+
+guint ags_automation_get_steps(AgsAutomation *automation);
+void ags_automation_set_steps(AgsAutomation *automation,
+			      guint steps);
+
+gdouble ags_automation_get_upper(AgsAutomation *automation);
+void ags_automation_set_upper(AgsAutomation *automation,
+			      gdouble upper);
+
+gdouble ags_automation_get_lower(AgsAutomation *automation);
+void ags_automation_set_lower(AgsAutomation *automation,
+			      gdouble lower);
+
+gdouble ags_automation_get_default_value(AgsAutomation *automation);
+void ags_automation_set_default_value(AgsAutomation *automation,
+				      gdouble default_value);
+
+GObject* ags_automation_get_port(AgsAutomation *automation);
+void ags_automation_set_port(AgsAutomation *automation,
+			     GObject *port);
+
+GList* ags_automation_get_acceleration(AgsAutomation *automation);
+void ags_automation_set_acceleration(AgsAutomation *automation,
+				     GList *acceleration);
 
 void ags_automation_add_acceleration(AgsAutomation *automation,
 				     AgsAcceleration *acceleration,

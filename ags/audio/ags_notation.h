@@ -117,7 +117,6 @@ GList* ags_notation_add(GList *notation,
 gint ags_notation_sort_func(gconstpointer a,
 			    gconstpointer b);
 
-
 GObject* ags_notation_get_audio(AgsNotation *notation);
 void ags_notation_set_audio(AgsNotation *notation,
 			    GObject *audio);
