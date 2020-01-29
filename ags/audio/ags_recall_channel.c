@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -630,6 +630,100 @@ ags_recall_channel_duplicate(AgsRecall *recall,
   g_message("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
 
   return((AgsRecall *) copy_recall_channel);
+}
+
+/**
+ * ags_recall_channel_get_destination:
+ * @recall_channel: the #AgsRecallDestination
+ * 
+ * Get destination.
+ * 
+ * Returns: (transfer full): the #AgsDestination
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_recall_channel_get_destination(AgsRecallChannel *recall_channel)
+{
+  AgsChannel *destination;
+
+  if(!AGS_IS_RECALL_CHANNEL(recall_channel)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel,
+	       "destination", &destination,
+	       NULL);
+
+  return(destination);
+}
+
+/**
+ * ags_recall_channel_set_destination:
+ * @recall_channel: the #AgsRecallChannel
+ * @destination: the #AgsChannel
+ * 
+ * Set destination.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_set_destination(AgsRecallChannel *recall_channel, AgsChannel *destination)
+{
+  if(!AGS_IS_RECALL_CHANNEL(recall_channel)){
+    return;
+  }
+
+  g_object_set(recall_channel,
+	       "destination", destination,
+	       NULL);
+}
+
+/**
+ * ags_recall_channel_get_source:
+ * @recall_channel: the #AgsRecallSource
+ * 
+ * Get source.
+ * 
+ * Returns: (transfer full): the #AgsSource
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_recall_channel_get_source(AgsRecallChannel *recall_channel)
+{
+  AgsChannel *source;
+
+  if(!AGS_IS_RECALL_CHANNEL(recall_channel)){
+    return(NULL);
+  }
+
+  g_object_get(recall_channel,
+	       "source", &source,
+	       NULL);
+
+  return(source);
+}
+
+/**
+ * ags_recall_channel_set_source:
+ * @recall_channel: the #AgsRecallChannel
+ * @source: the #AgsChannel
+ * 
+ * Set source.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_channel_set_source(AgsRecallChannel *recall_channel, AgsChannel *source)
+{
+  if(!AGS_IS_RECALL_CHANNEL(recall_channel)){
+    return;
+  }
+
+  g_object_set(recall_channel,
+	       "source", source,
+	       NULL);
 }
 
 /**

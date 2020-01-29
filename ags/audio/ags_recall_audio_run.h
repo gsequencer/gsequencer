@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,6 +56,14 @@ struct _AgsRecallAudioRunClass
 };
 
 GType ags_recall_audio_run_get_type();
+
+AgsAudio* ags_recall_audio_run_get_audio(AgsRecallAudioRun *recall_audio_run);
+void ags_recall_audio_run_set_audio(AgsRecallAudioRun *recall_audio_run,
+				    AgsAudio *audio);
+
+AgsRecallAudio* ags_recall_audio_run_get_recall_audio(AgsRecallAudioRun *recall_audio_run);
+void ags_recall_audio_run_set_recall_audio(AgsRecallAudioRun *recall_audio_run,
+					   AgsRecallAudio *recall_audio);
 
 AgsRecallAudioRun* ags_recall_audio_run_new();
 

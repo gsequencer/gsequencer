@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -443,6 +443,100 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   }
   
   return((AgsRecall *) copy_recall_audio_run);
+}
+
+/**
+ * ags_recall_audio_run_get_audio:
+ * @recall_audio_run: the #AgsRecallAudioRun
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+AgsAudio*
+ags_recall_audio_run_get_audio(AgsRecallAudioRun *recall_audio_run)
+{
+  AgsAudio *audio;
+
+  if(!AGS_IS_RECALL_AUDIO_RUN(recall_audio_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_audio_run,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_recall_audio_run_set_audio:
+ * @recall_audio_run: the #AgsRecallAudioRun
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_audio_run_set_audio(AgsRecallAudioRun *recall_audio_run, AgsAudio *audio)
+{
+  if(!AGS_IS_RECALL_AUDIO_RUN(recall_audio_run)){
+    return;
+  }
+
+  g_object_set(recall_audio_run,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
+ * ags_recall_audio_run_get_recall_audio:
+ * @recall_audio_run: the #AgsRecallAudioRun
+ * 
+ * Get recall audio.
+ * 
+ * Returns: (transfer full): the #AgsRecallAudio
+ * 
+ * Since: 3.1.0
+ */
+AgsRecallAudio*
+ags_recall_audio_run_get_recall_audio(AgsRecallAudioRun *recall_audio_run)
+{
+  AgsRecallAudio *recall_audio;
+
+  if(!AGS_IS_RECALL_AUDIO_RUN(recall_audio_run)){
+    return(NULL);
+  }
+
+  g_object_get(recall_audio_run,
+	       "recall-audio", &recall_audio,
+	       NULL);
+
+  return(recall_audio);
+}
+
+/**
+ * ags_recall_audio_run_set_recall_audio:
+ * @recall_audio_run: the #AgsRecallAudioRun
+ * @recall_audio: the #AgsRecallAudio
+ * 
+ * Set recall audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recall_audio_run_set_recall_audio(AgsRecallAudioRun *recall_audio_run, AgsRecallAudio *recall_audio)
+{
+  if(!AGS_IS_RECALL_AUDIO_RUN(recall_audio_run)){
+    return;
+  }
+
+  g_object_set(recall_audio_run,
+	       "recall-audio", recall_audio,
+	       NULL);
 }
 
 /**
