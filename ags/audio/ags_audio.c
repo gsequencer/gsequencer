@@ -9544,6 +9544,53 @@ ags_audio_remove_preset(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_playback_domain:
+ * @audio: the #AgsAudio
+ * 
+ * Get playback domain.
+ * 
+ * Returns: (transfer full): the #AgsPlaybackDomain
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_playback_domain(AgsAudio *audio)
+{
+  GObject *playback_domain;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
+
+  return(playback_domain);
+}
+
+/**
+ * ags_audio_set_playback_domain:
+ * @audio: the #AgsAudio
+ * @playback_domain: the #AgsPlaybackDomain
+ * 
+ * Set playback domain.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_playback_domain(AgsAudio *audio, GObject *playback_domain)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "playback-domain", playback_domain,
+	       NULL);
+}
+
+/**
  * ags_audio_get_synth_generator:
  * @audio: the #AgsAudio
  * 
@@ -9574,7 +9621,7 @@ ags_audio_get_synth_generator(AgsAudio *audio)
  * @audio: the #AgsAudio
  * @synth_generator: (element-type AgsAudio.SynthGenerator) (transfer full): the #GList-struct containing #AgsSynthGenerator
  * 
- * Set synth_generator by replacing existing.
+ * Set synth generator by replacing existing.
  * 
  * Since: 3.1.0
  */

@@ -289,6 +289,9 @@ void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
 void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
 
 /* recall related */
+GObject* ags_channel_get_playback(AgsChannel *channel);
+void ags_channel_set_playback(AgsChannel *channel, GObject *playback);
+
 GList* ags_channel_get_recall_id(AgsChannel *channel);
 void ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id);
 

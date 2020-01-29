@@ -388,6 +388,9 @@ void ags_audio_set_preset(AgsAudio *audio, GList *preset);
 void ags_audio_add_preset(AgsAudio *audio, GObject *preset);
 void ags_audio_remove_preset(AgsAudio *audio, GObject *preset);
 
+GObject* ags_audio_get_playback_domain(AgsAudio *audio);
+void ags_audio_set_playback_domain(AgsAudio *audio, GObject *playback_domain);
+
 GList* ags_audio_get_synth_generator(AgsAudio *audio);
 void ags_audio_set_synth_generator(AgsAudio *audio, GList *synth_generator);
 

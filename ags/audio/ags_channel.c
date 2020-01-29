@@ -7388,7 +7388,7 @@ ags_channel_set_format(AgsChannel *channel, guint format)
  * 
  * Get pattern.
  * 
- * Returns: (element-type AgsChannel.Pattern) (transfer full): the #GList-struct containig #AgsPattern
+ * Returns: (element-type AgsAudio.Pattern) (transfer full): the #GList-struct containig #AgsPattern
  * 
  * Since: 3.1.0
  */
@@ -7411,7 +7411,7 @@ ags_channel_get_pattern(AgsChannel *channel)
 /**
  * ags_channel_set_pattern:
  * @channel: the #AgsChannel
- * @pattern: (element-type AgsChannel.Pattern) (transfer full): the #GList-struct containing #AgsPattern
+ * @pattern: (element-type AgsAudio.Pattern) (transfer full): the #GList-struct containing #AgsPattern
  * 
  * Set pattern by replacing existing.
  * 
@@ -7513,6 +7513,115 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
 }
 
 /**
+ * ags_channel_get_playback:
+ * @channel: the #AgsChannel
+ * 
+ * Get playback domain.
+ * 
+ * Returns: (transfer full): the #AgsPlayback
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_playback(AgsChannel *channel)
+{
+  GObject *playback;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
+
+  return(playback);
+}
+
+/**
+ * ags_channel_set_playback:
+ * @channel: the #AgsChannel
+ * @playback: the #AgsPlayback
+ * 
+ * Set playback.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_playback(AgsChannel *channel, GObject *playback)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "playback", playback,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_recall_id:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall id.
+ * 
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall_id(AgsChannel *channel)
+{
+  GList *recall_id;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall_id", &recall_id,
+	       NULL);
+
+  return(recall_id);
+}
+
+/**
+ * ags_channel_set_recall_id:
+ * @channel: the #AgsChannel
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
+ * 
+ * Set recall id by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id)
+{
+  GList *start_recall_id;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall_id = channel->recall_id;
+  channel->recall_id = NULL;
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->recall_id = recall_id;
+  
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
  * ags_channel_add_recall_id:
  * @channel: an #AgsChannel
  * @recall_id: the #AgsRecallID
@@ -7581,74 +7690,12 @@ ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
 }
 
 /**
- * ags_channel_get_recall_id:
- * @channel: the #AgsChannel
- * 
- * Get recall id.
- * 
- * Returns: (element-type AgsChannel.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
- * 
- * Since: 3.1.0
- */
-GList*
-ags_channel_get_recall_id(AgsChannel *channel)
-{
-  GList *recall_id;
-
-  if(!AGS_IS_CHANNEL(channel)){
-    return(NULL);
-  }
-
-  g_object_get(channel,
-	       "recall_id", &recall_id,
-	       NULL);
-
-  return(recall_id);
-}
-
-/**
- * ags_channel_set_recall_id:
- * @channel: the #AgsChannel
- * @recall_id: (element-type AgsChannel.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
- * 
- * Set recall id by replacing existing.
- * 
- * Since: 3.1.0
- */
-void
-ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id)
-{
-  GList *start_recall_id;
-  
-  GRecMutex *channel_mutex;
-
-  if(!AGS_IS_CHANNEL(channel)){
-    return;
-  }
-
-  /* get channel mutex */
-  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
-    
-  g_rec_mutex_lock(channel_mutex);
-
-  start_recall_id = channel->recall_id;
-  channel->recall_id = NULL;
-
-  g_list_free_full(start_recall_id,
-		   (GDestroyNotify) g_object_unref);
-
-  channel->recall_id = recall_id;
-  
-  g_rec_mutex_unlock(channel_mutex);
-}
-
-/**
  * ags_channel_get_recall_container:
  * @channel: the #AgsChannel
  * 
  * Get recall_container.
  * 
- * Returns: (element-type AgsChannel.RecallContainer) (transfer full): the #GList-struct containig #AgsRecallContainer
+ * Returns: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containig #AgsRecallContainer
  * 
  * Since: 3.1.0
  */
@@ -7671,7 +7718,7 @@ ags_channel_get_recall_container(AgsChannel *channel)
 /**
  * ags_channel_set_recall_container:
  * @channel: the #AgsChannel
- * @recall_container: (element-type AgsChannel.RecallContainer) (transfer full): the #GList-struct containing #AgsRecallContainer
+ * @recall_container: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containing #AgsRecallContainer
  * 
  * Set recall_container by replacing existing.
  * 
@@ -7778,7 +7825,7 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
  * 
  * Get play.
  * 
- * Returns: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
  * 
  * Since: 3.1.0
  */
@@ -7801,7 +7848,7 @@ ags_channel_get_play(AgsChannel *channel)
 /**
  * ags_channel_set_play:
  * @channel: the #AgsChannel
- * @play: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * @play: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
  * 
  * Set play by replacing existing.
  * 
@@ -7840,7 +7887,7 @@ ags_channel_set_play(AgsChannel *channel, GList *play)
  * 
  * Get recall.
  * 
- * Returns: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
  * 
  * Since: 3.1.0
  */
@@ -7863,7 +7910,7 @@ ags_channel_get_recall(AgsChannel *channel)
 /**
  * ags_channel_set_recall:
  * @channel: the #AgsChannel
- * @recall: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * @recall: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
  * 
  * Set recall by replacing existing.
  * 
