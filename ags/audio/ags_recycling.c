@@ -1308,6 +1308,53 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
 }
 
 /**
+ * ags_recycling_get_channel:
+ * @recycling: the #AgsRecycling
+ * 
+ * Get channel.
+ * 
+ * Returns: (transfer full): the #AgsChannel
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_recycling_get_channel(AgsRecycling *recycling)
+{
+  GObject *channel;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  g_object_get(recycling,
+	       "channel", &channel,
+	       NULL);
+
+  return(channel);
+}
+
+/**
+ * ags_recycling_set_channel:
+ * @recycling: the #AgsRecycling
+ * @channel: the #AgsChannel
+ * 
+ * Set channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_recycling_set_channel(AgsRecycling *recycling, GObject *channel)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  g_object_set(recycling,
+	       "channel", channel,
+	       NULL);
+}
+
+/**
  * ags_recycling_next:
  * @recycling: the #AgsRecycling
  * 
@@ -1877,14 +1924,13 @@ ags_recycling_set_audio_signal(AgsRecycling *recycling, GList *audio_signal)
   g_rec_mutex_lock(recycling_mutex);
 
   start_audio_signal = recycling->audio_signal;
-  recycling->audio_signal = NULL;
-
-  g_list_free_full(start_audio_signal,
-		   (GDestroyNotify) g_object_unref);
 
   recycling->audio_signal = audio_signal;
   
   g_rec_mutex_unlock(recycling_mutex);
+
+  g_list_free_full(start_audio_signal,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

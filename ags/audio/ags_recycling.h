@@ -107,6 +107,10 @@ gboolean ags_recycling_test_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_set_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_unset_flags(AgsRecycling *recycling, guint flags);
 
+/* parent */
+GObject* ags_recycling_get_channel(AgsRecycling *recycling);
+void ags_recycling_set_channel(AgsRecycling *recycling, GObject *channel);
+
 /* recycling */
 AgsRecycling* ags_recycling_next(AgsRecycling *recycling);
 AgsRecycling* ags_recycling_prev(AgsRecycling *recycling);

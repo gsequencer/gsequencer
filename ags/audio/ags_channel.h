@@ -231,6 +231,10 @@ void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
 void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 				     guint staging_flags);
 
+/* parent */
+GObject* ags_channel_get_audio(AgsChannel *channel);
+void ags_channel_set_audio(AgsChannel *channel, GObject *audio);
+
 /* channels */
 AgsChannel* ags_channel_next(AgsChannel *channel);
 AgsChannel* ags_channel_prev(AgsChannel *channel);

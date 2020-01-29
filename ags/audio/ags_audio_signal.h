@@ -136,6 +136,10 @@ void* ags_stream_alloc(guint buffer_size,
 		       guint format);
 void ags_stream_free(void *buffer);
 
+/* parent */
+GObject* ags_audio_signal_get_recycling(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_recycling(AgsAudioSignal *audio_signal, GObject *recycling);
+
 /* soundcard */
 GObject* ags_audio_signal_get_output_soundcard(AgsAudioSignal *audio_signal);
 void ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard);

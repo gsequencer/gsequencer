@@ -7662,6 +7662,102 @@ ags_audio_get_input_lines(AgsAudio *audio)
 }
 
 /**
+ * ags_audio_get_output:
+ * @audio: the #AgsAudio
+ *
+ * Get the output object of @audio.
+ *
+ * Returns: (transfer full): the output
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_audio_get_output(AgsAudio *audio)
+{
+  AgsChannel *output;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "output", &output,
+	       NULL);
+
+  return(output);
+}
+
+/**
+ * ags_audio_set_output:
+ * @audio: the #AgsAudio
+ * @output: the #AgsChannel
+ *
+ * Set the output object of @audio.
+ *
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_output(AgsAudio *audio,
+		     AgsChannel *output)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "output", output,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_input:
+ * @audio: the #AgsAudio
+ *
+ * Get the input object of @audio.
+ *
+ * Returns: (transfer full): the input
+ * 
+ * Since: 3.1.0
+ */
+AgsChannel*
+ags_audio_get_input(AgsAudio *audio)
+{
+  AgsChannel *input;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "input", &input,
+	       NULL);
+
+  return(input);
+}
+
+/**
+ * ags_audio_set_input:
+ * @audio: the #AgsAudio
+ * @input: the #AgsChannel
+ *
+ * Set the input object of @audio.
+ *
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_input(AgsAudio *audio,
+		    AgsChannel *input)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "input", input,
+	       NULL);
+}
+
+/**
  * ags_audio_get_output_soundcard:
  * @audio: the #AgsAudio
  *
@@ -9436,14 +9532,12 @@ ags_audio_set_preset(AgsAudio *audio, GList *preset)
   g_rec_mutex_lock(audio_mutex);
 
   start_preset = audio->preset;
-  audio->preset = NULL;
-
-  g_list_free_full(start_preset,
-		   (GDestroyNotify) g_object_unref);
-
   audio->preset = preset;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_preset,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -9642,14 +9736,12 @@ ags_audio_set_synth_generator(AgsAudio *audio, GList *synth_generator)
   g_rec_mutex_lock(audio_mutex);
 
   start_synth_generator = audio->synth_generator;
-  audio->synth_generator = NULL;
-
-  g_list_free_full(start_synth_generator,
-		   (GDestroyNotify) g_object_unref);
-
   audio->synth_generator = synth_generator;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_synth_generator,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -9776,14 +9868,12 @@ ags_audio_set_cursor(AgsAudio *audio, GList *cursor)
   g_rec_mutex_lock(audio_mutex);
 
   start_cursor = audio->cursor;
-  audio->cursor = NULL;
-
-  g_list_free_full(start_cursor,
-		   (GDestroyNotify) g_object_unref);
-
   audio->cursor = cursor;
   
   g_rec_mutex_unlock(audio_mutex);
+  
+  g_list_free_full(start_cursor,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -9933,14 +10023,12 @@ ags_audio_set_notation(AgsAudio *audio, GList *notation)
   g_rec_mutex_lock(audio_mutex);
 
   start_notation = audio->notation;
-  audio->notation = NULL;
-
-  g_list_free_full(start_notation,
-		   (GDestroyNotify) g_object_unref);
-
   audio->notation = notation;
   
   g_rec_mutex_unlock(audio_mutex);
+  
+  g_list_free_full(start_notation,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -10270,14 +10358,12 @@ ags_audio_set_automation(AgsAudio *audio, GList *automation)
   g_rec_mutex_lock(audio_mutex);
 
   start_automation = audio->automation;
-  audio->automation = NULL;
-
-  g_list_free_full(start_automation,
-		   (GDestroyNotify) g_object_unref);
-
   audio->automation = automation;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_automation,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -10427,14 +10513,12 @@ ags_audio_set_wave(AgsAudio *audio, GList *wave)
   g_rec_mutex_lock(audio_mutex);
 
   start_wave = audio->wave;
-  audio->wave = NULL;
-
-  g_list_free_full(start_wave,
-		   (GDestroyNotify) g_object_unref);
-
   audio->wave = wave;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_wave,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -10772,14 +10856,12 @@ ags_audio_set_midi(AgsAudio *audio, GList *midi)
   g_rec_mutex_lock(audio_mutex);
 
   start_midi = audio->midi;
-  audio->midi = NULL;
-
-  g_list_free_full(start_midi,
-		   (GDestroyNotify) g_object_unref);
-
   audio->midi = midi;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_midi,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -11023,14 +11105,12 @@ ags_audio_set_recall_id(AgsAudio *audio, GList *recall_id)
   g_rec_mutex_lock(audio_mutex);
 
   start_recall_id = audio->recall_id;
-  audio->recall_id = NULL;
-
-  g_list_free_full(start_recall_id,
-		   (GDestroyNotify) g_object_unref);
-
   audio->recall_id = recall_id;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -11155,14 +11235,12 @@ ags_audio_set_recycling_context(AgsAudio *audio, GList *recycling_context)
   g_rec_mutex_lock(audio_mutex);
 
   start_recycling_context = audio->recycling_context;
-  audio->recycling_context = NULL;
-
-  g_list_free_full(start_recycling_context,
-		   (GDestroyNotify) g_object_unref);
-
   audio->recycling_context = recycling_context;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_recycling_context,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -11287,14 +11365,12 @@ ags_audio_set_recall_container(AgsAudio *audio, GList *recall_container)
   g_rec_mutex_lock(audio_mutex);
 
   start_recall_container = audio->recall_container;
-  audio->recall_container = NULL;
-
-  g_list_free_full(start_recall_container,
-		   (GDestroyNotify) g_object_unref);
-
   audio->recall_container = recall_container;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_recall_container,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -11419,14 +11495,12 @@ ags_audio_set_play(AgsAudio *audio, GList *play)
   g_rec_mutex_lock(audio_mutex);
 
   start_play = audio->play;
-  audio->play = NULL;
-
-  g_list_free_full(start_play,
-		   (GDestroyNotify) g_object_unref);
-
   audio->play = play;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -11481,14 +11555,12 @@ ags_audio_set_recall(AgsAudio *audio, GList *recall)
   g_rec_mutex_lock(audio_mutex);
 
   start_recall = audio->recall;
-  audio->recall = NULL;
-
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
-
   audio->recall = recall;
   
   g_rec_mutex_unlock(audio_mutex);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

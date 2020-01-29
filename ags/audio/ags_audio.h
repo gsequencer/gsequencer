@@ -310,6 +310,14 @@ void ags_audio_set_pads(AgsAudio *audio,
 guint ags_audio_get_output_lines(AgsAudio *audio);
 guint ags_audio_get_input_lines(AgsAudio *audio);
 
+AgsChannel* ags_audio_get_output(AgsAudio *audio);
+void ags_audio_set_output(AgsAudio *audio,
+			  AgsChannel *output);
+
+AgsChannel* ags_audio_get_input(AgsAudio *audio);
+void ags_audio_set_input(AgsAudio *audio,
+			  AgsChannel *input);
+
 /* soundcard */
 GObject* ags_audio_get_output_soundcard(AgsAudio *audio);
 void ags_audio_set_output_soundcard(AgsAudio *audio,

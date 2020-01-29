@@ -884,8 +884,8 @@ ags_note_unset_flags(AgsNote *note, guint flags)
 
 /**
  * ags_note_sort_func:
- * @a: an #AgsNote
- * @b: an #AgsNote
+ * @a: the #AgsNote
+ * @b: another #AgsNote
  * 
  * Sort notes.
  * 

@@ -3477,6 +3477,53 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 }
 
 /**
+ * ags_channel_get_audio:
+ * @channel: the #AgsChannel
+ * 
+ * Get audio.
+ * 
+ * Returns: (transfer full): the #AgsAudio
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_audio(AgsChannel *channel)
+{
+  GObject *audio;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "audio", &audio,
+	       NULL);
+
+  return(audio);
+}
+
+/**
+ * ags_channel_set_audio:
+ * @channel: the #AgsChannel
+ * @audio: the #AgsAudio
+ * 
+ * Set audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_audio(AgsChannel *channel, GObject *audio)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "audio", audio,
+	       NULL);
+}
+
+/**
  * ags_channel_next:
  * @channel: the #AgsChannel
  * 
@@ -7719,14 +7766,12 @@ ags_channel_set_pattern(AgsChannel *channel, GList *pattern)
   g_rec_mutex_lock(channel_mutex);
 
   start_pattern = channel->pattern;
-  channel->pattern = NULL;
-
-  g_list_free_full(start_pattern,
-		   (GDestroyNotify) g_object_unref);
-
   channel->pattern = pattern;
   
   g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_pattern,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -7896,14 +7941,12 @@ ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id)
   g_rec_mutex_lock(channel_mutex);
 
   start_recall_id = channel->recall_id;
-  channel->recall_id = NULL;
-
-  g_list_free_full(start_recall_id,
-		   (GDestroyNotify) g_object_unref);
-
   channel->recall_id = recall_id;
   
   g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -8026,14 +8069,12 @@ ags_channel_set_recall_container(AgsChannel *channel, GList *recall_container)
   g_rec_mutex_lock(channel_mutex);
 
   start_recall_container = channel->recall_container;
-  channel->recall_container = NULL;
-
-  g_list_free_full(start_recall_container,
-		   (GDestroyNotify) g_object_unref);
-
   channel->recall_container = recall_container;
   
   g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall_container,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -8156,14 +8197,12 @@ ags_channel_set_play(AgsChannel *channel, GList *play)
   g_rec_mutex_lock(channel_mutex);
 
   start_play = channel->play;
-  channel->play = NULL;
-
-  g_list_free_full(start_play,
-		   (GDestroyNotify) g_object_unref);
-
   channel->play = play;
   
   g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -8218,14 +8257,12 @@ ags_channel_set_recall(AgsChannel *channel, GList *recall)
   g_rec_mutex_lock(channel_mutex);
 
   start_recall = channel->recall;
-  channel->recall = NULL;
-
-  g_list_free_full(start_recall,
-		   (GDestroyNotify) g_object_unref);
-
   channel->recall = recall;
   
   g_rec_mutex_unlock(channel_mutex);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
