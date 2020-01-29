@@ -9122,7 +9122,7 @@ ags_audio_get_time_signature(AgsAudio *audio)
   }
 
   g_object_get(audio,
-	       "time_signature", &time_signature,
+	       "time-signature", &time_signature,
 	       NULL);
 
   return(time_signature);
@@ -9145,7 +9145,7 @@ ags_audio_set_time_signature(AgsAudio *audio, gchar *time_signature)
   }
 
   g_object_set(audio,
-	       "time_signature", time_signature,
+	       "time-signature", time_signature,
 	       NULL);
 }
 
@@ -10533,6 +10533,194 @@ ags_audio_remove_wave(AgsAudio *audio, GObject *wave)
 }
 
 /**
+ * ags_audio_get_output_audio_file:
+ * @audio: the #AgsAudio
+ * 
+ * Get output audio file.
+ * 
+ * Returns: (transfer full): the #GObject
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_output_audio_file(AgsAudio *audio)
+{
+  GObject *output_audio_file;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "output-audio-file", &output_audio_file,
+	       NULL);
+
+  return(output_audio_file);
+}
+
+/**
+ * ags_audio_set_output_audio_file:
+ * @audio: the #AgsAudio
+ * @output_audio_file: the #GObject
+ * 
+ * Set output audio file.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_output_audio_file(AgsAudio *audio, GObject *output_audio_file)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "output-audio-file", output_audio_file,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_input_audio_file:
+ * @audio: the #AgsAudio
+ * 
+ * Get input audio file.
+ * 
+ * Returns: (transfer full): the #GObject
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_input_audio_file(AgsAudio *audio)
+{
+  GObject *input_audio_file;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "input-audio-file", &input_audio_file,
+	       NULL);
+
+  return(input_audio_file);
+}
+
+/**
+ * ags_audio_set_input_audio_file:
+ * @audio: the #AgsAudio
+ * @input_audio_file: the #GObject
+ * 
+ * Set input audio file.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_input_audio_file(AgsAudio *audio, GObject *input_audio_file)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "input-audio-file", input_audio_file,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_instrument_name:
+ * @audio: the #AgsAudio
+ *
+ * Gets instrument name.
+ * 
+ * Returns: the instrument name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_audio_get_instrument_name(AgsAudio *audio)
+{
+  gchar *instrument_name;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "instrument-name", &instrument_name,
+	       NULL);
+
+  return(instrument_name);
+}
+
+/**
+ * ags_audio_set_instrument_name:
+ * @audio: the #AgsAudio
+ * @instrument_name: the instrument name
+ *
+ * Sets instrument name.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_instrument_name(AgsAudio *audio, gchar *instrument_name)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "instrument-name", instrument_name,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_track_name:
+ * @audio: the #AgsAudio
+ *
+ * Gets track name.
+ * 
+ * Returns: the track name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_audio_get_track_name(AgsAudio *audio)
+{
+  gchar *track_name;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "track-name", &track_name,
+	       NULL);
+
+  return(track_name);
+}
+
+/**
+ * ags_audio_set_track_name:
+ * @audio: the #AgsAudio
+ * @track_name: the track name
+ *
+ * Sets track name.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_track_name(AgsAudio *audio, gchar *track_name)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "track-name", track_name,
+	       NULL);
+}
+
+/**
  * ags_audio_get_midi:
  * @audio: the #AgsAudio
  * 
@@ -10687,6 +10875,100 @@ ags_audio_remove_midi(AgsAudio *audio, GObject *midi)
 
     g_object_unref(midi);
   }
+}
+
+/**
+ * ags_audio_get_output_midi_file:
+ * @audio: the #AgsAudio
+ * 
+ * Get output MIDI file.
+ * 
+ * Returns: (transfer full): the #GObject
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_output_midi_file(AgsAudio *audio)
+{
+  GObject *output_midi_file;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "output-midi-file", &output_midi_file,
+	       NULL);
+
+  return(output_midi_file);
+}
+
+/**
+ * ags_audio_set_output_midi_file:
+ * @audio: the #AgsAudio
+ * @output_midi_file: the #GObject
+ * 
+ * Set output MIDI file.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_output_midi_file(AgsAudio *audio, GObject *output_midi_file)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "output-midi-file", output_midi_file,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_input_midi_file:
+ * @audio: the #AgsAudio
+ * 
+ * Get input MIDI file.
+ * 
+ * Returns: (transfer full): the #GObject
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_input_midi_file(AgsAudio *audio)
+{
+  GObject *input_midi_file;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "input-midi-file", &input_midi_file,
+	       NULL);
+
+  return(input_midi_file);
+}
+
+/**
+ * ags_audio_set_input_midi_file:
+ * @audio: the #AgsAudio
+ * @input_midi_file: the #GObject
+ * 
+ * Set input MIDI file.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_input_midi_file(AgsAudio *audio, GObject *input_midi_file)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "input-midi-file", input_midi_file,
+	       NULL);
 }
 
 /**

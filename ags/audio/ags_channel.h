@@ -281,6 +281,26 @@ void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
 guint ags_channel_get_format(AgsChannel *channel);
 void ags_channel_set_format(AgsChannel *channel, guint format);
 
+/* alignment */
+guint ags_channel_get_pad(AgsChannel *channel);
+void ags_channel_set_pad(AgsChannel *channel, guint pad);
+
+guint ags_channel_get_audio_channel(AgsChannel *channel);
+void ags_channel_set_audio_channel(AgsChannel *channel, guint audio_channel);
+
+guint ags_channel_get_line(AgsChannel *channel);
+void ags_channel_set_line(AgsChannel *channel, guint line);
+
+/* key */
+gint ags_channel_get_octave(AgsChannel *channel);
+void ags_channel_set_octave(AgsChannel *channel, gint octave);
+
+guint ags_channel_get_key(AgsChannel *channel);
+void ags_channel_set_key(AgsChannel *channel, guint key);
+
+gint ags_channel_get_absolute_key(AgsChannel *channel);
+void ags_channel_set_absolute_key(AgsChannel *channel, gint absolute_key);
+
 /* children */
 GList* ags_channel_get_pattern(AgsChannel *channel);
 void ags_channel_set_pattern(AgsChannel *channel, GList *pattern);

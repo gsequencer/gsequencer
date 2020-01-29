@@ -7383,6 +7383,291 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 }
 
 /**
+ * ags_channel_get_pad:
+ * @channel: the #AgsChannel
+ *
+ * Gets pad.
+ * 
+ * Returns: the pad
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_pad(AgsChannel *channel)
+{
+  guint pad;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "pad", &pad,
+	       NULL);
+
+  return(pad);
+}
+
+/**
+ * ags_channel_set_pad:
+ * @channel: the #AgsChannel
+ * @pad: the pad
+ *
+ * Set pad.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_pad(AgsChannel *channel, guint pad)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "pad", pad,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_audio_channel:
+ * @channel: the #AgsChannel
+ *
+ * Gets audio_channel.
+ * 
+ * Returns: the audio_channel
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_audio_channel(AgsChannel *channel)
+{
+  guint audio_channel;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  return(audio_channel);
+}
+
+/**
+ * ags_channel_set_audio_channel:
+ * @channel: the #AgsChannel
+ * @audio_channel: the audio_channel
+ *
+ * Set audio_channel.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_audio_channel(AgsChannel *channel, guint audio_channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "audio-channel", audio_channel,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_line:
+ * @channel: the #AgsChannel
+ *
+ * Gets line.
+ * 
+ * Returns: the line
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_line(AgsChannel *channel)
+{
+  guint line;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "line", &line,
+	       NULL);
+
+  return(line);
+}
+
+/**
+ * ags_channel_set_line:
+ * @channel: the #AgsChannel
+ * @line: the line
+ *
+ * Set line.
+ *
+ * Since: 3.0.0
+ */
+void
+ags_channel_set_line(AgsChannel *channel, guint line)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+
+  g_object_set(channel,
+	       "line", line,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_octave:
+ * @channel: the #AgsChannel
+ *
+ * Gets octave.
+ * 
+ * Returns: the octave
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_channel_get_octave(AgsChannel *channel)
+{
+  gint octave;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "octave", &octave,
+	       NULL);
+
+  return(octave);
+}
+
+/**
+ * ags_channel_set_octave:
+ * @channel: the #AgsChannel
+ * @octave: the octave
+ *
+ * Sets octave.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_octave(AgsChannel *channel, gint octave)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "octave", octave,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_key:
+ * @channel: the #AgsChannel
+ *
+ * Gets key.
+ * 
+ * Returns: the key
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_key(AgsChannel *channel)
+{
+  guint key;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "key", &key,
+	       NULL);
+
+  return(key);
+}
+
+/**
+ * ags_channel_set_key:
+ * @channel: the #AgsChannel
+ * @key: the key
+ *
+ * Sets key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_key(AgsChannel *channel, guint key)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "key", key,
+	       NULL);
+}
+
+/**
+ * ags_channel_get_absolute_key:
+ * @channel: the #AgsChannel
+ *
+ * Gets absolute key.
+ * 
+ * Returns: the absolute key
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_channel_get_absolute_key(AgsChannel *channel)
+{
+  gint absolute_key;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "absolute-key", &absolute_key,
+	       NULL);
+
+  return(absolute_key);
+}
+
+/**
+ * ags_channel_set_absolute_key:
+ * @channel: the #AgsChannel
+ * @absolute_key: the absolute key
+ *
+ * Sets absolute key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_absolute_key(AgsChannel *channel, gint absolute_key)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  g_object_set(channel,
+	       "absolute-key", absolute_key,
+	       NULL);
+}
+
+/**
  * ags_channel_get_pattern:
  * @channel: the #AgsChannel
  * 

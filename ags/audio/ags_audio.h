@@ -428,11 +428,33 @@ void ags_audio_set_wave(AgsAudio *audio, GList *wave);
 void ags_audio_add_wave(AgsAudio *audio, GObject *wave);
 void ags_audio_remove_wave(AgsAudio *audio, GObject *wave);
 
+GObject* ags_audio_get_output_audio_file(AgsAudio *audio);
+void ags_audio_set_output_audio_file(AgsAudio *audio,
+				     GObject *audio_file);
+
+GObject* ags_audio_get_input_audio_file(AgsAudio *audio);
+void ags_audio_set_input_audio_file(AgsAudio *audio,
+				    GObject *audio_file);
+
+gchar* ags_audio_get_instrument_name(AgsAudio *audio);
+void ags_audio_set_instrument_name(AgsAudio *audio, gchar *instrument_name);
+
+gchar* ags_audio_get_track_name(AgsAudio *audio);
+void ags_audio_set_track_name(AgsAudio *audio, gchar *track_name);
+
 GList* ags_audio_get_midi(AgsAudio *audio);
 void ags_audio_set_midi(AgsAudio *audio, GList *midi);
 
 void ags_audio_add_midi(AgsAudio *audio, GObject *midi);
 void ags_audio_remove_midi(AgsAudio *audio, GObject *midi);
+
+GObject* ags_audio_get_output_midi_file(AgsAudio *audio);
+void ags_audio_set_output_midi_file(AgsAudio *audio,
+				    GObject *midi_file);
+
+GObject* ags_audio_get_input_midi_file(AgsAudio *audio);
+void ags_audio_set_input_midi_file(AgsAudio *audio,
+				   GObject *midi_file);
 
 /* recall related */
 GList* ags_audio_get_recall_id(AgsAudio *audio);
