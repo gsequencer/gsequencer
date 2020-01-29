@@ -61,7 +61,7 @@ struct _AgsAutomationMeta
   
   GtkLabel *editor_tool;
 
-  GtkTable *audio_channel_table;
+  GtkGrid *audio_channel_grid;
 
   GtkLabel *active_port;
   GtkLabel *focused_port;

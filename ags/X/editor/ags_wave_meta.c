@@ -97,7 +97,139 @@ ags_wave_meta_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_wave_meta_init(AgsWaveMeta *wave_meta)
 {
-  //TODO:JK: implement me
+  GtkGrid *grid;
+  GtkLabel *label;
+
+  guint i;
+  
+  wave_meta->flags = 0;
+
+  grid = gtk_grid_new();
+  gtk_box_pack_start((GtkBox *) wave_meta,
+		     (GtkWidget *) grid,
+		     FALSE,
+		     TRUE,
+		     0);
+
+  /* machine type */
+  i = 0;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("machine type"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->machine_type = (GtkLabel *) gtk_label_new("(null)");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->machine_type,
+		  1, i,
+		  1, 1);
+  
+  /* machine name */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("machine name"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->machine_name = (GtkLabel *) gtk_label_new("(null)");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->machine_name,
+		  1, i,
+		  1, 1);
+
+  /* audio channels */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->audio_channels = (GtkLabel *) gtk_label_new("-1");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  1, i,
+		  1, 1);
+
+  /* output pads */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("output pads"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->output_pads = (GtkLabel *) gtk_label_new("-1");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->output_pads,
+		  1, i,
+		  1, 1);
+
+  /* input pads */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("input pads"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->input_pads = (GtkLabel *) gtk_label_new("-1");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->input_pads,
+		  1, i,
+		  1, 1);
+
+  /* editor tool */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("editor tool"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->editor_tool = (GtkLabel *) gtk_label_new("(null)");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->editor_tool,
+		  1, i,
+		  1, 1);
+
+  /* active audio channel */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("active audio channel"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->active_audio_channel = (GtkLabel *) gtk_label_new("(null)");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->active_audio_channel,
+		  1, i,
+		  1, 1);
+
+  /* cursor x-position */
+  i++;
+  
+  label = (GtkLabel *) gtk_label_new(i18n("cursor x-position"));
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  0, i,
+		  1, 1);
+
+  wave_meta->cursor_x_position = (GtkLabel *) gtk_label_new("-1");
+  gtk_grid_attach(grid,
+		  (GtkWidget *) wave_meta->cursor_x_position,
+		  1, i,
+		  1, 1);
 }
 
 void

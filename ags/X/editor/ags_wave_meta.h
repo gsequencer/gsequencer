@@ -64,8 +64,6 @@ struct _AgsWaveMeta
   GtkLabel *active_audio_channel;
   
   GtkLabel *cursor_x_position;
-
-  GtkLabel *current_note;
 };
 
 struct _AgsWaveMetaClass
