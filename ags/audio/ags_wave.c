@@ -585,6 +585,26 @@ ags_wave_finalize(GObject *gobject)
 }
 
 /**
+ * ags_wave_get_obj_mutex:
+ * @wave: the #AgsWave
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @wave
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_wave_get_obj_mutex(AgsWave *wave)
+{
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  return(AGS_WAVE_GET_OBJ_MUTEX(wave));
+}
+
+/**
  * ags_wave_test_flags:
  * @wave: the #AgsWave
  * @flags: the flags

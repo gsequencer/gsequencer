@@ -269,6 +269,42 @@ ags_track_get_obj_mutex(AgsTrack *track)
 }
 
 /**
+ * ags_track_lock:
+ * @track: the #AgsTrack
+ * 
+ * Lock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_track_lock(AgsTrack *track)
+{
+  if(!AGS_IS_TRACK(track)){
+    return;
+  }
+
+  g_rec_mutex_lock(AGS_TRACK_GET_OBJ_MUTEX(track));
+}
+
+/**
+ * ags_track_unlock:
+ * @track: the #AgsTrack
+ * 
+ * Unlock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_track_unlock(AgsTrack *track)
+{
+  if(!AGS_IS_TRACK(track)){
+    return;
+  }
+
+  g_rec_mutex_unlock(AGS_TRACK_GET_OBJ_MUTEX(track));
+}
+
+/**
  * ags_track_test_flags:
  * @track: the #AgsTrack
  * @flags: the flags

@@ -83,6 +83,9 @@ GType ags_buffer_get_type();
 
 GRecMutex* ags_buffer_get_obj_mutex(AgsBuffer *buffer);
 
+void ags_buffer_lock(AgsBuffer *buffer);
+void ags_buffer_unlock(AgsBuffer *buffer);
+
 gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);

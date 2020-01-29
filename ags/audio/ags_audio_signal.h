@@ -128,6 +128,9 @@ GType ags_audio_signal_get_type();
 
 GRecMutex* ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal);
 
+void ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal);
+void ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal);
+
 gboolean ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);

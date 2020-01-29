@@ -1840,6 +1840,42 @@ ags_audio_signal_get_obj_mutex(AgsAudioSignal *audio_signal)
 }
 
 /**
+ * ags_audio_signal_stream_lock:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Lock stream mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_stream_lock(AgsAudioSignal *audio_signal)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_rec_mutex_lock(AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal));
+}
+
+/**
+ * ags_audio_signal_stream_unlock:
+ * @audio_signal: the #AgsAudioSignal
+ * 
+ * Unlock stream mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_signal_stream_unlock(AgsAudioSignal *audio_signal)
+{
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  g_rec_mutex_unlock(AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal));
+}
+
+/**
  * ags_audio_signal_test_flags:
  * @audio_signal: the #AgsAudioSignal
  * @flags: the flags

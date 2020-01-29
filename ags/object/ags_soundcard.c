@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -173,10 +173,10 @@ ags_soundcard_get_device(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_get_presets:
  * @soundcard: the #AgsSoundcard
- * @channels: the audio channels
- * @rate: the samplerate
- * @buffer_size: the buffer size
- * @format: the format
+ * @channels: (out): the audio channels
+ * @rate: (out): the samplerate
+ * @buffer_size: (out): the buffer size
+ * @format: (out): the format
  *
  * Get presets. 
  *
@@ -258,12 +258,12 @@ ags_soundcard_list_cards(AgsSoundcard *soundcard,
  * ags_soundcard_pcm_info:
  * @soundcard: the #AgsSoundcard
  * @card_id: the selected soundcard by its string identifier
- * @channels_min: min channels supported
- * @channels_max: max channels supported
- * @rate_min: min samplerate supported
- * @rate_max: max samplerate supported
- * @buffer_size_min: min buffer size supported by soundcard
- * @buffer_size_max: max buffer size supported by soundcard
+ * @channels_min: (out): min channels supported
+ * @channels_max: (out): max channels supported
+ * @rate_min: (out): min samplerate supported
+ * @rate_max: (out): max samplerate supported
+ * @buffer_size_min: (out): min buffer size supported by soundcard
+ * @buffer_size_max: (out): max buffer size supported by soundcard
  * @error: an error that may occure
  *
  * Retrieve detailed information of @card_id soundcard.
@@ -1009,9 +1009,9 @@ ags_soundcard_set_loop(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_get_loop:
  * @soundcard: the #AgsSoundcard
- * @loop_left: return location of loop position's region
- * @loop_right: return location of loop position's region
- * @do_loop: return location of do loop
+ * @loop_left: (out): return location of loop position's region
+ * @loop_right: (out): return location of loop position's region
+ * @do_loop: (out): return location of do loop
  *
  * Get loop parameters of @soundcard.
  * 

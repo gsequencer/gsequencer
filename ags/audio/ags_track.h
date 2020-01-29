@@ -75,6 +75,9 @@ GType ags_track_get_type();
 
 GRecMutex* ags_track_get_obj_mutex(AgsTrack *track);
 
+void ags_track_lock(AgsTrack *track);
+void ags_track_unlock(AgsTrack *track);
+
 gboolean ags_track_test_flags(AgsTrack *track, guint flags);
 void ags_track_set_flags(AgsTrack *track, guint flags);
 void ags_track_unset_flags(AgsTrack *track, guint flags);

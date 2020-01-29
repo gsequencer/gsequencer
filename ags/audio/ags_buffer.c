@@ -477,6 +477,42 @@ ags_buffer_get_obj_mutex(AgsBuffer *buffer)
 }
 
 /**
+ * ags_buffer_lock:
+ * @buffer: the #AgsBuffer
+ * 
+ * Lock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_buffer_lock(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_rec_mutex_lock(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
+ * ags_buffer_unlock:
+ * @buffer: the #AgsBuffer
+ * 
+ * Unlock object mutex.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_buffer_unlock(AgsBuffer *buffer)
+{
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_rec_mutex_unlock(AGS_BUFFER_GET_OBJ_MUTEX(buffer));
+}
+
+/**
  * ags_buffer_test_flags:
  * @buffer: the #AgsBuffer
  * @flags: the flags
