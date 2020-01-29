@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -249,6 +249,26 @@ ags_track_finalize(GObject *gobject)
 }
 
 /**
+ * ags_track_get_obj_mutex:
+ * @track: the #AgsTrack
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @track
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_track_get_obj_mutex(AgsTrack *track)
+{
+  if(!AGS_IS_TRACK(track)){
+    return(NULL);
+  }
+
+  return(AGS_TRACK_GET_OBJ_MUTEX(track));
+}
+
+/**
  * ags_track_test_flags:
  * @track: the #AgsTrack
  * @flags: the flags
@@ -379,6 +399,93 @@ ags_track_sort_func(gconstpointer a,
   }else{
     return(1);
   }  
+}
+
+/**
+ * ags_track_get_x:
+ * @track: the #AgsTrack
+ *
+ * Gets x.
+ * 
+ * Returns: the x
+ * 
+ * Since: 3.1.0
+ */
+guint64
+ags_track_get_x(AgsTrack *track)
+{
+  guint64 x;
+  
+  if(!AGS_IS_TRACK(track)){
+    return(0);
+  }
+
+  g_object_get(track,
+	       "x", &x,
+	       NULL);
+
+  return(x);
+}
+
+/**
+ * ags_track_set_x:
+ * @track: the #AgsTrack
+ * @x: the x
+ *
+ * Sets x.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_track_set_x(AgsTrack *track, guint64 x)
+{
+  if(!AGS_IS_TRACK(track)){
+    return;
+  }
+
+  g_object_set(track,
+	       "x", x,
+	       NULL);
+}
+
+/**
+ * ags_track_get_data:
+ * @track: the #AgsTrack
+ * @smf_buffer_length: (out): the SMF buffer length return location
+ *
+ * Gets data.
+ * 
+ * Returns: the data
+ * 
+ * Since: 3.1.0
+ */
+gpointer
+ags_track_get_smf_buffer(AgsTrack *track,
+			 guint *smf_buffer_length)
+{
+  gpointer smf_buffer;
+  
+  GRecMutex *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return(NULL);
+  }
+      
+  /* get track mutex */
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
+
+  /* set format */
+  g_rec_mutex_lock(track_mutex);
+
+  smf_buffer = track->smf_buffer;
+
+  if(smf_buffer_length != NULL){
+    smf_buffer_length[0] = track->smf_buffer_length;
+  }
+  
+  g_rec_mutex_unlock(track_mutex);
+
+  return(smf_buffer);
 }
 
 /**

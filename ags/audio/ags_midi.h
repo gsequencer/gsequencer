@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,6 +92,8 @@ struct _AgsMidiClass
 
 GType ags_midi_get_type(void);
 
+GRecMutex* ags_midi_get_obj_mutex(AgsMidi *midi);
+
 gboolean ags_midi_test_flags(AgsMidi *midi, guint flags);
 void ags_midi_set_flags(AgsMidi *midi, guint flags);
 void ags_midi_unset_flags(AgsMidi *midi, guint flags);
@@ -101,6 +103,22 @@ GList* ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 
 gint ags_midi_sort_func(gconstpointer a,
 			gconstpointer b);
+
+GObject* ags_midi_get_audio(AgsMidi *midi);
+void ags_midi_set_audio(AgsMidi *midi,
+			GObject *audio);
+
+guint ags_midi_get_audio_channel(AgsMidi *midi);
+void ags_midi_set_audio_channel(AgsMidi *midi,
+				guint audio_channel);
+
+AgsTimestamp* ags_midi_get_timestamp(AgsMidi *midi);
+void ags_midi_set_timestamp(AgsMidi *midi,
+			    AgsTimestamp *timestamp);
+
+GList* ags_midi_get_track(AgsMidi *midi);
+void ags_midi_set_track(AgsMidi *midi,
+			GList *track);
 
 GList* ags_midi_add(GList *midi,
 		    AgsMidi *new_midi);

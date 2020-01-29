@@ -87,6 +87,12 @@ gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
 void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);
 
+gint ags_buffer_sort_func(gconstpointer a,
+			  gconstpointer b);
+
+guint64 ags_buffer_get_x(AgsBuffer *buffer);
+void ags_buffer_set_x(AgsBuffer *buffer, guint64 x);
+
 guint ags_buffer_get_samplerate(AgsBuffer *buffer);
 void ags_buffer_set_samplerate(AgsBuffer *buffer,
 			       guint samplerate);
@@ -99,8 +105,7 @@ guint ags_buffer_get_format(AgsBuffer *buffer);
 void ags_buffer_set_format(AgsBuffer *buffer,
 			   guint format);
 
-gint ags_buffer_sort_func(gconstpointer a,
-			  gconstpointer b);
+gpointer ags_buffer_get_data(AgsBuffer *buffer);
 
 AgsBuffer* ags_buffer_duplicate(AgsBuffer *buffer);
 
