@@ -3964,6 +3964,66 @@ ags_audio_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_audio_get_obj_mutex:
+ * @audio: the #AgsAudio
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @audio
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_audio_get_obj_mutex(AgsAudio *audio)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  return(AGS_AUDIO_GET_OBJ_MUTEX(audio));
+}
+
+/**
+ * ags_audio_get_play_mutex:
+ * @audio: the #AgsAudio
+ * 
+ * Get play mutex.
+ * 
+ * Returns: the #GRecMutex to lock @audio's play property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_audio_get_play_mutex(AgsAudio *audio)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  return(AGS_AUDIO_GET_PLAY_MUTEX(audio));
+}
+
+/**
+ * ags_audio_get_recall_mutex:
+ * @audio: the #AgsAudio
+ * 
+ * Get recall mutex.
+ * 
+ * Returns: the #GRecMutex to lock @audio's recall property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_audio_get_recall_mutex(AgsAudio *audio)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  return(AGS_AUDIO_GET_RECALL_MUTEX(audio));
+}
+
+/**
  * ags_audio_test_flags:
  * @audio: the #AgsAudio
  * @flags: the flags
@@ -4964,6 +5024,53 @@ ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 }
 
 /**
+ * ags_audio_get_audio_name:
+ * @audio: the #AgsAudio
+ * 
+ * Get audio name of @audio.
+ * 
+ * Returns: the audio name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_audio_get_audio_name(AgsAudio *audio)
+{
+  gchar *audio_name;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "audio-name", &audio_name,
+	       NULL);
+
+  return(audio_name);
+}
+
+/**
+ * ags_audio_get_audio_name:
+ * @audio: the #AgsAudio
+ * @audio_name: the audio name
+ * 
+ * Set audio name of @audio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_audio_name(AgsAudio *audio, gchar *audio_name)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "audio-name", audio_name,
+	       NULL);
+}
+
+/**
  * ags_audio_find_name:
  * @audio: (element-type AgsAudio.Audio) (transfer none): the #GList-struct containing #AgsAudio
  * @audio_name: the audio name to find
@@ -5011,6 +5118,32 @@ ags_audio_find_name(GList *audio,
 }
 
 /**
+ * ags_audio_get_max_audio_channels:
+ * @audio: the #AgsAudio
+ * 
+ * Get maximum audio channels.
+ * 
+ * Returns: the maximum audio channels
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_max_audio_channels(AgsAudio *audio)
+{
+  guint max_audio_channels;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "max-audio-channels", &max_audio_channels,
+	       NULL);
+
+  return(max_audio_channels);
+}
+
+/**
  * ags_audio_set_max_audio_channels:
  * @audio: the #AgsAudio
  * @max_audio_channels: maximum of audio channels
@@ -5038,6 +5171,94 @@ ags_audio_set_max_audio_channels(AgsAudio *audio,
   audio->max_audio_channels = max_audio_channels;
 
   g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_max_output_pads:
+ * @audio: the #AgsAudio
+ * 
+ * Get maximum output pads.
+ * 
+ * Returns: the maximum output pads
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_max_output_pads(AgsAudio *audio)
+{
+  guint max_output_pads;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "max-output-pads", &max_output_pads,
+	       NULL);
+
+  return(max_output_pads);
+}
+
+/**
+ * ags_audio_set_max_output_pads:
+ * @audio: the #AgsAudio
+ * @max_output_pads: maximum of output pads
+ * 
+ * Set maximum output pads.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_max_output_pads(AgsAudio *audio,
+			      guint max_output_pads)
+{
+  ags_audio_set_max_pads(audio,
+			 AGS_TYPE_OUTPUT,
+			 max_output_pads);
+}
+
+/**
+ * ags_audio_get_max_input_pads:
+ * @audio: the #AgsAudio
+ * 
+ * Get maximum input pads.
+ * 
+ * Returns: the maximum input pads
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_max_input_pads(AgsAudio *audio)
+{
+  guint max_input_pads;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "max-input-pads", &max_input_pads,
+	       NULL);
+
+  return(max_input_pads);
+}
+
+/**
+ * ags_audio_set_max_input_pads:
+ * @audio: the #AgsAudio
+ * @max_input_pads: maximum of input pads
+ * 
+ * Set maximum input pads.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_max_input_pads(AgsAudio *audio,
+			     guint max_input_pads)
+{
+  ags_audio_set_max_pads(audio,
+			 AGS_TYPE_INPUT,
+			 max_input_pads);
 }
 
 /**
@@ -5076,6 +5297,32 @@ ags_audio_set_max_pads(AgsAudio *audio,
   }
 
   g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_audio_channels:
+ * @audio: the #AgsAudio
+ * 
+ * Get audio channels.
+ * 
+ * Returns: the audio channels
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_audio_channels(AgsAudio *audio)
+{
+  guint audio_channels;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  return(audio_channels);
 }
 
 void
@@ -6101,6 +6348,94 @@ ags_audio_set_audio_channels(AgsAudio *audio,
 		audio_signals[SET_AUDIO_CHANNELS], 0,
 		audio_channels, audio_channels_old);
   g_object_unref((GObject *) audio);
+}
+
+/**
+ * ags_audio_get_output_pads:
+ * @audio: the #AgsAudio
+ * 
+ * Get output pads.
+ * 
+ * Returns: the output pads
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_output_pads(AgsAudio *audio)
+{
+  guint output_pads;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       NULL);
+
+  return(output_pads);
+}
+
+/**
+ * ags_audio_set_output_pads:
+ * @audio: the #AgsAudio
+ * @output_pads: output pads
+ * 
+ * Set output pads.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_output_pads(AgsAudio *audio,
+			  guint output_pads)
+{
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     output_pads, 0);
+}
+
+/**
+ * ags_audio_get_input_pads:
+ * @audio: the #AgsAudio
+ * 
+ * Get input pads.
+ * 
+ * Returns: the input pads
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_input_pads(AgsAudio *audio)
+{
+  guint input_pads;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       NULL);
+
+  return(input_pads);
+}
+
+/**
+ * ags_audio_set_input_pads:
+ * @audio: the #AgsAudio
+ * @input_pads: input pads
+ * 
+ * Set input pads.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_input_pads(AgsAudio *audio,
+			  guint input_pads)
+{
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     input_pads, 0);
 }
 
 void
@@ -7275,6 +7610,84 @@ ags_audio_set_pads(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_output_lines:
+ * @audio: the #AgsAudio
+ * 
+ * Get output lines.
+ * 
+ * Returns: the output lines
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_output_lines(AgsAudio *audio)
+{
+  guint output_lines;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "output-lines", &output_lines,
+	       NULL);
+
+  return(output_lines);
+}
+
+/**
+ * ags_audio_get_input_lines:
+ * @audio: the #AgsAudio
+ * 
+ * Get input lines.
+ * 
+ * Returns: the input lines
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_input_lines(AgsAudio *audio)
+{
+  guint input_lines;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "input-lines", &input_lines,
+	       NULL);
+
+  return(input_lines);
+}
+
+/**
+ * ags_audio_get_output_soundcard:
+ * @audio: the #AgsAudio
+ *
+ * Get the output soundcard object of @audio.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_output_soundcard(AgsAudio *audio)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_audio_set_output_soundcard:
  * @audio: the #AgsAudio
  * @output_soundcard: an #AgsSoundcard
@@ -7466,6 +7879,32 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_input_soundcard:
+ * @audio: the #AgsAudio
+ *
+ * Get the input soundcard object of @audio.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_input_soundcard(AgsAudio *audio)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
+}
+
+/**
  * ags_audio_set_input_soundcard:
  * @audio: the #AgsAudio
  * @input_soundcard: an #AgsSoundcard
@@ -7611,6 +8050,32 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_output_sequencer:
+ * @audio: the #AgsAudio
+ *
+ * Get the output sequencer object of @audio.
+ *
+ * Returns: (transfer full): the output sequencer
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_output_sequencer(AgsAudio *audio)
+{
+  GObject *output_sequencer;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "output-sequencer", &output_sequencer,
+	       NULL);
+
+  return(output_sequencer);
+}
+
+/**
  * ags_audio_set_output_sequencer:
  * @audio: the #AgsAudio
  * @sequencer: the output sequencer
@@ -7663,6 +8128,32 @@ ags_audio_set_output_sequencer(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_input_sequencer:
+ * @audio: the #AgsAudio
+ *
+ * Get the input sequencer object of @audio.
+ *
+ * Returns: (transfer full): the input sequencer
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_audio_get_input_sequencer(AgsAudio *audio)
+{
+  GObject *input_sequencer;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "input-sequencer", &input_sequencer,
+	       NULL);
+
+  return(input_sequencer);
+}
+
+/**
  * ags_audio_set_input_sequencer:
  * @audio: the #AgsAudio
  * @sequencer: the input sequencer
@@ -7712,6 +8203,32 @@ ags_audio_set_input_sequencer(AgsAudio *audio,
   if(old_sequencer != NULL){
     g_object_unref(old_sequencer);
   }
+}
+
+/**
+ * ags_audio_get_samplerate:
+ * @audio: the #AgsAudio
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_samplerate(AgsAudio *audio)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
 }
 
 void
@@ -7901,6 +8418,32 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   }
 }
 
+/**
+ * ags_audio_get_buffer_size:
+ * @audio: the #AgsAudio
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_buffer_size(AgsAudio *audio)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
+}
+
 void
 ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size)
 {
@@ -8088,6 +8631,32 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
   }
 }
 
+/**
+ * ags_audio_get_format:
+ * @audio: the #AgsAudio
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_format(AgsAudio *audio)
+{
+  guint format;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
 void
 ags_audio_set_format_channel(AgsChannel *start_channel, guint format)
 {
@@ -8252,6 +8821,632 @@ ags_audio_set_format(AgsAudio *audio, guint format)
 }
 
 /**
+ * ags_audio_get_bpm:
+ * @audio: the #AgsAudio
+ *
+ * Gets bpm.
+ * 
+ * Returns: the bpm
+ * 
+ * Since: 3.1.0
+ */
+gdouble
+ags_audio_get_bpm(AgsAudio *audio)
+{
+  gdouble bpm;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0.0);
+  }
+
+  g_object_get(audio,
+	       "bpm", &bpm,
+	       NULL);
+
+  return(bpm);
+}
+
+/**
+ * ags_audio_set_bpm:
+ * @audio: the #AgsAudio
+ * @bpm: the bpm
+ *
+ * Sets bpm.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_bpm(AgsAudio *audio, gdouble bpm)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "bpm", bpm,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_audio_start_mapping:
+ * @audio: the #AgsAudio
+ *
+ * Gets audio start mapping.
+ * 
+ * Returns: the audio start mapping
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_audio_start_mapping(AgsAudio *audio)
+{
+  guint audio_start_mapping;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       NULL);
+
+  return(audio_start_mapping);
+}
+
+/**
+ * ags_audio_set_audio_start_mapping:
+ * @audio: the #AgsAudio
+ * @audio_start_mapping: the audio start mapping
+ *
+ * Sets audio start mapping.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_audio_start_mapping(AgsAudio *audio, guint audio_start_mapping)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "audio-start-mapping", audio_start_mapping,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_midi_start_mapping:
+ * @audio: the #AgsAudio
+ *
+ * Gets midi start mapping.
+ * 
+ * Returns: the midi start mapping
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_midi_start_mapping(AgsAudio *audio)
+{
+  guint midi_start_mapping;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  return(midi_start_mapping);
+}
+
+/**
+ * ags_audio_set_midi_start_mapping:
+ * @audio: the #AgsAudio
+ * @midi_start_mapping: the midi start mapping
+ *
+ * Sets midi start mapping.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_midi_start_mapping(AgsAudio *audio, guint midi_start_mapping)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "midi-start-mapping", midi_start_mapping,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_midi_channel:
+ * @audio: the #AgsAudio
+ *
+ * Gets midi channel.
+ * 
+ * Returns: the midi channel
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_midi_channel(AgsAudio *audio)
+{
+  guint midi_channel;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "midi-channel", &midi_channel,
+	       NULL);
+
+  return(midi_channel);
+}
+
+/**
+ * ags_audio_set_midi_channel:
+ * @audio: the #AgsAudio
+ * @midi_channel: the midi channel
+ *
+ * Sets midi channel.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_midi_channel(AgsAudio *audio, guint midi_channel)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "midi-channel", midi_channel,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_numerator:
+ * @audio: the #AgsAudio
+ *
+ * Gets numerator.
+ * 
+ * Returns: the numerator
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_numerator(AgsAudio *audio)
+{
+  guint numerator;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "numerator", &numerator,
+	       NULL);
+
+  return(numerator);
+}
+
+/**
+ * ags_audio_set_numerator:
+ * @audio: the #AgsAudio
+ * @numerator: the numerator
+ *
+ * Sets numerator.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_numerator(AgsAudio *audio, guint numerator)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "numerator", numerator,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_denominator:
+ * @audio: the #AgsAudio
+ *
+ * Gets denominator.
+ * 
+ * Returns: the denominator
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_denominator(AgsAudio *audio)
+{
+  guint denominator;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "denominator", &denominator,
+	       NULL);
+
+  return(denominator);
+}
+
+/**
+ * ags_audio_set_denominator:
+ * @audio: the #AgsAudio
+ * @denominator: the denominator
+ *
+ * Sets denominator.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_denominator(AgsAudio *audio, guint denominator)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "denominator", denominator,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_time_signature:
+ * @audio: the #AgsAudio
+ *
+ * Gets time signature.
+ * 
+ * Returns: the time signature
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_audio_get_time_signature(AgsAudio *audio)
+{
+  gchar *time_signature;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "time_signature", &time_signature,
+	       NULL);
+
+  return(time_signature);
+}
+
+/**
+ * ags_audio_set_time_signature:
+ * @audio: the #AgsAudio
+ * @time_signature: the time signature
+ *
+ * Sets time signature.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_time_signature(AgsAudio *audio, gchar *time_signature)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "time_signature", time_signature,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_is_minor:
+ * @audio: the #AgsAudio
+ *
+ * Gets is minor.
+ * 
+ * Returns: is minor
+ * 
+ * Since: 3.1.0
+ */
+gboolean
+ags_audio_get_is_minor(AgsAudio *audio)
+{
+  gboolean is_minor;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(FALSE);
+  }
+
+  g_object_get(audio,
+	       "is-minor", &is_minor,
+	       NULL);
+
+  return(is_minor);
+}
+
+/**
+ * ags_audio_set_is_minor:
+ * @audio: the #AgsAudio
+ * @is_minor: is minor
+ *
+ * Sets is minor.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_is_minor(AgsAudio *audio, guint is_minor)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "is-minor", is_minor,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_sharp_flats:
+ * @audio: the #AgsAudio
+ *
+ * Gets sharp flats.
+ * 
+ * Returns: the sharp flats
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_sharp_flats(AgsAudio *audio)
+{
+  guint sharp_flats;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "sharp-flats", &sharp_flats,
+	       NULL);
+
+  return(sharp_flats);
+}
+
+/**
+ * ags_audio_set_sharp_flats:
+ * @audio: the #AgsAudio
+ * @sharp_flats: the sharp flats
+ *
+ * Sets sharp flats.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_sharp_flats(AgsAudio *audio, guint sharp_flats)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "sharp-flats", sharp_flats,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_octave:
+ * @audio: the #AgsAudio
+ *
+ * Gets octave.
+ * 
+ * Returns: the octave
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_audio_get_octave(AgsAudio *audio)
+{
+  gint octave;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "octave", &octave,
+	       NULL);
+
+  return(octave);
+}
+
+/**
+ * ags_audio_set_octave:
+ * @audio: the #AgsAudio
+ * @octave: the octave
+ *
+ * Sets octave.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_octave(AgsAudio *audio, gint octave)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "octave", octave,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_key:
+ * @audio: the #AgsAudio
+ *
+ * Gets key.
+ * 
+ * Returns: the key
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_audio_get_key(AgsAudio *audio)
+{
+  guint key;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "key", &key,
+	       NULL);
+
+  return(key);
+}
+
+/**
+ * ags_audio_set_key:
+ * @audio: the #AgsAudio
+ * @key: the key
+ *
+ * Sets key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_key(AgsAudio *audio, guint key)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "key", key,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_absolute_key:
+ * @audio: the #AgsAudio
+ *
+ * Gets absolute key.
+ * 
+ * Returns: the absolute key
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_audio_get_absolute_key(AgsAudio *audio)
+{
+  gint absolute_key;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(0);
+  }
+
+  g_object_get(audio,
+	       "absolute-key", &absolute_key,
+	       NULL);
+
+  return(absolute_key);
+}
+
+/**
+ * ags_audio_set_absolute_key:
+ * @audio: the #AgsAudio
+ * @absolute_key: the absolute key
+ *
+ * Sets absolute key.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_absolute_key(AgsAudio *audio, gint absolute_key)
+{
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  g_object_set(audio,
+	       "absolute-key", absolute_key,
+	       NULL);
+}
+
+/**
+ * ags_audio_get_preset:
+ * @audio: the #AgsAudio
+ * 
+ * Get preset.
+ * 
+ * Returns: (element-type AgsAudio.Preset) (transfer full): the #GList-struct containig #AgsPreset
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_preset(AgsAudio *audio)
+{
+  GList *preset;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "preset", &preset,
+	       NULL);
+
+  return(preset);
+}
+
+/**
+ * ags_audio_set_preset:
+ * @audio: the #AgsAudio
+ * @preset: (element-type AgsAudio.Preset) (transfer full): the #GList-struct containing #AgsPreset
+ * 
+ * Set preset by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_preset(AgsAudio *audio, GList *preset)
+{
+  GList *start_preset;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_preset = audio->preset;
+  audio->preset = NULL;
+
+  g_list_free_full(start_preset,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->preset = preset;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_add_preset:
  * @audio: the #AgsAudio
  * @preset: an #AgsPreset
@@ -8349,6 +9544,68 @@ ags_audio_remove_preset(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_get_synth_generator:
+ * @audio: the #AgsAudio
+ * 
+ * Get synth generator.
+ * 
+ * Returns: (element-type AgsAudio.SynthGenerator) (transfer full): the #GList-struct containing #AgsSynthGenerator
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_synth_generator(AgsAudio *audio)
+{
+  GList *synth_generator;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "synth-generator", &synth_generator,
+	       NULL);
+
+  return(synth_generator);
+}
+
+/**
+ * ags_audio_set_synth_generator:
+ * @audio: the #AgsAudio
+ * @synth_generator: (element-type AgsAudio.SynthGenerator) (transfer full): the #GList-struct containing #AgsSynthGenerator
+ * 
+ * Set synth_generator by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_synth_generator(AgsAudio *audio, GList *synth_generator)
+{
+  GList *start_synth_generator;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_synth_generator = audio->synth_generator;
+  audio->synth_generator = NULL;
+
+  g_list_free_full(start_synth_generator,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->synth_generator = synth_generator;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_add_synth_generator:
  * @audio: the #AgsAudio
  * @synth_generator: an #AgsSynthGenerator
@@ -8416,6 +9673,68 @@ ags_audio_remove_synth_generator(AgsAudio *audio,
 					   synth_generator);
     g_object_unref(synth_generator);
   }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_cursor:
+ * @audio: the #AgsAudio
+ * 
+ * Get cursor.
+ * 
+ * Returns: (element-type GObject) (transfer full): the #GList-struct containig #GObject implementing #AgsCursor
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_cursor(AgsAudio *audio)
+{
+  GList *cursor;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "cursor", &cursor,
+	       NULL);
+
+  return(cursor);
+}
+
+/**
+ * ags_audio_set_cursor:
+ * @audio: the #AgsAudio
+ * @cursor: (element-type GObject) (transfer full): the #GList-struct containing #AgsCursor
+ * 
+ * Set cursor by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_cursor(AgsAudio *audio, GList *cursor)
+{
+  GList *start_cursor;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_cursor = audio->cursor;
+  audio->cursor = NULL;
+
+  g_list_free_full(start_cursor,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->cursor = cursor;
   
   g_rec_mutex_unlock(audio_mutex);
 }
@@ -8516,6 +9835,68 @@ ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor)
 }
 
 /**
+ * ags_audio_get_notation:
+ * @audio: the #AgsAudio
+ * 
+ * Get notation.
+ * 
+ * Returns: (element-type AgsAudio.Notation) (transfer full): the #GList-struct containig #AgsNotation
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_notation(AgsAudio *audio)
+{
+  GList *notation;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "notation", &notation,
+	       NULL);
+
+  return(notation);
+}
+
+/**
+ * ags_audio_set_notation:
+ * @audio: the #AgsAudio
+ * @notation: (element-type AgsAudio.Notation) (transfer full): the #GList-struct containing #AgsNotation
+ * 
+ * Set notation by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_notation(AgsAudio *audio, GList *notation)
+{
+  GList *start_notation;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_notation = audio->notation;
+  audio->notation = NULL;
+
+  g_list_free_full(start_notation,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->notation = notation;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_add_notation:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
@@ -8608,6 +9989,71 @@ ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
     
     g_object_unref(notation);
   }
+}
+
+/**
+ * ags_audio_get_automation_port:
+ * @audio: the #AgsAudio
+ *
+ * Get automation port.
+ *
+ * Returns: (transfer full): the string vector containing automation ports
+ * 
+ * Since: 3.1.0
+ */
+gchar**
+ags_audio_get_automation_port(AgsAudio *audio)
+{
+  gchar **automation_port;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  automation_port = g_strdupv(audio->automation_port);
+  
+  g_rec_mutex_unlock(audio_mutex);
+
+  return(automation_port);
+}
+
+/**
+ * ags_audio_set_automation_port:
+ * @audio: the #AgsAudio
+ * @automation_port: (transfer full): the string vector containing automation ports
+ * 
+ *
+ * Get automation port.
+ *
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_automation_port(AgsAudio *audio,
+			      gchar **automation_port)
+{
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  g_strfreev(audio->automation_port);
+  
+  audio->automation_port = automation_port;
+  
+  g_rec_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -8724,6 +10170,69 @@ ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name)
   g_rec_mutex_unlock(audio_mutex);
 }
 
+
+/**
+ * ags_audio_get_automation:
+ * @audio: the #AgsAudio
+ * 
+ * Get automation.
+ * 
+ * Returns: (element-type AgsAudio.Automation) (transfer full): the #GList-struct containig #AgsAutomation
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_automation(AgsAudio *audio)
+{
+  GList *automation;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "automation", &automation,
+	       NULL);
+
+  return(automation);
+}
+
+/**
+ * ags_audio_set_automation:
+ * @audio: the #AgsAudio
+ * @automation: (element-type AgsAudio.Automation) (transfer full): the #GList-struct containing #AgsAutomation
+ * 
+ * Set automation by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_automation(AgsAudio *audio, GList *automation)
+{
+  GList *start_automation;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_automation = audio->automation;
+  audio->automation = NULL;
+
+  g_list_free_full(start_automation,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->automation = automation;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
 /**
  * ags_audio_add_automation:
  * @audio: the #AgsAudio
@@ -8817,6 +10326,68 @@ ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
 
     g_object_unref(automation);
   }
+}
+
+/**
+ * ags_audio_get_wave:
+ * @audio: the #AgsAudio
+ * 
+ * Get wave.
+ * 
+ * Returns: (element-type AgsAudio.Wave) (transfer full): the #GList-struct containig #AgsWave
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_wave(AgsAudio *audio)
+{
+  GList *wave;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "wave", &wave,
+	       NULL);
+
+  return(wave);
+}
+
+/**
+ * ags_audio_set_wave:
+ * @audio: the #AgsAudio
+ * @wave: (element-type AgsAudio.Wave) (transfer full): the #GList-struct containing #AgsWave
+ * 
+ * Set wave by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_wave(AgsAudio *audio, GList *wave)
+{
+  GList *start_wave;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_wave = audio->wave;
+  audio->wave = NULL;
+
+  g_list_free_full(start_wave,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->wave = wave;
+  
+  g_rec_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -8915,6 +10486,68 @@ ags_audio_remove_wave(AgsAudio *audio, GObject *wave)
 }
 
 /**
+ * ags_audio_get_midi:
+ * @audio: the #AgsAudio
+ * 
+ * Get midi.
+ * 
+ * Returns: (element-type AgsAudio.Midi) (transfer full): the #GList-struct containig #AgsMidi
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_midi(AgsAudio *audio)
+{
+  GList *midi;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "midi", &midi,
+	       NULL);
+
+  return(midi);
+}
+
+/**
+ * ags_audio_set_midi:
+ * @audio: the #AgsAudio
+ * @midi: (element-type AgsAudio.Midi) (transfer full): the #GList-struct containing #AgsMidi
+ * 
+ * Set midi by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_midi(AgsAudio *audio, GList *midi)
+{
+  GList *start_midi;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_midi = audio->midi;
+  audio->midi = NULL;
+
+  g_list_free_full(start_midi,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->midi = midi;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_add_midi:
  * @audio: the #AgsAudio
  * @midi: the #AgsMidi
@@ -9010,6 +10643,68 @@ ags_audio_remove_midi(AgsAudio *audio, GObject *midi)
 }
 
 /**
+ * ags_audio_get_recall_id:
+ * @audio: the #AgsAudio
+ * 
+ * Get recall_id.
+ * 
+ * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_recall_id(AgsAudio *audio)
+{
+  GList *recall_id;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "recall_id", &recall_id,
+	       NULL);
+
+  return(recall_id);
+}
+
+/**
+ * ags_audio_set_recall_id:
+ * @audio: the #AgsAudio
+ * @recall_id: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
+ * 
+ * Set recall_id by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_recall_id(AgsAudio *audio, GList *recall_id)
+{
+  GList *start_recall_id;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_recall_id = audio->recall_id;
+  audio->recall_id = NULL;
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->recall_id = recall_id;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
  * ags_audio_add_recall_id:
  * @audio: the #AgsAudio
  * @recall_id: the #AgsRecallID
@@ -9075,6 +10770,68 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 				     recall_id);
     g_object_unref(recall_id);
   }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_recycling_context:
+ * @audio: the #AgsAudio
+ * 
+ * Get recycling_context.
+ * 
+ * Returns: (element-type AgsAudio.RecyclingContext) (transfer full): the #GList-struct containig #AgsRecyclingContext
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_recycling_context(AgsAudio *audio)
+{
+  GList *recycling_context;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "recycling_context", &recycling_context,
+	       NULL);
+
+  return(recycling_context);
+}
+
+/**
+ * ags_audio_set_recycling_context:
+ * @audio: the #AgsAudio
+ * @recycling_context: (element-type AgsAudio.RecyclingContext) (transfer full): the #GList-struct containing #AgsRecyclingContext
+ * 
+ * Set recycling_context by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_recycling_context(AgsAudio *audio, GList *recycling_context)
+{
+  GList *start_recycling_context;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_recycling_context = audio->recycling_context;
+  audio->recycling_context = NULL;
+
+  g_list_free_full(start_recycling_context,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->recycling_context = recycling_context;
   
   g_rec_mutex_unlock(audio_mutex);
 }
@@ -9148,6 +10905,67 @@ ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
   
   g_rec_mutex_unlock(audio_mutex);
 }
+/**
+ * ags_audio_get_recall_container:
+ * @audio: the #AgsAudio
+ * 
+ * Get recall_container.
+ * 
+ * Returns: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containig #AgsRecallContainer
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_recall_container(AgsAudio *audio)
+{
+  GList *recall_container;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "recall_container", &recall_container,
+	       NULL);
+
+  return(recall_container);
+}
+
+/**
+ * ags_audio_set_recall_container:
+ * @audio: the #AgsAudio
+ * @recall_container: (element-type AgsAudio.RecallContainer) (transfer full): the #GList-struct containing #AgsRecallContainer
+ * 
+ * Set recall_container by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_recall_container(AgsAudio *audio, GList *recall_container)
+{
+  GList *start_recall_container;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_recall_container = audio->recall_container;
+  audio->recall_container = NULL;
+
+  g_list_free_full(start_recall_container,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->recall_container = recall_container;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
 
 /**
  * ags_audio_add_recall_container:
@@ -9215,6 +11033,129 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
 					    recall_container);
     g_object_unref(recall_container);
   }
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+/**
+ * ags_audio_get_play:
+ * @audio: the #AgsAudio
+ * 
+ * Get play.
+ * 
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_play(AgsAudio *audio)
+{
+  GList *play;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "play", &play,
+	       NULL);
+
+  return(play);
+}
+
+/**
+ * ags_audio_set_play:
+ * @audio: the #AgsAudio
+ * @play: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set play by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_play(AgsAudio *audio, GList *play)
+{
+  GList *start_play;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_play = audio->play;
+  audio->play = NULL;
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->play = play;
+  
+  g_rec_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_get_recall:
+ * @audio: the #AgsAudio
+ * 
+ * Get recall.
+ * 
+ * Returns: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_audio_get_recall(AgsAudio *audio)
+{
+  GList *recall;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  g_object_get(audio,
+	       "recall", &recall,
+	       NULL);
+
+  return(recall);
+}
+
+/**
+ * ags_audio_set_recall:
+ * @audio: the #AgsAudio
+ * @recall: (element-type AgsAudio.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set recall by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_audio_set_recall(AgsAudio *audio, GList *recall)
+{
+  GList *start_recall;
+  
+  GRecMutex *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+    
+  g_rec_mutex_lock(audio_mutex);
+
+  start_recall = audio->recall;
+  audio->recall = NULL;
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  audio->recall = recall;
   
   g_rec_mutex_unlock(audio_mutex);
 }

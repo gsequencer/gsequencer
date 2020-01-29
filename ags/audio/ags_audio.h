@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -243,6 +243,10 @@ struct _AgsAudioClass
 
 GType ags_audio_get_type();
 
+GRecMutex* ags_audio_get_obj_mutex(AgsAudio *audio);
+GRecMutex* ags_audio_get_play_mutex(AgsAudio *audio);
+GRecMutex* ags_audio_get_recall_mutex(AgsAudio *audio);
+
 gboolean ags_audio_test_flags(AgsAudio *audio, guint flags);
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
@@ -262,75 +266,195 @@ void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
 void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 				   guint staging_flags);
 
-/* matching */
+/* audio name */
+gchar* ags_audio_get_audio_name(AgsAudio *audio);
+void ags_audio_set_audio_name(AgsAudio *audio, gchar *audio_name);
+
 GList* ags_audio_find_name(GList *audio,
 			   gchar *audio_name);
 
 /* channel alignment */
+guint ags_audio_get_max_audio_channels(AgsAudio *audio);
 void ags_audio_set_max_audio_channels(AgsAudio *audio,
 				      guint max_audio_channels);
+
+guint ags_audio_get_max_output_pads(AgsAudio *audio);
+void ags_audio_set_max_output_pads(AgsAudio *audio,
+				   guint max_output_pads);
+
+guint ags_audio_get_max_input_pads(AgsAudio *audio);
+void ags_audio_set_max_input_pads(AgsAudio *audio,
+				  guint max_input_pads);
 
 void ags_audio_set_max_pads(AgsAudio *audio,
 			    GType channel_type,
 			    guint max_pads);
 
+guint ags_audio_get_audio_channels(AgsAudio *audio);
 void ags_audio_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old);
+
+guint ags_audio_get_output_pads(AgsAudio *audio);
+void ags_audio_set_output_pads(AgsAudio *audio,
+			       guint output_pads);
+
+guint ags_audio_get_input_pads(AgsAudio *audio);
+void ags_audio_set_input_pads(AgsAudio *audio,
+			      guint input_pads);
+
 void ags_audio_set_pads(AgsAudio *audio,
 			GType channel_type,
 			guint pads, guint pads_old);
 
+
+guint ags_audio_get_output_lines(AgsAudio *audio);
+guint ags_audio_get_input_lines(AgsAudio *audio);
+
 /* soundcard */
+GObject* ags_audio_get_output_soundcard(AgsAudio *audio);
 void ags_audio_set_output_soundcard(AgsAudio *audio,
 				    GObject *output_soundcard);
+
+GObject* ags_audio_get_input_soundcard(AgsAudio *audio);
 void ags_audio_set_input_soundcard(AgsAudio *audio,
 				   GObject *input_soundcard);
 
 /* sequencer */
+GObject* ags_audio_get_output_sequencer(AgsAudio *audio);
 void ags_audio_set_output_sequencer(AgsAudio *audio,
 				    GObject *sequencer);
+
+GObject* ags_audio_get_input_sequencer(AgsAudio *audio);
 void ags_audio_set_input_sequencer(AgsAudio *audio,
 				   GObject *sequencer);
 
 /* presets */
+guint ags_audio_get_samplerate(AgsAudio *audio);
 void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
+
+guint ags_audio_get_buffer_size(AgsAudio *audio);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
+
+guint ags_audio_get_format(AgsAudio *audio);
 void ags_audio_set_format(AgsAudio *audio, guint format);
 
+/* bpm */
+gdouble ags_audio_get_bpm(AgsAudio *audio);
+void ags_audio_set_bpm(AgsAudio *audio, gdouble bpm);
+
+/* mapping */
+guint ags_audio_get_audio_start_mapping(AgsAudio *audio);
+void ags_audio_set_audio_start_mapping(AgsAudio *audio,
+				       guint audio_start_mapping);
+
+guint ags_audio_get_midi_start_mapping(AgsAudio *audio);
+void ags_audio_set_midi_start_mapping(AgsAudio *audio,
+				      guint midi_start_mapping);
+
+guint ags_audio_get_midi_channel(AgsAudio *audio);
+void ags_audio_set_midi_channel(AgsAudio *audio,
+				guint midi_channel);
+
+/* time signature */
+guint ags_audio_get_numerator(AgsAudio *audio);
+void ags_audio_set_numerator(AgsAudio *audio, guint numerator);
+
+guint ags_audio_get_denominator(AgsAudio *audio);
+void ags_audio_set_denominator(AgsAudio *audio, guint denominator);
+
+gchar* ags_audio_get_time_signature(AgsAudio *audio);
+void ags_audio_set_time_signature(AgsAudio *audio, gchar *time_signature);
+
+/* key */
+gboolean ags_audio_get_is_minor(AgsAudio *audio);
+void ags_audio_set_is_minor(AgsAudio *audio, guint is_minor);
+
+guint ags_audio_get_sharp_flats(AgsAudio *audio);
+void ags_audio_set_sharp_flats(AgsAudio *audio, guint sharp_flats);
+
+gint ags_audio_get_octave(AgsAudio *audio);
+void ags_audio_set_octave(AgsAudio *audio, gint octave);
+
+guint ags_audio_get_key(AgsAudio *audio);
+void ags_audio_set_key(AgsAudio *audio, guint key);
+
+gint ags_audio_get_absolute_key(AgsAudio *audio);
+void ags_audio_set_absolute_key(AgsAudio *audio, gint absolute_key);
+
 /* children */
+GList* ags_audio_get_preset(AgsAudio *audio);
+void ags_audio_set_preset(AgsAudio *audio, GList *preset);
+
 void ags_audio_add_preset(AgsAudio *audio, GObject *preset);
 void ags_audio_remove_preset(AgsAudio *audio, GObject *preset);
+
+GList* ags_audio_get_synth_generator(AgsAudio *audio);
+void ags_audio_set_synth_generator(AgsAudio *audio, GList *synth_generator);
 
 void ags_audio_add_synth_generator(AgsAudio *audio, GObject *synth_generator);
 void ags_audio_remove_synth_generator(AgsAudio *audio, GObject *synth_generator);
 
+GList* ags_audio_get_cursor(AgsAudio *audio);
+void ags_audio_set_cursor(AgsAudio *audio, GList *cursor);
+
 void ags_audio_add_cursor(AgsAudio *audio, GObject *cursor);
 void ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor);
+
+GList* ags_audio_get_notation(AgsAudio *audio);
+void ags_audio_set_notation(AgsAudio *audio, GList *notation);
 
 void ags_audio_add_notation(AgsAudio *audio, GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio, GObject *notation);
 
+gchar** ags_audio_get_automation_port(AgsAudio *audio);
+void ags_audio_set_automation_port(AgsAudio *audio,
+				   gchar **automation_port);
+
 void ags_audio_add_automation_port(AgsAudio *audio, gchar *control_name);
 void ags_audio_remove_automation_port(AgsAudio *audio, gchar *control_name);
+
+GList* ags_audio_get_automation(AgsAudio *audio);
+void ags_audio_set_automation(AgsAudio *audio, GList *automation);
 
 void ags_audio_add_automation(AgsAudio *audio, GObject *automation);
 void ags_audio_remove_automation(AgsAudio *audio, GObject *automation);
 
+GList* ags_audio_get_wave(AgsAudio *audio);
+void ags_audio_set_wave(AgsAudio *audio, GList *wave);
+
 void ags_audio_add_wave(AgsAudio *audio, GObject *wave);
 void ags_audio_remove_wave(AgsAudio *audio, GObject *wave);
+
+GList* ags_audio_get_midi(AgsAudio *audio);
+void ags_audio_set_midi(AgsAudio *audio, GList *midi);
 
 void ags_audio_add_midi(AgsAudio *audio, GObject *midi);
 void ags_audio_remove_midi(AgsAudio *audio, GObject *midi);
 
 /* recall related */
+GList* ags_audio_get_recall_id(AgsAudio *audio);
+void ags_audio_set_recall_id(AgsAudio *audio, GList *recall_id);
+
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
+
+GList* ags_audio_get_recycling_context(AgsAudio *audio);
+void ags_audio_set_recycling_context(AgsAudio *audio, GList *recycling_context);
 
 void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
 void ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context);
 
+GList* ags_audio_get_recall_container(AgsAudio *audio);
+void ags_audio_set_recall_container(AgsAudio *audio, GList *recall_container);
+
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);
+
+GList* ags_audio_get_play(AgsAudio *audio);
+void ags_audio_set_play(AgsAudio *audio, GList *play);
+
+GList* ags_audio_get_recall(AgsAudio *audio);
+void ags_audio_set_recall(AgsAudio *audio, GList *recall);
 
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall,
 			  gboolean play_context);
