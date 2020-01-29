@@ -790,6 +790,26 @@ ags_note_finalize(GObject *gobject)
 }
 
 /**
+ * ags_note_get_obj_mutex:
+ * @note: the #AgsNote
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @note
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_note_get_obj_mutex(AgsNote *note)
+{
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  return(AGS_NOTE_GET_OBJ_MUTEX(note));
+}
+
+/**
  * ags_note_test_flags:
  * @note: the #AgsNote
  * @flags: the flags
@@ -931,6 +951,570 @@ ags_note_sort_func(gconstpointer a,
   }else{
     return(1);
   }  
+}
+
+/**
+ * ags_note_get_is_minor:
+ * @note: the #AgsNote
+ *
+ * Gets is minor.
+ * 
+ * Returns: is minor
+ * 
+ * Since: 3.1.0
+ */
+gboolean
+ags_note_get_is_minor(AgsNote *note)
+{
+  gboolean is_minor;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(FALSE);
+  }
+
+  g_object_get(note,
+	       "is-minor", &is_minor,
+	       NULL);
+
+  return(is_minor);
+}
+
+/**
+ * ags_note_set_is_minor:
+ * @note: the #AgsNote
+ * @is_minor: is minor
+ *
+ * Sets is minor.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_is_minor(AgsNote *note, gboolean is_minor)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "is-minor", is_minor,
+	       NULL);
+}
+
+/**
+ * ags_note_get_sharp_flats:
+ * @note: the #AgsNote
+ *
+ * Gets sharp flats.
+ * 
+ * Returns: the sharp flats
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_note_get_sharp_flats(AgsNote *note)
+{
+  guint sharp_flats;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "sharp-flats", &sharp_flats,
+	       NULL);
+
+  return(sharp_flats);
+}
+
+/**
+ * ags_note_set_sharp_flats:
+ * @note: the #AgsNote
+ * @sharp_flats: the sharp flats
+ *
+ * Sets sharp flats.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_sharp_flats(AgsNote *note, guint sharp_flats)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "sharp-flats", sharp_flats,
+	       NULL);
+}
+
+/**
+ * ags_note_get_x0:
+ * @note: the #AgsNote
+ *
+ * Gets x0.
+ * 
+ * Returns: the sharp flats
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_note_get_x0(AgsNote *note)
+{
+  guint x0;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "x0", &x0,
+	       NULL);
+
+  return(x0);
+}
+
+/**
+ * ags_note_set_x0:
+ * @note: the #AgsNote
+ * @x0: the x0
+ *
+ * Sets x0.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_x0(AgsNote *note, guint x0)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "x0", x0,
+	       NULL);
+}
+
+/**
+ * ags_note_get_x1:
+ * @note: the #AgsNote
+ *
+ * Gets x1.
+ * 
+ * Returns: the x1
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_note_get_x1(AgsNote *note)
+{
+  guint x1;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "x1", &x1,
+	       NULL);
+
+  return(x1);
+}
+
+/**
+ * ags_note_set_x1:
+ * @note: the #AgsNote
+ * @x1: the x1
+ *
+ * Sets x1.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_x1(AgsNote *note, guint x1)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "x1", x1,
+	       NULL);
+}
+
+/**
+ * ags_note_get_y:
+ * @note: the #AgsNote
+ *
+ * Gets y.
+ * 
+ * Returns: the y
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_note_get_y(AgsNote *note)
+{
+  guint y;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "y", &y,
+	       NULL);
+
+  return(y);
+}
+
+/**
+ * ags_note_set_y:
+ * @note: the #AgsNote
+ * @y: the y
+ *
+ * Sets y.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_y(AgsNote *note, guint y)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "y", y,
+	       NULL);
+}
+
+/**
+ * ags_note_get_rt_offset:
+ * @note: the #AgsNote
+ *
+ * Gets rt-offset.
+ * 
+ * Returns: the rt-offset
+ * 
+ * Since: 3.1.0
+ */
+guint64
+ags_note_get_rt_offset(AgsNote *note)
+{
+  guint64 rt_offset;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "rt-offset", &rt_offset,
+	       NULL);
+
+  return(rt_offset);
+}
+
+/**
+ * ags_note_set_rt_offset:
+ * @note: the #AgsNote
+ * @rt_offset: the rt-offset
+ *
+ * Sets rt-offset.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_rt_offset(AgsNote *note, guint64 rt_offset)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "rt-offset", rt_offset,
+	       NULL);
+}
+
+/**
+ * ags_note_get_rt_attack:
+ * @note: the #AgsNote
+ *
+ * Gets rt-attack.
+ * 
+ * Returns: the rt-attack
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_note_get_rt_attack(AgsNote *note)
+{
+  guint rt_attack;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(0);
+  }
+
+  g_object_get(note,
+	       "rt-attack", &rt_attack,
+	       NULL);
+
+  return(rt_attack);
+}
+
+/**
+ * ags_note_set_rt_attack:
+ * @note: the #AgsNote
+ * @rt_attack: the rt-attack
+ *
+ * Sets rt-attack.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_rt_attack(AgsNote *note, guint rt_attack)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "rt-attack", rt_attack,
+	       NULL);
+}
+
+/**
+ * ags_note_get_attack:
+ * @note: the #AgsNote
+ *
+ * Gets attack.
+ * 
+ * Returns: the attack
+ * 
+ * Since: 3.1.0
+ */
+AgsComplex*
+ags_note_get_attack(AgsNote *note)
+{
+  AgsComplex *attack;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  g_object_get(note,
+	       "attack", &attack,
+	       NULL);
+
+  return(attack);
+}
+
+/**
+ * ags_note_set_attack:
+ * @note: the #AgsNote
+ * @attack: the attack
+ *
+ * Sets attack.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_attack(AgsNote *note, AgsComplex *attack)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "attack", attack,
+	       NULL);
+}
+
+/**
+ * ags_note_get_sustain:
+ * @note: the #AgsNote
+ *
+ * Gets sustain.
+ * 
+ * Returns: the sustain
+ * 
+ * Since: 3.1.0
+ */
+AgsComplex*
+ags_note_get_sustain(AgsNote *note)
+{
+  AgsComplex *sustain;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  g_object_get(note,
+	       "sustain", &sustain,
+	       NULL);
+
+  return(sustain);
+}
+
+/**
+ * ags_note_set_sustain:
+ * @note: the #AgsNote
+ * @sustain: the sustain
+ *
+ * Sets sustain.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_sustain(AgsNote *note, AgsComplex *sustain)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "sustain", sustain,
+	       NULL);
+}
+
+/**
+ * ags_note_get_decay:
+ * @note: the #AgsNote
+ *
+ * Gets decay.
+ * 
+ * Returns: the decay
+ * 
+ * Since: 3.1.0
+ */
+AgsComplex*
+ags_note_get_decay(AgsNote *note)
+{
+  AgsComplex *decay;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  g_object_get(note,
+	       "decay", &decay,
+	       NULL);
+
+  return(decay);
+}
+
+/**
+ * ags_note_set_decay:
+ * @note: the #AgsNote
+ * @decay: the decay
+ *
+ * Sets decay.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_decay(AgsNote *note, AgsComplex *decay)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "decay", decay,
+	       NULL);
+}
+
+/**
+ * ags_note_get_release:
+ * @note: the #AgsNote
+ *
+ * Gets release.
+ * 
+ * Returns: the release
+ * 
+ * Since: 3.1.0
+ */
+AgsComplex*
+ags_note_get_release(AgsNote *note)
+{
+  AgsComplex *release;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  g_object_get(note,
+	       "release", &release,
+	       NULL);
+
+  return(release);
+}
+
+/**
+ * ags_note_set_release:
+ * @note: the #AgsNote
+ * @release: the release
+ *
+ * Sets release.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_release(AgsNote *note, AgsComplex *release)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "release", release,
+	       NULL);
+}
+
+/**
+ * ags_note_get_ratio:
+ * @note: the #AgsNote
+ *
+ * Gets ratio.
+ * 
+ * Returns: the ratio
+ * 
+ * Since: 3.1.0
+ */
+AgsComplex*
+ags_note_get_ratio(AgsNote *note)
+{
+  AgsComplex *ratio;
+  
+  if(!AGS_IS_NOTE(note)){
+    return(NULL);
+  }
+
+  g_object_get(note,
+	       "ratio", &ratio,
+	       NULL);
+
+  return(ratio);
+}
+
+/**
+ * ags_note_set_ratio:
+ * @note: the #AgsNote
+ * @ratio: the ratio
+ *
+ * Sets ratio.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_note_set_ratio(AgsNote *note, AgsComplex *ratio)
+{
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+
+  g_object_set(note,
+	       "ratio", ratio,
+	       NULL);
 }
 
 /**

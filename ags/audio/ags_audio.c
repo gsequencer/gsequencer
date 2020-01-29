@@ -107,6 +107,9 @@ void ags_audio_disconnect(AgsConnectable *connectable);
 void ags_audio_set_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
 void ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
 
+void ags_audio_unref_all_channel(AgsAudio *audio,
+				 AgsChannel *channel);
+
 void ags_audio_set_audio_channels_grow(AgsAudio *audio,
 				       GType channel_type,
 				       guint audio_channels, guint audio_channels_old,
@@ -7661,6 +7664,21 @@ ags_audio_get_input_lines(AgsAudio *audio)
   return(input_lines);
 }
 
+void
+ags_audio_unref_all_channel(AgsAudio *audio,
+			    AgsChannel *channel)
+{
+  while(channel != NULL){
+    AgsChannel *next;
+
+    next = channel->next;
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+}
+
 /**
  * ags_audio_get_output:
  * @audio: the #AgsAudio
@@ -7690,7 +7708,7 @@ ags_audio_get_output(AgsAudio *audio)
 /**
  * ags_audio_set_output:
  * @audio: the #AgsAudio
- * @output: the #AgsChannel
+ * @output: (transfer full): the #AgsChannel
  *
  * Set the output object of @audio.
  *
@@ -7700,13 +7718,26 @@ void
 ags_audio_set_output(AgsAudio *audio,
 		     AgsChannel *output)
 {
+  AgsChannel *start_output;
+  
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  g_object_set(audio,
-	       "output", output,
-	       NULL);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  start_output = audio->output;
+  audio->output = output;
+  
+  g_rec_mutex_unlock(audio_mutex);
+
+  ags_audio_unref_all_channel(audio,
+			      start_output);
 }
 
 /**
@@ -7738,7 +7769,7 @@ ags_audio_get_input(AgsAudio *audio)
 /**
  * ags_audio_set_input:
  * @audio: the #AgsAudio
- * @input: the #AgsChannel
+ * @input: (transfer full): the #AgsChannel
  *
  * Set the input object of @audio.
  *
@@ -7748,13 +7779,26 @@ void
 ags_audio_set_input(AgsAudio *audio,
 		    AgsChannel *input)
 {
+  AgsChannel *start_input;
+  
+  GRecMutex *audio_mutex;
+
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  g_object_set(audio,
-	       "input", input,
-	       NULL);
+  /* get audio mutex */
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
+
+  g_rec_mutex_lock(audio_mutex);
+
+  start_input = audio->input;
+  audio->input = input;
+  
+  g_rec_mutex_unlock(audio_mutex);
+
+  ags_audio_unref_all_channel(audio,
+			      start_input);
 }
 
 /**
@@ -9281,7 +9325,7 @@ ags_audio_get_is_minor(AgsAudio *audio)
  * Since: 3.1.0
  */
 void
-ags_audio_set_is_minor(AgsAudio *audio, guint is_minor)
+ags_audio_set_is_minor(AgsAudio *audio, gboolean is_minor)
 {
   if(!AGS_IS_AUDIO(audio)){
     return;

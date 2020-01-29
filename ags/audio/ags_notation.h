@@ -127,7 +127,7 @@ void ags_notation_set_audio_channel(AgsNotation *notation,
 				    guint audio_channel);
 
 gboolean ags_notation_get_is_minor(AgsNotation *notation);
-void ags_notation_set_is_minor(AgsNotation *notation, guint is_minor);
+void ags_notation_set_is_minor(AgsNotation *notation, gboolean is_minor);
 
 guint ags_notation_get_sharp_flats(AgsNotation *notation);
 void ags_notation_set_sharp_flats(AgsNotation *notation, guint sharp_flats);

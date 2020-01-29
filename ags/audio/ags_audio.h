@@ -375,7 +375,7 @@ void ags_audio_set_time_signature(AgsAudio *audio, gchar *time_signature);
 
 /* key */
 gboolean ags_audio_get_is_minor(AgsAudio *audio);
-void ags_audio_set_is_minor(AgsAudio *audio, guint is_minor);
+void ags_audio_set_is_minor(AgsAudio *audio, gboolean is_minor);
 
 guint ags_audio_get_sharp_flats(AgsAudio *audio);
 void ags_audio_set_sharp_flats(AgsAudio *audio, guint sharp_flats);

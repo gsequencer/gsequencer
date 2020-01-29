@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,12 +106,50 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
+GRecMutex* ags_note_get_obj_mutex(AgsNote *note);
+
 gboolean ags_note_test_flags(AgsNote *note, guint flags);
 void ags_note_set_flags(AgsNote *note, guint flags);
 void ags_note_unset_flags(AgsNote *note, guint flags);
 
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);
+
+gboolean ags_note_get_is_minor(AgsNote *note);
+void ags_note_set_is_minor(AgsNote *note, gboolean is_minor);
+
+guint ags_note_get_sharp_flats(AgsNote *note);
+void ags_note_set_sharp_flats(AgsNote *note, guint sharp_flats);
+
+guint ags_note_get_x0(AgsNote *note);
+void ags_note_set_x0(AgsNote *note, guint x0);
+
+guint ags_note_get_x1(AgsNote *note);
+void ags_note_set_x1(AgsNote *note, guint x1);
+
+guint ags_note_get_y(AgsNote *note);
+void ags_note_set_y(AgsNote *note, guint y);
+
+guint64 ags_note_get_rt_offset(AgsNote *note);
+void ags_note_set_rt_offset(AgsNote *note, guint64 rt_offset);
+
+guint ags_note_get_rt_attack(AgsNote *note);
+void ags_note_set_rt_attack(AgsNote *note, guint rt_attack);
+
+AgsComplex* ags_note_get_attack(AgsNote *note);
+void ags_note_set_attack(AgsNote *note, AgsComplex *attack);
+
+AgsComplex* ags_note_get_sustain(AgsNote *note);
+void ags_note_set_sustain(AgsNote *note, AgsComplex *sustain);
+
+AgsComplex* ags_note_get_decay(AgsNote *note);
+void ags_note_set_decay(AgsNote *note, AgsComplex *decay);
+
+AgsComplex* ags_note_get_release(AgsNote *note);
+void ags_note_set_release(AgsNote *note, AgsComplex *release);
+
+AgsComplex* ags_note_get_ratio(AgsNote *note);
+void ags_note_set_ratio(AgsNote *note, AgsComplex *ratio);
 
 GList* ags_note_find_prev(GList *note,
 			  guint x0, guint y);

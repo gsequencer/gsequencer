@@ -995,7 +995,7 @@ ags_notation_get_is_minor(AgsNotation *notation)
  * Since: 3.1.0
  */
 void
-ags_notation_set_is_minor(AgsNotation *notation, guint is_minor)
+ags_notation_set_is_minor(AgsNotation *notation, gboolean is_minor)
 {
   if(!AGS_IS_NOTATION(notation)){
     return;
@@ -1098,6 +1098,66 @@ ags_notation_set_timestamp(AgsNotation *notation, AgsTimestamp *timestamp)
   g_object_set(notation,
 	       "timestamp", timestamp,
 	       NULL);
+}
+
+/**
+ * ags_notation_get_note:
+ * @notation: the #AgsNotation
+ * 
+ * Get note.
+ * 
+ * Returns: (element-type AgsAudio.Note) (transfer full): the #GList-struct containig #AgsNote
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_notation_get_note(AgsNotation *notation)
+{
+  GList *note;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  g_object_get(notation,
+	       "note", &note,
+	       NULL);
+
+  return(note);
+}
+
+/**
+ * ags_notation_set_note:
+ * @notation: the #AgsNotation
+ * @note: (element-type AgsAudio.Note) (transfer full): the #GList-struct containing #AgsNote
+ * 
+ * Set note by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_notation_set_note(AgsNotation *notation, GList *note)
+{
+  GList *start_note;
+  
+  GRecMutex *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+    
+  g_rec_mutex_lock(notation_mutex);
+
+  start_note = notation->note;
+  notation->note = note;
+  
+  g_rec_mutex_unlock(notation_mutex);
+
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
