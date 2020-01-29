@@ -2711,6 +2711,66 @@ ags_channel_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_channel_get_obj_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_obj_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_OBJ_MUTEX(channel));
+}
+
+/**
+ * ags_channel_get_play_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get play mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel's play property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_play_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_PLAY_MUTEX(channel));
+}
+
+/**
+ * ags_channel_get_recall_mutex:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall mutex.
+ * 
+ * Returns: the #GRecMutex to lock @channel's recall property
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_channel_get_recall_mutex(AgsChannel *channel)
+{
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  return(AGS_CHANNEL_GET_RECALL_MUTEX(channel));
+}
+
+/**
  * ags_channel_test_flags:
  * @channel: the #AgsChannel
  * @flags: the flags
@@ -6504,6 +6564,32 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_get_output_soundcard:
+ * @channel: the #AgsChannel
+ *
+ * Get the output soundcard object of @channel.
+ *
+ * Returns: (transfer full): the output soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_output_soundcard(AgsChannel *channel)
+{
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  return(output_soundcard);
+}
+
+/**
  * ags_channel_set_output_soundcard:
  * @channel: an #AgsChannel
  * @output_soundcard: an #GObject
@@ -6674,6 +6760,32 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_get_input_soundcard:
+ * @channel: the #AgsChannel
+ *
+ * Get the input soundcard object of @channel.
+ *
+ * Returns: (transfer full): the input soundcard
+ * 
+ * Since: 3.1.0
+ */
+GObject*
+ags_channel_get_input_soundcard(AgsChannel *channel)
+{
+  GObject *input_soundcard;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "input-soundcard", &input_soundcard,
+	       NULL);
+
+  return(input_soundcard);
+}
+
+/**
  * ags_channel_set_input_soundcard:
  * @channel: the #AgsChannel
  * @input_soundcard: an #AgsSoundcard
@@ -6791,6 +6903,32 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   if(old_soundcard != NULL){
     g_object_unref(old_soundcard);
   }
+}
+
+/**
+ * ags_channel_get_samplerate:
+ * @channel: the #AgsChannel
+ *
+ * Gets samplerate.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_samplerate(AgsChannel *channel)
+{
+  guint samplerate;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "samplerate", &samplerate,
+	       NULL);
+
+  return(samplerate);
 }
 
 /**
@@ -6937,6 +7075,32 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 }
 
 /**
+ * ags_channel_get_buffer_size:
+ * @channel: the #AgsChannel
+ *
+ * Gets buffer size.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_buffer_size(AgsChannel *channel)
+{
+  guint buffer_size;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  return(buffer_size);
+}
+
+/**
  * ags_channel_set_buffer_size:
  * @channel: the #AgsChannel
  * @buffer_size: the buffer_size
@@ -7080,6 +7244,32 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 }
 
 /**
+ * ags_channel_get_format:
+ * @channel: the #AgsChannel
+ *
+ * Gets format.
+ * 
+ * Returns: the format
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_channel_get_format(AgsChannel *channel)
+{
+  guint format;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(0);
+  }
+
+  g_object_get(channel,
+	       "format", &format,
+	       NULL);
+
+  return(format);
+}
+
+/**
  * ags_channel_set_format:
  * @channel: the #AgsChannel
  * @format: the format
@@ -7190,6 +7380,68 @@ ags_channel_set_format(AgsChannel *channel, guint format)
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
   }
+}
+
+/**
+ * ags_channel_get_pattern:
+ * @channel: the #AgsChannel
+ * 
+ * Get pattern.
+ * 
+ * Returns: (element-type AgsChannel.Pattern) (transfer full): the #GList-struct containig #AgsPattern
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_pattern(AgsChannel *channel)
+{
+  GList *pattern;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "pattern", &pattern,
+	       NULL);
+
+  return(pattern);
+}
+
+/**
+ * ags_channel_set_pattern:
+ * @channel: the #AgsChannel
+ * @pattern: (element-type AgsChannel.Pattern) (transfer full): the #GList-struct containing #AgsPattern
+ * 
+ * Set pattern by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_pattern(AgsChannel *channel, GList *pattern)
+{
+  GList *start_pattern;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_pattern = channel->pattern;
+  channel->pattern = NULL;
+
+  g_list_free_full(start_pattern,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->pattern = pattern;
+  
+  g_rec_mutex_unlock(channel_mutex);
 }
 
 /**
@@ -7329,6 +7581,130 @@ ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
 }
 
 /**
+ * ags_channel_get_recall_id:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall id.
+ * 
+ * Returns: (element-type AgsChannel.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall_id(AgsChannel *channel)
+{
+  GList *recall_id;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall_id", &recall_id,
+	       NULL);
+
+  return(recall_id);
+}
+
+/**
+ * ags_channel_set_recall_id:
+ * @channel: the #AgsChannel
+ * @recall_id: (element-type AgsChannel.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
+ * 
+ * Set recall id by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall_id(AgsChannel *channel, GList *recall_id)
+{
+  GList *start_recall_id;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall_id = channel->recall_id;
+  channel->recall_id = NULL;
+
+  g_list_free_full(start_recall_id,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->recall_id = recall_id;
+  
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_recall_container:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall_container.
+ * 
+ * Returns: (element-type AgsChannel.RecallContainer) (transfer full): the #GList-struct containig #AgsRecallContainer
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall_container(AgsChannel *channel)
+{
+  GList *recall_container;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall-container", &recall_container,
+	       NULL);
+
+  return(recall_container);
+}
+
+/**
+ * ags_channel_set_recall_container:
+ * @channel: the #AgsChannel
+ * @recall_container: (element-type AgsChannel.RecallContainer) (transfer full): the #GList-struct containing #AgsRecallContainer
+ * 
+ * Set recall_container by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall_container(AgsChannel *channel, GList *recall_container)
+{
+  GList *start_recall_container;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall_container = channel->recall_container;
+  channel->recall_container = NULL;
+
+  g_list_free_full(start_recall_container,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->recall_container = recall_container;
+  
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
  * ags_channel_add_recall_container:
  * @channel: an #AgsChannel
  * @recall_container: the #AgsRecallContainer
@@ -7392,6 +7768,130 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 					      recall_container);
     g_object_unref(G_OBJECT(recall_container));
   }
+  
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_play:
+ * @channel: the #AgsChannel
+ * 
+ * Get play.
+ * 
+ * Returns: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_play(AgsChannel *channel)
+{
+  GList *play;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "play", &play,
+	       NULL);
+
+  return(play);
+}
+
+/**
+ * ags_channel_set_play:
+ * @channel: the #AgsChannel
+ * @play: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set play by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_play(AgsChannel *channel, GList *play)
+{
+  GList *start_play;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_play = channel->play;
+  channel->play = NULL;
+
+  g_list_free_full(start_play,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->play = play;
+  
+  g_rec_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_get_recall:
+ * @channel: the #AgsChannel
+ * 
+ * Get recall.
+ * 
+ * Returns: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containig #AgsRecall
+ * 
+ * Since: 3.1.0
+ */
+GList*
+ags_channel_get_recall(AgsChannel *channel)
+{
+  GList *recall;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  g_object_get(channel,
+	       "recall", &recall,
+	       NULL);
+
+  return(recall);
+}
+
+/**
+ * ags_channel_set_recall:
+ * @channel: the #AgsChannel
+ * @recall: (element-type AgsChannel.Recall) (transfer full): the #GList-struct containing #AgsRecall
+ * 
+ * Set recall by replacing existing.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_channel_set_recall(AgsChannel *channel, GList *recall)
+{
+  GList *start_recall;
+  
+  GRecMutex *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
+    
+  g_rec_mutex_lock(channel_mutex);
+
+  start_recall = channel->recall;
+  channel->recall = NULL;
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  channel->recall = recall;
   
   g_rec_mutex_unlock(channel_mutex);
 }

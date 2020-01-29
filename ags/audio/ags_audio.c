@@ -10646,7 +10646,7 @@ ags_audio_remove_midi(AgsAudio *audio, GObject *midi)
  * ags_audio_get_recall_id:
  * @audio: the #AgsAudio
  * 
- * Get recall_id.
+ * Get recall id.
  * 
  * Returns: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containig #AgsRecallID
  * 
@@ -10673,7 +10673,7 @@ ags_audio_get_recall_id(AgsAudio *audio)
  * @audio: the #AgsAudio
  * @recall_id: (element-type AgsAudio.RecallID) (transfer full): the #GList-struct containing #AgsRecallID
  * 
- * Set recall_id by replacing existing.
+ * Set recall id by replacing existing.
  * 
  * Since: 3.1.0
  */
@@ -10905,6 +10905,7 @@ ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
   
   g_rec_mutex_unlock(audio_mutex);
 }
+
 /**
  * ags_audio_get_recall_container:
  * @audio: the #AgsAudio
@@ -10925,7 +10926,7 @@ ags_audio_get_recall_container(AgsAudio *audio)
   }
 
   g_object_get(audio,
-	       "recall_container", &recall_container,
+	       "recall-container", &recall_container,
 	       NULL);
 
   return(recall_container);
@@ -11036,6 +11037,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
   
   g_rec_mutex_unlock(audio_mutex);
 }
+
 /**
  * ags_audio_get_play:
  * @audio: the #AgsAudio
