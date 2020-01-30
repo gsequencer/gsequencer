@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,9 +112,51 @@ struct _AgsBasePluginClass
 
 GType ags_base_plugin_get_type(void);
 
+GRecMutex* ags_base_plugin_get_obj_mutex(AgsBasePlugin *base_plugin);
+
 gboolean ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags);
 void ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags);
 void ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags);
+
+gchar* ags_base_plugin_get_filename(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_filename(AgsBasePlugin *base_plugin,
+				  gchar *filename);
+
+gchar* ags_base_plugin_get_effect(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_effect(AgsBasePlugin *base_plugin,
+				gchar *effect);
+
+guint ags_base_plugin_get_effect_index(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_effect_index(AgsBasePlugin *base_plugin,
+				      guint effect_index);
+
+gpointer ags_base_plugin_get_plugin_so(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_plugin_so(AgsBasePlugin *base_plugin,
+				   gpointer plugin_so);
+
+GList* ags_base_plugin_get_plugin_port(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_plugin_port(AgsBasePlugin *base_plugin,
+				     GList *plugin_port);
+
+gchar* ags_base_plugin_get_ui_filename(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_ui_filename(AgsBasePlugin *base_plugin,
+				     gchar *ui_filename);
+
+gchar* ags_base_plugin_get_ui_effect(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_ui_effect(AgsBasePlugin *base_plugin,
+				   gchar *ui_effect);
+
+guint ags_base_plugin_get_ui_effect_index(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_ui_effect_index(AgsBasePlugin *base_plugin,
+					 guint ui_effect_index);
+
+gpointer ags_base_plugin_get_ui_plugin_so(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_ui_plugin_so(AgsBasePlugin *base_plugin,
+				      gpointer ui_plugin_so);
+
+GObject* ags_base_plugin_get_ui_plugin(AgsBasePlugin *base_plugin);
+void ags_base_plugin_set_ui_plugin(AgsBasePlugin *base_plugin,
+				   GObject *ui_plugin);
 
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);

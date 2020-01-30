@@ -3430,7 +3430,7 @@ ags_recall_get_filename(AgsRecall *recall)
 }
 
 /**
- * ags_recall_get_filename:
+ * ags_recall_set_filename:
  * @recall: the #AgsRecall
  * @filename: the filename
  * 
@@ -3478,7 +3478,7 @@ ags_recall_get_effect(AgsRecall *recall)
 }
 
 /**
- * ags_recall_get_effect:
+ * ags_recall_set_effect:
  * @recall: the #AgsRecall
  * @effect: the effect
  * 
