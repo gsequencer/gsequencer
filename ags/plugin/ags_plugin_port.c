@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/plugin/ags_plugin_port.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <ags/i18n.h>
 
@@ -507,17 +510,22 @@ ags_plugin_port_get_property(GObject *gobject,
       g_rec_mutex_lock(plugin_port_mutex);
 
       g_value_set_pointer(value,
-			  plugin_port->scale_point);
+			  g_strdupv(plugin_port->scale_point));
       
       g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_SCALE_VALUE:
-    {      
+    {
+      gdouble *scale_value;
+      
       g_rec_mutex_lock(plugin_port_mutex);
 
+      scale_value = (gdouble *) malloc(plugin_port->scale_steps * sizeof(gdouble));
+      memcpy(scale_value, plugin_port->scale_value, plugin_port->scale_steps * sizeof(gdouble));
+      
       g_value_set_pointer(value,
-			  plugin_port->scale_value);
+			  scale_value);
       
       g_rec_mutex_unlock(plugin_port_mutex);
     }
@@ -595,6 +603,26 @@ ags_plugin_port_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_plugin_port_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_plugin_port_get_obj_mutex:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get object mutex.
+ * 
+ * Returns: the #GRecMutex to lock @plugin_port
+ * 
+ * Since: 3.1.0
+ */
+GRecMutex*
+ags_plugin_port_get_obj_mutex(AgsPluginPort *plugin_port)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  return(AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port));
 }
 
 /**
@@ -688,6 +716,459 @@ ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
   plugin_port->flags &= (~flags);
   
   g_rec_mutex_unlock(plugin_port_mutex);
+}
+
+/**
+ * ags_plugin_port_get_port_index:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get port index.
+ * 
+ * Returns: the port index
+ * 
+ * Since: 3.1.0
+ */
+guint
+ags_plugin_port_get_port_index(AgsPluginPort *plugin_port)
+{
+  guint port_index;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "port-index", &port_index,
+	       NULL);
+
+  return(port_index);
+}
+
+/**
+ * ags_plugin_port_set_port_index:
+ * @plugin_port: the #AgsPluginPort
+ * @port_index: the port index
+ * 
+ * Set port index.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_port_index(AgsPluginPort *plugin_port,
+			       guint port_index)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "port-index", port_index,
+	       NULL);
+}
+
+/**
+ * ags_plugin_port_get_port_name:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get port name.
+ * 
+ * Returns: the port name
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_plugin_port_get_port_name(AgsPluginPort *plugin_port)
+{
+  gchar *port_name;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "port-name", &port_name,
+	       NULL);
+
+  return(port_name);
+}
+
+/**
+ * ags_plugin_port_set_port_name:
+ * @plugin_port: the #AgsPluginPort
+ * @port_name: the port name
+ * 
+ * Set port name.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_port_name(AgsPluginPort *plugin_port,
+			     gchar *port_name)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "port-name", port_name,
+	       NULL);
+}
+
+/**
+ * ags_plugin_port_get_port_symbol:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get port symbol.
+ * 
+ * Returns: the port symbol
+ * 
+ * Since: 3.1.0
+ */
+gchar*
+ags_plugin_port_get_port_symbol(AgsPluginPort *plugin_port)
+{
+  gchar *port_symbol;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "port-symbol", &port_symbol,
+	       NULL);
+
+  return(port_symbol);
+}
+
+/**
+ * ags_plugin_port_set_port_symbol:
+ * @plugin_port: the #AgsPluginPort
+ * @port_symbol: the port symbol
+ * 
+ * Set port symbol.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_port_symbol(AgsPluginPort *plugin_port,
+				gchar *port_symbol)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "port-symbol", port_symbol,
+	       NULL);
+}
+
+
+/**
+ * ags_plugin_port_get_scale_steps:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get scale steps.
+ * 
+ * Returns: the scale steps
+ * 
+ * Since: 3.1.0
+ */
+gint
+ags_plugin_port_get_scale_steps(AgsPluginPort *plugin_port)
+{
+  guint scale_steps;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "scale-steps", &scale_steps,
+	       NULL);
+
+  return(scale_steps);
+}
+
+/**
+ * ags_plugin_port_set_scale_steps:
+ * @plugin_port: the #AgsPluginPort
+ * @scale_steps: the scale steps
+ * 
+ * Set scale steps.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_scale_steps(AgsPluginPort *plugin_port,
+				gint scale_steps)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "scale-steps", scale_steps,
+	       NULL);
+}
+
+/**
+ * ags_plugin_port_get_scale_point:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get scale point.
+ * 
+ * Returns: the scale point
+ * 
+ * Since: 3.1.0
+ */
+gchar**
+ags_plugin_port_get_scale_point(AgsPluginPort *plugin_port)
+{
+  gchar **scale_point;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "scale-point", &scale_point,
+	       NULL);
+
+  return(scale_point);
+}
+
+/**
+ * ags_plugin_port_set_scale_point:
+ * @plugin_port: the #AgsPluginPort
+ * @scale_point: the scale point
+ * 
+ * Set scale point.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_scale_point(AgsPluginPort *plugin_port,
+				gchar **scale_point)
+{
+  GRecMutex *plugin_port_mutex;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  /* get plugin port mutex */
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
+  
+  g_rec_mutex_lock(plugin_port_mutex);
+
+  g_strfreev(plugin_port->scale_point);
+  
+  plugin_port->scale_point = scale_point;
+  
+  g_rec_mutex_unlock(plugin_port_mutex);
+}
+
+/**
+ * ags_plugin_port_get_scale_value:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get scale value.
+ * 
+ * Returns: the scale value
+ * 
+ * Since: 3.1.0
+ */
+gdouble*
+ags_plugin_port_get_scale_value(AgsPluginPort *plugin_port)
+{
+  gdouble *scale_value;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "scale-value", &scale_value,
+	       NULL);
+
+  return(scale_value);
+}
+
+/**
+ * ags_plugin_port_set_scale_value:
+ * @plugin_port: the #AgsPluginPort
+ * @scale_value: the scale value
+ * 
+ * Set scale value.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_scale_value(AgsPluginPort *plugin_port,
+				gdouble *scale_value)
+{
+  GRecMutex *plugin_port_mutex;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  /* get plugin port mutex */
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
+  
+  g_rec_mutex_lock(plugin_port_mutex);
+
+  if(plugin_port->scale_value != NULL){
+    free(plugin_port->scale_value);
+  }
+  
+  plugin_port->scale_value = scale_value;
+  
+  g_rec_mutex_unlock(plugin_port_mutex);
+}
+
+/**
+ * ags_plugin_port_get_lower_value:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get lower value.
+ * 
+ * Returns: the lower value
+ * 
+ * Since: 3.1.0
+ */
+GValue*
+ags_plugin_port_get_lower_value(AgsPluginPort *plugin_port)
+{
+  GValue *lower_value;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "lower-value", &lower_value,
+	       NULL);
+
+  return(lower_value);
+}
+
+/**
+ * ags_plugin_port_set_lower_value:
+ * @plugin_port: the #AgsPluginPort
+ * @lower_value: the lower value
+ * 
+ * Set lower value.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_lower_value(AgsPluginPort *plugin_port,
+				GValue *lower_value)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "lower-value", lower_value,
+	       NULL);
+}
+
+/**
+ * ags_plugin_port_get_upper_value:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get upper value.
+ * 
+ * Returns: the upper value
+ * 
+ * Since: 3.1.0
+ */
+GValue*
+ags_plugin_port_get_upper_value(AgsPluginPort *plugin_port)
+{
+  GValue *upper_value;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "upper-value", &upper_value,
+	       NULL);
+
+  return(upper_value);
+}
+
+/**
+ * ags_plugin_port_set_upper_value:
+ * @plugin_port: the #AgsPluginPort
+ * @upper_value: the upper value
+ * 
+ * Set upper value.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_upper_value(AgsPluginPort *plugin_port,
+				GValue *upper_value)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "upper-value", upper_value,
+	       NULL);
+}
+
+/**
+ * ags_plugin_port_get_default_value:
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Get default value.
+ * 
+ * Returns: the default value
+ * 
+ * Since: 3.1.0
+ */
+GValue*
+ags_plugin_port_get_default_value(AgsPluginPort *plugin_port)
+{
+  GValue *default_value;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(NULL);
+  }
+
+  g_object_get(plugin_port,
+	       "default-value", &default_value,
+	       NULL);
+
+  return(default_value);
+}
+
+/**
+ * ags_plugin_port_set_default_value:
+ * @plugin_port: the #AgsPluginPort
+ * @default_value: the default value
+ * 
+ * Set default value.
+ * 
+ * Since: 3.1.0
+ */
+void
+ags_plugin_port_set_default_value(AgsPluginPort *plugin_port,
+				  GValue *default_value)
+{
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  g_object_set(plugin_port,
+	       "default-value", default_value,
+	       NULL);
 }
 
 /**

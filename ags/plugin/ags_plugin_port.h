@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,9 +109,47 @@ struct _AgsPluginPortClass
 
 GType ags_plugin_port_get_type(void);
 
+GRecMutex* ags_plugin_port_get_obj_mutex(AgsPluginPort *plugin_port);
+
 gboolean ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags);
 void ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags);
 void ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags);
+
+guint ags_plugin_port_get_port_index(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_port_index(AgsPluginPort *plugin_port,
+				    guint port_index);
+
+gchar* ags_plugin_port_get_port_name(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_port_name(AgsPluginPort *plugin_port,
+				   gchar *port_name);
+
+gchar* ags_plugin_port_get_port_symbol(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_port_symbol(AgsPluginPort *plugin_port,
+				     gchar *port_symbol);
+
+gint ags_plugin_port_get_scale_steps(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_scale_steps(AgsPluginPort *plugin_port,
+				     gint scale_steps);
+
+gchar** ags_plugin_port_get_scale_point(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_scale_point(AgsPluginPort *plugin_port,
+				     gchar **scale_point);
+
+gdouble* ags_plugin_port_get_scale_value(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_scale_value(AgsPluginPort *plugin_port,
+				     gdouble *scale_value);
+
+GValue* ags_plugin_port_get_lower_value(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_lower_value(AgsPluginPort *plugin_port,
+				     GValue *lower_value);
+
+GValue* ags_plugin_port_get_upper_value(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_upper_value(AgsPluginPort *plugin_port,
+				     GValue *upper_value);
+
+GValue* ags_plugin_port_get_default_value(AgsPluginPort *plugin_port);
+void ags_plugin_port_set_default_value(AgsPluginPort *plugin_port,
+				       GValue *default_value);
 
 GList* ags_plugin_port_find_symbol(GList *plugin_port,
 				   gchar *port_symbol);
