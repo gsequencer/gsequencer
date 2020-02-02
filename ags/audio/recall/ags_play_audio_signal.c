@@ -123,7 +123,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsAudioSignal *source;
   AgsAudioSignal *rt_template;
   AgsPort *muted;
-
+  AgsRecallID *recall_id;
+  
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsPlayRecycling *play_recycling;
@@ -153,15 +154,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   void (*parent_class_run_inter)(AgsRecall *recall);  
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
-  
+
   /* get mutex */
   parent_class_run_inter = AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter;
 
   g_object_get(play_audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       "source", &source,
+	       "recall-id", &recall_id,
 	       NULL);
 
+  ags_recall_id_unset_state_flags(recall_id, AGS_SOUND_STATE_IS_WAITING);
+  g_object_unref(recall_id);
+  
   if(output_soundcard == NULL){
 #ifdef AGS_DEBUG
     g_warning("no soundcard");
@@ -428,7 +433,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	/* copy */
 	ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
 				  buffer0);
-	
+
 	ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel,
 						    buffer_source_prev, 1, soundcard_buffer_size - source->attack,
 						    attack, copy_mode);
@@ -444,7 +449,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       /* copy */
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
 				buffer0);
-      
+            
       ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + attack * pcm_channels,
 						  buffer_source, 1, 0,
 						  soundcard_buffer_size - attack, copy_mode);

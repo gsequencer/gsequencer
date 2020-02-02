@@ -950,7 +950,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
 	ags_channel_add_recall(channel,
 			       (GObject *) generic_recall_channel_run,
-			       FALSE);
+			       TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
       
 	/* ladspa recall */
@@ -1520,7 +1520,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
 	ags_channel_add_recall(channel,
 			       (GObject *) generic_recall_channel_run,
-			       FALSE);
+			       TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
 	/* dssi recall */
@@ -2079,7 +2079,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
 	ags_channel_add_recall(channel,
 			       (GObject *) generic_recall_channel_run,
-			       FALSE);
+			       TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
 	/* lv2 recall */

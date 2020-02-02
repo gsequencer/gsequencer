@@ -532,30 +532,54 @@ ags_plugin_port_get_property(GObject *gobject,
     break;
   case PROP_LOWER_VALUE:
     {
+      GValue *lower_value;
+      
       g_rec_mutex_lock(plugin_port_mutex);
 
+      lower_value = g_new0(GValue,
+			   1);
+
+      g_value_copy(plugin_port->lower_value,
+		   lower_value);
+      
       g_value_set_pointer(value,
-			  plugin_port->lower_value);
+			  lower_value);
       
       g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_UPPER_VALUE:
     {
+      GValue *upper_value;
+      
       g_rec_mutex_lock(plugin_port_mutex);
 
+      upper_value = g_new0(GValue,
+			   1);
+
+      g_value_copy(plugin_port->upper_value,
+		   upper_value);
+      
       g_value_set_pointer(value,
-			  plugin_port->upper_value);
+			  upper_value);
       
       g_rec_mutex_unlock(plugin_port_mutex);
     }
     break;
   case PROP_DEFAULT_VALUE:
     {
+      GValue *default_value;
+      
       g_rec_mutex_lock(plugin_port_mutex);
 
+      default_value = g_new0(GValue,
+			   1);
+
+      g_value_copy(plugin_port->default_value,
+		   default_value);
+      
       g_value_set_pointer(value,
-			  plugin_port->default_value);
+			  default_value);
       
       g_rec_mutex_unlock(plugin_port_mutex);
     }

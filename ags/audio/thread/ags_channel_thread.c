@@ -493,7 +493,8 @@ ags_channel_thread_run(AgsThread *thread)
   if(channel_thread->sound_scope >= 0){
     sound_scope = channel_thread->sound_scope;
 
-    if(ags_playback_get_recall_id(playback, sound_scope) != NULL){    
+    if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK ||
+       ags_playback_get_recall_id(playback, sound_scope) != NULL){    
       if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
 #if 1
 	ags_channel_recursive_run_stage(channel,
@@ -522,7 +523,8 @@ ags_channel_thread_run(AgsThread *thread)
     }
   }else{
     for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){
+      if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK ||
+	 ags_playback_get_recall_id(playback, sound_scope) == NULL){
 	continue;
       }
 

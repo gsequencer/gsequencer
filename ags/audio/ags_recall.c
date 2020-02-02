@@ -5001,6 +5001,12 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   gboolean children_lock_free;  
   gboolean omit_event;
+
+#if 0
+  if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+    g_message("%s::run-pre()", G_OBJECT_TYPE_NAME(recall));
+  }
+#endif
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -5076,6 +5082,12 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
   gboolean children_lock_free;  
   gboolean omit_event;
+
+#if 0
+  if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+    g_message("%s::run-inter()", G_OBJECT_TYPE_NAME(recall));
+  }
+#endif
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -5151,6 +5163,12 @@ ags_recall_real_run_post(AgsRecall *recall)
 
   gboolean children_lock_free;  
   gboolean omit_event;
+
+#if 0
+  if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+    g_message("%s::run-post()", G_OBJECT_TYPE_NAME(recall));
+  }
+#endif
   
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
@@ -5560,7 +5578,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
-
+  
   /* get some fields */
   g_rec_mutex_lock(recall_mutex);
 

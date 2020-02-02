@@ -11803,8 +11803,8 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     return;
   }
 
-  ags_recall_id_set_state_flags(recall_id,
-				AGS_SOUND_STATE_IS_WAITING);
+//  ags_recall_id_set_state_flags(recall_id,
+//				AGS_SOUND_STATE_IS_WAITING);
 
   g_rec_mutex_unlock(recall_id_mutex);
   

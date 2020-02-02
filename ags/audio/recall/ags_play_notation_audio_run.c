@@ -453,7 +453,8 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, G_OBJECT(play_notation_audio_run->delay_audio_run));
+      g_value_set_object(value,
+			 play_notation_audio_run->delay_audio_run);
 
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -462,7 +463,8 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, G_OBJECT(play_notation_audio_run->count_beats_audio_run));
+      g_value_set_object(value,
+			 play_notation_audio_run->count_beats_audio_run);
 
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -471,7 +473,8 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, play_notation_audio_run->notation);
+      g_value_set_object(value,
+			 play_notation_audio_run->notation);
 
       g_rec_mutex_unlock(recall_mutex);
     }
@@ -784,6 +787,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     return;
   }
 
+  audio = NULL;
+  
   g_object_get(play_notation_audio_run,
 	       "audio", &audio,
 	       NULL);
@@ -799,6 +804,17 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }
 
   /* get some fields */
+  recall_id = NULL;
+  recycling_context = NULL;
+
+  play_notation_audio = NULL;
+
+  output_soundcard = NULL;
+  
+  delay_audio = NULL;
+  delay_audio_run = NULL;
+  count_beats_audio_run = NULL;
+  
   g_object_get(play_notation_audio_run,
 	       "recall-id", &recall_id,
 	       "recall-audio", &play_notation_audio,
@@ -1082,18 +1098,30 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }  
 
   /* unref */
-  g_object_unref(audio);
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
   
-  g_object_unref(play_notation_audio);
+  if(play_notation_audio != NULL){
+    g_object_unref(play_notation_audio);
+  }
   
-  g_object_unref(output_soundcard);
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
   
-  g_object_unref(recall_id);
-
-  g_object_unref(delay_audio_run);
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
   
-  g_object_unref(count_beats_audio_run);
-
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
+  
+  if(count_beats_audio_run != NULL){
+    g_object_unref(count_beats_audio_run);
+  }
+  
   g_list_free_full(start_list,
 		   g_object_unref);
 

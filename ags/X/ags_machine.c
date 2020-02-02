@@ -2179,7 +2179,7 @@ ags_machine_playback_set_active(AgsMachine *machine,
     if(g_list_find(machine->active_playback, playback) != NULL){
       return;
     }
-    
+
     machine->active_playback = g_list_prepend(machine->active_playback,
 					      playback);
     g_object_ref(playback);
