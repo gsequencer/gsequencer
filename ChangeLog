@@ -5,6 +5,9 @@ ags (3.1.0)
 	* TODO:JK: implemented meta widget for editors
 	* TODO:JK: implemented AgsOnlineHelpWindow
 	* implemented accoustic feedback of ags-recall-dssi
+	* TODO:JK: implemented accoustic feedback of ags-recall-lv2
+	* TODO:JK: refactored ags-recall-dssi
+	* TODO:JK: refactored ags-recall-lv2
 	* TODO:JK: refactored GSequencer to allow single window mode
 	* fixed ref-count of AgsRecallDssi:count-beats-audio-run
 
