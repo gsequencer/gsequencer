@@ -772,8 +772,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
       ags_recall_done(recall);
 
-      g_message("dssi done");
-
       goto ags_recall_dssi_run_run_pre_END;
 #else
       ags_audio_signal_add_stream(audio_signal);
@@ -962,29 +960,31 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     guint midi_start_mapping;
     guint pad;
 
-    g_object_get(audio,
-		 "audio-start-mapping", &audio_start_mapping,
-		 "midi-start-mapping", &midi_start_mapping,
-		 NULL);
-
-    g_object_get(audio_signal,
-		 "note", &note_start,
-		 NULL);
-
-    g_object_get(channel,
-		 "pad", &pad,
-		 NULL);
-    
-    /* key on */
     seq_event = recall_dssi_run->event_buffer[0];
 		
-    seq_event->type = SND_SEQ_EVENT_NOTEON;
+    if(recall_dssi_run->event_count[0] == 0){
+      g_object_get(audio,
+		   "audio-start-mapping", &audio_start_mapping,
+		   "midi-start-mapping", &midi_start_mapping,
+		   NULL);
 
-    seq_event->data.note.channel = 0;
-    seq_event->data.note.note = 0x7f & (pad - audio_start_mapping + midi_start_mapping);
-    seq_event->data.note.velocity = 127;
+      g_object_get(audio_signal,
+		   "note", &note_start,
+		   NULL);
 
-    recall_dssi_run->event_count[0] = 1;
+      g_object_get(channel,
+		   "pad", &pad,
+		   NULL);
+    
+      /* key on */
+      seq_event->type = SND_SEQ_EVENT_NOTEON;
+
+      seq_event->data.note.channel = 0;
+      seq_event->data.note.note = 0x7f & (pad - audio_start_mapping + midi_start_mapping);
+      seq_event->data.note.velocity = 127;
+
+      recall_dssi_run->event_count[0] = 1;
+    }
   }else{
     g_object_get(recall_dssi_run,
 		 "note", &note_start,

@@ -986,8 +986,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 							AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
 							seq_event,
 							1);
-	      }
-		  
+	      }		  
 	    }
 
 	    //fixme:jk: remove notes

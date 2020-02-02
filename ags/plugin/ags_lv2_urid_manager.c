@@ -247,7 +247,7 @@ ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
     g_value_set_ulong(value,
 		      lv2_urid_manager->id_counter);
     ags_lv2_urid_manager_insert(lv2_urid_manager,
-				uri,
+				g_strdup(uri),
 				value);
 
     lv2_urid_manager->id_counter++;
@@ -279,7 +279,7 @@ ags_lv2_urid_manager_load_default(AgsLv2UridManager *lv2_urid_manager)
     g_value_set_ulong(value,
 		      lv2_urid_manager->id_counter);
     ags_lv2_urid_manager_insert(lv2_urid_manager,
-				*str,
+				g_strdup(str[0]),
 				value);
 
     lv2_urid_manager->id_counter++;

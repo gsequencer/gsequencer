@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -541,11 +541,11 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   /* connect event port */
   if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT)){
-#ifdef AGS_DEBUG
-    g_message("connect event port: %d", recall_lv2->event_port);
-#endif
-
     recall_lv2_run->event_port = ags_lv2_plugin_event_buffer_alloc(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+
+#ifdef AGS_DEBUG
+    g_message("connect event port: 0x%x", recall_lv2->event_port);
+#endif
     
     connect_port(recall_lv2_run->lv2_handle[0],
 		 recall_lv2->event_port,
@@ -554,12 +554,12 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   
   /* connect atom port */
   if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
-#ifdef AGS_DEBUG
-    g_message("connect atom port: %d", recall_lv2->atom_port);
-#endif
-
     recall_lv2_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
     
+#ifdef AGS_DEBUG
+    g_message("connect atom port: 0x%x", recall_lv2->atom_port);
+#endif
+
     connect_port(recall_lv2_run->lv2_handle[0],
 		 recall_lv2->atom_port,
 		 recall_lv2_run->atom_port);   
@@ -721,6 +721,9 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 void
 ags_recall_lv2_run_run_pre(AgsRecall *recall)
 {
+  AgsAudio *audio;
+  AgsChannel *channel;
+  
   AgsRecallLv2 *recall_lv2;
   AgsRecallChannelRun *recall_channel_run;
   AgsRecallRecycling *recall_recycling;
@@ -806,7 +809,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   g_object_get(recall_channel_run,
+	       "source", &channel,
 	       "recall-channel", &recall_lv2,
+	       NULL);
+
+  g_object_get(channel,
+	       "audio", &audio,
 	       NULL);
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
@@ -815,33 +823,17 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	       "route-lv2-audio-run", &route_lv2_audio_run,
 	       NULL);
   
-  if(route_lv2_audio_run == NULL){
-    g_object_unref(recall_id);
-
-    g_object_unref(audio_signal);
-
-    g_object_unref(recycling_context);
-
-    if(parent_recycling_context != NULL){
-      g_object_unref(parent_recycling_context);
-    }
-    
-    g_object_unref(recall_recycling);
-    
-    g_object_unref(recall_channel_run);
-
-    g_object_unref(recall_lv2);
-
-    return;
-  }
-
   /* get recall lv2 mutex */
   recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
-  g_object_get(route_lv2_audio_run,
-	       "count-beats-audio-run", &count_beats_audio_run,
-	       NULL);
+  count_beats_audio_run = NULL;
 
+  if(route_lv2_audio_run != NULL){
+    g_object_get(route_lv2_audio_run,
+		 "count-beats-audio-run", &count_beats_audio_run,
+		 NULL);
+  }
+  
   g_object_get(audio_signal,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -854,53 +846,81 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   g_rec_mutex_unlock(recall_lv2_mutex);
 
-  g_object_get(count_beats_audio_run,
-	       "notation-counter", &notation_counter,
-	       NULL);
-  
-  g_object_get(recall_lv2_run,
-	       "note", &note_start,
-	       NULL);
+  if(count_beats_audio_run != NULL){
+    g_object_get(count_beats_audio_run,
+		 "notation-counter", &notation_counter,
+		 NULL);
+    
+    g_object_get(recall_lv2_run,
+		 "note", &note_start,
+		 NULL);
 
-  if(ags_recall_global_get_rt_safe()){
-    note = note_start;
+    if(ags_recall_global_get_rt_safe()){
+      note = note_start;
 
-    while(note != NULL){
-      g_object_get(note->data,
+      while(note != NULL){
+	g_object_get(note->data,
+		     "x0", &x0,
+		     "x1", &x1,
+		     NULL);
+       	
+	if((x1 + 1 <= notation_counter &&
+	    !ags_note_test_flags(note->data, AGS_NOTE_FEED)) ||
+	   x0 > notation_counter){
+	  recall_lv2_run->note = g_list_remove(recall_lv2_run->note,
+					       note->data);
+	  g_object_unref(note->data);
+	}
+    
+	note = note->next;
+      }
+
+      g_list_free(note_start);
+    }else{
+      g_object_get(note_start->data,
 		   "x0", &x0,
 		   "x1", &x1,
 		   NULL);
-       	
-      if((x1 + 1 <= notation_counter &&
-	  !ags_note_test_flags(note->data, AGS_NOTE_FEED)) ||
+    
+      if(audio_signal->stream_current == NULL ||
+	 (x1 + 1 <= notation_counter &&
+	  !ags_note_test_flags(note_start->data, AGS_NOTE_FEED)) ||
 	 x0 > notation_counter){
-	recall_lv2_run->note = g_list_remove(recall_lv2_run->note,
-					     note->data);
-	g_object_unref(note->data);
-      }
-    
-      note = note->next;
-    }
+	//    g_message("done");
+	g_rec_mutex_lock(recall_lv2_mutex);
 
-    g_list_free(note_start);
+	deactivate = recall_lv2->plugin_descriptor->deactivate;
+	cleanup = recall_lv2->plugin_descriptor->cleanup;
+      
+	g_rec_mutex_unlock(recall_lv2_mutex);
+
+	/* deactivate */
+	if(deactivate != NULL){
+	  deactivate(recall_lv2_run->lv2_handle[0]);
+	}
+
+	/* cleanup */
+	if(cleanup != NULL){
+	  cleanup(recall_lv2_run->lv2_handle[0]);
+	}
+
+	ags_recall_done(recall);
+	g_list_free(note_start);
+      
+	goto ags_recall_lv2_run_run_pre_END;
+      }
+    }
   }else{
-    g_object_get(note_start->data,
-		 "x0", &x0,
-		 "x1", &x1,
-		 NULL);
-    
-    if(audio_signal->stream_current == NULL ||
-       (x1 + 1 <= notation_counter &&
-	!ags_note_test_flags(note_start->data, AGS_NOTE_FEED)) ||
-       x0 > notation_counter){
-      //    g_message("done");
+    if(parent_recycling_context == NULL &&
+       audio_signal->stream_current == NULL){
+#if 0
       g_rec_mutex_lock(recall_lv2_mutex);
 
       deactivate = recall_lv2->plugin_descriptor->deactivate;
       cleanup = recall_lv2->plugin_descriptor->cleanup;
       
       g_rec_mutex_unlock(recall_lv2_mutex);
-
+      
       /* deactivate */
       if(deactivate != NULL){
 	deactivate(recall_lv2_run->lv2_handle[0]);
@@ -912,12 +932,20 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
       }
 
       ags_recall_done(recall);
-      g_list_free(note_start);
-      
+
       goto ags_recall_lv2_run_run_pre_END;
+#else
+      ags_audio_signal_add_stream(audio_signal);
+      audio_signal->stream_current = audio_signal->stream_end;
+
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  audio_signal->length + 2);
+
+//      ags_audio_signal_add_stream(audio_signal);
+#endif
     }
   }
-
+  
   /* get copy mode and clear buffer */
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
@@ -949,9 +977,64 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
     
   g_rec_mutex_unlock(recall_lv2_mutex);
   
-  g_object_get(recall_lv2_run,
-	       "note", &note_start,
-	       NULL);
+  if(parent_recycling_context == NULL){
+    snd_seq_event_t *seq_event;
+
+    guint audio_start_mapping;
+    guint midi_start_mapping;
+    guint pad;
+
+    g_object_get(audio_signal,
+		 "note", &note_start,
+		 NULL);
+    
+    /* key on */
+    seq_event = recall_lv2_run->event_buffer[0];
+		
+    if(recall_lv2_run->event_count[0] == 0){
+      gboolean success;
+      
+      g_object_get(audio,
+		   "audio-start-mapping", &audio_start_mapping,
+		   "midi-start-mapping", &midi_start_mapping,
+		   NULL);
+
+      g_object_get(channel,
+		   "pad", &pad,
+		   NULL);
+      
+      seq_event->type = SND_SEQ_EVENT_NOTEON;
+
+      seq_event->data.note.channel = 0;
+      seq_event->data.note.note = 0x7f & (pad - audio_start_mapping + midi_start_mapping);
+      seq_event->data.note.velocity = 127;
+
+      /* write to port */
+      success = FALSE;
+      
+      if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
+	success = ags_lv2_plugin_atom_sequence_append_midi(recall_lv2_run->atom_port,
+							   AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
+							   seq_event,
+							   1);
+      }else if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT)){
+	success = ags_lv2_plugin_event_buffer_append_midi(recall_lv2_run->event_port,
+							  AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
+							  seq_event,
+							  1);
+      }
+
+      if(success){
+	recall_lv2_run->event_count[0] = 1;
+      }else{
+	note_start = NULL;
+      }
+    }
+  }else{
+    g_object_get(recall_lv2_run,
+		 "note", &note_start,
+		 NULL);
+  }
   
   note = note_start;
 
@@ -976,6 +1059,10 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
 ags_recall_lv2_run_run_pre_END:
   
+  g_object_unref(audio);
+
+  g_object_unref(channel);
+  
   g_object_unref(recall_id);
 
   g_object_unref(recycling_context);
@@ -990,7 +1077,13 @@ ags_recall_lv2_run_run_pre_END:
 
   g_object_unref(recall_lv2);
 
-  g_object_unref(count_beats_audio_run);
+  if(route_lv2_audio_run != NULL){
+    g_object_unref(route_lv2_audio_run);
+  }
+
+  if(count_beats_audio_run != NULL){
+    g_object_unref(count_beats_audio_run);
+  }
 }
 
 void
