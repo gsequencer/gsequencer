@@ -30,9 +30,14 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_automation_editor.h>
+
 #include <ags/X/editor/ags_automation_meta.h>
 
 G_BEGIN_DECLS
+
+void ags_automation_meta_machine_changed_callback(AgsAutomationEditor *automation_editor, AgsMachine *machine,
+						  AgsAutomationMeta *automation_meta);
 
 G_END_DECLS
 

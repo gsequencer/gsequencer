@@ -61,7 +61,7 @@ struct _AgsAutomationMeta
   
   GtkLabel *editor_tool;
 
-  GtkGrid *audio_channel_grid;
+  GtkLabel *active_audio_channel;
 
   GtkLabel *active_port;
   GtkLabel *focused_port;
@@ -81,6 +81,8 @@ struct _AgsAutomationMetaClass
 };
 
 GType ags_automation_meta_get_type(void);
+
+void ags_automation_meta_refresh(AgsAutomationMeta *automation_meta);
 
 AgsAutomationMeta* ags_automation_meta_new();
 

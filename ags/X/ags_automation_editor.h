@@ -35,6 +35,7 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 #include <ags/X/editor/ags_automation_edit.h>
+#include <ags/X/editor/ags_automation_meta.h>
 
 G_BEGIN_DECLS
 
@@ -109,6 +110,8 @@ struct _AgsAutomationEditor
   GtkHScrollbar *input_hscrollbar;
 
   AgsAutomationEdit *focused_automation_edit;
+
+  AgsAutomationMeta *automation_meta;
 };
 
 struct _AgsAutomationEditorClass

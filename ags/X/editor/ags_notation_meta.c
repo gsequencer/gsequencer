@@ -352,8 +352,6 @@ ags_notation_meta_disconnect(AgsConnectable *connectable)
 {
   AgsNotationEditor *notation_editor;
   AgsNotationMeta *notation_meta;
-
-  GList *list;
   
   notation_meta = AGS_NOTATION_META(connectable);
 
@@ -375,6 +373,14 @@ ags_notation_meta_disconnect(AgsConnectable *connectable)
   }
 }
 
+/**
+ * ags_notation_meta_refresh:
+ * @notation_meta: the #AgsNotationMeta
+ * 
+ * Refresh @notation_meta.
+ * 
+ * Since: 3.1.0
+ */
 void
 ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 {
@@ -406,6 +412,9 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 
     gtk_label_set_label(notation_meta->input_pads,
 			"-1"); 
+
+    gtk_label_set_label(notation_meta->editor_tool,
+			"(null)");
 
     gtk_label_set_label(notation_meta->active_audio_channel,
 			"(null)"); 
@@ -500,7 +509,6 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 	active_start = position;
 	active_end = position;
       }else{
-
 	if(position == active_end + 1){
 	  active_end = position;
 	}else{
@@ -509,15 +517,9 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 	      str = g_strdup_printf("%d",
 				    active_start);
 	    }else{
-	      gchar *tmp;
-	    
-	      tmp = g_strdup_printf("%d-%d",
+	      str = g_strdup_printf("%d-%d",
 				    active_start,
 				    active_end);
-
-	      g_free(str);
-
-	      str = tmp;
 	    }
 	  }else{
 	    if(active_start == active_end){
@@ -706,7 +708,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 	}else{
 	  gchar *tmp;
 	  
-	  tmp = g_strdup_printf("%s,\n @audio_channel[%d] -> (null)",
+	  tmp = g_strdup_printf("%s,\n  @audio_channel[%d] -> (null)",
 				str,
 				i);
 
@@ -722,7 +724,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
 	}else{
 	  gchar *tmp;
 	  
-	  tmp = g_strdup_printf("%s,\n @audio_channel[%d] -> {%s}",
+	  tmp = g_strdup_printf("%s,\n  @audio_channel[%d] -> {%s}",
 				str,
 				i,
 				current_str);

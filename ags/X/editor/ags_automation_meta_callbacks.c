@@ -18,3 +18,10 @@
  */
 
 #include <ags/X/editor/ags_automation_meta_callbacks.h>
+
+void
+ags_automation_meta_machine_changed_callback(AgsAutomationEditor *automation_editor, AgsMachine *machine,
+					     AgsAutomationMeta *automation_meta)
+{
+  ags_automation_meta_refresh(automation_meta);
+}

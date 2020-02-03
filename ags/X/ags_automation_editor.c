@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2020 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -186,6 +186,7 @@ void
 ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
   GtkViewport *viewport;
+  GtkHBox *hbox;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
 
@@ -272,15 +273,23 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->selected_machine = NULL;
 
   /* notebook audio, output, input */
+  hbox = gtk_hbox_new(FALSE,
+		      0);
+  gtk_paned_pack2((GtkPaned *) automation_editor->paned,
+		  (GtkWidget *) hbox,
+		  TRUE,
+		  TRUE);
+  
   viewport = (GtkViewport *) gtk_viewport_new(NULL,
 					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_paned_pack2((GtkPaned *) automation_editor->paned,
-		  (GtkWidget *) viewport,
-		  TRUE, TRUE);
-
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) viewport,
+		     TRUE, TRUE,
+		     0);
+  
   automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();
   gtk_container_add(GTK_CONTAINER(viewport),
 		    GTK_WIDGET(automation_editor->notebook));
@@ -598,6 +607,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   /* focused automation edit */
   automation_editor->focused_automation_edit = NULL;
 
+  /* automation meta */
+  automation_editor->automation_meta = ags_automation_meta_new();
+  g_object_set(automation_editor->automation_meta,
+	       "valign", GTK_ALIGN_START,
+	       NULL);  
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) automation_editor->automation_meta,
+		     FALSE, FALSE,
+		     0);
+  
   /* style context */
   style_context = gtk_widget_get_style_context(automation_editor);
   gtk_style_context_add_class(style_context,
@@ -688,6 +707,8 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   /* toolbar and selector */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
+
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_meta));
 }
 
 void
@@ -727,6 +748,8 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
   /* toolbar and selector */
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->automation_toolbar)); 
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->machine_selector));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->automation_meta));
 }
 
 void
