@@ -30,9 +30,14 @@
 
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_notation_editor.h>
+
 #include <ags/X/editor/ags_notation_meta.h>
 
 G_BEGIN_DECLS
+
+void ags_notation_meta_machine_changed_callback(AgsNotationEditor *notation_editor, AgsMachine *machine,
+						AgsNotationMeta *notation_meta);
 
 G_END_DECLS
 

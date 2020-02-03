@@ -76,6 +76,8 @@ struct _AgsNotationMetaClass
 
 GType ags_notation_meta_get_type(void);
 
+void ags_notation_meta_refresh(AgsNotationMeta *notation_meta);
+
 AgsNotationMeta* ags_notation_meta_new();
 
 G_END_DECLS

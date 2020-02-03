@@ -18,3 +18,10 @@
  */
 
 #include <ags/X/editor/ags_notation_meta_callbacks.h>
+
+void
+ags_notation_meta_machine_changed_callback(AgsNotationEditor *notation_editor, AgsMachine *machine,
+					   AgsNotationMeta *notation_meta)
+{
+  ags_notation_meta_refresh(notation_meta);
+}

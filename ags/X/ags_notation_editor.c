@@ -353,6 +353,15 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		   1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+
+  /* notation meta */
+  notation_editor->notation_meta = ags_notation_meta_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) notation_editor->notation_meta,
+		   2, 3,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -461,6 +470,9 @@ ags_notation_editor_connect(AgsConnectable *connectable)
 
   /* notation edit */
   ags_connectable_connect(AGS_CONNECTABLE(notation_editor->notation_edit));
+
+  /* notation meta */
+  ags_connectable_connect(AGS_CONNECTABLE(notation_editor->notation_meta));
 }
 
 void
@@ -499,6 +511,9 @@ ags_notation_editor_disconnect(AgsConnectable *connectable)
 
   /* notation edit */
   ags_connectable_disconnect(AGS_CONNECTABLE(notation_editor->notation_edit));
+
+  /* notation meta */
+  ags_connectable_disconnect(AGS_CONNECTABLE(notation_editor->notation_meta));
 }
 
 void

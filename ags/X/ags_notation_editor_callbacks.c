@@ -19,10 +19,6 @@
 
 #include <ags/X/ags_notation_editor_callbacks.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 void
 ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					     AgsNotationEditor *notation_editor)
