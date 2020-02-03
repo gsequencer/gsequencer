@@ -3116,7 +3116,7 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 /**
  * ags_recall_unset_staging_flags:
  * @recall: the #AgsRecall
- * @staging_flags: staging flags to unset
+* @staging_flags: staging flags to unset
  * 
  * Unset staging flags.
  * 
@@ -3956,13 +3956,15 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   buffer_size = recall->buffer_size;
   format = recall->format;
   
-  recall_id = recall->recall_id;
-  
   recall->children = g_list_prepend(recall->children,
 				    child);
   
   g_rec_mutex_unlock(recall_mutex);
 
+  g_object_get(recall,
+	       "recall-id", &recall_id,
+	       NULL);
+  
   /* ref new */
   ags_recall_set_ability_flags(child, recall_ability_flags);
   ags_recall_set_behaviour_flags(child, recall_behaviour_flags);
@@ -3982,7 +3984,7 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
 	       "samplerate", samplerate,
 	       "buffer-size", buffer_size,
 	       "format", format,
-	       "recall_id", recall_id,
+	       "recall-id", recall_id,
 	       NULL);
 
   g_signal_connect_after(G_OBJECT(child), "done",
@@ -3996,20 +3998,31 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   }
   
   /* get mask */
-  staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-		   AGS_SOUND_STAGING_RUN_INIT_PRE |
-		   AGS_SOUND_STAGING_RUN_INIT_INTER |
-		   AGS_SOUND_STAGING_RUN_INIT_POST);
-  
-  g_rec_mutex_lock(recall_mutex);
+  if(recall_id != NULL){
+    staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+		     AGS_SOUND_STAGING_RUN_INIT_PRE |
+		     AGS_SOUND_STAGING_RUN_INIT_INTER |
+		     AGS_SOUND_STAGING_RUN_INIT_POST);
 
-  staging_flags = (staging_flags & (recall->staging_flags));
+    //FIXME:JK: this doesn't work
+#if 0  
+    g_message("staging + 0x%x", staging_flags);
   
-  g_rec_mutex_unlock(recall_mutex);
+    g_rec_mutex_lock(recall_mutex);
 
-  /* set staging flags */
-  ags_recall_set_staging_flags(child,
-			       staging_flags);
+    staging_flags = (staging_flags & (recall->staging_flags));
+  
+    g_rec_mutex_unlock(recall_mutex);
+
+    g_message("staging - 0x%x", staging_flags);
+#endif
+  
+    /* set staging flags */
+    ags_recall_set_staging_flags(child,
+				 staging_flags);
+
+    g_object_unref(recall_id);
+  }
 }
 
 /**
