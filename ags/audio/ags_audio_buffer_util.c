@@ -4277,6 +4277,20 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
   return(retval);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s8_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
 					      guint samplerate,
@@ -4312,6 +4326,20 @@ ags_audio_buffer_util_resample_s8_with_buffer(gint8 *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s16_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
 					       guint samplerate,
@@ -4347,6 +4375,20 @@ ags_audio_buffer_util_resample_s16_with_buffer(gint16 *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s24_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
 					       guint samplerate,
@@ -4382,6 +4424,20 @@ ags_audio_buffer_util_resample_s24_with_buffer(gint32 *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s32_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
 					       guint samplerate,
@@ -4417,6 +4473,20 @@ ags_audio_buffer_util_resample_s32_with_buffer(gint32 *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s64_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
 					       guint samplerate,
@@ -4452,6 +4522,20 @@ ags_audio_buffer_util_resample_s64_with_buffer(gint64 *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_float_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
 						 guint samplerate,
@@ -4482,6 +4566,20 @@ ags_audio_buffer_util_resample_float_with_buffer(gfloat *buffer, guint channels,
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_double_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channels,
 						  guint samplerate,
@@ -4517,6 +4615,20 @@ ags_audio_buffer_util_resample_double_with_buffer(gdouble *buffer, guint channel
   free(secret_rabbit.data_in);
 }
 
+/**
+ * ags_audio_buffer_util_resample_complex_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint channels,
 						   guint samplerate,
@@ -4573,6 +4685,21 @@ ags_audio_buffer_util_resample_complex_with_buffer(AgsComplex *buffer, guint cha
   }
 }
 
+/**
+ * ags_audio_buffer_util_resample_with_buffer:
+ * @buffer: the buffer to resample
+ * @channels: the channels
+ * @format: the format
+ * @samplerate: the samplerate
+ * @buffer_length: the buffer length
+ * @target_samplerate: target samplerate
+ * @target_buffer_length: target buffer length
+ * @target_buffer: (out): target buffer
+ * 
+ * Resample @buffer by providing @target_buffer.
+ * 
+ * Since: 3.0.0
+ */
 void
 ags_audio_buffer_util_resample_with_buffer(void *buffer, guint channels,
 					   guint format,  guint samplerate,
